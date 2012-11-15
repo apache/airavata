@@ -68,6 +68,7 @@ import org.apache.airavata.common.workflow.execution.context.WorkflowContextHead
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
+import org.apache.airavata.rest.client.*;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
@@ -237,7 +238,7 @@ public class AiravataClient implements AiravataAPI {
 		if (clientConfiguration.getJcrURL() != null
 				&& clientConfiguration.getGfacURL() == null) {
 			try {
-				clientConfiguration.setGfacURL(getRegistry().getGFacURIs()
+				clientConfiguration.setGfacURL(getConfigurationResourceClient().getGFacURIs()
 						.get(0).toURL());
 				configuration.put(GFAC, clientConfiguration.getGfacURL()
 						.toString());
@@ -412,15 +413,15 @@ public class AiravataClient implements AiravataAPI {
 	private void runPreWorkflowExecutionTasks(String topic, String user,
 			String metadata, String experimentName) throws RegistryException {
 		if (user != null) {
-			getRegistry().updateExperimentExecutionUser(topic, user);
+			getProvenanceResouceClient().updateExperimentExecutionUser(topic, user);
 		}
 		if (metadata != null) {
-			getRegistry().updateExperimentMetadata(topic, metadata);
+			getProvenanceResouceClient().updateExperimentMetadata(topic, metadata);
 		}
 		if (experimentName == null) {
 			experimentName = topic;
 		}
-		getRegistry().updateExperimentName(topic, experimentName);
+		getProvenanceResouceClient().updateExperimentName(topic, experimentName);
 	}
 
 	public String runWorkflow(String topic, NameValue[] inputs)
@@ -469,13 +470,11 @@ public class AiravataClient implements AiravataAPI {
 			}).start();
 			int timeout = 0;
 			try {
-				while (!getRegistry().isExperimentExists(topic)
+				while (!getExperimentResourceClient().isExperimentExists(topic)
 						&& timeout < MAX_TIMEOUT) {
 					Thread.sleep(TIMEOUT_STEP);
 					timeout += MAX_TIMEOUT;
 				}
-			} catch (RegistryException e) {
-				throw new AiravataAPIInvocationException(e);
 			} catch (InterruptedException e) {
 				throw new AiravataAPIInvocationException(e);
 			}
@@ -487,17 +486,18 @@ public class AiravataClient implements AiravataAPI {
 
 	public List<ExperimentData> getWorkflowExecutionDataByUser(String user)
 			throws RegistryException {
-		return getRegistry().getExperimentByUser(user);
+		return getProvenanceResouceClient().getExperimentByUser(user);
 	}
 
 	public ExperimentData getWorkflowExecutionData(String topic)
 			throws RegistryException {
-		return getRegistry().getExperiment(topic);
+		return getProvenanceResouceClient().getExperiment(topic);
 	}
 
 	public List<ExperimentData> getWorkflowExecutionData(String user,
 			int pageSize, int PageNo) throws RegistryException {
-		return getRegistry().getExperimentByUser(user, pageSize, PageNo);
+        return null;
+//		return getProvenanceResouceClient().getExperimentByUser(user, pageSize, PageNo);
 	}
 
 	public static String getWorkflow() {
@@ -508,14 +508,59 @@ public class AiravataClient implements AiravataAPI {
 		AiravataClient.workflow = workflow;
 	}
 
-	public AiravataRegistry2 getRegistry() throws RegistryException {
-		if (registry == null) {
-			String jcrUsername = getClientConfiguration().getJcrUsername();
-			String jcrPassword = getClientConfiguration().getJcrPassword();
-			registry = getRegistryObject(jcrUsername, jcrPassword);
-		}
-		return registry;
-	}
+    public AllRegistryResourceClients getRegistryResourceClient(){
+        AllRegistryResourceClients allRegistryResourceClients = new AllRegistryResourceClients();
+        return allRegistryResourceClients;
+    }
+
+	public ConfigurationResourceClient getConfigurationResourceClient (){
+       ConfigurationResourceClient configurationResourceClient = new ConfigurationResourceClient();
+        return configurationResourceClient;
+    }
+
+    public DescriptorResourceClient getDescriptorResourceClient (){
+        DescriptorResourceClient descriptorResourceClient = new DescriptorResourceClient();
+        return descriptorResourceClient;
+    }
+
+    public ExperimentResourceClient getExperimentResourceClient (){
+        ExperimentResourceClient experimentResourceClient = new ExperimentResourceClient();
+        return experimentResourceClient;
+    }
+
+    public ProvenanceResourceClient getProvenanceResouceClient (){
+        ProvenanceResourceClient provenanceResourceClient = new ProvenanceResourceClient();
+        return provenanceResourceClient;
+    }
+
+    public ProjectResourceClient getProjectResourceClient (){
+        ProjectResourceClient projectResourceClient = new ProjectResourceClient();
+        return projectResourceClient;
+    }
+
+    public PublishedWorkflowResourceClient getPublishedWFResourceClient (){
+        PublishedWorkflowResourceClient publishedWorkflowResourceClient = new PublishedWorkflowResourceClient();
+        return publishedWorkflowResourceClient;
+    }
+
+    public UserWorkflowResourceClient getUserWFResourceClient () {
+        UserWorkflowResourceClient userWorkflowResourceClient = new UserWorkflowResourceClient();
+        return userWorkflowResourceClient;
+    }
+
+    public BasicRegistryResourceClient getBasicResourceClient (){
+        BasicRegistryResourceClient basicRegistryResourceClient = new BasicRegistryResourceClient();
+        return basicRegistryResourceClient;
+    }
+
+//    public AiravataRegistry2 getRegistry() throws RegistryException {
+//		if (registry == null) {
+//			String jcrUsername = getClientConfiguration().getJcrUsername();
+//			String jcrPassword = getClientConfiguration().getJcrPassword();
+//			registry = getRegistryObject(jcrUsername, jcrPassword);
+//		}
+//		return registry;
+//	}
 
 	private static AiravataRegistry2 getRegistryObject(String jcrUsername,
 			String jcrPassword) throws RegistryException {
@@ -574,11 +619,11 @@ public class AiravataClient implements AiravataAPI {
 		List<String> workflowList = new ArrayList<String>();
 		Map<String, String> workflows;
 		try {
-			workflows = getRegistry().getWorkflows();
+			workflows = getUserWFResourceClient().getWorkflows();
 			for (String name : workflows.keySet()) {
 				workflowList.add(name);
 			}
-		} catch (RegistryException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -587,7 +632,7 @@ public class AiravataClient implements AiravataAPI {
 
 	public String runWorkflow(String workflowTemplateId,
 			List<WorkflowInput> inputs) throws Exception {
-		return runWorkflow(workflowTemplateId, inputs, getRegistry().getUser()
+		return runWorkflow(workflowTemplateId, inputs, getBasicResourceClient().getUser()
 				.getUserName(), null, workflowTemplateId + "_"
 				+ Calendar.getInstance().getTime().toString());
 	}
@@ -595,7 +640,7 @@ public class AiravataClient implements AiravataAPI {
 	public String runWorkflow(String workflowTemplateId,
 			List<WorkflowInput> inputs, String workflowInstanceName)
 			throws Exception {
-		return runWorkflow(workflowTemplateId, inputs, getRegistry().getUser()
+		return runWorkflow(workflowTemplateId, inputs, getBasicResourceClient().getUser()
 				.getUserName(), null, workflowInstanceName);
 	}
 
@@ -657,17 +702,17 @@ public class AiravataClient implements AiravataAPI {
 			}
 			workflow = workflowString;
 			String topic = workflowObj.getName() + "_" + UUID.randomUUID();
-			getRegistry().setWorkflowInstanceTemplateName(topic,
-					workflowObj.getName());
+			getProvenanceResouceClient().setWorkflowInstanceTemplateName(topic,
+                    workflowObj.getName());
 			return runWorkflow(topic, inputValues.toArray(new NameValue[] {}),
 					user, metadata, workflowInstanceName, builder);
-		} catch (RegistryException e) {
-			throw new AiravataAPIInvocationException(e);
 		} catch (GraphException e) {
 			throw new AiravataAPIInvocationException(e);
 		} catch (ComponentException e) {
 			throw new AiravataAPIInvocationException(e);
-		}
+		} catch (Exception e) {
+            throw new AiravataAPIInvocationException(e);
+        }
 	}
 
 	public String runWorkflow(String workflowName, List<WorkflowInput> inputs,
@@ -701,22 +746,20 @@ public class AiravataClient implements AiravataAPI {
 			if (experimentID == null || experimentID.isEmpty()) {
 				experimentID = workflowObj.getName() + "_" + UUID.randomUUID();
 			}
-			getRegistry().setWorkflowInstanceTemplateName(experimentID,
-					workflowObj.getName());
+			getProvenanceResouceClient().setWorkflowInstanceTemplateName(experimentID,
+                    workflowObj.getName());
 			return runWorkflow(experimentID,
 					inputValues.toArray(new NameValue[] {}), user, metadata,
 					workflowInstanceName, this.builder);
-		} catch (RegistryException e) {
-			throw new AiravataAPIInvocationException(
-					"Error working with Airavata Registry: "
-							+ e.getLocalizedMessage(), e);
-		} catch (GraphException e) {
+		}  catch (GraphException e) {
 			throw new AiravataAPIInvocationException(e);
 		} catch (ComponentException e) {
 			throw new AiravataAPIInvocationException(e);
 		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
+            throw new AiravataAPIInvocationException(
+                    "Error working with Airavata Registry: "
+                            + e.getLocalizedMessage(), e);
+        }
 	}
 
 	public List<WorkflowInput> getWorkflowInputs(String workflowTemplateId)
@@ -748,14 +791,14 @@ public class AiravataClient implements AiravataAPI {
 	public String getWorkflowAsString(String workflowTemplateId)
 			throws AiravataAPIInvocationException {
 		try {
-			Map<String, String> workflows = getRegistry().getWorkflows();
+			Map<String, String> workflows = getUserWFResourceClient().getWorkflows();
 			for (String name : workflows.keySet()) {
 				if (name.equals(workflowTemplateId)) {
 					return workflows.get(name);
 				}
 			}
 			return null;
-		} catch (RegistryException e) {
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 

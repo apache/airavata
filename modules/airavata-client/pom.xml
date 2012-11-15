@@ -50,7 +50,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-jpa-registry</artifactId>
+            <artifactId>airavata-rest-client</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

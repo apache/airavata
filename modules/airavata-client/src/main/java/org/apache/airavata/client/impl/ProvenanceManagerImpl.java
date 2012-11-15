@@ -53,8 +53,8 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	public void setWorkflowInstanceNodeInput(WorkflowInstanceNode node, String data)
 			throws AiravataAPIInvocationException {
 		try {
-			getClient().getRegistry().updateWorkflowNodeInput(node, data);
-		} catch (RegistryException e) {
+			getClient().getProvenanceResouceClient().updateWorkflowNodeInput(node, data);
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
@@ -70,8 +70,8 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	public void setWorkflowInstanceNodeOutput(WorkflowInstanceNode node, String data)
 			throws AiravataAPIInvocationException {
 		try {
-			getClient().getRegistry().updateWorkflowNodeOutput(node, data);
-		} catch (RegistryException e) {
+			getClient().getProvenanceResouceClient().updateWorkflowNodeOutput(node, data);
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
@@ -87,8 +87,8 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	@Override
 	public String getWorkflowInstanceNodeInput(WorkflowInstanceNode node) throws AiravataAPIInvocationException {
 		try {
-			return getClient().getRegistry().getWorkflowInstanceNodeData(node.getWorkflowInstance().getWorkflowInstanceId(), node.getNodeId()).getInput();
-		} catch (RegistryException e) {
+			return getClient().getProvenanceResouceClient().getWorkflowInstanceNodeData(node.getWorkflowInstance().getWorkflowInstanceId(), node.getNodeId()).getInput();
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
@@ -102,9 +102,9 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	@Override
 	public Map<WorkflowInstanceNode,String> getWorkflowInstanceNodeInput(String workflowName, String nodeId) throws AiravataAPIInvocationException{
 		try {
-			List<WorkflowNodeIOData> list = getClient().getRegistry().searchWorkflowInstanceNodeInput(".*", workflowName, nodeId);
+			List<WorkflowNodeIOData> list = getClient().getProvenanceResouceClient().searchWorkflowInstanceNodeInput(".*", workflowName, nodeId);
 			return groupNodePortData(list);
-		} catch (RegistryException e) {
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
@@ -120,8 +120,8 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	@Override
 	public String getWorkflowInstanceNodeOutput(WorkflowInstanceNode node) throws AiravataAPIInvocationException {
 		try {
-			return getClient().getRegistry().getWorkflowInstanceNodeData(node.getWorkflowInstance().getWorkflowInstanceId(), node.getNodeId()).getOutput();
-		} catch (RegistryException e) {
+			return getClient().getProvenanceResouceClient().getWorkflowInstanceNodeData(node.getWorkflowInstance().getWorkflowInstanceId(), node.getNodeId()).getOutput();
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
@@ -136,9 +136,9 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	@Override
 	public Map<WorkflowInstanceNode,String> getWorkflowInstanceNodeOutput(String workflowName, String nodeId) throws AiravataAPIInvocationException{
 		try {
-			List<WorkflowNodeIOData> list = getClient().getRegistry().searchWorkflowInstanceNodeOutput(".*", workflowName, nodeId);
+			List<WorkflowNodeIOData> list = getClient().getProvenanceResouceClient().searchWorkflowInstanceNodeOutput(".*", workflowName, nodeId);
 			return groupNodePortData(list);
-		} catch (RegistryException e) {
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
@@ -153,8 +153,8 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	public void setWorkflowInstanceStatus(WorkflowInstanceStatus status)
 			throws AiravataAPIInvocationException {
 		try {
-			getClient().getRegistry().updateWorkflowInstanceStatus(status);
-		} catch (RegistryException e) {
+			getClient().getProvenanceResouceClient().updateWorkflowInstanceStatus(status);
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 		
@@ -165,8 +165,8 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 			String experimentId, String workflowInstanceId)
 			throws AiravataAPIInvocationException {
 		try {
-			return getClient().getRegistry().getWorkflowInstanceStatus(experimentId);
-		} catch (RegistryException e) {
+			return getClient().getProvenanceResouceClient().getWorkflowInstanceStatus(experimentId);
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
@@ -181,8 +181,8 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	@Override
 	public void setExperimentUser(String experimentId, String user) throws AiravataAPIInvocationException {
 		try {
-			getClient().getRegistry().updateExperimentExecutionUser(experimentId, user);
-		} catch (RegistryException e) {
+			getClient().getProvenanceResouceClient().updateExperimentExecutionUser(experimentId, user);
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
@@ -196,8 +196,8 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	@Override
 	public ExperimentUser getExperimentUser(String experimentId)throws AiravataAPIInvocationException {
 		try {
-			return new ExperimentUser(experimentId,getClient().getRegistry().getExperimentExecutionUser(experimentId));
-		} catch (RegistryException e) {
+			return new ExperimentUser(experimentId,getClient().getProvenanceResouceClient().getExperimentExecutionUser(experimentId));
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
@@ -206,8 +206,8 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	public void setExperimentMetadata(String experimentId, String metadata)
 			throws AiravataAPIInvocationException {
 		try {
-			getClient().getRegistry().updateExperimentMetadata(experimentId, metadata);
-		} catch (RegistryException e) {
+			getClient().getProvenanceResouceClient().updateExperimentMetadata(experimentId, metadata);
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 		
@@ -222,8 +222,8 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	@Override
 	public ExperimentMetadata getExperimentMetadata(String experimentId)throws AiravataAPIInvocationException {
 		try {
-			return new ExperimentMetadata(experimentId, getClient().getRegistry().getExperimentMetadata(experimentId));
-		} catch (RegistryException e) {
+			return new ExperimentMetadata(experimentId, getClient().getProvenanceResouceClient().getExperimentMetadata(experimentId));
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
@@ -231,8 +231,8 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
     @Override
     public boolean isExperimentNameExist(String experimentName) throws AiravataAPIInvocationException {
         try {
-            return getClient().getRegistry().isExperimentNameExist(experimentName);
-        } catch (RegistryException e) {
+            return getClient().getProvenanceResouceClient().isExperimentNameExist(experimentName);
+        } catch (Exception e) {
             throw new AiravataAPIInvocationException(e);
         }
     }
@@ -240,8 +240,8 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
     @Override
 	public List<String> getExperimentIdList(String owner) throws AiravataAPIInvocationException{
 		try {
-			return getClient().getRegistry().getExperimentIdByUser(owner);
-		} catch (RegistryException e) {
+			return getClient().getProvenanceResouceClient().getExperimentIdByUser(owner);
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
@@ -261,8 +261,8 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	public List<ExperimentData> getWorkflowExperimentDataList(String user)
 			throws AiravataAPIInvocationException {
 		try {
-			return  getClient().getRegistry().getExperimentByUser(user);
-		} catch (RegistryException e) {
+			return  getClient().getProvenanceResouceClient().getExperimentByUser(user);
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
@@ -271,8 +271,8 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	public List<ExperimentData> getWorkflowExperimentData(String user,
 			int pageSize, int pageNo) throws AiravataAPIInvocationException {
 		try {
-			return  getClient().getRegistry().getExperimentByUser(user, pageSize, pageNo);
-		} catch (RegistryException e) {
+			return  getClient().getProvenanceResouceClient().getExperimentByUser(user, pageSize, pageNo);
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
@@ -281,8 +281,8 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	public WorkflowInstanceData getWorkflowInstanceData(String experimentId,
 			String workflowInstanceId) throws AiravataAPIInvocationException {
 		try {
-			return getClient().getRegistry().getWorkflowInstanceData(workflowInstanceId);
-		} catch (RegistryException e) {
+			return getClient().getProvenanceResouceClient().getWorkflowInstanceData(workflowInstanceId);
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
@@ -311,8 +311,8 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	public void setExperimentName(String experimentId, String experimentName)
 			throws AiravataAPIInvocationException {
 		try {
-			getClient().getRegistry().updateExperimentName(experimentId, experimentName);
-		} catch (RegistryException e) {
+			getClient().getProvenanceResouceClient().updateExperimentName(experimentId, experimentName);
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
@@ -327,8 +327,8 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	public ExperimentName getExperimentName(String experimentId)
 			throws AiravataAPIInvocationException {
 		try {
-			return new ExperimentName(experimentId, getClient().getRegistry().getExperimentName(experimentId));
-		} catch (RegistryException e) {
+			return new ExperimentName(experimentId, getClient().getProvenanceResouceClient().getExperimentName(experimentId));
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
@@ -337,8 +337,8 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	public ExperimentData getWorkflowExperimentData(String experimentId)
 			throws AiravataAPIInvocationException {
 		try {
-			return getClient().getRegistry().getExperiment(experimentId);
-		} catch (RegistryException e) {
+			return getClient().getProvenanceResouceClient().getExperiment(experimentId);
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
@@ -348,8 +348,8 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 			String workflowInstaceId, String nodeId, ExecutionStatus status)
 			throws AiravataAPIInvocationException {
 		try {
-			getClient().getRegistry().updateWorkflowNodeStatus(workflowInstaceId, nodeId, status);
-		} catch (RegistryException e) {
+			getClient().getProvenanceResouceClient().updateWorkflowNodeStatus(workflowInstaceId, nodeId, status);
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 		
@@ -359,8 +359,8 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	public void setWorkflowInstanceNodeStatus(WorkflowInstanceNodeStatus status)
 			throws AiravataAPIInvocationException {
 		try {
-			getClient().getRegistry().updateWorkflowNodeStatus(status);
-		} catch (RegistryException e) {
+			getClient().getProvenanceResouceClient().updateWorkflowNodeStatus(status);
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
@@ -376,8 +376,8 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	public WorkflowInstanceNodeStatus getWorkflowInstanceNodeStatus(
 			WorkflowInstanceNode node) throws AiravataAPIInvocationException {
 		try {
-			return getClient().getRegistry().getWorkflowNodeStatus(node);
-		} catch (RegistryException e) {
+			return getClient().getProvenanceResouceClient().getWorkflowNodeStatus(node);
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}	
 	}
@@ -388,9 +388,9 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 		try {
 			AiravataExperiment experiment = new AiravataExperiment();
 			experiment.setExperimentId(experimentId);
-			getClient().getRegistry().addExperiment(projectName, experiment);
-			getClient().getRegistry().updateExperimentName(experimentId, experimentName);
-		} catch (RegistryException e) {
+			getClient().getExperimentResourceClient().addExperiment(projectName, experiment);
+			getClient().getProvenanceResouceClient().updateExperimentName(experimentId, experimentName);
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}	
 	}
@@ -400,8 +400,8 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 			WorkflowInstance workflowInstance)
 			throws AiravataAPIInvocationException {
 		try {
-			getClient().getRegistry().addWorkflowInstance(experimentId, workflowInstance.getWorkflowInstanceId(),workflowInstance.getTemplateName());
-		} catch (RegistryException e) {
+			getClient().getProvenanceResouceClient().addWorkflowInstance(experimentId, workflowInstance.getWorkflowInstanceId(),workflowInstance.getTemplateName());
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 		
@@ -411,8 +411,8 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	public ExperimentData getExperimentMetaInformation(String experimentId)
 			throws AiravataAPIInvocationException {
 		try {
-			return getClient().getRegistry().getExperimentMetaInformation(experimentId);
-		} catch (RegistryException e) {
+			return getClient().getProvenanceResouceClient().getExperimentMetaInformation(experimentId);
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
@@ -421,8 +421,8 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	public List<ExperimentData> getAllExperimentMetaInformation(String user)
 			throws AiravataAPIInvocationException {
 		try {
-			return getClient().getRegistry().getAllExperimentMetaInformation(user);
-		} catch (RegistryException e) {
+			return getClient().getProvenanceResouceClient().getAllExperimentMetaInformation(user);
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
