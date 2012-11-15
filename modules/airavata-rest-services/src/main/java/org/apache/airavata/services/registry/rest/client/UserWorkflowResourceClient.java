@@ -51,7 +51,7 @@ public class UserWorkflowResourceClient {
         return UriBuilder.fromUri("http://localhost:9080/airavata-services/").build();
     }
 
-    private com.sun.jersey.api.client.WebResource getUserWFRegistryBaseResource (){
+    private WebResource getUserWFRegistryBaseResource (){
         ClientConfig config = new DefaultClientConfig();
         config.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING,
                 Boolean.TRUE);

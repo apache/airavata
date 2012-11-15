@@ -200,7 +200,7 @@ public class DescriptorResourceClient {
         }
     }
 
-    public void saveServiceDescriptor (ServiceDescription serviceDescription){
+    public void addServiceDescriptor (ServiceDescription serviceDescription){
         ServiceDescriptor serviceDescriptor = DescriptorUtil.createServiceDescriptor(serviceDescription);
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC_SAVE);
         ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, serviceDescriptor);
@@ -283,7 +283,7 @@ public class DescriptorResourceClient {
         return serviceDescriptions;
     }
 
-    public boolean isApplicationDescriptorExist (String serviceName, String hostName, String appDescriptorName){
+    public boolean isApplicationDescriptorExists (String serviceName, String hostName, String appDescriptorName){
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.APPL_DESC_EXIST);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("serviceName", serviceName);
@@ -484,5 +484,21 @@ public class DescriptorResourceClient {
 
         DescriptorNameList descriptorNameList = response.getEntity(DescriptorNameList.class);
         return descriptorNameList.getDescriptorNames();
+    }
+
+    public void removeApplicationDescriptor (String serviceName, String hostName, String applicationName){
+        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_DELETE);
+        MultivaluedMap queryParams = new MultivaluedMapImpl();
+        queryParams.add("serviceName", serviceName);
+        queryParams.add("hostName", hostName);
+        queryParams.add("appName", applicationName);
+        ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).delete(ClientResponse.class);
+        int status = response.getStatus();
+
+        if (status != 200) {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
+        }
     }
 }
