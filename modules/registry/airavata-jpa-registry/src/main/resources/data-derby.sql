@@ -191,4 +191,7 @@ create table Gram_Data
        FOREIGN KEY (workflow_instanceID) REFERENCES Workflow_Data(workflow_instanceID) ON DELETE CASCADE
 );
 
+insert into Users values ('admin', 'admin');
+
+
 
