@@ -28,6 +28,7 @@ import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
 import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.services.registry.rest.resourcemappings.ExperimentDataList;
@@ -686,5 +687,22 @@ public class ProvenanceResourceClient {
                     + status);
         }
     }
+
+    public List<WorkflowNodeIOData> searchWorkflowInstanceNodeInput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx)  {
+        //not implemented in Registry API
+        return null;
+    }
+
+    public List<WorkflowNodeIOData> searchWorkflowInstanceNodeOutput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx)  {
+        //not implemented in Registry API
+        return null;
+    }
+
+    public List<ExperimentData> getExperimentByUser(String user, int pageSize, int pageNo) {
+        //not implemented in Registry API
+        return null;
+    }
+
+
 
 }

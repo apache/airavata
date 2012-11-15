@@ -165,4 +165,13 @@ public class ResourcePathConstants {
         public static final String REMOVE_WORKFLOW = "remove/workflow";
     }
 
+    public final class BasicRegistryConstants {
+
+        public static final String REGISTRY_API_BASICREGISTRY = "/registry/api/basicregistry/";
+        public static final String GET_GATEWAY = "get/gateway";
+        public static final String GET_USER = "get/user";
+        public static final String SET_GATEWAY = "set/gateway";
+        public static final String SET_USER = "set/user";
+    }
+
     }
