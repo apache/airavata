@@ -122,17 +122,18 @@ public class ExecutionManagerImpl implements ExecutionManager {
 		}
 	}
 
-    @Override
-    public DefaultExecutionContext createDefaultExecutionContext() throws AiravataAPIInvocationException {
-        DefaultExecutionContext ec = new DefaultExecutionContext();
-//        ec.addNotifiable(new LoggingNotification());
-        try {
-            ec.setRegistryService(getClient().getRegistry());
-        } catch (RegistryException e) {
-            throw new AiravataAPIInvocationException(e);
-        }
-        return  ec;
-    }
+//    @Override
+//    public DefaultExecutionContext createDefaultExecutionContext() throws AiravataAPIInvocationException {
+//        DefaultExecutionContext ec = new DefaultExecutionContext();
+////        ec.addNotifiable(new LoggingNotification());
+////        try {
+//            // TODO : Fix me
+////            ec.setRegistryService(getClient().getRegistry());
+////        } catch (RegistryException e) {
+////            throw new AiravataAPIInvocationException(e);
+////        }
+//        return  ec;
+//    }
 
 	@Override
 	public String runExperiment(String workflowName,
