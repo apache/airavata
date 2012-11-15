@@ -337,14 +337,14 @@ public class ProvenanceRegistryResource {
      * @param createIfNotPresent flag whether to create a new workflow instance or not
      * @return HTTP response
      */
-    @GET
-    @Path(ResourcePathConstants.ProvenanceResourcePathConstants.WORKFLOWINSTANCE_NODE_EXIST_CREATE)
+    @POST
+    @Path(ResourcePathConstants.ProvenanceResourcePathConstants.WORKFLOWINSTANCE_EXIST_CREATE)
     @Produces(MediaType.TEXT_PLAIN)
-    public Response isWorkflowInstanceExistsThenCreate(@QueryParam("instanceId") String instanceId,
-                                                       @QueryParam("createIfNotPresent") boolean createIfNotPresent) {
+    public Response isWorkflowInstanceExistsThenCreate(@FormParam("instanceId") String instanceId,
+                                                       @FormParam("createIfNotPresent") String createIfNotPresent) {
         airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
         try {
-            Boolean result = airavataRegistry.isWorkflowInstanceExists(instanceId, createIfNotPresent);
+            Boolean result = airavataRegistry.isWorkflowInstanceExists(instanceId, Boolean.valueOf(createIfNotPresent));
             if (result) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity("New workflow instance has been created...");
@@ -691,7 +691,7 @@ public class ProvenanceRegistryResource {
      */
     @GET
     @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENT_ID_USER)
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getExperimentIdByUser(@QueryParam("username") String username) {
         airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
         try{
@@ -875,7 +875,7 @@ public class ProvenanceRegistryResource {
      * @param workflowNodeGramData workflow node gram data object as a JSON input
      * @return HTTP response
      */
-    @GET
+    @POST
     @Path(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_WORKFLOWNODE_GRAMDATA)
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces(MediaType.TEXT_PLAIN)
@@ -966,10 +966,10 @@ public class ProvenanceRegistryResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response isWorkflowInstanceNodePresentCreate(@FormParam("workflowInstanceId") String workflowInstanceId,
                                                         @FormParam("nodeId") String nodeId,
-                                                        @FormParam("createIfNotPresent") boolean createIfNotPresent){
+                                                        @FormParam("createIfNotPresent") String createIfNotPresent){
         airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
         try{
-            boolean workflowInstanceNodePresent = airavataRegistry.isWorkflowInstanceNodePresent(workflowInstanceId, nodeId, createIfNotPresent);
+            boolean workflowInstanceNodePresent = airavataRegistry.isWorkflowInstanceNodePresent(workflowInstanceId, nodeId, Boolean.getBoolean(createIfNotPresent));
             if (workflowInstanceNodePresent){
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity("Workflow instance node exists...");

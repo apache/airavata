@@ -1021,7 +1021,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		}
 		WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(status.getWorkflowInstance().getWorkflowInstanceId());
 		Timestamp currentTime = new Timestamp(status.getStatusUpdateTime().getTime());
-		wi.setStatus(status.getExecutionStatus().toString());
+        if(status.getExecutionStatus() != null){
+            wi.setStatus(status.getExecutionStatus().toString());
+        }
+
 		if (status.getExecutionStatus()==ExecutionStatus.STARTED){
 			wi.setStartTime(currentTime);
 		}
