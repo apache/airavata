@@ -586,8 +586,7 @@
                 <module>modules/registry</module>
                 <module>modules/airavata-client</module>
                 <module>modules/security</module>
-                <module>modules/airavata-rest-services</module>
-                <module>modules/airavata-rest-client</module>
+                <module>modules/rest</module>
                 <module>samples/simple-math-service</module>
                 <module>samples/complex-math-service</module>
                 <module>samples/levenshtein-distance-service</module>
