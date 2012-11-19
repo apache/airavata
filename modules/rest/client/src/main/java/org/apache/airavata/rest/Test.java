@@ -40,7 +40,7 @@ public class Test {
 
     public static void configurationResourceClientTest(){
         //configuration resource test
-        ConfigurationResourceClient configurationResourceClient = new ConfigurationResourceClient();
+//        ConfigurationResourceClient configurationResourceClient = new ConfigurationResourceClient();
 
 //        System.out.println("###############getConfiguration###############");
 //        Object configuration = configurationResourceClient.getConfiguration("interpreter.url");
@@ -125,7 +125,7 @@ public class Test {
     }
 
     public static void hostDescriptorClientTest(){
-        DescriptorResourceClient descriptorResourceClient = new DescriptorResourceClient();
+//        DescriptorResourceClient descriptorResourceClient = new DescriptorResourceClient();
 
 //        boolean localHost = descriptorResourceClient.isHostDescriptorExists("LocalHost");
 //        System.out.println(localHost);
@@ -147,7 +147,7 @@ public class Test {
 //            System.out.println(hostName);
 //        }
 
-        descriptorResourceClient.removeHostDescriptor("testHost");
+//        descriptorResourceClient.removeHostDescriptor("testHost");
 
 //        System.out.println(localHost.getType().getHostName());
 //        System.out.println(localHost.getType().getHostAddress());
@@ -155,7 +155,7 @@ public class Test {
     }
 
     public static void serviceDescriptorClientTest (){
-        DescriptorResourceClient descriptorResourceClient = new DescriptorResourceClient();
+//        DescriptorResourceClient descriptorResourceClient = new DescriptorResourceClient();
         //service descriptor exists
 //        boolean exists = descriptorResourceClient.isServiceDescriptorExists("echo");
 //        System.out.println(exists);
@@ -323,7 +323,7 @@ public class Test {
     }
 
     public static void projectRegistryClientTest(){
-        ProjectResourceClient projectResourceClient = new ProjectResourceClient();
+//        ProjectResourceClient projectResourceClient = new ProjectResourceClient();
         //isWorkspaceProjectExists
 //        boolean projectExists = projectResourceClient.isWorkspaceProjectExists("default");
 //        System.out.println(projectExists);
@@ -351,7 +351,7 @@ public class Test {
     }
 
     public static void experimentRegistryClient(){
-        ExperimentResourceClient experimentResourceClient = new ExperimentResourceClient();
+//        ExperimentResourceClient experimentResourceClient = new ExperimentResourceClient();
         //add experiment
 //        try {
 //            AiravataExperiment experiment = new AiravataExperiment();
@@ -403,7 +403,7 @@ public class Test {
     }
 
     public static void userWFClientTest (){
-        UserWorkflowResourceClient userWorkflowResourceClient = new UserWorkflowResourceClient();
+//        UserWorkflowResourceClient userWorkflowResourceClient = new UserWorkflowResourceClient();
 //        boolean exists = userWorkflowResourceClient.isWorkflowExists("Workflow1");
 //        System.out.println(exists);
 //         userWorkflowResourceClient.addWorkflow("workflow5", "testworlflowcontent");
@@ -416,7 +416,7 @@ public class Test {
     }
 
     public static void publishWFClientTest () {
-        PublishedWorkflowResourceClient publishedWorkflowResourceClient = new PublishedWorkflowResourceClient();
+//        PublishedWorkflowResourceClient publishedWorkflowResourceClient = new PublishedWorkflowResourceClient();
 //        boolean exists = publishedWorkflowResourceClient.isPublishedWorkflowExists("Workflow2");
 //        System.out.println(exists);
 

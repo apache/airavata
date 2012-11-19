@@ -38,7 +38,12 @@ public class GFacConfiguration {
 
     private String trustedCertLocation;
 
-    public GFacConfiguration(String myProxyServer, String myProxyUser, String myProxyPassphrase, int myProxyLifeCycle, AiravataRegistry2 axis2Registry, String trustedCertLocation) {
+    public GFacConfiguration(String myProxyServer,
+                             String myProxyUser,
+                             String myProxyPassphrase,
+                             int myProxyLifeCycle,
+                             AiravataRegistry2 axis2Registry,
+                             String trustedCertLocation) {
         this.myProxyServer = myProxyServer;
         this.myProxyUser = myProxyUser;
         this.myProxyPassphrase = myProxyPassphrase;
