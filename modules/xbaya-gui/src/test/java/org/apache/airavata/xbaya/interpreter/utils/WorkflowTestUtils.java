@@ -20,13 +20,13 @@
 */
 package org.apache.airavata.xbaya.interpreter.utils;
 
+import org.apache.airavata.client.stub.interpretor.NameValue;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.interpreter.EchoService;
 import org.apache.airavata.xbaya.interpreter.LevenshteinDistanceService;
 import org.apache.airavata.xbaya.interpreter.ComplexMathService;
 import org.apache.airavata.xbaya.interpretor.HeaderConstants;
-import org.apache.airavata.xbaya.interpretor.NameValue;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpretorSkeleton;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;

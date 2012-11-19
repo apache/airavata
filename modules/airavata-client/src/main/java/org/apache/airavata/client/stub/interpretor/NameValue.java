@@ -18,7 +18,8 @@
  * under the License.
  *
  */
-package org.apache.airavata.xbaya.interpretor;
+package org.apache.airavata.client.stub.interpretor;
+
 
 // http://silktree.cs.indiana.edu:18080/axis2/services/WorkflowInterpretor
 public class NameValue implements org.apache.axis2.databinding.ADBBean {

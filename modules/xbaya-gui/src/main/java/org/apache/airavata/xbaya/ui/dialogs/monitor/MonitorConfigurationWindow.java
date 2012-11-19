@@ -34,8 +34,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.apache.airavata.common.utils.SwingUtil;
+import org.apache.airavata.ws.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;

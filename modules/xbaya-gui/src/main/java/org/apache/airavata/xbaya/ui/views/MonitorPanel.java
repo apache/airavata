@@ -42,9 +42,9 @@ import javax.swing.table.TableColumnModel;
 
 import org.apache.airavata.common.utils.BrowserLauncher;
 import org.apache.airavata.common.utils.SwingUtil;
-import org.apache.airavata.xbaya.monitor.Monitor;
-import org.apache.airavata.xbaya.monitor.MonitorEventData;
-import org.apache.airavata.xbaya.monitor.MonitorUtil;
+import org.apache.airavata.ws.monitor.Monitor;
+import org.apache.airavata.ws.monitor.MonitorEventData;
+import org.apache.airavata.ws.monitor.MonitorUtil;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.monitor.MonitorWindow;
 import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler;

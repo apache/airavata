@@ -37,6 +37,7 @@ import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.airavata.client.stub.interpretor.NameValue;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.graph.DataPort;
@@ -48,16 +49,15 @@ import org.apache.airavata.workflow.model.graph.system.EndifNode;
 import org.apache.airavata.workflow.model.graph.system.ForEachNode;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.workflow.model.wf.Workflow;
+import org.apache.airavata.ws.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.interpretor.NameValue;
 import org.apache.airavata.xbaya.interpretor.SystemComponentInvoker;
 import org.apache.airavata.xbaya.interpretor.WorkFlowInterpreterException;
 import org.apache.airavata.xbaya.invoker.GenericInvoker;
 import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.invoker.WorkflowInvokerWrapperForGFacInvoker;
 import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
-import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.ui.dialogs.registry.JCRRegistryWindow;
 import org.apache.axis2.util.XMLUtils;
 import org.slf4j.Logger;

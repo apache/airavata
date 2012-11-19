@@ -13,7 +13,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.airavata</groupId>
     <artifactId>airavata-xbaya-gui</artifactId>
-    <version>0.5-SNAPSHOT</version>
+    <version>0.6-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Airavata XBaya</name>
     <url>http://incubator.apache.org/airavata/</url>
@@ -358,6 +358,16 @@
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-workflow-model-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-message-monitor</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-client-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

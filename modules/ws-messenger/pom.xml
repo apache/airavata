@@ -148,6 +148,7 @@
                 <module>client</module>
                 <module>messagebox</module>
                 <module>messagebroker</module>
+                <module>message-monitor</module>
                 <!-- <module>distribution</module> -->
             </modules>
         </profile>

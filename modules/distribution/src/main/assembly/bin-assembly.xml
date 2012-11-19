@@ -237,6 +237,8 @@
 				<include>org.apache.airavata:airavata-gfac-schema-utils</include>
 				<include>org.apache.airavata:airavata-common-utils</include>
 				<include>org.apache.airavata:airavata-workflow-model-core:jar</include>
+				<include>org.apache.airavata:airavata-message-monitor:jar</include>
+				<include>org.apache.airavata:airavata-client-api:jar</include>
 				<include>org.apache.airavata:airavata-jpa-registry:jar</include>
 				<include>org.apache.openjpa:openjpa-all:jar</include>
 				<include>edu.berkeley:yfilter</include>

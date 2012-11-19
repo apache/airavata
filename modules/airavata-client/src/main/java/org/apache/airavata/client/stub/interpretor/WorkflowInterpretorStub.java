@@ -19,12 +19,13 @@
  *
  */
 
-package org.apache.airavata.xbaya.interpretor;
+package org.apache.airavata.client.stub.interpretor;
 
 /*
  *  WorkflowInterpretorStub java implementation
  */
 
+import org.apache.airavata.client.stub.interpretor.NameValue.Factory;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.Constants;
 import org.apache.axis2.transport.http.HTTPConstants;

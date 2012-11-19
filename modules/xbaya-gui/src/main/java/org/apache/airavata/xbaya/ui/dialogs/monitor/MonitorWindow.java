@@ -29,8 +29,8 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.xbaya.monitor.MonitorEventData;
-import org.apache.airavata.xbaya.monitor.MonitorUtil;
+import org.apache.airavata.ws.monitor.MonitorEventData;
+import org.apache.airavata.ws.monitor.MonitorUtil;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;

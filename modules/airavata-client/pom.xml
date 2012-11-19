@@ -29,6 +29,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-message-monitor</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.axis2</groupId>
             <artifactId>axis2-codegen</artifactId>
             <version>${axis2.version}</version>
@@ -43,11 +48,6 @@
             <artifactId>airavata-workflow-model-core</artifactId>
             <version>${project.version}</version>
         </dependency>        
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-xbaya-gui</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-rest-client</artifactId>
