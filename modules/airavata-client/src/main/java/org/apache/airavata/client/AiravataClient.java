@@ -65,6 +65,7 @@ import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
 import org.apache.airavata.rest.client.*;
+import org.apache.airavata.rest.utils.Callback;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
@@ -107,7 +108,7 @@ public class AiravataClient implements AiravataAPI {
 	private String currentUser;
     private String password;
     private URI regitryURI;
-    private PasswordCallBackImpl passwordCallBack;
+    private Callback callBack;
 
 	private AiravataRegistry2 registry;
 
@@ -506,50 +507,42 @@ public class AiravataClient implements AiravataAPI {
 	}
 
 	public ConfigurationResourceClient getConfigurationResourceClient (){
-        passwordCallBack = new PasswordCallBackImpl(getCurrentUser(), getPassword());
-        ConfigurationResourceClient configurationResourceClient = new ConfigurationResourceClient(getCurrentUser(), passwordCallBack);
+        ConfigurationResourceClient configurationResourceClient = new ConfigurationResourceClient(getCurrentUser(), getCallBack());
         return configurationResourceClient;
     }
 
     public DescriptorResourceClient getDescriptorResourceClient (){
-        passwordCallBack = new PasswordCallBackImpl(getCurrentUser(), getPassword());
-        DescriptorResourceClient descriptorResourceClient = new DescriptorResourceClient(getCurrentUser(), passwordCallBack);
+        DescriptorResourceClient descriptorResourceClient = new DescriptorResourceClient(getCurrentUser(), getCallBack());
         return descriptorResourceClient;
     }
 
     public ExperimentResourceClient getExperimentResourceClient (){
-        passwordCallBack = new PasswordCallBackImpl(getCurrentUser(), getPassword());
-        ExperimentResourceClient experimentResourceClient = new ExperimentResourceClient(getCurrentUser(), passwordCallBack);
+        ExperimentResourceClient experimentResourceClient = new ExperimentResourceClient(getCurrentUser(), getCallBack());
         return experimentResourceClient;
     }
 
     public ProvenanceResourceClient getProvenanceResouceClient (){
-        passwordCallBack = new PasswordCallBackImpl(getCurrentUser(), getPassword());
-        ProvenanceResourceClient provenanceResourceClient = new ProvenanceResourceClient(getCurrentUser(), passwordCallBack);
+        ProvenanceResourceClient provenanceResourceClient = new ProvenanceResourceClient(getCurrentUser(), getCallBack());
         return provenanceResourceClient;
     }
 
     public ProjectResourceClient getProjectResourceClient (){
-        PasswordCallBackImpl passwordCallBack = new PasswordCallBackImpl(getCurrentUser(), getPassword());
-        ProjectResourceClient projectResourceClient = new ProjectResourceClient(getCurrentUser(), passwordCallBack);
+        ProjectResourceClient projectResourceClient = new ProjectResourceClient(getCurrentUser(), getCallBack());
         return projectResourceClient;
     }
 
     public PublishedWorkflowResourceClient getPublishedWFResourceClient (){
-        passwordCallBack = new PasswordCallBackImpl(getCurrentUser(), getPassword());
-        PublishedWorkflowResourceClient publishedWorkflowResourceClient = new PublishedWorkflowResourceClient(getCurrentUser(), passwordCallBack);
+        PublishedWorkflowResourceClient publishedWorkflowResourceClient = new PublishedWorkflowResourceClient(getCurrentUser(), getCallBack());
         return publishedWorkflowResourceClient;
     }
 
     public UserWorkflowResourceClient getUserWFResourceClient () {
-        passwordCallBack = new PasswordCallBackImpl(getCurrentUser(), getPassword());
-        UserWorkflowResourceClient userWorkflowResourceClient = new UserWorkflowResourceClient(getCurrentUser(), passwordCallBack);
+        UserWorkflowResourceClient userWorkflowResourceClient = new UserWorkflowResourceClient(getCurrentUser(), getCallBack());
         return userWorkflowResourceClient;
     }
 
     public BasicRegistryResourceClient getBasicResourceClient (){
-        passwordCallBack = new PasswordCallBackImpl(getCurrentUser(), getPassword());
-        BasicRegistryResourceClient basicRegistryResourceClient = new BasicRegistryResourceClient(getCurrentUser(), passwordCallBack);
+        BasicRegistryResourceClient basicRegistryResourceClient = new BasicRegistryResourceClient(getCurrentUser(), getCallBack());
         return basicRegistryResourceClient;
     }
 
@@ -1036,5 +1029,13 @@ public class AiravataClient implements AiravataAPI {
 
     public URI getRegitryURI() {
         return regitryURI;
+    }
+
+    public Callback getCallBack() {
+        return callBack;
+    }
+
+    public void setCallBack(Callback callBack) {
+        this.callBack = callBack;
     }
 }

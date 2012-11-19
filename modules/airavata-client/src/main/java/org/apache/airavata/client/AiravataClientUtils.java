@@ -30,11 +30,21 @@ import javax.jcr.RepositoryException;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.rest.utils.Callback;
 
 public class AiravataClientUtils {
 	public static AiravataAPI getAPI(URI registryURL, String username, String password) throws MalformedURLException, RepositoryException, RegistryException{
 		return getAPI(registryURL, username, password, username);
 	}
+
+    public static AiravataAPI getAPI(URI registryURL, String username, Callback callback) throws MalformedURLException, RepositoryException, RegistryException{
+        AiravataClient apiObj = new AiravataClient();
+        apiObj.setCurrentUser(username);
+        apiObj.setCallBack(callback);
+        apiObj.setPassword(callback.getPassword(username));
+        apiObj.setRegitryURI(registryURL);
+        return apiObj;
+    }
 
 	public static AiravataAPI getAPI(URI registryURL, String username, String password, String alternateUsername) throws MalformedURLException, RepositoryException, RegistryException{
 		AiravataClient apiObj = new AiravataClient();
