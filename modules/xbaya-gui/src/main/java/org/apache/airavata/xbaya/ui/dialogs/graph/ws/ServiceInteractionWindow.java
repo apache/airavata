@@ -27,7 +27,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import org.apache.airavata.xbaya.monitor.Monitor;
+import org.apache.airavata.ws.monitor.Monitor;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.WaitDialog;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;

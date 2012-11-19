@@ -25,10 +25,10 @@ import java.net.URI;
 
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.workflow.model.wf.Workflow;
+import org.apache.airavata.ws.monitor.Monitor;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.jython.lib.NotificationSender;
 import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
-import org.apache.airavata.xbaya.monitor.Monitor;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 
 public class WorkflowInterpreterConfiguration {

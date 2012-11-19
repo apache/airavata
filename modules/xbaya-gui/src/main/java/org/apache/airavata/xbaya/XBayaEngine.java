@@ -31,10 +31,10 @@ import org.apache.airavata.workflow.model.component.registry.LocalComponentRegis
 import org.apache.airavata.workflow.model.component.registry.SystemComponentRegistry;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
+import org.apache.airavata.ws.monitor.Monitor;
+import org.apache.airavata.ws.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.component.registry.ComponentController;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpreter;
-import org.apache.airavata.xbaya.monitor.Monitor;
-import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.monitor.MonitorStarter;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;

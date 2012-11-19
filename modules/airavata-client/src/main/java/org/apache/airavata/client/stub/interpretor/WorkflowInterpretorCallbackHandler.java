@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.xbaya.interpretor;
+package org.apache.airavata.client.stub.interpretor;
 
 /**
  * WorkflowInterpretorCallbackHandler Callback class, Users can extend this class and implement their own receiveResult

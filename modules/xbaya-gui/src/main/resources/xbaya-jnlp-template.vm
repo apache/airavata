@@ -36,43 +36,6 @@
 	$dependencies
 </resources>
 <application-desc main-class="$mainClass">
-	<!-- Title -->
-##	<argument>-title</argument>
-##	<argument>Apache Airavata Workflow Interface</argument>
-
-	<!-- Service End Point References -->
-	
-	<!-- Registry -->
-	<argument>-RegistryURL</argument>
-	<argument>http://gf9.ucs.indiana.edu:8090/jackrabbit-webapp-2.4.0/rmi</argument>
-
-	<!-- GFac -->
-	#*<argument>-gfacURL</argument>
-	<argument>$gfacEPR</argument>*#
-	
-	<!-- Monitoring -->
-	#*<argument>-brokerURL</argument>
-	<argument>$messagebrokerEPR</argument>
-	<argument>-messageBoxURL</argument>
-	<argument>$messageboxEPR</argument>
-	<argument>-pullMode</argument>
-	<argument>true</argument>
-	
-	<argument>-registryUserName</argument>
-	<argument>regUser</argument>
-	<argument>-registryPassphrase</argument>
-	<argument>regPassword</argument>
-	<argument>-workflow</argument>
-	<argument>workflowId</argument>*#
-
-	<!-- Monitoring Information-->
-	<!--
-	<argument>-topic</argument>
-	<argument>topicName</argument>
-	<argument>-startMonitor</argument>
-	<argument>-mode</argument>
-	<argument>monitor</argument>
-	-->
 
 </application-desc>
 </jnlp>

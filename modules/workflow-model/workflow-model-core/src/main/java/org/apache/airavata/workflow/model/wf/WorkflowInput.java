@@ -28,6 +28,10 @@ public class WorkflowInput {
 	private Object value;
 	private boolean optional;
 	
+	public WorkflowInput(String name,Object value) {
+		this(name, null, null, value, false);
+	}
+	
 	public WorkflowInput(String name,String type,Object defaultValue,Object value, boolean optional) {
 		setName(name);
 		setType(type);

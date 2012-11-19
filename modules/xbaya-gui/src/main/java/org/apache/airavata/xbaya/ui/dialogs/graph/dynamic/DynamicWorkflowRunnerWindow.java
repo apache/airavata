@@ -48,6 +48,8 @@ import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.workflow.model.graph.ws.WSNode;
 import org.apache.airavata.workflow.model.ode.ODEClient;
 import org.apache.airavata.workflow.model.wf.Workflow;
+import org.apache.airavata.ws.monitor.MonitorConfiguration;
+import org.apache.airavata.ws.monitor.MonitorException;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
@@ -55,8 +57,6 @@ import org.apache.airavata.xbaya.interpretor.GUIWorkflowInterpreterInteractorImp
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpreter;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpreterConfiguration;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
-import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
-import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.graph.ws.WSNodeGUI;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;

@@ -60,16 +60,16 @@ import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.Node;
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.wf.Workflow;
+import org.apache.airavata.ws.monitor.MonitorException;
+import org.apache.airavata.ws.monitor.event.Event;
+import org.apache.airavata.ws.monitor.event.EventListener;
+import org.apache.airavata.ws.monitor.event.Event.Type;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.core.generators.WorkflowFiler;
 import org.apache.airavata.xbaya.core.ide.XBayaExecutionModeListener;
-import org.apache.airavata.xbaya.event.Event;
-import org.apache.airavata.xbaya.event.Event.Type;
-import org.apache.airavata.xbaya.event.EventListener;
-import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.ui.dialogs.ErrorWindow;
 import org.apache.airavata.xbaya.ui.dialogs.workflow.WorkflowPropertyWindow;
 import org.apache.airavata.xbaya.ui.graph.GraphCanvas;
@@ -529,7 +529,7 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.event.EventListener#eventReceived(org.apache.airavata.xbaya.event.Event)
+     * @see org.apache.airavata.ws.monitor.event.EventListener#eventReceived(org.apache.airavata.ws.monitor.event.Event)
      */
     public void eventReceived(Event event) {
         Type type = event.getType();

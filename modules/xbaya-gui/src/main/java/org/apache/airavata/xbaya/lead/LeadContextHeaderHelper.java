@@ -25,10 +25,10 @@ import java.net.URI;
 
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.workflow.model.wf.Workflow;
+import org.apache.airavata.ws.monitor.MonitorConfiguration;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
-import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 
 import org.apache.axis2.addressing.EndpointReference;
 import xsul.lead.LeadContextHeader;

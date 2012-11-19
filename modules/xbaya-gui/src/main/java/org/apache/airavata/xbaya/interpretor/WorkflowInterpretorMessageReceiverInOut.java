@@ -20,6 +20,9 @@
 */
 package org.apache.airavata.xbaya.interpretor;
 
+import org.apache.airavata.client.stub.interpretor.NameValue;
+import org.apache.airavata.client.stub.interpretor.WorkflowInterpretorStub;
+
 
 public class WorkflowInterpretorMessageReceiverInOut extends org.apache.axis2.receivers.AbstractInOutMessageReceiver{
     public static final String MYPROXY_USER = "myproxy.user";

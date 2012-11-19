@@ -36,16 +36,16 @@ import javax.swing.event.MenuListener;
 
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.wf.WorkflowExecutionState;
+import org.apache.airavata.ws.monitor.Monitor;
+import org.apache.airavata.ws.monitor.MonitorConfiguration;
+import org.apache.airavata.ws.monitor.MonitorException;
+import org.apache.airavata.ws.monitor.event.Event;
+import org.apache.airavata.ws.monitor.event.EventListener;
+import org.apache.airavata.ws.monitor.event.Event.Type;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.core.ide.XBayaExecutionModeListener;
-import org.apache.airavata.xbaya.event.Event;
-import org.apache.airavata.xbaya.event.Event.Type;
-import org.apache.airavata.xbaya.event.EventListener;
-import org.apache.airavata.xbaya.monitor.Monitor;
-import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
-import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.ui.dialogs.graph.dynamic.DynamicWorkflowRunnerWindow;
 import org.apache.airavata.xbaya.ui.dialogs.monitor.MonitorConfigurationWindow;
 import org.apache.airavata.xbaya.ui.experiment.WorkflowInterpreterLaunchWindow;
@@ -339,7 +339,7 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
     }
     
     /**
-     * @see org.apache.airavata.xbaya.event.EventListener#eventReceived(org.apache.airavata.xbaya.event.Event)
+     * @see org.apache.airavata.ws.monitor.event.EventListener#eventReceived(org.apache.airavata.ws.monitor.event.Event)
      */
     public void eventReceived(Event event) {
         Type type = event.getType();

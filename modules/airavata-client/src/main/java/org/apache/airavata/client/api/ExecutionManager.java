@@ -27,8 +27,8 @@ import org.apache.airavata.common.workflow.execution.context.WorkflowContextHead
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
-import org.apache.airavata.xbaya.monitor.Monitor;
-import org.apache.airavata.xbaya.monitor.MonitorEventListener;
+import org.apache.airavata.ws.monitor.Monitor;
+import org.apache.airavata.ws.monitor.MonitorEventListener;
 
 public interface ExecutionManager {
     /**
