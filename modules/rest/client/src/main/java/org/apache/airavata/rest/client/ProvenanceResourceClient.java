@@ -1008,6 +1008,38 @@ public class ProvenanceResourceClient {
         return null;
     }
 
+    public List<WorkflowNodeIOData> getWorkflowInstanceNodeInput(String workflowInstanceId, String nodeType){
+        //not implemented in Registry API
+        return null;
+    }
+
+    public List<WorkflowNodeIOData> getWorkflowInstanceNodeOutput(String workflowInstanceId, String nodeType){
+        //not implemented in Registry API
+        return null;
+    }
+
+    public void saveWorkflowExecutionOutput(String experimentId, String outputNodeName, String output){
+        //not implemented in Registry API
+    }
+
+    public void saveWorkflowExecutionOutput(String experimentId, WorkflowIOData data){
+        //not implemented in Registry API
+    }
+
+    public WorkflowIOData getWorkflowExecutionOutput(String experimentId, String outputNodeName) {
+        //not implemented in Registry API
+        return null;
+    }
+
+    public List<WorkflowIOData> getWorkflowExecutionOutput(String experimentId) {
+        //not implemented in Registry API
+        return null;
+    }
+
+    public String[] getWorkflowExecutionOutputNames(String exeperimentId){
+        //not implemented in Registry API
+        return null;
+    }
 
 
 }

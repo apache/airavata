@@ -236,7 +236,7 @@ public class AiravataClient implements AiravataAPI {
 		if (clientConfiguration.getJcrURL() != null
 				&& clientConfiguration.getGfacURL() == null) {
 			try {
-				clientConfiguration.setGfacURL(getConfigurationResourceClient().getGFacURIs()
+				clientConfiguration.setGfacURL(getRegistryClient().getGFacURIs()
 						.get(0).toURL());
 				configuration.put(GFAC, clientConfiguration.getGfacURL()
 						.toString());
@@ -411,15 +411,15 @@ public class AiravataClient implements AiravataAPI {
 	private void runPreWorkflowExecutionTasks(String topic, String user,
 			String metadata, String experimentName) throws RegistryException {
 		if (user != null) {
-			getProvenanceResouceClient().updateExperimentExecutionUser(topic, user);
+			getRegistryClient().updateExperimentExecutionUser(topic, user);
 		}
 		if (metadata != null) {
-			getProvenanceResouceClient().updateExperimentMetadata(topic, metadata);
+            getRegistryClient().updateExperimentMetadata(topic, metadata);
 		}
 		if (experimentName == null) {
 			experimentName = topic;
 		}
-		getProvenanceResouceClient().updateExperimentName(topic, experimentName);
+        getRegistryClient().updateExperimentName(topic, experimentName);
 	}
 
 	public String runWorkflow(String topic, NameValue[] inputs)
@@ -468,15 +468,17 @@ public class AiravataClient implements AiravataAPI {
 			}).start();
 			int timeout = 0;
 			try {
-				while (!getExperimentResourceClient().isExperimentExists(topic)
+				while (!getRegistryClient().isExperimentExists(topic)
 						&& timeout < MAX_TIMEOUT) {
 					Thread.sleep(TIMEOUT_STEP);
 					timeout += MAX_TIMEOUT;
 				}
 			} catch (InterruptedException e) {
 				throw new AiravataAPIInvocationException(e);
-			}
-		} else {
+			} catch (RegistryException e) {
+                throw new AiravataAPIInvocationException(e);
+            }
+        } else {
 			launchWorkflow(topic, inputs, builder);
 		}
 		return topic;
@@ -484,12 +486,12 @@ public class AiravataClient implements AiravataAPI {
 
 	public List<ExperimentData> getWorkflowExecutionDataByUser(String user)
 			throws RegistryException {
-		return getProvenanceResouceClient().getExperimentByUser(user);
+		return getRegistryClient().getExperimentByUser(user);
 	}
 
 	public ExperimentData getWorkflowExecutionData(String topic)
 			throws RegistryException {
-		return getProvenanceResouceClient().getExperiment(topic);
+		return getRegistryClient().getExperiment(topic);
 	}
 
 	public List<ExperimentData> getWorkflowExecutionData(String user,
@@ -506,45 +508,11 @@ public class AiravataClient implements AiravataAPI {
 		AiravataClient.workflow = workflow;
 	}
 
-	public ConfigurationResourceClient getConfigurationResourceClient (){
-        ConfigurationResourceClient configurationResourceClient = new ConfigurationResourceClient(getCurrentUser(), getCallBack());
-        return configurationResourceClient;
+	public RegistryClient getRegistryClient(){
+        RegistryClient registryClient = new RegistryClient(getCurrentUser(), getCallBack());
+        return registryClient;
     }
 
-    public DescriptorResourceClient getDescriptorResourceClient (){
-        DescriptorResourceClient descriptorResourceClient = new DescriptorResourceClient(getCurrentUser(), getCallBack());
-        return descriptorResourceClient;
-    }
-
-    public ExperimentResourceClient getExperimentResourceClient (){
-        ExperimentResourceClient experimentResourceClient = new ExperimentResourceClient(getCurrentUser(), getCallBack());
-        return experimentResourceClient;
-    }
-
-    public ProvenanceResourceClient getProvenanceResouceClient (){
-        ProvenanceResourceClient provenanceResourceClient = new ProvenanceResourceClient(getCurrentUser(), getCallBack());
-        return provenanceResourceClient;
-    }
-
-    public ProjectResourceClient getProjectResourceClient (){
-        ProjectResourceClient projectResourceClient = new ProjectResourceClient(getCurrentUser(), getCallBack());
-        return projectResourceClient;
-    }
-
-    public PublishedWorkflowResourceClient getPublishedWFResourceClient (){
-        PublishedWorkflowResourceClient publishedWorkflowResourceClient = new PublishedWorkflowResourceClient(getCurrentUser(), getCallBack());
-        return publishedWorkflowResourceClient;
-    }
-
-    public UserWorkflowResourceClient getUserWFResourceClient () {
-        UserWorkflowResourceClient userWorkflowResourceClient = new UserWorkflowResourceClient(getCurrentUser(), getCallBack());
-        return userWorkflowResourceClient;
-    }
-
-    public BasicRegistryResourceClient getBasicResourceClient (){
-        BasicRegistryResourceClient basicRegistryResourceClient = new BasicRegistryResourceClient(getCurrentUser(), getCallBack());
-        return basicRegistryResourceClient;
-    }
 
 //    public AiravataRegistry2 getRegistry() throws RegistryException {
 //		if (registry == null) {
@@ -612,7 +580,7 @@ public class AiravataClient implements AiravataAPI {
 		List<String> workflowList = new ArrayList<String>();
 		Map<String, String> workflows;
 		try {
-			workflows = getUserWFResourceClient().getWorkflows();
+			workflows = getRegistryClient().getWorkflows();
 			for (String name : workflows.keySet()) {
 				workflowList.add(name);
 			}
@@ -625,7 +593,7 @@ public class AiravataClient implements AiravataAPI {
 
 	public String runWorkflow(String workflowTemplateId,
 			List<WorkflowInput> inputs) throws Exception {
-		return runWorkflow(workflowTemplateId, inputs, getBasicResourceClient().getUser()
+		return runWorkflow(workflowTemplateId, inputs, getRegistryClient().getUser()
 				.getUserName(), null, workflowTemplateId + "_"
 				+ Calendar.getInstance().getTime().toString());
 	}
@@ -633,7 +601,7 @@ public class AiravataClient implements AiravataAPI {
 	public String runWorkflow(String workflowTemplateId,
 			List<WorkflowInput> inputs, String workflowInstanceName)
 			throws Exception {
-		return runWorkflow(workflowTemplateId, inputs, getBasicResourceClient().getUser()
+		return runWorkflow(workflowTemplateId, inputs, getRegistryClient().getUser()
 				.getUserName(), null, workflowInstanceName);
 	}
 
@@ -695,7 +663,7 @@ public class AiravataClient implements AiravataAPI {
 			}
 			workflow = workflowString;
 			String topic = workflowObj.getName() + "_" + UUID.randomUUID();
-			getProvenanceResouceClient().setWorkflowInstanceTemplateName(topic,
+            getRegistryClient().setWorkflowInstanceTemplateName(topic,
                     workflowObj.getName());
 			return runWorkflow(topic, inputValues.toArray(new NameValue[] {}),
 					user, metadata, workflowInstanceName, builder);
@@ -739,7 +707,7 @@ public class AiravataClient implements AiravataAPI {
 			if (experimentID == null || experimentID.isEmpty()) {
 				experimentID = workflowObj.getName() + "_" + UUID.randomUUID();
 			}
-			getProvenanceResouceClient().setWorkflowInstanceTemplateName(experimentID,
+            getRegistryClient().setWorkflowInstanceTemplateName(experimentID,
                     workflowObj.getName());
 			return runWorkflow(experimentID,
 					inputValues.toArray(new NameValue[] {}), user, metadata,
@@ -784,7 +752,7 @@ public class AiravataClient implements AiravataAPI {
 	public String getWorkflowAsString(String workflowTemplateId)
 			throws AiravataAPIInvocationException {
 		try {
-			Map<String, String> workflows = getUserWFResourceClient().getWorkflows();
+			Map<String, String> workflows = getRegistryClient().getWorkflows();
 			for (String name : workflows.keySet()) {
 				if (name.equals(workflowTemplateId)) {
 					return workflows.get(name);

@@ -66,13 +66,13 @@ public class WorkflowManagerImpl implements WorkflowManager {
 			throws AiravataAPIInvocationException {
 		try {
 			
-			if (getClient().getUserWFResourceClient().isWorkflowExists(workflow.getName())) {
-				getClient().getUserWFResourceClient().updateWorkflow(workflow.getName(),workflowAsString);
+			if (getClient().getRegistryClient().isWorkflowExists(workflow.getName())) {
+				getClient().getRegistryClient().updateWorkflow(workflow.getName(),workflowAsString);
 			}else{
-				getClient().getUserWFResourceClient().addWorkflow(workflow.getName(),workflowAsString);
+				getClient().getRegistryClient().addWorkflow(workflow.getName(),workflowAsString);
 			}
 			if (owner==null){
-				getClient().getPublishedWFResourceClient().publishWorkflow(workflow.getName());
+				getClient().getRegistryClient().publishWorkflow(workflow.getName());
 			}
 			return true;
 		} catch (Exception e) {
@@ -85,7 +85,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 			throws AiravataAPIInvocationException {
 		try {
 			List<Workflow> workflows=new ArrayList<Workflow>();
-			Map<String, String> workflowMap = getClient().getUserWFResourceClient().getWorkflows();
+			Map<String, String> workflowMap = getClient().getRegistryClient().getWorkflows();
 			for(String workflowStr:workflowMap.values()){
 				workflows.add(getWorkflowFromString(workflowStr));
 			}
@@ -101,7 +101,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 		try {
 			List<String> workflowList = new ArrayList<String>();
 			Map<String, String> workflows;
-			workflows = getClient().getUserWFResourceClient().getWorkflows();
+			workflows = getClient().getRegistryClient().getWorkflows();
 			for (String name : workflows.keySet()) {
 				workflowList.add(name);
 			}
@@ -121,7 +121,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 	public String getWorkflowAsString(String workflowName, String owner)
 			throws AiravataAPIInvocationException {
 		try {
-			return getClient().getUserWFResourceClient().getWorkflowGraphXML(workflowName);
+			return getClient().getRegistryClient().getWorkflowGraphXML(workflowName);
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
@@ -131,7 +131,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 	public boolean deleteWorkflow(String workflowName, String owner)
 			throws AiravataAPIInvocationException {
 		try {
-			getClient().getUserWFResourceClient().removeWorkflow(workflowName);
+			getClient().getRegistryClient().removeWorkflow(workflowName);
 			return true;
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
@@ -220,7 +220,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 	public boolean isPublishedWorkflowExists(String workflowName)
 			throws AiravataAPIInvocationException {
 		try {
-			return getClient().getPublishedWFResourceClient().isPublishedWorkflowExists(workflowName);
+			return getClient().getRegistryClient().isPublishedWorkflowExists(workflowName);
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
@@ -230,7 +230,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 	public void publishWorkflow(String workflowName, String publishWorkflowName)
 			throws AiravataAPIInvocationException {
 		try {
-			getClient().getPublishedWFResourceClient().publishWorkflow(workflowName, publishWorkflowName);
+			getClient().getRegistryClient().publishWorkflow(workflowName, publishWorkflowName);
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
@@ -240,7 +240,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 	public void publishWorkflow(String workflowName)
 			throws AiravataAPIInvocationException {
 		try {
-			getClient().getPublishedWFResourceClient().publishWorkflow(workflowName);
+			getClient().getRegistryClient().publishWorkflow(workflowName);
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
@@ -250,7 +250,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 	public String getPublishedWorkflowGraphXML(String workflowName)
 			throws AiravataAPIInvocationException {
 		try {
-			return getClient().getPublishedWFResourceClient().getPublishedWorkflowGraphXML(workflowName);
+			return getClient().getRegistryClient().getPublishedWorkflowGraphXML(workflowName);
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
@@ -266,7 +266,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 	public List<String> getPublishedWorkflowNames()
 			throws AiravataAPIInvocationException {
 		try {
-			return getClient().getPublishedWFResourceClient().getPublishedWorkflowNames();
+			return getClient().getRegistryClient().getPublishedWorkflowNames();
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
@@ -277,7 +277,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 			throws AiravataAPIInvocationException {
 		try {
 			Map<String, Workflow> workflows=new HashMap<String, Workflow>();
-			Map<String, String> publishedWorkflows = getClient().getPublishedWFResourceClient().getPublishedWorkflows();
+			Map<String, String> publishedWorkflows = getClient().getRegistryClient().getPublishedWorkflows();
 			for (String name : publishedWorkflows.keySet()) {
 				workflows.put(name, getWorkflowFromString(publishedWorkflows.get(name)));
 			}
@@ -291,7 +291,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 	public void removePublishedWorkflow(String workflowName)
 			throws AiravataAPIInvocationException {
 		try {
-			getClient().getPublishedWFResourceClient().removePublishedWorkflow(workflowName);
+			getClient().getRegistryClient().removePublishedWorkflow(workflowName);
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
@@ -305,7 +305,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 	@Override
 	public List<WorkflowInput> getWorkflowInputs(WorkflowData workflowData) throws AiravataAPIInvocationException, Exception {
 		if (workflowData.isPublished()){
-			return getWorkflowFromString(getClient().getPublishedWFResourceClient().getPublishedWorkflowGraphXML(workflowData.getName())).getWorkflowInputs();
+			return getWorkflowFromString(getClient().getRegistryClient().getPublishedWorkflowGraphXML(workflowData.getName())).getWorkflowInputs();
 		}else{
 			return getWorkflowInputs(workflowData.getName());
 		}
@@ -319,7 +319,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 			for (String id : workflowTemplateIds) {
 				list.add(new WorkflowData(id,null,false));
 			}
-			List<String> publishedWorkflowNames = getClient().getPublishedWFResourceClient().getPublishedWorkflowNames();
+			List<String> publishedWorkflowNames = getClient().getRegistryClient().getPublishedWorkflowNames();
 			for (String id : publishedWorkflowNames) {
 				list.add(new WorkflowData(id,null,false));
 			}

@@ -42,7 +42,7 @@ public class AiravataManagerImpl implements AiravataManager {
 	public List<URI> getGFaCURLs()  throws AiravataAPIInvocationException{
 		List<URI> list=new ArrayList<URI>();
 		try {
-			List<URI> gFacDescriptorList = getClient().getConfigurationResourceClient().getGFacURIs();
+			List<URI> gFacDescriptorList = getClient().getRegistryClient().getGFacURIs();
 			for (URI url : gFacDescriptorList) {
 				list.add(url);
 			}
@@ -72,7 +72,7 @@ public class AiravataManagerImpl implements AiravataManager {
 	@Override
 	public List<URI> getWorkflowInterpreterServiceURLs()  throws AiravataAPIInvocationException{
 		try {
-			return getClient().getConfigurationResourceClient().getWorkflowInterpreterURIs();
+			return getClient().getRegistryClient().getWorkflowInterpreterURIs();
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
@@ -113,7 +113,7 @@ public class AiravataManagerImpl implements AiravataManager {
 	public List<URI> getMessageBoxServiceURLs()
 			throws AiravataAPIInvocationException {
 		try {
-			return new ArrayList<URI>(){{add(getClient().getConfigurationResourceClient().getMsgBoxURI());}};
+			return new ArrayList<URI>(){{add(getClient().getRegistryClient().getMessageBoxURI());}};
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
@@ -142,7 +142,7 @@ public class AiravataManagerImpl implements AiravataManager {
 	public List<URI> getEventingServiceURLs()
 			throws AiravataAPIInvocationException {
 		try {
-			return new ArrayList<URI>(){{add(getClient().getConfigurationResourceClient().getEventingURI());}};
+			return new ArrayList<URI>(){{add(getClient().getRegistryClient().getEventingServiceURI());}};
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
