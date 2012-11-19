@@ -6,6 +6,7 @@ import org.apache.airavata.security.userstore.JDBCUserStore;
 import org.apache.airavata.security.userstore.LDAPUserStore;
 
 import java.io.File;
+import java.net.URLDecoder;
 import java.util.List;
 
 /**
@@ -14,7 +15,8 @@ import java.util.List;
  */
 public class AuthenticatorConfigurationReaderTest extends TestCase {
 
-    private String configurationFile = this.getClass().getClassLoader().getResource("authenticators.xml").getFile();
+    private String configurationFile = URLDecoder.decode(
+            this.getClass().getClassLoader().getResource("authenticators.xml").getFile());
 
     public void setUp() throws Exception {
 
@@ -84,7 +86,8 @@ public class AuthenticatorConfigurationReaderTest extends TestCase {
     public void testDisabledAuthenticator() throws Exception {
 
         String disabledConfiguration
-                = this.getClass().getClassLoader().getResource("disabled-authenticator.xml").getFile();
+                = URLDecoder.decode(
+                this.getClass().getClassLoader().getResource("disabled-authenticator.xml").getFile());
 
 
         AuthenticatorConfigurationReader authenticatorConfigurationReader
