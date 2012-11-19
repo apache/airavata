@@ -19,7 +19,10 @@
  *
  */
 
-package org.apache.airavata.rest.mappings.utils;
+package org.apache.airavata.rest.utils;
 
-public class a {
+public class ClientConstant {
+
+    public static final int HTTP_OK = 200;
+    public static final int HTTP_UNAUTHORIZED = 405;
 }

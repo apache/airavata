@@ -23,6 +23,7 @@ package org.apache.airavata.rest.mappings.utils;
 
 public class ResourcePathConstants {
 
+    public static final String BASE_URL = "http://localhost:9080/airavata-services";
 
     public final class ConfigResourcePathConstants {
         public static final String CONFIGURATION_REGISTRY_RESOURCE = "/registry/api/congfigregistry/";

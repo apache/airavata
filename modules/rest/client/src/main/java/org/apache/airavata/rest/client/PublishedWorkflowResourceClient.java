@@ -32,6 +32,9 @@ import org.apache.airavata.rest.mappings.resourcemappings.PublishWorkflowNamesLi
 import org.apache.airavata.rest.mappings.resourcemappings.Workflow;
 import org.apache.airavata.rest.mappings.resourcemappings.WorkflowList;
 import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
+import org.apache.airavata.rest.utils.BasicAuthHeaderUtil;
+import org.apache.airavata.rest.utils.Callback;
+import org.apache.airavata.rest.utils.ClientConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +49,13 @@ import java.util.Map;
 public class PublishedWorkflowResourceClient {
     private WebResource webResource;
     private final static Logger logger = LoggerFactory.getLogger(PublishedWorkflowResourceClient.class);
+    private String userName;
+    private Callback callback;
+
+    public PublishedWorkflowResourceClient(String userName, Callback callback) {
+        this.userName = userName;
+        this.callback = callback;
+    }
 
     private URI getBaseURI() {
         logger.info("Creating Base URI");
@@ -69,10 +79,20 @@ public class PublishedWorkflowResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
         int status = response.getStatus();
 
-        if (status != 200) {
+        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
+        }else if (status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
+            response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+            status = response.getStatus();
+
+            if (status != ClientConstant.HTTP_OK ) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            }
         }
 
         return true;
@@ -86,10 +106,19 @@ public class PublishedWorkflowResourceClient {
 
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
-        if (status != 200) {
+        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
+        }else if (status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
+            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+            status = response.getStatus();
+            if (status != ClientConstant.HTTP_OK ) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            }
         }
     }
 
@@ -100,10 +129,19 @@ public class PublishedWorkflowResourceClient {
 
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
-        if (status != 200) {
+        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
+        }else if (status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
+            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+            status = response.getStatus();
+            if (status != ClientConstant.HTTP_OK ) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            }
         }
 
     }
@@ -115,12 +153,21 @@ public class PublishedWorkflowResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_FORM_URLENCODED).get(ClientResponse.class);
         int status = response.getStatus();
 
-        if (status != 200) {
+        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }
+        }else if (status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
+            response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_FORM_URLENCODED).get(ClientResponse.class);
+            status = response.getStatus();
 
+            if (status != ClientConstant.HTTP_OK ) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            }
+        }
         String wfGraph = response.getEntity(String.class);
         return wfGraph;
 
@@ -131,10 +178,20 @@ public class PublishedWorkflowResourceClient {
         ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
 
-        if (status != 200) {
+        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
+        }else if (status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
+            response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            status = response.getStatus();
+
+            if (status != ClientConstant.HTTP_OK ) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            }
         }
 
         PublishWorkflowNamesList workflowNamesList = response.getEntity(PublishWorkflowNamesList.class);
@@ -147,10 +204,20 @@ public class PublishedWorkflowResourceClient {
         ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
 
-        if (status != 200) {
+        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
+        }else if (status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
+            response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            status = response.getStatus();
+
+            if (status != ClientConstant.HTTP_OK ) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            }
         }
 
         Map<String, String> publishWFmap = new HashMap<String, String>();
@@ -171,10 +238,20 @@ public class PublishedWorkflowResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).delete(ClientResponse.class);
         int status = response.getStatus();
 
-        if (status != 200) {
+        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
+        }else if (status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
+            response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).delete(ClientResponse.class);
+            status = response.getStatus();
+
+            if (status != ClientConstant.HTTP_OK ) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            }
         }
 
     }

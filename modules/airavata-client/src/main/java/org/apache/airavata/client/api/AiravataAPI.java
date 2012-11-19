@@ -23,6 +23,8 @@ package org.apache.airavata.client.api;
 
 import org.apache.airavata.common.utils.Version;
 
+import java.util.Observable;
+
 
 /**
  * This is the base interface for AiravataAPI which contains all the base methods for Airavata API

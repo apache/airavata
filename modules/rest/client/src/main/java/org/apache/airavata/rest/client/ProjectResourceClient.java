@@ -31,6 +31,9 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import org.apache.airavata.registry.api.WorkspaceProject;
 import org.apache.airavata.rest.mappings.resourcemappings.WorkspaceProjectList;
 import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
+import org.apache.airavata.rest.utils.BasicAuthHeaderUtil;
+import org.apache.airavata.rest.utils.Callback;
+import org.apache.airavata.rest.utils.ClientConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +47,13 @@ import java.util.List;
 public class ProjectResourceClient {
     private WebResource webResource;
     private final static Logger logger = LoggerFactory.getLogger(ProjectResourceClient.class);
+    private String userName;
+    private Callback callback;
+
+    public ProjectResourceClient(String userName, Callback callback) {
+        this.callback = callback;
+        this.userName = userName;
+    }
 
     private URI getBaseURI() {
         logger.info("Creating Base URI");
@@ -67,11 +77,22 @@ public class ProjectResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).get(ClientResponse.class);
         int status = response.getStatus();
 
-        if (status != 200) {
+        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else {
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
+            response = webResource.queryParams(queryParams).get(ClientResponse.class);
+            status = response.getStatus();
+            if (status != ClientConstant.HTTP_OK ) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            }else {
+                return true;
+            }
+        }else {
             return true;
         }
     }
@@ -89,10 +110,21 @@ public class ProjectResourceClient {
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
 
-        if (status != 200) {
+        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
+            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+            status = response.getStatus();
+            if (status != ClientConstant.HTTP_OK ) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            }else {
+                return true;
+            }
         }else {
             return true;
         }
@@ -106,10 +138,19 @@ public class ProjectResourceClient {
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
 
-        if (status != 200) {
+        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
+            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+            status = response.getStatus();
+            if (status != ClientConstant.HTTP_OK ) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            }
         }
     }
 
@@ -121,10 +162,19 @@ public class ProjectResourceClient {
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
 
-        if (status != 200) {
+        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
+            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+            status = response.getStatus();
+            if (status != ClientConstant.HTTP_OK ) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            }
         }
     }
 
@@ -135,10 +185,19 @@ public class ProjectResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).delete(ClientResponse.class);
         int status = response.getStatus();
 
-        if (status != 200) {
+        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
+            response = webResource.queryParams(queryParams).delete(ClientResponse.class);
+            status = response.getStatus();
+            if (status != ClientConstant.HTTP_OK ) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            }
         }
     }
 
@@ -149,12 +208,20 @@ public class ProjectResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).get(ClientResponse.class);
         int status = response.getStatus();
 
-        if (status != 200) {
+        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
+            response = webResource.queryParams(queryParams).get(ClientResponse.class);
+            status = response.getStatus();
+            if (status != ClientConstant.HTTP_OK ) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            }
         }
-
         WorkspaceProject workspaceProject = response.getEntity(WorkspaceProject.class);
         return workspaceProject;
     }
@@ -164,10 +231,19 @@ public class ProjectResourceClient {
         ClientResponse response = webResource.get(ClientResponse.class);
         int status = response.getStatus();
 
-        if (status != 200) {
+        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
+            response = webResource.get(ClientResponse.class);
+            status = response.getStatus();
+            if (status != ClientConstant.HTTP_OK ) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            }
         }
 
         WorkspaceProjectList workspaceProjectList = response.getEntity(WorkspaceProjectList.class);
