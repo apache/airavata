@@ -28,6 +28,7 @@ import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
+import org.apache.airavata.registry.api.ResourceMetadata;
 import org.apache.airavata.rest.mappings.resourcemappings.PublishWorkflowNamesList;
 import org.apache.airavata.rest.mappings.resourcemappings.Workflow;
 import org.apache.airavata.rest.mappings.resourcemappings.WorkflowList;
@@ -254,5 +255,10 @@ public class PublishedWorkflowResourceClient {
             }
         }
 
+    }
+
+    public ResourceMetadata getPublishedWorkflowMetadata(String workflowName){
+        //not implemented in Registry API
+        return null;
     }
 }

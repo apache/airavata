@@ -42,7 +42,11 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ConfigurationResourceClient {
@@ -130,12 +134,14 @@ public class ConfigurationResourceClient {
         return configurationValueList;
     }
 
-    public void setConfiguration (String configKey, String configVal, String date){
+    public void setConfiguration (String configKey, String configVal, Date date){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String formattedDate = dateFormat.format(date);
         webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.SAVE_CONFIGURATION);
         MultivaluedMap formData = new MultivaluedMapImpl();
         formData.add("key", configKey);
         formData.add("value", configVal);
-        formData.add("date", date);
+        formData.add("date", formattedDate);
 
         ClientResponse response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class, formData);
         int status = response.getStatus();
@@ -157,12 +163,14 @@ public class ConfigurationResourceClient {
         }
     }
 
-    public void addConfiguration(String configKey, String configVal, String date){
+    public void addConfiguration(String configKey, String configVal, Date date){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String formattedDate = dateFormat.format(date);
         webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.UPDATE_CONFIGURATION);
         MultivaluedMap formData = new MultivaluedMapImpl();
         formData.add("key", configKey);
         formData.add("value", configVal);
-        formData.add("date", date);
+        formData.add("date", formattedDate);
 
         ClientResponse response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class, formData);
         int status = response.getStatus();
@@ -365,10 +373,10 @@ public class ConfigurationResourceClient {
         }
     }
 
-    public void addGFacURI(String uri) {
+    public void addGFacURI(URI uri) {
         webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.ADD_GFAC_URI);
         MultivaluedMap formData = new MultivaluedMapImpl();
-        formData.add("uri", uri);
+        formData.add("uri", uri.toString());
 
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
         int status = response.getStatus();
@@ -390,10 +398,10 @@ public class ConfigurationResourceClient {
         }
     }
 
-    public void addWFInterpreterURI(String uri) {
+    public void addWFInterpreterURI(URI uri) {
         webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.ADD_WFINTERPRETER_URI);
         MultivaluedMap formData = new MultivaluedMapImpl();
-        formData.add("uri", uri);
+        formData.add("uri", uri.toString());
 
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
         int status = response.getStatus();
@@ -415,10 +423,10 @@ public class ConfigurationResourceClient {
         }
     }
 
-    public void setEventingURI(String uri) {
+    public void setEventingURI(URI uri) {
         webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.ADD_EVENTING_URI);
         MultivaluedMap formData = new MultivaluedMapImpl();
-        formData.add("uri", uri);
+        formData.add("uri", uri.toString());
 
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
         int status = response.getStatus();
@@ -440,10 +448,10 @@ public class ConfigurationResourceClient {
         }
     }
 
-    public void setMessageBoxURI(String uri) {
+    public void setMessageBoxURI(URI uri) {
         webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.ADD_MESSAGE_BOX_URI);
         MultivaluedMap formData = new MultivaluedMapImpl();
-        formData.add("uri", uri);
+        formData.add("uri", uri.toString());
 
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
         int status = response.getStatus();
@@ -465,11 +473,13 @@ public class ConfigurationResourceClient {
         }
     }
 
-    public void addGFacURIByDate(String uri, String date) {
+    public void addGFacURIByDate(URI uri, Date date) {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String formattedDate = dateFormat.format(date);
         webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.ADD_GFAC_URI_DATE);
         MultivaluedMap formData = new MultivaluedMapImpl();
-        formData.add("uri", uri);
-        formData.add("date", date);
+        formData.add("uri", uri.toString());
+        formData.add("date", formattedDate);
 
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
         int status = response.getStatus();
@@ -491,11 +501,13 @@ public class ConfigurationResourceClient {
         }
     }
 
-    public void addWorkflowInterpreterURI(String uri, String date) {
+    public void addWorkflowInterpreterURI(URI uri, Date date) {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String formattedDate = dateFormat.format(date);
         webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.ADD_WFINTERPRETER_URI_DATE);
         MultivaluedMap formData = new MultivaluedMapImpl();
-        formData.add("uri", uri);
-        formData.add("date", date);
+        formData.add("uri", uri.toString());
+        formData.add("date", formattedDate);
 
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
         int status = response.getStatus();
@@ -517,11 +529,13 @@ public class ConfigurationResourceClient {
         }
     }
 
-    public void setEventingURIByDate(String uri, String date) {
+    public void setEventingURIByDate(URI uri, Date date) {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String formattedDate = dateFormat.format(date);
         webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.ADD_EVENTING_URI_DATE);
         MultivaluedMap formData = new MultivaluedMapImpl();
-        formData.add("uri", uri);
-        formData.add("date", date);
+        formData.add("uri", uri.toString());
+        formData.add("date", formattedDate);
 
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
         int status = response.getStatus();
@@ -543,11 +557,13 @@ public class ConfigurationResourceClient {
         }
     }
 
-    public void setMessageBoxURIByDate(String uri, String date) {
+    public void setMessageBoxURIByDate(URI uri, Date date) {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String formattedDate = dateFormat.format(date);
         webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.ADD_MSG_BOX_URI_DATE);
         MultivaluedMap formData = new MultivaluedMapImpl();
-        formData.add("uri", uri);
-        formData.add("date", date);
+        formData.add("uri", uri.toString());
+        formData.add("date", formattedDate);
 
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
         int status = response.getStatus();
@@ -569,10 +585,10 @@ public class ConfigurationResourceClient {
         }
     }
 
-    public void removeGFacURI(String uri){
+    public void removeGFacURI(URI uri){
         webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_GFAC_URI);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
-        queryParams.add("uri", uri);
+        queryParams.add("uri", uri.toString());
         ClientResponse response = webResource.queryParams(queryParams).delete(ClientResponse.class);
         int status = response.getStatus();
 
@@ -615,10 +631,10 @@ public class ConfigurationResourceClient {
         }
     }
 
-    public void removeWorkflowInterpreterURI(String uri){
+    public void removeWorkflowInterpreterURI(URI uri){
         webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_WFINTERPRETER_URI);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
-        queryParams.add("uri", uri);
+        queryParams.add("uri", uri.toString());
         ClientResponse response = webResource.queryParams(queryParams).delete(ClientResponse.class);
         int status = response.getStatus();
 

@@ -130,10 +130,10 @@ public class ProjectResourceClient {
         }
     }
 
-    public void addWorkspaceProject(String projectName){
+    public void addWorkspaceProject(WorkspaceProject project){
         webResource = getProjectRegistryBaseResource().path(ResourcePathConstants.ProjectResourcePathConstants.ADD_PROJECT);
         MultivaluedMap formParams = new MultivaluedMapImpl();
-        formParams.add("projectName", projectName );
+        formParams.add("projectName", project.getProjectName() );
 
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
@@ -154,10 +154,10 @@ public class ProjectResourceClient {
         }
     }
 
-    public void updateWorkspaceProject(String projectName){
+    public void updateWorkspaceProject(WorkspaceProject project){
         webResource = getProjectRegistryBaseResource().path(ResourcePathConstants.ProjectResourcePathConstants.UPDATE_PROJECT);
         MultivaluedMap formParams = new MultivaluedMapImpl();
-        formParams.add("projectName", projectName );
+        formParams.add("projectName", project.getProjectName() );
 
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
