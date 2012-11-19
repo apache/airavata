@@ -106,6 +106,10 @@ public class MsgBoxWsaResponsesCorrelator extends WSIFAsyncWsaResponsesCorrelato
                         System.out.println(Thread.currentThread().getName());
                         WSIFMessageElement e = new WSIFMessageElement(m);
                         this.invoker.setOutputMessage(e);
+                        //ideally there are no multiple messages, so we can return from this thread at this point
+                        //otherwise this thread will keep running forever for each worfklow node, so there can be large
+                        // number of waiting threads in an airavata deployment
+                        return;
                     } catch (Throwable e) {
                         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     }
