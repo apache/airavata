@@ -24,11 +24,14 @@ package org.apache.airavata.client.impl;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.airavata.client.AiravataClient;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.AiravataManager;
+import org.apache.airavata.registry.api.AiravataUser;
+import org.apache.airavata.registry.api.Gateway;
 import org.apache.airavata.registry.api.exception.RegistryException;
 
 public class AiravataManagerImpl implements AiravataManager {
@@ -183,5 +186,177 @@ public class AiravataManagerImpl implements AiravataManager {
 		}
 		return getRegistryURL();
 	}
+
+    @Override
+    public void setConfiguration(String key, String value, Date expire) throws AiravataAPIInvocationException {
+       try{
+           getClient().getRegistryClient().setConfiguration(key, value, expire);
+       }catch (Exception e){
+           throw new AiravataAPIInvocationException(e);
+       }
+    }
+
+    @Override
+    public void addConfiguration(String key, String value, Date expire) throws AiravataAPIInvocationException {
+        try{
+            getClient().getRegistryClient().addConfiguration(key, value, expire);
+        }catch (Exception e){
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void removeAllConfiguration(String key) throws AiravataAPIInvocationException {
+        try{
+            getClient().getRegistryClient().removeAllConfiguration(key);
+        }catch (Exception e){
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void removeConfiguration(String key, String value) throws AiravataAPIInvocationException {
+        try{
+            getClient().getRegistryClient().removeConfiguration(key, value);
+        }catch (Exception e){
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void addGFacURI(URI uri) throws AiravataAPIInvocationException {
+        try{
+            getClient().getRegistryClient().addGFacURI(uri);
+        }catch (Exception e){
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void addWorkflowInterpreterURI(URI uri) throws AiravataAPIInvocationException {
+        try{
+            getClient().getRegistryClient().addWorkflowInterpreterURI(uri);
+        }catch (Exception e){
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void setEventingURI(URI uri) throws AiravataAPIInvocationException {
+        try{
+            getClient().getRegistryClient().setEventingURI(uri);
+        }catch (Exception e){
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void setMessageBoxURI(URI uri) throws AiravataAPIInvocationException {
+        try{
+            getClient().getRegistryClient().setMessageBoxURI(uri);
+        }catch (Exception e){
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void addGFacURI(URI uri, Date expire) throws AiravataAPIInvocationException {
+        try{
+            getClient().getRegistryClient().addGFacURI(uri, expire);
+        }catch (Exception e){
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void addWorkflowInterpreterURI(URI uri, Date expire) throws AiravataAPIInvocationException {
+        try{
+            getClient().getRegistryClient().addWorkflowInterpreterURI(uri, expire);
+        }catch (Exception e){
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void setEventingURI(URI uri, Date expire) throws AiravataAPIInvocationException {
+        try{
+            getClient().getRegistryClient().setEventingURI(uri, expire);
+        }catch (Exception e){
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void setMessageBoxURI(URI uri, Date expire) throws AiravataAPIInvocationException {
+        try{
+            getClient().getRegistryClient().setMessageBoxURI(uri, expire);
+        }catch (Exception e){
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void removeGFacURI(URI uri) throws AiravataAPIInvocationException {
+        try{
+            getClient().getRegistryClient().removeGFacURI(uri);
+        }catch (Exception e){
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void removeAllGFacURI() throws AiravataAPIInvocationException {
+        try{
+            getClient().getRegistryClient().removeAllGFacURI();
+        }catch (Exception e){
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void removeWorkflowInterpreterURI(URI uri) throws AiravataAPIInvocationException {
+        try{
+            getClient().getRegistryClient().removeWorkflowInterpreterURI(uri);
+        }catch (Exception e){
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void removeAllWorkflowInterpreterURI() throws AiravataAPIInvocationException {
+        try{
+            getClient().getRegistryClient().removeAllWorkflowInterpreterURI();
+        }catch (Exception e){
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void unsetEventingURI() throws AiravataAPIInvocationException {
+        try{
+            getClient().getRegistryClient().unsetEventingURI();
+        }catch (Exception e){
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void unsetMessageBoxURI() throws AiravataAPIInvocationException {
+        try{
+            getClient().getRegistryClient().unsetMessageBoxURI();
+        }catch (Exception e){
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public Gateway getGateway() throws AiravataAPIInvocationException {
+        return getClient().getRegistryClient().getGateway();
+    }
+
+    @Override
+    public AiravataUser getUser() throws AiravataAPIInvocationException {
+        return getClient().getRegistryClient().getUser();
+    }
 
 }

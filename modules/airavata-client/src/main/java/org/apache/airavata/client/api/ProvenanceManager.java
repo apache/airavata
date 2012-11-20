@@ -24,15 +24,7 @@ package org.apache.airavata.client.api;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.airavata.registry.api.workflow.ExperimentData;
-import org.apache.airavata.registry.api.workflow.ExperimentMetadata;
-import org.apache.airavata.registry.api.workflow.ExperimentName;
-import org.apache.airavata.registry.api.workflow.ExperimentUser;
-import org.apache.airavata.registry.api.workflow.WorkflowInstance;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeStatus;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
+import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
 
 /**
@@ -341,4 +333,10 @@ public interface ProvenanceManager {
 	public void addWorkflowInstance(String experimentId, WorkflowInstance workflowInstance) throws AiravataAPIInvocationException;
 	
 	//TODO setup node type for the node & gram data for the node
+
+    public List<WorkflowInstance> getExperimentWorkflowInstances(String experimentId) throws AiravataAPIInvocationException;
+
+    public void setWorkflowNodeType(WorkflowInstanceNode node, WorkflowNodeType type) throws AiravataAPIInvocationException;
+
+    public void setWorkflowInstanceTemplateName(String workflowInstanceId,String templateName) throws AiravataAPIInvocationException;
 }

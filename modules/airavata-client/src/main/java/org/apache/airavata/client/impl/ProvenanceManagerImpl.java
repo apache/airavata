@@ -30,17 +30,8 @@ import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.ProvenanceManager;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.AiravataExperiment;
-import org.apache.airavata.registry.api.workflow.ExperimentData;
-import org.apache.airavata.registry.api.workflow.ExperimentMetadata;
-import org.apache.airavata.registry.api.workflow.ExperimentName;
-import org.apache.airavata.registry.api.workflow.ExperimentUser;
-import org.apache.airavata.registry.api.workflow.WorkflowInstance;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeStatus;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
+import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
-import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
 
 public class ProvenanceManagerImpl implements ProvenanceManager {
 	private AiravataClient client;
@@ -407,7 +398,34 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 		
 	}
 
-	@Override
+    @Override
+    public List<WorkflowInstance> getExperimentWorkflowInstances(String experimentId) throws AiravataAPIInvocationException {
+        try{
+            return getClient().getRegistryClient().getProvenanceResourceClient().getExperimentWorkflowInstances(experimentId);
+        }catch (Exception e) {
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void setWorkflowNodeType(WorkflowInstanceNode node, WorkflowNodeType type) throws AiravataAPIInvocationException {
+        try{
+            getClient().getRegistryClient().getProvenanceResourceClient().updateWorkflowNodeType(node, type);
+        }catch (Exception e) {
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void setWorkflowInstanceTemplateName(String workflowInstanceId, String templateName) throws AiravataAPIInvocationException {
+        try{
+            getClient().getRegistryClient().getProvenanceResourceClient().setWorkflowInstanceTemplateName(workflowInstanceId, templateName);
+        }catch (Exception e) {
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
 	public ExperimentData getExperimentMetaInformation(String experimentId)
 			throws AiravataAPIInvocationException {
 		try {

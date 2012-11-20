@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.registry.api.exception.RegistryException;
 
 public interface ApplicationManager {
 	//Service descriptors
@@ -181,5 +182,17 @@ public interface ApplicationManager {
      * @throws AiravataAPIInvocationException
      */
     public boolean deployServiceOnHost(String serviceName, String hostName)throws AiravataAPIInvocationException;
+
+    public Map<String,ApplicationDeploymentDescription> getApplicationDescriptors (String serviceName) throws AiravataAPIInvocationException;
+
+    public boolean isHostDescriptorExists(String descriptorName) throws AiravataAPIInvocationException;
+
+    public void removeHostDescriptor(String hostName) throws AiravataAPIInvocationException;
+
+    public boolean isServiceDescriptorExists(String descriptorName) throws AiravataAPIInvocationException;
+
+    public void removeServiceDescriptor(String serviceName) throws AiravataAPIInvocationException;
+
+    public void removeApplicationDescriptor(String serviceName, String hostName, String applicationName) throws AiravataAPIInvocationException;
 
 }
