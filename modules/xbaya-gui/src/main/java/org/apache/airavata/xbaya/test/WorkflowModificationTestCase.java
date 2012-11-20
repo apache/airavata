@@ -40,6 +40,7 @@ import org.apache.airavata.workflow.model.component.system.OutputComponent;
 import org.apache.airavata.workflow.model.gpel.DSCUtil;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.Node.NodeExecutionState;
 import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
 import org.apache.airavata.workflow.model.graph.ws.WSGraph;
 import org.apache.airavata.workflow.model.wf.Workflow;
@@ -60,13 +61,11 @@ import org.apache.airavata.ws.monitor.event.Event.Type;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
-import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.modifier.WorkflowModifier;
 import org.apache.airavata.xbaya.test.service.adder.Adder;
 import org.apache.airavata.xbaya.test.service.multiplier.Multiplier;
 import org.apache.airavata.xbaya.test.util.WorkflowCreator;
 import org.apache.airavata.xbaya.ui.graph.GraphCanvas;
-import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
 import org.apache.xmlbeans.XmlObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -202,9 +201,9 @@ public class WorkflowModificationTestCase extends XBayaTestCase {
         sendNotification(adderWSDL, adder1ID, "add", inputMap1, outputMap1, notifier);
         // These are needed because without GUI, the nodes' color won't be
         // changed.
-        NodeController.getGUI(a).setBodyColor(NodeState.FINISHED.color);
-        NodeController.getGUI(b).setBodyColor(NodeState.FINISHED.color);
-        NodeController.getGUI(adder).setBodyColor(NodeState.FINISHED.color);
+        a.setState(NodeExecutionState.FINISHED);
+        b.setState(NodeExecutionState.FINISHED);
+        adder.setState(NodeExecutionState.FINISHED);
         repaintAndWait(3);
 
         HashMap<String, String> inputMap2 = new HashMap<String, String>();
@@ -214,9 +213,9 @@ public class WorkflowModificationTestCase extends XBayaTestCase {
         outputMap2.put("z", "9");
         sendNotification(adderWSDL, adder2ID, "add", inputMap2, outputMap2, notifier);
 
-        NodeController.getGUI(c).setBodyColor(NodeState.FINISHED.color);
-        NodeController.getGUI(d).setBodyColor(NodeState.FINISHED.color);
-        NodeController.getGUI(adder2).setBodyColor(NodeState.FINISHED.color);
+        c.setState(NodeExecutionState.FINISHED);
+        d.setState(NodeExecutionState.FINISHED);
+        adder2.setState(NodeExecutionState.FINISHED);
         repaintAndWait(3);
     }
 

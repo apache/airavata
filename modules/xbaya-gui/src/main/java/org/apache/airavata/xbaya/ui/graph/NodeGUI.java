@@ -22,7 +22,6 @@
 package org.apache.airavata.xbaya.ui.graph;
 
 import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Dimension;
@@ -43,13 +42,15 @@ import java.util.List;
 
 import org.apache.airavata.workflow.model.graph.DataPort;
 import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.Node.NodeObserver;
+import org.apache.airavata.workflow.model.graph.Node.NodeUpdateType;
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
 import org.apache.airavata.xbaya.ui.utils.DrawUtils;
 
-public abstract class NodeGUI implements GraphPieceGUI {
+public abstract class NodeGUI implements GraphPieceGUI, NodeObserver {
 
     /**
      * BREAK_POINT_BORDER_COLOR
@@ -117,6 +118,7 @@ public abstract class NodeGUI implements GraphPieceGUI {
         // The followings are just to make sure that it has some size.
         this.dimension = new Dimension(MINIMUM_WIDTH, MINIMUM_HEIGHT);
         this.paintables = new LinkedList<Paintable>();
+        node.registerObserver(this);
     }
 
     /**
@@ -506,4 +508,28 @@ public abstract class NodeGUI implements GraphPieceGUI {
     	return Color.white;
     }
     
+    @Override
+    public void nodeUpdated(NodeUpdateType type) {
+    	switch(type){
+    	case STATE_CHANGED:
+    		updateNodeColor();
+    		break;
+		default:
+			break;
+    	}
+    	
+    }
+
+	private void updateNodeColor() {
+		switch(node.getState()){
+		case WAITING:
+			setBodyColor(NodeState.DEFAULT.color); break;
+		case EXECUTING:
+			setBodyColor(NodeState.EXECUTING.color); break;
+		case FAILED:
+			setBodyColor(NodeState.FAILED.color); break;
+		case FINISHED:
+			setBodyColor(NodeState.FINISHED.color); break;
+		}
+	}
 }

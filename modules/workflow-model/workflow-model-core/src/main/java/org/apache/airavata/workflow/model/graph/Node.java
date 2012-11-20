@@ -24,11 +24,18 @@ package org.apache.airavata.workflow.model.graph;
 import java.awt.Point;
 import java.util.Collection;
 import java.util.List;
+import java.util.Observer;
 
 import org.apache.airavata.workflow.model.component.Component;
 
 public interface Node extends GraphPiece {
 
+	public static enum NodeExecutionState{
+		WAITING,
+		EXECUTING,
+		FAILED,
+		FINISHED
+	}
     /**
      * Returns the ID of the node.
      * 
@@ -194,4 +201,18 @@ public interface Node extends GraphPiece {
      */
     public boolean getRequireJoin();
 
+    public NodeExecutionState getState();
+    
+    public void setState(NodeExecutionState state);
+    
+	public void registerObserver(NodeObserver o);
+	public void removeObserver(NodeObserver o);
+	
+	public static enum NodeUpdateType{
+		STATE_CHANGED,
+		OTHER
+	}
+	public static interface NodeObserver{
+		public void nodeUpdated(NodeUpdateType type);
+	} 
 }

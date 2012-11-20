@@ -92,6 +92,10 @@ public abstract class NodeImpl implements Node {
     protected String label;
 
     protected transient boolean requireJoin = false;
+    
+    private NodeExecutionState state;
+    
+    private List<NodeObserver> observers;
 
     /**
      * Creates a Node.
@@ -109,6 +113,8 @@ public abstract class NodeImpl implements Node {
         this.inputPortIDs = new ArrayList<String>();
         this.outputPortIDs = new ArrayList<String>();
         this.controlOutPortIDs = new ArrayList<String>();
+        
+        observers=new ArrayList<Node.NodeObserver>();
     }
 
     protected NodeImpl(Graph graph) {
@@ -674,5 +680,37 @@ public abstract class NodeImpl implements Node {
     public boolean getRequireJoin() {
         return this.requireJoin;
     }
-
+    
+    @Override
+    public NodeExecutionState getState() {
+		return state;
+	}
+    
+    @Override
+    public void setState(NodeExecutionState state) {
+		this.state = state;
+		triggerNodeObservers(NodeUpdateType.STATE_CHANGED);
+	}
+    
+    @Override
+    public void registerObserver(NodeObserver o) {
+    	observers.add(o);
+    }
+    
+    @Override
+    public void removeObserver(NodeObserver o) {
+    	if (observers.contains(o)) {
+			observers.remove(o);
+		}
+    }
+    
+    private void triggerNodeObservers(NodeUpdateType type){
+    	for (NodeObserver o : observers) {
+			try {
+				o.nodeUpdated(type);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+    }
 }

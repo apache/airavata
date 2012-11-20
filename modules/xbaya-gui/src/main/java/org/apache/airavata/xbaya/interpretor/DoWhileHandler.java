@@ -38,6 +38,7 @@ import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.graph.ControlPort;
 import org.apache.airavata.workflow.model.graph.DataPort;
 import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.Node.NodeExecutionState;
 import org.apache.airavata.workflow.model.graph.impl.EdgeImpl;
 import org.apache.airavata.workflow.model.graph.system.DoWhileNode;
 import org.apache.airavata.workflow.model.graph.system.EndDoWhileNode;
@@ -47,7 +48,6 @@ import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
 import org.apache.airavata.xbaya.util.InterpreterUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xmlpull.infoset.XmlElement;
 
 public class DoWhileHandler implements Callable<Boolean> {
 	private static Logger log = LoggerFactory.getLogger(DoWhileHandler.class);
@@ -196,7 +196,7 @@ public class DoWhileHandler implements Callable<Boolean> {
 				} else if (NodeController.isFailed(donode)) {
 					log.info("Service " + donode.getName() + " Failed");
 					runflag = false;
-					NodeController.getGUI(dowhilenode).setBodyColor(NodeState.FAILED.color);
+					dowhilenode.setState(NodeExecutionState.FAILED);
 					this.threadExecutor.shutdown();
 					return false;
 				} else if (donode.isBreak()) {
@@ -220,14 +220,13 @@ public class DoWhileHandler implements Callable<Boolean> {
 				}
 
 				Node whileNode = readyNodes.get(0);
-				// this.dowhilenode.getGUI().setBodyColor(NodeState.STARTING.color);
 				log.info("Expression evaluation is true so invoking service again " + whileNode.getName());
 
 				this.interpreter.handleWSComponent(whileNode);
 			}
 		}
 		// WS node should be done
-		NodeController.getGUI(dowhilenode).setBodyColor(NodeState.FINISHED.color);
+		dowhilenode.setState(NodeExecutionState.FINISHED);
 		EndDoWhileNode endDoWhileNode = this.dowhilenode.getEndDoWhileNode();
 
 		// /////////////////////////////////////////////////////////
@@ -245,7 +244,7 @@ public class DoWhileHandler implements Callable<Boolean> {
 		this.invokerMap.put(endDoWhileNode, invoker);
 		// TODO send mail once the iterations have converged
 
-		NodeController.getGUI(endDoWhileNode).setBodyColor(NodeState.FINISHED.color);
+		endDoWhileNode.setState(NodeExecutionState.FINISHED);
 		this.threadExecutor.shutdown();
 		return true;
 	}

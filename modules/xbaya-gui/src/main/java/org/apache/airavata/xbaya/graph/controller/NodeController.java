@@ -28,6 +28,7 @@ import org.apache.airavata.workflow.model.graph.Edge;
 import org.apache.airavata.workflow.model.graph.Graph;
 import org.apache.airavata.workflow.model.graph.GraphPiece;
 import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.Node.NodeExecutionState;
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.graph.amazon.InstanceNode;
 import org.apache.airavata.workflow.model.graph.amazon.TerminateInstanceNode;
@@ -80,7 +81,6 @@ import org.apache.airavata.xbaya.ui.graph.system.S3InputNodeGUI;
 import org.apache.airavata.xbaya.ui.graph.system.StreamSourceNodeGUI;
 import org.apache.airavata.xbaya.ui.graph.ws.WSNodeGUI;
 import org.apache.airavata.xbaya.ui.graph.ws.WorkflowNodeGUI;
-import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler;
 
 public class NodeController {
 	private static Map<GraphPiece,GraphPieceGUI> nodeMap=new HashMap<GraphPiece, GraphPieceGUI>();
@@ -185,15 +185,15 @@ public class NodeController {
 	}
 
 	public static boolean isFinished(Node node){
-		return ((NodeGUI)getGUI(node)).getBodyColor() == MonitorEventHandler.NodeState.FINISHED.color;
+		return node.getState() == NodeExecutionState.FINISHED;
 	}
 	public static boolean isWaiting(Node node){
-		return ((NodeGUI)getGUI(node)).getBodyColor() == MonitorEventHandler.NodeState.DEFAULT.color;
+		return node.getState() == NodeExecutionState.WAITING;
 	}
 	public static boolean isRunning(Node node){
-		return ((NodeGUI)getGUI(node)).getBodyColor() == MonitorEventHandler.NodeState.EXECUTING.color;
+		return node.getState() == NodeExecutionState.EXECUTING;
 	}
 	public static boolean isFailed(Node node){
-		return ((NodeGUI)getGUI(node)).getBodyColor() == MonitorEventHandler.NodeState.FAILED.color;
+		return node.getState() == NodeExecutionState.FAILED;
 	}
 }
