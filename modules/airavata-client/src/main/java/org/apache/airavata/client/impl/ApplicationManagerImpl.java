@@ -34,6 +34,7 @@ import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.exception.UnimplementedRegistryOperationException;
+import org.apache.airavata.registry.api.exception.gateway.MalformedDescriptorException;
 
 public class ApplicationManagerImpl implements ApplicationManager {
 	private AiravataClient client;
@@ -234,7 +235,64 @@ public class ApplicationManagerImpl implements ApplicationManager {
 		throw new AiravataAPIInvocationException(new UnimplementedRegistryOperationException());
 	}
 
-	public AiravataClient getClient() {
+    @Override
+    public Map<String, ApplicationDeploymentDescription> getApplicationDescriptors(String serviceName) throws AiravataAPIInvocationException {
+        try{
+            Map<String, ApplicationDeploymentDescription> applicationDescriptors = getClient().getRegistryClient().getApplicationDescriptors(serviceName);
+            return applicationDescriptors;
+        } catch (MalformedDescriptorException e) {
+            throw new AiravataAPIInvocationException(e);
+        } catch (RegistryException e) {
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public boolean isHostDescriptorExists(String descriptorName) throws AiravataAPIInvocationException {
+        try {
+            return getClient().getRegistryClient().isHostDescriptorExists(descriptorName);
+        } catch (RegistryException e) {
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void removeHostDescriptor(String hostName) throws AiravataAPIInvocationException {
+        try {
+            getClient().getRegistryClient().removeHostDescriptor(hostName);
+        } catch (RegistryException e) {
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public boolean isServiceDescriptorExists(String descriptorName) throws AiravataAPIInvocationException {
+        try {
+            return getClient().getRegistryClient().isServiceDescriptorExists(descriptorName);
+        } catch (RegistryException e) {
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void removeServiceDescriptor(String serviceName) throws AiravataAPIInvocationException {
+        try {
+            getClient().getRegistryClient().removeServiceDescriptor(serviceName);
+        } catch (RegistryException e) {
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void removeApplicationDescriptor(String serviceName, String hostName, String applicationName) throws AiravataAPIInvocationException {
+        try {
+            getClient().getRegistryClient().removeApplicationDescriptor(serviceName, hostName, applicationName);
+        } catch (RegistryException e) {
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    public AiravataClient getClient() {
 		return client;
 	}
 

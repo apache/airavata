@@ -21,7 +21,11 @@
 
 package org.apache.airavata.client.api;
 
+import org.apache.airavata.registry.api.AiravataUser;
+import org.apache.airavata.registry.api.Gateway;
+
 import java.net.URI;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -132,4 +136,44 @@ public interface AiravataManager {
      * @throws AiravataAPIInvocationException
      */
 	public URI getRegistryURL(URI defaultURL) throws AiravataAPIInvocationException;
+
+    public void setConfiguration(String key, String value, Date expire) throws AiravataAPIInvocationException;
+
+    public void addConfiguration(String key, String value, Date expire) throws AiravataAPIInvocationException;
+
+    public void removeAllConfiguration(String key) throws AiravataAPIInvocationException;
+
+    public void removeConfiguration(String key, String value) throws AiravataAPIInvocationException;
+
+    public void addGFacURI(URI uri) throws AiravataAPIInvocationException;
+
+    public void addWorkflowInterpreterURI(URI uri) throws AiravataAPIInvocationException;
+
+    public void setEventingURI(URI uri) throws AiravataAPIInvocationException;
+
+    public void setMessageBoxURI(URI uri) throws AiravataAPIInvocationException;
+
+    public void addGFacURI(URI uri, Date expire) throws AiravataAPIInvocationException;
+
+    public void addWorkflowInterpreterURI(URI uri, Date expire) throws AiravataAPIInvocationException;
+
+    public void setEventingURI(URI uri, Date expire) throws AiravataAPIInvocationException;
+
+    public void setMessageBoxURI(URI uri, Date expire) throws AiravataAPIInvocationException;
+
+    public void removeGFacURI(URI uri) throws AiravataAPIInvocationException ;
+
+    public void removeAllGFacURI() throws AiravataAPIInvocationException;
+
+    public void removeWorkflowInterpreterURI(URI uri) throws AiravataAPIInvocationException;
+
+    public void removeAllWorkflowInterpreterURI() throws AiravataAPIInvocationException;
+
+    public void unsetEventingURI() throws AiravataAPIInvocationException;
+
+    public void unsetMessageBoxURI() throws AiravataAPIInvocationException;
+
+    public Gateway getGateway () throws AiravataAPIInvocationException;
+
+    public AiravataUser getUser() throws AiravataAPIInvocationException;
 }
