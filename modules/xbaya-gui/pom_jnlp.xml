@@ -360,6 +360,11 @@
             <artifactId>airavata-workflow-model-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+		<dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-workflow-model-component</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-message-monitor</artifactId>
