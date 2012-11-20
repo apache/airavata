@@ -24,7 +24,7 @@
 package org.apache.airavata.security.userstore;
 
 import org.apache.airavata.security.UserStoreException;
-import org.apache.airavata.security.util.DBLookup;
+import org.apache.airavata.common.utils.DBUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -44,7 +44,7 @@ public class SessionDBUserStore extends AbstractJDBCUserStore {
     private String sessionColumn;
     private String comparingColumn;
 
-    protected DBLookup dbLookup;
+    protected DBUtil dbUtil;
 
     protected static Logger log = LoggerFactory.getLogger(SessionDBUserStore.class);
 
@@ -61,7 +61,7 @@ public class SessionDBUserStore extends AbstractJDBCUserStore {
         String sessionTicket = (String)credentials;
 
         try {
-            String sessionString = dbLookup.getMatchingColumnValue(sessionTable, sessionColumn, sessionTicket);
+            String sessionString = dbUtil.getMatchingColumnValue(sessionTable, sessionColumn, sessionTicket);
             return (sessionString != null);
         } catch (SQLException e) {
             throw new UserStoreException("Error querying database for session information.", e);
@@ -126,10 +126,10 @@ public class SessionDBUserStore extends AbstractJDBCUserStore {
 
     private void initializeDatabaseLookup() throws RuntimeException {
 
-        this.dbLookup = new DBLookup(getDatabaseURL(), getDatabaseUserName(), getDatabasePassword(), getDatabaseDriver());
+        this.dbUtil = new DBUtil(getDatabaseURL(), getDatabaseUserName(), getDatabasePassword(), getDatabaseDriver());
 
         try {
-            this.dbLookup.init();
+            this.dbUtil.init();
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Error loading database driver. Driver class not found.", e);
         } catch (InstantiationException e) {

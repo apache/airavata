@@ -23,9 +23,8 @@
 
 package org.apache.airavata.security.userstore;
 
-import org.apache.airavata.security.UserStore;
 import org.apache.airavata.security.UserStoreException;
-import org.apache.airavata.security.util.DBLookup;
+import org.apache.airavata.common.utils.DBUtil;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -143,9 +142,9 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
     protected void initializeDatabaseLookup(String passwordColumn, String userTable,
                                             String userNameColumn) {
 
-        DBLookup dbLookup = new DBLookup(getDatabaseURL(), getDatabaseUserName(), getDatabasePassword(),
+        DBUtil dbUtil = new DBUtil(getDatabaseURL(), getDatabaseUserName(), getDatabasePassword(),
                 getDatabaseDriver());
-        DataSource dataSource = dbLookup.getDataSource();
+        DataSource dataSource = dbUtil.getDataSource();
         jdbcRealm.setDataSource(dataSource);
 
         StringBuilder stringBuilder = new StringBuilder();
