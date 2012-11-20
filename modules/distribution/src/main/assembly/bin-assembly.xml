@@ -237,6 +237,7 @@
 				<include>org.apache.airavata:airavata-gfac-schema-utils</include>
 				<include>org.apache.airavata:airavata-common-utils</include>
 				<include>org.apache.airavata:airavata-workflow-model-core:jar</include>
+				<include>org.apache.airavata:airavata-workflow-model-component:jar</include>
 				<include>org.apache.airavata:airavata-message-monitor:jar</include>
 				<include>org.apache.airavata:airavata-client-api:jar</include>
 				<include>org.apache.airavata:airavata-jpa-registry:jar</include>
