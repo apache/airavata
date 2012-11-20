@@ -30,7 +30,6 @@ import org.apache.airavata.client.AiravataClient;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.WorkflowManager;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowData;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;

@@ -204,6 +204,8 @@ public interface Node extends GraphPiece {
     public NodeExecutionState getState();
     
     public void setState(NodeExecutionState state);
+
+//    public void executeDynamically();
     
 	public void registerObserver(NodeObserver o);
 	public void removeObserver(NodeObserver o);
@@ -215,4 +217,5 @@ public interface Node extends GraphPiece {
 	public static interface NodeObserver{
 		public void nodeUpdated(NodeUpdateType type);
 	} 
+	
 }
