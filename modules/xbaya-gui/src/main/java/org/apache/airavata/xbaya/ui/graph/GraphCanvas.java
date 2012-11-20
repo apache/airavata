@@ -69,6 +69,7 @@ import org.apache.airavata.workflow.model.graph.Graph;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.GraphPiece;
 import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.Node.NodeExecutionState;
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.graph.Port.Kind;
 import org.apache.airavata.workflow.model.graph.dynamic.DynamicNode;
@@ -1256,7 +1257,7 @@ public class GraphCanvas implements XBayaExecutionModeListener{
                 for (DataPort dataPort : outputPorts) {
                     exploreNodes.addAll(dataPort.getToNodes());
                 }
-                NodeController.getGUI(node).setBodyColor(NodeGUI.DEFAULT_BODY_COLOR);
+                node.setState(NodeExecutionState.WAITING);
 
                 exploreNodes.remove(0);
             }

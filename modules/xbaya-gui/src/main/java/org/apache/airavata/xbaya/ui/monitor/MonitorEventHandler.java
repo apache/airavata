@@ -39,6 +39,7 @@ import org.apache.airavata.workflow.model.graph.EPRPort;
 import org.apache.airavata.workflow.model.graph.Edge;
 import org.apache.airavata.workflow.model.graph.Graph;
 import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.Node.NodeExecutionState;
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.graph.amazon.InstanceNode;
 import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
@@ -422,7 +423,7 @@ public class MonitorEventHandler implements ChangeListener {
 
     private void nodeStarted(Node node, boolean forward) {
         if (forward) {
-            if (!NodeController.getGUI(node).getBodyColor().equals(NodeState.FINISHED.color)) {
+            if (node.getState()!= NodeExecutionState.FINISHED) {
                 executeNode(node);
                 finishPredecessorNodes(node);
             }
@@ -497,19 +498,19 @@ public class MonitorEventHandler implements ChangeListener {
     }
 
     private void executeNode(Node node) {
-        NodeController.getGUI(node).setBodyColor(NodeState.EXECUTING.color);
+        node.setState(NodeExecutionState.EXECUTING);
     }
 
     private void finishNode(Node node) {
-        NodeController.getGUI(node).setBodyColor(NodeState.FINISHED.color);
+        node.setState(NodeExecutionState.FINISHED);
     }
 
     private void failNode(Node node) {
-        NodeController.getGUI(node).setBodyColor(NodeState.FAILED.color);
+        node.setState(NodeExecutionState.FAILED);
     }
 
     private void resetNode(Node node) {
-        NodeController.getGUI(node).setBodyColor(NodeState.DEFAULT.color);
+        node.setState(NodeExecutionState.WAITING);
         NodeController.getGUI(node).resetTokens();
     }
 

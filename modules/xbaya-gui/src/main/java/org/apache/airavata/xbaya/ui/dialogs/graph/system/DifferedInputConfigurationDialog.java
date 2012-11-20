@@ -30,13 +30,13 @@ import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.workflow.model.graph.Node.NodeExecutionState;
 import org.apache.airavata.workflow.model.graph.system.DifferedInputNode;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.lead.LEADTypes;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.graph.system.DifferedInputNodeGUI;
-import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextArea;
@@ -198,7 +198,7 @@ public class DifferedInputConfigurationDialog {
         this.node.setDescription(description);
         this.node.setDefaultValue(value);
         this.node.setMetadata(metadata);
-        NodeController.getGUI(this.node).setBodyColor(NodeState.FINISHED.color);
+        this.node.setState(NodeExecutionState.FINISHED);
         
         hide();
         this.xbayaGUI.getGraphCanvas().repaint();

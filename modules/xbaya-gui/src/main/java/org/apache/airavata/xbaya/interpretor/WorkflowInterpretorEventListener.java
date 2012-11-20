@@ -31,6 +31,7 @@ import org.apache.airavata.workflow.model.graph.EPRPort;
 import org.apache.airavata.workflow.model.graph.Edge;
 import org.apache.airavata.workflow.model.graph.Graph;
 import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.Node.NodeExecutionState;
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
@@ -51,8 +52,6 @@ import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.provenance.WorkflowNodeStatusUpdater;
 import org.apache.airavata.xbaya.provenance.WorkflowStatusUpdater;
-import org.apache.airavata.xbaya.ui.graph.NodeGUI;
-import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.addressing.EndpointReference;
 import org.slf4j.Logger;
@@ -296,19 +295,19 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
     }
 
     private void executeNode(Node node) {
-        NodeController.getGUI(node).setBodyColor(NodeState.EXECUTING.color);
+        node.setState(NodeExecutionState.EXECUTING);
     }
 
     private void finishNode(Node node) {
-        NodeController.getGUI(node).setBodyColor(NodeState.FINISHED.color);
+        node.setState(NodeExecutionState.FINISHED);
     }
 
     private void failNode(Node node) {
-        NodeController.getGUI(node).setBodyColor(NodeState.FAILED.color);
+        node.setState(NodeExecutionState.FAILED);
     }
 
     private void resetNode(Node node) {
-        NodeController.getGUI(node).setBodyColor(NodeGUI.DEFAULT_BODY_COLOR);
+        node.setState(NodeExecutionState.WAITING);
         NodeController.getGUI(node).resetTokens();
     }
 

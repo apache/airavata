@@ -21,7 +21,6 @@
 
 package org.apache.airavata.xbaya.interpretor;
 
-import java.awt.Color;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -43,10 +42,10 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.amazon.InstanceComponent;
@@ -72,6 +71,7 @@ import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.graph.ControlPort;
 import org.apache.airavata.workflow.model.graph.DataPort;
 import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.Node.NodeExecutionState;
 import org.apache.airavata.workflow.model.graph.amazon.InstanceNode;
 import org.apache.airavata.workflow.model.graph.dynamic.BasicTypeMapping;
 import org.apache.airavata.workflow.model.graph.dynamic.DynamicNode;
@@ -96,7 +96,6 @@ import org.apache.airavata.ws.monitor.MonitorConfiguration;
 import org.apache.airavata.ws.monitor.MonitorException;
 import org.apache.airavata.xbaya.concurrent.PredicatedTaskRunner;
 import org.apache.airavata.xbaya.core.amazon.AmazonCredential;
-import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.invoker.DynamicInvoker;
 import org.apache.airavata.xbaya.invoker.EmbeddedGFacInvoker;
 import org.apache.airavata.xbaya.invoker.GenericInvoker;
@@ -105,8 +104,6 @@ import org.apache.airavata.xbaya.invoker.WorkflowInputUtil;
 import org.apache.airavata.xbaya.invoker.WorkflowInvokerWrapperForGFacInvoker;
 import org.apache.airavata.xbaya.provenance.ProvenanceReader;
 import org.apache.airavata.xbaya.provenance.ProvenanceWrite;
-import org.apache.airavata.xbaya.ui.graph.NodeGUI;
-import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
 import org.apache.airavata.xbaya.util.AmazonUtil;
 import org.apache.airavata.xbaya.util.InterpreterUtil;
 import org.apache.airavata.xbaya.util.XBayaUtil;
@@ -185,7 +182,7 @@ public class WorkflowInterpreter {
 			String[] keywords = new String[inputNodes.size()];
 			for (int i = 0; i < inputNodes.size(); ++i) {
 				Node node = inputNodes.get(i);
-				NodeController.getGUI(node).setBodyColor(NodeState.FINISHED.color);
+				node.setState(NodeExecutionState.FINISHED);
 				notifyViaInteractor(WorkflowExecutionMessage.NODE_STATE_CHANGED, null);
 				keywords[i] = ((InputNode) node).getName();
 				values[i] = ((InputNode) node).getDefaultValue();
@@ -353,7 +350,7 @@ public class WorkflowInterpreter {
 				}
 
 				this.invokerMap.put(node, invoker);
-				NodeController.getGUI(node).setBodyColor(NodeState.FINISHED.color);
+				node.setState(NodeExecutionState.FINISHED);
 				return true;
 			} else {
 //				writeProvenanceLater(node);
@@ -445,7 +442,7 @@ public class WorkflowInterpreter {
 				// next run
 				// even if the next run runs before the notification arrives
 
-				NodeController.getGUI(node).setBodyColor(NodeState.EXECUTING.color);
+				node.setState(NodeExecutionState.EXECUTING);
 				// OutputNode node = (OutputNode) outputNode;
 				List<DataPort> inputPorts = node.getInputPorts();
 
@@ -482,7 +479,7 @@ public class WorkflowInterpreter {
 													// Templates.
 						}
 					}
-					NodeController.getGUI(node).setBodyColor(NodeState.FINISHED.color);
+					node.setState(NodeExecutionState.FINISHED);
 				}
 				System.out.println("Looping");
 			}
@@ -496,7 +493,7 @@ public class WorkflowInterpreter {
 		List<NodeImpl> nodes = this.getGraph().getNodes();
 		for (Node node : nodes) {
 			if (node instanceof OutputNode) {
-				if (NodeController.getGUI(node.getInputPort(0).getFromNode()).getBodyColor().equals(NodeState.FINISHED.color)) {
+				if (node.getInputPort(0).getFromNode().getState()== NodeExecutionState.FINISHED) {
 					outoutNodes.add(node);
 				} else {
 					// The workflow is incomplete so return without sending
@@ -518,7 +515,7 @@ public class WorkflowInterpreter {
 					throw new WorkFlowInterpreterException("Unable to find output for the node:" + node.getID());
 				}
 				// Some node not yet updated
-				if (NodeController.getGUI(node).getBodyColor() != NodeState.FINISHED.color) {
+				if (node.getState() != NodeExecutionState.FINISHED) {
 					if (this.config.isActOnProvenance()) {
 						try {
 							if (val instanceof String) {
@@ -545,7 +542,7 @@ public class WorkflowInterpreter {
 					} else {
 						((OutputNode) node).setDescription(val.toString());
 					}
-					NodeController.getGUI(node).setBodyColor(NodeState.FINISHED.color);
+					node.setState(NodeExecutionState.FINISHED);
 				}
 			}
 
@@ -557,7 +554,7 @@ public class WorkflowInterpreter {
 	}
 
 	private void executeDynamically(final Node node) throws WorkflowException {
-		NodeController.getGUI(node).setBodyColor(NodeState.EXECUTING.color);
+		node.setState(NodeExecutionState.EXECUTING);
 		Component component = node.getComponent();
 		if (component instanceof SubWorkflowComponent) {
 			handleSubWorkComponent(node);
@@ -597,7 +594,7 @@ public class WorkflowInterpreter {
 			AmazonUtil.terminateInstances(instanceId);
 
 			// set color to done
-			NodeController.getGUI(node).setBodyColor(NodeState.FINISHED.color);
+			node.setState(NodeExecutionState.FINISHED);
 		} else {
 			throw new WorkFlowInterpreterException("Encountered Node that cannot be executed:" + node);
 		}
@@ -818,7 +815,7 @@ public class WorkflowInterpreter {
 		this.invokerMap.put(node, dynamicInvoker);
 		dynamicInvoker.setup();
 		dynamicInvoker.invoke();
-		NodeController.getGUI(node).setBodyColor(NodeState.FINISHED.color);
+		node.setState(NodeExecutionState.FINISHED);
 	}
 
 	private void handleForEach(Node node) throws WorkflowException {
@@ -888,8 +885,8 @@ public class WorkflowInterpreter {
 						// Start reading input came for foreach node
 						int parallelRuns = listOfValues.size() * node1.getOutputPorts().size();
 						if (listOfValues.size() > 0) {
-							NodeController.getGUI(forEachNode).setBodyColor(NodeState.EXECUTING.color);
-							NodeController.getGUI(node1).setBodyColor(NodeState.EXECUTING.color);
+							forEachNode.setState(NodeExecutionState.EXECUTING);
+							node1.setState(NodeExecutionState.EXECUTING);
 							List<DataPort> outputPorts = node1.getOutputPorts();
 							final AtomicInteger counter = new AtomicInteger();
 							for (Node endFor : endForEachNodes) {
@@ -935,9 +932,9 @@ public class WorkflowInterpreter {
 				}
 				// we have finished execution so end foreach is finished
 				// todo this has to be done in a separate thread
-				NodeController.getGUI(endForEachNode).setBodyColor(NodeState.FINISHED.color);
-				NodeController.getGUI(middleNode).setBodyColor(NodeState.FINISHED.color);
-				NodeController.getGUI(node).setBodyColor(NodeState.FINISHED.color);
+				endForEachNode.setState(NodeExecutionState.FINISHED);
+				middleNode.setState(NodeExecutionState.FINISHED);
+				node.setState(NodeExecutionState.FINISHED);
 
 			} else {
 
@@ -969,8 +966,8 @@ public class WorkflowInterpreter {
 				int parallelRuns = createInputValues(listOfValues, inputNumbers).size() * outputPorts1.size();
 				if (listOfValues.size() > 0) {
 
-					NodeController.getGUI(forEachNode).setBodyColor(NodeState.EXECUTING.color);
-					NodeController.getGUI(foreachWSNode).setBodyColor(NodeState.EXECUTING.color);
+					forEachNode.setState(NodeExecutionState.EXECUTING);
+					foreachWSNode.setState(NodeExecutionState.EXECUTING);
 					List<DataPort> outputPorts = middleNode.getOutputPorts();
 					final AtomicInteger counter = new AtomicInteger();
 					for (Node endFor : endForEachNodes) {
@@ -1000,9 +997,9 @@ public class WorkflowInterpreter {
 					}
 					// we have finished execution so end foreach is finished
 					// todo this has to be done in a separate thread
-					NodeController.getGUI(middleNode).setBodyColor(NodeState.FINISHED.color);
+					middleNode.setState(NodeExecutionState.FINISHED);
 					for (Node endForEach : endForEachNodes) {
-						NodeController.getGUI(endForEach).setBodyColor(NodeState.FINISHED.color);
+						endForEach.setState(NodeExecutionState.FINISHED);
 					}
 				} else {
 					throw new WorkFlowInterpreterException("No array values found for foreach");
@@ -1053,7 +1050,7 @@ public class WorkflowInterpreter {
 				}
 			}
 
-			NodeController.getGUI(node).setBodyColor(NodeState.FINISHED.color);
+			node.setState(NodeExecutionState.FINISHED);
 
 		} catch (XPathExpressionException e) {
 			throw new WorkFlowInterpreterException("Cannot evaluate XPath in If Condition: " + booleanExpression);
@@ -1081,7 +1078,7 @@ public class WorkflowInterpreter {
 
 		this.invokerMap.put(node, invoker);
 
-		NodeController.getGUI(node).setBodyColor(NodeState.FINISHED.color);
+		node.setState(NodeExecutionState.FINISHED);
 	}
 
 	private Invoker createInvokerForEachSingleWSNode(Node foreachWSNode, String gfacURLString, WSComponent wsComponent) throws WorkflowException {
@@ -1248,7 +1245,7 @@ public class WorkflowInterpreter {
 			}
 			i++;
 		}
-		NodeController.getGUI(forEachNode).setBodyColor(NodeState.FINISHED.color);
+		forEachNode.setState(NodeExecutionState.FINISHED);
 	}
 
 	private void invokeGFacService(LinkedList<String> listOfValues, Node middleNode, Integer[] inputNumber, String input, Invoker invoker)
@@ -1360,8 +1357,8 @@ public class WorkflowInterpreter {
 		ArrayList<Node> list = new ArrayList<Node>();
 		List<NodeImpl> nodes = this.getGraph().getNodes();
 		for (Node node : nodes) {
-			if (node instanceof OutputNode && NodeController.getGUI(node).getBodyColor().equals(NodeGUI.DEFAULT_BODY_COLOR)
-					&& NodeController.getGUI(node.getInputPort(0).getFromNode()).getBodyColor().equals(NodeState.FINISHED.color)) {
+			if (node instanceof OutputNode && node.getState()==NodeExecutionState.WAITING 
+					&& node.getInputPort(0).getFromNode().getState()== NodeExecutionState.FINISHED) {
 
 				list.add(node);
 			}
@@ -1530,18 +1527,18 @@ public class WorkflowInterpreter {
 	}
 
 	private ArrayList<Node> getFinishedNodesDynamically() {
-		return this.getNodesWithBodyColor(NodeState.FINISHED.color);
+		return this.getNodesWithState(NodeExecutionState.FINISHED);
 	}
 
 	private ArrayList<Node> getWaitingNodesDynamically() {
-		return this.getNodesWithBodyColor(NodeState.DEFAULT.color);
+		return this.getNodesWithState(NodeExecutionState.WAITING);
 	}
 
-	private ArrayList<Node> getNodesWithBodyColor(Color color) {
+	private ArrayList<Node> getNodesWithState(NodeExecutionState state) {
 		ArrayList<Node> list = new ArrayList<Node>();
 		List<NodeImpl> nodes = getGraph().getNodes();
 		for (Node node : nodes) {
-			if (color.equals(NodeController.getGUI(node).getBodyColor())) {
+			if (state==node.getState()) {
 				list.add(node);
 			}
 		}
