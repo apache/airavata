@@ -21,6 +21,7 @@
 
 package org.apache.airavata.services.registry.rest.resources;
 
+import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.Gateway;
@@ -115,6 +116,29 @@ public class BasicRegistryResouce {
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Airavata user added successfully");
             return builder.build();
+        } catch (Exception e) {
+            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+            builder.entity(e.getMessage());
+            return builder.build();
+        }
+    }
+
+    @GET
+    @Path(ResourcePathConstants.BasicRegistryConstants.VERSION)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getVersion (){
+        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        try {
+            Version version = airavataRegistry.getVersion();
+            if (version != null){
+                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+                builder.entity(version);
+                return builder.build();
+            } else {
+                Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
+                builder.entity("Cannot retrieve Airavata version...");
+                return builder.build();
+            }
         } catch (Exception e) {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
