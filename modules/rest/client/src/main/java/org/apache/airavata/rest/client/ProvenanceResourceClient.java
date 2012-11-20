@@ -90,6 +90,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
 
@@ -113,6 +114,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
 
@@ -138,6 +140,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -160,6 +163,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -186,6 +190,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -208,6 +213,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -233,6 +239,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -254,6 +261,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -280,6 +288,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -297,6 +306,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
@@ -332,6 +342,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -356,6 +367,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -376,6 +388,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
@@ -406,6 +419,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -427,6 +441,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -454,6 +469,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -478,6 +494,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -499,6 +516,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -522,6 +540,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -546,6 +565,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -576,6 +596,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -605,6 +626,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -630,6 +652,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -661,6 +684,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -685,6 +709,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -709,6 +734,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK) {
@@ -731,6 +757,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -756,6 +783,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -787,6 +815,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -816,6 +845,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.accept(MediaType.TEXT_PLAIN).type(MediaType.APPLICATION_JSON).post(ClientResponse.class, workflowNodeGramData);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -837,6 +867,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -862,6 +893,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -886,6 +918,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -909,6 +942,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK ) {
@@ -936,6 +970,7 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -956,6 +991,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
@@ -979,6 +1015,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
