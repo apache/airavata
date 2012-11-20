@@ -173,6 +173,7 @@ public class ResourcePathConstants {
         public static final String GET_USER = "get/user";
         public static final String SET_GATEWAY = "set/gateway";
         public static final String SET_USER = "set/user";
+        public static final String VERSION = "get/version";
     }
 
     }

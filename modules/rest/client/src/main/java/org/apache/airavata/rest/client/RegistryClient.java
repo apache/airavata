@@ -759,7 +759,6 @@ public class RegistryClient extends AiravataRegistry2 {
 
     @Override
     public void setAiravataRegistry(AiravataRegistry2 registry) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -774,11 +773,11 @@ public class RegistryClient extends AiravataRegistry2 {
 
     @Override
     public boolean isActive() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     @Override
     public Version getVersion() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return getBasicRegistryResourceClient().getVersion();
     }
 }
