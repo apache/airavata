@@ -23,7 +23,7 @@ package org.apache.airavata.workflow.model.graph.system;
 
 import java.util.List;
 
-import org.apache.airavata.workflow.model.component.ExitComponent;
+import org.apache.airavata.workflow.model.component.system.ExitComponent;
 import org.apache.airavata.workflow.model.graph.ControlEdge;
 import org.apache.airavata.workflow.model.graph.Edge;
 import org.apache.airavata.workflow.model.graph.Graph;

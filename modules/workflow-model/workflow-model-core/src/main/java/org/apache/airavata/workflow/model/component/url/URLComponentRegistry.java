@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.workflow.model.component.registry;
+package org.apache.airavata.workflow.model.component.url;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -28,6 +28,7 @@ import java.util.List;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.ComponentReference;
+import org.apache.airavata.workflow.model.component.ComponentRegistry;
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;
 import org.apache.airavata.workflow.model.component.ws.WSComponent;
 import org.apache.airavata.workflow.model.component.ws.WSComponentFactory;

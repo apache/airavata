@@ -24,8 +24,8 @@ package org.apache.airavata.xbaya.component.registry;
 import java.util.List;
 
 import org.apache.airavata.workflow.model.component.ComponentReference;
+import org.apache.airavata.workflow.model.component.ComponentRegistry;
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;
-import org.apache.airavata.workflow.model.component.registry.ComponentRegistry;
 import org.apache.airavata.xbaya.ui.widgets.component.ComponentTreeNode;
 
 public class ComponentController {

@@ -27,8 +27,8 @@ import java.util.Observable;
 import java.util.Observer;
 
 import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.workflow.model.component.ComponentRegistry;
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;
-import org.apache.airavata.workflow.model.component.registry.ComponentRegistry;
 import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;

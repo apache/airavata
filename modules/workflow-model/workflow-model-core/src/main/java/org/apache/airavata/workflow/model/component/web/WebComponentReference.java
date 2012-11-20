@@ -19,30 +19,27 @@
  *
  */
 
-package org.apache.airavata.workflow.model.component.registry;
+package org.apache.airavata.workflow.model.component.web;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.ComponentReference;
+import org.apache.airavata.workflow.model.component.ws.WSComponent;
 
-public class WSComponentReference extends ComponentReference {
+public class WebComponentReference extends ComponentReference {
 
-    private Component component;
-
-    private List<Component> components;
+    private List<WSComponent> components;
 
     /**
-     * Constructs a SystemComponentNode.
+     * Constructs a WebComponentNode.
      * 
      * @param name
-     * @param component
+     * @param components
      */
-    public WSComponentReference(String name, Component component) {
+    public WebComponentReference(String name, List<WSComponent> components) {
         super(name);
-        this.component = component;
-        this.components = Collections.singletonList(component);
+        this.components = components;
     }
 
     /**
@@ -50,7 +47,7 @@ public class WSComponentReference extends ComponentReference {
      */
     @Override
     public Component getComponent() {
-        return this.component;
+        return this.components.get(0);
     }
 
     /**

@@ -19,36 +19,46 @@
  *
  */
 
-package org.apache.airavata.workflow.model.component.registry;
+package org.apache.airavata.workflow.model.component;
 
+import java.util.Collections;
 import java.util.List;
 
+import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.ComponentReference;
-import org.apache.airavata.workflow.model.component.ComponentRegistryException;
 
-public abstract class ComponentRegistry {
+public class ComponentOperationReference extends ComponentReference {
 
-    /**
-     * Returns a List of hirarchical Component References. This method should refresh the list even if subclass uses the cache.
-     * 
-     * @return The ComponentTreeR
-     * @throws ComponentRegistryException
-     */
-    public abstract List<ComponentReference> getComponentReferenceList() throws ComponentRegistryException;
+    private Component component;
+
+    private List<Component> components;
 
     /**
-     * Used by the ComponentTreeViewer to display a node.
+     * Constructs a BasicComponentReference.
      * 
-     * @see java.lang.Object#toString()
+     * @param name
+     * @param component
      */
-    @Override
-    public String toString() {
-        return getName();
+    public ComponentOperationReference(String name, Component component) {
+        super(name);
+        this.component = component;
+        this.components = Collections.singletonList(component);
     }
 
     /**
-     * @return The name to show in the tree.
+     * @see org.apache.airavata.workflow.model.component.ComponentReference#getComponent()
      */
-    public abstract String getName();
-    
+    @Override
+    public Component getComponent() {
+        return this.component;
+    }
+
+    /**
+     * @see org.apache.airavata.workflow.model.component.ComponentReference#getComponents()
+     */
+    @Override
+    public List<? extends Component> getComponents() {
+        return this.components;
+    }
+
 }

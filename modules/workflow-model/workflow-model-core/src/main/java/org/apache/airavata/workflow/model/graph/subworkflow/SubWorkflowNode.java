@@ -23,7 +23,7 @@ package org.apache.airavata.workflow.model.graph.subworkflow;
 
 import java.util.List;
 
-import org.apache.airavata.workflow.model.component.SubWorkflowComponent;
+import org.apache.airavata.workflow.model.component.system.SubWorkflowComponent;
 import org.apache.airavata.workflow.model.graph.DataPort;
 import org.apache.airavata.workflow.model.graph.Edge;
 import org.apache.airavata.workflow.model.graph.Graph;

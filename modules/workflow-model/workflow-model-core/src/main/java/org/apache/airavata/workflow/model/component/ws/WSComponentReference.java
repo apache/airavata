@@ -19,57 +19,45 @@
  *
  */
 
-package org.apache.airavata.workflow.model.component.registry;
+package org.apache.airavata.workflow.model.component.ws;
 
-import java.io.File;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.airavata.workflow.model.component.Component;
-import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.ComponentReference;
-import org.apache.airavata.workflow.model.component.ComponentRegistryException;
-import org.apache.airavata.workflow.model.component.ws.WSComponent;
 
-public class LocalComponentReference extends ComponentReference {
+public class WSComponentReference extends ComponentReference {
 
-    private LocalComponentRegistry registry;
+    private Component component;
 
-    private File file;
-
-    private List<WSComponent> components;
+    private List<Component> components;
 
     /**
-     * Constructs a LocalComponentNode.
+     * Constructs a SystemComponentNode.
      * 
      * @param name
-     * @param file
-     * @param registry
+     * @param component
      */
-    public LocalComponentReference(String name, File file, LocalComponentRegistry registry) {
+    public WSComponentReference(String name, Component component) {
         super(name);
-        this.file = file;
-        this.registry = registry;
+        this.component = component;
+        this.components = Collections.singletonList(component);
     }
 
     /**
-     * @throws ComponentException
-     * @throws ComponentRegistryException
      * @see org.apache.airavata.workflow.model.component.ComponentReference#getComponent()
      */
     @Override
-    @Deprecated
-    public Component getComponent() throws ComponentException, ComponentRegistryException {
-        return getComponents().get(0);
+    public Component getComponent() {
+        return this.component;
     }
 
     /**
      * @see org.apache.airavata.workflow.model.component.ComponentReference#getComponents()
      */
     @Override
-    public List<WSComponent> getComponents() throws ComponentRegistryException, ComponentException {
-        if (this.components == null) {
-            this.components = this.registry.getComponents(this.file);
-        }
+    public List<? extends Component> getComponents() {
         return this.components;
     }
 }

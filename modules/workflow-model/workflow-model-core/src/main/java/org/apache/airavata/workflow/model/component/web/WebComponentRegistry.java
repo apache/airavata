@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.workflow.model.component.registry;
+package org.apache.airavata.workflow.model.component.web;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +41,7 @@ import javax.swing.text.html.parser.ParserDelegator;
 import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.ComponentReference;
+import org.apache.airavata.workflow.model.component.ComponentRegistry;
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;
 import org.apache.airavata.workflow.model.component.ws.WSComponent;
 import org.apache.airavata.workflow.model.component.ws.WSComponentFactory;

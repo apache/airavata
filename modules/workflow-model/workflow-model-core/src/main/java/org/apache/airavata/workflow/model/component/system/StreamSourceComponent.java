@@ -19,8 +19,9 @@
  *
  */
 
-package org.apache.airavata.workflow.model.component;
+package org.apache.airavata.workflow.model.component.system;
 
+import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.system.SystemComponent;
 import org.apache.airavata.workflow.model.component.system.SystemComponentDataPort;
 import org.apache.airavata.workflow.model.graph.Graph;

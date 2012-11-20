@@ -26,7 +26,7 @@ import java.awt.Point;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;
-import org.apache.airavata.workflow.model.component.registry.LocalComponentRegistry;
+import org.apache.airavata.workflow.model.component.local.LocalComponentRegistry;
 import org.apache.airavata.workflow.model.component.system.ConstantComponent;
 import org.apache.airavata.workflow.model.component.system.DoWhileComponent;
 import org.apache.airavata.workflow.model.component.system.EndDoWhileComponent;
