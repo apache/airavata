@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.workflow.model.component.registry;
+package org.apache.airavata.workflow.model.component.system;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -28,25 +28,8 @@ import java.util.Map;
 
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.ComponentReference;
-import org.apache.airavata.workflow.model.component.ExitComponent;
-import org.apache.airavata.workflow.model.component.StreamSourceComponent;
-import org.apache.airavata.workflow.model.component.SubWorkflowComponent;
+import org.apache.airavata.workflow.model.component.ComponentRegistry;
 import org.apache.airavata.workflow.model.component.dynamic.DynamicComponent;
-import org.apache.airavata.workflow.model.component.system.BlockComponent;
-import org.apache.airavata.workflow.model.component.system.ConstantComponent;
-import org.apache.airavata.workflow.model.component.system.DifferedInputComponent;
-import org.apache.airavata.workflow.model.component.system.DoWhileComponent;
-import org.apache.airavata.workflow.model.component.system.EndBlockComponent;
-import org.apache.airavata.workflow.model.component.system.EndDoWhileComponent;
-import org.apache.airavata.workflow.model.component.system.EndForEachComponent;
-import org.apache.airavata.workflow.model.component.system.EndifComponent;
-import org.apache.airavata.workflow.model.component.system.ForEachComponent;
-import org.apache.airavata.workflow.model.component.system.IfComponent;
-import org.apache.airavata.workflow.model.component.system.InputComponent;
-import org.apache.airavata.workflow.model.component.system.MemoComponent;
-import org.apache.airavata.workflow.model.component.system.OutputComponent;
-import org.apache.airavata.workflow.model.component.system.ReceiveComponent;
-import org.apache.airavata.workflow.model.component.system.S3InputComponent;
 
 public class SystemComponentRegistry extends ComponentRegistry {
 

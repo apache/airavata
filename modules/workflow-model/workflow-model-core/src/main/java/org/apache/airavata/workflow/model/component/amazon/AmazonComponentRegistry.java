@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.workflow.model.component.registry;
+package org.apache.airavata.workflow.model.component.amazon;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -28,8 +28,8 @@ import java.util.Map;
 
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.ComponentReference;
-import org.apache.airavata.workflow.model.component.amazon.InstanceComponent;
-import org.apache.airavata.workflow.model.component.amazon.TerminateInstanceComponent;
+import org.apache.airavata.workflow.model.component.ComponentRegistry;
+import org.apache.airavata.workflow.model.component.system.SystemComponentReference;
 
 public class AmazonComponentRegistry extends ComponentRegistry {
 

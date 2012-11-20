@@ -25,7 +25,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 
 import org.apache.airavata.workflow.model.component.Component;
-import org.apache.airavata.workflow.model.component.StreamSourceComponent;
+import org.apache.airavata.workflow.model.component.system.StreamSourceComponent;
 import org.apache.airavata.workflow.model.graph.Graph;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.GraphSchema;

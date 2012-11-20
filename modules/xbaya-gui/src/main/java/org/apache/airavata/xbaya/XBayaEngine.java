@@ -26,9 +26,9 @@ import java.util.List;
 
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;
-import org.apache.airavata.workflow.model.component.registry.AmazonComponentRegistry;
-import org.apache.airavata.workflow.model.component.registry.LocalComponentRegistry;
-import org.apache.airavata.workflow.model.component.registry.SystemComponentRegistry;
+import org.apache.airavata.workflow.model.component.amazon.AmazonComponentRegistry;
+import org.apache.airavata.workflow.model.component.local.LocalComponentRegistry;
+import org.apache.airavata.workflow.model.component.system.SystemComponentRegistry;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.ws.monitor.Monitor;

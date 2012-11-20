@@ -36,7 +36,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.xml.namespace.QName;
 
-import org.apache.airavata.workflow.model.component.registry.URLComponentRegistry;
+import org.apache.airavata.workflow.model.component.url.URLComponentRegistry;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.graph.DataPort;
 import org.apache.airavata.workflow.model.graph.Graph;

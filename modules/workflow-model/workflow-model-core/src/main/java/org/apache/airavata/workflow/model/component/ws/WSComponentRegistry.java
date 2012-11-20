@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.workflow.model.component.registry;
+package org.apache.airavata.workflow.model.component.ws;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -32,10 +32,10 @@ import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.ComponentReference;
+import org.apache.airavata.workflow.model.component.ComponentRegistry;
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;
-import org.apache.airavata.workflow.model.component.SubWorkflowComponent;
-import org.apache.airavata.workflow.model.component.ws.WSComponent;
-import org.apache.airavata.workflow.model.component.ws.WSComponentFactory;
+import org.apache.airavata.workflow.model.component.system.SubWorkflowComponent;
+import org.apache.airavata.workflow.model.component.url.URLComponentReference;
 
 import xsul.wsdl.WsdlDefinitions;
 import xsul.wsdl.WsdlException;

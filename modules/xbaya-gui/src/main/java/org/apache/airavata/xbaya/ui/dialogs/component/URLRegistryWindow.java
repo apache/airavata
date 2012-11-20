@@ -29,7 +29,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import org.apache.airavata.workflow.model.component.registry.URLComponentRegistry;
+import org.apache.airavata.workflow.model.component.url.URLComponentRegistry;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.registry.ComponentRegistryLoader;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;

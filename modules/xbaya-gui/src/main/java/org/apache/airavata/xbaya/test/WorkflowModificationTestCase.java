@@ -35,7 +35,7 @@ import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;
-import org.apache.airavata.workflow.model.component.registry.LocalComponentRegistry;
+import org.apache.airavata.workflow.model.component.local.LocalComponentRegistry;
 import org.apache.airavata.workflow.model.component.system.OutputComponent;
 import org.apache.airavata.workflow.model.gpel.DSCUtil;
 import org.apache.airavata.workflow.model.graph.GraphException;

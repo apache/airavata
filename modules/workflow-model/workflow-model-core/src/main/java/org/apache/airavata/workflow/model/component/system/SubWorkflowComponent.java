@@ -19,8 +19,9 @@
  *
  */
 
-package org.apache.airavata.workflow.model.component;
+package org.apache.airavata.workflow.model.component.system;
 
+import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.ws.WSComponent;
 import org.apache.airavata.workflow.model.graph.Graph;
 import org.apache.airavata.workflow.model.graph.GraphException;

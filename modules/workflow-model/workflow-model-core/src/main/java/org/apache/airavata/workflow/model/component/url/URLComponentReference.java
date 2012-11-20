@@ -19,30 +19,27 @@
  *
  */
 
-package org.apache.airavata.workflow.model.component.registry;
+package org.apache.airavata.workflow.model.component.url;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.ComponentReference;
+import org.apache.airavata.workflow.model.component.ws.WSComponent;
 
-public class ComponentOperationReference extends ComponentReference {
+public class URLComponentReference extends ComponentReference {
 
-    private Component component;
-
-    private List<Component> components;
+    private List<WSComponent> components;
 
     /**
-     * Constructs a BasicComponentReference.
+     * Constructs a URLComponentReference.
      * 
      * @param name
-     * @param component
+     * @param components
      */
-    public ComponentOperationReference(String name, Component component) {
+    public URLComponentReference(String name, List<WSComponent> components) {
         super(name);
-        this.component = component;
-        this.components = Collections.singletonList(component);
+        this.components = components;
     }
 
     /**
@@ -50,7 +47,7 @@ public class ComponentOperationReference extends ComponentReference {
      */
     @Override
     public Component getComponent() {
-        return this.component;
+        return this.components.get(0);
     }
 
     /**
@@ -60,5 +57,4 @@ public class ComponentOperationReference extends ComponentReference {
     public List<? extends Component> getComponents() {
         return this.components;
     }
-
 }

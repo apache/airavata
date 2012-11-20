@@ -19,42 +19,57 @@
  *
  */
 
-package org.apache.airavata.workflow.model.component.registry;
+package org.apache.airavata.workflow.model.component.local;
 
+import java.io.File;
 import java.util.List;
 
 import org.apache.airavata.workflow.model.component.Component;
+import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.ComponentReference;
+import org.apache.airavata.workflow.model.component.ComponentRegistryException;
 import org.apache.airavata.workflow.model.component.ws.WSComponent;
 
-public class URLComponentReference extends ComponentReference {
+public class LocalComponentReference extends ComponentReference {
+
+    private LocalComponentRegistry registry;
+
+    private File file;
 
     private List<WSComponent> components;
 
     /**
-     * Constructs a URLComponentReference.
+     * Constructs a LocalComponentNode.
      * 
      * @param name
-     * @param components
+     * @param file
+     * @param registry
      */
-    public URLComponentReference(String name, List<WSComponent> components) {
+    public LocalComponentReference(String name, File file, LocalComponentRegistry registry) {
         super(name);
-        this.components = components;
+        this.file = file;
+        this.registry = registry;
     }
 
     /**
+     * @throws ComponentException
+     * @throws ComponentRegistryException
      * @see org.apache.airavata.workflow.model.component.ComponentReference#getComponent()
      */
     @Override
-    public Component getComponent() {
-        return this.components.get(0);
+    @Deprecated
+    public Component getComponent() throws ComponentException, ComponentRegistryException {
+        return getComponents().get(0);
     }
 
     /**
      * @see org.apache.airavata.workflow.model.component.ComponentReference#getComponents()
      */
     @Override
-    public List<? extends Component> getComponents() {
+    public List<WSComponent> getComponents() throws ComponentRegistryException, ComponentException {
+        if (this.components == null) {
+            this.components = this.registry.getComponents(this.file);
+        }
         return this.components;
     }
 }
