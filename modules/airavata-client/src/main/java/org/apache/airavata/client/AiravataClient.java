@@ -67,10 +67,11 @@ import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.AiravataRegistryFactory;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
 import org.apache.airavata.rest.client.RegistryClient;
-import org.apache.airavata.rest.utils.Callback;
+import org.apache.airavata.registry.api.Callback;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
 import org.apache.airavata.workflow.model.graph.GraphException;
@@ -512,7 +513,7 @@ public class AiravataClient implements AiravataAPI {
 		AiravataClient.workflow = workflow;
 	}
 
-	public RegistryClient getRegistryClient(){
+	public AiravataRegistry2 getRegistryClient(){
         RegistryClient registryClient = new RegistryClient(getCurrentUser(), getCallBack());
         return registryClient;
     }

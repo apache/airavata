@@ -273,5 +273,11 @@ public interface WorkflowManager {
      * @throws AiravataAPIInvocationException
      */
     public List<WorkflowData> getAllWorkflows() throws AiravataAPIInvocationException;
-    
+
+    public boolean isWorkflowExists(String workflowName) throws AiravataAPIInvocationException;
+
+    public void updateWorkflow(String workflowName, String workflowGraphXml) throws AiravataAPIInvocationException;
+
+    public void removeWorkflow(String workflowName) throws AiravataAPIInvocationException;
+
 }

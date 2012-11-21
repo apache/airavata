@@ -195,4 +195,11 @@ public interface ApplicationManager {
 
     public void removeApplicationDescriptor(String serviceName, String hostName, String applicationName) throws AiravataAPIInvocationException;
 
+    public void updateHostDescriptor(HostDescription descriptor) throws AiravataAPIInvocationException;
+
+    public void updateServiceDescriptor(ServiceDescription descriptor) throws AiravataAPIInvocationException;
+
+    public void updateApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) throws AiravataAPIInvocationException;
+
+    public ApplicationDeploymentDescription getApplicationDescriptor(String serviceName, String hostname, String applicationName) throws AiravataAPIInvocationException;
 }

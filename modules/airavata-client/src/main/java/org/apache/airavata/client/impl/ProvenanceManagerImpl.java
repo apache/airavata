@@ -401,7 +401,7 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
     @Override
     public List<WorkflowInstance> getExperimentWorkflowInstances(String experimentId) throws AiravataAPIInvocationException {
         try{
-            return getClient().getRegistryClient().getProvenanceResourceClient().getExperimentWorkflowInstances(experimentId);
+            return getClient().getRegistryClient().getExperimentWorkflowInstances(experimentId);
         }catch (Exception e) {
             throw new AiravataAPIInvocationException(e);
         }
@@ -410,7 +410,7 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
     @Override
     public void setWorkflowNodeType(WorkflowInstanceNode node, WorkflowNodeType type) throws AiravataAPIInvocationException {
         try{
-            getClient().getRegistryClient().getProvenanceResourceClient().updateWorkflowNodeType(node, type);
+            getClient().getRegistryClient().updateWorkflowNodeType(node, type);
         }catch (Exception e) {
             throw new AiravataAPIInvocationException(e);
         }
@@ -419,8 +419,17 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
     @Override
     public void setWorkflowInstanceTemplateName(String workflowInstanceId, String templateName) throws AiravataAPIInvocationException {
         try{
-            getClient().getRegistryClient().getProvenanceResourceClient().setWorkflowInstanceTemplateName(workflowInstanceId, templateName);
+            getClient().getRegistryClient().setWorkflowInstanceTemplateName(workflowInstanceId, templateName);
         }catch (Exception e) {
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void saveWorkflowExecutionOutput(String experimentId, String outputNodeName, String output) throws AiravataAPIInvocationException {
+        try {
+            getClient().getRegistryClient().saveWorkflowExecutionOutput(experimentId, outputNodeName, output);
+        } catch (RegistryException e) {
             throw new AiravataAPIInvocationException(e);
         }
     }

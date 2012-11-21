@@ -292,6 +292,42 @@ public class ApplicationManagerImpl implements ApplicationManager {
         }
     }
 
+    @Override
+    public void updateHostDescriptor(HostDescription descriptor) throws AiravataAPIInvocationException {
+        try {
+            getClient().getRegistryClient().updateHostDescriptor(descriptor);
+        } catch (RegistryException e) {
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void updateServiceDescriptor(ServiceDescription descriptor) throws AiravataAPIInvocationException {
+        try {
+            getClient().getRegistryClient().updateServiceDescriptor(descriptor);
+        } catch (RegistryException e) {
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void updateApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) throws AiravataAPIInvocationException {
+        try {
+            getClient().getRegistryClient().updateApplicationDescriptor(serviceName, hostName, descriptor);
+        } catch (RegistryException e) {
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public ApplicationDeploymentDescription getApplicationDescriptor(String serviceName, String hostname, String applicationName) throws AiravataAPIInvocationException {
+        try {
+            return getClient().getRegistryClient().getApplicationDescriptor(serviceName, hostname, applicationName);
+        } catch (RegistryException e) {
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
     public AiravataClient getClient() {
 		return client;
 	}
