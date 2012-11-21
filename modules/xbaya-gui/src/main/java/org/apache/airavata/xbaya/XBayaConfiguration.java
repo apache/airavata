@@ -22,19 +22,28 @@
 package org.apache.airavata.xbaya;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
+import org.apache.airavata.client.AiravataClientUtils;
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.core.ide.XBayaExecutionModeListener;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
+import org.apache.airavata.xbaya.registry.PasswordCallbackImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import xsul.lead.LeadDeploymentConfig;
+
+import javax.jcr.RepositoryException;
+import javax.security.auth.callback.PasswordCallback;
 
 public class XBayaConfiguration extends Observable implements Observer {
 
@@ -134,6 +143,8 @@ public class XBayaConfiguration extends Observable implements Observer {
     private boolean runWithCrossProduct = true;
 
     private String trustedCertLocation = "";
+
+    private AiravataAPI airavataAPI;
 
     private XBayaExecutionMode xbayaExecutionMode=XBayaExecutionMode.IDE;
     
@@ -479,7 +490,7 @@ public class XBayaConfiguration extends Observable implements Observer {
     /**
      * Sets kermaWorkflowInstanceID.
      * 
-     * @param kermaWorkflowInstanceID
+     * @param karmaWorkflowInstanceID
      *            The kermaWorkflowInstanceID to set.
      */
     public void setKarmaWorkflowInstanceID(URI karmaWorkflowInstanceID) {
@@ -761,13 +772,13 @@ public class XBayaConfiguration extends Observable implements Observer {
     }
 
     public void setJcrComponentRegistry(JCRComponentRegistry jcrComponentRegistry) {
-        if (this.jcrComponentRegistry != null && this.jcrComponentRegistry.getRegistry() instanceof Observable) {
-            ((Observable) this.jcrComponentRegistry.getRegistry()).deleteObserver(this);
+        if (this.jcrComponentRegistry != null && this.jcrComponentRegistry.getAiravataAPI() instanceof Observable) {
+            ((Observable) this.jcrComponentRegistry.getAiravataAPI()).deleteObserver(this);
         }
         this.jcrComponentRegistry = jcrComponentRegistry;
         triggerObservers(jcrComponentRegistry);
-        if (jcrComponentRegistry != null && jcrComponentRegistry.getRegistry() instanceof Observable) {
-            ((Observable) jcrComponentRegistry.getRegistry()).addObserver(this);
+        if (jcrComponentRegistry != null && jcrComponentRegistry.getAiravataAPI() instanceof Observable) {
+            ((Observable) jcrComponentRegistry.getAiravataAPI()).addObserver(this);
         }
     }
 
@@ -880,4 +891,30 @@ public class XBayaConfiguration extends Observable implements Observer {
     public void setY(int y) {
         this.y = y;
     }
+
+    public AiravataAPI getAiravataAPI() {
+        return airavataAPI;
+    }
+
+    public void setAiravataAPI(AiravataAPI airavataAPI) {
+        this.airavataAPI = airavataAPI;
+    }
+
+//    public AiravataAPI setAiravataAPI() {
+//        try{
+//            URI baseUri = new URI(ResourcePathConstants.BASE_URL);
+//            PasswordCallbackImpl passwordCallback = new PasswordCallbackImpl(getRegistryUserName(), getRegistryPassphrase());
+//            airavataAPI = AiravataClientUtils.getAPI(baseUri,
+//                    getRegistryUserName(), passwordCallback);
+//        } catch (RepositoryException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        } catch (RegistryException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        } catch (URISyntaxException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        }
+//        return airavataAPI;
+//    }
 }

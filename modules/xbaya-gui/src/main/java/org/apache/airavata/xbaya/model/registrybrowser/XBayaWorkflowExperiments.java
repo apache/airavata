@@ -26,38 +26,40 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class XBayaWorkflowExperiments {
-	private AiravataRegistry2 registry;
+	private AiravataAPI airavataAPI;
 	
-	public XBayaWorkflowExperiments(AiravataRegistry2 registry) {
-		setRegistry(registry);
+	public XBayaWorkflowExperiments(AiravataAPI airavataAPI) {
+		setAiravataAPI(airavataAPI);
 	}
 	
 	public List<XBayaWorkflowExperiment> getAllExperiments(){
 		Map<String, XBayaWorkflowExperiment> experiments=new HashMap<String,XBayaWorkflowExperiment>();
     	try {
     		initializeExperimentMap(experiments);
-		} catch (RegistryException e) {
+		} catch (AiravataAPIInvocationException e) {
 			e.printStackTrace();
 		}
     	return Arrays.asList(experiments.values().toArray(new XBayaWorkflowExperiment[]{}));
 	}
 	
-	public void initializeExperimentMap(Map<String, XBayaWorkflowExperiment> experiments) throws RegistryException{
-		List<String> experimentIdByUser = getRegistry().getExperimentIdByUser(null);
+	public void initializeExperimentMap(Map<String, XBayaWorkflowExperiment> experiments) throws AiravataAPIInvocationException {
+		List<String> experimentIdByUser = getAiravataAPI().getProvenanceManager().getExperimentIdList(null);
 		for (String id : experimentIdByUser) {
-			experiments.put(id, new XBayaWorkflowExperiment(id, getRegistry()));
+			experiments.put(id, new XBayaWorkflowExperiment(id, getAiravataAPI()));
 		}
 	}
-	
-	public AiravataRegistry2 getRegistry() {
-		return registry;
-	}
-	public void setRegistry(AiravataRegistry2 registry) {
-		this.registry = registry;
-	}
 
+    public AiravataAPI getAiravataAPI() {
+        return airavataAPI;
+    }
+
+    public void setAiravataAPI(AiravataAPI airavataAPI) {
+        this.airavataAPI = airavataAPI;
+    }
 }

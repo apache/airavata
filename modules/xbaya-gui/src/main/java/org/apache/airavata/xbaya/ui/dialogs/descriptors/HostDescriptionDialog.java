@@ -32,10 +32,12 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.*;
 
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
@@ -59,7 +61,7 @@ public class HostDescriptionDialog extends JDialog {
 
     private boolean hostCreated = false;
 
-    private AiravataRegistry2 registry;
+    private AiravataAPI registry;
 
 	private XBayaLabel globusGateKeeperLabel;
 
@@ -88,7 +90,7 @@ public class HostDescriptionDialog extends JDialog {
 	private static final String REMOTE_PROTOCOL_STR_HADOOP="Hadoop";
 	
     
-    public HostDescriptionDialog(AiravataRegistry2 registry, JFrame parent) {
+    public HostDescriptionDialog(AiravataAPI registry, JFrame parent) {
     	this(registry,true,null, parent);
     }
 
@@ -98,7 +100,7 @@ public class HostDescriptionDialog extends JDialog {
      * @param newHost
      * @param originalHostDescription
      */
-    public HostDescriptionDialog(AiravataRegistry2 registry, boolean newHost, HostDescription originalHostDescription, JFrame parent) {
+    public HostDescriptionDialog(AiravataAPI registry, boolean newHost, HostDescription originalHostDescription, JFrame parent) {
         super(parent);
         setNewHost(newHost);
         setOriginalHostDescription(originalHostDescription);
@@ -347,7 +349,7 @@ public class HostDescriptionDialog extends JDialog {
 				throw new Exception("Id of the host cannot be empty!!!");
 			}
 			HostDescription hostDescription2 = null;
-		    hostDescription2 = getRegistry().getHostDescriptor(hostName);
+		    hostDescription2 = getRegistry().getApplicationManager().getHostDescription(hostName);
 			if (hostDescription2 != null) {
 				throw new Exception(
 						"Host descriptor with the given id already exists!!!");
@@ -397,27 +399,24 @@ public class HostDescriptionDialog extends JDialog {
     public void saveHostDescription() {
         HostDescription desc = getHostDescription();
         try {
-        	if (getRegistry().isHostDescriptorExists(desc.getType().getHostName())){
-        		getRegistry().updateHostDescriptor(desc);	
+        	if (getRegistry().getApplicationManager().isHostDescriptorExists(desc.getType().getHostName())){
+        		getRegistry().getApplicationManager().updateHostDescriptor(desc);
         	}else{
-        		getRegistry().addHostDescriptor(desc);
+        		getRegistry().getApplicationManager().saveHostDescription(desc);
         	}
 			setHostCreated(true);
-		} catch (DescriptorAlreadyExistsException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (RegistryException e) {
+		}  catch (AiravataAPIInvocationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 //		setHostCreated(false);
     }
 
-    public AiravataRegistry2 getRegistry() {
+    public AiravataAPI getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry2 registry) {
+    public void setRegistry(AiravataAPI registry) {
         this.registry = registry;
     }
     String previousProtocol=null;

@@ -27,6 +27,8 @@ import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
@@ -61,15 +63,15 @@ public class SchedulerImpl implements Scheduler {
 
     public Provider schedule(InvocationContext context) throws SchedulerException {
 
-        AiravataRegistry2 registryService = context.getExecutionContext().getRegistryService();
+        AiravataAPI registryService = context.getExecutionContext().getRegistryService();
 
         /*
          * Load Service
          */
         ServiceDescription serviceDesc = null;
         try {
-            serviceDesc = registryService.getServiceDescriptor(context.getServiceName());
-        } catch (RegistryException e2) {
+            serviceDesc = registryService.getApplicationManager().getServiceDescription(context.getServiceName());
+        } catch (AiravataAPIInvocationException e2) {
             e2.printStackTrace();
         }
 
@@ -91,9 +93,9 @@ public class SchedulerImpl implements Scheduler {
          */
         ApplicationDeploymentDescription app = null;
         try {
-            app = registryService.getApplicationDescriptors(context.getServiceName(),
+            app = registryService.getApplicationManager().getDeploymentDescription(context.getServiceName(),
                     getRegisteredHost(registryService,context.getServiceName()).getType().getHostName());
-        } catch (RegistryException e2) {
+        } catch (AiravataAPIInvocationException e2) {
             e2.printStackTrace();
         }
 
@@ -159,7 +161,7 @@ public class SchedulerImpl implements Scheduler {
         return null;
     }
 
-    private HostDescription scheduleToHost(AiravataRegistry2 regService, String serviceName) {
+    private HostDescription scheduleToHost(AiravataAPI regService, String serviceName) {
         // Since xbaya removes the other scheduling configuration here we only have pick the 0th element of the array
         String hostName = null;
         ContextHeaderDocument.ContextHeader currentContextHeader = WorkflowContextHeaderBuilder.getCurrentContextHeader();
@@ -177,8 +179,8 @@ public class SchedulerImpl implements Scheduler {
         if(hostName != null){
             HostDescription hostDescription = null;
             try {
-                hostDescription = regService.getHostDescriptor(hostName);
-            } catch (RegistryException e) {
+                hostDescription = regService.getApplicationManager().getHostDescription(hostName);
+            } catch (AiravataAPIInvocationException e) {
                 e.printStackTrace();
                 log.warn("Wrong host Name provided in WorkflowContext Header");
             }
@@ -205,16 +207,16 @@ public class SchedulerImpl implements Scheduler {
 //        }
     }
 
-    private HostDescription getRegisteredHost(AiravataRegistry2 regService, String serviceName) {
+    private HostDescription getRegisteredHost(AiravataAPI regService, String serviceName) {
         HostDescription result = null;
         try {
-            Map<String, ApplicationDeploymentDescription> applicationDescriptors = regService.getApplicationDescriptors(serviceName);
+            Map<String, ApplicationDeploymentDescription> applicationDescriptors = regService.getApplicationManager().getApplicationDescriptors(serviceName);
             for (String hostDescName : applicationDescriptors.keySet()) {
-                HostDescription hostDescriptor = regService.getHostDescriptor(hostDescName);
+                HostDescription hostDescriptor = regService.getApplicationManager().getHostDescription(hostDescName);
                 result = hostDescriptor;
                 log.info("Found service on: " + result.getType().getHostAddress());
             }
-        } catch (RegistryException e) {
+        } catch (AiravataAPIInvocationException e) {
             e.printStackTrace();
         }
         return result;

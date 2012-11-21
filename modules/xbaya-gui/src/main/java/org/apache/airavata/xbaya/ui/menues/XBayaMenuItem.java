@@ -312,7 +312,7 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
                 if (XBayaUtil.acquireJCRRegistry(engine)) {
                     try {
                         DeploymentDescriptionDialog serviceDescriptionDialog = new DeploymentDescriptionDialog(XBayaMenuItem.this.engine.getGUI().getFrame(), engine.getConfiguration().getJcrComponentRegistry()
-                                        .getRegistry());
+                                        .getAiravataAPI());
                     	serviceDescriptionDialog.open();
 //                        ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(
 //                                engine.getConfiguration().getJcrComponentRegistry()
@@ -359,7 +359,7 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
                 if (XBayaUtil.acquireJCRRegistry(engine)) {
                     try {
                         HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(
-                        		engine.getConfiguration().getJcrComponentRegistry().getRegistry(),XBayaMenuItem.this.engine.getGUI().getFrame() );
+                        		engine.getConfiguration().getJcrComponentRegistry().getAiravataAPI(),XBayaMenuItem.this.engine.getGUI().getFrame() );
                         hostDescriptionDialog.open();
                     } catch (Exception e1) {
                         engine.getGUI().getErrorWindow().error(e1);

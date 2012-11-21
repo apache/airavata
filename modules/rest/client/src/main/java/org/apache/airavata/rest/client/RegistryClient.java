@@ -30,7 +30,7 @@ import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.gateway.*;
 import org.apache.airavata.registry.api.exception.worker.*;
 import org.apache.airavata.registry.api.workflow.*;
-import org.apache.airavata.registry.api.Callback;
+import org.apache.airavata.registry.api.PasswordCallback;
 
 import java.net.URI;
 import java.util.Date;
@@ -40,7 +40,7 @@ import java.util.Map;
 public class RegistryClient extends AiravataRegistry2 {
 
     private URI connectionURI;
-    private Callback callback;
+    private PasswordCallback callback;
     
     private BasicRegistryResourceClient basicRegistryResourceClient;
     private ConfigurationResourceClient configurationResourceClient;
@@ -51,7 +51,7 @@ public class RegistryClient extends AiravataRegistry2 {
     private PublishedWorkflowResourceClient publishedWorkflowResourceClient;
     private UserWorkflowResourceClient userWorkflowResourceClient;
 
-    public RegistryClient(String userName, Callback callback) {
+    public RegistryClient(String userName, PasswordCallback callback) {
         basicRegistryResourceClient = new BasicRegistryResourceClient(userName, callback);
         configurationResourceClient = new ConfigurationResourceClient(userName, callback);
         descriptorResourceClient = new DescriptorResourceClient(userName, callback);
@@ -796,12 +796,12 @@ public class RegistryClient extends AiravataRegistry2 {
 	}
 
 	@Override
-	public void setCallback(Callback callback) {
+	public void setCallback(PasswordCallback callback) {
 		this.callback=callback;
 	}
 
 	@Override
-	public Callback getCallback() {
+	public PasswordCallback getCallback() {
 		return callback;
 	}
 }

@@ -23,7 +23,8 @@ package org.apache.airavata.xbaya.interpretor;
 
 import java.net.URI;
 
-import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.client.api.AiravataAPI;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.ws.monitor.Monitor;
 import org.apache.airavata.xbaya.XBayaConfiguration;
@@ -37,7 +38,7 @@ public class WorkflowInterpreterConfiguration {
 //	
 	private URI messageBoxURL;
 	private URI messageBrokerURL;
-	private AiravataRegistry2 registry;
+	private AiravataAPI registry;
 	private XBayaConfiguration configuration;
 	private XBayaGUI gui;
 	private Monitor monitor;
@@ -50,22 +51,37 @@ public class WorkflowInterpreterConfiguration {
 	private Boolean actOnProvenance = null;
 	private boolean subWorkflow;
 	private boolean testMode=false;
+    private AiravataAPI airavataAPI;
 	
-	public WorkflowInterpreterConfiguration(Workflow workflow, String topic, URI messageBoxURL,URI messageBrokerURL,AiravataRegistry2 registry,XBayaConfiguration configuration,XBayaGUI gui,Monitor monitor) {
+	public WorkflowInterpreterConfiguration(Workflow workflow,
+                                            String topic,
+                                            URI messageBoxURL,
+                                            URI messageBrokerURL,
+                                            AiravataAPI registry,
+                                            XBayaConfiguration configuration,
+                                            XBayaGUI gui,Monitor monitor) {
 		this(workflow, topic, messageBoxURL,messageBrokerURL,registry,configuration,gui,monitor, true);
 	}
 	
-	public WorkflowInterpreterConfiguration(Workflow workflow, String topic, URI messageBoxURL,URI messageBrokerURL,AiravataRegistry2 registry,XBayaConfiguration configuration,XBayaGUI gui,Monitor monitor, boolean offline) {
-		this.messageBoxURL = messageBoxURL;
-		this.messageBrokerURL = messageBrokerURL;
-		this.registry = registry;
-		this.configuration = configuration;
-		this.gui = gui;
-		this.monitor = monitor;
-		this.offline = offline;
-		this.workflow = workflow;
-		this.topic = topic;
-	}
+    public WorkflowInterpreterConfiguration(Workflow workflow,
+                                            String topic,
+                                            URI messageBoxURL,
+                                            URI messageBrokerURL,
+                                            AiravataAPI airavataAPI,
+                                            XBayaConfiguration configuration,
+                                            XBayaGUI gui,
+                                            Monitor monitor,
+                                            boolean offline) {
+        this.messageBoxURL = messageBoxURL;
+        this.messageBrokerURL = messageBrokerURL;
+        this.airavataAPI = airavataAPI;
+        this.configuration = configuration;
+        this.gui = gui;
+        this.monitor = monitor;
+        this.offline = offline;
+        this.workflow = workflow;
+        this.topic = topic;
+    }
 	
 	public URI getMessageBoxURL() {
 		return messageBoxURL;
@@ -79,10 +95,10 @@ public class WorkflowInterpreterConfiguration {
 	public void setMessageBrokerURL(URI messageBrokerURL) {
 		this.messageBrokerURL = messageBrokerURL;
 	}
-	public AiravataRegistry2 getRegistry() {
+	public AiravataAPI getRegistry() {
 		return registry;
 	}
-	public void setRegistry(AiravataRegistry2 registry) {
+	public void setRegistry(AiravataAPI registry) {
 		this.registry = registry;
 	}
 	public XBayaConfiguration getConfiguration() {
@@ -187,4 +203,12 @@ public class WorkflowInterpreterConfiguration {
 	private void setTestMode(boolean testMode) {
 		this.testMode = testMode;
 	}
+
+    public AiravataAPI getAiravataAPI() {
+        return airavataAPI;
+    }
+
+    public void setAiravataAPI(AiravataAPI airavataAPI) {
+        this.airavataAPI = airavataAPI;
+    }
 }

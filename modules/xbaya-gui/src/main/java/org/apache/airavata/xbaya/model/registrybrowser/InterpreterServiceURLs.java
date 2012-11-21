@@ -21,32 +21,35 @@
 
 package org.apache.airavata.xbaya.model.registrybrowser;
 
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class InterpreterServiceURLs {
-    private AiravataRegistry2 registry;
+    private AiravataAPI airavataAPI;
 
-    public InterpreterServiceURLs(AiravataRegistry2 registry) {
-        setRegistry(registry);
+    public InterpreterServiceURLs(AiravataAPI airavataAPI) {
+        setAiravataAPI(airavataAPI);
     }
 
-    public AiravataRegistry2 getRegistry() {
-        return registry;
+    public AiravataAPI getAiravataAPI() {
+        return airavataAPI;
     }
 
-    public void setRegistry(AiravataRegistry2 registry) {
-        this.registry = registry;
+    public void setAiravataAPI(AiravataAPI airavataAPI) {
+        this.airavataAPI = airavataAPI;
     }
 
-    public List<InterpreterServiceURL> getURLS() {
+    public List<InterpreterServiceURL> getURLS() throws AiravataAPIInvocationException {
         List<InterpreterServiceURL> urls = new ArrayList<InterpreterServiceURL>();
-        List<URI> gfacDescriptorList = getRegistry().getWorkflowInterpreterURIs();
+        List<URI> gfacDescriptorList = getAiravataAPI().getAiravataManager().getWorkflowInterpreterServiceURLs();
 		for (URI uri : gfacDescriptorList) {
-		    urls.add(new InterpreterServiceURL(getRegistry(), uri));
+		    urls.add(new InterpreterServiceURL(getAiravataAPI(), uri));
 		}
         return urls;
     }

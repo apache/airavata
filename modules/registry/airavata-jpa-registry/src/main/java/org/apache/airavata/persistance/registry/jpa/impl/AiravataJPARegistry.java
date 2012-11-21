@@ -53,13 +53,7 @@ import org.apache.airavata.persistance.registry.jpa.resources.ServiceDescriptorR
 import org.apache.airavata.persistance.registry.jpa.resources.UserWorkflowResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkflowDataResource;
-import org.apache.airavata.registry.api.AiravataExperiment;
-import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.AiravataUser;
-import org.apache.airavata.registry.api.Callback;
-import org.apache.airavata.registry.api.Gateway;
-import org.apache.airavata.registry.api.ResourceMetadata;
-import org.apache.airavata.registry.api.WorkspaceProject;
+import org.apache.airavata.registry.api.*;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.UnimplementedRegistryOperationException;
 import org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException;
@@ -101,7 +95,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     private static final Version API_VERSION=new Version("Airavata Registry API",0,5,null,null,null);
     private URI registryConnectionURI;
     
-    private Callback callback;
+    private PasswordCallback callback;
     
     @Override
     protected void initialize() {
@@ -197,7 +191,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public void addGFacURI(URI uri) {
-        addConfigurationURL(GFAC_URL,uri);
+        addConfigurationURL(GFAC_URL, uri);
     }
 
 	private void addConfigurationURL(String urlType,URI uri) {
@@ -244,7 +238,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public void removeWorkflowInterpreterURI(URI uri) {
-    	removeConfiguration(INTERPRETER_URL,uri.toString());
+    	removeConfiguration(INTERPRETER_URL, uri.toString());
     }
 
     public void removeAllGFacURI() {
@@ -418,7 +412,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
     
     public void addApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDeploymentDescription descriptor) throws RegistryException {
-        addApplicationDescriptor(serviceDescription.getType().getName(),hostDescriptor.getType().getHostName(),descriptor);
+        addApplicationDescriptor(serviceDescription.getType().getName(), hostDescriptor.getType().getHostName(), descriptor);
     }
 
     public void addApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) throws RegistryException {
@@ -1315,7 +1309,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public WorkflowInstanceNodeData getWorkflowInstanceNodeData(
 			String workflowInstanceId, String nodeId) throws RegistryException {
-		if (!isWorkflowInstanceNodePresent(workflowInstanceId,nodeId)){
+		if (!isWorkflowInstanceNodePresent(workflowInstanceId, nodeId)){
 			throw new WorkflowInstanceNodeDoesNotExistsException(workflowInstanceId,nodeId);
 		}
 		NodeDataResource nodeData = jpa.getWorker().getWorkflowInstance(workflowInstanceId).getNodeData(nodeId);
@@ -1448,13 +1442,13 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
 
 	@Override
-	public void setCallback(Callback callback) {
+	public void setCallback(PasswordCallback callback) {
 		this.callback=callback;
 	}
 
 
 	@Override
-	public Callback getCallback() {
+	public PasswordCallback getCallback() {
 		return callback;
 	}
 

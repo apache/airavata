@@ -40,13 +40,15 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.airavata.registry.api.AbstractRegistryUpdaterThread;
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.client.tools.PeriodicExecutorThread;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.client.stub.interpretor.NameValue;
 import org.apache.airavata.common.utils.ServiceUtils;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
@@ -117,7 +119,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 
 	protected WIServiceThread thread;
     
-    private AiravataRegistry2 getRegistry(){
+    private AiravataAPI getRegistry(){
         Properties properties = new Properties();
         try {
             URL url = getXBayaPropertiesURL();
@@ -126,7 +128,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
             jcrPassword = (String) properties.get(JCR_PASS);
             jcrURL = (String) properties.get(JCR_URL);
             jcrComponentRegistry = new JCRComponentRegistry(jcrUserName,jcrPassword);
-            return jcrComponentRegistry.getRegistry();
+            return jcrComponentRegistry.getAiravataAPI();
         } catch (RegistryException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (IOException e) {
@@ -171,15 +173,17 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
                             List<HostDescription> hostList = getDefinedHostDescriptions();
                             for(HostDescription host:hostList){
                                 // This will avoid the changes user is doing to one of the predefined Hosts during a restart of the system
-                                AiravataRegistry2 registry = jcrComponentRegistry.getRegistry();
-								if(!registry.isHostDescriptorExists(host.getType().getHostName())){
+                                AiravataAPI registry = jcrComponentRegistry.getAiravataAPI();
+								if(!registry.getApplicationManager().isHostDescriptorExists(host.getType().getHostName())){
                                     log.info("Saving the predefined Host: " + host.getType().getHostName());
-                                    registry.addHostDescriptor(host);
+                                    registry.getApplicationManager().saveHostDescription(host);
                                 }
                             }
+		                } catch (AiravataAPIInvocationException e) {
+		                    e.printStackTrace();
 		                } catch (RegistryException e) {
-		                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-		                }
+                            e.printStackTrace();
+                        }
                     }else{
 		                provenance = false;
 		            }
@@ -199,7 +203,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
                     String localAddress = ServiceUtils.generateServiceURLFromConfigurationContext(configctx,SERVICE_NAME);
  					log.info("INTERPRETER_SERVICE_ADDRESS:" + localAddress);
  					configctx.setProperty(SERVICE_URL,new URI(localAddress));
- 					configctx.setProperty(JCR_REG,jcrComponentRegistry.getRegistry());
+ 					configctx.setProperty(JCR_REG,jcrComponentRegistry.getAiravataAPI());
  					/*
 					 * Heart beat message to registry
 					 */
@@ -273,20 +277,22 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
             parse = ContextHeaderDocument.Factory.parse(workflowContext.toStringWithConsume());
             String msgBox = parse.getContextHeader().getWorkflowMonitoringContext().getMsgBoxEpr();
             if(msgBox == null || "".equals(msgBox)){
-                msgBox = jcrComponentRegistry.getRegistry().getMessageBoxURI().toASCIIString();
+                msgBox = jcrComponentRegistry.getAiravataAPI().getAiravataManager().getMessageBoxServiceURL().toASCIIString();
             }
             String msgBroker = parse.getContextHeader().getWorkflowMonitoringContext().getEventPublishEpr();
             if(msgBroker == null || "".equals(msgBroker)){
-                msgBroker = jcrComponentRegistry.getRegistry().getEventingServiceURI().toASCIIString();
+                msgBroker = jcrComponentRegistry.getAiravataAPI().getAiravataManager().getEventingServiceURL().toASCIIString();
             }
             String gfac =  parse.getContextHeader().getSoaServiceEprs().getGfacUrl();
             if(gfac == null || "".equals(gfac)){
-                gfac = jcrComponentRegistry.getRegistry().getGFacURIs().get(0).toString();
+                gfac = jcrComponentRegistry.getAiravataAPI().getAiravataManager().getGFaCURLs().get(0).toString();
             }
             configuration.put(BROKER, msgBroker);
             configuration.put(GFAC, gfac);
             configuration.put(MSGBOX, msgBox);
         } catch (XmlException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (AiravataAPIInvocationException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         return new WorkflowContextHeaderBuilder(parse.getContextHeader());
@@ -331,7 +337,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         }
         WorkflowInterpretorEventListener listener = null;
         WorkflowInterpreter interpreter = null;
-        AiravataRegistry2 registry = getRegistry();
+        AiravataAPI registry = getRegistry();
 		WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow,topic,conf.getMessageBoxURL(), conf.getBrokerURL(), registry, conf, null, null);
         workflowInterpreterConfiguration.setGfacEmbeddedMode(gfacEmbeddedMode);
         workflowInterpreterConfiguration.setActOnProvenance(provenance);
@@ -420,8 +426,12 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     public void shutDown(ConfigurationContext configctx, AxisService service) {
         URI gfacURL = (URI) configctx.getProperty(SERVICE_URL);
         if (jcrComponentRegistry != null && thread != null) {
-            AiravataRegistry2 registry = jcrComponentRegistry.getRegistry();
-            registry.removeWorkflowInterpreterURI(gfacURL);
+            AiravataAPI registry = jcrComponentRegistry.getAiravataAPI();
+            try {
+                registry.getAiravataManager().removeWorkflowInterpreterURI(gfacURL);
+            } catch (AiravataAPIInvocationException e) {
+                e.printStackTrace();
+            }
             thread.interrupt();
             try {
                 thread.join();
@@ -469,18 +479,18 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     }
     public static final int URL_UPDATE_INTERVAL = 1000 * 60 * 60 * 3;
 
-    class WIServiceThread extends AbstractRegistryUpdaterThread {
+    class WIServiceThread extends PeriodicExecutorThread {
         private ConfigurationContext context = null;
 
-        WIServiceThread(AiravataRegistry2 registry, ConfigurationContext context) {
+        WIServiceThread(AiravataAPI registry, ConfigurationContext context) {
             super(registry);
             this.context = context;
         }
 
         @Override
-        protected void updateRegistry(AiravataRegistry2 registry) throws Exception {
+        protected void updateRegistry(AiravataAPI registry) throws Exception {
             URI localAddress = (URI) this.context.getProperty(SERVICE_URL);
-            registry.addWorkflowInterpreterURI(localAddress);
+            registry.getAiravataManager().addWorkflowInterpreterURI(localAddress);
             log.info("Updated Workflow Interpreter service URL in to Repository");
 
         }

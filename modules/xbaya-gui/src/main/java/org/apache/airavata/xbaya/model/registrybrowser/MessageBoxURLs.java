@@ -21,31 +21,34 @@
 
 package org.apache.airavata.xbaya.model.registrybrowser;
 
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class MessageBoxURLs {
-    private AiravataRegistry2 registry;
+    private AiravataAPI airavataAPI;
 
-    public MessageBoxURLs(AiravataRegistry2 registry) {
-        setRegistry(registry);
+    public MessageBoxURLs(AiravataAPI airavataAPI) {
+        setAiravataAPI(airavataAPI);
     }
 
-    public AiravataRegistry2 getRegistry() {
-        return registry;
+    public AiravataAPI getAiravataAPI() {
+        return airavataAPI;
     }
 
-    public void setRegistry(AiravataRegistry2 registry) {
-        this.registry = registry;
+    public void setAiravataAPI(AiravataAPI airavataAPI) {
+        this.airavataAPI = airavataAPI;
     }
 
-    public List<MessageBoxURL> getURLS() {
+    public List<MessageBoxURL> getURLS() throws AiravataAPIInvocationException {
         List<MessageBoxURL> urls = new ArrayList<MessageBoxURL>();
-        URI gfacDescriptor = getRegistry().getMessageBoxURI();
-		urls.add(new MessageBoxURL(getRegistry(), gfacDescriptor));
+        URI gfacDescriptor = getAiravataAPI().getAiravataManager().getMessageBoxServiceURL();
+		urls.add(new MessageBoxURL(getAiravataAPI(), gfacDescriptor));
         return urls;
     }
 }

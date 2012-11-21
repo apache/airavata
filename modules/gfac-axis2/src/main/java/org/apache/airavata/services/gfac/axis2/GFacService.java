@@ -26,17 +26,17 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
-import org.apache.airavata.common.exception.AiravataConfigurationException;
+import org.apache.airavata.client.AiravataClientUtils;
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.client.tools.PeriodicExecutorThread;
 import org.apache.airavata.common.utils.ServiceUtils;
 import org.apache.airavata.core.gfac.context.GFacConfiguration;
 import org.apache.airavata.registry.api.*;
-import org.apache.airavata.registry.api.util.RegistryUtils;
 import org.apache.airavata.services.gfac.axis2.dispatchers.GFacURIBasedDispatcher;
 import org.apache.airavata.services.gfac.axis2.handlers.AmazonSecurityHandler;
 import org.apache.airavata.services.gfac.axis2.handlers.MyProxySecurityHandler;
@@ -52,14 +52,11 @@ public class GFacService implements ServiceLifeCycle {
 
     private static final Logger log = LoggerFactory.getLogger(GFacService.class);
 
-    public static final String CONFIGURATION_CONTEXT_REGISTRY = "registry";
     public static final String GFAC_URL = "GFacURL";
 
     public static final String SECURITY_CONTEXT = "security_context";
 
     public static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
-
-    public static final int GFAC_URL_UPDATE_INTERVAL = 1000 * 60 * 60 * 3;
 
     public static final int JCR_AVAIALABILITY_WAIT_INTERVAL = 1000 * 10;
 
@@ -70,10 +67,6 @@ public class GFacService implements ServiceLifeCycle {
     /*
      * Properties for JCR
      */
-    public static final String JCR_CLASS = "jcr.class";
-    public static final String JCR_USER = "jcr.user";
-    public static final String JCR_PASS = "jcr.pass";
-    public static final String ORG_APACHE_JACKRABBIT_REPOSITORY_URI = "org.apache.jackrabbit.repository.uri";
     public static final String TRUSTED_CERT_LOCATION = "trusted.cert.location";
     public static final String MYPROXY_SERVER = "myproxy.server";
     public static final String MYPROXY_USER = "myproxy.user";
@@ -81,6 +74,8 @@ public class GFacService implements ServiceLifeCycle {
     public static final String MYPROXY_LIFE = "myproxy.life";
     public static final String GFAC_CONFIGURATION = "gfacConfiguration";
     public static final String GATEWAY_ID = "gateway.id";
+    public static final String REGISTRY_PASSWORD = "registry.password";
+    public static final String REGISTRY_URL = "registry.jdbc.url";
 
     /*
      * Heart beat thread
@@ -117,7 +112,8 @@ public class GFacService implements ServiceLifeCycle {
     		public void run() {
                 String port = null;
                 String username = null;
-                AiravataRegistry2 registry = null;
+                String password = null;
+                AiravataAPI airavataAPI = null;
                 try {
                     URL url = this.getClass().getClassLoader().getResource(REPOSITORY_PROPERTIES);
                     try {
@@ -131,21 +127,25 @@ public class GFacService implements ServiceLifeCycle {
                         if (properties.get(REGISTRY_USER) != null) {
                             username = (String) properties.get(REGISTRY_USER);
                         }
+                        if (properties.get(REGISTRY_PASSWORD) != null) {
+                            password = (String) properties.get(REGISTRY_PASSWORD);
+                        }
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    registry = RegistryUtils.getRegistryFromConfig(url);
+                    URI baseUri = new URI(properties.getProperty(REGISTRY_URL));
+                    airavataAPI = AiravataClientUtils.getAPI(baseUri, username, password);
                     context.setProperty(GFAC_URL, ServiceUtils.generateServiceURLFromConfigurationContext(context,SERVICE_NAME));
                     GFacConfiguration gfacConfig = new GFacConfiguration(properties.getProperty(MYPROXY_SERVER),properties.getProperty(MYPROXY_USER),
-                            properties.getProperty(MYPROXY_PASS),Integer.parseInt(properties.getProperty(MYPROXY_LIFE)),registry,properties.getProperty(TRUSTED_CERT_LOCATION));
+                            properties.getProperty(MYPROXY_PASS),Integer.parseInt(properties.getProperty(MYPROXY_LIFE)),airavataAPI,properties.getProperty(TRUSTED_CERT_LOCATION));
 					context.setProperty(GFAC_CONFIGURATION,
 							gfacConfig);
 					/*
 					 * Heart beat message to registry
 					 */
-					thread = new GFacThread(registry, context);
+					thread = new GFacThread(airavataAPI, context);
 					thread.start();
     	        } catch (Exception e) {
     	            log.error(e.getMessage(), e);
@@ -157,12 +157,14 @@ public class GFacService implements ServiceLifeCycle {
     public void shutDown(ConfigurationContext configctx, AxisService service) {
         //following nullchecks will avoid the exceptions when user press Ctrl-C before the server start properly
         if (configctx.getProperty(GFAC_CONFIGURATION) != null) {
-            AiravataRegistry2 registry = ((GFacConfiguration) configctx.getProperty(GFAC_CONFIGURATION)).getRegistry();
+            AiravataAPI airavataAPI = ((GFacConfiguration) configctx.getProperty(GFAC_CONFIGURATION)).getAiravataAPI();
             String gfacURL = (String) configctx.getProperty(GFAC_URL);
             try {
-                registry.removeGFacURI(new URI(gfacURL));
+                airavataAPI.getAiravataManager().removeGFacURI(new URI(gfacURL));
+            } catch (AiravataAPIInvocationException e) {
+                e.printStackTrace();
             } catch (URISyntaxException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e.printStackTrace();
             }
         }
         if (thread != null) {
@@ -175,18 +177,18 @@ public class GFacService implements ServiceLifeCycle {
         }
     }
 
-    class GFacThread extends AbstractRegistryUpdaterThread {
+    class GFacThread extends PeriodicExecutorThread {
         private ConfigurationContext context = null;
 
-        GFacThread(AiravataRegistry2 registry, ConfigurationContext context) {
-            super(registry);
+        GFacThread(AiravataAPI airavataAPI, ConfigurationContext context) {
+            super(airavataAPI);
             this.context = context;
         }
 
         @Override
-        protected void updateRegistry(AiravataRegistry2 registry) throws Exception {
+        protected void updateRegistry(AiravataAPI airavataAPI) throws Exception {
             URI localAddress = new URI((String) this.context.getProperty(GFAC_URL));
-            registry.addGFacURI(localAddress);
+            airavataAPI.getAiravataManager().addGFacURI(localAddress);
             log.info("Updated Workflow Interpreter service URL in to Repository");
         }
     }

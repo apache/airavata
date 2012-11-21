@@ -29,6 +29,7 @@ import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.xbaya.model.registrybrowser.ApplicationDeploymentDescriptions;
@@ -104,10 +105,10 @@ public class ServiceDescriptionNode extends AbstractAiravataTreeNode {
 		return true;
 	}
 
-    private boolean deleteServiceDescription(JTree tree) throws RegistryException {
+    private boolean deleteServiceDescription(JTree tree) throws AiravataAPIInvocationException {
         if (askQuestion("Application", "Are you sure that you want to remove the applications associated with \""
                 + getServiceDescription().getType().getName() + "\"?")) {
-            getRegistry().removeServiceDescriptor(getServiceDescription().getType().getName());
+            getRegistry().getApplicationManager().deleteServiceDescription(getServiceDescription().getType().getName());
             ((AbstractAiravataTreeNode) getParent()).refresh();
             reloadTreeNode(tree, getParent());
         }

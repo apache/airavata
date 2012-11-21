@@ -43,12 +43,14 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.exception.gateway.DescriptorDoesNotExistsException;
 import org.apache.airavata.registry.api.exception.gateway.MalformedDescriptorException;
 import org.apache.airavata.xbaya.XBayaEngine;
@@ -64,7 +66,7 @@ public class DescriptorEditorDialog extends JDialog {
 
     private XBayaDialog dialog;
 
-    private AiravataRegistry2 registry;
+    private AiravataAPI registry;
 
 	private JList descriptorList;
 
@@ -87,7 +89,7 @@ public class DescriptorEditorDialog extends JDialog {
      */
     public DescriptorEditorDialog(XBayaEngine engine,DescriptorType descriptorType) {
         this.engine = engine;
-        setRegistry(engine.getConfiguration().getJcrComponentRegistry().getRegistry());
+        setRegistry(engine.getConfiguration().getJcrComponentRegistry().getAiravataAPI());
         this.descriptorType=descriptorType;
         initGUI();
         
@@ -118,7 +120,7 @@ public class DescriptorEditorDialog extends JDialog {
     			if (e.getClickCount()==2){
     				try {
 						editDescriptor();
-    				} catch (RegistryException e1) {
+    				} catch (AiravataAPIInvocationException e1) {
     					engine.getGUI().getErrorWindow().error("Error while editing descriptor", e1);
     					e1.printStackTrace();
     				}
@@ -135,7 +137,7 @@ public class DescriptorEditorDialog extends JDialog {
             public void actionPerformed(ActionEvent e) {
             	try {
 					newDescriptor();
-        		} catch (RegistryException e1) {
+        		} catch (AiravataAPIInvocationException e1) {
         			engine.getGUI().getErrorWindow().error("Error while creating descriptors", e1);
         			e1.printStackTrace();
         		}
@@ -154,7 +156,7 @@ public class DescriptorEditorDialog extends JDialog {
             public void actionPerformed(ActionEvent e) {
             	try {
 					editDescriptor();
-        		} catch (RegistryException e1) {
+        		} catch (AiravataAPIInvocationException e1) {
         			engine.getGUI().getErrorWindow().error("Error while editing descriptor", e1);
         			e1.printStackTrace();
         		}
@@ -166,7 +168,7 @@ public class DescriptorEditorDialog extends JDialog {
             public void actionPerformed(ActionEvent e) {
             	try {
 					deleteDescriptor();
-        		} catch (RegistryException e1) {
+        		} catch (AiravataAPIInvocationException e1) {
         			engine.getGUI().getErrorWindow().error("Error while removing descriptor", e1);
         			e1.printStackTrace();
         		}
@@ -204,17 +206,17 @@ public class DescriptorEditorDialog extends JDialog {
         removeButton.setEnabled(false);
         try {
 			loadDescriptors();
-		} catch (RegistryException e1) {
+		} catch (AiravataAPIInvocationException e1) {
 			engine.getGUI().getErrorWindow().error("Error while loading descriptors", e1);
 			e1.printStackTrace();
 		}
     }
     
-    private void editDescriptor() throws MalformedDescriptorException, RegistryException {
+    private void editDescriptor() throws AiravataAPIInvocationException {
     	switch (descriptorType){
 	    	case HOST:
 	    		HostDescription h = (HostDescription) getSelected();
-	    		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine.getConfiguration().getJcrComponentRegistry().getRegistry(),false,h, null);
+	    		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine.getConfiguration().getJcrComponentRegistry().getAiravataAPI(),false,h, null);
 	    		hostDescriptionDialog.setLocationRelativeTo(this.engine.getGUI().getFrame());
 	    		hostDescriptionDialog.open();
 	    		if (hostDescriptionDialog.isHostCreated()) {
@@ -244,10 +246,10 @@ public class DescriptorEditorDialog extends JDialog {
     	}
 	}
 
-    private void newDescriptor() throws MalformedDescriptorException, RegistryException {
+    private void newDescriptor() throws AiravataAPIInvocationException {
     	switch (descriptorType){
 	    	case HOST:
-	    		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine.getConfiguration().getJcrComponentRegistry().getRegistry(), null);
+	    		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine.getConfiguration().getJcrComponentRegistry().getAiravataAPI(), null);
 	    		hostDescriptionDialog.open();
 	    		if (hostDescriptionDialog.isHostCreated()){
 	    			loadDescriptors();
@@ -280,7 +282,7 @@ public class DescriptorEditorDialog extends JDialog {
 	protected boolean askQuestion(String title, String question) {
         return JOptionPane.showConfirmDialog(null, question, title, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
     }
-    private boolean deleteDescriptor() throws DescriptorDoesNotExistsException, RegistryException{
+    private boolean deleteDescriptor() throws AiravataAPIInvocationException{
     	String title=null;
     	String question=null;
     	switch (descriptorType){
@@ -309,16 +311,16 @@ public class DescriptorEditorDialog extends JDialog {
             	switch (descriptorType){
 	    	    	case HOST:
 	    	    		HostDescription h = (HostDescription) getSelected();
-	    	        	getRegistry().removeHostDescriptor(h.getType().getHostName());
+	    	        	getRegistry().getApplicationManager().deleteHostDescription(h.getType().getHostName());
 	    	    		break;
 	    	    	case SERVICE:
 	    	        	ServiceDescription d = (ServiceDescription) getSelected();
-	    	        	getRegistry().removeServiceDescriptor(d.getType().getName());
+	    	        	getRegistry().getApplicationManager().deleteServiceDescription(d.getType().getName());
 	    	    		break;
 	    	    	case APPLICATION:
 	    	    		ApplicationDeploymentDescription a = (ApplicationDeploymentDescription) getSelected();
 	    	    		String[] s = dlist.get(a).split("\\$");
-	    	        	getRegistry().removeApplicationDescriptor(s[0], s[1], a.getType().getApplicationName().getStringValue());
+	    	        	getRegistry().getApplicationManager().deleteDeploymentDescription(s[0], s[1], a.getType().getApplicationName().getStringValue());
 	    	    		break;
             	}
 				loadDescriptors();
@@ -326,7 +328,7 @@ public class DescriptorEditorDialog extends JDialog {
         return true;
     }
     
-    private void loadDescriptors() throws MalformedDescriptorException, RegistryException {
+    private void loadDescriptors() throws AiravataAPIInvocationException {
     	try {
     		//allow the registry cache to update
 			Thread.sleep(500);
@@ -337,13 +339,13 @@ public class DescriptorEditorDialog extends JDialog {
     		List<?> descriptors=null;
 			switch (descriptorType){
 	    	case HOST:
-	    		descriptors = getRegistry().getHostDescriptors();
+	    		descriptors = getRegistry().getApplicationManager().getAllHostDescriptions();
 	    		break;
 	    	case SERVICE:
-	    		descriptors = getRegistry().getServiceDescriptors();
+	    		descriptors = getRegistry().getApplicationManager().getAllServiceDescriptions();
 	    		break;
 	    	case APPLICATION:
-	    		Map<String,ApplicationDeploymentDescription> temp =getRegistry().getApplicationDescriptors(null);
+	    		Map<String,ApplicationDeploymentDescription> temp =getRegistry().getApplicationManager().getApplicationDescriptors(null);
                 for(String value:temp.keySet()) {
                     dlist.put(temp.get(value), value);
 
@@ -386,11 +388,11 @@ public class DescriptorEditorDialog extends JDialog {
 		}
     	
     }
-    public AiravataRegistry2 getRegistry() {
+    public AiravataAPI getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry2 registry) {
+    public void setRegistry(AiravataAPI registry) {
         this.registry = registry;
     }
 }

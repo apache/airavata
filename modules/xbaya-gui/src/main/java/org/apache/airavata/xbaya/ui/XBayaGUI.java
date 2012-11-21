@@ -48,6 +48,7 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.common.utils.XMLUtil;
@@ -831,11 +832,11 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
             this.newGraphCanvas(true, false);
             JCRComponentRegistry jcrComponentRegistry = this.engine.getConfiguration().getJcrComponentRegistry();
             try {
-            	String xml = jcrComponentRegistry.getRegistry().getWorkflowGraphXML(this.engine.getConfiguration().getWorkflow());
+            	String xml = jcrComponentRegistry.getAiravataAPI().getWorkflowManager().getWorkflowAsString(this.engine.getConfiguration().getWorkflow());
                 XmlElement xwf = XMLUtil.stringToXmlElement(xml);
                 Workflow workflow = new Workflow(xwf);
                 setWorkflow(workflow);
-            } catch (RegistryException e) {
+            } catch (AiravataAPIInvocationException e) {
                getErrorWindow().error(ErrorMessages.REPOSITORY_CONFIGURATION_IS_WRONG_FAILED_TO_LOAD_THE_WORKFLOW, e);
             } catch (GraphException e) {
                 getErrorWindow().error(ErrorMessages.WORKFLOW_IS_WRONG, e);

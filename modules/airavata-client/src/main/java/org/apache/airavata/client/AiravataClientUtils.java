@@ -30,16 +30,16 @@ import javax.jcr.RepositoryException;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.impl.PasswordCallBackImpl;
+import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.Callback;
 
 public class AiravataClientUtils {
 	
-	public static AiravataAPI getAPI(URI registryURL, String gateway, String username, Callback callback) throws MalformedURLException, RepositoryException, RegistryException{
+	public static AiravataAPI getAPI(URI registryURL, String gateway, String username, PasswordCallback callback) throws MalformedURLException, RepositoryException, RegistryException{
         return getAPI(registryURL, gateway, username, username, callback);
     }
     
-    public static AiravataAPI getAPI(URI registryURL, String gateway, String username, String alternateUsername, Callback callback) throws MalformedURLException, RepositoryException, RegistryException{
+    public static AiravataAPI getAPI(URI registryURL, String gateway, String username, String alternateUsername, PasswordCallback callback) throws MalformedURLException, RepositoryException, RegistryException{
         AiravataClient apiObj = new AiravataClient();
         apiObj.setCurrentUser(alternateUsername);
         apiObj.setCallBack(callback);
@@ -55,7 +55,7 @@ public class AiravataClientUtils {
 	}
 	
     @Deprecated
-    public static AiravataAPI getAPI(URI registryURL, String username, Callback callback) throws MalformedURLException, RepositoryException, RegistryException{
+    public static AiravataAPI getAPI(URI registryURL, String username, PasswordCallback callback) throws MalformedURLException, RepositoryException, RegistryException{
         return getAPI(registryURL, username, username, callback);
     }
 

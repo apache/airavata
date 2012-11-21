@@ -24,8 +24,10 @@ package org.apache.airavata.xbaya.model.registrybrowser;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.workflow.WorkflowInstance;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeData;
@@ -33,23 +35,23 @@ import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeData;
 public class XBayaWorkflow {
 	private List<XBayaWorkflowNodeElement> workflowServices;
 	private WorkflowInstance workflowInstance;
-	private AiravataRegistry2 registry;
+	private AiravataAPI airavataAPI;
 	
-	public XBayaWorkflow(WorkflowInstance workflowInstance, AiravataRegistry2 registry) {
+	public XBayaWorkflow(WorkflowInstance workflowInstance, AiravataAPI airavataAPI) {
 		setWorkflowInstance(workflowInstance);
-		setRegistry(registry);
+		setAiravataAPI(airavataAPI);
 	}
 
 	public List<XBayaWorkflowNodeElement> getWorkflowServices() {
 		if (workflowServices==null){
 			workflowServices=new ArrayList<XBayaWorkflowNodeElement>();
 			try {
-				WorkflowInstanceData workflowInstanceData = getRegistry().getWorkflowInstanceData(getWorkflowId());
+				WorkflowInstanceData workflowInstanceData = getAiravataAPI().getProvenanceManager().getWorkflowInstanceData(getWorkflowId(), getWorkflowId());
 				List<WorkflowInstanceNodeData> nodeDataList = workflowInstanceData.getNodeDataList();
 				for (WorkflowInstanceNodeData nodeData : nodeDataList) {
 					workflowServices.add(new XBayaWorkflowNodeElement(nodeData.getWorkflowInstanceNode().getNodeId(), nodeData));
 				}
-			} catch (RegistryException e) {
+			} catch (AiravataAPIInvocationException e) {
 				e.printStackTrace();
 			}
 		}
@@ -72,15 +74,15 @@ public class XBayaWorkflow {
 		return getWorkflowInstance().getWorkflowInstanceId();
 	}
 
-	public AiravataRegistry2 getRegistry() {
-		return registry;
-	}
+    public AiravataAPI getAiravataAPI() {
+        return airavataAPI;
+    }
 
-	public void setRegistry(AiravataRegistry2 registry) {
-		this.registry = registry;
-	}
+    public void setAiravataAPI(AiravataAPI airavataAPI) {
+        this.airavataAPI = airavataAPI;
+    }
 
-	public WorkflowInstance getWorkflowInstance() {
+    public WorkflowInstance getWorkflowInstance() {
 		return workflowInstance;
 	}
 

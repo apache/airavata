@@ -28,8 +28,10 @@ import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.xbaya.model.registrybrowser.ApplicationDeploymentDescriptionWrap;
 import org.apache.airavata.xbaya.model.registrybrowser.ApplicationDeploymentDescriptions;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
@@ -51,6 +53,9 @@ public class ApplicationDeploymentDescriptionsNode extends AbstractAiravataTreeN
     protected List<TreeNode> getChildren() {
         try {
             return getTreeNodeList(getApplicationDeploymentDescriptions().getDescriptions().toArray(), this);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();
+            return emptyList();
         } catch (RegistryException e) {
             e.printStackTrace();
             return emptyList();
@@ -99,11 +104,11 @@ public class ApplicationDeploymentDescriptionsNode extends AbstractAiravataTreeN
     private void deleteApplicationDescription(JTree tree) throws Exception {
         if (askQuestion("Application descriptions",
                 "Are you sure that you want to remove all application descriptions in this registry?")) {
-            AiravataRegistry2 registry = getRegistry();
+            AiravataAPI airavataAPI = getRegistry();
             List<ApplicationDeploymentDescriptionWrap> descriptions = getApplicationDeploymentDescriptions()
                     .getDescriptions();
             for (ApplicationDeploymentDescriptionWrap descriptionWrap : descriptions) {
-                registry.removeApplicationDescriptor(descriptionWrap.getService(), descriptionWrap.getHost(),
+                airavataAPI.getApplicationManager().removeApplicationDescriptor(descriptionWrap.getService(), descriptionWrap.getHost(),
                         descriptionWrap.getDescription().getType().getApplicationName().getStringValue());
             }
             refresh();

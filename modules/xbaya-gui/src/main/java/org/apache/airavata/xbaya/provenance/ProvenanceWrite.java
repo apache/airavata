@@ -24,9 +24,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.workflow.WorkflowInstance;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
@@ -60,15 +62,15 @@ public final class ProvenanceWrite implements PredicatedExecutable {
 
     private String experimentId;
 
-    private AiravataRegistry2 registry;
+    private AiravataAPI airavataAPI;
 
 	public ProvenanceWrite(Node node, String workflowName,
-                           Map<Node, Invoker> invokerMap, String experimentId,AiravataRegistry2 registry) {
+                           Map<Node, Invoker> invokerMap, String experimentId,AiravataAPI airavataAPI) {
 		this.node = node;
 		this.workflowName = workflowName;
 		this.invokerMap = invokerMap;
         this.experimentId = experimentId;
-        this.registry = registry;
+        this.airavataAPI = airavataAPI;
 	}
 
 	public void run() {
@@ -176,8 +178,8 @@ public final class ProvenanceWrite implements PredicatedExecutable {
 			}
             if (inputs!=null) {
 				try {
-					this.registry.updateWorkflowNodeInput(new WorkflowInstanceNode(new WorkflowInstance(experimentId,experimentId),node.getID()),xsul5.XmlConstants.BUILDER.serializeToString(inputs));
-				} catch (RegistryException e) {
+					this.airavataAPI.getProvenanceManager().setWorkflowInstanceNodeInput(new WorkflowInstanceNode(new WorkflowInstance(experimentId, experimentId), node.getID()), xsul5.XmlConstants.BUILDER.serializeToString(inputs));
+                } catch (AiravataAPIInvocationException e) {
 					throw new WorkflowException(e);
 				}
 				// deal with the outputs
@@ -206,8 +208,8 @@ public final class ProvenanceWrite implements PredicatedExecutable {
 				}
 			}
             try {
-				this.registry.updateWorkflowNodeOutput(new WorkflowInstanceNode(new WorkflowInstance(experimentId,experimentId),node.getID()),xsul5.XmlConstants.BUILDER.serializeToString(outputs));
-            } catch (RegistryException e) {
+				this.airavataAPI.getProvenanceManager().setWorkflowInstanceNodeOutput(new WorkflowInstanceNode(new WorkflowInstance(experimentId,experimentId),node.getID()),xsul5.XmlConstants.BUILDER.serializeToString(outputs));
+            } catch (AiravataAPIInvocationException e) {
 				throw new WorkflowException(e);
 			}
 		}

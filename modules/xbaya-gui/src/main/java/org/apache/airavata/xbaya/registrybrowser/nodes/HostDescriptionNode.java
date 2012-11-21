@@ -28,6 +28,7 @@ import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
@@ -86,7 +87,7 @@ public class HostDescriptionNode extends AbstractAiravataTreeNode {
     }
     
 	private boolean editHostDescription(JTree tree) {
-		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(getXBayaEngine().getConfiguration().getJcrComponentRegistry().getRegistry(),false,getHostDescription(), null);
+		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(getXBayaEngine().getConfiguration().getJcrComponentRegistry().getAiravataAPI(),false,getHostDescription(), null);
 		hostDescriptionDialog.open();
 		if (hostDescriptionDialog.isHostCreated()) {
 		    refresh();
@@ -95,10 +96,10 @@ public class HostDescriptionNode extends AbstractAiravataTreeNode {
 		return true;
 	}
 
-    private boolean deleteHostDescription(JTree tree) throws RegistryException {
+    private boolean deleteHostDescription(JTree tree) throws AiravataAPIInvocationException {
         if (askQuestion("Host description", "Are you sure that you want to remove the host description \""
                 + getHostDescription().getType().getHostName() + "\"?")) {
-            getRegistry().removeHostDescriptor(getHostDescription().getType().getHostName());
+            getRegistry().getApplicationManager().deleteHostDescription(getHostDescription().getType().getHostName());
             ((AbstractAiravataTreeNode) getParent()).refresh();
             reloadTreeNode(tree, getParent());
         }

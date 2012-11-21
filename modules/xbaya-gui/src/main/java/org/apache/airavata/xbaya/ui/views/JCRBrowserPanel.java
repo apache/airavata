@@ -42,7 +42,8 @@ import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultTreeModel;
 
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.registrybrowser.nodes.AbstractAiravataTreeNode;
@@ -192,9 +193,9 @@ public class JCRBrowserPanel extends JPanel implements Observer {
         }
     }
 
-    private AiravataRegistry2 getJCRRegistry() {
+    private AiravataAPI getJCRRegistry() {
         try {
-            return getEngine().getConfiguration().getJcrComponentRegistry().getRegistry();
+            return getEngine().getConfiguration().getJcrComponentRegistry().getAiravataAPI();
         } catch (Exception e) {
             // JCR registry not specified yet
             return null;
@@ -205,7 +206,7 @@ public class JCRBrowserPanel extends JPanel implements Observer {
         if (getEngine().getConfiguration() == observable) {
             if (o instanceof JCRComponentRegistry) {
                 resetModel();
-            } else if (o instanceof AiravataRegistry2) {
+            } else if (o instanceof AiravataAPI) {
                 resetModel();
             }
         }

@@ -42,9 +42,10 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.NameValuePairType;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
@@ -64,7 +65,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     private boolean tableModelChanging = false;
     private JButton btnDeleteVariable;
     private JButton okButton;
-    private AiravataRegistry2 registry;
+    private AiravataAPI registry;
 	private XBayaTextField txtWorkingDir;
 
     /**
@@ -84,7 +85,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     /**
      * Create the dialog.
      */
-    public ApplicationDescriptionAdvancedOptionDialog(AiravataRegistry2 registry, ApplicationDeploymentDescription descriptor) {
+    public ApplicationDescriptionAdvancedOptionDialog(AiravataAPI registry, ApplicationDeploymentDescription descriptor) {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent arg0) {
@@ -345,11 +346,11 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 
 
 
-    public AiravataRegistry2 getRegistry() {
+    public AiravataAPI getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry2 registry) {
+    public void setRegistry(AiravataAPI registry) {
         this.registry = registry;
     }
 

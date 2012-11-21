@@ -21,21 +21,34 @@
 
 package org.apache.airavata.xbaya.model.registrybrowser;
 
+import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class AiravataConfigurations {
-    private AiravataRegistry2 registry;
+//    private AiravataRegistry2 registry;
+    private AiravataAPI airavataAPI;
 
-    public AiravataConfigurations(AiravataRegistry2 registry) {
-        setRegistry(registry);
+//    public AiravataConfigurations(AiravataRegistry2 registry) {
+//        setRegistry(registry);
+//    }
+    public AiravataConfigurations(AiravataAPI airavataAPI) {
+        setAiravataAPI(airavataAPI);
     }
 
-    public AiravataRegistry2 getRegistry() {
-        return registry;
+//    public AiravataRegistry2 getRegistry() {
+//        return registry;
+//    }
+//
+//    public void setRegistry(AiravataRegistry2 registry) {
+//        this.registry = registry;
+//    }
+
+
+    public AiravataAPI getAiravataAPI() {
+        return airavataAPI;
     }
 
-    public void setRegistry(AiravataRegistry2 registry) {
-        this.registry = registry;
+    public void setAiravataAPI(AiravataAPI airavataAPI) {
+        this.airavataAPI = airavataAPI;
     }
-    
 }

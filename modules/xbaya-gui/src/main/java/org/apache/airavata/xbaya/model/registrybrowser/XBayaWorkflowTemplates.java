@@ -25,32 +25,37 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.workflow.model.wf.Workflow;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class XBayaWorkflowTemplates {
-    private AiravataRegistry2 registry;
+    private AiravataAPI airavataAPI;
 
-    public XBayaWorkflowTemplates(AiravataRegistry2 registry) {
-        setRegistry(registry);
+    public XBayaWorkflowTemplates(AiravataAPI airavataAPI) {
+        setAiravataAPI(airavataAPI);
     }
 
-    public AiravataRegistry2 getRegistry() {
-        return registry;
+    public AiravataAPI getAiravataAPI() {
+        return airavataAPI;
     }
 
-    public void setRegistry(AiravataRegistry2 registry) {
-        this.registry = registry;
+    public void setAiravataAPI(AiravataAPI airavataAPI) {
+        this.airavataAPI = airavataAPI;
     }
 
     public List<XBayaWorkflowTemplate> getWorkflows() {
         List<XBayaWorkflowTemplate> workflows = new ArrayList<XBayaWorkflowTemplate>();
         try {
-			Map<String, String> workflowMap = registry.getWorkflows();
-			for (String xBayaWorkflowName : workflowMap.keySet()) {
-			    workflows.add(new XBayaWorkflowTemplate(xBayaWorkflowName,workflowMap.get(xBayaWorkflowName)));
-			}
-		} catch (RegistryException e) {
+            List<Workflow> list = getAiravataAPI().getWorkflowManager().getWorkflows();
+
+            for (Workflow workflow : list){
+                String workflowAsString = getAiravataAPI().getWorkflowManager().getWorkflowAsString(workflow.getName());
+                workflows.add(new XBayaWorkflowTemplate(workflow.getName(), workflowAsString));
+            }
+		} catch (AiravataAPIInvocationException e) {
 			e.printStackTrace();
 		}
         return workflows;

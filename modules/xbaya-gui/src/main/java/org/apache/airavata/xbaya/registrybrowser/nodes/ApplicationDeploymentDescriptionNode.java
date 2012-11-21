@@ -28,6 +28,7 @@ import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.xbaya.model.registrybrowser.ApplicationDeploymentDescriptionWrap;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
@@ -96,11 +97,11 @@ public class ApplicationDeploymentDescriptionNode extends AbstractAiravataTreeNo
 		return true;
 	}
 
-    private boolean deleteApplicationDescription(JTree tree) throws RegistryException {
+    private boolean deleteApplicationDescription(JTree tree) throws AiravataAPIInvocationException {
         if (askQuestion("Application description",
                 "Are you sure that you want to remove the application description \""
                         + getApplicationDeploymentDescriptionWrap().getDescription().getType().getApplicationName().getStringValue() + "\"?")) {
-            getRegistry().removeApplicationDescriptor(getApplicationDeploymentDescriptionWrap().getService(),
+            getRegistry().getApplicationManager().deleteDeploymentDescription(getApplicationDeploymentDescriptionWrap().getService(),
                     getApplicationDeploymentDescriptionWrap().getHost(),
                     getApplicationDeploymentDescriptionWrap().getDescription().getType().getApplicationName().getStringValue());
             ((AbstractAiravataTreeNode) getParent()).refresh();

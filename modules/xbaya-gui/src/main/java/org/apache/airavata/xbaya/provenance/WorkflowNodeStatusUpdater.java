@@ -20,8 +20,9 @@
 */
 package org.apache.airavata.xbaya.provenance;
 
-import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.workflow.WorkflowInstance;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
@@ -32,10 +33,10 @@ import org.slf4j.LoggerFactory;
 public class WorkflowNodeStatusUpdater {
        private static Logger logger = LoggerFactory.getLogger(WorkflowNodeStatusUpdater.class);
 
-    private AiravataRegistry2 registry;
+    private AiravataAPI airavataAPI;
 
-    public WorkflowNodeStatusUpdater(AiravataRegistry2 registry) {
-        this.registry = registry;
+    public WorkflowNodeStatusUpdater(AiravataAPI airavataAPI) {
+        this.airavataAPI = airavataAPI;
     }
 
     public boolean workflowStarted(String workflowInstanceID,String nodeID,String inputs,String workflowID){
@@ -44,10 +45,10 @@ public class WorkflowNodeStatusUpdater {
             WorkflowNodeType workflowNodeType = new WorkflowNodeType();
             workflowNodeType.setNodeType(WorkflowNodeType.WorkflowNode.SERVICENODE);
             WorkflowInstanceNode node = new WorkflowInstanceNode(new WorkflowInstance(workflowInstanceID,workflowInstanceID), nodeID);
-			registry.updateWorkflowNodeInput(node,inputs);
-            registry.updateWorkflowNodeType(node, workflowNodeType);
-            registry.updateWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.STARTED);
-        } catch (RegistryException e) {
+			airavataAPI.getProvenanceManager().setWorkflowInstanceNodeInput(node, inputs);
+            airavataAPI.getProvenanceManager().setWorkflowNodeType(node, workflowNodeType);
+            airavataAPI.getProvenanceManager().setWorkflowInstanceNodeStatus(workflowInstanceID, workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.STARTED);
+        } catch (AiravataAPIInvocationException e) {
             logger.error("Error updating Wokflow Node status !!");
             return false;
         }
@@ -56,9 +57,9 @@ public class WorkflowNodeStatusUpdater {
 
     public boolean workflowFailed(String workflowInstanceID,String nodeID){
         try {
-            registry.updateWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.FAILED);
-            registry.updateWorkflowInstanceStatus(workflowInstanceID, WorkflowInstanceStatus.ExecutionStatus.FAILED);
-        } catch (RegistryException e) {
+            airavataAPI.getProvenanceManager().setWorkflowInstanceNodeStatus(workflowInstanceID, workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.FAILED);
+            airavataAPI.getProvenanceManager().setWorkflowInstanceStatus(workflowInstanceID, workflowInstanceID, WorkflowInstanceStatus.ExecutionStatus.FAILED);
+        } catch (AiravataAPIInvocationException e) {
             logger.error("Error updating Wokflow Node status !!");
             return false;
         }
@@ -70,10 +71,10 @@ public class WorkflowNodeStatusUpdater {
         	WorkflowNodeType workflowNodeType = new WorkflowNodeType();
             workflowNodeType.setNodeType(WorkflowNodeType.WorkflowNode.SERVICENODE);
             WorkflowInstanceNode node = new WorkflowInstanceNode(new WorkflowInstance(workflowInstanceID,workflowInstanceID), nodeID);
-            registry.updateWorkflowNodeOutput(node,inputs);
-            registry.updateWorkflowNodeType(node,workflowNodeType);
-            registry.updateWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.FINISHED);
-        } catch (RegistryException e) {
+            airavataAPI.getProvenanceManager().setWorkflowInstanceNodeOutput(node, inputs);
+            airavataAPI.getProvenanceManager().setWorkflowNodeType(node,workflowNodeType);
+            airavataAPI.getProvenanceManager().setWorkflowInstanceNodeStatus(workflowInstanceID, workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.FINISHED);
+        } catch (AiravataAPIInvocationException e) {
             logger.error("Error updating Wokflow Node status !!");
             return false;
         }
@@ -82,8 +83,8 @@ public class WorkflowNodeStatusUpdater {
 
     public boolean workflowRunning(String workflowInstanceID,String nodeID){
         try {
-            registry.updateWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.RUNNING);
-        } catch (RegistryException e) {
+            airavataAPI.getProvenanceManager().setWorkflowInstanceNodeStatus(workflowInstanceID, workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.RUNNING);
+        } catch (AiravataAPIInvocationException e) {
             logger.error("Error updating Wokflow Node status !!");
             return false;
         }
@@ -92,8 +93,8 @@ public class WorkflowNodeStatusUpdater {
 
      public boolean workflowPaused(String workflowInstanceID,String nodeID){
         try {
-            registry.updateWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.PAUSED);
-        } catch (RegistryException e) {
+            airavataAPI.getProvenanceManager().setWorkflowInstanceNodeStatus(workflowInstanceID, workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.PAUSED);
+        } catch (AiravataAPIInvocationException e) {
             logger.error("Error updating Wokflow Node status !!");
             return false;
         }

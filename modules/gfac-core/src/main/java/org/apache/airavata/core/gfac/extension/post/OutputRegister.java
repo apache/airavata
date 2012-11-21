@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
@@ -52,7 +53,7 @@ public class OutputRegister extends PostExecuteChain {
         MessageContext<String> workflowContext = context.getMessageContext(WorkflowContextImpl.WORKFLOW_CONTEXT_NAME);
 
         // registry
-        AiravataRegistry2 registry = context.getExecutionContext().getRegistryService();
+        AiravataAPI airavataAPI = context.getExecutionContext().getRegistryService();
 
         if (outputContext != null && workflowContext != null) {
 
@@ -64,14 +65,14 @@ public class OutputRegister extends PostExecuteChain {
                 outputs.add(outputContext.getValue(key));
             }
 
-            if (registry != null && DataRegistry.class.isAssignableFrom(registry.getClass())) {
+            if (airavataAPI != null && DataRegistry.class.isAssignableFrom(airavataAPI.getClass())) {
                 try {
-					((DataRegistry) registry).saveOutput(workflowId, outputs);
+					((DataRegistry) airavataAPI).saveOutput(workflowId, outputs);
 				} catch (RegistryException e) {
 					log.error(e.getLocalizedMessage(), e);
 				}
             } else {
-                log.debug("Registry does not support for Data Catalog, CLass: " + registry.getClass());
+                log.debug("Registry does not support for Data Catalog, CLass: " + airavataAPI.getClass());
             }
 
         } else {

@@ -29,10 +29,10 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import org.apache.airavata.registry.api.AiravataExperiment;
+import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.rest.mappings.resourcemappings.ExperimentList;
 import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
 import org.apache.airavata.rest.utils.BasicAuthHeaderUtil;
-import org.apache.airavata.registry.api.Callback;
 import org.apache.airavata.rest.utils.ClientConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,9 +51,9 @@ public class ExperimentResourceClient {
     private WebResource webResource;
     private final static Logger logger = LoggerFactory.getLogger(ExperimentResourceClient.class);
     private String userName;
-    private Callback callback;
+    private PasswordCallback callback;
 
-    public ExperimentResourceClient(String userName, Callback callback) {
+    public ExperimentResourceClient(String userName, PasswordCallback callback) {
         this.userName = userName;
         this.callback = callback;
     }

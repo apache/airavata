@@ -55,7 +55,7 @@ public class GfacAPI {
         DefaultInvocationContext invocationContext = new DefaultInvocationContext();
         invocationContext.setExecutionContext(new DefaultExecutionContext());
         invocationContext.setServiceName(jobContext.getServiceName());
-        invocationContext.getExecutionContext().setRegistryService(gfacConfig.getRegistry());
+        invocationContext.getExecutionContext().setRegistryService(gfacConfig.getAiravataAPI());
         invocationContext.getExecutionContext().addNotifiable(workflowNotification);
         invocationContext.getExecutionContext().addNotifiable(loggingNotification);
 
@@ -78,7 +78,7 @@ public class GfacAPI {
         /*
     * Add workflow context
     */
-        ServiceDescription serviceDescription = gfacConfig.getRegistry().getServiceDescriptor(jobContext.getServiceName());
+        ServiceDescription serviceDescription = gfacConfig.getAiravataAPI().getApplicationManager().getServiceDescription(jobContext.getServiceName());
         if(serviceDescription==null){
         	throw new RegistryException(new Exception("Service Description not found in registry."));
         }

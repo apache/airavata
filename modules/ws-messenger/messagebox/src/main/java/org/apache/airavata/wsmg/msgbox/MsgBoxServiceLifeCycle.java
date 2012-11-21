@@ -21,17 +21,19 @@
 
 package org.apache.airavata.wsmg.msgbox;
 
-import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.airavata.client.AiravataClientUtils;
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.ServiceUtils;
-import org.apache.airavata.registry.api.AbstractRegistryUpdaterThread;
-import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.util.RegistryUtils;
+import org.apache.airavata.client.tools.PeriodicExecutorThread;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.util.RegistryUtils;
 import org.apache.airavata.wsmg.commons.config.ConfigurationManager;
 import org.apache.airavata.wsmg.commons.util.Axis2Utils;
 import org.apache.airavata.wsmg.msgbox.Storage.MsgBoxStorage;
@@ -69,9 +71,13 @@ public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
     
     public void shutDown(ConfigurationContext configurationcontext, AxisService axisservice) {
         logger.info("Message box shutting down");
-        AiravataRegistry2 registry = (AiravataRegistry2) configurationcontext.getProperty(JCR_REGISTRY);
+        AiravataAPI registry = (AiravataAPI) configurationcontext.getProperty(JCR_REGISTRY);
         if (registry != null && thread != null) {
-            registry.unsetMessageBoxURI();
+            try {
+                registry.getAiravataManager().unsetMessageBoxURI();
+            } catch (AiravataAPIInvocationException e) {
+                e.printStackTrace();
+            }
             thread.interrupt();
             try {
                 thread.join();
@@ -108,15 +114,21 @@ public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
 					} catch (InterruptedException e1) {
 						e1.printStackTrace();
 					}
-					AiravataRegistry2 registry = RegistryUtils.getRegistryFromConfig(url);
+
+                    String userName = properties.getProperty("registry.user");
+                    String password = properties.getProperty("registry.password");
+                    String regURL = properties.getProperty("registry.jdbc.url");
+                    URI baseUri = new URI(regURL);
+
+                    AiravataAPI airavataAPI = AiravataClientUtils.getAPI(baseUri, userName, password);
 					String localAddress = ServiceUtils.generateServiceURLFromConfigurationContext(context, MESSAGE_BOX_SERVICE_NAME);
 					logger.debug("MESSAGE BOX SERVICE_ADDRESS:" + localAddress);
                     context.setProperty(SERVICE_URL,new URI(localAddress));
-					context.setProperty(JCR_REGISTRY,registry);
+					context.setProperty(JCR_REGISTRY,airavataAPI);
 					/*
 					 * Heart beat message to registry
 					 */
-					thread = new MsgBoxURLRegisterThread(registry, context);
+					thread = new MsgBoxURLRegisterThread(airavataAPI, context);
 					thread.start();
     	        } catch (Exception e) {
     	            logger.error(e.getMessage(), e);
@@ -167,18 +179,18 @@ public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
         return interval;
     }
     
-    class MsgBoxURLRegisterThread extends AbstractRegistryUpdaterThread {
+    class MsgBoxURLRegisterThread extends PeriodicExecutorThread {
         private ConfigurationContext context = null;
 
-        MsgBoxURLRegisterThread(AiravataRegistry2 registry, ConfigurationContext context) {
+        MsgBoxURLRegisterThread(AiravataAPI registry, ConfigurationContext context) {
             super(registry);
             this.context = context;
         }
 
         @Override
-        protected void updateRegistry(AiravataRegistry2 registry) throws Exception {
+        protected void updateRegistry(AiravataAPI registry) throws Exception {
             URI localAddress = (URI) this.context.getProperty(SERVICE_URL);
-            registry.setMessageBoxURI(localAddress);
+            registry.getAiravataManager().setMessageBoxURI(localAddress);
             logger.info("Updated Workflow Interpreter service URL in to Repository");
         }
     }

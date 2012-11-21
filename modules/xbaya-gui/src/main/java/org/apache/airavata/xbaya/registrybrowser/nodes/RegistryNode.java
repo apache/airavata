@@ -28,7 +28,9 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.tree.TreeNode;
 
-import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.model.registrybrowser.AiravataConfigurations;
 import org.apache.airavata.xbaya.model.registrybrowser.HostDescriptions;
@@ -39,12 +41,12 @@ import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.RefreshAction;
 
 public class RegistryNode extends AbstractAiravataTreeNode {
-    private AiravataRegistry2 registry;
+    private AiravataAPI registry;
     private XBayaEngine engine;
 
     public RegistryNode(XBayaEngine engine, TreeNode parent) {
         super(parent);
-        setRegistry(engine.getConfiguration().getJcrComponentRegistry().getRegistry());
+        setRegistry(engine.getConfiguration().getJcrComponentRegistry().getAiravataAPI());
         this.engine=engine;
     }
 
@@ -66,17 +68,22 @@ public class RegistryNode extends AbstractAiravataTreeNode {
         return getTreeNodeList(children.toArray(), this);
     }
 
-    public AiravataRegistry2 getRegistry() {
+    public AiravataAPI getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry2 registry) {
+    public void setRegistry(AiravataAPI registry) {
         this.registry = registry;
     }
 
     @Override
     public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return getRegistry().getGateway().getGatewayName() + " - " + getRegistry().getUser().getUserName();
+        try {
+            return getRegistry().getAiravataManager().getGateway().getGatewayName() + " - " + getRegistry().getAiravataManager().getUser().getUserName();
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override

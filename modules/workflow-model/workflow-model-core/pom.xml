@@ -203,11 +203,11 @@
         </dependency>
 
         <!-- AIRAVATA modules -->
-        <dependency>
+        <!--dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-message-broker</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency-->
         <!--dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-registry-api</artifactId>
@@ -232,11 +232,11 @@
             <artifactId>airavata-gfac-schema-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-gfac-core</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>

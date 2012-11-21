@@ -22,10 +22,10 @@ package org.apache.airavata.xbaya.provenance;
 
 import java.util.List;
 
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeData;
-import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
 import org.apache.airavata.workflow.model.graph.Node;
 
 public class ProvenanceReader {
@@ -34,19 +34,19 @@ public class ProvenanceReader {
 
     private String experimentId;
 
-    private AiravataRegistry2 registry;
+    private AiravataAPI airavataAPI;
 
     private Node node;
 
-    public ProvenanceReader(Node node,String experimentId,AiravataRegistry2 registry) {
+    public ProvenanceReader(Node node,String experimentId,AiravataAPI airavataAPI) {
        this.experimentId = experimentId;
-        this.registry = registry;
+        this.airavataAPI = airavataAPI;
         this.node = node;
 	}
 
     public Object read() throws Exception {
         try {
-            ExperimentData workflowExecution = registry.getExperiment(experimentId);
+            ExperimentData workflowExecution = airavataAPI.getProvenanceManager().getExperimentData(experimentId);
             List<WorkflowInstanceNodeData> nodeDataList = workflowExecution.getWorkflowInstanceData().get(0).getNodeDataList();
             if (nodeDataList.size() == 0) {
                 return null;

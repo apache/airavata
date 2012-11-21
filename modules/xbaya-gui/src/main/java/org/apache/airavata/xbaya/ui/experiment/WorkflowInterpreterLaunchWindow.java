@@ -36,12 +36,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.stub.interpretor.NameValue;
 import org.apache.airavata.client.stub.interpretor.WorkflowInterpretorStub;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.workflow.model.graph.util.GraphUtil;
@@ -163,8 +164,8 @@ public class WorkflowInterpreterLaunchWindow {
             this.workflowInterpreterTextField.setText(XBayaConstants.DEFAULT_WORKFLOW_INTERPRETER_URL);
         }
 
-        org.apache.airavata.registry.api.AiravataRegistry2 registryURL = config.getJcrComponentRegistry().getRegistry();
-        if (null != registryURL) {
+        AiravataAPI airavataAPI = config.getJcrComponentRegistry().getAiravataAPI();
+        if (null != airavataAPI) {
             this.RegistryTextField.setText(config.getRegistryURL());
         } else {
             this.RegistryTextField.setText(XBayaConstants.REGISTRY_URL.toASCIIString());
@@ -373,9 +374,9 @@ public class WorkflowInterpreterLaunchWindow {
                             ,null,configuration.getMessageBoxURL().toASCIIString());
                     stub._getServiceClient().addHeader(AXIOMUtil.stringToOM(XMLUtil.xmlElementToString(builder.getXml())));
                     stub.launchWorkflow(workflow.toXMLText(), topicString, inputNameVals);
-                    AiravataRegistry2 registry = engine.getConfiguration().getJcrComponentRegistry().getRegistry();
-                    registry.updateExperimentName(topicString, instanceNameFinal);
-                    registry.updateExperimentExecutionUser(topicString, registry.getUser().getUserName());
+                    AiravataAPI registry = engine.getConfiguration().getJcrComponentRegistry().getAiravataAPI();
+                    registry.getProvenanceManager().setExperimentName(topicString, instanceNameFinal);
+                    registry.getProvenanceManager().setExperimentUser(topicString, registry.getAiravataManager().getUser().getUserName());
                 } catch (Exception e) {
                     WorkflowInterpreterLaunchWindow.this.engine.getGUI().getErrorWindow().error(e);
                 }

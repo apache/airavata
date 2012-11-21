@@ -25,7 +25,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.UUID;
 
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaConfiguration;
@@ -59,9 +59,12 @@ public class ComplexForEachWorkflowTest {
         Workflow workflow = new Workflow(WorkflowTestUtils.readWorkflow(systemResource));
 //        ((InputNode) workflow.getGraph().getNode("input")).setDefaultValue("1");
         XBayaConfiguration conf = WorkflowTestUtils.getConfiguration();
-        AiravataRegistry2 registry = conf.getJcrComponentRegistry()==null? null:conf.getJcrComponentRegistry().getRegistry();
-		WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow, UUID.randomUUID().toString(),conf.getMessageBoxURL(), conf.getBrokerURL(), registry, conf,null,null,true);
-		workflowInterpreterConfiguration.setNotifier(new StandaloneNotificationSender(workflowInterpreterConfiguration.getTopic(),workflowInterpreterConfiguration.getWorkflow()));
+//        AiravataRegistry2 registry = conf.getJcrComponentRegistry()==null? null:conf.getJcrComponentRegistry().getRegistry();
+//		WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow, UUID.randomUUID().toString(),conf.getMessageBoxURL(), conf.getBrokerURL(), registry, conf,null,null,true);
+        WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow,
+                UUID.randomUUID().toString(), conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getAiravataAPI(), conf,null,null,true);
+
+        workflowInterpreterConfiguration.setNotifier(new StandaloneNotificationSender(workflowInterpreterConfiguration.getTopic(),workflowInterpreterConfiguration.getWorkflow()));
         SSWorkflowInterpreterInteractorImpl ssWorkflowInterpreterInteractorImpl = new SSWorkflowInterpreterInteractorImpl();
 
         WorkflowInterpreter interpretor = new WorkflowInterpreter(workflowInterpreterConfiguration,ssWorkflowInterpreterInteractorImpl);

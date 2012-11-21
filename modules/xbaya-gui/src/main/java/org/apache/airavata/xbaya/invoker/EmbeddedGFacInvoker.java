@@ -39,6 +39,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
@@ -49,7 +50,7 @@ import org.apache.airavata.core.gfac.context.JobContext;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
@@ -96,11 +97,13 @@ public class EmbeddedGFacInvoker implements Invoker{
 
     private ServiceNotifiable notifier;
 
-    private AiravataRegistry2 registry;
+//    private AiravataRegistry2 registry;
 
     private String topic;
 
     private String serviceName;
+
+    private AiravataAPI airavataAPI;
     /**
      * used for notification
      */
@@ -191,8 +194,16 @@ public class EmbeddedGFacInvoker implements Invoker{
      * @param gfacURL
      * @param notifier
      */
-    public EmbeddedGFacInvoker(QName portTypeQName, WsdlDefinitions wsdl, String nodeID, String messageBoxURL,
-            String gfacURL, WorkflowNotifiable notifier,String topic,AiravataRegistry2 registry,String serviceName,XBayaConfiguration config) {
+    public EmbeddedGFacInvoker(QName portTypeQName,
+                               WsdlDefinitions wsdl,
+                               String nodeID,
+                               String messageBoxURL,
+                               String gfacURL,
+                               WorkflowNotifiable notifier,
+                               String topic,
+                               AiravataAPI airavataAPI,
+                               String serviceName,
+                               XBayaConfiguration config) {
         final String wsdlStr = xsul.XmlConstants.BUILDER.serializeToString(wsdl);
         this.nodeID = nodeID;
         this.portTypeQName = portTypeQName;
@@ -201,7 +212,7 @@ public class EmbeddedGFacInvoker implements Invoker{
         this.serviceInformation = wsdlStr;
         this.gfacURL = gfacURL;
         this.notifier = notifier.createServiceNotificationSender(nodeID);
-        this.registry = registry;
+        this.airavataAPI = airavataAPI;
         this.topic = topic;
         this.serviceName = serviceName;
         this.failerSent = false;
@@ -243,7 +254,7 @@ public class EmbeddedGFacInvoker implements Invoker{
             }
             this.inputNames.add(name);
             this.inputValues.add(value);
-            ServiceDescription serviceDescription = registry.getServiceDescriptor(this.serviceName);
+            ServiceDescription serviceDescription = airavataAPI.getApplicationManager().getServiceDescription(this.serviceName);
             if(serviceDescription==null){
             	throw new RegistryException(new Exception("Service Description not found in registry."));
             }
@@ -289,7 +300,7 @@ public class EmbeddedGFacInvoker implements Invoker{
                         GFacConfiguration gFacConfiguration = new GFacConfiguration(EmbeddedGFacInvoker.this.configuration.getMyProxyServer(),
                                 EmbeddedGFacInvoker.this.configuration.getMyProxyUsername(),
                             EmbeddedGFacInvoker.this.configuration.getMyProxyPassphrase(),EmbeddedGFacInvoker.this.configuration.getMyProxyLifetime(),
-                                EmbeddedGFacInvoker.this.registry, EmbeddedGFacInvoker.this.configuration.getTrustedCertLocation());
+                                EmbeddedGFacInvoker.this.airavataAPI, EmbeddedGFacInvoker.this.configuration.getTrustedCertLocation());
 
                         GfacAPI gfacAPI1 = new GfacAPI();
                         InvocationContext defaultInvocationContext = gfacAPI1.gridJobSubmit(jobContext, gFacConfiguration);

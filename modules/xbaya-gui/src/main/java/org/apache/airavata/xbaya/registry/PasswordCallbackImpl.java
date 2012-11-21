@@ -19,11 +19,21 @@
  *
  */
 
-package org.apache.airavata.registry.api.util;
+package org.apache.airavata.xbaya.registry;
 
-public class RegistryConstants {
-    public static final String KEY_DEFAULT_GATEWAY_ID = "gateway.id";
-    public static final String KEY_DEFAULT_REGISTRY_USER = "registry.user";
-    public static final String KEY_DEFAULT_REGISTRY_URL = "registry.jdbc.url";
+import org.apache.airavata.registry.api.PasswordCallback;
 
+public class PasswordCallbackImpl implements PasswordCallback {
+    private String username;
+    private String password;
+
+    public PasswordCallbackImpl(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    @Override
+    public String getPassword(String username) {
+       return password;
+    }
 }
