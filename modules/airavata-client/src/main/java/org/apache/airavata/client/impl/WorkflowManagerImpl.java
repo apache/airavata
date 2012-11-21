@@ -30,6 +30,7 @@ import org.apache.airavata.client.AiravataClient;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.WorkflowManager;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowData;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
@@ -327,5 +328,32 @@ public class WorkflowManagerImpl implements WorkflowManager {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
+
+    @Override
+    public boolean isWorkflowExists(String workflowName) throws AiravataAPIInvocationException {
+        try {
+            return getClient().getRegistryClient().isWorkflowExists(workflowName);
+        } catch (RegistryException e) {
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void updateWorkflow(String workflowName, String workflowGraphXml) throws AiravataAPIInvocationException {
+        try {
+            getClient().getRegistryClient().updateWorkflow(workflowName, workflowGraphXml);
+        } catch (RegistryException e) {
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
+    public void removeWorkflow(String workflowName) throws AiravataAPIInvocationException {
+        try {
+            getClient().getRegistryClient().removeWorkflow(workflowName);
+        } catch (RegistryException e) {
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
 
 }

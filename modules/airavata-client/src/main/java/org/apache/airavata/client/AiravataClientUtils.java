@@ -29,29 +29,31 @@ import java.util.Map;
 import javax.jcr.RepositoryException;
 
 import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.impl.PasswordCallBackImpl;
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.rest.utils.Callback;
+import org.apache.airavata.registry.api.Callback;
 
 public class AiravataClientUtils {
 	public static AiravataAPI getAPI(URI registryURL, String username, String password) throws MalformedURLException, RepositoryException, RegistryException{
 		return getAPI(registryURL, username, password, username);
 	}
 
-    public static AiravataAPI getAPI(URI registryURL, String username, Callback callback) throws MalformedURLException, RepositoryException, RegistryException{
+    public static AiravataAPI getAPI(URI registryURL, String username, String alternateUsername, Callback callback) throws MalformedURLException, RepositoryException, RegistryException{
         AiravataClient apiObj = new AiravataClient();
-        apiObj.setCurrentUser(username);
+        apiObj.setCurrentUser(alternateUsername);
         apiObj.setCallBack(callback);
         apiObj.setPassword(callback.getPassword(username));
         apiObj.setRegitryURI(registryURL);
         return apiObj;
     }
 
+    public static AiravataAPI getAPI(URI registryURL, String username, Callback callback) throws MalformedURLException, RepositoryException, RegistryException{
+        return getAPI(registryURL, username, username, callback);
+    }
+
 	public static AiravataAPI getAPI(URI registryURL, String username, String password, String alternateUsername) throws MalformedURLException, RepositoryException, RegistryException{
-		AiravataClient apiObj = new AiravataClient();
-		apiObj.setCurrentUser(alternateUsername);
-        apiObj.setPassword(password);
-        apiObj.setRegitryURI(registryURL);
-		return apiObj;
+        AiravataAPI airavataAPI = getAPI(registryURL, username, new PasswordCallBackImpl(username, password));
+		return airavataAPI;
 	}
 
     @Deprecated

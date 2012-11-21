@@ -339,4 +339,6 @@ public interface ProvenanceManager {
     public void setWorkflowNodeType(WorkflowInstanceNode node, WorkflowNodeType type) throws AiravataAPIInvocationException;
 
     public void setWorkflowInstanceTemplateName(String workflowInstanceId,String templateName) throws AiravataAPIInvocationException;
+
+    public void saveWorkflowExecutionOutput(String experimentId, String outputNodeName, String output) throws AiravataAPIInvocationException;
 }

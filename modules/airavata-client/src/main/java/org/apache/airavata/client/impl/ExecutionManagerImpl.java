@@ -21,20 +21,18 @@
 
 package org.apache.airavata.client.impl;
 
-import java.util.Calendar;
-import java.util.List;
-
 import org.apache.airavata.client.AiravataClient;
 import org.apache.airavata.client.AiravataClientConfiguration;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.ExecutionManager;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
-import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.apache.airavata.ws.monitor.Monitor;
 import org.apache.airavata.ws.monitor.MonitorEventListener;
+
+import java.util.Calendar;
+import java.util.List;
 
 public class ExecutionManagerImpl implements ExecutionManager {
 	private AiravataClient client;

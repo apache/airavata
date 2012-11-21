@@ -21,7 +21,7 @@
 
 package org.apache.airavata.client.impl;
 
-import org.apache.airavata.rest.utils.Callback;
+import org.apache.airavata.registry.api.Callback;
 
 public class PasswordCallBackImpl implements Callback {
     private String username;
