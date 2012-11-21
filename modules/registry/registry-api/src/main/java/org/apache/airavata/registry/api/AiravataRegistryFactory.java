@@ -22,6 +22,7 @@
 package org.apache.airavata.registry.api;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Properties;
 
@@ -40,7 +41,7 @@ public class AiravataRegistryFactory {
 	/***
 	 * Return a registry accessor object capable of handling all data in the
 	 * registry
-	 *
+	 * @deprecated
 	 * @param gateway
 	 * @param user
 	 * @return
@@ -59,6 +60,34 @@ public class AiravataRegistryFactory {
 		if (registryObj instanceof AiravataRegistry2) {
 			AiravataRegistry2 registry = (AiravataRegistry2) registryObj;
 			registry.preInitialize(gateway, user);
+			registry.initialize();
+			return registry;
+		}
+		throw new RegistryAccessorInvalidException(registryObj.getClass()
+				.getName());
+	}
+	
+	/***
+	 * Return a registry accessor object capable of handling all data in the
+	 * registry
+	 * @param gateway
+	 * @param user
+	 * @return
+	 * @throws RegistryAccessorNotFoundException
+	 * @throws RegistryAccessorUndefinedException
+	 * @throws RegistryAccessorInstantiateException
+	 * @throws AiravataConfigurationException
+	 * @throws RegistryAccessorInvalidException
+	 */
+	public static AiravataRegistry2 getRegistry(URI connectionURI, Gateway gateway,
+			AiravataUser user, Callback callback) throws RegistryAccessorNotFoundException,
+			RegistryAccessorUndefinedException,
+			RegistryAccessorInstantiateException,
+			AiravataConfigurationException, RegistryAccessorInvalidException {
+		Object registryObj = getRegistryClass(REGISTRY_ACCESSOR_CLASS);
+		if (registryObj instanceof AiravataRegistry2) {
+			AiravataRegistry2 registry = (AiravataRegistry2) registryObj;
+			registry.preInitialize(connectionURI, gateway, user, callback);
 			registry.initialize();
 			return registry;
 		}

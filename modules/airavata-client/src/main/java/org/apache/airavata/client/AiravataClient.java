@@ -63,15 +63,21 @@ import org.apache.airavata.client.impl.UserManagerImpl;
 import org.apache.airavata.client.impl.WorkflowManagerImpl;
 import org.apache.airavata.client.stub.interpretor.NameValue;
 import org.apache.airavata.client.stub.interpretor.WorkflowInterpretorStub;
+import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataRegistryFactory;
+import org.apache.airavata.registry.api.AiravataUser;
+import org.apache.airavata.registry.api.Callback;
+import org.apache.airavata.registry.api.Gateway;
+import org.apache.airavata.registry.api.exception.RegistryAccessorInstantiateException;
+import org.apache.airavata.registry.api.exception.RegistryAccessorInvalidException;
+import org.apache.airavata.registry.api.exception.RegistryAccessorNotFoundException;
+import org.apache.airavata.registry.api.exception.RegistryAccessorUndefinedException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
-import org.apache.airavata.rest.client.RegistryClient;
-import org.apache.airavata.registry.api.Callback;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
 import org.apache.airavata.workflow.model.graph.GraphException;
@@ -124,6 +130,7 @@ public class AiravataClient implements AiravataAPI {
 	private ProvenanceManagerImpl provenanceManagerImpl;
 	private UserManagerImpl userManagerImpl;
 	private ExecutionManagerImpl executionManagerImpl;
+	private String gateway;
 
 	// private NameValue[] configurations = new NameValue[7];
 
@@ -353,21 +360,21 @@ public class AiravataClient implements AiravataAPI {
 		}
 	}
 
-	public String runWorkflow(String topic) {
+	public String runWorkflow(String topic) throws AiravataConfigurationException {
 		return runWorkflow(topic, (String) null);
 	}
 
-	public String runWorkflow(String topic, String user) {
+	public String runWorkflow(String topic, String user) throws AiravataConfigurationException {
 		return runWorkflow(topic, user, null, topic);
 	}
 
 	public String runWorkflow(String topic, String user, String metadata,
-			String workflowInstanceName) {
+			String workflowInstanceName) throws AiravataConfigurationException {
 		return runWorkflow(topic, user, metadata, workflowInstanceName, builder);
 	}
 
 	public String runWorkflow(String topic, String user, String metadata,
-			String workflowInstanceName, WorkflowContextHeaderBuilder builder) {
+			String workflowInstanceName, WorkflowContextHeaderBuilder builder) throws AiravataConfigurationException {
 		String worflowoutput = null;
 		try {
 			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(
@@ -414,7 +421,7 @@ public class AiravataClient implements AiravataAPI {
 	}
 
 	private void runPreWorkflowExecutionTasks(String topic, String user,
-			String metadata, String experimentName) throws RegistryException {
+			String metadata, String experimentName) throws RegistryException, AiravataConfigurationException {
 		if (user != null) {
 			getRegistryClient().updateExperimentExecutionUser(topic, user);
 		}
@@ -447,7 +454,7 @@ public class AiravataClient implements AiravataAPI {
 	public String runWorkflow(final String topic, final NameValue[] inputs,
 			final String user, final String metadata,
 			final String experimentName,
-			final WorkflowContextHeaderBuilder builder) throws AiravataAPIInvocationException {
+			final WorkflowContextHeaderBuilder builder) throws AiravataAPIInvocationException, AiravataConfigurationException {
 		return runWorkflow(topic, inputs, user, metadata, experimentName,
 				builder, true);
 	}
@@ -459,7 +466,7 @@ public class AiravataClient implements AiravataAPI {
 			final String user, final String metadata,
 			final String experimentName,
 			final WorkflowContextHeaderBuilder builder, boolean launchOnThread)
-			throws AiravataAPIInvocationException {
+			throws AiravataAPIInvocationException, AiravataConfigurationException {
 		try {
 			runPreWorkflowExecutionTasks(topic, user, metadata, experimentName);
 		} catch (RegistryException e) {
@@ -490,12 +497,12 @@ public class AiravataClient implements AiravataAPI {
 	}
 
 	public List<ExperimentData> getWorkflowExecutionDataByUser(String user)
-			throws RegistryException {
+			throws RegistryException, AiravataConfigurationException {
 		return getRegistryClient().getExperimentByUser(user);
 	}
 
 	public ExperimentData getWorkflowExecutionData(String topic)
-			throws RegistryException {
+			throws RegistryException, AiravataConfigurationException {
 		return getRegistryClient().getExperiment(topic);
 	}
 
@@ -513,9 +520,13 @@ public class AiravataClient implements AiravataAPI {
 		AiravataClient.workflow = workflow;
 	}
 
-	public AiravataRegistry2 getRegistryClient(){
-        RegistryClient registryClient = new RegistryClient(getCurrentUser(), getCallBack());
-        return registryClient;
+	public AiravataRegistry2 getRegistryClient() throws RegistryAccessorNotFoundException, RegistryAccessorUndefinedException, RegistryAccessorInstantiateException, AiravataConfigurationException, RegistryAccessorInvalidException{
+		if (registry==null) {
+			registry = AiravataRegistryFactory.getRegistry(getRegitryURI(),
+					new Gateway(getGateway()), new AiravataUser(
+							getCurrentUser()), getCallBack());
+		}
+        return registry;
     }
 
 
@@ -1004,4 +1015,13 @@ public class AiravataClient implements AiravataAPI {
     public void setCallBack(Callback callBack) {
         this.callBack = callBack;
     }
+    
+
+	public String getGateway() {
+		return gateway;
+	}
+
+	public void setGateway(String gateway) {
+		this.gateway = gateway;
+	}
 }
