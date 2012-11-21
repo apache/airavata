@@ -30,7 +30,7 @@ import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.gateway.*;
 import org.apache.airavata.registry.api.exception.worker.*;
 import org.apache.airavata.registry.api.workflow.*;
-import org.apache.airavata.rest.utils.Callback;
+import org.apache.airavata.registry.api.Callback;
 
 import java.net.URI;
 import java.util.Date;
