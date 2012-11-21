@@ -241,7 +241,10 @@
 				<include>org.apache.airavata:airavata-message-monitor:jar</include>
 				<include>org.apache.airavata:airavata-client-api:jar</include>
 				<include>org.apache.airavata:airavata-jpa-registry:jar</include>
+                <include>org.apache.airavata:airavata-rest-mappings:jar</include>
+                <include>org.apache.airavata:airavata-rest-client:jar</include>
 				<include>org.apache.openjpa:openjpa-all:jar</include>
+                <include>com.sun.jersey:jersey-client:jar</include>
 				<include>edu.berkeley:yfilter</include>
 				<include>edu.berkeley:yfilter</include>
 				<include>javax.servlet:servlet-api</include>

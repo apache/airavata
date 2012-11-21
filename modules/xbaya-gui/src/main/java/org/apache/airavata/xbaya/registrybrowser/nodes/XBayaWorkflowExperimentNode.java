@@ -28,6 +28,7 @@ import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
 import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflowExperiment;
@@ -51,8 +52,8 @@ public class XBayaWorkflowExperimentNode extends AbstractAiravataTreeNode {
     public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
     	if (workflowExecutionName==null) {
 			try {
-				workflowExecutionName = getRegistry().getExperimentName(getExperiment().getExperimentId());
-			} catch (RegistryException e) {
+				workflowExecutionName = getRegistry().getProvenanceManager().getExperimentName(getExperiment().getExperimentId()).getInstanceName();
+			} catch (AiravataAPIInvocationException e) {
 				e.printStackTrace();
 			}
 			if (workflowExecutionName==null){
@@ -61,14 +62,14 @@ public class XBayaWorkflowExperimentNode extends AbstractAiravataTreeNode {
 		}
     	String caption=workflowExecutionName;
     	try {
-			WorkflowInstanceStatus workflowExecutionStatus = getRegistry().getWorkflowInstanceStatus(getExperiment().getExperimentId());
+			WorkflowInstanceStatus workflowExecutionStatus = getRegistry().getProvenanceManager().getWorkflowInstanceStatus(getExperiment().getExperimentId(), getExperiment().getExperimentId());
 			if (workflowExecutionStatus!=null && workflowExecutionStatus.getExecutionStatus()!=null){
 				caption += " - <i>" + workflowExecutionStatus.getExecutionStatus().toString()+"</i>";
 				if (workflowExecutionStatus.getStatusUpdateTime()!=null) {
 						caption += "<i> as of " + workflowExecutionStatus.getStatusUpdateTime().toString() + "</i>";
 				}
 			}
-		} catch (RegistryException e) {
+		} catch (AiravataAPIInvocationException e) {
 			e.printStackTrace();
 		}
 		return wrapAsHtml(caption);

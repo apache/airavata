@@ -28,9 +28,11 @@ import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.xbaya.model.registrybrowser.HostDescriptions;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.AddAction;
@@ -50,7 +52,7 @@ public class HostDescriptionsNode extends AbstractAiravataTreeNode {
     protected List<TreeNode> getChildren() {
         try {
             return getTreeNodeList(getHostDescriptions().getDescriptions().toArray(), this);
-        } catch (RegistryException e) {
+        } catch (AiravataAPIInvocationException e) {
             e.printStackTrace();
             return emptyList();
         }
@@ -84,7 +86,7 @@ public class HostDescriptionsNode extends AbstractAiravataTreeNode {
             deleteHostDescription(tree);
             return true;
         } else if (action.equals(AddAction.ID)) {
-            HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(getXBayaEngine().getConfiguration().getJcrComponentRegistry().getRegistry(), null);
+            HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(getXBayaEngine().getConfiguration().getJcrComponentRegistry().getAiravataAPI(), null);
             hostDescriptionDialog.open();
             if (hostDescriptionDialog.isHostCreated()) {
                 refresh();
@@ -98,10 +100,10 @@ public class HostDescriptionsNode extends AbstractAiravataTreeNode {
     private void deleteHostDescription(JTree tree) throws Exception {
         if (askQuestion("Host descriptions",
                 "Are you sure that you want to remove all host descriptions in this registry?")) {
-            AiravataRegistry2 registry = getRegistry();
+            AiravataAPI registry = getRegistry();
             List<HostDescription> descriptions = getHostDescriptions().getDescriptions();
             for (HostDescription descriptionWrap : descriptions) {
-                registry.removeHostDescriptor(descriptionWrap.getType().getHostName());
+                registry.getApplicationManager().removeHostDescriptor(descriptionWrap.getType().getHostName());
             }
             refresh();
             reloadTreeNode(tree, this);

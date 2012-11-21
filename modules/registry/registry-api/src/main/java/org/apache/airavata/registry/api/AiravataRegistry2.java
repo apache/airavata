@@ -36,7 +36,7 @@ public abstract class AiravataRegistry2 extends Observable implements Descriptor
 		setUser(user);
 	}
 	
-	protected void preInitialize(URI connectionURI, Gateway gateway, AiravataUser user, Callback callback) {
+	protected void preInitialize(URI connectionURI, Gateway gateway, AiravataUser user, PasswordCallback callback) {
 		setConnectionURI(connectionURI);
 		setGateway(gateway);
 		setUser(user);

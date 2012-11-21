@@ -27,6 +27,7 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.tree.TreeNode;
 
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.xbaya.model.registrybrowser.MessageBoxURLs;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.RefreshAction;
@@ -41,7 +42,12 @@ public class MessageBoxURLsNode extends AbstractAiravataTreeNode {
 
     @Override
     protected List<TreeNode> getChildren() {
-        return getTreeNodeList(getMessageBoxURLs().getURLS().toArray(), this);
+        try {
+            return getTreeNodeList(getMessageBoxURLs().getURLS().toArray(), this);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override

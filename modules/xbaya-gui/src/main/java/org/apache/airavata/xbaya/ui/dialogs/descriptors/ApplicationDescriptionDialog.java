@@ -48,12 +48,14 @@ import javax.swing.JTextField;
 import javax.swing.ProgressMonitor;
 import javax.swing.SwingConstants;
 
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
@@ -75,7 +77,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     private XBayaTextField txtAppName;
     private XBayaTextField txtTempDir;
 
-    private AiravataRegistry2 registry;
+    private AiravataAPI registry;
     private ApplicationDeploymentDescription shellApplicationDescription;
     private JLabel lblError;
     private boolean applcationDescCreated = false;
@@ -119,7 +121,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     	setOriginalDeploymentDescription(originalDeploymentDescription);
     	setOriginalHost(originalHost);
     	setOriginalService(originalService);
-        setRegistry(engine.getConfiguration().getJcrComponentRegistry().getRegistry());
+        setRegistry(engine.getConfiguration().getJcrComponentRegistry().getAiravataAPI());
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent arg0) {
@@ -129,7 +131,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 					String defaultName = baseName + i;
 					try {
 						ApplicationDeploymentDescription applicationDeploymentDescription = getRegistry()
-								.getApplicationDescriptors(getServiceName(),
+								.getApplicationManager().getDeploymentDescription(getServiceName(),
 										getHostName());
 						while (true) {
 							boolean notFound = true;
@@ -156,12 +158,12 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         iniGUI();
         if (originalService!=null){
     		try {
-    			ServiceDescription disc = getRegistry().getServiceDescriptor(originalService);
+    			ServiceDescription disc = getRegistry().getApplicationManager().getServiceDescription(originalService);
     			if(disc!=null){
     				setServiceDescription(disc);
     			}
-    			throw new RegistryException(new Exception("Service Description not found in registry."));
-			} catch (RegistryException e) {
+    			throw new AiravataAPIInvocationException(new Exception("Service Description not found in registry."));
+			} catch (AiravataAPIInvocationException e) {
 				e.printStackTrace();
 			}
     	}
@@ -354,7 +356,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             lnkNewHost.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     try {
-                        HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine.getConfiguration().getJcrComponentRegistry().getRegistry(), null);
+                        HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine.getConfiguration().getJcrComponentRegistry().getAiravataAPI(), null);
                         hostDescriptionDialog.setLocationRelativeTo(getContentPane());
                         hostDescriptionDialog.open();
 
@@ -519,7 +521,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         cmbHostName.removeAllItems();
         setHostName(null);
         try {
-            List<HostDescription> hostDescriptions = getRegistry().getHostDescriptors();
+            List<HostDescription> hostDescriptions = getRegistry().getApplicationManager().getAllHostDescriptions();
             for (HostDescription hostDescription : hostDescriptions) {
                 if (hostDescription.getType().getHostName() == null) {
                     cmbHostName.addItem(hostDescription.getType().getHostName());
@@ -605,21 +607,21 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     public void saveApplicationDescription() {
         try {
 			try {
-				getRegistry().addApplicationDescriptor(getServiceName(), getHostName(), getShellApplicationDescription());
-			} catch (DescriptorAlreadyExistsException e) {
-				getRegistry().updateApplicationDescriptor(getServiceName(), getHostName(), getShellApplicationDescription());
+				getRegistry().getApplicationManager().saveDeploymentDescription(getServiceName(), getHostName(), getShellApplicationDescription());
+			} catch (AiravataAPIInvocationException e) {
+				getRegistry().getApplicationManager().updateApplicationDescriptor(getServiceName(), getHostName(), getShellApplicationDescription());
 			}
 			if (!isNewDescritor() && (!getServiceName().equals(getOriginalService()) || !getHostName().equals(getOriginalHost()))) {
 				try {
-					getRegistry().removeApplicationDescriptor(getOriginalService(),
+					getRegistry().getApplicationManager().deleteDeploymentDescription(getOriginalService(),
 							getOriginalHost(),getOriginalDeploymentDescription().getType()
 							.getApplicationName().getStringValue());
-				} catch (RegistryException e) {
+				} catch (AiravataAPIInvocationException e) {
 					engine.getGUI().getErrorWindow().error(e);
 				}
 			}
 			setApplicationDescCreated(true);
-		} catch (RegistryException e) {
+		} catch (AiravataAPIInvocationException e) {
 			engine.getGUI().getErrorWindow().error(e);
 		}
     }
@@ -658,9 +660,9 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 
         ApplicationDeploymentDescription deploymentDescriptions = null;
         try {
-            deploymentDescriptions = getRegistry().getApplicationDescriptor(getServiceName(), getHostName(),
+            deploymentDescriptions = getRegistry().getApplicationManager().getApplicationDescriptor(getServiceName(), getHostName(),
                     getApplicationName());
-        } catch (RegistryException e) {
+        } catch (AiravataAPIInvocationException e) {
             throw e;
         }
         if (deploymentDescriptions!=null && (isNewDescritor() || (!getServiceName().equals(getOriginalService()) || !getHostName().equals(getOriginalHost())))) {
@@ -703,7 +705,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         if (hostName!=null) {
 			HostDescription hostDescription;
 			try {
-				hostDescription = registry.getHostDescriptor(hostName);
+				hostDescription = registry.getApplicationManager().getHostDescription(hostName);
 				if (hostDescription.getType() instanceof GlobusHostType) {
 					getShellApplicationDescription().getType().changeType(
 							GramApplicationDeploymentType.type);
@@ -717,7 +719,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 				btnExecBrowse.setVisible(isLocal);
 				btnTmpDirBrowse.setVisible(isLocal);
 				
-			} catch (RegistryException e) {
+			} catch (AiravataAPIInvocationException e) {
 				//not there - ouch
 			}
 		}
@@ -761,11 +763,11 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         }
     }
 
-    public AiravataRegistry2 getRegistry() {
+    public AiravataAPI getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry2 registry) {
+    public void setRegistry(AiravataAPI registry) {
         this.registry = registry;
     }
 

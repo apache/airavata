@@ -49,10 +49,11 @@ public class ApplicationManagerImpl implements ApplicationManager {
 			if(desc!=null){
 	        	return desc;
 	        }
-			throw new AiravataAPIInvocationException(new Exception("Service Description not found in registry."));
+//			throw new AiravataAPIInvocationException(new Exception("Service Description not found in registry."));
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
+        return null;
 	}
 
 	@Override

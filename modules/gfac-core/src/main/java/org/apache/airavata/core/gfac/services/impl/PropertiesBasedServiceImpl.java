@@ -21,12 +21,8 @@
 
 package org.apache.airavata.core.gfac.services.impl;
 
-import java.lang.reflect.Array;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
-
+import org.apache.airavata.client.AiravataClientUtils;
+import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
@@ -39,14 +35,22 @@ import org.apache.airavata.core.gfac.extension.ExitableChain;
 import org.apache.airavata.core.gfac.extension.PostExecuteChain;
 import org.apache.airavata.core.gfac.extension.PreExecuteChain;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
-import org.apache.airavata.core.gfac.utils.LogUtils;
-import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.util.RegistryUtils;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jcr.RepositoryException;
+import java.lang.reflect.Array;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * This generic service implementation will load Registry service and Data Catalog from property file using (Apache
@@ -101,11 +105,15 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     public static final String MYPROXY_PASS = "myproxy.pass";
     public static final String MYPROXY_LIFE = "myproxy.life";
 
+    public static final String REGISTRY_PASSWORD = "registry.password";
+    public static final String REGISTRY_USER = "registry.user";
+    public static final String REGISTRY_URL = "registry.jdbc.url";
+
     private Scheduler scheduler;
     private PreExecuteChain[] preChain;
     private PostExecuteChain[] postChain;
     private DataServiceChain[] dataChain;
-    private AiravataRegistry2 registryService;
+    private AiravataAPI airavataAPI;
 
     private String fileName = DEFAULT_FILENAME;
     private Configuration config;
@@ -202,7 +210,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
          */
         if (context.getExecutionContext() == null || context.getExecutionContext().getRegistryService() == null) {
 
-            if (this.registryService == null) {
+            if (this.airavataAPI == null) {
                 log.info("try to create default registry service (JCR Implementation)");
 
                 // JCR
@@ -235,7 +243,22 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
                 if (map.size() == 0)
                     map = null;
 
-                this.registryService = RegistryUtils.getRegistryFromConfig(this.getClass().getClassLoader().getResource(REPOSITORY_PROPERTIES));
+                URI baseUri = null;
+                try {
+                    baseUri = new URI(loadFromProperty(REGISTRY_URL, true));
+                    String regUser = loadFromProperty(REGISTRY_USER, true);
+                    String regUserPW = loadFromProperty(REGISTRY_PASSWORD, true);
+                    airavataAPI = AiravataClientUtils.getAPI(baseUri, regUser, regUserPW);
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                } catch (RepositoryException e) {
+                    e.printStackTrace();
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (RegistryException e) {
+                    e.printStackTrace();
+                }
+
 
                 log.info("Default registry service is created");
             }
@@ -243,7 +266,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
             /*
              * If there is no specific registry service, use the default one.
              */
-            ((DefaultExecutionContext) context.getExecutionContext()).setRegistryService(this.registryService);
+            ((DefaultExecutionContext) context.getExecutionContext()).setRegistryService(this.airavataAPI);
         }
     }
 

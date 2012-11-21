@@ -61,10 +61,12 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.schemas.gfac.DataType;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
@@ -90,7 +92,7 @@ public class ServiceDescriptionDialog extends JDialog {
     private JButton okButton;
     private JButton btnDeleteParameter;
     private DefaultTableModel defaultTableModel;
-    private AiravataRegistry2 registry;
+    private AiravataAPI registry;
     private boolean newDescription;
     private boolean ignoreTableChanges=false;
 	private JCheckBox chkForceFileStagingToWorkDir;
@@ -111,18 +113,18 @@ public class ServiceDescriptionDialog extends JDialog {
         }
     }
 
-    public ServiceDescriptionDialog(AiravataRegistry2 registry) {
+    public ServiceDescriptionDialog(AiravataAPI registry) {
     	this(registry,true,null);
     }
     
-    public ServiceDescriptionDialog(AiravataRegistry2 registry, boolean newDescription, ServiceDescription serviceDescription) {
+    public ServiceDescriptionDialog(AiravataAPI registry, boolean newDescription, ServiceDescription serviceDescription) {
     	this(registry, newDescription, serviceDescription, true, null);
     }
     
     /**
      * Create the dialog.
      */
-    public ServiceDescriptionDialog(AiravataRegistry2 registry, boolean newDescription, ServiceDescription serviceDescription, boolean serviceDescriptionMode, String suggestedNamePrefix) {
+    public ServiceDescriptionDialog(AiravataAPI registry, boolean newDescription, ServiceDescription serviceDescription, boolean serviceDescriptionMode, String suggestedNamePrefix) {
     	setNewDescription(newDescription);
     	this.setOrginalServiceDescription(serviceDescription);
     	setServiceDescriptionMode(serviceDescriptionMode);
@@ -147,7 +149,7 @@ public class ServiceDescriptionDialog extends JDialog {
 						defaultName = baseName;
 					}
 					try {
-						while (getRegistry().isServiceDescriptorExists(defaultName)) {
+						while (getRegistry().getApplicationManager().isServiceDescriptorExists(defaultName)) {
 							defaultName = baseName + (++i);
 						}
 					} catch (Exception e) {
@@ -559,8 +561,8 @@ public class ServiceDescriptionDialog extends JDialog {
 
         ServiceDescription serviceDescription2 = null;
         try {
-            serviceDescription2 = getRegistry().getServiceDescriptor(getServiceName());
-        } catch (RegistryException e) {
+            serviceDescription2 = getRegistry().getApplicationManager().getServiceDescription(getServiceName());
+        } catch (AiravataAPIInvocationException e) {
             if (e.getCause() instanceof PathNotFoundException) {
                 // non-existant name. just want we want
             } else {
@@ -606,13 +608,13 @@ public class ServiceDescriptionDialog extends JDialog {
         getServiceDescriptionType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[] {}));
 
         try {
-			if (getRegistry().isServiceDescriptorExists(getServiceDescription().getType().getName())) {
-				getRegistry().updateServiceDescriptor(getServiceDescription());
+			if (getRegistry().getApplicationManager().isServiceDescriptorExists(getServiceDescription().getType().getName())) {
+				getRegistry().getApplicationManager().updateServiceDescriptor(getServiceDescription());
 			}else{
-				getRegistry().addServiceDescriptor(getServiceDescription());
+				getRegistry().getApplicationManager().saveServiceDescription(getServiceDescription());
 			}
 			setServiceCreated(true);
-		} catch (RegistryException e) {
+		} catch (AiravataAPIInvocationException e) {
 			e.printStackTrace();
 			setError(e.getMessage());
 		}
@@ -657,11 +659,11 @@ public class ServiceDescriptionDialog extends JDialog {
 		}
     }
 
-    public AiravataRegistry2 getRegistry() {
+    public AiravataAPI getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry2 registry) {
+    public void setRegistry(AiravataAPI registry) {
         this.registry = registry;
     }
 

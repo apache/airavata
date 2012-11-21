@@ -40,6 +40,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
@@ -121,7 +122,11 @@ public class DynamicWorkflowRunnerWindow {
     public void show() {
         this.workflow = this.engine.getGUI().getWorkflow();
         List<URI> urlList=null;
-		urlList = this.engine.getConfiguration().getJcrComponentRegistry().getRegistry().getGFacURIs();
+        try {
+            urlList = this.engine.getConfiguration().getJcrComponentRegistry().getAiravataAPI().getAiravataManager().getGFaCURLs();
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();
+        }
         // When run xbaya continously urls can be repeating, so first remove everything and then add
         this.gfacUrlListField.removeAllItems();
         for (URI gfacUrl : urlList) {
@@ -351,7 +356,7 @@ public class DynamicWorkflowRunnerWindow {
             @Override
             public void run() {
                 XBayaConfiguration conf = DynamicWorkflowRunnerWindow.this.engine.getConfiguration();
-                WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(engine.getGUI().getWorkflow(),topicString,conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getJcrComponentRegistry().getRegistry(), conf, DynamicWorkflowRunnerWindow.this.engine.getGUI(), DynamicWorkflowRunnerWindow.this.engine.getMonitor());
+                WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(engine.getGUI().getWorkflow(),topicString,conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getJcrComponentRegistry().getAiravataAPI(), conf, DynamicWorkflowRunnerWindow.this.engine.getGUI(), DynamicWorkflowRunnerWindow.this.engine.getMonitor());
                 workflowInterpreterConfiguration.setRunWithCrossProduct(isRunCrossProduct);
 
                 WorkflowInterpreter workflowInterpreter = new WorkflowInterpreter(

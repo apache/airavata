@@ -37,7 +37,8 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.RefreshAction;
@@ -192,7 +193,7 @@ public abstract class AbstractAiravataTreeNode implements TreeNode {
         return rootNode;
     }
 
-    public AiravataRegistry2 getRegistry() {
+    public AiravataAPI getRegistry() {
         TreeNode rootNode = getRootNode();
         if (rootNode instanceof RegistryNode) {
             return ((RegistryNode) rootNode).getRegistry();

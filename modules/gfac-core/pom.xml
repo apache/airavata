@@ -82,7 +82,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-registry-api</artifactId>
+            <artifactId>airavata-client-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -140,11 +140,11 @@
             <version>0.2.9</version>
             <type>jar</type>
         </dependency>
-         <dependency>
+         <!--dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-jpa-registry</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency-->
     </dependencies>
 
 </project>

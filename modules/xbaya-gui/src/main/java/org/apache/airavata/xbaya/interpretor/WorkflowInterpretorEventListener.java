@@ -83,8 +83,8 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
         this.wseClient = new WseMsgBrokerClient();
         this.wseClient.init(this.brokerURL.toString());
         this.workflowInterpreterConfiguration = WorkflowInterpreter.getWorkflowInterpreterConfiguration();
-        this.workflowNodeStatusUpdater = new WorkflowNodeStatusUpdater(this.workflowInterpreterConfiguration.getRegistry());
-        this.workflowStatusUpdater = new WorkflowStatusUpdater(this.workflowInterpreterConfiguration.getRegistry());
+        this.workflowNodeStatusUpdater = new WorkflowNodeStatusUpdater(this.workflowInterpreterConfiguration.getAiravataAPI());
+        this.workflowStatusUpdater = new WorkflowStatusUpdater(this.workflowInterpreterConfiguration.getAiravataAPI());
     }
 
     public void start() throws MonitorException {

@@ -35,6 +35,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.graph.GraphException;
@@ -126,7 +127,7 @@ public class RegistryLoaderWindow {
                 } catch (Error e) {
                     RegistryLoaderWindow.this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                     hide();
-                } catch (RegistryException e) {
+                } catch (AiravataAPIInvocationException e) {
                     RegistryLoaderWindow.this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                     hide();
                 }
@@ -165,7 +166,7 @@ public class RegistryLoaderWindow {
         for (RegistrySearchResult i : this.list.getSelectedValues()) {
             try {
                 registryAccesser.deleteOGCEWorkflow(i.getResourceId());
-            } catch (RegistryException e) {
+            }  catch (AiravataAPIInvocationException e) {
                 e.printStackTrace();
             }
         }

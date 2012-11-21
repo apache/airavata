@@ -30,8 +30,13 @@ import java.util.List;
 import org.apache.airavata.client.AiravataClient;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.AiravataManager;
+import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.Gateway;
+import org.apache.airavata.registry.api.exception.RegistryAccessorInstantiateException;
+import org.apache.airavata.registry.api.exception.RegistryAccessorInvalidException;
+import org.apache.airavata.registry.api.exception.RegistryAccessorNotFoundException;
+import org.apache.airavata.registry.api.exception.RegistryAccessorUndefinedException;
 
 public class AiravataManagerImpl implements AiravataManager {
 	private AiravataClient client;
@@ -124,8 +129,8 @@ public class AiravataManagerImpl implements AiravataManager {
 	@Override
 	public URI getMessageBoxServiceURL() throws AiravataAPIInvocationException {
 		try {
-			return getClient().getClientConfiguration().getMessageboxURL().toURI();
-		} catch (URISyntaxException e) {
+			return getClient().getRegistryClient().getMessageBoxURI();
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
@@ -153,11 +158,11 @@ public class AiravataManagerImpl implements AiravataManager {
 	@Override
 	public URI getEventingServiceURL() throws AiravataAPIInvocationException {
 		try {
-			return getClient().getClientConfiguration().getMessagebrokerURL().toURI();
-		} catch (URISyntaxException e) {
+			return getClient().getRegistryClient().getEventingServiceURI();
+		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
-	}
+    }
 
 	@Override
 	public URI getEventingServiceURL(URI defaultURL)

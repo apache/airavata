@@ -24,32 +24,34 @@ package org.apache.airavata.xbaya.model.registrybrowser;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.workflow.WorkflowInstance;
 
 public class XBayaWorkflowExperiment {
 	private List<XBayaWorkflow> workflows;
 	private String experimentId;
-	private AiravataRegistry2 registry;
+	private AiravataAPI airavataAPI;
 	
-	public XBayaWorkflowExperiment(String experimentId, AiravataRegistry2 registry) {
+	public XBayaWorkflowExperiment(String experimentId, AiravataAPI airavataAPI) {
 		setExperimentId(experimentId);
-		setRegistry(registry);
+		setAiravataAPI(airavataAPI);
 	}
 
 	public List<XBayaWorkflow> getWorkflows() {
 		if (workflows==null){
 			workflows=new ArrayList<XBayaWorkflow>();
 			try {
-				List<WorkflowInstance> experimentWorkflowInstances = getRegistry().getExperimentWorkflowInstances(getExperimentId());
+				List<WorkflowInstance> experimentWorkflowInstances = getAiravataAPI().getProvenanceManager().getExperimentWorkflowInstances(getExperimentId());
 				for (WorkflowInstance workflowInstance : experimentWorkflowInstances) {
-					workflows.add(new XBayaWorkflow(workflowInstance, getRegistry()));
+					workflows.add(new XBayaWorkflow(workflowInstance, getAiravataAPI()));
 				}
-			} catch (RegistryException e) {
-				e.printStackTrace();
-			}
-		}
+			}  catch (AiravataAPIInvocationException e) {
+                e.printStackTrace();
+            }
+        }
 		return workflows;
 	}
 
@@ -69,11 +71,11 @@ public class XBayaWorkflowExperiment {
 		this.experimentId = experimentId;
 	}
 
-	public AiravataRegistry2 getRegistry() {
-		return registry;
-	}
+    public AiravataAPI getAiravataAPI() {
+        return airavataAPI;
+    }
 
-	public void setRegistry(AiravataRegistry2 registry) {
-		this.registry = registry;
-	}
+    public void setAiravataAPI(AiravataAPI airavataAPI) {
+        this.airavataAPI = airavataAPI;
+    }
 }

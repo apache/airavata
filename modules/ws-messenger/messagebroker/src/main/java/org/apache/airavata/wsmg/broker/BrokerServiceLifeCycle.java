@@ -29,10 +29,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.airavata.client.AiravataClientUtils;
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.client.tools.PeriodicExecutorThread;
 import org.apache.airavata.common.utils.ServiceUtils;
-import org.apache.airavata.registry.api.AbstractRegistryUpdaterThread;
-import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.util.RegistryUtils;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.util.RegistryUtils;
 import org.apache.airavata.wsmg.broker.handler.PublishedMessageHandler;
 import org.apache.airavata.wsmg.broker.subscription.SubscriptionManager;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
@@ -96,11 +99,14 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
         synchronized (initialized) {
             if (initialized) {
                 initialized = false;
-                AiravataRegistry2 registry = (AiravataRegistry2) configurationcontext
-                        .getProperty(JCR_REGISTRY);
+                AiravataAPI registry = (AiravataAPI) configurationcontext.getProperty(JCR_REGISTRY);
                 if(registry != null && thread != null){
-                registry.unsetEventingURI();
-                thread.interrupt();
+                    try {
+                        registry.getAiravataManager().unsetEventingURI();
+                    } catch (AiravataAPIInvocationException e) {
+                        e.printStackTrace();
+                    }
+                    thread.interrupt();
                 try {
                     thread.join();
                 } catch (InterruptedException e) {
@@ -148,7 +154,13 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
                             } catch (InterruptedException e1) {
                                 e1.printStackTrace();
                             }
-                            AiravataRegistry2 registry = RegistryUtils.getRegistryFromConfig(url);
+
+                            String userName = properties.getProperty("registry.user");
+                            String password = properties.getProperty("registry.password");
+                            String regURL = properties.getProperty("registry.jdbc.url");
+                            URI baseUri = new URI(regURL);
+
+                            AiravataAPI airavataAPI = AiravataClientUtils.getAPI(baseUri, userName, password);
                             String localAddress = ServiceUtils
                                     .generateServiceURLFromConfigurationContext(
                                             context,
@@ -157,11 +169,11 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
                                     + localAddress);
                             context.setProperty(SERVICE_URL, new URI(
                                     localAddress));
-                            context.setProperty(JCR_REGISTRY, registry);
+                            context.setProperty(JCR_REGISTRY, airavataAPI);
                             /*
                                     * Heart beat message to registry
                                     */
-                            thread = new MsgBrokerURLRegisterThread(registry, context);
+                            thread = new MsgBrokerURLRegisterThread(airavataAPI, context);
                             thread.start();
                         } catch (Exception e) {
                             log.error(e.getMessage(), e);
@@ -300,19 +312,23 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
         log.info(initedmethod + " sending method inited");
     }
 
-    class MsgBrokerURLRegisterThread extends AbstractRegistryUpdaterThread {
+    class MsgBrokerURLRegisterThread extends PeriodicExecutorThread {
 
         private ConfigurationContext context = null;
 
-        public MsgBrokerURLRegisterThread(AiravataRegistry2 registry, ConfigurationContext context) {
+        public MsgBrokerURLRegisterThread(AiravataAPI registry, ConfigurationContext context) {
             super(registry);
             this.context = context;
         }
 
 
-        protected void updateRegistry(AiravataRegistry2 registry) {
-            URI localAddress = (URI) this.context.getProperty(SERVICE_URL);
-            registry.setEventingURI(localAddress);
+        protected void updateRegistry(AiravataAPI registry) {
+            try {
+                URI localAddress = (URI) this.context.getProperty(SERVICE_URL);
+                registry.getAiravataManager().setEventingURI(localAddress);
+            } catch (AiravataAPIInvocationException e) {
+                e.printStackTrace();
+            }
             log.info("Updated Workflow Interpreter service URL in to Repository");
         }
 

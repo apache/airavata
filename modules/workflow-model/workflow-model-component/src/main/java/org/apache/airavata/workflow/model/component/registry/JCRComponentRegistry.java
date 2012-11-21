@@ -21,20 +21,11 @@
 
 package org.apache.airavata.workflow.model.component.registry;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-
-import org.apache.airavata.common.exception.AiravataConfigurationException;
+import org.apache.airavata.client.AiravataClientUtils;
+import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataRegistryConnectionDataProvider;
 import org.apache.airavata.registry.api.AiravataRegistryFactory;
-import org.apache.airavata.registry.api.AiravataUser;
-import org.apache.airavata.registry.api.Gateway;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.util.RegistryConstants;
 import org.apache.airavata.registry.api.util.WebServiceUtil;
@@ -43,16 +34,27 @@ import org.apache.airavata.workflow.model.component.ComponentRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jcr.RepositoryException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
 public class JCRComponentRegistry extends ComponentRegistry {
 
     private static final Logger log = LoggerFactory.getLogger(JCRComponentRegistry.class);
     private static final String NAME = "Application Services";
     public static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
 
-    private AiravataRegistry2 registry;
+    private AiravataAPI airavataAPI;
 
     public JCRComponentRegistry(String username, String password) throws RegistryException {
         String gatewayName=null;
+        String registryURL = null;
         AiravataRegistryConnectionDataProvider provider = AiravataRegistryFactory.getRegistryConnectionDataProvider();
 		if (provider==null){
 	        URL configURL = this.getClass().getClassLoader().getResource(REPOSITORY_PROPERTIES);
@@ -66,6 +68,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
 			            }
 		            }
 		            gatewayName = (String)properties.get(RegistryConstants.KEY_DEFAULT_GATEWAY_ID);
+                    registryURL =  properties.getProperty(RegistryConstants.KEY_DEFAULT_REGISTRY_URL);
 		        } catch (MalformedURLException e) {
 		            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 		        } catch (IOException e) {
@@ -78,6 +81,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
 					username=provider.getValue(RegistryConstants.KEY_DEFAULT_REGISTRY_USER).toString();
 				}
 				gatewayName = provider.getValue(RegistryConstants.KEY_DEFAULT_GATEWAY_ID).toString();
+                registryURL = provider.getValue(RegistryConstants.KEY_DEFAULT_REGISTRY_URL).toString();
 			} catch (Exception e) {
 				log.warn(e.getMessage());
 			}
@@ -89,10 +93,16 @@ public class JCRComponentRegistry extends ComponentRegistry {
         	gatewayName="default";	
         }
         try {
-			this.registry = AiravataRegistryFactory.getRegistry(new Gateway(gatewayName),
-                    new AiravataUser(username));
-        } catch (AiravataConfigurationException e) {
-            log.error("Error initializing AiravataRegistry2");
+            URI baseUri = new URI(registryURL);
+            //TODO callback class
+            PasswordCallBackImpl passwordCallBack = new PasswordCallBackImpl(username, password);
+            this.airavataAPI = AiravataClientUtils.getAPI(baseUri, gatewayName, username, passwordCallBack);
+        }  catch (URISyntaxException e) {
+            log.error("Error initializing Airavata Client");
+        } catch (RepositoryException e) {
+            log.error("Error initializing Airavata Client");
+        } catch (MalformedURLException e) {
+            log.error("Error initializing Airavata Client");
         }
 
     }
@@ -119,7 +129,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
     public List<ComponentReference> getComponentReferenceList() {
         List<ComponentReference> tree = new ArrayList<ComponentReference>();
         try {
-            List<ServiceDescription> services = this.registry.getServiceDescriptors();
+            List<ServiceDescription> services = this.airavataAPI.getApplicationManager().getAllServiceDescriptions();
             for (ServiceDescription serviceDescription : services) {
                 String serviceName = serviceDescription.getType().getName();
                 JCRComponentReference jcr = new JCRComponentReference(serviceName,
@@ -151,7 +161,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
 //        return registry.saveDeploymentDescription(service, host, app);
 //    }
 
-    public AiravataRegistry2 getRegistry() {
-        return registry;
+    public AiravataAPI getAiravataAPI() {
+        return airavataAPI;
     }
 }

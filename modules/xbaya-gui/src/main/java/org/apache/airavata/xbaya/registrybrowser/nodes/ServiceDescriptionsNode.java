@@ -28,9 +28,11 @@ import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.xbaya.model.registrybrowser.ServiceDescriptions;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.AddAction;
@@ -50,6 +52,9 @@ public class ServiceDescriptionsNode extends AbstractAiravataTreeNode {
     protected List<TreeNode> getChildren() {
         try {
             return getTreeNodeList(getServiceDescriptions().getDescriptions().toArray(), this);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();
+            return emptyList();
         } catch (RegistryException e) {
             e.printStackTrace();
             return emptyList();
@@ -100,10 +105,10 @@ public class ServiceDescriptionsNode extends AbstractAiravataTreeNode {
     private void deleteServiceDescription(JTree tree) throws Exception {
         if (askQuestion("Applications",
                 "Are you sure that you want to remove all applications defined in this registry?")) {
-            AiravataRegistry2 registry = getRegistry();
+            AiravataAPI registry = getRegistry();
             List<ServiceDescription> descriptions = getServiceDescriptions().getDescriptions();
             for (ServiceDescription descriptionWrap : descriptions) {
-                registry.removeServiceDescriptor(descriptionWrap.getType().getName());
+                registry.getApplicationManager().deleteServiceDescription(descriptionWrap.getType().getName());
             }
             refresh();
             reloadTreeNode(tree, this);

@@ -19,11 +19,22 @@
  *
  */
 
-package org.apache.airavata.registry.api.util;
+package org.apache.airavata.workflow.model.component.registry;
 
-public class RegistryConstants {
-    public static final String KEY_DEFAULT_GATEWAY_ID = "gateway.id";
-    public static final String KEY_DEFAULT_REGISTRY_USER = "registry.user";
-    public static final String KEY_DEFAULT_REGISTRY_URL = "registry.jdbc.url";
+import org.apache.airavata.registry.api.PasswordCallback;
 
+public class PasswordCallBackImpl implements PasswordCallback {
+
+    private String userName;
+    private String password;
+
+    public PasswordCallBackImpl(String userName, String password) {
+        this.userName = userName;
+        this.password = password;
+    }
+
+    @Override
+    public String getPassword(String s) {
+        return password;
+    }
 }

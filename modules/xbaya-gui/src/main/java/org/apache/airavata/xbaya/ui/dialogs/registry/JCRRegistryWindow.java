@@ -111,6 +111,7 @@ public class JCRRegistryWindow {
         configuration.setRegigstryUserName(username);
         configuration.setRegistryPassphrase(password);
         configuration.setRegistryURL(url);
+        configuration.setAiravataAPI(registry.getAiravataAPI());
         engine.updateXBayaConfigurationServiceURLs();
         hide();
 

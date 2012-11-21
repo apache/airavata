@@ -83,7 +83,7 @@ public class GFacMessageReciever implements MessageReceiver {
     public static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
     private GFacConfiguration gfacContext;
     private GenericService service;
-    private AiravataRegistry2 registry;
+//    private AiravataRegistry2 registry;
     private  GfacAPI gfacAPI;
 
     public void receive(org.apache.axis2.context.MessageContext axisRequestMsgCtx) throws AxisFault {

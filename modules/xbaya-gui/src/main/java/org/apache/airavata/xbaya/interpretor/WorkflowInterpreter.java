@@ -42,6 +42,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
@@ -134,15 +135,11 @@ public class WorkflowInterpreter {
     public static ThreadLocal<WorkflowInterpreterConfiguration> workflowInterpreterConfigurationThreadLocal =
             new ThreadLocal<WorkflowInterpreterConfiguration>();
 
-	/**
-	 *
-	 * Constructs a WorkflowInterpreter.
-	 *
-	 * @param engine
-	 * @param topic
-	 * @param workflow
-	 * @param subWorkflow
-	 */
+    /**
+     *
+     * @param config
+     * @param interactor
+     */
 	public WorkflowInterpreter(WorkflowInterpreterConfiguration config, WorkflowInterpreterInteractor interactor) {
 		this.setConfig(config);
 		config.validateNotifier();
@@ -244,24 +241,22 @@ public class WorkflowInterpreter {
 
 			if (InterpreterUtil.getFailedNodeCountDynamically(this.getGraph()) == 0) {
 				if (this.config.isActOnProvenance()) {
-					try {
-						try {
-							this.getConfig().getConfiguration().getJcrComponentRegistry().getRegistry()
-									.updateWorkflowInstanceStatus(this.config.getTopic(), ExecutionStatus.FINISHED);
-						} catch (Exception e) {
-							throw new WorkflowException(e);
-						}
-					} catch (Exception e) {
-						throw new WorkflowException(e);
-					}
+
+                    try {
+                        this.getConfig().getConfiguration().getJcrComponentRegistry().getAiravataAPI().getProvenanceManager().setWorkflowInstanceStatus(
+                                this.config.getTopic(), this.config.getTopic(), ExecutionStatus.FINISHED);
+                    } catch (Exception e) {
+                        throw new WorkflowException(e);
+                    }
+
 					// System.out.println(this.config.getConfiguration().getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
 				}
 			} else {
 				if (this.config.isActOnProvenance()) {
 					try {
-						this.getConfig().getConfiguration().getJcrComponentRegistry().getRegistry()
-								.updateWorkflowInstanceStatus(this.config.getTopic(), ExecutionStatus.FAILED);
-					} catch (RegistryException e) {
+						this.getConfig().getConfiguration().getJcrComponentRegistry().getAiravataAPI().getProvenanceManager().
+                                setWorkflowInstanceStatus(this.config.getTopic(),this.config.getTopic(), ExecutionStatus.FAILED);
+					} catch (AiravataAPIInvocationException e) {
 						throw new WorkflowException(e);
 					}
 				}
@@ -320,7 +315,7 @@ public class WorkflowInterpreter {
 				}
 			}
 
-			String output = ((String) new ProvenanceReader(node, this.config.getTopic(), this.config.getRegistry()).read());
+			String output = ((String) new ProvenanceReader(node, this.config.getTopic(), this.config.getAiravataAPI()).read());
 			if (output != null) {
 				XmlElement result = XMLUtil.stringToXmlElement(output);
 				SystemComponentInvoker invoker = new SystemComponentInvoker();
@@ -363,7 +358,7 @@ public class WorkflowInterpreter {
 			this.provenanceWriter = new PredicatedTaskRunner(1);
 		}
 		this.provenanceWriter.scedule(new ProvenanceWrite(node, this.getWorkflow().getName(), invokerMap, this.config.getTopic(), this.getConfig()
-				.getConfiguration().getJcrComponentRegistry().getRegistry()));
+				.getConfiguration().getJcrComponentRegistry().getAiravataAPI()));
 	}
 
 	/**
@@ -421,17 +416,17 @@ public class WorkflowInterpreter {
 					if (this.config.isActOnProvenance()) {
 						try {
 							if (val instanceof String) {
-								this.getConfig().getConfiguration().getJcrComponentRegistry().getRegistry()
+								this.getConfig().getConfiguration().getJcrComponentRegistry().getAiravataAPI().getProvenanceManager()
 										.saveWorkflowExecutionOutput(this.config.getTopic(), node.getName(), val.toString());
 							} else if (val instanceof org.xmlpull.v1.builder.XmlElement) {
 								this.getConfig()
 										.getConfiguration()
 										.getJcrComponentRegistry()
-										.getRegistry()
+										.getAiravataAPI().getProvenanceManager()
 										.saveWorkflowExecutionOutput(this.config.getTopic(), node.getName(),
 												XMLUtil.xmlElementToString((org.xmlpull.v1.builder.XmlElement) val));
 							}
-						} catch (RegistryException e) {
+						} catch (AiravataAPIInvocationException e) {
 							e.printStackTrace(); // To change body of catch
 													// statement use File |
 													// Settings | File
@@ -478,18 +473,22 @@ public class WorkflowInterpreter {
 					if (this.config.isActOnProvenance()) {
 						try {
 							if (val instanceof String) {
-								this.getConfig().getConfiguration().getJcrComponentRegistry().getRegistry()
+                                /**
+                                 TODO :  saveWorkflowExecutionOutput() is not implemented in Registry
+                                  API or Airavata API at the moment
+                                  **/
+								this.getConfig().getConfiguration().getJcrComponentRegistry().getAiravataAPI().getProvenanceManager()
 										.saveWorkflowExecutionOutput(this.config.getTopic(), node.getName(), val.toString());
 							} else if (val instanceof org.xmlpull.v1.builder.XmlElement) {
 								this.getConfig()
 										.getConfiguration()
 										.getJcrComponentRegistry()
-										.getRegistry()
+										.getAiravataAPI().getProvenanceManager()
 										.saveWorkflowExecutionOutput(this.config.getTopic(), node.getName(),
 												XMLUtil.xmlElementToString((org.xmlpull.v1.builder.XmlElement) val));
 							}
 
-						} catch (RegistryException e) {
+						} catch (AiravataAPIInvocationException e) {
 							e.printStackTrace(); // To change body of catch
 													// statement use File |
 													// Settings | File
@@ -686,7 +685,7 @@ public class WorkflowInterpreter {
 				if (this.config.isGfacEmbeddedMode()) {
 					invoker = new EmbeddedGFacInvoker(portTypeQName, WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode.getComponent().getWSDL()), node.getID(),
 							this.config.getMessageBoxURL().toASCIIString(), this.config.getMessageBrokerURL().toASCIIString(), this.config.getNotifier(),
-							this.config.getTopic(), this.config.getRegistry(), portTypeQName.getLocalPart(), this.config.getConfiguration());
+							this.config.getTopic(), this.config.getAiravataAPI(), portTypeQName.getLocalPart(), this.config.getConfiguration());
 				} else {
 					invoker = new GenericInvoker(portTypeQName, WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode.getComponent().getWSDL()), node.getID(),
 							this.config.getMessageBoxURL().toASCIIString(), gfacURLString, this.config.getNotifier());

@@ -80,7 +80,7 @@ public class AiravataRegistryFactory {
 	 * @throws RegistryAccessorInvalidException
 	 */
 	public static AiravataRegistry2 getRegistry(URI connectionURI, Gateway gateway,
-			AiravataUser user, Callback callback) throws RegistryAccessorNotFoundException,
+			AiravataUser user, PasswordCallback callback) throws RegistryAccessorNotFoundException,
 			RegistryAccessorUndefinedException,
 			RegistryAccessorInstantiateException,
 			AiravataConfigurationException, RegistryAccessorInvalidException {

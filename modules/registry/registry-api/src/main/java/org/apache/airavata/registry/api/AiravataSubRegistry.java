@@ -54,8 +54,8 @@ public interface AiravataSubRegistry {
 	
 	public URI getConnectionURI();
 	
-	public void setCallback(Callback callback);
+	public void setCallback(PasswordCallback callback);
 	
-	public Callback getCallback();
+	public PasswordCallback getCallback();
 	
 }

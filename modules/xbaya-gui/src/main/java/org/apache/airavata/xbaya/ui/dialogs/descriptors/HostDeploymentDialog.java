@@ -45,11 +45,13 @@ import javax.swing.JTextField;
 import javax.swing.ProgressMonitor;
 import javax.swing.SwingConstants;
 
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.exception.gateway.DescriptorDoesNotExistsException;
 import org.apache.airavata.registry.api.exception.gateway.MalformedDescriptorException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
@@ -70,7 +72,7 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
     private XBayaTextField txtExecPath;
     private XBayaTextField txtTempDir;
 
-    private AiravataRegistry2 registry;
+    private AiravataAPI registry;
     private ApplicationDeploymentDescription shellApplicationDescription;
     private JLabel lblError;
     private boolean applcationDescCreated = false;
@@ -90,7 +92,7 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
     /**
      * Create the dialog.
      */
-    public HostDeploymentDialog(AiravataRegistry2 registry, boolean newDescriptor, ApplicationDeploymentDescription originalDeploymentDescription, String originalHost, List<String> existingHostList) {
+    public HostDeploymentDialog(AiravataAPI registry, boolean newDescriptor, ApplicationDeploymentDescription originalDeploymentDescription, String originalHost, List<String> existingHostList) {
     	setNewDescriptor(newDescriptor);
     	setOriginalDeploymentDescription(originalDeploymentDescription);
     	setOriginalHost(originalHost);
@@ -371,7 +373,7 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
         cmbHostName.removeAllItems();
         setHostName(null);
         try {
-            List<HostDescription> hostDescriptions = getRegistry().getHostDescriptors();
+            List<HostDescription> hostDescriptions = getRegistry().getApplicationManager().getAllHostDescriptions();
             for (HostDescription hostDescription : hostDescriptions) {
                 if (!isNewDescriptor() || !getExistingHostList().contains(hostDescription.getType().getHostName())) {
 					cmbHostName.addItem(hostDescription.getType().getHostName());
@@ -493,7 +495,7 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
         if (hostName != null) {
             HostDescription hostDescription;
             try {
-				hostDescription = registry.getHostDescriptor(hostName);
+				hostDescription = registry.getApplicationManager().getHostDescription(hostName);
 				if (hostDescription.getType() instanceof GlobusHostType) {
 				    getShellApplicationDescription().getType().changeType(
 				            GramApplicationDeploymentType.type);
@@ -506,13 +508,9 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
 				boolean isLocal = isLocalAddress(hostAddress);
 				btnExecBrowse.setVisible(isLocal);
 				btnTmpDirBrowse.setVisible(isLocal);
-			} catch (DescriptorDoesNotExistsException e) {
-				e.printStackTrace();
-			} catch (MalformedDescriptorException e) {
-				e.printStackTrace();
-			} catch (RegistryException e) {
-				e.printStackTrace();
-			}
+			}  catch (AiravataAPIInvocationException e) {
+                e.printStackTrace();
+            }
         }
         updateDialogStatus();
     }
@@ -539,11 +537,11 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
         }
     }
 
-    public AiravataRegistry2 getRegistry() {
+    public AiravataAPI getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry2 registry) {
+    public void setRegistry(AiravataAPI registry) {
         this.registry = registry;
     }
 
@@ -572,10 +570,10 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
 		this.originalHost = originalHost;
 	}
 	
-	public HostDeployment execute() throws RegistryException{
+	public HostDeployment execute() throws AiravataAPIInvocationException{
 		open();
 		if (isApplicationDescCreated()){
-			return new HostDeployment(getRegistry().getHostDescriptor(getHostName()),getShellApplicationDescription());
+			return new HostDeployment(getRegistry().getApplicationManager().getHostDescription(getHostName()),getShellApplicationDescription());
 		}
 		return null;
 	}

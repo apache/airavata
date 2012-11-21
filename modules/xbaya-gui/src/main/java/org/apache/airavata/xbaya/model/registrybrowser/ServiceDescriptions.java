@@ -23,26 +23,28 @@ package org.apache.airavata.xbaya.model.registrybrowser;
 
 import java.util.List;
 
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class ServiceDescriptions {
-    private AiravataRegistry2 registry;
+    private AiravataAPI airavataAPI;
 
-    public ServiceDescriptions(AiravataRegistry2 registry) {
-        setRegistry(registry);
+    public ServiceDescriptions(AiravataAPI airavataAPI) {
+        setAiravataAPI(airavataAPI);
     }
 
-    public AiravataRegistry2 getRegistry() {
-        return registry;
+    public AiravataAPI getAiravataAPI() {
+        return airavataAPI;
     }
 
-    public void setRegistry(AiravataRegistry2 registry) {
-        this.registry = registry;
+    public void setAiravataAPI(AiravataAPI airavataAPI) {
+        this.airavataAPI = airavataAPI;
     }
 
-    public List<ServiceDescription> getDescriptions() throws RegistryException {
-        return getRegistry().getServiceDescriptors();
+    public List<ServiceDescription> getDescriptions() throws RegistryException, AiravataAPIInvocationException {
+        return getAiravataAPI().getApplicationManager().getAllServiceDescriptions();
     }
 }

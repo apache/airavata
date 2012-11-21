@@ -21,28 +21,30 @@
 
 package org.apache.airavata.xbaya.model.registrybrowser;
 
+import org.apache.airavata.client.api.AiravataAPI;
+
 import java.net.URI;
 
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class MessageBoxURL {
-    private AiravataRegistry2 registry;
+    private AiravataAPI airavataAPI;
     private URI messageBoxURL;
 
-    public MessageBoxURL(AiravataRegistry2 registry, URI messageBoxURL) {
-        setRegistry(registry);
+    public MessageBoxURL(AiravataAPI airavataAPI, URI messageBoxURL) {
+        setAiravataAPI(airavataAPI);
         setMessageBoxURL(messageBoxURL);
     }
 
-    public AiravataRegistry2 getRegistry() {
-        return registry;
+    public AiravataAPI getAiravataAPI() {
+        return airavataAPI;
     }
 
-    public void setRegistry(AiravataRegistry2 registry) {
-        this.registry = registry;
+    public void setAiravataAPI(AiravataAPI airavataAPI) {
+        this.airavataAPI = airavataAPI;
     }
 
-	public URI getMessageBoxURL() {
+    public URI getMessageBoxURL() {
 		return messageBoxURL;
 	}
 

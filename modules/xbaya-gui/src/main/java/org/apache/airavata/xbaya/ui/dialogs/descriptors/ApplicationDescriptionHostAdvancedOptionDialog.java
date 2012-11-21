@@ -21,9 +21,10 @@
 
 package org.apache.airavata.xbaya.ui.dialogs.descriptors;
 
+import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.JobTypeType;
 import org.apache.airavata.schemas.gfac.JobTypeType.Enum;
@@ -55,7 +56,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
     private XBayaTextField txtNodeCount = new XBayaTextField();
     private XBayaTextField txtProcessorsPerNode = new XBayaTextField();
     private JButton okButton;
-    private AiravataRegistry2 registry;
+    private AiravataAPI registry;
     private ApplicationDeploymentDescription descriptor;
 	private XBayaLabel lblCpuCount;
 	private XBayaLabel lblProcessorPerNode;
@@ -64,7 +65,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
     /**
      * Create the dialog.
      */
-    public ApplicationDescriptionHostAdvancedOptionDialog(AiravataRegistry2 registry, ApplicationDeploymentDescription descriptor) {
+    public ApplicationDescriptionHostAdvancedOptionDialog(AiravataAPI registry, ApplicationDeploymentDescription descriptor) {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent arg0) {
@@ -322,11 +323,11 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		txtQueueType.setText(queueName.getQueueName()==null?"":queueName.getQueueName());
     }
 
-    public AiravataRegistry2 getRegistry() {
+    public AiravataAPI getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry2 registry) {
+    public void setRegistry(AiravataAPI registry) {
         this.registry = registry;
     }
 

@@ -42,12 +42,14 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.xbaya.registrybrowser.nodes.JCRBrowserIcons;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
@@ -61,7 +63,7 @@ public class DescriptorListDialog extends JDialog {
 
     private XBayaDialog dialog;
 
-    private AiravataRegistry2 registry;
+    private AiravataAPI registry;
 
 	private JList descriptorList;
 
@@ -78,11 +80,13 @@ public class DescriptorListDialog extends JDialog {
 	};
 
 	public DescriptorType descriptorType;
-	
+
     /**
-     * @param engine XBaya workflow engine
+     *
+     * @param registry
+     * @param descriptorType
      */
-    public DescriptorListDialog(AiravataRegistry2 registry, DescriptorType descriptorType) {
+    public DescriptorListDialog(AiravataAPI registry, DescriptorType descriptorType) {
         setRegistry(registry);
         this.descriptorType=descriptorType;
         initGUI();
@@ -192,20 +196,20 @@ public class DescriptorListDialog extends JDialog {
     		List<?> descriptors=null;
 			switch (descriptorType){
 	    	case HOST:
-	    		descriptors = getRegistry().getHostDescriptors();
+	    		descriptors = getRegistry().getApplicationManager().getAllHostDescriptions();
 	    		break;
 	    	case SERVICE:
-	    		descriptors = getRegistry().getServiceDescriptors();
+	    		descriptors = getRegistry().getApplicationManager().getAllServiceDescriptions();
 	    		break;
 	    	case APPLICATION:
-	    		dlist=getRegistry().getApplicationDescriptors();
+	    		dlist=getRegistry().getApplicationManager().getAllDeploymentDescriptions();
 	    		descriptors =Arrays.asList(dlist.values().toArray(new ApplicationDeploymentDescription[]{})); 
 	    		break;
     		}
     		for (Object d : descriptors) {
 				((DefaultListModel)descriptorList.getModel()).addElement(d);
 			}
-		} catch (RegistryException e) {
+		} catch (AiravataAPIInvocationException e) {
 			xbayaGUI.getErrorWindow().error(e);
 		}
 	}
@@ -240,11 +244,11 @@ public class DescriptorListDialog extends JDialog {
 		}
     	
     }
-    public AiravataRegistry2 getRegistry() {
+    public AiravataAPI getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry2 registry) {
+    public void setRegistry(AiravataAPI registry) {
         this.registry = registry;
     }
 

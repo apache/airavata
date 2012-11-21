@@ -31,11 +31,11 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.rest.mappings.resourcemappings.*;
 import org.apache.airavata.rest.mappings.utils.DescriptorUtil;
 import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
 import org.apache.airavata.rest.utils.BasicAuthHeaderUtil;
-import org.apache.airavata.registry.api.Callback;
 import org.apache.airavata.rest.utils.ClientConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,9 +53,9 @@ public class DescriptorResourceClient {
     private WebResource webResource;
     private final static Logger logger = LoggerFactory.getLogger(DescriptorResourceClient.class);
     private String userName;
-    private Callback callback;
+    private PasswordCallback callback;
 
-    public DescriptorResourceClient(String userName, Callback callback) {
+    public DescriptorResourceClient(String userName, PasswordCallback callback) {
         this.userName = userName;
         this.callback = callback;
     }

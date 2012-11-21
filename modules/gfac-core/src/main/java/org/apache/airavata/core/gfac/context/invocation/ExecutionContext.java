@@ -21,6 +21,7 @@
 
 package org.apache.airavata.core.gfac.context.invocation;
 
+import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.core.gfac.notification.GFacNotifiable;
 import org.apache.airavata.core.gfac.notification.GFacNotifier;
 import org.apache.airavata.registry.api.AiravataRegistry2;
@@ -53,15 +54,15 @@ public interface ExecutionContext {
      * 
      * @return Registry object
      */
-    AiravataRegistry2 getRegistryService();
+    AiravataAPI getRegistryService();
 
     /**
      * Set Registry object.
      * 
-     * @param AiravataRegistry2
+     * @param airavataAPI
      *            object to used.
      */
-    void setRegistryService(AiravataRegistry2 value);
+    void setRegistryService(AiravataAPI airavataAPI);
 
     public OMElement getSecurityContextHeader();
 

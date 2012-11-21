@@ -24,7 +24,10 @@ package org.apache.airavata.xbaya;
 import java.net.URI;
 import java.util.List;
 
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.client.AiravataClientUtils;
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataManager;
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;
 import org.apache.airavata.workflow.model.component.amazon.AmazonComponentRegistry;
 import org.apache.airavata.workflow.model.component.local.LocalComponentRegistry;
@@ -234,16 +237,18 @@ public class XBayaEngine {
 	
 	public void updateXBayaConfigurationServiceURLs() {
 		try {
-			if (this.getConfiguration().getJcrComponentRegistry()!=null && this.getConfiguration().getJcrComponentRegistry().getRegistry()!=null){
-	        	AiravataRegistry2 registry=this.getConfiguration().getJcrComponentRegistry().getRegistry();
-	        	URI eventingServiceURL = registry.getEventingServiceURI();
+			if (this.getConfiguration().getJcrComponentRegistry()!=null && this.getConfiguration().getJcrComponentRegistry().getAiravataAPI()!=null){
+                AiravataAPI airavataAPI = getConfiguration().getAiravataAPI();
+                AiravataManager airavataManager = airavataAPI.getAiravataManager();
+//                AiravataRegistry2 registry=this.getConfiguration().getJcrComponentRegistry().getRegistry();
+	        	URI eventingServiceURL = airavataManager.getEventingServiceURL();
 				if (eventingServiceURL!=null) {
 					this.getConfiguration().setBrokerURL(eventingServiceURL);
 					this.getMonitor()
 							.getConfiguration()
 							.setBrokerURL(eventingServiceURL);
 				}
-				URI messageBoxServiceURL = registry.getMessageBoxURI();
+				URI messageBoxServiceURL = airavataManager.getMessageBoxServiceURL();
 				if (messageBoxServiceURL!=null) {
 					this.getConfiguration()
 					.setMessageBoxURL(messageBoxServiceURL);
@@ -251,12 +256,12 @@ public class XBayaEngine {
 							.getConfiguration()
 							.setMessageBoxURL(messageBoxServiceURL);
 				}
-				List<URI> interpreterServiceURLList = registry.getWorkflowInterpreterURIs();
+				List<URI> interpreterServiceURLList = airavataManager.getWorkflowInterpreterServiceURLs();
 				if (interpreterServiceURLList.size()>0) {
 					this.getConfiguration()
 							.setWorkflowInterpreterURL(interpreterServiceURLList.get(0));
 				}
-				List<URI> gfacURLList = registry.getGFacURIs();
+				List<URI> gfacURLList = airavataManager.getGFaCURLs();
 				if (gfacURLList.size()>0) {
 					this.getConfiguration().setGFacURL(gfacURLList.get(0));
 				}

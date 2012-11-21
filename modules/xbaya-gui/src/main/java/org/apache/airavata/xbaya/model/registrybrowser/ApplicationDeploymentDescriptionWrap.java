@@ -21,24 +21,26 @@
 
 package org.apache.airavata.xbaya.model.registrybrowser;
 
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class ApplicationDeploymentDescriptionWrap {
     private ApplicationDeploymentDescription applicationDeploymentDescription;
     private String service;
     private String host;
-    private AiravataRegistry2 registry;
+//    private AiravataRegistry2 registry;
+    private AiravataAPI airavataAPI;
 
-    public ApplicationDeploymentDescriptionWrap(AiravataRegistry2 registry,
+    public ApplicationDeploymentDescriptionWrap(AiravataAPI airavataAPI,
             ApplicationDeploymentDescription applicationDeploymentDescription, String service, String host) {
         setApplicationDeploymentDescription(applicationDeploymentDescription);
         setService(service);
         setHost(host);
-        setRegistry(registry);
+        setAiravataAPI(airavataAPI);
     }
 
     public ApplicationDeploymentDescription getDescription() {
@@ -53,12 +55,12 @@ public class ApplicationDeploymentDescriptionWrap {
         return service;
     }
 
-    public ServiceDescription getServiceDescription() throws RegistryException{
-        ServiceDescription desc = getRegistry().getServiceDescriptor(getService());
+    public ServiceDescription getServiceDescription() throws AiravataAPIInvocationException {
+        ServiceDescription desc = getAiravataAPI().getApplicationManager().getServiceDescription(getService());
         if(desc!=null){
         	return desc;
         }
-        throw new RegistryException(new Exception("Service Description not found in registry."));
+        throw new AiravataAPIInvocationException(new Exception("Service Description not found in registry."));
     }
 
     public void setService(String service) {
@@ -69,19 +71,28 @@ public class ApplicationDeploymentDescriptionWrap {
         return host;
     }
 
-    public HostDescription getHostDescription() throws RegistryException{
-        return getRegistry().getHostDescriptor(getHost());
+    public HostDescription getHostDescription() throws AiravataAPIInvocationException {
+        return getAiravataAPI().getApplicationManager().getHostDescription(getHost());
     }
 
     public void setHost(String host) {
         this.host = host;
     }
 
-    public AiravataRegistry2 getRegistry() {
-        return registry;
+//    public AiravataRegistry2 getRegistry() {
+//        return registry;
+//    }
+//
+//    public void setRegistry(AiravataRegistry2 registry) {
+//        this.registry = registry;
+//    }
+
+
+    public AiravataAPI getAiravataAPI() {
+        return airavataAPI;
     }
 
-    public void setRegistry(AiravataRegistry2 registry) {
-        this.registry = registry;
+    public void setAiravataAPI(AiravataAPI airavataAPI) {
+        this.airavataAPI = airavataAPI;
     }
 }

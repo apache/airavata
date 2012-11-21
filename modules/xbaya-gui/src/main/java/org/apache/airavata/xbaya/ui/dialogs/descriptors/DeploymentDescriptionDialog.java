@@ -45,11 +45,13 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.exception.gateway.DescriptorDoesNotExistsException;
 import org.apache.airavata.registry.api.exception.gateway.MalformedDescriptorException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
@@ -79,7 +81,7 @@ public class DeploymentDescriptionDialog extends JDialog {
     private JButton okButton;
     private JButton btnDeleteParameter;
     private DefaultTableModel defaultTableModel;
-    private AiravataRegistry2 registry;
+    private AiravataAPI registry;
     private boolean newDescription;
     private boolean ignoreTableChanges=false;
 	private JCheckBox chkForceFileStagingToWorkDir;
@@ -102,7 +104,7 @@ public class DeploymentDescriptionDialog extends JDialog {
         }
     }
 
-    public DeploymentDescriptionDialog(JFrame parent, AiravataRegistry2 registry) {
+    public DeploymentDescriptionDialog(JFrame parent, AiravataAPI registry) {
     	this(registry, true, null, parent);
     }
 
@@ -113,7 +115,7 @@ public class DeploymentDescriptionDialog extends JDialog {
     /**
      * Create the dialog.
      */
-    public DeploymentDescriptionDialog(AiravataRegistry2 registry, boolean newDescription, ServiceDescription serviceDescription, JFrame parent) {
+    public DeploymentDescriptionDialog(AiravataAPI registry, boolean newDescription, ServiceDescription serviceDescription, JFrame parent) {
         super(parent);
         setNewDescription(newDescription);
     	this.setOrginalServiceDescription(serviceDescription);
@@ -242,7 +244,7 @@ public class DeploymentDescriptionDialog extends JDialog {
                                 saveServiceDescription(true);
                             }
 							close();
-						} catch (RegistryException e1) {
+						} catch (AiravataAPIInvocationException e1) {
 							e1.printStackTrace();
 						}
                     }
@@ -329,7 +331,7 @@ public class DeploymentDescriptionDialog extends JDialog {
 						getDeployments().put(hostType.getHostName(), deployDesc);
 						updateDeploymentTable();
 					}
-				} catch (RegistryException e1) {
+				} catch (AiravataAPIInvocationException e1) {
 					setError(e1.getLocalizedMessage());
 					e1.printStackTrace();
 				}
@@ -476,9 +478,9 @@ public class DeploymentDescriptionDialog extends JDialog {
     	updateIODataTable(descType);
         getDeployments().clear();
         try {
-			Map<String, ApplicationDeploymentDescription> descs = getRegistry().getApplicationDescriptors(descType.getName());
+			Map<String, ApplicationDeploymentDescription> descs = getRegistry().getApplicationManager().getApplicationDescriptors(descType.getName());
 			for (String hostDescName : descs.keySet()) {
-			    getDeployments().put(hostDescName, new HostDeployment(getRegistry().getHostDescriptor(hostDescName), descs.get(hostDescName)));
+			    getDeployments().put(hostDescName, new HostDeployment(getRegistry().getApplicationManager().getHostDescription(hostDescName), descs.get(hostDescName)));
 			}
 
 			updateDeploymentTable();
@@ -495,13 +497,7 @@ public class DeploymentDescriptionDialog extends JDialog {
 			chkForceFileStagingToWorkDir.setSelected(selected);
 			setForceFileStagingToWorkDir(selected);
 			ignoreTableChanges=false;
-		} catch (MalformedDescriptorException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DescriptorDoesNotExistsException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (RegistryException e) {
+		} catch (AiravataAPIInvocationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -611,13 +607,13 @@ public class DeploymentDescriptionDialog extends JDialog {
             throw new Exception("Name of the application cannot be empty!!!");
         }
         ServiceDescription serviceDescription2 = null;
-        serviceDescription2 = getRegistry().getServiceDescriptor(getServiceName());
+        serviceDescription2 = getRegistry().getApplicationManager().getServiceDescription(getServiceName());
         if (isNewDescription() && serviceDescription2 != null) {
             throw new Exception("Service descriptor with the given name already exists!!!");
         }
     }
 
-    public void saveServiceDescription(boolean update) throws RegistryException {
+    public void saveServiceDescription(boolean update) throws AiravataAPIInvocationException {
         List<InputParameterType> inputParameters = new ArrayList<InputParameterType>();
         List<OutputParameterType> outputParameters = new ArrayList<OutputParameterType>();
 
@@ -650,24 +646,24 @@ public class DeploymentDescriptionDialog extends JDialog {
         getServiceDescriptionType().setInputParametersArray(inputParameters.toArray(new InputParameterType[] {}));
         getServiceDescriptionType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[] {}));
         if (update) {
-            getRegistry().updateServiceDescriptor(getServiceDescription());
+            getRegistry().getApplicationManager().updateServiceDescriptor(getServiceDescription());
         } else {
-            getRegistry().addServiceDescriptor(getServiceDescription());
+            getRegistry().getApplicationManager().saveServiceDescription(getServiceDescription());
         }
         if (!isNewDescription()) {
-            Map<String, ApplicationDeploymentDescription> descs = getRegistry().getApplicationDescriptors(getServiceName());
+            Map<String, ApplicationDeploymentDescription> descs = getRegistry().getApplicationManager().getApplicationDescriptors(getServiceName());
             for (String hostDescName : descs.keySet()) {
-                getRegistry().removeApplicationDescriptor(getServiceName(), hostDescName, descs.get(hostDescName).getType().getApplicationName().getStringValue());
+                getRegistry().getApplicationManager().deleteDeploymentDescription(getServiceName(), hostDescName, descs.get(hostDescName).getType().getApplicationName().getStringValue());
             }
         }
         for (String hostName : getDeployments().keySet()) {
-            getRegistry().addApplicationDescriptor(getServiceName(), hostName, getDeployments().get(hostName).getApplicationDescription());
+            getRegistry().getApplicationManager().saveDeploymentDescription(getServiceName(), hostName, getDeployments().get(hostName).getApplicationDescription());
         }
         setServiceCreated(true);
         JOptionPane.showMessageDialog(this, "Application '" + getServiceName() + "' is registered Successfully !");
     }
 
-    public void saveServiceDescription() throws RegistryException {
+    public void saveServiceDescription() throws AiravataAPIInvocationException {
         List<InputParameterType> inputParameters = new ArrayList<InputParameterType>();
         List<OutputParameterType> outputParameters = new ArrayList<OutputParameterType>();
 
@@ -699,15 +695,15 @@ public class DeploymentDescriptionDialog extends JDialog {
         }
         getServiceDescriptionType().setInputParametersArray(inputParameters.toArray(new InputParameterType[] {}));
         getServiceDescriptionType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[] {}));
-        getRegistry().addServiceDescriptor(getServiceDescription());
+        getRegistry().getApplicationManager().saveServiceDescription(getServiceDescription());
         if (!isNewDescription()) {
-            Map<String, ApplicationDeploymentDescription> descs = getRegistry().getApplicationDescriptors(getServiceName());
+            Map<String, ApplicationDeploymentDescription> descs = getRegistry().getApplicationManager().getApplicationDescriptors(getServiceName());
             for (String hostDescName : descs.keySet()) {
-                getRegistry().removeApplicationDescriptor(getServiceName(), hostDescName, descs.get(hostDescName).getType().getApplicationName().getStringValue());
+                getRegistry().getApplicationManager().deleteDeploymentDescription(getServiceName(), hostDescName, descs.get(hostDescName).getType().getApplicationName().getStringValue());
             }
         }
         for (String hostName : getDeployments().keySet()) {
-            getRegistry().addApplicationDescriptor(getServiceName(), hostName, getDeployments().get(hostName).getApplicationDescription());
+            getRegistry().getApplicationManager().saveDeploymentDescription(getServiceName(), hostName, getDeployments().get(hostName).getApplicationDescription());
         }
         setServiceCreated(true);
         JOptionPane.showMessageDialog(this, "Application '" + getServiceName() + "' is registered Successfully !");
@@ -751,11 +747,11 @@ public class DeploymentDescriptionDialog extends JDialog {
 		}
     }
 
-    public AiravataRegistry2 getRegistry() {
+    public AiravataAPI getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry2 registry) {
+    public void setRegistry(AiravataAPI registry) {
         this.registry = registry;
     }
 
@@ -807,7 +803,7 @@ public class DeploymentDescriptionDialog extends JDialog {
 				getDeployments().put(deployDesc.getHostDescription().getType().getHostName(), deployDesc);
 				updateDeploymentTable();
 			}
-		} catch (RegistryException e1) {
+		} catch (AiravataAPIInvocationException e1) {
 			setError(e1.getLocalizedMessage());
 			e1.printStackTrace();
 		}

@@ -19,7 +19,7 @@ package org.apache.airavata.registry.api;/*
  *
  */
 
-public interface Callback {
+public interface PasswordCallback {
 
     public String getPassword (String username);
 }

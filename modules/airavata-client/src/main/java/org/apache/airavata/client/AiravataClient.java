@@ -67,11 +67,7 @@ import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
-import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.AiravataRegistryFactory;
-import org.apache.airavata.registry.api.AiravataUser;
-import org.apache.airavata.registry.api.Callback;
-import org.apache.airavata.registry.api.Gateway;
+import org.apache.airavata.registry.api.*;
 import org.apache.airavata.registry.api.exception.RegistryAccessorInstantiateException;
 import org.apache.airavata.registry.api.exception.RegistryAccessorInvalidException;
 import org.apache.airavata.registry.api.exception.RegistryAccessorNotFoundException;
@@ -119,7 +115,7 @@ public class AiravataClient implements AiravataAPI {
 	private String currentUser;
     private String password;
     private URI regitryURI;
-    private Callback callBack;
+    private PasswordCallback callBack;
 
 	private AiravataRegistry2 registry;
 
@@ -650,7 +646,7 @@ public class AiravataClient implements AiravataAPI {
 			WorkflowContextHeaderBuilder builder) throws AiravataAPIInvocationException{
 		try {
 			String workflowString = XMLUtil.xmlElementToString(workflowObj
-					.toXML());
+                    .toXML());
 			List<WSComponentPort> ports = getWSComponentPortInputs(workflowObj);
 			for (WorkflowInput input : inputs) {
 				WSComponentPort port = getWSComponentPort(input.getName(),
@@ -691,7 +687,7 @@ public class AiravataClient implements AiravataAPI {
 		try {
 			Workflow workflowObj = getWorkflow(workflowName);
 			String workflowString = XMLUtil.xmlElementToString(workflowObj
-					.toXML());
+                    .toXML());
 			List<WSComponentPort> ports;
 			ports = getWSComponentPortInputs(workflowObj);
 			for (WorkflowInput input : inputs) {
@@ -1008,11 +1004,11 @@ public class AiravataClient implements AiravataAPI {
         return regitryURI;
     }
 
-    public Callback getCallBack() {
+    public PasswordCallback getCallBack() {
         return callBack;
     }
 
-    public void setCallBack(Callback callBack) {
+    public void setCallBack(PasswordCallback callBack) {
         this.callBack = callBack;
     }
     

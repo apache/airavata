@@ -21,25 +21,19 @@
 
 package org.apache.airavata.xbaya.model.registrybrowser;
 
+import org.apache.airavata.client.api.AiravataAPI;
+
 import java.net.URI;
 
-import org.apache.airavata.registry.api.AiravataRegistry2;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class EventingServiceURL {
-    private AiravataRegistry2 registry;
+    private AiravataAPI airavataAPI;
     private URI eventingServiceURL;
 
-    public EventingServiceURL(AiravataRegistry2 registry, URI eventingServiceURL) {
-        setRegistry(registry);
+    public EventingServiceURL(AiravataAPI airavataAPI, URI eventingServiceURL) {
+        setAiravataAPI(airavataAPI);
         setEventingServiceURL(eventingServiceURL);
-    }
-
-    public AiravataRegistry2 getRegistry() {
-        return registry;
-    }
-
-    public void setRegistry(AiravataRegistry2 registry) {
-        this.registry = registry;
     }
 
 	public URI getEventingServiceURL() {
@@ -50,4 +44,11 @@ public class EventingServiceURL {
 		this.eventingServiceURL = eventingServiceURL;
 	}
 
+    public AiravataAPI getAiravataAPI() {
+        return airavataAPI;
+    }
+
+    public void setAiravataAPI(AiravataAPI airavataAPI) {
+        this.airavataAPI = airavataAPI;
+    }
 }
