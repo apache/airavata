@@ -56,6 +56,7 @@ import org.apache.airavata.persistance.registry.jpa.resources.WorkflowDataResour
 import org.apache.airavata.registry.api.AiravataExperiment;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataUser;
+import org.apache.airavata.registry.api.Callback;
 import org.apache.airavata.registry.api.Gateway;
 import org.apache.airavata.registry.api.ResourceMetadata;
 import org.apache.airavata.registry.api.WorkspaceProject;
@@ -98,6 +99,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     private boolean active=false;
     private static final String DEFAULT_PROJECT_NAME = "default";
     private static final Version API_VERSION=new Version("Airavata Registry API",0,5,null,null,null);
+    private URI registryConnectionURI;
+    
+    private Callback callback;
     
     @Override
     protected void initialize() {
@@ -1428,6 +1432,30 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public Version getVersion() {
 		return API_VERSION;
+	}
+
+
+	@Override
+	public void setConnectionURI(URI connectionURI) {
+		registryConnectionURI=connectionURI;
+	}
+
+
+	@Override
+	public URI getConnectionURI() {
+		return registryConnectionURI;
+	}
+
+
+	@Override
+	public void setCallback(Callback callback) {
+		this.callback=callback;
+	}
+
+
+	@Override
+	public Callback getCallback() {
+		return callback;
 	}
 
 }

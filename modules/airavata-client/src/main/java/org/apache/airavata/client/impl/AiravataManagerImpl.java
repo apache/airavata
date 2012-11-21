@@ -32,7 +32,6 @@ import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.AiravataManager;
 import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.Gateway;
-import org.apache.airavata.registry.api.exception.RegistryException;
 
 public class AiravataManagerImpl implements AiravataManager {
 	private AiravataClient client;
@@ -351,12 +350,20 @@ public class AiravataManagerImpl implements AiravataManager {
 
     @Override
     public Gateway getGateway() throws AiravataAPIInvocationException {
-        return getClient().getRegistryClient().getGateway();
+        try {
+			return getClient().getRegistryClient().getGateway();
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
     }
 
     @Override
     public AiravataUser getUser() throws AiravataAPIInvocationException {
-        return getClient().getRegistryClient().getUser();
+    	try{
+    		return getClient().getRegistryClient().getUser();
+    	} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
     }
 
 }

@@ -29,12 +29,10 @@ import java.util.Map;
 import org.apache.airavata.client.AiravataClient;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.ApplicationManager;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.exception.UnimplementedRegistryOperationException;
-import org.apache.airavata.registry.api.exception.gateway.MalformedDescriptorException;
 
 public class ApplicationManagerImpl implements ApplicationManager {
 	private AiravataClient client;
@@ -240,9 +238,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
         try{
             Map<String, ApplicationDeploymentDescription> applicationDescriptors = getClient().getRegistryClient().getApplicationDescriptors(serviceName);
             return applicationDescriptors;
-        } catch (MalformedDescriptorException e) {
-            throw new AiravataAPIInvocationException(e);
-        } catch (RegistryException e) {
+        } catch (Exception e) {
             throw new AiravataAPIInvocationException(e);
         }
     }
@@ -251,7 +247,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
     public boolean isHostDescriptorExists(String descriptorName) throws AiravataAPIInvocationException {
         try {
             return getClient().getRegistryClient().isHostDescriptorExists(descriptorName);
-        } catch (RegistryException e) {
+        } catch (Exception e) {
             throw new AiravataAPIInvocationException(e);
         }
     }
@@ -260,7 +256,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
     public void removeHostDescriptor(String hostName) throws AiravataAPIInvocationException {
         try {
             getClient().getRegistryClient().removeHostDescriptor(hostName);
-        } catch (RegistryException e) {
+        } catch (Exception e) {
             throw new AiravataAPIInvocationException(e);
         }
     }
@@ -269,7 +265,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
     public boolean isServiceDescriptorExists(String descriptorName) throws AiravataAPIInvocationException {
         try {
             return getClient().getRegistryClient().isServiceDescriptorExists(descriptorName);
-        } catch (RegistryException e) {
+        } catch (Exception e) {
             throw new AiravataAPIInvocationException(e);
         }
     }
@@ -278,7 +274,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
     public void removeServiceDescriptor(String serviceName) throws AiravataAPIInvocationException {
         try {
             getClient().getRegistryClient().removeServiceDescriptor(serviceName);
-        } catch (RegistryException e) {
+        } catch (Exception e) {
             throw new AiravataAPIInvocationException(e);
         }
     }
@@ -287,7 +283,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
     public void removeApplicationDescriptor(String serviceName, String hostName, String applicationName) throws AiravataAPIInvocationException {
         try {
             getClient().getRegistryClient().removeApplicationDescriptor(serviceName, hostName, applicationName);
-        } catch (RegistryException e) {
+        } catch (Exception e) {
             throw new AiravataAPIInvocationException(e);
         }
     }
@@ -296,7 +292,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
     public void updateHostDescriptor(HostDescription descriptor) throws AiravataAPIInvocationException {
         try {
             getClient().getRegistryClient().updateHostDescriptor(descriptor);
-        } catch (RegistryException e) {
+        } catch (Exception e) {
             throw new AiravataAPIInvocationException(e);
         }
     }
@@ -305,7 +301,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
     public void updateServiceDescriptor(ServiceDescription descriptor) throws AiravataAPIInvocationException {
         try {
             getClient().getRegistryClient().updateServiceDescriptor(descriptor);
-        } catch (RegistryException e) {
+        } catch (Exception e) {
             throw new AiravataAPIInvocationException(e);
         }
     }
@@ -314,7 +310,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
     public void updateApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) throws AiravataAPIInvocationException {
         try {
             getClient().getRegistryClient().updateApplicationDescriptor(serviceName, hostName, descriptor);
-        } catch (RegistryException e) {
+        } catch (Exception e) {
             throw new AiravataAPIInvocationException(e);
         }
     }
@@ -323,7 +319,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
     public ApplicationDeploymentDescription getApplicationDescriptor(String serviceName, String hostname, String applicationName) throws AiravataAPIInvocationException {
         try {
             return getClient().getRegistryClient().getApplicationDescriptor(serviceName, hostname, applicationName);
-        } catch (RegistryException e) {
+        } catch (Exception e) {
             throw new AiravataAPIInvocationException(e);
         }
     }

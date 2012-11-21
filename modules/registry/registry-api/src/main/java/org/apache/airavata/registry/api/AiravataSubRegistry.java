@@ -21,6 +21,8 @@
 
 package org.apache.airavata.registry.api;
 
+import java.net.URI;
+
 import org.apache.airavata.common.utils.Version;
 
 public interface AiravataSubRegistry {
@@ -47,5 +49,13 @@ public interface AiravataSubRegistry {
 	 * @return
 	 */
 	public Version getVersion();
+	
+	public void setConnectionURI(URI connectionURI);
+	
+	public URI getConnectionURI();
+	
+	public void setCallback(Callback callback);
+	
+	public Callback getCallback();
 	
 }

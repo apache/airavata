@@ -38,6 +38,10 @@ import java.util.List;
 import java.util.Map;
 
 public class RegistryClient extends AiravataRegistry2 {
+
+    private URI connectionURI;
+    private Callback callback;
+    
     private BasicRegistryResourceClient basicRegistryResourceClient;
     private ConfigurationResourceClient configurationResourceClient;
     private DescriptorResourceClient descriptorResourceClient;
@@ -780,4 +784,24 @@ public class RegistryClient extends AiravataRegistry2 {
     public Version getVersion() {
         return getBasicRegistryResourceClient().getVersion();
     }
+    
+	@Override
+	public void setConnectionURI(URI connectionURI) {
+		this.connectionURI=connectionURI;
+	}
+
+	@Override
+	public URI getConnectionURI() {
+		return connectionURI;
+	}
+
+	@Override
+	public void setCallback(Callback callback) {
+		this.callback=callback;
+	}
+
+	@Override
+	public Callback getCallback() {
+		return callback;
+	}
 }

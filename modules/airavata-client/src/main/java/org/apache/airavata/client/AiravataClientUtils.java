@@ -34,26 +34,34 @@ import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.Callback;
 
 public class AiravataClientUtils {
-	public static AiravataAPI getAPI(URI registryURL, String username, String password) throws MalformedURLException, RepositoryException, RegistryException{
-		return getAPI(registryURL, username, password, username);
-	}
-
-    public static AiravataAPI getAPI(URI registryURL, String username, String alternateUsername, Callback callback) throws MalformedURLException, RepositoryException, RegistryException{
+	
+	public static AiravataAPI getAPI(URI registryURL, String gateway, String username, Callback callback) throws MalformedURLException, RepositoryException, RegistryException{
+        return getAPI(registryURL, gateway, username, username, callback);
+    }
+    
+    public static AiravataAPI getAPI(URI registryURL, String gateway, String username, String alternateUsername, Callback callback) throws MalformedURLException, RepositoryException, RegistryException{
         AiravataClient apiObj = new AiravataClient();
         apiObj.setCurrentUser(alternateUsername);
         apiObj.setCallBack(callback);
         apiObj.setPassword(callback.getPassword(username));
         apiObj.setRegitryURI(registryURL);
+        apiObj.setGateway(gateway);
         return apiObj;
     }
 
+	@Deprecated
+    public static AiravataAPI getAPI(URI registryURL, String username, String password) throws MalformedURLException, RepositoryException, RegistryException{
+		return getAPI(registryURL, username, password, username);
+	}
+	
+    @Deprecated
     public static AiravataAPI getAPI(URI registryURL, String username, Callback callback) throws MalformedURLException, RepositoryException, RegistryException{
         return getAPI(registryURL, username, username, callback);
     }
 
+    @Deprecated
 	public static AiravataAPI getAPI(URI registryURL, String username, String password, String alternateUsername) throws MalformedURLException, RepositoryException, RegistryException{
-        AiravataAPI airavataAPI = getAPI(registryURL, username, new PasswordCallBackImpl(username, password));
-		return airavataAPI;
+		return getAPI(registryURL, username, new PasswordCallBackImpl(username, password));
 	}
 
     @Deprecated

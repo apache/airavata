@@ -429,7 +429,7 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
     public void saveWorkflowExecutionOutput(String experimentId, String outputNodeName, String output) throws AiravataAPIInvocationException {
         try {
             getClient().getRegistryClient().saveWorkflowExecutionOutput(experimentId, outputNodeName, output);
-        } catch (RegistryException e) {
+        } catch (Exception e) {
             throw new AiravataAPIInvocationException(e);
         }
     }

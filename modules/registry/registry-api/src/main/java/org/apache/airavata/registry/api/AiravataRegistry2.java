@@ -21,6 +21,7 @@
 
 package org.apache.airavata.registry.api;
 
+import java.net.URI;
 import java.util.Observable;
 
 
@@ -33,6 +34,13 @@ public abstract class AiravataRegistry2 extends Observable implements Descriptor
 	protected void preInitialize(Gateway gateway, AiravataUser user) {
 		setGateway(gateway);
 		setUser(user);
+	}
+	
+	protected void preInitialize(URI connectionURI, Gateway gateway, AiravataUser user, Callback callback) {
+		setConnectionURI(connectionURI);
+		setGateway(gateway);
+		setUser(user);
+		setCallback(callback);
 	}
 	
 	protected abstract void initialize();
