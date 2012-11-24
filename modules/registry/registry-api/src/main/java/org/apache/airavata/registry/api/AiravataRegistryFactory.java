@@ -41,7 +41,6 @@ public class AiravataRegistryFactory {
 	/***
 	 * Return a registry accessor object capable of handling all data in the
 	 * registry
-	 * @deprecated
 	 * @param gateway
 	 * @param user
 	 * @return
@@ -56,22 +55,16 @@ public class AiravataRegistryFactory {
 			RegistryAccessorUndefinedException,
 			RegistryAccessorInstantiateException,
 			AiravataConfigurationException, RegistryAccessorInvalidException {
-		Object registryObj = getRegistryClass(REGISTRY_ACCESSOR_CLASS);
-		if (registryObj instanceof AiravataRegistry2) {
-			AiravataRegistry2 registry = (AiravataRegistry2) registryObj;
-			registry.preInitialize(gateway, user);
-			registry.initialize();
-			return registry;
-		}
-		throw new RegistryAccessorInvalidException(registryObj.getClass()
-				.getName());
+		return getRegistry(null, gateway, user, null);
 	}
 	
 	/***
 	 * Return a registry accessor object capable of handling all data in the
 	 * registry
+	 * @param connectionURI
 	 * @param gateway
 	 * @param user
+	 * @param callback
 	 * @return
 	 * @throws RegistryAccessorNotFoundException
 	 * @throws RegistryAccessorUndefinedException
@@ -91,8 +84,7 @@ public class AiravataRegistryFactory {
 			registry.initialize();
 			return registry;
 		}
-		throw new RegistryAccessorInvalidException(registryObj.getClass()
-				.getName());
+		throw new RegistryAccessorInvalidException(registryObj.getClass().getName());
 	}
 
 	/***

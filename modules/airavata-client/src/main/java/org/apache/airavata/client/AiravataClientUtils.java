@@ -56,12 +56,12 @@ public class AiravataClientUtils {
 	
     @Deprecated
     public static AiravataAPI getAPI(URI registryURL, String username, PasswordCallback callback) throws MalformedURLException, RepositoryException, RegistryException{
-        return getAPI(registryURL, username, username, callback);
+        return getAPI(registryURL, null, username, callback);
     }
 
     @Deprecated
 	public static AiravataAPI getAPI(URI registryURL, String username, String password, String alternateUsername) throws MalformedURLException, RepositoryException, RegistryException{
-		return getAPI(registryURL, username, new PasswordCallBackImpl(username, password));
+		return getAPI(registryURL, null, username, alternateUsername, new PasswordCallBackImpl(username, password));
 	}
 
     @Deprecated

@@ -31,11 +31,6 @@ public abstract class AiravataRegistry2 extends Observable implements Descriptor
 	
 	protected static final int SERVICE_TTL=180;
 	
-	protected void preInitialize(Gateway gateway, AiravataUser user) {
-		setGateway(gateway);
-		setUser(user);
-	}
-	
 	protected void preInitialize(URI connectionURI, Gateway gateway, AiravataUser user, PasswordCallback callback) {
 		setConnectionURI(connectionURI);
 		setGateway(gateway);
