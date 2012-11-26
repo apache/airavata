@@ -21,7 +21,7 @@
 
 package org.apache.airavata.workflow.model.component.registry;
 
-import org.apache.airavata.client.AiravataClientUtils;
+import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.AiravataRegistryConnectionDataProvider;
@@ -96,7 +96,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
             URI baseUri = new URI(registryURL);
             //TODO callback class
             PasswordCallBackImpl passwordCallBack = new PasswordCallBackImpl(username, password);
-            this.airavataAPI = AiravataClientUtils.getAPI(baseUri, gatewayName, username, passwordCallBack);
+            this.airavataAPI = AiravataAPIFactory.getAPI(baseUri, gatewayName, username, passwordCallBack);
         }  catch (URISyntaxException e) {
             log.error("Error initializing Airavata Client");
         } catch (RepositoryException e) {

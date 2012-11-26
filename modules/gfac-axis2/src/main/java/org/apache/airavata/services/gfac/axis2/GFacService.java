@@ -30,7 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.airavata.client.AiravataClientUtils;
+import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.tools.PeriodicExecutorThread;
@@ -136,7 +136,7 @@ public class GFacService implements ServiceLifeCycle {
                         e.printStackTrace();
                     }
                     URI baseUri = new URI(properties.getProperty(REGISTRY_URL));
-                    airavataAPI = AiravataClientUtils.getAPI(baseUri, username, password);
+                    airavataAPI = AiravataAPIFactory.getAPI(baseUri, username, password);
                     context.setProperty(GFAC_URL, ServiceUtils.generateServiceURLFromConfigurationContext(context,SERVICE_NAME));
                     GFacConfiguration gfacConfig = new GFacConfiguration(properties.getProperty(MYPROXY_SERVER),properties.getProperty(MYPROXY_USER),
                             properties.getProperty(MYPROXY_PASS),Integer.parseInt(properties.getProperty(MYPROXY_LIFE)),airavataAPI,properties.getProperty(TRUSTED_CERT_LOCATION));
