@@ -20,6 +20,8 @@
 
 package org.apache.airavata.services.registry.rest.security.basic;
 
+import org.apache.airavata.common.context.RequestContext;
+import org.apache.airavata.common.context.WorkflowContext;
 import org.apache.airavata.security.AbstractAuthenticator;
 import org.apache.airavata.security.AuthenticationException;
 import org.apache.airavata.security.UserStoreException;
@@ -43,7 +45,7 @@ public class BasicAccessAuthenticator extends AbstractAuthenticator {
      * Header names
      */
     private static final String AUTHORISATION_HEADER_NAME = "Authorization";
-    private static final String USER_IN_SESSION = "userName";
+    public static final String USER_IN_SESSION = "userName";
 
     public BasicAccessAuthenticator() {
         super(AUTHENTICATOR_NAME);
@@ -115,6 +117,12 @@ public class BasicAccessAuthenticator extends AbstractAuthenticator {
         if (servletRequest.getSession() != null) {
             servletRequest.getSession().setAttribute(USER_IN_SESSION, userName);
         }
+
+        // Add user to context - TODO We may need to abstract out this
+        RequestContext requestContext = new RequestContext();
+        requestContext.setUserIdentity(userName);
+
+        WorkflowContext.set(requestContext);
     }
 
     @Override
