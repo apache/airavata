@@ -28,7 +28,7 @@ import org.apache.airavata.registry.api.exception.worker.WorkspaceProjectAlready
 import org.apache.airavata.registry.api.exception.worker.WorkspaceProjectDoesNotExistsException;
 import org.apache.airavata.rest.mappings.resourcemappings.WorkspaceProjectList;
 import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
-import org.apache.airavata.rest.mappings.utils.RestServicesConstants;
+import org.apache.airavata.services.registry.rest.utils.RegPoolUtils;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
@@ -43,7 +43,6 @@ import java.util.List;
  */
 @Path(ResourcePathConstants.ProjectResourcePathConstants.REGISTRY_API_PROJECTREGISTRY)
 public class ProjectRegistryResource {
-    private AiravataRegistry2 airavataRegistry;
 
     @Context
     ServletContext context;
@@ -61,7 +60,7 @@ public class ProjectRegistryResource {
     @Path(ResourcePathConstants.ProjectResourcePathConstants.PROJECT_EXIST)
     @Produces(MediaType.TEXT_PLAIN)
     public Response isWorkspaceProjectExists(@QueryParam("projectName") String projectName) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             boolean result = airavataRegistry.isWorkspaceProjectExists(projectName);
             if (result) {
@@ -77,6 +76,10 @@ public class ProjectRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
@@ -96,7 +99,7 @@ public class ProjectRegistryResource {
         if (createIfNotExists.equals("true")) {
             createIfNotExistStatus = true;
         }
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             boolean result = airavataRegistry.isWorkspaceProjectExists(projectName, createIfNotExistStatus);
             if (result) {
@@ -112,6 +115,10 @@ public class ProjectRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        }finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
@@ -124,7 +131,7 @@ public class ProjectRegistryResource {
     @Path(ResourcePathConstants.ProjectResourcePathConstants.ADD_PROJECT)
     @Produces(MediaType.TEXT_PLAIN)
     public Response addWorkspaceProject(@FormParam("projectName") String projectName) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             WorkspaceProject workspaceProject = new WorkspaceProject(projectName, airavataRegistry);
             airavataRegistry.addWorkspaceProject(workspaceProject);
@@ -139,6 +146,10 @@ public class ProjectRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
@@ -151,7 +162,7 @@ public class ProjectRegistryResource {
     @Path(ResourcePathConstants.ProjectResourcePathConstants.UPDATE_PROJECT)
     @Produces(MediaType.TEXT_PLAIN)
     public Response updateWorkspaceProject(@FormParam("projectName") String projectName) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             WorkspaceProject workspaceProject = new WorkspaceProject(projectName, airavataRegistry);
             airavataRegistry.updateWorkspaceProject(workspaceProject);
@@ -166,6 +177,10 @@ public class ProjectRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        }  finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
@@ -178,7 +193,7 @@ public class ProjectRegistryResource {
     @Path(ResourcePathConstants.ProjectResourcePathConstants.DELETE_PROJECT)
     @Produces(MediaType.TEXT_PLAIN)
     public Response deleteWorkspaceProject(@QueryParam("projectName") String projectName) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             airavataRegistry.deleteWorkspaceProject(projectName);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -192,6 +207,10 @@ public class ProjectRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        }  finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
@@ -204,7 +223,7 @@ public class ProjectRegistryResource {
     @Path(ResourcePathConstants.ProjectResourcePathConstants.GET_PROJECT)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getWorkspaceProject(@QueryParam("projectName") String projectName) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             WorkspaceProject workspaceProject = airavataRegistry.getWorkspaceProject(projectName);
             if (workspaceProject != null) {
@@ -224,6 +243,10 @@ public class ProjectRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
@@ -235,7 +258,7 @@ public class ProjectRegistryResource {
     @Path(ResourcePathConstants.ProjectResourcePathConstants.GET_PROJECTS)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getWorkspaceProjects() {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             List<WorkspaceProject> workspaceProjects = airavataRegistry.getWorkspaceProjects();
             WorkspaceProjectList workspaceProjectList = new WorkspaceProjectList();
@@ -257,6 +280,10 @@ public class ProjectRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 }

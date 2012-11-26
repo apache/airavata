@@ -26,7 +26,7 @@ import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.Gateway;
 import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
-import org.apache.airavata.rest.mappings.utils.RestServicesConstants;
+import org.apache.airavata.services.registry.rest.utils.RegPoolUtils;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
@@ -36,19 +36,17 @@ import javax.ws.rs.core.Response;
 
 @Path(ResourcePathConstants.BasicRegistryConstants.REGISTRY_API_BASICREGISTRY)
 public class BasicRegistryResouce {
-    protected static AiravataRegistry2 airavataRegistry;
-
     @Context
     ServletContext context;
 
     @GET
     @Path(ResourcePathConstants.BasicRegistryConstants.GET_GATEWAY)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response getGateway (){
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+    public Response getGateway() {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             Gateway gateway = airavataRegistry.getGateway();
-            if (gateway != null){
+            if (gateway != null) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity(gateway);
                 return builder.build();
@@ -61,17 +59,21 @@ public class BasicRegistryResouce {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     @GET
     @Path(ResourcePathConstants.BasicRegistryConstants.GET_USER)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response getAiravataUser (){
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+    public Response getAiravataUser() {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             AiravataUser airavataUser = airavataRegistry.getAiravataUser();
-            if (airavataUser != null){
+            if (airavataUser != null) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity(airavataUser);
                 return builder.build();
@@ -84,6 +86,10 @@ public class BasicRegistryResouce {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
@@ -91,8 +97,8 @@ public class BasicRegistryResouce {
     @Path(ResourcePathConstants.BasicRegistryConstants.SET_GATEWAY)
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces(MediaType.TEXT_PLAIN)
-    public Response setGateway (Gateway gateway){
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+    public Response setGateway(Gateway gateway) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             airavataRegistry.setGateway(gateway);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -102,6 +108,10 @@ public class BasicRegistryResouce {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
@@ -109,8 +119,8 @@ public class BasicRegistryResouce {
     @Path(ResourcePathConstants.BasicRegistryConstants.SET_USER)
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces(MediaType.TEXT_PLAIN)
-    public Response setAiravataUser (AiravataUser user){
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+    public Response setAiravataUser(AiravataUser user) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             airavataRegistry.setAiravataUser(user);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -120,17 +130,21 @@ public class BasicRegistryResouce {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     @GET
     @Path(ResourcePathConstants.BasicRegistryConstants.VERSION)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response getVersion (){
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+    public Response getVersion() {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             Version version = airavataRegistry.getVersion();
-            if (version != null){
+            if (version != null) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity(version);
                 return builder.build();
@@ -143,6 +157,10 @@ public class BasicRegistryResouce {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 }

@@ -32,8 +32,6 @@ import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.ServiceUtils;
 import org.apache.airavata.client.tools.PeriodicExecutorThread;
-//import org.apache.airavata.registry.api.AiravataRegistry2;
-//import org.apache.airavata.registry.api.util.RegistryUtils;
 import org.apache.airavata.wsmg.commons.config.ConfigurationManager;
 import org.apache.airavata.wsmg.commons.util.Axis2Utils;
 import org.apache.airavata.wsmg.msgbox.Storage.MsgBoxStorage;
@@ -116,11 +114,9 @@ public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
 					}
 
                     String userName = properties.getProperty("registry.user");
-                    String password = properties.getProperty("registry.password");
-                    String regURL = properties.getProperty("registry.jdbc.url");
-                    URI baseUri = new URI(regURL);
+                    String gateway = properties.getProperty("gateway.id");
 
-                    AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(baseUri, userName, password);
+                    AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(gateway, userName);
 					String localAddress = ServiceUtils.generateServiceURLFromConfigurationContext(context, MESSAGE_BOX_SERVICE_NAME);
 					logger.debug("MESSAGE BOX SERVICE_ADDRESS:" + localAddress);
                     context.setProperty(SERVICE_URL,new URI(localAddress));

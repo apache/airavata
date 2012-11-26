@@ -75,7 +75,7 @@ public class GFacService implements ServiceLifeCycle {
     public static final String GFAC_CONFIGURATION = "gfacConfiguration";
     public static final String GATEWAY_ID = "gateway.id";
     public static final String REGISTRY_PASSWORD = "registry.password";
-    public static final String REGISTRY_URL = "registry.jdbc.url";
+//    public static final String REGISTRY_URL = "registry.jdbc.url";
 
     /*
      * Heart beat thread
@@ -135,8 +135,8 @@ public class GFacService implements ServiceLifeCycle {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    URI baseUri = new URI(properties.getProperty(REGISTRY_URL));
-                    airavataAPI = AiravataAPIFactory.getAPI(baseUri, username, password);
+                    String gatewayName = properties.getProperty(GATEWAY_ID);
+                    airavataAPI = AiravataAPIFactory.getAPI(gatewayName, username);
                     context.setProperty(GFAC_URL, ServiceUtils.generateServiceURLFromConfigurationContext(context,SERVICE_NAME));
                     GFacConfiguration gfacConfig = new GFacConfiguration(properties.getProperty(MYPROXY_SERVER),properties.getProperty(MYPROXY_USER),
                             properties.getProperty(MYPROXY_PASS),Integer.parseInt(properties.getProperty(MYPROXY_LIFE)),airavataAPI,properties.getProperty(TRUSTED_CERT_LOCATION));

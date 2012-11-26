@@ -113,7 +113,6 @@ public class AiravataClient implements AiravataAPI {
 	private static String workflow = "";
 	private static WorkflowContextHeaderBuilder builder;
 	private String currentUser;
-    private String password;
     private URI regitryURI;
     private PasswordCallback callBack;
 
@@ -988,16 +987,16 @@ public class AiravataClient implements AiravataAPI {
 		}
 	}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public void setRegitryURI(URI regitryURI) {
         this.regitryURI = regitryURI;
     }
 
     public String getPassword() {
-        return password;
+        if(getCallBack() != null){
+            return getCallBack().getPassword(getCurrentUser());
+        }
+        return null;
+
     }
 
     public URI getRegitryURI() {

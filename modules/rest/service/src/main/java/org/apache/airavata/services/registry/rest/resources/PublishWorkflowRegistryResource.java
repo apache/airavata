@@ -30,7 +30,7 @@ import org.apache.airavata.rest.mappings.resourcemappings.PublishWorkflowNamesLi
 import org.apache.airavata.rest.mappings.resourcemappings.Workflow;
 import org.apache.airavata.rest.mappings.resourcemappings.WorkflowList;
 import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
-import org.apache.airavata.rest.mappings.utils.RestServicesConstants;
+import org.apache.airavata.services.registry.rest.utils.RegPoolUtils;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
@@ -47,7 +47,6 @@ import java.util.Map;
  */
 @Path(ResourcePathConstants.PublishedWFConstants.REGISTRY_API_PUBLISHWFREGISTRY)
 public class PublishWorkflowRegistryResource {
-    private AiravataRegistry2 airavataRegistry;
 
     @Context
     ServletContext context;
@@ -56,6 +55,7 @@ public class PublishWorkflowRegistryResource {
 
     /**
      * This method will check whether a given published workflow name already exists
+     *
      * @param workflowname publish workflow name
      * @return HTTP response
      */
@@ -63,14 +63,14 @@ public class PublishWorkflowRegistryResource {
     @Path(ResourcePathConstants.PublishedWFConstants.PUBLISHWF_EXIST)
     @Produces(MediaType.TEXT_PLAIN)
     public Response isPublishedWorkflowExists(@QueryParam("workflowname") String workflowname) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
-        try{
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        try {
             boolean workflowExists = airavataRegistry.isPublishedWorkflowExists(workflowname);
-            if (workflowExists){
+            if (workflowExists) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity("Publish workflow exists...");
                 return builder.build();
-            }else {
+            } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
                 builder.entity("Publish workflow does not exists...");
                 return builder.build();
@@ -79,12 +79,17 @@ public class PublishWorkflowRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will make a user workflow as a published workflow with the given name
-     * @param workflowName user workflow name
+     *
+     * @param workflowName        user workflow name
      * @param publishWorkflowName name need to save the published workflow as
      * @return HTTP response
      */
@@ -92,9 +97,9 @@ public class PublishWorkflowRegistryResource {
     @Path(ResourcePathConstants.PublishedWFConstants.PUBLISH_WORKFLOW)
     @Produces(MediaType.TEXT_PLAIN)
     public Response publishWorkflow(@FormParam("workflowName") String workflowName,
-                                    @FormParam("publishWorkflowName") String publishWorkflowName)  {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
-        try{
+                                    @FormParam("publishWorkflowName") String publishWorkflowName) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        try {
             airavataRegistry.publishWorkflow(workflowName, publishWorkflowName);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Workflow published successfully...");
@@ -111,20 +116,25 @@ public class PublishWorkflowRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will publish a workflow with the default workflow name
+     *
      * @param workflowName workflow name
      * @return HTTP response
      */
     @POST
     @Path(ResourcePathConstants.PublishedWFConstants.PUBLISH_DEFAULT_WORKFLOW)
     @Produces(MediaType.TEXT_PLAIN)
-    public Response publishWorkflow(@FormParam("workflowName") String workflowName){
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
-        try{
+    public Response publishWorkflow(@FormParam("workflowName") String workflowName) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        try {
             airavataRegistry.publishWorkflow(workflowName);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Workflow published successfully...");
@@ -141,11 +151,16 @@ public class PublishWorkflowRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will return the worklflow graph
+     *
      * @param workflowName workflow name
      * @return HTTP response
      */
@@ -153,14 +168,14 @@ public class PublishWorkflowRegistryResource {
     @Path(ResourcePathConstants.PublishedWFConstants.GET_PUBLISHWORKFLOWGRAPH)
     @Produces(MediaType.APPLICATION_FORM_URLENCODED)
     public Response getPublishedWorkflowGraphXML(@QueryParam("workflowName") String workflowName) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
-        try{
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        try {
             String publishedWorkflowGraphXML = airavataRegistry.getPublishedWorkflowGraphXML(workflowName);
-            if (publishedWorkflowGraphXML !=null){
+            if (publishedWorkflowGraphXML != null) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity(publishedWorkflowGraphXML);
                 return builder.build();
-            }else {
+            } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
                 builder.entity("Could not find workflow graph...");
                 return builder.build();
@@ -173,23 +188,28 @@ public class PublishWorkflowRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will return all the published workflow names
+     *
      * @return HTTP response
      */
     @GET
     @Path(ResourcePathConstants.PublishedWFConstants.GET_PUBLISHWORKFLOWNAMES)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getPublishedWorkflowNames() {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
-        try{
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        try {
             List<String> publishedWorkflowNames = airavataRegistry.getPublishedWorkflowNames();
             PublishWorkflowNamesList publishWorkflowNamesList = new PublishWorkflowNamesList();
             publishWorkflowNamesList.setPublishWorkflowNames(publishedWorkflowNames);
-            if (publishedWorkflowNames.size() != 0){
+            if (publishedWorkflowNames.size() != 0) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity(publishWorkflowNamesList);
                 return builder.build();
@@ -202,30 +222,35 @@ public class PublishWorkflowRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will return all the published workflows
+     *
      * @return HTTP response
      */
     @GET
     @Path(ResourcePathConstants.PublishedWFConstants.GET_PUBLISHWORKFLOWS)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getPublishedWorkflows() {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
-        try{
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        try {
             Map<String, String> publishedWorkflows = airavataRegistry.getPublishedWorkflows();
             WorkflowList workflowList = new WorkflowList();
             List<Workflow> workflowsModels = new ArrayList<Workflow>();
-            for (String workflowName : publishedWorkflows.keySet()){
+            for (String workflowName : publishedWorkflows.keySet()) {
                 Workflow workflow = new Workflow();
                 workflow.setWorkflowName(workflowName);
                 workflow.setWorkflowGraph(publishedWorkflows.get(workflowName));
                 workflowsModels.add(workflow);
             }
             workflowList.setWorkflowList(workflowsModels);
-            if(publishedWorkflows.size() != 0 ){
+            if (publishedWorkflows.size() != 0) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity(workflowList);
                 return builder.build();
@@ -239,11 +264,16 @@ public class PublishWorkflowRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will delete a published workflow with the given published workflow name
+     *
      * @param workflowName published workflow name
      * @return HTTP response
      */
@@ -251,8 +281,8 @@ public class PublishWorkflowRegistryResource {
     @Path(ResourcePathConstants.PublishedWFConstants.REMOVE_PUBLISHWORKFLOW)
     @Produces(MediaType.TEXT_PLAIN)
     public Response removePublishedWorkflow(@QueryParam("workflowName") String workflowName) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
-        try{
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        try {
             airavataRegistry.removePublishedWorkflow(workflowName);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Publish workflow removed successfully...");
@@ -265,6 +295,10 @@ public class PublishWorkflowRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 }

@@ -39,6 +39,8 @@ public class JPAResourceAccessor {
 	}
 	
 	public GatewayResource getGateway(){
+        gatewayResource = new GatewayResource();
+        gatewayResource.setGatewayName(this.registry.getGateway().getGatewayName());
 		return gatewayResource;
 	}
 	
@@ -47,6 +49,7 @@ public class JPAResourceAccessor {
 	}
 	
 	public WorkerResource getWorker(){
+        workerResource = new WorkerResource(registry.getUser().getUserName(), getGateway());
 		return workerResource;
 	}
 }

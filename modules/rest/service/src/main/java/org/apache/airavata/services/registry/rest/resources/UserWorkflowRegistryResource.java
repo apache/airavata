@@ -28,7 +28,7 @@ import org.apache.airavata.registry.api.exception.worker.UserWorkflowDoesNotExis
 import org.apache.airavata.rest.mappings.resourcemappings.Workflow;
 import org.apache.airavata.rest.mappings.resourcemappings.WorkflowList;
 import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
-import org.apache.airavata.rest.mappings.utils.RestServicesConstants;
+import org.apache.airavata.services.registry.rest.utils.RegPoolUtils;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
@@ -45,7 +45,6 @@ import java.util.Map;
  */
 @Path(ResourcePathConstants.UserWFConstants.REGISTRY_API_USERWFREGISTRY)
 public class UserWorkflowRegistryResource {
-    private AiravataRegistry2 airavataRegistry;
 
     @Context
     ServletContext context;
@@ -54,21 +53,22 @@ public class UserWorkflowRegistryResource {
 
     /**
      * This method will check whether a given user workflow name already exists
+     *
      * @param workflowName workflow name
      * @return HTTP response
      */
     @GET
     @Path(ResourcePathConstants.UserWFConstants.WORKFLOW_EXIST)
     @Produces(MediaType.TEXT_PLAIN)
-    public Response isWorkflowExists(@QueryParam("workflowName") String workflowName){
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
-        try{
+    public Response isWorkflowExists(@QueryParam("workflowName") String workflowName) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        try {
             boolean workflowExists = airavataRegistry.isWorkflowExists(workflowName);
-            if (workflowExists){
+            if (workflowExists) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity("User workflow exists...");
                 return builder.build();
-            }else {
+            } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
                 builder.entity("User workflow does not exists...");
                 return builder.build();
@@ -77,12 +77,17 @@ public class UserWorkflowRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will add a new workflow
-     * @param workflowName workflow name
+     *
+     * @param workflowName     workflow name
      * @param workflowGraphXml workflow content
      * @return HTTP response
      */
@@ -92,8 +97,8 @@ public class UserWorkflowRegistryResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response addWorkflow(@FormParam("workflowName") String workflowName,
                                 @FormParam("workflowGraphXml") String workflowGraphXml) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
-        try{
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        try {
             airavataRegistry.addWorkflow(workflowName, workflowGraphXml);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Workflow added successfully...");
@@ -106,12 +111,17 @@ public class UserWorkflowRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will update the workflow
-     * @param workflowName workflow name
+     *
+     * @param workflowName     workflow name
      * @param workflowGraphXml workflow content
      * @return HTTP response
      */
@@ -120,9 +130,9 @@ public class UserWorkflowRegistryResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_PLAIN)
     public Response updateWorkflow(@FormParam("workflowName") String workflowName,
-                                   @FormParam("workflowGraphXml") String workflowGraphXml){
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
-        try{
+                                   @FormParam("workflowGraphXml") String workflowGraphXml) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        try {
             airavataRegistry.updateWorkflow(workflowName, workflowGraphXml);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Workflow updated successfully...");
@@ -135,11 +145,16 @@ public class UserWorkflowRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will return the content of the given workflow
+     *
      * @param workflowName workflow name
      * @return HTTP response
      */
@@ -147,14 +162,14 @@ public class UserWorkflowRegistryResource {
     @Path(ResourcePathConstants.UserWFConstants.GET_WORKFLOWGRAPH)
     @Produces(MediaType.APPLICATION_FORM_URLENCODED)
     public Response getWorkflowGraphXML(@QueryParam("workflowName") String workflowName) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
-        try{
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        try {
             String workflowGraphXML = airavataRegistry.getWorkflowGraphXML(workflowName);
-            if (workflowGraphXML != null){
+            if (workflowGraphXML != null) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity(workflowGraphXML);
                 return builder.build();
-            }else {
+            } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
                 builder.entity("Could not get workflow graph...");
                 return builder.build();
@@ -167,30 +182,35 @@ public class UserWorkflowRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will return all the user workflows
+     *
      * @return HTTP response
      */
     @GET
     @Path(ResourcePathConstants.UserWFConstants.GET_WORKFLOWS)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getWorkflows()  {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
-        try{
+    public Response getWorkflows() {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        try {
             Map<String, String> workflows = airavataRegistry.getWorkflows();
             WorkflowList workflowList = new WorkflowList();
             List<Workflow> workflowsModels = new ArrayList<Workflow>();
-            for (String workflowName : workflows.keySet()){
+            for (String workflowName : workflows.keySet()) {
                 Workflow workflow = new Workflow();
                 workflow.setWorkflowName(workflowName);
                 workflow.setWorkflowGraph(workflows.get(workflowName));
                 workflowsModels.add(workflow);
             }
             workflowList.setWorkflowList(workflowsModels);
-            if(workflows.size() != 0 ){
+            if (workflows.size() != 0) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity(workflowList);
                 return builder.build();
@@ -204,11 +224,16 @@ public class UserWorkflowRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will delete a user workflow with the given user workflow name
+     *
      * @param workflowName user workflow name
      * @return HTTP response
      */
@@ -216,8 +241,8 @@ public class UserWorkflowRegistryResource {
     @Path(ResourcePathConstants.UserWFConstants.REMOVE_WORKFLOW)
     @Produces(MediaType.TEXT_PLAIN)
     public Response removeWorkflow(@QueryParam("workflowName") String workflowName) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
-        try{
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        try {
             airavataRegistry.removeWorkflow(workflowName);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Workflow removed successfully...");
@@ -230,6 +255,10 @@ public class UserWorkflowRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 }
