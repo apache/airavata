@@ -32,6 +32,7 @@ import org.apache.airavata.registry.api.exception.worker.*;
 import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.PasswordCallback;
 
+import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
@@ -51,15 +52,19 @@ public class RegistryClient extends AiravataRegistry2 {
     private PublishedWorkflowResourceClient publishedWorkflowResourceClient;
     private UserWorkflowResourceClient userWorkflowResourceClient;
 
-    public RegistryClient(String userName, PasswordCallback callback) {
-        basicRegistryResourceClient = new BasicRegistryResourceClient(userName, callback);
-        configurationResourceClient = new ConfigurationResourceClient(userName, callback);
-        descriptorResourceClient = new DescriptorResourceClient(userName, callback);
-        experimentResourceClient = new ExperimentResourceClient(userName, callback);
-        projectResourceClient = new ProjectResourceClient(userName, callback);
-        provenanceResourceClient = new ProvenanceResourceClient(userName, callback);
-        publishedWorkflowResourceClient = new PublishedWorkflowResourceClient(userName, callback);
-        userWorkflowResourceClient = new UserWorkflowResourceClient(userName, callback);
+    public RegistryClient(String userName, String serviceURI, PasswordCallback callback) {
+        basicRegistryResourceClient = new BasicRegistryResourceClient(userName, serviceURI, callback);
+        configurationResourceClient = new ConfigurationResourceClient(userName, serviceURI,  callback);
+        descriptorResourceClient = new DescriptorResourceClient(userName, serviceURI, callback);
+        experimentResourceClient = new ExperimentResourceClient(userName, serviceURI, callback);
+        projectResourceClient = new ProjectResourceClient(userName, serviceURI, callback);
+        provenanceResourceClient = new ProvenanceResourceClient(userName, serviceURI, callback);
+        publishedWorkflowResourceClient = new PublishedWorkflowResourceClient(userName, serviceURI, callback);
+        userWorkflowResourceClient = new UserWorkflowResourceClient(userName,serviceURI,callback);
+    }
+
+    private URI getBaseURI() {
+        return UriBuilder.fromUri("http://localhost:9080/airavata-services/").build();
     }
 
     public BasicRegistryResourceClient getBasicRegistryResourceClient() {
