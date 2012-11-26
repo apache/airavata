@@ -52,10 +52,12 @@ public class PublishedWorkflowResourceClient {
     private final static Logger logger = LoggerFactory.getLogger(PublishedWorkflowResourceClient.class);
     private String userName;
     private PasswordCallback callback;
+    private String baseURI;
 
-    public PublishedWorkflowResourceClient(String userName, PasswordCallback callback) {
+    public PublishedWorkflowResourceClient(String userName, String serviceURI, PasswordCallback callback) {
         this.userName = userName;
         this.callback = callback;
+        this.baseURI = serviceURI;
     }
 
     private URI getBaseURI() {

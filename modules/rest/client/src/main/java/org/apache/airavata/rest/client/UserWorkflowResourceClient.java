@@ -51,15 +51,17 @@ public class UserWorkflowResourceClient {
     private final static Logger logger = LoggerFactory.getLogger(UserWorkflowResourceClient.class);
     private String userName;
     private PasswordCallback callback;
+    private String baseURI;
 
-    public UserWorkflowResourceClient(String userName, PasswordCallback callback) {
+    public UserWorkflowResourceClient(String userName, String serviceURI, PasswordCallback callback) {
         this.userName = userName;
         this.callback = callback;
+        this.baseURI = serviceURI;
     }
 
     private URI getBaseURI() {
         logger.info("Creating Base URI");
-        return UriBuilder.fromUri("http://localhost:9080/airavata-services/").build();
+        return UriBuilder.fromUri(baseURI).build();
     }
 
     private com.sun.jersey.api.client.WebResource getUserWFRegistryBaseResource (){

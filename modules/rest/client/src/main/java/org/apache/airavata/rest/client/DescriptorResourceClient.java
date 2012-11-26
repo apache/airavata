@@ -54,15 +54,17 @@ public class DescriptorResourceClient {
     private final static Logger logger = LoggerFactory.getLogger(DescriptorResourceClient.class);
     private String userName;
     private PasswordCallback callback;
+    private String baseURI;
 
-    public DescriptorResourceClient(String userName, PasswordCallback callback) {
+    public DescriptorResourceClient(String userName, String serviceURI, PasswordCallback callback) {
         this.userName = userName;
         this.callback = callback;
+        this.baseURI = serviceURI;
     }
 
     private URI getBaseURI() {
         logger.info("Creating Base URI");
-        return UriBuilder.fromUri("http://localhost:9080/airavata-services/").build();
+        return UriBuilder.fromUri(baseURI).build();
     }
 
     private WebResource getDescriptorRegistryBaseResource (){

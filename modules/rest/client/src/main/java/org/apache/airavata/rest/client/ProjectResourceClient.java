@@ -49,15 +49,17 @@ public class ProjectResourceClient {
     private final static Logger logger = LoggerFactory.getLogger(ProjectResourceClient.class);
     private String userName;
     private PasswordCallback callback;
+    private String baseURI;
 
-    public ProjectResourceClient(String userName, PasswordCallback callback) {
+    public ProjectResourceClient(String userName, String serviceURI,  PasswordCallback callback) {
         this.callback = callback;
         this.userName = userName;
+        this.baseURI = serviceURI;
     }
 
     private URI getBaseURI() {
         logger.info("Creating Base URI");
-        return UriBuilder.fromUri("http://localhost:9080/airavata-services/").build();
+        return UriBuilder.fromUri(baseURI).build();
     }
 
     private WebResource getProjectRegistryBaseResource (){
