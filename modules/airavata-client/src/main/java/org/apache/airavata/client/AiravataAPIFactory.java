@@ -51,7 +51,6 @@ public class AiravataAPIFactory {
         AiravataClient apiObj = new AiravataClient();
         apiObj.setCurrentUser(alternateUsername);
         apiObj.setCallBack(callback);
-        apiObj.setPassword(callback.getPassword(username));
         apiObj.setRegitryURI(registryURL);
         apiObj.setGateway(gateway);
         return apiObj;

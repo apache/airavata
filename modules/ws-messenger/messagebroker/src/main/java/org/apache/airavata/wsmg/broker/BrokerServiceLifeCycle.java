@@ -21,7 +21,6 @@
 
 package org.apache.airavata.wsmg.broker;
 
-import java.io.File;
 import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URL;
@@ -34,8 +33,6 @@ import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.tools.PeriodicExecutorThread;
 import org.apache.airavata.common.utils.ServiceUtils;
-//import org.apache.airavata.registry.api.AiravataRegistry2;
-//import org.apache.airavata.registry.api.util.RegistryUtils;
 import org.apache.airavata.wsmg.broker.handler.PublishedMessageHandler;
 import org.apache.airavata.wsmg.broker.subscription.SubscriptionManager;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
@@ -156,11 +153,9 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
                             }
 
                             String userName = properties.getProperty("registry.user");
-                            String password = properties.getProperty("registry.password");
-                            String regURL = properties.getProperty("registry.jdbc.url");
-                            URI baseUri = new URI(regURL);
+                            String gateway = properties.getProperty("gateway.id");
 
-                            AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(baseUri, userName, password);
+                            AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(gateway, userName);
                             String localAddress = ServiceUtils
                                     .generateServiceURLFromConfigurationContext(
                                             context,

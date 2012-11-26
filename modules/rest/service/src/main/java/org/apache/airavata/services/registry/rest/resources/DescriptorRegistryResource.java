@@ -32,7 +32,7 @@ import org.apache.airavata.registry.api.exception.gateway.MalformedDescriptorExc
 import org.apache.airavata.rest.mappings.resourcemappings.*;
 import org.apache.airavata.rest.mappings.utils.DescriptorUtil;
 import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
-import org.apache.airavata.rest.mappings.utils.RestServicesConstants;
+import org.apache.airavata.services.registry.rest.utils.RegPoolUtils;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
@@ -49,7 +49,6 @@ import java.util.Map;
  */
 @Path(ResourcePathConstants.DecResourcePathConstants.DESC_RESOURCE_PATH)
 public class DescriptorRegistryResource {
-    private AiravataRegistry2 airavataRegistry;
 
     @Context
     ServletContext context;
@@ -61,6 +60,7 @@ public class DescriptorRegistryResource {
 
     /**
      * This method will check whether the host descriptor exists
+     *
      * @param hostDescriptorName host descriptor name
      * @return HTTP response
      */
@@ -68,7 +68,7 @@ public class DescriptorRegistryResource {
     @Path(ResourcePathConstants.DecResourcePathConstants.HOST_DESC_EXISTS)
     @Produces(MediaType.TEXT_PLAIN)
     public Response isHostDescriptorExists(@QueryParam("hostDescriptorName") String hostDescriptorName) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         boolean state;
         try {
             state = airavataRegistry.isHostDescriptorExists(hostDescriptorName);
@@ -85,11 +85,16 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will save the host descriptor
+     *
      * @param host JSON message send according to HostDescriptor class
      * @return HTTP response
      */
@@ -98,7 +103,7 @@ public class DescriptorRegistryResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response addHostDescriptor(HostDescriptor host) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             HostDescription hostDescription = DescriptorUtil.createHostDescription(host);
             airavataRegistry.addHostDescriptor(hostDescription);
@@ -113,11 +118,16 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will update the host descriptor
+     *
      * @param host JSON message send according to HostDescriptor class
      * @return HTTP response
      */
@@ -126,7 +136,7 @@ public class DescriptorRegistryResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response updateHostDescriptor(HostDescriptor host) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             HostDescription hostDescription = DescriptorUtil.createHostDescription(host);
             airavataRegistry.updateHostDescriptor(hostDescription);
@@ -141,21 +151,26 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will retrieve host descriptor. Clients will get a JSON message that is generated
      * according to HostDescriptor class
+     *
      * @param hostName host name
-     * @return   HTTP response
+     * @return HTTP response
      */
     @GET
     @Path(ResourcePathConstants.DecResourcePathConstants.HOST_DESC)
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getHostDescriptor(@QueryParam("hostName") String hostName) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             HostDescription hostDescription = airavataRegistry.getHostDescriptor(hostName);
             HostDescriptor hostDescriptor = DescriptorUtil.createHostDescriptor(hostDescription);
@@ -172,12 +187,17 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
 
     }
 
     /**
      * This method will delete the given host descriptor
+     *
      * @param hostName host descriptor name
      * @return HTTP response
      */
@@ -185,7 +205,7 @@ public class DescriptorRegistryResource {
     @Path(ResourcePathConstants.DecResourcePathConstants.HOST_DESC_DELETE)
     @Produces(MediaType.TEXT_PLAIN)
     public Response removeHostDescriptor(@QueryParam("hostName") String hostName) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             airavataRegistry.removeHostDescriptor(hostName);
             Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
@@ -199,11 +219,16 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will retrieve all the host descriptors available.
+     *
      * @return HTTP response
      */
     @GET
@@ -211,7 +236,7 @@ public class DescriptorRegistryResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getHostDescriptors() {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             List<HostDescription> hostDescriptionList = airavataRegistry.getHostDescriptors();
             HostDescriptionList list = new HostDescriptionList();
@@ -234,18 +259,23 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will return all the host descriptor names available
+     *
      * @return HTTP response
      */
     @GET
     @Path(ResourcePathConstants.DecResourcePathConstants.GET_HOST_DESCS_NAMES)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getHostDescriptorNames() {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             List<HostDescription> hostDescriptionList = airavataRegistry.getHostDescriptors();
             List<String> hostDescriptorNames = new ArrayList<String>();
@@ -267,11 +297,16 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will check whether the service descriptor available
+     *
      * @param serviceDescriptorName service descriptor name
      * @return HTTP response
      */
@@ -279,7 +314,7 @@ public class DescriptorRegistryResource {
     @Path(ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC_EXISTS)
     @Produces(MediaType.TEXT_PLAIN)
     public Response isServiceDescriptorExists(@QueryParam("serviceDescriptorName") String serviceDescriptorName) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         boolean state;
         try {
             state = airavataRegistry.isServiceDescriptorExists(serviceDescriptorName);
@@ -296,11 +331,16 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will save the service descriptor
+     *
      * @param service this is a JSON message created according to ServiceDescriptor class
      * @return HTTP response
      */
@@ -309,7 +349,7 @@ public class DescriptorRegistryResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response addServiceDescriptor(ServiceDescriptor service) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             ServiceDescription serviceDescription = DescriptorUtil.createServiceDescription(service);
             airavataRegistry.addServiceDescriptor(serviceDescription);
@@ -324,11 +364,16 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will update the service descriptor
+     *
      * @param service this is a JSON message generated according to Service Descriptor class
      * @return HTTP response
      */
@@ -337,7 +382,7 @@ public class DescriptorRegistryResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response updateServiceDescriptor(ServiceDescriptor service) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             ServiceDescription serviceDescription = DescriptorUtil.createServiceDescription(service);
             airavataRegistry.updateServiceDescriptor(serviceDescription);
@@ -352,13 +397,18 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will retrieve service descriptor for a given service descriptor name. Clients
      * will get a JSON message that is generated according to Service Descriptor class
-     * @param serviceName  service name
+     *
+     * @param serviceName service name
      * @return HTTP response
      */
     @GET
@@ -366,7 +416,7 @@ public class DescriptorRegistryResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getServiceDescriptor(@QueryParam("serviceName") String serviceName) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             ServiceDescription serviceDescription = airavataRegistry.getServiceDescriptor(serviceName);
             ServiceDescriptor serviceDescriptor = DescriptorUtil.createServiceDescriptor(serviceDescription);
@@ -383,11 +433,16 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will delete a given service descriptor
+     *
      * @param serviceName service descriptor name
      * @return HTTP response
      */
@@ -395,7 +450,7 @@ public class DescriptorRegistryResource {
     @Path(ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC_DELETE)
     @Produces(MediaType.TEXT_PLAIN)
     public Response removeServiceDescriptor(@QueryParam("serviceName") String serviceName) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             airavataRegistry.removeServiceDescriptor(serviceName);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -409,11 +464,16 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will retrieve all the service descriptors
+     *
      * @return HTTP response
      */
     @GET
@@ -421,7 +481,7 @@ public class DescriptorRegistryResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getServiceDescriptors() {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             List<ServiceDescription> serviceDescriptors = airavataRegistry.getServiceDescriptors();
             ServiceDescriptionList list = new ServiceDescriptionList();
@@ -444,14 +504,19 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
 
     /**
      * This method will check whether the given application descriptor exists
-     * @param serviceName service descriptor name
-     * @param hostName host descriptor name
+     *
+     * @param serviceName       service descriptor name
+     * @param hostName          host descriptor name
      * @param appDescriptorName application descriptor name
      * @return HTTP response
      */
@@ -461,7 +526,7 @@ public class DescriptorRegistryResource {
     public Response isApplicationDescriptorExists(@QueryParam("serviceName") String serviceName,
                                                   @QueryParam("hostName") String hostName,
                                                   @QueryParam("appDescName") String appDescriptorName) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         boolean state;
         try {
             state = airavataRegistry.isApplicationDescriptorExists(serviceName, hostName, appDescriptorName);
@@ -478,13 +543,18 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will save given application descriptor
+     *
      * @param applicationDescriptor this is a JSON message created according to
-     * ApplicationDescriptor class
+     *                              ApplicationDescriptor class
      * @return HTTP response
      */
     @POST
@@ -492,7 +562,7 @@ public class DescriptorRegistryResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response addApplicationDescriptor(ApplicationDescriptor applicationDescriptor) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             String hostdescName = applicationDescriptor.getHostdescName();
             if (!airavataRegistry.isHostDescriptorExists(hostdescName)) {
@@ -531,11 +601,16 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will update the application descriptor
+     *
      * @param applicationDescriptor JSON message of ApplicationDescriptor class
      * @return HTTP response
      */
@@ -544,7 +619,7 @@ public class DescriptorRegistryResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response udpateApplicationDescriptor(ApplicationDescriptor applicationDescriptor) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             String hostdescName = applicationDescriptor.getHostdescName();
             if (!airavataRegistry.isHostDescriptorExists(hostdescName)) {
@@ -584,15 +659,20 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will retrieve an application descriptor according to given service name, host name
      * and application name
-     * @param serviceName  service name
-     * @param hostName  host name
-     * @param applicationName  application name
+     *
+     * @param serviceName     service name
+     * @param hostName        host name
+     * @param applicationName application name
      * @return HTTP response
      */
     @GET
@@ -601,7 +681,7 @@ public class DescriptorRegistryResource {
     public Response getApplicationDescriptor(@QueryParam("serviceName") String serviceName,
                                              @QueryParam("hostName") String hostName,
                                              @QueryParam("applicationName") String applicationName) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             ApplicationDeploymentDescription applicationDeploymentDescription = airavataRegistry.getApplicationDescriptor(serviceName, hostName, applicationName);
             ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(applicationDeploymentDescription);
@@ -623,21 +703,26 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will retrieve application descriptors for a given service and host
+     *
      * @param serviceName service name
-     * @param hostName host name
+     * @param hostName    host name
      * @return HTTP response
      */
     @GET
     @Path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_PER_HOST_SERVICE)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getApplicationDescriptorPerServiceHost(@QueryParam("serviceName") String serviceName,
-                                              @QueryParam("hostName") String hostName) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+                                                           @QueryParam("hostName") String hostName) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             ApplicationDeploymentDescription applicationDeploymentDescription = airavataRegistry.getApplicationDescriptors(serviceName, hostName);
             ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(applicationDeploymentDescription);
@@ -659,11 +744,16 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will get all the application descriptors for a given service
+     *
      * @param serviceName service name
      * @return HTTP response
      */
@@ -671,7 +761,7 @@ public class DescriptorRegistryResource {
     @Path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_ALL_DESCS_SERVICE)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getApplicationDescriptors(@QueryParam("serviceName") String serviceName) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             Map<String, ApplicationDeploymentDescription> applicationDeploymentDescriptionMap = airavataRegistry.getApplicationDescriptors(serviceName);
             ApplicationDescriptorList applicationDescriptorList = new ApplicationDescriptorList();
@@ -707,18 +797,23 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will retrieve all the application descriptors available
+     *
      * @return HTTP response
      */
     @GET
     @Path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_ALL_DESCRIPTORS)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getApplicationDescriptors() {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             Map<String[], ApplicationDeploymentDescription> applicationDeploymentDescriptionMap = airavataRegistry.getApplicationDescriptors();
             ApplicationDescriptorList applicationDescriptorList = new ApplicationDescriptorList();
@@ -756,18 +851,23 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will return all the application names available
+     *
      * @return HTTP response
      */
     @GET
     @Path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_NAMES)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getApplicationDescriptorNames() {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             Map<String[], ApplicationDeploymentDescription> applicationDeploymentDescriptionMap = airavataRegistry.getApplicationDescriptors();
             DescriptorNameList descriptorNameList = new DescriptorNameList();
@@ -794,15 +894,20 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method wil remove an application descriptor according to given service name, host name
      * and application name
+     *
      * @param serviceName service name
-     * @param hostName  host name
-     * @param appName application name
+     * @param hostName    host name
+     * @param appName     application name
      * @return HTTP response
      */
     @DELETE
@@ -811,7 +916,7 @@ public class DescriptorRegistryResource {
     public Response removeApplicationDescriptor(@QueryParam("serviceName") String serviceName,
                                                 @QueryParam("hostName") String hostName,
                                                 @QueryParam("appName") String appName) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             airavataRegistry.removeApplicationDescriptor(serviceName, hostName, appName);
             Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
@@ -825,6 +930,10 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 }

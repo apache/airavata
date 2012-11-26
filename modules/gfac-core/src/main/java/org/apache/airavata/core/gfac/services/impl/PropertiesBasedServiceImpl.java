@@ -108,6 +108,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     public static final String REGISTRY_PASSWORD = "registry.password";
     public static final String REGISTRY_USER = "registry.user";
     public static final String REGISTRY_URL = "registry.jdbc.url";
+    public static final String GATEWAY_ID = "gateway.id";
 
     private Scheduler scheduler;
     private PreExecuteChain[] preChain;
@@ -248,7 +249,8 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
                     baseUri = new URI(loadFromProperty(REGISTRY_URL, true));
                     String regUser = loadFromProperty(REGISTRY_USER, true);
                     String regUserPW = loadFromProperty(REGISTRY_PASSWORD, true);
-                    airavataAPI = AiravataAPIFactory.getAPI(baseUri, regUser, regUserPW);
+                    String gateway = loadFromProperty(GATEWAY_ID, true);
+                    airavataAPI = AiravataAPIFactory.getAPI(gateway, regUser);
                 } catch (URISyntaxException e) {
                     e.printStackTrace();
                 } catch (RepositoryException e) {

@@ -30,6 +30,8 @@ public class RestServicesConstants {
     public static final String REGISTRY_USERNAME = "registry.user";
     public static final String REGISTRY_USER = "airavata.user";
     public static final String AIRAVATA_REGISTRY = "airavataRegistry";
+    public static final String AIRAVATA_REGISTRY_POOL = "airavataRegistryPool";
+
 
     /**
      * A method to use by clients in the case of Basic Access authentication.

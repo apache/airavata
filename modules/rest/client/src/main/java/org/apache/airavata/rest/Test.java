@@ -26,7 +26,7 @@ import org.apache.airavata.rest.client.*;
 
 public class Test {
     public static void main(String[] args) {
-//        configurationResourceClientTest();
+        configurationResourceClientTest();
 //        hostDescriptorClientTest();
 //        serviceDescriptorClientTest();
 //          appDescriptorClientTest();
@@ -34,17 +34,18 @@ public class Test {
 //        experimentRegistryClient();
 //        userWFClientTest();
 //        publishWFClientTest();
-        provenanceClientTest();
+//        provenanceClientTest();
     }
 
 
     public static void configurationResourceClientTest(){
         //configuration resource test
-//        ConfigurationResourceClient configurationResourceClient = new ConfigurationResourceClient();
+        ConfigurationResourceClient configurationResourceClient = new ConfigurationResourceClient("admin", new PasswordCallbackImpl("admin", "admin"));
 
-//        System.out.println("###############getConfiguration###############");
-//        Object configuration = configurationResourceClient.getConfiguration("interpreter.url");
-//        System.out.println(configuration.toString());
+
+        System.out.println("###############getConfiguration###############");
+        Object configuration = configurationResourceClient.getConfiguration("key3");
+        System.out.println(configuration.toString());
 //
 //        System.out.println("###############getConfigurationList###############");
 //        configurationResourceClient.addWFInterpreterURI("http://192.168.17.1:8080/axis2/services/WorkflowInterpretor2");

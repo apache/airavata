@@ -31,6 +31,7 @@ import org.apache.airavata.registry.api.exception.worker.WorkspaceProjectDoesNot
 import org.apache.airavata.rest.mappings.resourcemappings.ExperimentList;
 import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
 import org.apache.airavata.rest.mappings.utils.RestServicesConstants;
+import org.apache.airavata.services.registry.rest.utils.RegPoolUtils;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
@@ -49,7 +50,6 @@ import java.util.List;
  */
 @Path(ResourcePathConstants.ExperimentResourcePathConstants.EXP_RESOURCE_PATH)
 public class ExperimentRegistryResource {
-    private AiravataRegistry2 airavataRegistry;
 
     @Context
     ServletContext context;
@@ -60,14 +60,15 @@ public class ExperimentRegistryResource {
 
     /**
      * This method will delete an experiment with given experiment ID
-     * @param experimentId  experiment ID
+     *
+     * @param experimentId experiment ID
      * @return HTTP response
      */
     @DELETE
     @Path(ResourcePathConstants.ExperimentResourcePathConstants.DELETE_EXP)
     @Produces(MediaType.TEXT_PLAIN)
     public Response removeExperiment(@QueryParam("experimentId") String experimentId) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             airavataRegistry.removeExperiment(experimentId);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -77,19 +78,23 @@ public class ExperimentRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.NOT_FOUND);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will return all the experiments available
-     * @return HTTP response
      *
+     * @return HTTP response
      */
     @GET
     @Path(ResourcePathConstants.ExperimentResourcePathConstants.GET_ALL_EXPS)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getExperiments(){
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+    public Response getExperiments() {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             List<AiravataExperiment> airavataExperimentList = airavataRegistry.getExperiments();
             ExperimentList experimentList = new ExperimentList();
@@ -111,11 +116,16 @@ public class ExperimentRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will return all the experiments for a given project
+     *
      * @param projectName project name
      * @return HTTP response
      */
@@ -123,7 +133,7 @@ public class ExperimentRegistryResource {
     @Path(ResourcePathConstants.ExperimentResourcePathConstants.GET_EXPS_BY_PROJECT)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getExperimentsByProject(@QueryParam("projectName") String projectName) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             List<AiravataExperiment> airavataExperimentList = airavataRegistry.getExperiments(projectName);
             ExperimentList experimentList = new ExperimentList();
@@ -145,14 +155,19 @@ public class ExperimentRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will return all the experiments in a given period of time
+     *
      * @param fromDate starting date
-     * @param toDate end date
-     * @return  HTTP response
+     * @param toDate   end date
+     * @return HTTP response
      */
     @GET
     @Path(ResourcePathConstants.ExperimentResourcePathConstants.GET_EXPS_BY_DATE)
@@ -160,7 +175,7 @@ public class ExperimentRegistryResource {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getExperimentsByDate(@QueryParam("fromDate") String fromDate,
                                          @QueryParam("toDate") String toDate) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date formattedFromDate = dateFormat.parse(fromDate);
@@ -189,14 +204,19 @@ public class ExperimentRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will return all the experiments for a given project in a given period of time
+     *
      * @param projectName project name
-     * @param fromDate starting date
-     * @param toDate end date
+     * @param fromDate    starting date
+     * @param toDate      end date
      * @return HTTP response
      */
     @GET
@@ -206,7 +226,7 @@ public class ExperimentRegistryResource {
     public Response getExperimentsByProjectDate(@QueryParam("projectName") String projectName,
                                                 @QueryParam("fromDate") String fromDate,
                                                 @QueryParam("toDate") String toDate) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date formattedFromDate = dateFormat.parse(fromDate);
@@ -235,13 +255,18 @@ public class ExperimentRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will add a new experiment
-     * @param projectName project name
-     * @param experimentID experiment ID
+     *
+     * @param projectName   project name
+     * @param experimentID  experiment ID
      * @param submittedDate submitted date
      * @return HTTP response
      */
@@ -252,7 +277,7 @@ public class ExperimentRegistryResource {
     public Response addExperiment(@FormParam("projectName") String projectName,
                                   @FormParam("experimentID") String experimentID,
                                   @FormParam("submittedDate") String submittedDate) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             AiravataExperiment experiment = new AiravataExperiment();
             experiment.setExperimentId(experimentID);
@@ -283,12 +308,17 @@ public class ExperimentRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
 
     }
 
     /**
      * This method will check whether the given experiment ID exists
+     *
      * @param experimentId experiment ID
      * @return HTTP response
      */
@@ -296,7 +326,7 @@ public class ExperimentRegistryResource {
     @Path(ResourcePathConstants.ExperimentResourcePathConstants.EXP_EXISTS)
     @Produces(MediaType.TEXT_PLAIN)
     public Response isExperimentExists(@QueryParam("experimentId") String experimentId) {
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             airavataRegistry.isExperimentExists(experimentId);
             Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
@@ -310,14 +340,19 @@ public class ExperimentRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.NOT_FOUND);
             builder.entity("Exprtiment does not exist...");
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
     /**
      * This method will check whether an experiment exist and create if not exists according to the
      * createIfNotPresent flag
-     * @param experimentId  experiment ID
-     * @param createIfNotPresent  flag to check whether to create a new experiment or not
+     *
+     * @param experimentId       experiment ID
+     * @param createIfNotPresent flag to check whether to create a new experiment or not
      * @return HTTP response
      */
     @POST
@@ -329,7 +364,7 @@ public class ExperimentRegistryResource {
         if (createIfNotPresent.equals("true")) {
             createIfNotPresentStatus = true;
         }
-        airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
         try {
             airavataRegistry.isExperimentExists(experimentId, createIfNotPresentStatus);
             Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
@@ -339,6 +374,10 @@ public class ExperimentRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.NOT_FOUND);
             builder.entity(e.getMessage());
             return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
         }
     }
 
