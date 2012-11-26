@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.airavata.client.AiravataClientUtils;
+import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.ServiceUtils;
@@ -120,7 +120,7 @@ public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
                     String regURL = properties.getProperty("registry.jdbc.url");
                     URI baseUri = new URI(regURL);
 
-                    AiravataAPI airavataAPI = AiravataClientUtils.getAPI(baseUri, userName, password);
+                    AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(baseUri, userName, password);
 					String localAddress = ServiceUtils.generateServiceURLFromConfigurationContext(context, MESSAGE_BOX_SERVICE_NAME);
 					logger.debug("MESSAGE BOX SERVICE_ADDRESS:" + localAddress);
                     context.setProperty(SERVICE_URL,new URI(localAddress));

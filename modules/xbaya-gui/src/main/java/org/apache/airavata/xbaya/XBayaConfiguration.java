@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.apache.airavata.client.AiravataClientUtils;
+import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;

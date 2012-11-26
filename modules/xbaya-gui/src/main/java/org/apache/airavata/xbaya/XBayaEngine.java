@@ -25,7 +25,7 @@ import java.net.URI;
 import java.util.List;
 
 //import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.client.AiravataClientUtils;
+import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataManager;
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;

@@ -21,7 +21,7 @@
 
 package org.apache.airavata.core.gfac.services.impl;
 
-import org.apache.airavata.client.AiravataClientUtils;
+import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
@@ -248,7 +248,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
                     baseUri = new URI(loadFromProperty(REGISTRY_URL, true));
                     String regUser = loadFromProperty(REGISTRY_USER, true);
                     String regUserPW = loadFromProperty(REGISTRY_PASSWORD, true);
-                    airavataAPI = AiravataClientUtils.getAPI(baseUri, regUser, regUserPW);
+                    airavataAPI = AiravataAPIFactory.getAPI(baseUri, regUser, regUserPW);
                 } catch (URISyntaxException e) {
                     e.printStackTrace();
                 } catch (RepositoryException e) {
