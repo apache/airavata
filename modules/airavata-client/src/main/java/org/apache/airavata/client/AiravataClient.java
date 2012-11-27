@@ -58,6 +58,7 @@ import org.apache.airavata.client.api.WorkflowManager;
 import org.apache.airavata.client.impl.AiravataManagerImpl;
 import org.apache.airavata.client.impl.ApplicationManagerImpl;
 import org.apache.airavata.client.impl.ExecutionManagerImpl;
+import org.apache.airavata.client.impl.PasswordCallBackImpl;
 import org.apache.airavata.client.impl.ProvenanceManagerImpl;
 import org.apache.airavata.client.impl.UserManagerImpl;
 import org.apache.airavata.client.impl.WorkflowManagerImpl;
@@ -126,22 +127,36 @@ public class AiravataClient implements AiravataAPI {
 	private UserManagerImpl userManagerImpl;
 	private ExecutionManagerImpl executionManagerImpl;
 	private String gateway;
+	private boolean configCreated=false;
 
 	// private NameValue[] configurations = new NameValue[7];
 
 	private static final Version API_VERSION = new Version("Airavata", 0, 5,
 			null, null, null);
 
+	@Deprecated
 	protected AiravataClient(Map<String, String> configuration)
 			throws MalformedURLException {
 		this.configuration = configuration;
-		initialize();
+		try {
+			initialize();
+		} catch (AiravataConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RepositoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RegistryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	// FIXME: Need a constructor to set registry URL
 	protected AiravataClient() {
 	}
 
+	@Deprecated
 	protected AiravataClient(String fileName) throws RegistryException,
 			MalformedURLException, IOException {
 		URL url = this.getClass().getClassLoader().getResource(fileName);
@@ -162,42 +177,59 @@ public class AiravataClient implements AiravataAPI {
 						.getProperty(WORKFLOWSERVICEURL)));
 		configuration.put(WITHLISTENER, properties.getProperty(WITHLISTENER));
 
-		initialize();
+		try {
+			initialize();
+		} catch (AiravataConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RepositoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
-	// protected AiravataClient(URI registryUrl, String username, String
-	// password) throws MalformedURLException, RepositoryException,
-	// RegistryException {
-	// this(createConfig(registryUrl, username, password));
-	// }
-	//
-	// private static HashMap<String, String> createConfig(URI registryUrl,
-	// String username, String password) throws RepositoryException,
-	// RegistryException {
-	// HashMap<String, String> config = new HashMap<String,String>();
-	// config.put(AiravataClient.JCR,registryUrl.toString());
-	// config.put(AiravataClient.JCR_USERNAME,username);
-	// config.put(AiravataClient.JCR_PASSWORD,password);
-	// AiravataRegistry2 registryObject = getRegistryObject(username, password);
-	// if (registryObject!=null){
-	// URI uri = registryObject.getEventingServiceURI();
-	// config.put(AiravataClient.BROKER,uri==null?
-	// "http://localhost:8080/axis2/services/EventingService":uri.toString());
-	// uri = registryObject.getMessageBoxURI();
-	// config.put(AiravataClient.MSGBOX,uri==null?
-	// "http://localhost:8080/axis2/services/MsgBoxService":uri.toString());
-	// List<URI> URLList = registryObject.getWorkflowInterpreterURIs();
-	// config.put(AiravataClient.WORKFLOWSERVICEURL,URLList==null ||
-	// URLList.size()==0?
-	// "http://localhost:8080/axis2/services/WorkflowInterpretor?wsdl":URLList.get(0).toString());
-	// List<URI> urlList = registryObject.getGFacURIs();
-	// config.put(AiravataClient.GFAC,urlList==null || urlList.size()==0?
-	// "http://localhost:8080/axis2/services/GFacService":urlList.get(0).toString());
-	// config.put(AiravataClient.WITHLISTENER,"true");
-	// }
-	// return config;
-	// }
-	private void initialize() throws MalformedURLException {
+	protected AiravataClient(URI registryUrl, String username, String password)
+			throws MalformedURLException, RepositoryException,
+			RegistryException, AiravataConfigurationException {
+		this(createConfig(registryUrl, username, password));
+	}
+	
+	 private static HashMap<String, String> createConfig(URI registryUrl,String username, String password) throws RepositoryException,	 RegistryException, AiravataConfigurationException {
+		HashMap<String, String> config = new HashMap<String, String>();
+//		config.put(AiravataClient.JCR, registryUrl.toString());
+//		config.put(AiravataClient.JCR_USERNAME, username);
+//		config.put(AiravataClient.JCR_PASSWORD, password);
+		AiravataRegistry2 registryObject = getRegistry(registryUrl, "default", username, new PasswordCallBackImpl(username, password));
+		if (registryObject != null) {
+			URI uri = registryObject.getEventingServiceURI();
+			config.put(
+					AiravataClient.BROKER,
+					uri == null ? "http://localhost:8080/axis2/services/EventingService"
+							: uri.toString());
+			uri = registryObject.getMessageBoxURI();
+			config.put(
+					AiravataClient.MSGBOX,
+					uri == null ? "http://localhost:8080/axis2/services/MsgBoxService"
+							: uri.toString());
+			List<URI> URLList = registryObject.getWorkflowInterpreterURIs();
+			config.put(
+					AiravataClient.WORKFLOWSERVICEURL,
+					URLList == null || URLList.size() == 0 ? "http://localhost:8080/axis2/services/WorkflowInterpretor?wsdl"
+							: URLList.get(0).toString());
+			List<URI> urlList = registryObject.getGFacURIs();
+			config.put(
+					AiravataClient.GFAC,
+					urlList == null || urlList.size() == 0 ? "http://localhost:8080/axis2/services/GFacService"
+							: urlList.get(0).toString());
+			config.put(AiravataClient.WITHLISTENER, "true");
+		}
+		return config;
+	 }
+	protected void initialize() throws MalformedURLException, AiravataConfigurationException, RepositoryException, RegistryException {
+		if (!configCreated){
+			createConfig(getRegitryURI(), getCurrentUser(), getPassword());
+			configCreated=true;
+		}
 		updateClientConfiguration(configuration);
 
 		// At this point we do not know the workflowExperimentId
@@ -515,24 +547,19 @@ public class AiravataClient implements AiravataAPI {
 		AiravataClient.workflow = workflow;
 	}
 
-	public AiravataRegistry2 getRegistryClient() throws RegistryAccessorNotFoundException, RegistryAccessorUndefinedException, RegistryAccessorInstantiateException, AiravataConfigurationException, RegistryAccessorInvalidException{
+	public AiravataRegistry2 getRegistryClient() throws AiravataConfigurationException, RegistryException{
 		if (registry==null) {
-			registry = AiravataRegistryFactory.getRegistry(getRegitryURI(),
-					new Gateway(getGateway()), new AiravataUser(
-							getCurrentUser()), getCallBack());
+			registry = getRegistry(getRegitryURI(),
+					getGateway(),getCurrentUser(), getCallBack());
 		}
         return registry;
     }
-
-
-//    public AiravataRegistry2 getRegistry() throws RegistryException {
-//		if (registry == null) {
-//			String jcrUsername = getClientConfiguration().getJcrUsername();
-//			String jcrPassword = getClientConfiguration().getJcrPassword();
-//			registry = getRegistryObject(jcrUsername, jcrPassword);
-//		}
-//		return registry;
-//	}
+	
+    public static AiravataRegistry2 getRegistry(URI registryURI, String gateway, String username, PasswordCallback callback) throws RegistryException, AiravataConfigurationException {
+    	return AiravataRegistryFactory.getRegistry(registryURI,
+				new Gateway(gateway), new AiravataUser(
+						username), callback);
+	}
 
 	public AiravataClientConfiguration getClientConfiguration() {
 		if (clientConfiguration == null) {
