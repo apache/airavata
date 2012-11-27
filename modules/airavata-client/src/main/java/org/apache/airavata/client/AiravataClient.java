@@ -197,8 +197,10 @@ public class AiravataClient implements AiravataAPI {
 	
 	 private static HashMap<String, String> createConfig(URI registryUrl,String username, String password) throws RepositoryException,	 RegistryException, AiravataConfigurationException {
 		HashMap<String, String> config = new HashMap<String, String>();
-		config.put(AiravataClient.REGISTRY, registryUrl.toString());
-//		config.put(AiravataClient.JCR_USERNAME, username);
+		if (registryUrl!=null) {
+			config.put(AiravataClient.REGISTRY, registryUrl.toString());
+		}
+		//		config.put(AiravataClient.JCR_USERNAME, username);
 //		config.put(AiravataClient.JCR_PASSWORD, password);
 		AiravataRegistry2 registryObject = getRegistry(registryUrl, "default", username, new PasswordCallBackImpl(username, password));
 		if (registryObject != null) {
@@ -260,7 +262,7 @@ public class AiravataClient implements AiravataAPI {
 			clientConfiguration.setMessagebrokerURL(new URL(configuration
 					.get(BROKER)));
 		}
-		 if (configuration.get(REGISTRY)!= null) {
+		 if (configuration.containsKey(REGISTRY)) {
 			 clientConfiguration.setRegistryURL(new URL(configuration.get(REGISTRY)));
 		 }
 		if (configuration.get(WORKFLOWSERVICEURL) != null) {
