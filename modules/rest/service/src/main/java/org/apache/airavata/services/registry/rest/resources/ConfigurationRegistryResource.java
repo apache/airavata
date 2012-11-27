@@ -67,7 +67,7 @@ public class ConfigurationRegistryResource {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Response getConfiguration(@QueryParam("key") String key) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             Object configuration = airavataRegistry.getConfiguration(key);
             if (configuration != null) {
@@ -85,7 +85,7 @@ public class ConfigurationRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
 
@@ -101,7 +101,7 @@ public class ConfigurationRegistryResource {
     @Path(ResourcePathConstants.ConfigResourcePathConstants.GET_CONFIGURATION_LIST)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getConfigurationList(@QueryParam("key") String key) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
 
             List<Object> configurationList = airavataRegistry.getConfigurationList(key);
@@ -126,7 +126,7 @@ public class ConfigurationRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -146,7 +146,7 @@ public class ConfigurationRegistryResource {
     public Response setConfiguration(@FormParam("key") String key,
                                      @FormParam("value") String value,
                                      @FormParam("date") String date) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date formattedDate = dateFormat.parse(date);
@@ -161,7 +161,7 @@ public class ConfigurationRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -181,7 +181,7 @@ public class ConfigurationRegistryResource {
     public Response addConfiguration(@FormParam("key") String key,
                                      @FormParam("value") String value,
                                      @FormParam("date") String date) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date formattedDate = dateFormat.parse(date);
@@ -196,7 +196,7 @@ public class ConfigurationRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -211,7 +211,7 @@ public class ConfigurationRegistryResource {
     @Path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_ALL_CONFIGURATION)
     @Produces(MediaType.TEXT_PLAIN)
     public Response removeAllConfiguration(@QueryParam("key") String key) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.removeAllConfiguration(key);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -223,7 +223,7 @@ public class ConfigurationRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -239,7 +239,7 @@ public class ConfigurationRegistryResource {
     @Path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_CONFIGURATION)
     @Produces(MediaType.TEXT_PLAIN)
     public Response removeConfiguration(@QueryParam("key") String key, @QueryParam("value") String value) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.removeConfiguration(key, value);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -251,7 +251,7 @@ public class ConfigurationRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -265,7 +265,7 @@ public class ConfigurationRegistryResource {
     @Path(ResourcePathConstants.ConfigResourcePathConstants.GET_GFAC_URI_LIST)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getGFacURIs() {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             List<URI> uris = airavataRegistry.getGFacURIs();
             URLList list = new URLList();
@@ -289,7 +289,7 @@ public class ConfigurationRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -303,7 +303,7 @@ public class ConfigurationRegistryResource {
     @Path(ResourcePathConstants.ConfigResourcePathConstants.GET_WFINTERPRETER_URI_LIST)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getWorkflowInterpreterURIs() {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             List<URI> uris = airavataRegistry.getWorkflowInterpreterURIs();
             URLList list = new URLList();
@@ -327,7 +327,7 @@ public class ConfigurationRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -341,7 +341,7 @@ public class ConfigurationRegistryResource {
     @Path(ResourcePathConstants.ConfigResourcePathConstants.GET_EVENTING_URI)
     @Produces(MediaType.TEXT_PLAIN)
     public Response getEventingServiceURI() {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             URI eventingServiceURI = airavataRegistry.getEventingServiceURI();
             if (eventingServiceURI != null) {
@@ -359,7 +359,7 @@ public class ConfigurationRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -373,7 +373,7 @@ public class ConfigurationRegistryResource {
     @Path(ResourcePathConstants.ConfigResourcePathConstants.GET_MESSAGE_BOX_URI)
     @Produces(MediaType.TEXT_PLAIN)
     public Response getMessageBoxURI() {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             URI eventingServiceURI = airavataRegistry.getMessageBoxURI();
             if (eventingServiceURI != null) {
@@ -391,7 +391,7 @@ public class ConfigurationRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -406,7 +406,7 @@ public class ConfigurationRegistryResource {
     @Path(ResourcePathConstants.ConfigResourcePathConstants.ADD_GFAC_URI)
     @Produces(MediaType.TEXT_PLAIN)
     public Response addGFacURI(@FormParam("uri") String uri) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             URI gfacURI = new URI(uri);
             airavataRegistry.addGFacURI(gfacURI);
@@ -419,7 +419,7 @@ public class ConfigurationRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -434,7 +434,7 @@ public class ConfigurationRegistryResource {
     @Path(ResourcePathConstants.ConfigResourcePathConstants.ADD_WFINTERPRETER_URI)
     @Produces(MediaType.TEXT_PLAIN)
     public Response addWorkflowInterpreterURI(@FormParam("uri") String uri) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             URI interpreterURI = new URI(uri);
             airavataRegistry.addWorkflowInterpreterURI(interpreterURI);
@@ -447,7 +447,7 @@ public class ConfigurationRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -462,7 +462,7 @@ public class ConfigurationRegistryResource {
     @Path(ResourcePathConstants.ConfigResourcePathConstants.ADD_EVENTING_URI)
     @Produces(MediaType.TEXT_PLAIN)
     public Response setEventingURI(@FormParam("uri") String uri) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             URI eventingURI = new URI(uri);
             airavataRegistry.setEventingURI(eventingURI);
@@ -475,7 +475,7 @@ public class ConfigurationRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -490,7 +490,7 @@ public class ConfigurationRegistryResource {
     @Path(ResourcePathConstants.ConfigResourcePathConstants.ADD_MESSAGE_BOX_URI)
     @Produces(MediaType.TEXT_PLAIN)
     public Response setMessageBoxURI(@FormParam("uri") String uri) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             URI msgBoxURI = new URI(uri);
             airavataRegistry.setMessageBoxURI(msgBoxURI);
@@ -503,7 +503,7 @@ public class ConfigurationRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -519,7 +519,7 @@ public class ConfigurationRegistryResource {
     @Path(ResourcePathConstants.ConfigResourcePathConstants.ADD_GFAC_URI_DATE)
     @Produces(MediaType.TEXT_PLAIN)
     public Response addGFacURIByDate(@FormParam("uri") String uri, @FormParam("date") String date) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date formattedDate = dateFormat.parse(date);
@@ -534,7 +534,7 @@ public class ConfigurationRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -550,7 +550,7 @@ public class ConfigurationRegistryResource {
     @Path(ResourcePathConstants.ConfigResourcePathConstants.ADD_WFINTERPRETER_URI_DATE)
     @Produces(MediaType.TEXT_PLAIN)
     public Response addWorkflowInterpreterURI(@FormParam("uri") String uri, @FormParam("date") String date) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date formattedDate = dateFormat.parse(date);
@@ -565,7 +565,7 @@ public class ConfigurationRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -581,7 +581,7 @@ public class ConfigurationRegistryResource {
     @Path(ResourcePathConstants.ConfigResourcePathConstants.ADD_EVENTING_URI_DATE)
     @Produces(MediaType.TEXT_PLAIN)
     public Response setEventingURIByDate(@FormParam("uri") String uri, @FormParam("date") String date) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date formattedDate = dateFormat.parse(date);
@@ -596,7 +596,7 @@ public class ConfigurationRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -612,7 +612,7 @@ public class ConfigurationRegistryResource {
     @Path(ResourcePathConstants.ConfigResourcePathConstants.ADD_MSG_BOX_URI_DATE)
     @Produces(MediaType.TEXT_PLAIN)
     public Response setMessageBoxURIByDate(@FormParam("uri") String uri, @FormParam("date") String date) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date formattedDate = dateFormat.parse(date);
@@ -627,7 +627,7 @@ public class ConfigurationRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -642,7 +642,7 @@ public class ConfigurationRegistryResource {
     @Path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_GFAC_URI)
     @Produces(MediaType.TEXT_PLAIN)
     public Response removeGFacURI(@QueryParam("uri") String uri) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             URI gfacURI = new URI(uri);
             airavataRegistry.removeGFacURI(gfacURI);
@@ -655,7 +655,7 @@ public class ConfigurationRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -669,7 +669,7 @@ public class ConfigurationRegistryResource {
     @Path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_ALL_GFAC_URIS)
     @Produces(MediaType.TEXT_PLAIN)
     public Response removeAllGFacURI() {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.removeAllGFacURI();
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -681,7 +681,7 @@ public class ConfigurationRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -696,7 +696,7 @@ public class ConfigurationRegistryResource {
     @Path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_WFINTERPRETER_URI)
     @Produces(MediaType.TEXT_PLAIN)
     public Response removeWorkflowInterpreterURI(@QueryParam("uri") String uri) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             URI intURI = new URI(uri);
             airavataRegistry.removeWorkflowInterpreterURI(intURI);
@@ -709,7 +709,7 @@ public class ConfigurationRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -723,7 +723,7 @@ public class ConfigurationRegistryResource {
     @Path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_ALL_WFINTERPRETER_URIS)
     @Produces(MediaType.TEXT_PLAIN)
     public Response removeAllWorkflowInterpreterURI() {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.removeAllWorkflowInterpreterURI();
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -735,7 +735,7 @@ public class ConfigurationRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -749,7 +749,7 @@ public class ConfigurationRegistryResource {
     @Path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_EVENTING_URI)
     @Produces(MediaType.TEXT_PLAIN)
     public Response unsetEventingURI() {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.unsetEventingURI();
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -761,7 +761,7 @@ public class ConfigurationRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -775,7 +775,7 @@ public class ConfigurationRegistryResource {
     @Path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_MSG_BOX_URI)
     @Produces(MediaType.TEXT_PLAIN)
     public Response unsetMessageBoxURI() {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.unsetMessageBoxURI();
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -787,7 +787,7 @@ public class ConfigurationRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }

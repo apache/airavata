@@ -44,7 +44,7 @@ public class BasicRegistryResouce {
     @Path(ResourcePathConstants.BasicRegistryConstants.GET_GATEWAY)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getGateway() {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             Gateway gateway = airavataRegistry.getGateway();
             if (gateway != null) {
@@ -62,7 +62,7 @@ public class BasicRegistryResouce {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -71,7 +71,7 @@ public class BasicRegistryResouce {
     @Path(ResourcePathConstants.BasicRegistryConstants.GET_USER)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getAiravataUser() {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             AiravataUser airavataUser = airavataRegistry.getAiravataUser();
             if (airavataUser != null) {
@@ -89,7 +89,7 @@ public class BasicRegistryResouce {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -99,7 +99,7 @@ public class BasicRegistryResouce {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces(MediaType.TEXT_PLAIN)
     public Response setGateway(Gateway gateway) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.setGateway(gateway);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -111,7 +111,7 @@ public class BasicRegistryResouce {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -121,7 +121,7 @@ public class BasicRegistryResouce {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces(MediaType.TEXT_PLAIN)
     public Response setAiravataUser(AiravataUser user) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.setAiravataUser(user);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -133,7 +133,7 @@ public class BasicRegistryResouce {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -142,7 +142,7 @@ public class BasicRegistryResouce {
     @Path(ResourcePathConstants.BasicRegistryConstants.VERSION)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getVersion() {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             Version version = airavataRegistry.getVersion();
             if (version != null) {
@@ -160,7 +160,7 @@ public class BasicRegistryResouce {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -169,7 +169,7 @@ public class BasicRegistryResouce {
     @Path(ResourcePathConstants.BasicRegistryConstants.GET_SERVICE_URL)
     @Produces(MediaType.TEXT_PLAIN)
     public Response getConnectionURL (){
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try{
             String connectionURL = airavataRegistry.getConnectionURI().toString();
             if (connectionURL != null) {
@@ -187,7 +187,7 @@ public class BasicRegistryResouce {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -196,7 +196,7 @@ public class BasicRegistryResouce {
     @Path(ResourcePathConstants.BasicRegistryConstants.SET_SERVICE_URL)
     @Produces(MediaType.TEXT_PLAIN)
     public Response setConnectionURL (@FormParam("connectionurl") String connectionURL){
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try{
             URI uri = new URI(connectionURL);
             airavataRegistry.setConnectionURI(uri);
@@ -209,7 +209,7 @@ public class BasicRegistryResouce {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }

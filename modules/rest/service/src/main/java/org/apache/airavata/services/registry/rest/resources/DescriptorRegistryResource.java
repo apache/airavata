@@ -68,7 +68,7 @@ public class DescriptorRegistryResource {
     @Path(ResourcePathConstants.DecResourcePathConstants.HOST_DESC_EXISTS)
     @Produces(MediaType.TEXT_PLAIN)
     public Response isHostDescriptorExists(@QueryParam("hostDescriptorName") String hostDescriptorName) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         boolean state;
         try {
             state = airavataRegistry.isHostDescriptorExists(hostDescriptorName);
@@ -87,7 +87,7 @@ public class DescriptorRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -103,7 +103,7 @@ public class DescriptorRegistryResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response addHostDescriptor(HostDescriptor host) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             HostDescription hostDescription = DescriptorUtil.createHostDescription(host);
             airavataRegistry.addHostDescriptor(hostDescription);
@@ -120,7 +120,7 @@ public class DescriptorRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -136,7 +136,7 @@ public class DescriptorRegistryResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response updateHostDescriptor(HostDescriptor host) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             HostDescription hostDescription = DescriptorUtil.createHostDescription(host);
             airavataRegistry.updateHostDescriptor(hostDescription);
@@ -153,7 +153,7 @@ public class DescriptorRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -170,7 +170,7 @@ public class DescriptorRegistryResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getHostDescriptor(@QueryParam("hostName") String hostName) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             HostDescription hostDescription = airavataRegistry.getHostDescriptor(hostName);
             HostDescriptor hostDescriptor = DescriptorUtil.createHostDescriptor(hostDescription);
@@ -189,7 +189,7 @@ public class DescriptorRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
 
@@ -205,7 +205,7 @@ public class DescriptorRegistryResource {
     @Path(ResourcePathConstants.DecResourcePathConstants.HOST_DESC_DELETE)
     @Produces(MediaType.TEXT_PLAIN)
     public Response removeHostDescriptor(@QueryParam("hostName") String hostName) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.removeHostDescriptor(hostName);
             Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
@@ -221,7 +221,7 @@ public class DescriptorRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -236,7 +236,7 @@ public class DescriptorRegistryResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getHostDescriptors() {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             List<HostDescription> hostDescriptionList = airavataRegistry.getHostDescriptors();
             HostDescriptionList list = new HostDescriptionList();
@@ -261,7 +261,7 @@ public class DescriptorRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -275,7 +275,7 @@ public class DescriptorRegistryResource {
     @Path(ResourcePathConstants.DecResourcePathConstants.GET_HOST_DESCS_NAMES)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getHostDescriptorNames() {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             List<HostDescription> hostDescriptionList = airavataRegistry.getHostDescriptors();
             List<String> hostDescriptorNames = new ArrayList<String>();
@@ -299,7 +299,7 @@ public class DescriptorRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -314,7 +314,7 @@ public class DescriptorRegistryResource {
     @Path(ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC_EXISTS)
     @Produces(MediaType.TEXT_PLAIN)
     public Response isServiceDescriptorExists(@QueryParam("serviceDescriptorName") String serviceDescriptorName) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         boolean state;
         try {
             state = airavataRegistry.isServiceDescriptorExists(serviceDescriptorName);
@@ -333,7 +333,7 @@ public class DescriptorRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -349,7 +349,7 @@ public class DescriptorRegistryResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response addServiceDescriptor(ServiceDescriptor service) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             ServiceDescription serviceDescription = DescriptorUtil.createServiceDescription(service);
             airavataRegistry.addServiceDescriptor(serviceDescription);
@@ -366,7 +366,7 @@ public class DescriptorRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -382,7 +382,7 @@ public class DescriptorRegistryResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response updateServiceDescriptor(ServiceDescriptor service) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             ServiceDescription serviceDescription = DescriptorUtil.createServiceDescription(service);
             airavataRegistry.updateServiceDescriptor(serviceDescription);
@@ -399,7 +399,7 @@ public class DescriptorRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -416,7 +416,7 @@ public class DescriptorRegistryResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getServiceDescriptor(@QueryParam("serviceName") String serviceName) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             ServiceDescription serviceDescription = airavataRegistry.getServiceDescriptor(serviceName);
             ServiceDescriptor serviceDescriptor = DescriptorUtil.createServiceDescriptor(serviceDescription);
@@ -435,7 +435,7 @@ public class DescriptorRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -450,7 +450,7 @@ public class DescriptorRegistryResource {
     @Path(ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC_DELETE)
     @Produces(MediaType.TEXT_PLAIN)
     public Response removeServiceDescriptor(@QueryParam("serviceName") String serviceName) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.removeServiceDescriptor(serviceName);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -466,7 +466,7 @@ public class DescriptorRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -481,7 +481,7 @@ public class DescriptorRegistryResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getServiceDescriptors() {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             List<ServiceDescription> serviceDescriptors = airavataRegistry.getServiceDescriptors();
             ServiceDescriptionList list = new ServiceDescriptionList();
@@ -506,7 +506,7 @@ public class DescriptorRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -526,7 +526,7 @@ public class DescriptorRegistryResource {
     public Response isApplicationDescriptorExists(@QueryParam("serviceName") String serviceName,
                                                   @QueryParam("hostName") String hostName,
                                                   @QueryParam("appDescName") String appDescriptorName) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         boolean state;
         try {
             state = airavataRegistry.isApplicationDescriptorExists(serviceName, hostName, appDescriptorName);
@@ -545,7 +545,7 @@ public class DescriptorRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -562,7 +562,7 @@ public class DescriptorRegistryResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response addApplicationDescriptor(ApplicationDescriptor applicationDescriptor) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             String hostdescName = applicationDescriptor.getHostdescName();
             if (!airavataRegistry.isHostDescriptorExists(hostdescName)) {
@@ -603,7 +603,7 @@ public class DescriptorRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -619,7 +619,7 @@ public class DescriptorRegistryResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response udpateApplicationDescriptor(ApplicationDescriptor applicationDescriptor) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             String hostdescName = applicationDescriptor.getHostdescName();
             if (!airavataRegistry.isHostDescriptorExists(hostdescName)) {
@@ -661,7 +661,7 @@ public class DescriptorRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -681,7 +681,7 @@ public class DescriptorRegistryResource {
     public Response getApplicationDescriptor(@QueryParam("serviceName") String serviceName,
                                              @QueryParam("hostName") String hostName,
                                              @QueryParam("applicationName") String applicationName) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             ApplicationDeploymentDescription applicationDeploymentDescription = airavataRegistry.getApplicationDescriptor(serviceName, hostName, applicationName);
             ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(applicationDeploymentDescription);
@@ -705,7 +705,7 @@ public class DescriptorRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -722,7 +722,7 @@ public class DescriptorRegistryResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getApplicationDescriptorPerServiceHost(@QueryParam("serviceName") String serviceName,
                                                            @QueryParam("hostName") String hostName) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             ApplicationDeploymentDescription applicationDeploymentDescription = airavataRegistry.getApplicationDescriptors(serviceName, hostName);
             ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(applicationDeploymentDescription);
@@ -746,7 +746,7 @@ public class DescriptorRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -761,7 +761,7 @@ public class DescriptorRegistryResource {
     @Path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_ALL_DESCS_SERVICE)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getApplicationDescriptors(@QueryParam("serviceName") String serviceName) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             Map<String, ApplicationDeploymentDescription> applicationDeploymentDescriptionMap = airavataRegistry.getApplicationDescriptors(serviceName);
             ApplicationDescriptorList applicationDescriptorList = new ApplicationDescriptorList();
@@ -799,7 +799,7 @@ public class DescriptorRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -813,7 +813,7 @@ public class DescriptorRegistryResource {
     @Path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_ALL_DESCRIPTORS)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getApplicationDescriptors() {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             Map<String[], ApplicationDeploymentDescription> applicationDeploymentDescriptionMap = airavataRegistry.getApplicationDescriptors();
             ApplicationDescriptorList applicationDescriptorList = new ApplicationDescriptorList();
@@ -853,7 +853,7 @@ public class DescriptorRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -867,7 +867,7 @@ public class DescriptorRegistryResource {
     @Path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_NAMES)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getApplicationDescriptorNames() {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             Map<String[], ApplicationDeploymentDescription> applicationDeploymentDescriptionMap = airavataRegistry.getApplicationDescriptors();
             DescriptorNameList descriptorNameList = new DescriptorNameList();
@@ -896,7 +896,7 @@ public class DescriptorRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -916,7 +916,7 @@ public class DescriptorRegistryResource {
     public Response removeApplicationDescriptor(@QueryParam("serviceName") String serviceName,
                                                 @QueryParam("hostName") String hostName,
                                                 @QueryParam("appName") String appName) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.removeApplicationDescriptor(serviceName, hostName, appName);
             Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
@@ -932,7 +932,7 @@ public class DescriptorRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }

@@ -68,7 +68,7 @@ public class ExperimentRegistryResource {
     @Path(ResourcePathConstants.ExperimentResourcePathConstants.DELETE_EXP)
     @Produces(MediaType.TEXT_PLAIN)
     public Response removeExperiment(@QueryParam("experimentId") String experimentId) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.removeExperiment(experimentId);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -80,7 +80,7 @@ public class ExperimentRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -94,7 +94,7 @@ public class ExperimentRegistryResource {
     @Path(ResourcePathConstants.ExperimentResourcePathConstants.GET_ALL_EXPS)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getExperiments() {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             List<AiravataExperiment> airavataExperimentList = airavataRegistry.getExperiments();
             ExperimentList experimentList = new ExperimentList();
@@ -118,7 +118,7 @@ public class ExperimentRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -133,7 +133,7 @@ public class ExperimentRegistryResource {
     @Path(ResourcePathConstants.ExperimentResourcePathConstants.GET_EXPS_BY_PROJECT)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getExperimentsByProject(@QueryParam("projectName") String projectName) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             List<AiravataExperiment> airavataExperimentList = airavataRegistry.getExperiments(projectName);
             ExperimentList experimentList = new ExperimentList();
@@ -157,7 +157,7 @@ public class ExperimentRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -175,7 +175,7 @@ public class ExperimentRegistryResource {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getExperimentsByDate(@QueryParam("fromDate") String fromDate,
                                          @QueryParam("toDate") String toDate) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date formattedFromDate = dateFormat.parse(fromDate);
@@ -206,7 +206,7 @@ public class ExperimentRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -226,7 +226,7 @@ public class ExperimentRegistryResource {
     public Response getExperimentsByProjectDate(@QueryParam("projectName") String projectName,
                                                 @QueryParam("fromDate") String fromDate,
                                                 @QueryParam("toDate") String toDate) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date formattedFromDate = dateFormat.parse(fromDate);
@@ -257,7 +257,7 @@ public class ExperimentRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -277,7 +277,7 @@ public class ExperimentRegistryResource {
     public Response addExperiment(@FormParam("projectName") String projectName,
                                   @FormParam("experimentID") String experimentID,
                                   @FormParam("submittedDate") String submittedDate) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             AiravataExperiment experiment = new AiravataExperiment();
             experiment.setExperimentId(experimentID);
@@ -310,7 +310,7 @@ public class ExperimentRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
 
@@ -326,7 +326,7 @@ public class ExperimentRegistryResource {
     @Path(ResourcePathConstants.ExperimentResourcePathConstants.EXP_EXISTS)
     @Produces(MediaType.TEXT_PLAIN)
     public Response isExperimentExists(@QueryParam("experimentId") String experimentId) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.isExperimentExists(experimentId);
             Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
@@ -342,7 +342,7 @@ public class ExperimentRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -364,7 +364,7 @@ public class ExperimentRegistryResource {
         if (createIfNotPresent.equals("true")) {
             createIfNotPresentStatus = true;
         }
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.isExperimentExists(experimentId, createIfNotPresentStatus);
             Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
@@ -376,7 +376,7 @@ public class ExperimentRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }

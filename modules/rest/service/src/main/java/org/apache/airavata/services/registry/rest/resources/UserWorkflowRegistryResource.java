@@ -61,7 +61,7 @@ public class UserWorkflowRegistryResource {
     @Path(ResourcePathConstants.UserWFConstants.WORKFLOW_EXIST)
     @Produces(MediaType.TEXT_PLAIN)
     public Response isWorkflowExists(@QueryParam("workflowName") String workflowName) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             boolean workflowExists = airavataRegistry.isWorkflowExists(workflowName);
             if (workflowExists) {
@@ -79,7 +79,7 @@ public class UserWorkflowRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -97,7 +97,7 @@ public class UserWorkflowRegistryResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response addWorkflow(@FormParam("workflowName") String workflowName,
                                 @FormParam("workflowGraphXml") String workflowGraphXml) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.addWorkflow(workflowName, workflowGraphXml);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -113,7 +113,7 @@ public class UserWorkflowRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -131,7 +131,7 @@ public class UserWorkflowRegistryResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response updateWorkflow(@FormParam("workflowName") String workflowName,
                                    @FormParam("workflowGraphXml") String workflowGraphXml) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.updateWorkflow(workflowName, workflowGraphXml);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -147,7 +147,7 @@ public class UserWorkflowRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -162,7 +162,7 @@ public class UserWorkflowRegistryResource {
     @Path(ResourcePathConstants.UserWFConstants.GET_WORKFLOWGRAPH)
     @Produces(MediaType.APPLICATION_FORM_URLENCODED)
     public Response getWorkflowGraphXML(@QueryParam("workflowName") String workflowName) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             String workflowGraphXML = airavataRegistry.getWorkflowGraphXML(workflowName);
             if (workflowGraphXML != null) {
@@ -184,7 +184,7 @@ public class UserWorkflowRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -198,7 +198,7 @@ public class UserWorkflowRegistryResource {
     @Path(ResourcePathConstants.UserWFConstants.GET_WORKFLOWS)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getWorkflows() {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             Map<String, String> workflows = airavataRegistry.getWorkflows();
             WorkflowList workflowList = new WorkflowList();
@@ -226,7 +226,7 @@ public class UserWorkflowRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -241,7 +241,7 @@ public class UserWorkflowRegistryResource {
     @Path(ResourcePathConstants.UserWFConstants.REMOVE_WORKFLOW)
     @Produces(MediaType.TEXT_PLAIN)
     public Response removeWorkflow(@QueryParam("workflowName") String workflowName) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.removeWorkflow(workflowName);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -257,7 +257,7 @@ public class UserWorkflowRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }

@@ -69,7 +69,7 @@ public class ProvenanceRegistryResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response updateExperimentExecutionUser(@FormParam("experimentId") String experimentId,
                                                   @FormParam("user") String user) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.updateExperimentExecutionUser(experimentId, user);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -81,7 +81,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -96,7 +96,7 @@ public class ProvenanceRegistryResource {
     @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENT_EXECUTIONUSER)
     @Produces(MediaType.TEXT_PLAIN)
     public Response getExperimentExecutionUser(@QueryParam("experimentId") String experimentId) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             String user = airavataRegistry.getExperimentExecutionUser(experimentId);
             if (user != null) {
@@ -114,7 +114,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -129,7 +129,7 @@ public class ProvenanceRegistryResource {
     @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENT_NAME)
     @Produces(MediaType.TEXT_PLAIN)
     public Response getExperimentName(@QueryParam("experimentId") String experimentId) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             String result = airavataRegistry.getExperimentName(experimentId);
             if (result != null) {
@@ -147,7 +147,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -164,7 +164,7 @@ public class ProvenanceRegistryResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response updateExperimentName(@FormParam("experimentId") String experimentId,
                                          @FormParam("experimentName") String experimentName) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.updateExperimentName(experimentId, experimentName);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -176,7 +176,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -191,7 +191,7 @@ public class ProvenanceRegistryResource {
     @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENTMETADATA)
     @Produces(MediaType.TEXT_PLAIN)
     public Response getExperimentMetadata(@QueryParam("experimentId") String experimentId) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             String result = airavataRegistry.getExperimentMetadata(experimentId);
             if (result != null) {
@@ -209,7 +209,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -226,7 +226,7 @@ public class ProvenanceRegistryResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response updateExperimentMetadata(@FormParam("experimentId") String experimentId,
                                              @FormParam("metadata") String metadata) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.updateExperimentMetadata(experimentId, metadata);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -238,7 +238,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -254,7 +254,7 @@ public class ProvenanceRegistryResource {
     @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_WORKFLOWTEMPLATENAME)
     @Produces(MediaType.TEXT_PLAIN)
     public Response getWorkflowExecutionTemplateName(@QueryParam("workflowInstanceId") String workflowInstanceId) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             String result = airavataRegistry.getWorkflowExecutionTemplateName(workflowInstanceId);
             if (result != null) {
@@ -272,7 +272,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -289,7 +289,7 @@ public class ProvenanceRegistryResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response setWorkflowInstanceTemplateName(@FormParam("workflowInstanceId") String workflowInstanceId,
                                                     @FormParam("templateName") String templateName) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.setWorkflowInstanceTemplateName(workflowInstanceId, templateName);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -301,7 +301,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -316,7 +316,7 @@ public class ProvenanceRegistryResource {
     @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENTWORKFLOWINSTANCES)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getExperimentWorkflowInstances(@QueryParam("experimentId") String experimentId) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             List<WorkflowInstance> experimentWorkflowInstances = airavataRegistry.getExperimentWorkflowInstances(experimentId);
             WorkflowInstancesList workflowInstancesList = new WorkflowInstancesList();
@@ -340,7 +340,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -355,7 +355,7 @@ public class ProvenanceRegistryResource {
     @Path(ResourcePathConstants.ProvenanceResourcePathConstants.WORKFLOWINSTANCE_EXIST_CHECK)
     @Produces(MediaType.TEXT_PLAIN)
     public Response isWorkflowInstanceExists(@QueryParam("instanceId") String instanceId) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             Boolean result = airavataRegistry.isWorkflowInstanceExists(instanceId);
             if (result) {
@@ -373,7 +373,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
 
@@ -392,7 +392,7 @@ public class ProvenanceRegistryResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response isWorkflowInstanceExistsThenCreate(@FormParam("instanceId") String instanceId,
                                                        @FormParam("createIfNotPresent") String createIfNotPresent) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             Boolean result = airavataRegistry.isWorkflowInstanceExists(instanceId, Boolean.valueOf(createIfNotPresent));
             if (result) {
@@ -410,7 +410,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -427,7 +427,7 @@ public class ProvenanceRegistryResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response updateWorkflowInstanceStatusByInstance(@FormParam("instanceId") String instanceId,
                                                            @FormParam("executionStatus") String executionStatus) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             WorkflowInstanceStatus.ExecutionStatus status = WorkflowInstanceStatus.ExecutionStatus.valueOf(executionStatus);
             airavataRegistry.updateWorkflowInstanceStatus(instanceId, status);
@@ -440,7 +440,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -459,7 +459,7 @@ public class ProvenanceRegistryResource {
     public Response updateWorkflowInstanceStatus(@FormParam("workflowInstanceId") String workflowInstanceId,
                                                  @FormParam("executionStatus") String executionStatus,
                                                  @FormParam("statusUpdateTime") String statusUpdateTime) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date formattedDate = dateFormat.parse(statusUpdateTime);
@@ -480,7 +480,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -495,7 +495,7 @@ public class ProvenanceRegistryResource {
     @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_WORKFLOWINSTANCESTATUS)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getWorkflowInstanceStatus(@QueryParam("instanceId") String instanceId) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             WorkflowInstanceStatus workflowInstanceStatus = airavataRegistry.getWorkflowInstanceStatus(instanceId);
             if (workflowInstanceStatus != null) {
@@ -513,7 +513,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -532,7 +532,7 @@ public class ProvenanceRegistryResource {
     public Response updateWorkflowNodeInput(@FormParam("nodeID") String nodeID,
                                             @FormParam("workflowInstanceId") String workflowInstanceID,
                                             @FormParam("data") String data) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             WorkflowInstanceData workflowInstanceData = airavataRegistry.getWorkflowInstanceData(workflowInstanceID);
             WorkflowInstanceNode workflowInstanceNode = workflowInstanceData.getNodeData(nodeID).getWorkflowInstanceNode();
@@ -546,7 +546,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
 
@@ -566,7 +566,7 @@ public class ProvenanceRegistryResource {
     public Response updateWorkflowNodeOutput(@FormParam("nodeID") String nodeID,
                                              @FormParam("workflowInstanceId") String workflowInstanceID,
                                              @FormParam("data") String data) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             WorkflowInstanceData workflowInstanceData = airavataRegistry.getWorkflowInstanceData(workflowInstanceID);
             WorkflowInstanceNode workflowInstanceNode = workflowInstanceData.getNodeData(nodeID).getWorkflowInstanceNode();
@@ -580,7 +580,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -592,7 +592,7 @@ public class ProvenanceRegistryResource {
     public Response searchWorkflowInstanceNodeInput(@QueryParam("experimentIdRegEx") String experimentIdRegEx,
                                                     @QueryParam("workflowNameRegEx") String workflowNameRegEx,
                                                     @QueryParam("nodeNameRegEx") String nodeNameRegEx) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             List<WorkflowNodeIOData> workflowNodeIODataList = airavataRegistry.searchWorkflowInstanceNodeInput(experimentIdRegEx, workflowNameRegEx, nodeNameRegEx);
             WorkflowNodeIODataMapping[] workflowNodeIODataCollection = new WorkflowNodeIODataMapping[workflowNodeIODataList.size()];
@@ -622,7 +622,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -633,7 +633,7 @@ public class ProvenanceRegistryResource {
     public Response searchWorkflowInstanceNodeOutput(@QueryParam("experimentIdRegEx") String experimentIdRegEx,
                                                      @QueryParam("workflowNameRegEx") String workflowNameRegEx,
                                                      @QueryParam("nodeNameRegEx") String nodeNameRegEx) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             List<WorkflowNodeIOData> workflowNodeIODataList = airavataRegistry.searchWorkflowInstanceNodeOutput(experimentIdRegEx, workflowNameRegEx, nodeNameRegEx);
             WorkflowNodeIODataMapping[] workflowNodeIODataCollection = new WorkflowNodeIODataMapping[workflowNodeIODataList.size()];
@@ -663,7 +663,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         }finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -674,7 +674,7 @@ public class ProvenanceRegistryResource {
     public Response getWorkflowInstanceNodeInput(@QueryParam("workflowInstanceId") String workflowInstanceId,
                                                  @QueryParam("nodeType") String nodeType) {
         // Airavata JPA Registry method returns null at the moment
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             List<WorkflowNodeIOData> workflowNodeIODataList = airavataRegistry.getWorkflowInstanceNodeInput(workflowInstanceId, nodeType);
             WorkflowNodeIODataMapping[] workflowNodeIODataCollection = new WorkflowNodeIODataMapping[workflowNodeIODataList.size()];
@@ -704,7 +704,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         }  finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -714,7 +714,7 @@ public class ProvenanceRegistryResource {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getWorkflowInstanceNodeOutput(@QueryParam("workflowInstanceId") String workflowInstanceId,
                                                   @QueryParam("nodeType") String nodeType) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             List<WorkflowNodeIOData> workflowNodeIODataList = airavataRegistry.getWorkflowInstanceNodeOutput(workflowInstanceId, nodeType);
             WorkflowNodeIODataMapping[] workflowNodeIODataCollection = new WorkflowNodeIODataMapping[workflowNodeIODataList.size()];
@@ -744,7 +744,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         }finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -761,7 +761,7 @@ public class ProvenanceRegistryResource {
     @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENT)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getExperiment(@QueryParam("experimentId") String experimentId) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             ExperimentDataImpl experimentData = (ExperimentDataImpl) airavataRegistry.getExperiment(experimentId);
             if (experimentData != null) {
@@ -779,7 +779,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -794,7 +794,7 @@ public class ProvenanceRegistryResource {
     @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENT_ID_USER)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getExperimentIdByUser(@QueryParam("username") String username) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             ArrayList<String> experiments = (ArrayList) airavataRegistry.getExperimentIdByUser(username);
             ExperimentIDList experimentIDList = new ExperimentIDList();
@@ -814,7 +814,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -829,7 +829,7 @@ public class ProvenanceRegistryResource {
     @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENT_USER)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getExperimentByUser(@QueryParam("username") String username) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             List<ExperimentData> experimentDataList = airavataRegistry.getExperimentByUser(username);
             ExperimentDataList experimentData = new ExperimentDataList();
@@ -853,7 +853,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -872,7 +872,7 @@ public class ProvenanceRegistryResource {
     public Response updateWorkflowNodeStatus(@FormParam("workflowInstanceId") String workflowInstanceId,
                                              @FormParam("nodeId") String nodeId,
                                              @FormParam("executionStatus") String executionStatus) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             WorkflowInstanceStatus.ExecutionStatus status = WorkflowInstanceStatus.ExecutionStatus.valueOf(executionStatus);
             airavataRegistry.updateWorkflowNodeStatus(workflowInstanceId, nodeId, status);
@@ -885,7 +885,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -902,7 +902,7 @@ public class ProvenanceRegistryResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getWorkflowNodeStatus(@QueryParam("workflowInstanceId") String workflowInstanceId,
                                           @QueryParam("nodeId") String nodeId) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             WorkflowInstanceData workflowInstanceData = airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
             WorkflowInstanceNode workflowInstanceNode = workflowInstanceData.getNodeData(nodeId).getWorkflowInstanceNode();
@@ -922,7 +922,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -939,7 +939,7 @@ public class ProvenanceRegistryResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response getWorkflowNodeStartTime(@QueryParam("workflowInstanceId") String workflowInstanceId,
                                              @QueryParam("nodeId") String nodeId) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             WorkflowInstanceData workflowInstanceData = airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
             WorkflowInstanceNode workflowInstanceNode = workflowInstanceData.getNodeData(nodeId).getWorkflowInstanceNode();
@@ -959,7 +959,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -974,7 +974,7 @@ public class ProvenanceRegistryResource {
     @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_WORKFLOW_STARTTIME)
     @Produces(MediaType.TEXT_PLAIN)
     public Response getWorkflowStartTime(@QueryParam("workflowInstanceId") String workflowInstanceId) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             WorkflowInstanceData workflowInstanceData = airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
             WorkflowInstance workflowInstance = workflowInstanceData.getWorkflowInstance();
@@ -994,7 +994,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -1010,7 +1010,7 @@ public class ProvenanceRegistryResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces(MediaType.TEXT_PLAIN)
     public Response updateWorkflowNodeGramData(WorkflowNodeGramData workflowNodeGramData) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.updateWorkflowNodeGramData(workflowNodeGramData);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -1022,7 +1022,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
 
@@ -1038,7 +1038,7 @@ public class ProvenanceRegistryResource {
     @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_WORKFLOWINSTANCEDATA)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getWorkflowInstanceData(@QueryParam("workflowInstanceId") String workflowInstanceId) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             WorkflowInstanceData workflowInstanceData = airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
             if (workflowInstanceData != null) {
@@ -1056,7 +1056,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -1073,7 +1073,7 @@ public class ProvenanceRegistryResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response isWorkflowInstanceNodePresent(@QueryParam("workflowInstanceId") String workflowInstanceId,
                                                   @QueryParam("nodeId") String nodeId) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             boolean workflowInstanceNodePresent = airavataRegistry.isWorkflowInstanceNodePresent(workflowInstanceId, nodeId);
             if (workflowInstanceNodePresent) {
@@ -1091,7 +1091,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
 
@@ -1112,7 +1112,7 @@ public class ProvenanceRegistryResource {
     public Response isWorkflowInstanceNodePresentCreate(@FormParam("workflowInstanceId") String workflowInstanceId,
                                                         @FormParam("nodeId") String nodeId,
                                                         @FormParam("createIfNotPresent") String createIfNotPresent) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             boolean workflowInstanceNodePresent = airavataRegistry.isWorkflowInstanceNodePresent(workflowInstanceId, nodeId, Boolean.getBoolean(createIfNotPresent));
             if (workflowInstanceNodePresent) {
@@ -1130,7 +1130,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
 
@@ -1149,7 +1149,7 @@ public class ProvenanceRegistryResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getWorkflowInstanceNodeData(@QueryParam("workflowInstanceId") String workflowInstanceId,
                                                 @QueryParam("nodeId") String nodeId) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             WorkflowInstanceNodeData workflowInstanceNodeData = airavataRegistry.getWorkflowInstanceNodeData(workflowInstanceId, nodeId);
             if (workflowInstanceNodeData != null) {
@@ -1167,7 +1167,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
 
@@ -1187,7 +1187,7 @@ public class ProvenanceRegistryResource {
     public Response addWorkflowInstance(@FormParam("experimentId") String experimentId,
                                         @FormParam("workflowInstanceId") String workflowInstanceId,
                                         @FormParam("templateName") String templateName) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.addWorkflowInstance(experimentId, workflowInstanceId, templateName);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -1199,7 +1199,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -1218,7 +1218,7 @@ public class ProvenanceRegistryResource {
     public Response updateWorkflowNodeType(@FormParam("workflowInstanceId") String workflowInstanceId,
                                            @FormParam("nodeId") String nodeId,
                                            @FormParam("nodeType") String nodeType) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             WorkflowInstanceNodeData workflowInstanceNodeData = airavataRegistry.getWorkflowInstanceData(workflowInstanceId).getNodeData(nodeId);
             WorkflowInstanceNode workflowInstanceNode = workflowInstanceNodeData.getWorkflowInstanceNode();
@@ -1237,7 +1237,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -1255,7 +1255,7 @@ public class ProvenanceRegistryResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response addWorkflowInstanceNode(@FormParam("workflowInstanceId") String workflowInstanceId,
                                             @FormParam("nodeId") String nodeId) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.addWorkflowInstanceNode(workflowInstanceId, nodeId);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -1267,7 +1267,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -1283,7 +1283,7 @@ public class ProvenanceRegistryResource {
     @Path(ResourcePathConstants.ProvenanceResourcePathConstants.EXPERIMENTNAME_EXISTS)
     @Produces(MediaType.TEXT_PLAIN)
     public Response isExperimentNameExist(@QueryParam("experimentName") String experimentName) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             boolean experimentNameExist = airavataRegistry.isExperimentNameExist(experimentName);
             if (experimentNameExist) {
@@ -1302,7 +1302,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
 
@@ -1319,7 +1319,7 @@ public class ProvenanceRegistryResource {
     @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENT_METAINFORMATION)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getExperimentMetaInformation(@QueryParam("experimentId") String experimentId) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             ExperimentDataImpl experimentMetaInformation = (ExperimentDataImpl) airavataRegistry.getExperimentMetaInformation(experimentId);
             if (experimentMetaInformation != null) {
@@ -1337,7 +1337,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -1352,7 +1352,7 @@ public class ProvenanceRegistryResource {
     @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_ALL_EXPERIMENT_METAINFORMATION)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getAllExperimentMetaInformation(@QueryParam("user") String user) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             List<ExperimentData> allExperimentMetaInformation = airavataRegistry.getAllExperimentMetaInformation(user);
             ExperimentDataList experimentDataList = new ExperimentDataList();
@@ -1376,7 +1376,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -1394,7 +1394,7 @@ public class ProvenanceRegistryResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response searchExperiments(@QueryParam("user") String user,
                                       @QueryParam("experimentNameRegex") String experimentNameRegex) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             List<ExperimentData> experimentDataList = airavataRegistry.searchExperiments(user, experimentNameRegex);
             ExperimentDataList experimentData = new ExperimentDataList();
@@ -1418,7 +1418,7 @@ public class ProvenanceRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
 

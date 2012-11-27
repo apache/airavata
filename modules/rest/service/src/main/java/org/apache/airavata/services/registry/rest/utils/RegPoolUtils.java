@@ -41,11 +41,7 @@ import java.util.Map;
 
 public class RegPoolUtils {
 
-    @Context
-    static ServletContext context;
-
-
-    public static AiravataRegistry2 acquireRegistry() {
+    public static AiravataRegistry2 acquireRegistry(ServletContext context) {
         AiravataRegistry2 airavataRegistry=null;
         RequestContext requestContext = WorkflowContext.get();
         String user = requestContext.getUserIdentity();
@@ -86,7 +82,7 @@ public class RegPoolUtils {
         return airavataRegistry;
     }
 
-    public static void releaseRegistry(AiravataRegistry2 airavataRegistry) {
+    public static void releaseRegistry(ServletContext context, AiravataRegistry2 airavataRegistry) {
         RegistryInstancesPool registryInstancesPool = (RegistryInstancesPool)context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY_POOL);
         Map<RegIdentifier, AiravataRegistry2> registryInstancesList = registryInstancesPool.getRegistryInstancesList();
         synchronized (registryInstancesList){
