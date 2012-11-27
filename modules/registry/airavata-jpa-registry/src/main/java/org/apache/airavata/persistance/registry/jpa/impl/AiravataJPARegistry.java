@@ -94,17 +94,17 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     private static final String DEFAULT_PROJECT_NAME = "default";
     private static final Version API_VERSION=new Version("Airavata Registry API",0,5,null,null,null);
     private URI registryConnectionURI;
-    
+
     private PasswordCallback callback;
-    
+
     @Override
     protected void initialize() {
     	jpa = new JPAResourceAccessor(this);
-    	//TODO check if the db connections are proper & accessible & the relevant db/tables are 
+    	//TODO check if the db connections are proper & accessible & the relevant db/tables are
     	//present
     	active=true;
     }
-    
+
 
 	@Override
 	public boolean isActive() {
@@ -112,7 +112,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
     /**---------------------------------Configuration Registry----------------------------------**/
-    
+
     public Object getConfiguration(String key) {
 		ConfigurationResource configuration = ResourceUtils.getConfiguration(key);
 		return configuration==null? null: configuration.getConfigVal();
@@ -153,12 +153,12 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     public void removeConfiguration(String key, String value) {
     	ResourceUtils.removeConfiguration(key, value);
     }
-    
+
     private static final String GFAC_URL="gfac.url";
     private static final String INTERPRETER_URL="interpreter.url";
     private static final String MESSAGE_BOX_URL="messagebox.url";
     private static final String EVENTING_URL="eventing.url";
-    
+
     public List<URI> getGFacURIs() {
     	return retrieveURIsFromConfiguration(GFAC_URL);
     }
@@ -258,7 +258,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     /**---------------------------------Descriptor Registry----------------------------------**/
-    
+
     public boolean isHostDescriptorExists(String descriptorName)throws RegistryException{
     	return jpa.getGateway().isHostDescriptorExists(descriptorName);
     }
@@ -334,7 +334,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     public boolean isServiceDescriptorExists(String descriptorName)throws RegistryException{
     	return jpa.getGateway().isServiceDescriptorExists(descriptorName);
     }
-    
+
     public void addServiceDescriptor(ServiceDescription descriptor) throws RegistryException {
     	GatewayResource gateway = jpa.getGateway();
         WorkerResource workerResource = jpa.getWorker();
@@ -361,6 +361,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
     public ServiceDescription getServiceDescriptor(String serviceName) throws DescriptorDoesNotExistsException, MalformedDescriptorException {
     	GatewayResource gateway = jpa.getGateway();
+    	System.out.println("AAA");
 		if (!gateway.isServiceDescriptorExists(serviceName)){
         	return null;
         }
@@ -385,7 +386,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
 		gateway.removeServiceDescriptor(serviceName);
     }
-    
+
     @Override
 	public List<ServiceDescription> getServiceDescriptors()
 			throws MalformedDescriptorException, RegistryException {
@@ -397,7 +398,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		}
 		return list;
 	}
-    
+
     public ResourceMetadata getServiceDescriptorMetadata(String serviceName) throws UnimplementedRegistryOperationException {
     	//TODO
         throw new UnimplementedRegistryOperationException();
@@ -406,11 +407,11 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     private String createAppName(String serviceName, String hostName, String applicationName){
     	return serviceName+"/"+hostName+"/"+applicationName;
     }
-    
+
     public boolean isApplicationDescriptorExists(String serviceName, String hostName, String descriptorName)throws RegistryException{
  		return jpa.getGateway().isApplicationDescriptorExists(createAppName(serviceName, hostName, descriptorName));
     }
-    
+
     public void addApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDeploymentDescription descriptor) throws RegistryException {
         addApplicationDescriptor(serviceDescription.getType().getName(), hostDescriptor.getType().getHostName(), descriptor);
     }
@@ -461,7 +462,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             throw new MalformedDescriptorException(applicationDescriptorResource.getName(),e);
         }
 	}
-    
+
     public ApplicationDeploymentDescription getApplicationDescriptor(String serviceName, String hostname, String applicationName)throws DescriptorDoesNotExistsException, MalformedDescriptorException, RegistryException{
     	if (serviceName==null || hostname==null){
     		throw new InsufficientDataException("Service name or Host name cannot be null");
@@ -472,7 +473,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
         return createApplicationDescriptor(gateway.getApplicationDescriptorResource(createAppName(serviceName, hostname, applicationName)));
     }
-    
+
     public ApplicationDeploymentDescription getApplicationDescriptors(String serviceName, String hostname) throws MalformedDescriptorException {
     	GatewayResource gateway = jpa.getGateway();
 		List<ApplicationDescriptorResource> applicationDescriptorResources = gateway.getApplicationDescriptorResources(serviceName, hostname);
@@ -491,7 +492,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		}
 		return map;
     }
-    
+
     public Map<String[],ApplicationDeploymentDescription> getApplicationDescriptors()throws MalformedDescriptorException, RegistryException{
     	GatewayResource gateway = jpa.getGateway();
 		Map<String[], ApplicationDeploymentDescription> map=new HashMap<String[],ApplicationDeploymentDescription>();
@@ -521,16 +522,16 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     private String createProjName(String projectName){
     	return createProjName(getGateway().getGatewayName(),getUser().getUserName(),projectName);
     }
-    
+
     private String createProjName(String gatewayName, String userName, String projectName){
     	return gatewayName+"\n"+userName+"\n"+projectName;
     }
-    
+
     private String getProjName(String projectLongName){
     	String[] s = projectLongName.split("\n");
     	return s[s.length-1];
     }
-    
+
 	@Override
 	public boolean isWorkspaceProjectExists(String projectName)
 			throws RegistryException {
@@ -584,7 +585,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		ProjectResource projectResource = worker.getProject(createProjName(projectName));
 		return new WorkspaceProject(getProjName(projectResource.getName()), this);
     }
-    
+
     public List<WorkspaceProject> getWorkspaceProjects() throws RegistryException{
     	WorkerResource worker = jpa.getWorker();
     	List<WorkspaceProject> projects=new ArrayList<WorkspaceProject>();
@@ -681,7 +682,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 			throws RegistryException {
 		return jpa.getGateway().isPublishedWorkflowExists(workflowName);
 	}
-    
+
     public void publishWorkflow(String workflowName, String publishWorkflowName) throws RegistryException {
     	GatewayResource gateway = jpa.getGateway();
     	String workflowGraphXML = getWorkflowGraphXML(workflowName);
@@ -706,7 +707,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
         return gateway.getPublishedWorkflow(workflowName).getContent();
     }
-    
+
 	public List<String> getPublishedWorkflowNames() throws RegistryException{
 		GatewayResource gateway = jpa.getGateway();
 		List<String> result=new ArrayList<String>();
@@ -734,7 +735,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
         gateway.removePublishedWorkflow(workflowName);
     }
-    
+
     public ResourceMetadata getPublishedWorkflowMetadata(String workflowName) throws RegistryException {
     	//TODO
         throw new UnimplementedRegistryOperationException();
@@ -747,7 +748,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 			throws RegistryException {
 		return jpa.getWorker().isWorkflowTemplateExists(workflowName);
 	}
-	
+
     public void addWorkflow(String workflowName, String workflowGraphXml) throws RegistryException {
     	WorkerResource worker = jpa.getWorker();
 		if (isWorkflowExists(workflowName)){
@@ -775,7 +776,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
 		return worker.getWorkflowTemplate(workflowName).getContent();
     }
-    
+
 	@Override
 	public Map<String, String> getWorkflows() throws RegistryException {
     	WorkerResource worker = jpa.getWorker();
@@ -794,7 +795,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
 		worker.removeWorkflowTemplate(workflowName);
     }
-    
+
     public ResourceMetadata getWorkflowMetadata(String workflowName) throws UnimplementedRegistryOperationException {
     	//TODO
         throw new UnimplementedRegistryOperationException();
@@ -817,7 +818,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public boolean isExperimentExists(String experimentId, boolean createIfNotPresent)throws RegistryException {
 		if (jpa.getWorker().isExperimentExists(experimentId)){
-			return true; 
+			return true;
 		}else if (createIfNotPresent){
 			if (!isWorkspaceProjectExists(DEFAULT_PROJECT_NAME, true)){
 				throw new WorkspaceProjectDoesNotExistsException(createProjName(DEFAULT_PROJECT_NAME));
@@ -975,8 +976,8 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		if (jpa.getWorker().isWorkflowInstancePresent(instanceId)){
 			return true;
 		}else if (createIfNotPresent){
-			//we are using the same id for the experiment id for backward compatibility 
-			//for up to airavata 0.5 
+			//we are using the same id for the experiment id for backward compatibility
+			//for up to airavata 0.5
 			if (!isExperimentExists(instanceId, true)){
 				throw new ExperimentDoesNotExistsException(instanceId);
 			}
