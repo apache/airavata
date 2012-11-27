@@ -63,7 +63,7 @@ public class PublishWorkflowRegistryResource {
     @Path(ResourcePathConstants.PublishedWFConstants.PUBLISHWF_EXIST)
     @Produces(MediaType.TEXT_PLAIN)
     public Response isPublishedWorkflowExists(@QueryParam("workflowname") String workflowname) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             boolean workflowExists = airavataRegistry.isPublishedWorkflowExists(workflowname);
             if (workflowExists) {
@@ -81,7 +81,7 @@ public class PublishWorkflowRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -98,7 +98,7 @@ public class PublishWorkflowRegistryResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response publishWorkflow(@FormParam("workflowName") String workflowName,
                                     @FormParam("publishWorkflowName") String publishWorkflowName) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.publishWorkflow(workflowName, publishWorkflowName);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -118,7 +118,7 @@ public class PublishWorkflowRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -133,7 +133,7 @@ public class PublishWorkflowRegistryResource {
     @Path(ResourcePathConstants.PublishedWFConstants.PUBLISH_DEFAULT_WORKFLOW)
     @Produces(MediaType.TEXT_PLAIN)
     public Response publishWorkflow(@FormParam("workflowName") String workflowName) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.publishWorkflow(workflowName);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -153,7 +153,7 @@ public class PublishWorkflowRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -168,7 +168,7 @@ public class PublishWorkflowRegistryResource {
     @Path(ResourcePathConstants.PublishedWFConstants.GET_PUBLISHWORKFLOWGRAPH)
     @Produces(MediaType.APPLICATION_FORM_URLENCODED)
     public Response getPublishedWorkflowGraphXML(@QueryParam("workflowName") String workflowName) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             String publishedWorkflowGraphXML = airavataRegistry.getPublishedWorkflowGraphXML(workflowName);
             if (publishedWorkflowGraphXML != null) {
@@ -190,7 +190,7 @@ public class PublishWorkflowRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -204,7 +204,7 @@ public class PublishWorkflowRegistryResource {
     @Path(ResourcePathConstants.PublishedWFConstants.GET_PUBLISHWORKFLOWNAMES)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getPublishedWorkflowNames() {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             List<String> publishedWorkflowNames = airavataRegistry.getPublishedWorkflowNames();
             PublishWorkflowNamesList publishWorkflowNamesList = new PublishWorkflowNamesList();
@@ -224,7 +224,7 @@ public class PublishWorkflowRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -238,7 +238,7 @@ public class PublishWorkflowRegistryResource {
     @Path(ResourcePathConstants.PublishedWFConstants.GET_PUBLISHWORKFLOWS)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getPublishedWorkflows() {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             Map<String, String> publishedWorkflows = airavataRegistry.getPublishedWorkflows();
             WorkflowList workflowList = new WorkflowList();
@@ -266,7 +266,7 @@ public class PublishWorkflowRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
@@ -281,7 +281,7 @@ public class PublishWorkflowRegistryResource {
     @Path(ResourcePathConstants.PublishedWFConstants.REMOVE_PUBLISHWORKFLOW)
     @Produces(MediaType.TEXT_PLAIN)
     public Response removePublishedWorkflow(@QueryParam("workflowName") String workflowName) {
-        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.removePublishedWorkflow(workflowName);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -297,7 +297,7 @@ public class PublishWorkflowRegistryResource {
             return builder.build();
         } finally {
             if (airavataRegistry != null) {
-                RegPoolUtils.releaseRegistry(airavataRegistry);
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
     }
