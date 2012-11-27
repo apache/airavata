@@ -27,6 +27,7 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.json.JSONConfiguration;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.Gateway;
@@ -38,8 +39,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 public class BasicRegistryResourceClient {
     private WebResource webResource;
@@ -187,5 +190,58 @@ public class BasicRegistryResourceClient {
 
         Version airavataVersion = response.getEntity(Version.class);
         return airavataVersion;
+    }
+
+    public URI getConnectionURI(){
+        try {
+            webResource = getBasicRegistryBaseResource().path(ResourcePathConstants.BasicRegistryConstants.GET_SERVICE_URL);
+            ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+            int status = response.getStatus();
+
+            if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+                webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
+                response = webResource.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+                status = response.getStatus();
+
+                if (status != ClientConstant.HTTP_OK) {
+                    logger.error(response.getEntity(String.class));
+                    throw new RuntimeException("Failed : HTTP error code : "
+                            + status);
+                }
+            }
+            String uri = response.getEntity(String.class);
+            return new URI(uri);
+        } catch (URISyntaxException e) {
+            logger.error("URI syntax is not correct...");
+        }
+        return null;
+    }
+
+    public void setConnectionURI(URI connectionURI){
+        webResource = getBasicRegistryBaseResource().path(ResourcePathConstants.BasicRegistryConstants.SET_SERVICE_URL);
+        MultivaluedMap formData = new MultivaluedMapImpl();
+        formData.add("connectionurl", connectionURI.toString());
+        ClientResponse response = webResource.type(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+        int status = response.getStatus();
+
+        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
+            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
+            response = webResource.type(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+            status = response.getStatus();
+
+            if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            }
+        }
     }
 }

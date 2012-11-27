@@ -33,6 +33,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.net.URI;
 
 @Path(ResourcePathConstants.BasicRegistryConstants.REGISTRY_API_BASICREGISTRY)
 public class BasicRegistryResouce {
@@ -153,6 +154,55 @@ public class BasicRegistryResouce {
                 builder.entity("Cannot retrieve Airavata version...");
                 return builder.build();
             }
+        } catch (Exception e) {
+            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+            builder.entity(e.getMessage());
+            return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
+        }
+    }
+
+    @GET
+    @Path(ResourcePathConstants.BasicRegistryConstants.GET_SERVICE_URL)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response getConnectionURL (){
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        try{
+            String connectionURL = airavataRegistry.getConnectionURI().toString();
+            if (connectionURL != null) {
+                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+                builder.entity(connectionURL);
+                return builder.build();
+            } else {
+                Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
+                builder.entity("Cannot retrieve registry connection URL...");
+                return builder.build();
+            }
+        } catch (Exception e) {
+            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+            builder.entity(e.getMessage());
+            return builder.build();
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(airavataRegistry);
+            }
+        }
+    }
+
+    @POST
+    @Path(ResourcePathConstants.BasicRegistryConstants.SET_SERVICE_URL)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response setConnectionURL (@FormParam("connectionurl") String connectionURL){
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry();
+        try{
+            URI uri = new URI(connectionURL);
+            airavataRegistry.setConnectionURI(uri);
+            Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+            builder.entity("Connection URL updated successfully...");
+            return builder.build();
         } catch (Exception e) {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());

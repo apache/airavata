@@ -185,7 +185,7 @@
         <cargo.version>1.2.1</cargo.version>
         <!-- if you want a remote debugging on a different a address override on
               command line with -Dcargo.debug.addres=xxxx -->
-        <cargo.debug.address>8000</cargo.debug.address>
+        <cargo.debug.address>5000</cargo.debug.address>
         <!-- if you want to start remote debugging session suspended override on
               command line with -Dcargo.debug.suspend=y -->
         <cargo.debug.suspend>n</cargo.debug.suspend>
