@@ -23,6 +23,7 @@ package org.apache.airavata.core.gfac.services.impl;
 
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
@@ -253,11 +254,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
                     airavataAPI = AiravataAPIFactory.getAPI(gateway, regUser);
                 } catch (URISyntaxException e) {
                     e.printStackTrace();
-                } catch (RepositoryException e) {
-                    e.printStackTrace();
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (RegistryException e) {
+                } catch (AiravataAPIInvocationException e) {
                     e.printStackTrace();
                 }
 
