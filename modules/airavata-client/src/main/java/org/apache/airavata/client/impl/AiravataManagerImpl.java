@@ -176,7 +176,7 @@ public class AiravataManagerImpl implements AiravataManager {
 	@Override
 	public URI getRegistryURL() throws AiravataAPIInvocationException {
 		try {
-			return getClient().getClientConfiguration().getJcrURL().toURI();
+			return getClient().getClientConfiguration().getRegistryURL().toURI();
 		} catch (URISyntaxException e) {
 			throw new AiravataAPIInvocationException(e);
 		}

@@ -78,10 +78,10 @@ public class AiravataClientConfiguration {
 	public void setXbayaServiceURL(URL xbayaServiceURL) {
 		this.xbayaServiceURL = xbayaServiceURL;
 	}
-	public URL getJcrURL() {
+	public URL getRegistryURL() {
 		return jcrURL;
 	}
-	public void setJcrURL(URL jcrURL) {
+	public void setRegistryURL(URL jcrURL) {
 		this.jcrURL = jcrURL;
 	}
 	public String getJcrUsername() {

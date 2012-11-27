@@ -68,11 +68,11 @@ import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
-import org.apache.airavata.registry.api.*;
-import org.apache.airavata.registry.api.exception.RegistryAccessorInstantiateException;
-import org.apache.airavata.registry.api.exception.RegistryAccessorInvalidException;
-import org.apache.airavata.registry.api.exception.RegistryAccessorNotFoundException;
-import org.apache.airavata.registry.api.exception.RegistryAccessorUndefinedException;
+import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.AiravataRegistryFactory;
+import org.apache.airavata.registry.api.AiravataUser;
+import org.apache.airavata.registry.api.Gateway;
+import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
 import org.apache.airavata.workflow.model.component.ComponentException;
@@ -96,6 +96,7 @@ public class AiravataClient implements AiravataAPI {
 
 	private static final Logger log = LoggerFactory
 			.getLogger(AiravataClient.class);
+	public static final String REGISTRY = "JCR";
 	public static final String GFAC = "gfac";
 	public static final String PROXYSERVER = "proxyserver";
 	public static final String MSGBOX = "msgbox";
@@ -196,7 +197,7 @@ public class AiravataClient implements AiravataAPI {
 	
 	 private static HashMap<String, String> createConfig(URI registryUrl,String username, String password) throws RepositoryException,	 RegistryException, AiravataConfigurationException {
 		HashMap<String, String> config = new HashMap<String, String>();
-//		config.put(AiravataClient.JCR, registryUrl.toString());
+		config.put(AiravataClient.REGISTRY, registryUrl.toString());
 //		config.put(AiravataClient.JCR_USERNAME, username);
 //		config.put(AiravataClient.JCR_PASSWORD, password);
 		AiravataRegistry2 registryObject = getRegistry(registryUrl, "default", username, new PasswordCallBackImpl(username, password));
@@ -227,7 +228,7 @@ public class AiravataClient implements AiravataAPI {
 	 }
 	protected void initialize() throws MalformedURLException, AiravataConfigurationException, RepositoryException, RegistryException {
 		if (!configCreated){
-			createConfig(getRegitryURI(), getCurrentUser(), getPassword());
+			configuration=createConfig(getRegitryURI(), getCurrentUser(), getPassword());
 			configCreated=true;
 		}
 		updateClientConfiguration(configuration);
@@ -259,10 +260,9 @@ public class AiravataClient implements AiravataAPI {
 			clientConfiguration.setMessagebrokerURL(new URL(configuration
 					.get(BROKER)));
 		}
-		// if (configuration.get(JCR)!= null) {
-		// clientConfiguration
-		// .setJcrURL(new URL(configuration.get(JCR)));
-		// }
+		 if (configuration.get(REGISTRY)!= null) {
+			 clientConfiguration.setRegistryURL(new URL(configuration.get(REGISTRY)));
+		 }
 		if (configuration.get(WORKFLOWSERVICEURL) != null) {
 			clientConfiguration.setXbayaServiceURL(new URL(configuration
 					.get(WORKFLOWSERVICEURL)));
@@ -272,7 +272,7 @@ public class AiravataClient implements AiravataAPI {
 					.get(MSGBOX)));
 		}
 
-		if (clientConfiguration.getJcrURL() != null
+		if (clientConfiguration.getRegistryURL() != null
 				&& clientConfiguration.getGfacURL() == null) {
 			try {
 				clientConfiguration.setGfacURL(getRegistryClient().getGFacURIs()

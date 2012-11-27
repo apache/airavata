@@ -113,7 +113,7 @@ public class ExecutionManagerImpl implements ExecutionManager {
 		AiravataClientConfiguration config = getClient().getClientConfiguration();
 		try {
 			return new WorkflowContextHeaderBuilder(config.getMessagebrokerURL().toString(),
-					config.getGfacURL().toString(),config.getJcrURL().toString(),null,null,
+					config.getGfacURL().toString(),config.getRegistryURL().toString(),null,null,
 					config.getMessageboxURL().toString());
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
