@@ -174,6 +174,8 @@ public class ResourcePathConstants {
         public static final String SET_GATEWAY = "set/gateway";
         public static final String SET_USER = "set/user";
         public static final String VERSION = "get/version";
+        public static final String GET_SERVICE_URL = "get/serviceURL";
+        public static final String SET_SERVICE_URL = "set/serviceURL";
     }
 
     }
