@@ -21,8 +21,18 @@
 
 package org.apache.airavata.workflow.model.component.registry;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.AiravataRegistryConnectionDataProvider;
 import org.apache.airavata.registry.api.AiravataRegistryFactory;
@@ -33,16 +43,6 @@ import org.apache.airavata.workflow.model.component.ComponentReference;
 import org.apache.airavata.workflow.model.component.ComponentRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.jcr.RepositoryException;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
 
 public class JCRComponentRegistry extends ComponentRegistry {
 
@@ -87,10 +87,10 @@ public class JCRComponentRegistry extends ComponentRegistry {
 			}
         }
         if (username==null){
-        	username="admin";	
+        	username="admin";
         }
         if (gatewayName==null){
-        	gatewayName="default";	
+        	gatewayName="default";
         }
         try {
             URI baseUri = new URI(registryURL);
@@ -99,9 +99,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
             this.airavataAPI = AiravataAPIFactory.getAPI(baseUri, gatewayName, username, passwordCallBack);
         }  catch (URISyntaxException e) {
             log.error("Error initializing Airavata Client");
-        } catch (RepositoryException e) {
-            log.error("Error initializing Airavata Client");
-        } catch (MalformedURLException e) {
+        } catch (AiravataAPIInvocationException e) {
             log.error("Error initializing Airavata Client");
         }
 
