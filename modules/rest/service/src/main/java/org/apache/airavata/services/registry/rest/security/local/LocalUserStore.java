@@ -1,15 +1,16 @@
 package org.apache.airavata.services.registry.rest.security.local;
 
 import org.apache.airavata.common.utils.DBUtil;
+import org.apache.airavata.services.registry.rest.utils.WebAppUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.ServletContext;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * User store to maintain internal DB database.
@@ -19,6 +20,16 @@ public class LocalUserStore {
     protected static Logger log = LoggerFactory.getLogger(LocalUserStore.class);
 
     private DBUtil dbUtil;
+
+    public LocalUserStore(ServletContext servletContext) throws Exception {
+        Properties properties = WebAppUtil.getAiravataProperties(servletContext);
+        dbUtil = new DBUtil(properties.getProperty("registry.jdbc.url"),
+                properties.getProperty("registry.jdbc.user"),
+                properties.getProperty("registry.jdbc.password"),
+                        properties.getProperty("registry.jdbc.driver"));
+
+        dbUtil.init();
+    }
 
     public LocalUserStore(DBUtil db) {
         dbUtil = db;
@@ -41,6 +52,8 @@ public class LocalUserStore {
             preparedStatement.executeUpdate();
 
             connection.commit();
+
+            log.info("User " + userName + " successfully added.");
 
         } catch (SQLException e) {
             StringBuilder stringBuilder = new StringBuilder("Error persisting user information.");
@@ -131,6 +144,8 @@ public class LocalUserStore {
 
             connection.commit();
 
+            log.info("Password changed for user " + userName);
+
         } catch (SQLException e) {
             StringBuilder stringBuilder = new StringBuilder("Error updating credentials.");
             stringBuilder.append(" user - ").append(userName);
@@ -164,6 +179,8 @@ public class LocalUserStore {
 
             connection.commit();
 
+            log.info("Admin changed password of user " + userName);
+
         } catch (SQLException e) {
             StringBuilder stringBuilder = new StringBuilder("Error updating credentials.");
             stringBuilder.append(" user - ").append(userName);
@@ -181,7 +198,7 @@ public class LocalUserStore {
 
     public void deleteUser(String userName) {
 
-        String sql = "delete from users where user_name=?;";
+        String sql = "delete from users where user_name=?";
 
         Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -195,6 +212,8 @@ public class LocalUserStore {
             preparedStatement.executeUpdate();
 
             connection.commit();
+
+            log.info("User " + userName + " deleted.");
 
         } catch (SQLException e) {
             StringBuilder stringBuilder = new StringBuilder("Error deleting user.");
@@ -226,7 +245,7 @@ public class LocalUserStore {
 
             resultSet = preparedStatement.executeQuery();
 
-            if (resultSet.next()) {
+            while (resultSet.next()) {
                 userList.add(resultSet.getString("user_name"));
             }
 
@@ -257,12 +276,18 @@ public class LocalUserStore {
                 try {
                     connection.close();
                 } catch (SQLException e) {
-                    log.error("Error closing prepared statement", e);
+                    log.error("Error closing connection", e);
                 }
             }
         }
 
+        Collections.sort(userList);
+
         return userList;
 
+    }
+
+    public static String getPasswordRegularExpression() {
+        return "'^[a-zA-Z0-9_-]{6,15}$'";
     }
 }

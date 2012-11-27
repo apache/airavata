@@ -137,7 +137,7 @@ public class HttpAuthenticatorFilter implements Filter {
         }
     }
 
-    protected void sendUnauthorisedError(ServletResponse servletResponse, String message) throws IOException {
+    public static void sendUnauthorisedError(ServletResponse servletResponse, String message) throws IOException {
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
         httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
     }
@@ -167,7 +167,7 @@ public class HttpAuthenticatorFilter implements Filter {
      *
      * @param servletResponse The HTTP response.
      */
-    private void populateUnauthorisedData(ServletResponse servletResponse, String message) {
+    public static void populateUnauthorisedData(ServletResponse servletResponse, String message) {
 
         HttpServletResponse httpServletResponse = (HttpServletResponse)servletResponse;
 
