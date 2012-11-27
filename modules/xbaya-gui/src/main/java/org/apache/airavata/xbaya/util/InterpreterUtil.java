@@ -20,7 +20,6 @@
  */
 package org.apache.airavata.xbaya.util;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,6 +32,7 @@ import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.graph.DataPort;
 import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.Node.NodeExecutionState;
 import org.apache.airavata.workflow.model.graph.amazon.InstanceNode;
 import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
 import org.apache.airavata.workflow.model.graph.system.ConstantNode;
@@ -47,20 +47,19 @@ import org.apache.airavata.workflow.model.graph.system.SystemDataPort;
 import org.apache.airavata.workflow.model.graph.ws.WSGraph;
 import org.apache.airavata.workflow.model.graph.ws.WSNode;
 import org.apache.airavata.workflow.model.graph.ws.WSPort;
-import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.interpretor.SystemComponentInvoker;
 import org.apache.airavata.xbaya.interpretor.WorkFlowInterpreterException;
 import org.apache.airavata.xbaya.invoker.GenericInvoker;
 import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.invoker.WorkflowInvokerWrapperForGFacInvoker;
-import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler;
-import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.infoset.impl.XmlElementWithViewsImpl;
 
 import xsul5.XmlConstants;
 import xsul5.wsdl.WsdlPort;
 import xsul5.wsdl.WsdlService;
+//import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler;
+//import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
 
 public class InterpreterUtil {
     /**
@@ -321,22 +320,22 @@ public class InterpreterUtil {
     }
 
     public static ArrayList<Node> getFinishedNodesDynamically(WSGraph graph) {
-        return getNodesWithBodyColor(MonitorEventHandler.NodeState.FINISHED.color, graph);
+        return getNodesWithBodyColor(NodeExecutionState.FINISHED, graph);
     }
 
     public static ArrayList<Node> getFailedNodesDynamically(WSGraph graph) {
-        return getNodesWithBodyColor(MonitorEventHandler.NodeState.FAILED.color, graph);
+        return getNodesWithBodyColor(NodeExecutionState.FAILED, graph);
     }
 
     public static ArrayList<Node> getWaitingNodesDynamically(WSGraph graph) {
-        return getNodesWithBodyColor(NodeState.DEFAULT.color, graph);
+        return getNodesWithBodyColor(NodeExecutionState.WAITING, graph);
     }
 
-    public static ArrayList<Node> getNodesWithBodyColor(Color color, WSGraph graph) {
+    public static ArrayList<Node> getNodesWithBodyColor(NodeExecutionState state, WSGraph graph) {
         ArrayList<Node> list = new ArrayList<Node>();
         List<NodeImpl> nodes = graph.getNodes();
         for (Node node : nodes) {
-            if (color.equals(NodeController.getGUI(node).getBodyColor())) {
+            if (node.getState()==state) {
                 list.add(node);
             }
         }
@@ -344,7 +343,7 @@ public class InterpreterUtil {
     }
 
     public static int getRunningNodeCountDynamically(WSGraph graph) {
-        return getNodeCountWithBodyColor(MonitorEventHandler.NodeState.EXECUTING.color, graph);
+        return getNodeCountWithBodyColor(NodeExecutionState.EXECUTING, graph);
     }
 
     public static int getFailedNodeCountDynamically(WSGraph graph) {
@@ -352,14 +351,14 @@ public class InterpreterUtil {
     }
 
     public static int getWaitingNodeCountDynamically(WSGraph graph) {
-        return getNodeCountWithBodyColor(NodeState.DEFAULT.color, graph);
+        return getNodeCountWithBodyColor(NodeExecutionState.WAITING, graph);
     }
 
-    public static int getNodeCountWithBodyColor(Color color, WSGraph graph) {
+    public static int getNodeCountWithBodyColor(NodeExecutionState state, WSGraph graph) {
         int sum = 0;
         List<NodeImpl> nodes = graph.getNodes();
         for (Node node : nodes) {
-            if (color.equals(NodeController.getGUI(node).getBodyColor())) {
+            if (node.getState()==state) {
                 ++sum;
             }
         }
