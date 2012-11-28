@@ -333,4 +333,15 @@ public class ApplicationManagerImpl implements ApplicationManager {
 		this.client = client;
 	}
 
+	@Override
+	public boolean isDeploymentDescriptorExists(String serviceName,
+			String hostName, String descriptorName)
+			throws AiravataAPIInvocationException {
+        try {
+            return getClient().getRegistryClient().isApplicationDescriptorExists(serviceName, hostName, descriptorName);
+        } catch (Exception e) {
+            throw new AiravataAPIInvocationException(e);
+        }
+	}
+
 }

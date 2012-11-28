@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.airavata.client.AiravataAPIFactory;
+import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -39,10 +41,6 @@ import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
 import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
 import org.apache.airavata.core.gfac.services.impl.PropertiesBasedServiceImpl;
-import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.AiravataRegistryFactory;
-import org.apache.airavata.registry.api.AiravataUser;
-import org.apache.airavata.registry.api.Gateway;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.DataType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
@@ -61,7 +59,7 @@ public class FileBreedGramTest {
 
     public static final String MYPROXY = "myproxy";
     public static final String GRAM_PROPERTIES = "gram.properties";
-    private AiravataRegistry2 jcrRegistry = null;
+    private AiravataAPI airavataAPI = null;
 
     @Before
     public void setUp() throws Exception {
@@ -71,8 +69,8 @@ public class FileBreedGramTest {
 
 
        Map<String,String> config = new HashMap<String,String>();
-
-       jcrRegistry = AiravataRegistryFactory.getRegistry(new Gateway("default"), new AiravataUser("admin"));
+       airavataAPI=AiravataAPIFactory.getAPI("default","admin");
+//       jcrRegistry = AiravataRegistryFactory.getRegistry(new Gateway("default"), new AiravataUser("admin"));
 	   config.put("org.apache.jackrabbit.repository.home","target");
 	   
         /*
@@ -138,9 +136,9 @@ public class FileBreedGramTest {
         /*
         * Save deployment descriptions to registry
         */
-        jcrRegistry.addHostDescriptor(host);
-        jcrRegistry.addApplicationDescriptor(serv.getType().getName(), host.getType().getHostName(), appDesc);
-        jcrRegistry.addServiceDescriptor(serv);
+        airavataAPI.getApplicationManager().saveHostDescription(host);
+        airavataAPI.getApplicationManager().saveDeploymentDescription(serv.getType().getName(), host.getType().getHostName(), appDesc);
+        airavataAPI.getApplicationManager().saveServiceDescription(serv);
 //        jcrRegistry.deployServiceOnHost(serv.getType().getName(), host.getType().getHostName());
     }
 
@@ -154,7 +152,7 @@ public class FileBreedGramTest {
             DefaultInvocationContext ct = new DefaultInvocationContext();
             DefaultExecutionContext ec = new DefaultExecutionContext();
             ec.addNotifiable(new LoggingNotification());
-            ec.setRegistryService(jcrRegistry);
+            ec.setRegistryService(airavataAPI);
             ct.setExecutionContext(ec);
 
 
