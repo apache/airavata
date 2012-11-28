@@ -26,16 +26,19 @@ import java.util.Properties;
 
 import org.apache.airavata.common.exception.ServerSettingsException;
 import org.apache.airavata.common.exception.ServerSettingsLoadException;
-import org.apache.airavata.common.exception.UnspecifiedServerSettings;
+import org.apache.airavata.common.exception.UnspecifiedServerSettingsException;
 
 public class ServerSettings {
     private static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
     private static Properties properties = new Properties();
     private static Exception propertyLoadException;
     private static final String DEFAULT_GATEWAY_ID="gateway.id";
-    
+    private static final String SYSTEM_USER="system.user";
+    private static final String SYSTEM_USER_PASSWORD="system.password";
+    private static final String SYSTEM_USER_GATEWAY="system.gateway";
+
     static{
-    	URL url = ServiceUtils.class.getClassLoader()
+    	URL url = ServerSettings.class.getClassLoader()
 				.getResource(REPOSITORY_PROPERTIES);
         try {
             properties.load(url.openStream());
@@ -55,10 +58,22 @@ public class ServerSettings {
     	if (properties.containsKey(key)){
     		return properties.getProperty(key);
     	}
-    	throw new UnspecifiedServerSettings(key);
+    	throw new UnspecifiedServerSettingsException(key);
     }
     
     public static String getDefaultGatewayId()throws ServerSettingsException{
     	return getSetting(DEFAULT_GATEWAY_ID);
+    }
+    
+    public static String getSystemUser() throws ServerSettingsException{
+    	return getSetting(SYSTEM_USER);
+    }
+    
+    public static String getSystemUserPassword() throws ServerSettingsException{
+    	return getSetting(SYSTEM_USER_PASSWORD);
+    }
+    
+    public static String getSystemUserGateway() throws ServerSettingsException{
+    	return getSetting(SYSTEM_USER_GATEWAY);
     }
 }
