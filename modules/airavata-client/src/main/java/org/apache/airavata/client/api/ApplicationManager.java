@@ -190,6 +190,8 @@ public interface ApplicationManager {
     public void removeHostDescriptor(String hostName) throws AiravataAPIInvocationException;
 
     public boolean isServiceDescriptorExists(String descriptorName) throws AiravataAPIInvocationException;
+    
+    public boolean isDeploymentDescriptorExists(String serviceName, String hostName, String descriptorName)throws AiravataAPIInvocationException;
 
     public void removeServiceDescriptor(String serviceName) throws AiravataAPIInvocationException;
 

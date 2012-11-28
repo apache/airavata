@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.airavata.client.AiravataAPIFactory;
+import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -39,10 +41,6 @@ import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
 import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
 import org.apache.airavata.core.gfac.services.impl.PropertiesBasedServiceImpl;
-import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.AiravataRegistryFactory;
-import org.apache.airavata.registry.api.AiravataUser;
-import org.apache.airavata.registry.api.Gateway;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
@@ -61,7 +59,7 @@ public class GramProviderTest {
     public static final String MYPROXY = "myproxy";
 //    public static final String GRAM_PROPERTIES = "gram.properties";
     public static final String GRAM_PROPERTIES = "gram-ranger.properties";
-    private AiravataRegistry2 jcrRegistry = null;
+    private AiravataAPI airavataAPI = null;
 
     @Before
     public void setUp() throws Exception {
@@ -71,7 +69,7 @@ public class GramProviderTest {
         Map<String,String> config = new HashMap<String,String>();
             config.put("org.apache.jackrabbit.repository.home","target");
 
-        jcrRegistry = AiravataRegistryFactory.getRegistry(new Gateway("default"), new AiravataUser("admin"));
+        airavataAPI=AiravataAPIFactory.getAPI("default","admin");
 
     
         /*
@@ -135,24 +133,24 @@ public class GramProviderTest {
            * Save to registry
            */
 
-        jcrRegistry.getApplicationDescriptors(serv.getType().getName());
+        airavataAPI.getApplicationManager().getApplicationDescriptors(serv.getType().getName());
 
-        if(jcrRegistry.isHostDescriptorExists(host.getType().getHostName())) {
-            jcrRegistry.updateHostDescriptor(host);
+        if(airavataAPI.getApplicationManager().isHostDescriptorExists(host.getType().getHostName())) {
+            airavataAPI.getApplicationManager().updateHostDescriptor(host);
         } else {
-            jcrRegistry.addHostDescriptor(host);
+            airavataAPI.getApplicationManager().saveHostDescription(host);
         }
 
-        if (jcrRegistry.isApplicationDescriptorExists(serv.getType().getName(),host.getType().getHostName(),appDesc.getType().getApplicationName().getStringValue())){
-            jcrRegistry.updateApplicationDescriptor(serv.getType().getName(), host.getType().getHostName(), appDesc);
+        if (airavataAPI.getApplicationManager().isDeploymentDescriptorExists(serv.getType().getName(),host.getType().getHostName(),appDesc.getType().getApplicationName().getStringValue())){
+            airavataAPI.getApplicationManager().updateApplicationDescriptor(serv.getType().getName(), host.getType().getHostName(), appDesc);
         } else {
-            jcrRegistry.addApplicationDescriptor(serv.getType().getName(), host.getType().getHostName(), appDesc);
+            airavataAPI.getApplicationManager().saveDeploymentDescription(serv.getType().getName(), host.getType().getHostName(), appDesc);
         }
 
-        if (jcrRegistry.isServiceDescriptorExists(serv.getType().getName())){
-            jcrRegistry.updateServiceDescriptor(serv);
+        if (airavataAPI.getApplicationManager().isServiceDescriptorExists(serv.getType().getName())){
+            airavataAPI.getApplicationManager().updateServiceDescriptor(serv);
         } else {
-            jcrRegistry.addServiceDescriptor(serv);
+            airavataAPI.getApplicationManager().saveServiceDescription(serv);
         }
 //        jcrRegistry.deployServiceOnHost(serv.getType().getName(), host.getType().getHostName());
     }
@@ -167,7 +165,7 @@ public class GramProviderTest {
             DefaultInvocationContext ct = new DefaultInvocationContext();
             DefaultExecutionContext ec = new DefaultExecutionContext();
             ec.addNotifiable(new LoggingNotification());
-            ec.setRegistryService(jcrRegistry);
+            ec.setRegistryService(airavataAPI);
             ct.setExecutionContext(ec);
 
 
