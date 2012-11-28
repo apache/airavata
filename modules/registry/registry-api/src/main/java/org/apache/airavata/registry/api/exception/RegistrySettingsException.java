@@ -19,12 +19,17 @@
  *
  */
 
-package org.apache.airavata.common.exception;
+package org.apache.airavata.registry.api.exception;
 
-public class UnspecifiedServerSettings extends ServerSettingsException {
+public class RegistrySettingsException extends RegistryException {
 
-	private static final long serialVersionUID = -1159027432434546003L;
-	public UnspecifiedServerSettings(String key) {
-		super("The '"+key+"' is not configured in Server settings!!!");
+	private static final long serialVersionUID = -4901850535475160411L;
+
+	public RegistrySettingsException(String message) {
+		super(message);
+	}
+	
+	public RegistrySettingsException(String message, Throwable e) {
+		super(message, e);
 	}
 }
