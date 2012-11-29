@@ -26,17 +26,25 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.KeyStore;
 
+import javax.jcr.RepositoryException;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 
+import org.apache.airavata.client.AiravataAPIFactory;
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.registry.api.PasswordCallback;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.registry.ComponentRegistryLoader;
+import org.apache.airavata.xbaya.registry.PasswordCallbackImpl;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
@@ -53,6 +61,8 @@ public class JCRRegistryWindow {
 
     private XBayaTextField urlTextField;
 
+    private XBayaTextField gatewayTextField;
+
     private XBayaTextField usernameTextField;
 
     private JPasswordField passwordTextField;
@@ -60,6 +70,14 @@ public class JCRRegistryWindow {
     private XBayaLinkButton newUserButton;
 
     private NewJCRRegistryUserDialog newUserWindow;
+
+    private String userName;
+
+    private String password;
+
+    private String regURL;
+
+    private String gateway;
 
     /**
      * @param engine
@@ -82,36 +100,40 @@ public class JCRRegistryWindow {
     }
 
     private void ok() {
-        String urlString = this.urlTextField.getText();
-        String username = this.usernameTextField.getText();
-        String password = new String(this.passwordTextField.getPassword());
+        setRegURL(this.urlTextField.getText());
+        setUserName(this.usernameTextField.getText());
+        setPassword(new String(this.passwordTextField.getPassword()));
+        setGateway(this.gatewayTextField.getText());
 
-        if (urlString.length() == 0) {
+        if (getRegURL().length() == 0) {
             this.engine.getGUI().getErrorWindow().error(ErrorMessages.URL_EMPTY);
             return;
         }
         URI url;
         try {
-            url = new URI(urlString);
+            url = new URI(regURL);
         } catch (URISyntaxException e) {
             this.engine.getGUI().getErrorWindow().error(ErrorMessages.URL_WRONG, e);
             return;
         }
+
+        AiravataAPI airavataAPI = getAiravataAPI();
+
         JCRComponentRegistry registry = null;
         try {
-            registry = new JCRComponentRegistry(username, password);
+            registry = new JCRComponentRegistry(airavataAPI);
         } catch (Exception e) {
             this.engine.getGUI().getErrorWindow().error(e.getMessage());
             return;
         }
         XBayaConfiguration configuration = this.engine.getConfiguration();
-
-
+        this.engine.setAiravataAPI(airavataAPI);
         configuration.setJcrComponentRegistry(registry);
-        configuration.setRegigstryUserName(username);
+        configuration.setRegigstryUserName(userName);
         configuration.setRegistryPassphrase(password);
         configuration.setRegistryURL(url);
-        configuration.setAiravataAPI(registry.getAiravataAPI());
+        configuration.setAiravataAPI(airavataAPI);
+        configuration.setDefaultGateway(gateway);
         engine.updateXBayaConfigurationServiceURLs();
         hide();
 
@@ -144,12 +166,15 @@ public class JCRRegistryWindow {
      */
     private void initGUI() {
         this.urlTextField = new XBayaTextField();
+        this.gatewayTextField = new XBayaTextField();
         this.usernameTextField = new XBayaTextField();
         this.passwordTextField = new JPasswordField();
         this.urlTextField.setText(engine.getConfiguration().getRegistryURL().toASCIIString());
+        this.gatewayTextField.setText(engine.getConfiguration().getDefaultGateway());
         this.usernameTextField.setText(engine.getConfiguration().getRegistryUserName());
         this.passwordTextField.setText(engine.getConfiguration().getRegistryPassphrase());
         XBayaLabel urlLabel = new XBayaLabel("URL", this.urlTextField);
+        XBayaLabel gatewayLabel = new XBayaLabel("Gateway", this.gatewayTextField);
         XBayaLabel nameLabel = new XBayaLabel("Username", this.usernameTextField);
         XBayaLabel passLabel = new XBayaLabel("Password", this.usernameTextField);
         this.newUserButton = new XBayaLinkButton("Create new user...");
@@ -163,15 +188,17 @@ public class JCRRegistryWindow {
         });
 
         GridPanel infoPanel = new GridPanel();
-//        infoPanel.add(urlLabel);
-//        infoPanel.add(this.urlTextField);
+        infoPanel.add(urlLabel);
+        infoPanel.add(this.urlTextField);
+        infoPanel.add(gatewayLabel);
+        infoPanel.add(this.gatewayTextField);
         infoPanel.add(nameLabel);
         infoPanel.add(this.usernameTextField);
         infoPanel.add(passLabel);
         infoPanel.add(this.passwordTextField);
         infoPanel.add(emptyLabel);
         infoPanel.add(this.newUserButton);
-        infoPanel.layout(3, 2, GridPanel.WEIGHT_NONE, 1);
+        infoPanel.layout(5, 2, GridPanel.WEIGHT_NONE, 1);
 //        infoPanel.layout(2, 2, GridPanel.WEIGHT_NONE, 1);
 
         infoPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
@@ -197,5 +224,52 @@ public class JCRRegistryWindow {
 
         this.dialog = new XBayaDialog(this.engine.getGUI(), "Airavata Registry", infoPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
+    }
+
+    public AiravataAPI getAiravataAPI(){
+        try {
+            URI regURI = new URI(getRegURL());
+            PasswordCallbackImpl passwordCallback = new PasswordCallbackImpl(userName, password);
+            AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(regURI, getGateway(), userName, passwordCallback);
+            return airavataAPI;
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return null;
+
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getRegURL() {
+        return regURL;
+    }
+
+    public void setRegURL(String regURL) {
+        this.regURL = regURL;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getGateway() {
+        return gateway;
+    }
+
+    public void setGateway(String gateway) {
+        this.gateway = gateway;
     }
 }

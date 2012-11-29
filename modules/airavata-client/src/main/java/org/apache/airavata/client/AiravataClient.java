@@ -262,9 +262,9 @@ public class AiravataClient implements AiravataAPI {
 			clientConfiguration.setMessagebrokerURL(new URL(configuration
 					.get(BROKER)));
 		}
-		 if (configuration.containsKey(REGISTRY)) {
-			 clientConfiguration.setRegistryURL(new URL(configuration.get(REGISTRY)));
-		 }
+//		if (configuration.containsKey(REGISTRY)) {
+//			 clientConfiguration.setRegistryURL(new URL(configuration.get(REGISTRY)));
+//		}
 		if (configuration.get(WORKFLOWSERVICEURL) != null) {
 			clientConfiguration.setXbayaServiceURL(new URL(configuration
 					.get(WORKFLOWSERVICEURL)));
@@ -496,6 +496,9 @@ public class AiravataClient implements AiravataAPI {
 			final String experimentName,
 			final WorkflowContextHeaderBuilder builder, boolean launchOnThread)
 			throws AiravataAPIInvocationException, AiravataConfigurationException {
+
+        //TODO - fix user passing
+        builder.setUserIdentifier(getCurrentUser());
 		try {
 			runPreWorkflowExecutionTasks(topic, user, metadata, experimentName);
 		} catch (RegistryException e) {

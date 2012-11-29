@@ -111,8 +111,6 @@ public class ProjectResource extends AbstractResource {
             EntityManager em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
         	QueryGenerator generator = new QueryGenerator(EXPERIMENT);
-//        	generator.setParameter(ExperimentConstants.PROJECT_NAME, name);
-//        	generator.setParameter(ExperimentConstants.USERNAME, getWorker().getUser());
         	generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
         	Query q = generator.selectQuery(em);
             Experiment experiment = (Experiment) q.getSingleResult();

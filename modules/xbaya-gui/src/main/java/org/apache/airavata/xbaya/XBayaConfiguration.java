@@ -84,6 +84,8 @@ public class XBayaConfiguration extends Observable implements Observer {
 
     private String registryPassphrase = XBayaConstants.REGISTRY_PASSPHRASE;
 
+    private String defaultGateway = XBayaConstants.DEFAULT_GATEWAY;
+
     private URI dscURL = XBayaConstants.DEFAULT_DSC_URL;
 
     // Monitor related
@@ -900,7 +902,15 @@ public class XBayaConfiguration extends Observable implements Observer {
         this.airavataAPI = airavataAPI;
     }
 
-//    public AiravataAPI setAiravataAPI() {
+    public String getDefaultGateway() {
+        return defaultGateway;
+    }
+
+    public void setDefaultGateway(String defaultGateway) {
+        this.defaultGateway = defaultGateway;
+    }
+
+    //    public AiravataAPI setAiravataAPI() {
 //        try{
 //            URI baseUri = new URI(ResourcePathConstants.BASE_URL);
 //            PasswordCallbackImpl passwordCallback = new PasswordCallbackImpl(getRegistryUserName(), getRegistryPassphrase());

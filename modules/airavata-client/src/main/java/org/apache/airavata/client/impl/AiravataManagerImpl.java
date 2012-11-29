@@ -183,6 +183,7 @@ public class AiravataManagerImpl implements AiravataManager {
 	}
 
 	@Override
+    @Deprecated
 	public URI getRegistryURL(URI defaultURL)
 			throws AiravataAPIInvocationException {
 		if (getRegistryURL()==null){

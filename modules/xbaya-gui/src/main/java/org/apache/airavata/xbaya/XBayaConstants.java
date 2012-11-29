@@ -181,7 +181,8 @@ public class XBayaConstants {
     public static final String STREAM_SERVER = "http://pagodatree.cs.indiana.edu:8081/axis2/services/StreamService?wsdl";
 
     public static final String STATIC_LABEL = "STATIC";
-    public static final URI REGISTRY_URL = URI.create("http://localhost:8081/rmi");
+    public static final URI REGISTRY_URL = URI.create("http://localhost:9080/airavata-services/api");
+    public static final String DEFAULT_GATEWAY = "default";
     public static final String REGISTRY_USERNAME = "admin";
     public static final String REGISTRY_PASSPHRASE = "admin";
     public static final String REGISTRY_TYPE_HOST_DESC = "HostDesc";
