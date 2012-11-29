@@ -360,11 +360,11 @@ public class ProvenanceRegistryResource {
             Boolean result = airavataRegistry.isWorkflowInstanceExists(instanceId);
             if (result) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
-                builder.entity("Workflow instance available...");
+                builder.entity("True");
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NOT_FOUND);
-                builder.entity("Workflow instance does not exist...");
+                builder.entity("False");
                 return builder.build();
             }
         } catch (RegistryException e) {
@@ -397,11 +397,11 @@ public class ProvenanceRegistryResource {
             Boolean result = airavataRegistry.isWorkflowInstanceExists(instanceId, Boolean.valueOf(createIfNotPresent));
             if (result) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
-                builder.entity("New workflow instance has been created...");
+                builder.entity("True");
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NOT_FOUND);
-                builder.entity("Could not create workflow instance...");
+                builder.entity("False");
                 return builder.build();
             }
         } catch (RegistryException e) {
@@ -1078,11 +1078,11 @@ public class ProvenanceRegistryResource {
             boolean workflowInstanceNodePresent = airavataRegistry.isWorkflowInstanceNodePresent(workflowInstanceId, nodeId);
             if (workflowInstanceNodePresent) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
-                builder.entity("Workflow instance node exists...");
+                builder.entity("True");
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("Workflow instance node does not exist...");
+                builder.entity("False");
                 return builder.build();
             }
         } catch (RegistryException e) {
@@ -1117,11 +1117,11 @@ public class ProvenanceRegistryResource {
             boolean workflowInstanceNodePresent = airavataRegistry.isWorkflowInstanceNodePresent(workflowInstanceId, nodeId, Boolean.getBoolean(createIfNotPresent));
             if (workflowInstanceNodePresent) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
-                builder.entity("Workflow instance node exists...");
+                builder.entity("True");
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("Workflow instance node does not exist...");
+                builder.entity("False");
                 return builder.build();
             }
         } catch (RegistryException e) {
@@ -1288,11 +1288,11 @@ public class ProvenanceRegistryResource {
             boolean experimentNameExist = airavataRegistry.isExperimentNameExist(experimentName);
             if (experimentNameExist) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
-                builder.entity("Experiment name exists...");
+                builder.entity("True");
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("Experiment name does not exists...");
+                builder.entity("False");
                 return builder.build();
             }
 

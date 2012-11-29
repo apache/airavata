@@ -66,11 +66,11 @@ public class UserWorkflowRegistryResource {
             boolean workflowExists = airavataRegistry.isWorkflowExists(workflowName);
             if (workflowExists) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
-                builder.entity("User workflow exists...");
+                builder.entity("True");
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("User workflow does not exists...");
+                builder.entity("False");
                 return builder.build();
             }
         } catch (RegistryException e) {

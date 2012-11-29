@@ -40,6 +40,7 @@ import java.util.Map;
 public class RegistryClient extends AiravataRegistry2 {
 
     private PasswordCallback callback;
+    private URI connectionURI;
     
     private BasicRegistryResourceClient basicRegistryResourceClient;
     private ConfigurationResourceClient configurationResourceClient;
@@ -50,11 +51,8 @@ public class RegistryClient extends AiravataRegistry2 {
     private PublishedWorkflowResourceClient publishedWorkflowResourceClient;
     private UserWorkflowResourceClient userWorkflowResourceClient;
 
-    public RegistryClient() {
-    }
 
-    private URI getBaseURI() {
-        return UriBuilder.fromUri("http://localhost:9080/airavata-services/").build();
+    public RegistryClient() {
     }
 
     public BasicRegistryResourceClient getBasicRegistryResourceClient() {
@@ -125,7 +123,7 @@ public class RegistryClient extends AiravataRegistry2 {
     protected void initialize() {
         String userName = getUser().getUserName();
         callback = getCallback();
-        String serviceURI = getBaseURI().toString();
+        String serviceURI = getConnectionURI().toString();
         basicRegistryResourceClient = new BasicRegistryResourceClient(userName, serviceURI, callback);
         configurationResourceClient = new ConfigurationResourceClient(userName, serviceURI,  callback);
         descriptorResourceClient = new DescriptorResourceClient(userName, serviceURI, callback);
@@ -783,11 +781,11 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
     public void setConnectionURI(URI connectionURI) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        this.connectionURI = connectionURI;
     }
 
     public URI getConnectionURI() {
-		return getBasicRegistryResourceClient().getConnectionURI();
+		return connectionURI;
 	}
 
 

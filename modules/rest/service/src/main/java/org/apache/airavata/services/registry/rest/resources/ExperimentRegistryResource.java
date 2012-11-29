@@ -330,11 +330,11 @@ public class ExperimentRegistryResource {
         try {
             airavataRegistry.isExperimentExists(experimentId);
             Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-            builder.entity("Experiment exists...");
+            builder.entity("True");
             return builder.build();
         } catch (ExperimentDoesNotExistsException e) {
             Response.ResponseBuilder builder = Response.status(Response.Status.NOT_FOUND);
-            builder.entity("Exprtiment does not exist...");
+            builder.entity("False");
             return builder.build();
         } catch (RegistryException e) {
             Response.ResponseBuilder builder = Response.status(Response.Status.NOT_FOUND);
@@ -360,10 +360,7 @@ public class ExperimentRegistryResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response isExperimentExistsThenCreate(@FormParam("experimentId") String experimentId,
                                                  @FormParam("createIfNotPresent") String createIfNotPresent) {
-        boolean createIfNotPresentStatus = false;
-        if (createIfNotPresent.equals("true")) {
-            createIfNotPresentStatus = true;
-        }
+        boolean createIfNotPresentStatus = Boolean.valueOf(createIfNotPresent);
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.isExperimentExists(experimentId, createIfNotPresentStatus);

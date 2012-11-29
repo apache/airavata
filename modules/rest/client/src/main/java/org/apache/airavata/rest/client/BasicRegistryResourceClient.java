@@ -44,6 +44,11 @@ import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+/**
+ * This is the client class for all the basic registry operations. This class is being
+ * instantiated by <code>AiravataClient</code>. Users of Airavata can also call this
+ * client class if he wants to use REST service
+ */
 public class BasicRegistryResourceClient {
     private WebResource webResource;
     private final static Logger logger = LoggerFactory.getLogger(BasicRegistryResourceClient.class);
@@ -51,112 +56,124 @@ public class BasicRegistryResourceClient {
     private PasswordCallback callback;
     private String baseURI;
 
-    public BasicRegistryResourceClient(String userName, String seriveURI, PasswordCallback callback) {
+    /**
+     * Creates a BasicRegistryResourceClient
+     * @param userName registry user
+     * @param seriveURI REST service URL
+     * @param callback implementation of the <code>PasswordCallback</code>
+     */
+    public BasicRegistryResourceClient(String userName,
+                                       String seriveURI,
+                                       PasswordCallback callback) {
         this.userName = userName;
         this.callback = callback;
         this.baseURI = seriveURI;
     }
 
+    /**
+     * Get base URL of the REST service
+     * @return REST url
+     */
     private URI getBaseURI() {
-        logger.info("Creating Base URI");
+        logger.debug("Creating Base URI");
         return UriBuilder.fromUri(baseURI).build();
     }
 
-    private WebResource getBasicRegistryBaseResource (){
+    /**
+     * Creating the web resource for base url
+     * @return web resource related to the base url
+     */
+    private WebResource getBasicRegistryBaseResource() {
         ClientConfig config = new DefaultClientConfig();
         config.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING,
                 Boolean.TRUE);
         Client client = Client.create(config);
         WebResource baseWebResource = client.resource(getBaseURI());
-        webResource = baseWebResource.path(ResourcePathConstants.BasicRegistryConstants.REGISTRY_API_BASICREGISTRY);
+        webResource = baseWebResource.path(
+                ResourcePathConstants.BasicRegistryConstants.REGISTRY_API_BASICREGISTRY);
         return webResource;
     }
 
-    public Gateway getGateway (){
-        webResource = getBasicRegistryBaseResource().path(ResourcePathConstants.BasicRegistryConstants.GET_GATEWAY);
-        ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+    /**
+     * Get gateway related to the instance
+     * @return gateway
+     */
+    public Gateway getGateway() {
+        webResource = getBasicRegistryBaseResource().path(
+                ResourcePathConstants.BasicRegistryConstants.GET_GATEWAY);
+        ClientResponse response = webResource.accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             }
         }
-
-
-        Gateway gateway = response.getEntity(Gateway.class);
-        return gateway;
+        return response.getEntity(Gateway.class);
     }
 
-    public AiravataUser getUser (){
-        webResource = getBasicRegistryBaseResource().path(ResourcePathConstants.BasicRegistryConstants.GET_USER);
-        ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+    /**
+     * Get executing user for the instance
+     * @return airavata user
+     */
+    public AiravataUser getUser() {
+        webResource = getBasicRegistryBaseResource().path(
+                ResourcePathConstants.BasicRegistryConstants.GET_USER);
+        ClientResponse response = webResource.accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             }
         }
-
-        AiravataUser airavataUser = response.getEntity(AiravataUser.class);
-        return airavataUser;
+        return response.getEntity(AiravataUser.class);
     }
 
-    public void setGateway (Gateway gateway){
-        webResource = getBasicRegistryBaseResource().path(ResourcePathConstants.BasicRegistryConstants.SET_GATEWAY);
-        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).type(MediaType.APPLICATION_JSON).post(ClientResponse.class, gateway);
+    /**
+     * setting the gateway
+     * @param gateway gateway
+     */
+    public void setGateway(Gateway gateway) {
+        webResource = getBasicRegistryBaseResource().path(
+                ResourcePathConstants.BasicRegistryConstants.SET_GATEWAY);
+        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).type(
+                MediaType.APPLICATION_JSON).post(ClientResponse.class, gateway);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).type(MediaType.APPLICATION_JSON).post(ClientResponse.class, gateway);
-            status = response.getStatus();
-
-            if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-                logger.error(response.getEntity(String.class));
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + status);
-            }
-        }
-    }
-
-    public void setUser (AiravataUser user){
-        webResource = getBasicRegistryBaseResource().path(ResourcePathConstants.BasicRegistryConstants.SET_USER);
-        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).type(MediaType.APPLICATION_JSON).post(ClientResponse.class, user);
-        int status = response.getStatus();
-
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).type(MediaType.APPLICATION_JSON).post(ClientResponse.class, user);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).type(
+                    MediaType.APPLICATION_JSON).post(ClientResponse.class, gateway);
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -167,35 +184,77 @@ public class BasicRegistryResourceClient {
         }
     }
 
+    /**
+     * Setting the airavata user
+     * @param user airavata user
+     */
+    public void setUser(AiravataUser user) {
+        webResource = getBasicRegistryBaseResource().path(
+                ResourcePathConstants.BasicRegistryConstants.SET_USER);
+        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).type(
+                MediaType.APPLICATION_JSON).post(ClientResponse.class, user);
+        int status = response.getStatus();
+
+        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).type(
+                    MediaType.APPLICATION_JSON).post(ClientResponse.class, user);
+            status = response.getStatus();
+
+            if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            }
+        }
+    }
+
+    /**
+     * Get service API version
+     * @return API version
+     */
     public Version getVersion() {
-        webResource = getBasicRegistryBaseResource().path(ResourcePathConstants.BasicRegistryConstants.VERSION);
-        ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        webResource = getBasicRegistryBaseResource().path(
+                ResourcePathConstants.BasicRegistryConstants.VERSION);
+        ClientResponse response = webResource.accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             }
         }
 
-        Version airavataVersion = response.getEntity(Version.class);
-        return airavataVersion;
+        return response.getEntity(Version.class);
     }
 
-    public URI getConnectionURI(){
+    /**
+     * Get registry REST service connection URL
+     * @return service URL
+     */
+    public URI getConnectionURI() {
         try {
-            webResource = getBasicRegistryBaseResource().path(ResourcePathConstants.BasicRegistryConstants.GET_SERVICE_URL);
-            ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+            webResource = getBasicRegistryBaseResource().path(
+                    ResourcePathConstants.BasicRegistryConstants.GET_SERVICE_URL);
+            ClientResponse response = webResource.accept(
+                    MediaType.TEXT_PLAIN).get(ClientResponse.class);
             int status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -203,8 +262,9 @@ public class BasicRegistryResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-                webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-                response = webResource.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+                WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName));
+                response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
                 status = response.getStatus();
 
                 if (status != ClientConstant.HTTP_OK) {
@@ -221,20 +281,27 @@ public class BasicRegistryResourceClient {
         return null;
     }
 
-    public void setConnectionURI(URI connectionURI){
-        webResource = getBasicRegistryBaseResource().path(ResourcePathConstants.BasicRegistryConstants.SET_SERVICE_URL);
+    /**
+     * set service connection URL
+     * @param connectionURI service connection URL
+     */
+    public void setConnectionURI(URI connectionURI) {
+        webResource = getBasicRegistryBaseResource().path(
+                ResourcePathConstants.BasicRegistryConstants.SET_SERVICE_URL);
         MultivaluedMap formData = new MultivaluedMapImpl();
         formData.add("connectionurl", connectionURI.toString());
-        ClientResponse response = webResource.type(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+        ClientResponse response = webResource.type(
+                MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.type(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName));
+            response = builder.type(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
