@@ -59,13 +59,16 @@ public class RegistrySettings {
     	throw new UnspecifiedRegistrySettingsException(key);
     }
     
-    public static String getSetting(String key, String defaultValue) throws RegistrySettingsException{
-    	validateSuccessfulPropertyFileLoad();
-    	if (properties.containsKey(key)){
-    		return properties.getProperty(key);
-    	}else{
-    		return defaultValue;
-    	}
+    public static String getSetting(String key, String defaultValue){
+    	try {
+			validateSuccessfulPropertyFileLoad();
+			if (properties.containsKey(key)){
+				return properties.getProperty(key);
+			}
+		} catch (RegistrySettingsException e) {
+			//we'll ignore this error since a default value is provided
+		}
+		return defaultValue;
     }
     
     public static String getRegistryAccessorClass() throws RegistrySettingsException{
