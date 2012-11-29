@@ -24,8 +24,6 @@ package org.apache.airavata.xbaya;
 import java.net.URI;
 import java.util.List;
 
-//import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataManager;
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;
@@ -46,6 +44,7 @@ import org.apache.airavata.xbaya.ui.widgets.component.ComponentTreeNode;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class XBayaEngine {
 
@@ -239,7 +238,7 @@ public class XBayaEngine {
 	
 	public void updateXBayaConfigurationServiceURLs() {
 		try {
-			if (this.getConfiguration().getJcrComponentRegistry()!=null && this.getConfiguration().getJcrComponentRegistry().getAiravataAPI()!=null){
+			if (this.getConfiguration().getAiravataAPI()!=null && this.getConfiguration().getAiravataAPI()!=null){
                 AiravataAPI airavataAPI = getConfiguration().getAiravataAPI();
                 AiravataManager airavataManager = airavataAPI.getAiravataManager();
 //                AiravataRegistry2 registry=this.getConfiguration().getJcrComponentRegistry().getRegistry();

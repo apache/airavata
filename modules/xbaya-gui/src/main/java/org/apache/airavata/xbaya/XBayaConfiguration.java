@@ -22,28 +22,20 @@
 package org.apache.airavata.xbaya;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.core.ide.XBayaExecutionModeListener;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
-import org.apache.airavata.xbaya.registry.PasswordCallbackImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import xsul.lead.LeadDeploymentConfig;
-
-import javax.jcr.RepositoryException;
-import javax.security.auth.callback.PasswordCallback;
 
 public class XBayaConfiguration extends Observable implements Observer {
 
@@ -65,7 +57,7 @@ public class XBayaConfiguration extends Observable implements Observer {
 
     private URI gpelInstanceID = null;
 
-    private JCRComponentRegistry jcrComponentRegistry = null;
+    private AiravataAPI airavataAPI = null;
     // ODE
     private String odeURL = XBayaConstants.DEFAULT_ODE_URL;
 
@@ -146,7 +138,7 @@ public class XBayaConfiguration extends Observable implements Observer {
 
     private String trustedCertLocation = "";
 
-    private AiravataAPI airavataAPI;
+    private JCRComponentRegistry jcrComponentRegistry=null;
 
     private XBayaExecutionMode xbayaExecutionMode=XBayaExecutionMode.IDE;
     
@@ -769,18 +761,18 @@ public class XBayaConfiguration extends Observable implements Observer {
         return this.closeOnExit;
     }
 
-    public JCRComponentRegistry getJcrComponentRegistry() {
-        return jcrComponentRegistry;
+    public AiravataAPI getAiravataAPI() {
+        return airavataAPI;
     }
 
-    public void setJcrComponentRegistry(JCRComponentRegistry jcrComponentRegistry) {
-        if (this.jcrComponentRegistry != null && this.jcrComponentRegistry.getAiravataAPI() instanceof Observable) {
-            ((Observable) this.jcrComponentRegistry.getAiravataAPI()).deleteObserver(this);
+    public void setAiravataAPI(AiravataAPI airavataAPI) {
+        if (this.airavataAPI != null && this.airavataAPI instanceof Observable) {
+            ((Observable) this.airavataAPI).deleteObserver(this);
         }
-        this.jcrComponentRegistry = jcrComponentRegistry;
-        triggerObservers(jcrComponentRegistry);
-        if (jcrComponentRegistry != null && jcrComponentRegistry.getAiravataAPI() instanceof Observable) {
-            ((Observable) jcrComponentRegistry.getAiravataAPI()).addObserver(this);
+        this.airavataAPI = airavataAPI;
+        triggerObservers(airavataAPI);
+        if (airavataAPI != null && airavataAPI instanceof Observable) {
+            ((Observable) airavataAPI).addObserver(this);
         }
     }
 
@@ -894,13 +886,13 @@ public class XBayaConfiguration extends Observable implements Observer {
         this.y = y;
     }
 
-    public AiravataAPI getAiravataAPI() {
-        return airavataAPI;
-    }
-
-    public void setAiravataAPI(AiravataAPI airavataAPI) {
-        this.airavataAPI = airavataAPI;
-    }
+//    public AiravataAPI getAiravataAPI() {
+//        return airavataAPI;
+//    }
+//
+//    public void setAiravataAPI(AiravataAPI airavataAPI) {
+//        this.airavataAPI = airavataAPI;
+//    }
 
     public String getDefaultGateway() {
         return defaultGateway;
@@ -909,6 +901,14 @@ public class XBayaConfiguration extends Observable implements Observer {
     public void setDefaultGateway(String defaultGateway) {
         this.defaultGateway = defaultGateway;
     }
+
+	public JCRComponentRegistry getJcrComponentRegistry() {
+		return jcrComponentRegistry;
+	}
+
+	public void setJcrComponentRegistry(JCRComponentRegistry jcrComponentRegistry) {
+		this.jcrComponentRegistry = jcrComponentRegistry;
+	}
 
     //    public AiravataAPI setAiravataAPI() {
 //        try{

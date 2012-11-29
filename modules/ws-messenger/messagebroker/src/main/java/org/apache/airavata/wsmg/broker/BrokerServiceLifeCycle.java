@@ -23,15 +23,12 @@ package org.apache.airavata.wsmg.broker;
 
 import java.lang.reflect.Constructor;
 import java.net.URI;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.tools.PeriodicExecutorThread;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ServiceUtils;
 import org.apache.airavata.wsmg.broker.handler.PublishedMessageHandler;
 import org.apache.airavata.wsmg.broker.subscription.SubscriptionManager;
@@ -62,7 +59,7 @@ import org.slf4j.LoggerFactory;
 public class BrokerServiceLifeCycle implements ServiceLifeCycle {
 
     private static final Logger log = LoggerFactory.getLogger(BrokerServiceLifeCycle.class);
-    public static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
+//    public static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
     public static final int GFAC_URL_UPDATE_INTERVAL = 1000 * 60 * 60 * 3;
 
     public static final int JCR_AVAIALABILITY_WAIT_INTERVAL = 1000 * 10;
@@ -139,21 +136,21 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
                 new Thread() {
                     @Override
                     public void run() {
-                        Properties properties = new Properties();
+//                        Properties properties = new Properties();
                         try {
-                            URL url = this.getClass().getClassLoader()
-                                    .getResource(REPOSITORY_PROPERTIES);
-                            properties.load(url.openStream());
-                            Map<String, String> map = new HashMap<String, String>(
-                                    (Map) properties);
+//                            URL url = this.getClass().getClassLoader()
+//                                    .getResource(REPOSITORY_PROPERTIES);
+//                            properties.load(url.openStream());
+//                            Map<String, String> map = new HashMap<String, String>(
+//                                    (Map) properties);
                             try {
                                 Thread.sleep(JCR_AVAIALABILITY_WAIT_INTERVAL);
                             } catch (InterruptedException e1) {
                                 e1.printStackTrace();
                             }
 
-                            String userName = properties.getProperty("registry.user");
-                            String gateway = properties.getProperty("gateway.id");
+                            String userName = ServerSettings.getSystemUser();
+                            String gateway = ServerSettings.getSystemUserGateway();
 
                             AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(gateway, userName);
                             String localAddress = ServiceUtils
@@ -184,8 +181,7 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
         WsmgConfigurationContext wsmgConfig = new WsmgConfigurationContext();
         configContext.setProperty(WsmgCommonConstants.BROKER_WSMGCONFIG, wsmgConfig);
 
-        ConfigurationManager configMan = new ConfigurationManager(
-                    WsmgCommonConstants.BROKER_CONFIGURATION_FILE_NAME);
+        ConfigurationManager configMan = new ConfigurationManager();
 
         wsmgConfig.setConfigurationManager(configMan);
 

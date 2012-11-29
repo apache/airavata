@@ -45,18 +45,15 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-//import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.exception.gateway.DescriptorDoesNotExistsException;
-import org.apache.airavata.registry.api.exception.gateway.MalformedDescriptorException;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.registrybrowser.nodes.JCRBrowserIcons;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class DescriptorEditorDialog extends JDialog {
 
@@ -89,7 +86,7 @@ public class DescriptorEditorDialog extends JDialog {
      */
     public DescriptorEditorDialog(XBayaEngine engine,DescriptorType descriptorType) {
         this.engine = engine;
-        setRegistry(engine.getConfiguration().getJcrComponentRegistry().getAiravataAPI());
+        setRegistry(engine.getConfiguration().getAiravataAPI());
         this.descriptorType=descriptorType;
         initGUI();
         
@@ -216,7 +213,7 @@ public class DescriptorEditorDialog extends JDialog {
     	switch (descriptorType){
 	    	case HOST:
 	    		HostDescription h = (HostDescription) getSelected();
-	    		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine.getConfiguration().getJcrComponentRegistry().getAiravataAPI(),false,h, null);
+	    		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine.getConfiguration().getAiravataAPI(),false,h, null);
 	    		hostDescriptionDialog.setLocationRelativeTo(this.engine.getGUI().getFrame());
 	    		hostDescriptionDialog.open();
 	    		if (hostDescriptionDialog.isHostCreated()) {
@@ -249,7 +246,7 @@ public class DescriptorEditorDialog extends JDialog {
     private void newDescriptor() throws AiravataAPIInvocationException {
     	switch (descriptorType){
 	    	case HOST:
-	    		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine.getConfiguration().getJcrComponentRegistry().getAiravataAPI(), null);
+	    		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine.getConfiguration().getAiravataAPI(), null);
 	    		hostDescriptionDialog.open();
 	    		if (hostDescriptionDialog.isHostCreated()){
 	    			loadDescriptors();

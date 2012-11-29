@@ -195,7 +195,7 @@ public class JCRBrowserPanel extends JPanel implements Observer {
 
     private AiravataAPI getJCRRegistry() {
         try {
-            return getEngine().getConfiguration().getJcrComponentRegistry().getAiravataAPI();
+            return getEngine().getConfiguration().getAiravataAPI();
         } catch (Exception e) {
             // JCR registry not specified yet
             return null;

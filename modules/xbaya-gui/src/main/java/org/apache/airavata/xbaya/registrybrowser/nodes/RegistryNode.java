@@ -46,7 +46,7 @@ public class RegistryNode extends AbstractAiravataTreeNode {
 
     public RegistryNode(XBayaEngine engine, TreeNode parent) {
         super(parent);
-        setRegistry(engine.getConfiguration().getJcrComponentRegistry().getAiravataAPI());
+        setRegistry(engine.getConfiguration().getAiravataAPI());
         this.engine=engine;
     }
 

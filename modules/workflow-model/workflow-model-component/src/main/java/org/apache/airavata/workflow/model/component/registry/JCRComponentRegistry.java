@@ -49,7 +49,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
 
     private static final Logger log = LoggerFactory.getLogger(JCRComponentRegistry.class);
     private static final String NAME = "Application Services";
-    public static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
+//    public static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
 
     private AiravataAPI airavataAPI;
 
@@ -57,58 +57,58 @@ public class JCRComponentRegistry extends ComponentRegistry {
         this.airavataAPI = airavataAPI;
     }
 
-    public JCRComponentRegistry(String username, String password) throws RegistryException {
-        String gatewayName=null;
-        String registryURL = null;
-        AiravataRegistryConnectionDataProvider provider = AiravataRegistryFactory.getRegistryConnectionDataProvider();
-		if (provider==null){
-	        URL configURL = this.getClass().getClassLoader().getResource(REPOSITORY_PROPERTIES);
-	        if(configURL != null){
-		        try {
-			        Properties properties = new Properties();
-		            properties.load(configURL.openStream());
-		            if (username==null){
-			            if(properties.get(RegistryConstants.KEY_DEFAULT_REGISTRY_USER) != null){
-			                username = (String)properties.get(RegistryConstants.KEY_DEFAULT_REGISTRY_USER);
-			            }
-		            }
-		            gatewayName = (String)properties.get(RegistryConstants.KEY_DEFAULT_GATEWAY_ID);
-                    registryURL =  properties.getProperty(RegistryConstants.KEY_DEFAULT_REGISTRY_URL);
-		        } catch (MalformedURLException e) {
-		            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-		        } catch (IOException e) {
-		            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-		        }
-	        }
-        }else{
-        	try {
-				if (username==null){
-					username=provider.getValue(RegistryConstants.KEY_DEFAULT_REGISTRY_USER).toString();
-				}
-				gatewayName = provider.getValue(RegistryConstants.KEY_DEFAULT_GATEWAY_ID).toString();
-                registryURL = provider.getValue(RegistryConstants.KEY_DEFAULT_REGISTRY_URL).toString();
-			} catch (Exception e) {
-				log.warn(e.getMessage());
-			}
-        }
-        if (username==null){
-        	username="admin";
-        }
-        if (gatewayName==null){
-        	gatewayName="default";
-        }
-        try {
-            URI baseUri = new URI(registryURL);
-            //TODO callback class
-//            PasswordCallBackImpl passwordCallBack = new PasswordCallBackImpl(username, password);
-            this.airavataAPI = AiravataAPIFactory.getAPI(baseUri, gatewayName, username, (PasswordCallback)null);
-        }  catch (URISyntaxException e) {
-            log.error("Error initializing Airavata Client");
-        } catch (AiravataAPIInvocationException e) {
-            log.error("Error initializing Airavata Client");
-        }
-
-    }
+//    public JCRComponentRegistry(String username, String password) throws RegistryException {
+//        String gatewayName=null;
+//        String registryURL = null;
+//        AiravataRegistryConnectionDataProvider provider = AiravataRegistryFactory.getRegistryConnectionDataProvider();
+//		if (provider==null){
+//	        URL configURL = this.getClass().getClassLoader().getResource(REPOSITORY_PROPERTIES);
+//	        if(configURL != null){
+//		        try {
+//			        Properties properties = new Properties();
+//		            properties.load(configURL.openStream());
+//		            if (username==null){
+//			            if(properties.get(RegistryConstants.KEY_DEFAULT_REGISTRY_USER) != null){
+//			                username = (String)properties.get(RegistryConstants.KEY_DEFAULT_REGISTRY_USER);
+//			            }
+//		            }
+//		            gatewayName = (String)properties.get(RegistryConstants.KEY_DEFAULT_GATEWAY_ID);
+//                    registryURL =  properties.getProperty(RegistryConstants.KEY_DEFAULT_REGISTRY_URL);
+//		        } catch (MalformedURLException e) {
+//		            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//		        } catch (IOException e) {
+//		            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//		        }
+//	        }
+//        }else{
+//        	try {
+//				if (username==null){
+//					username=provider.getValue(RegistryConstants.KEY_DEFAULT_REGISTRY_USER).toString();
+//				}
+//				gatewayName = provider.getValue(RegistryConstants.KEY_DEFAULT_GATEWAY_ID).toString();
+//                registryURL = provider.getValue(RegistryConstants.KEY_DEFAULT_REGISTRY_URL).toString();
+//			} catch (Exception e) {
+//				log.warn(e.getMessage());
+//			}
+//        }
+//        if (username==null){
+//        	username="admin";
+//        }
+//        if (gatewayName==null){
+//        	gatewayName="default";
+//        }
+//        try {
+//            URI baseUri = new URI(registryURL);
+//            //TODO callback class
+////            PasswordCallBackImpl passwordCallBack = new PasswordCallBackImpl(username, password);
+//            this.airavataAPI = AiravataAPIFactory.getAPI(baseUri, gatewayName, username, (PasswordCallback)null);
+//        }  catch (URISyntaxException e) {
+//            log.error("Error initializing Airavata Client");
+//        } catch (AiravataAPIInvocationException e) {
+//            log.error("Error initializing Airavata Client");
+//        }
+//
+//    }
 
     static {
         registerUserManagers();

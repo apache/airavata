@@ -46,7 +46,6 @@ import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.amazon.InstanceComponent;
@@ -243,7 +242,7 @@ public class WorkflowInterpreter {
 				if (this.config.isActOnProvenance()) {
 
                     try {
-                        this.getConfig().getConfiguration().getJcrComponentRegistry().getAiravataAPI().getProvenanceManager().setWorkflowInstanceStatus(
+                        this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager().setWorkflowInstanceStatus(
                                 this.config.getTopic(), this.config.getTopic(), ExecutionStatus.FINISHED);
                     } catch (Exception e) {
                         throw new WorkflowException(e);
@@ -254,7 +253,7 @@ public class WorkflowInterpreter {
 			} else {
 				if (this.config.isActOnProvenance()) {
 					try {
-						this.getConfig().getConfiguration().getJcrComponentRegistry().getAiravataAPI().getProvenanceManager().
+						this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager().
                                 setWorkflowInstanceStatus(this.config.getTopic(),this.config.getTopic(), ExecutionStatus.FAILED);
 					} catch (AiravataAPIInvocationException e) {
 						throw new WorkflowException(e);
@@ -358,7 +357,7 @@ public class WorkflowInterpreter {
 			this.provenanceWriter = new PredicatedTaskRunner(1);
 		}
 		this.provenanceWriter.scedule(new ProvenanceWrite(node, this.getWorkflow().getName(), invokerMap, this.config.getTopic(), this.getConfig()
-				.getConfiguration().getJcrComponentRegistry().getAiravataAPI()));
+				.getConfiguration().getAiravataAPI()));
 	}
 
 	/**
@@ -416,12 +415,11 @@ public class WorkflowInterpreter {
 					if (this.config.isActOnProvenance()) {
 						try {
 							if (val instanceof String) {
-								this.getConfig().getConfiguration().getJcrComponentRegistry().getAiravataAPI().getProvenanceManager()
+								this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager()
 										.saveWorkflowExecutionOutput(this.config.getTopic(), node.getName(), val.toString());
 							} else if (val instanceof org.xmlpull.v1.builder.XmlElement) {
 								this.getConfig()
 										.getConfiguration()
-										.getJcrComponentRegistry()
 										.getAiravataAPI().getProvenanceManager()
 										.saveWorkflowExecutionOutput(this.config.getTopic(), node.getName(),
 												XMLUtil.xmlElementToString((org.xmlpull.v1.builder.XmlElement) val));
@@ -477,12 +475,11 @@ public class WorkflowInterpreter {
                                  TODO :  saveWorkflowExecutionOutput() is not implemented in Registry
                                   API or Airavata API at the moment
                                   **/
-								this.getConfig().getConfiguration().getJcrComponentRegistry().getAiravataAPI().getProvenanceManager()
+								this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager()
 										.saveWorkflowExecutionOutput(this.config.getTopic(), node.getName(), val.toString());
 							} else if (val instanceof org.xmlpull.v1.builder.XmlElement) {
 								this.getConfig()
 										.getConfiguration()
-										.getJcrComponentRegistry()
 										.getAiravataAPI().getProvenanceManager()
 										.saveWorkflowExecutionOutput(this.config.getTopic(), node.getName(),
 												XMLUtil.xmlElementToString((org.xmlpull.v1.builder.XmlElement) val));

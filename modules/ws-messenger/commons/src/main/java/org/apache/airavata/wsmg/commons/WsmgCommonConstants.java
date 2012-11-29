@@ -72,7 +72,7 @@ public class WsmgCommonConstants {
     public static final long DEFAULT_CLIENT_SOCKET_TIME_OUT_MILLIES = 300000L;
     public static final int DEFAULT_SUBSCRIPTION_EXPIRATION_TIME = 1000 * 60 * 60 * 72; // 72 hours
 
-    public static final String CONFIGURATION_FILE_NAME = "configuration.file.name";
+//    public static final String CONFIGURATION_FILE_NAME = "configuration.file.name";
     public static final String CONFIG_JDBC_URL = "broker.jdbc.url";
     public static final String CONFIG_JDBC_DRIVER = "broker.jdbc.driver";
     public static final String CONFIG_START_DELIVERY_THREADS = "broker.start.delivery.thread";
@@ -86,7 +86,7 @@ public class WsmgCommonConstants {
     public static final String CONFIG_SENDING_BATCH_SIZE = "sending.batch.size";
     public static final String CONFIG_SENDING_THREAD_POOL_SIZE = "sending.thread.pool.size";
 
-    public static final String BROKER_CONFIGURATION_FILE_NAME = "airavata-server.properties";
+//    public static final String BROKER_CONFIGURATION_FILE_NAME = "airavata-server.properties";
 
     public static final String DELIVERY_PROTOCOL = "broker.delivery.protocol";
 

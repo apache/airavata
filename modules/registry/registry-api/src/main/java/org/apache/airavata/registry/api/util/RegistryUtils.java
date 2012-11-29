@@ -24,10 +24,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Properties;
 
 import org.apache.airavata.common.exception.AiravataConfigurationException;
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.common.exception.ServerSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataRegistryFactory;
 import org.apache.airavata.registry.api.AiravataUser;
@@ -36,6 +36,7 @@ import org.apache.airavata.registry.api.exception.RegistryAccessorInstantiateExc
 import org.apache.airavata.registry.api.exception.RegistryAccessorInvalidException;
 import org.apache.airavata.registry.api.exception.RegistryAccessorNotFoundException;
 import org.apache.airavata.registry.api.exception.RegistryAccessorUndefinedException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,22 +92,24 @@ public class RegistryUtils {
 //        return true;
 //    }
 
-    public static AiravataRegistry2 getRegistryFromConfig(URL url) {
+    public static AiravataRegistry2 getRegistryFromServerSettings() {
         String username = "";
-        Properties properties = new Properties();
+//        Properties properties = new Properties();
         AiravataRegistry2 registry = null;
+//        try {
+////            properties.load(url.openStream());
+//        	username=ServerSettings.getSystemUser();
+////            if (properties.get(REGISTRY_USER) != null) {
+////                username = (String) properties.get(REGISTRY_USER);
+////            }
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         try {
-            properties.load(url.openStream());
-            if (properties.get(REGISTRY_USER) != null) {
-                username = (String) properties.get(REGISTRY_USER);
-            }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            registry = AiravataRegistryFactory.getRegistry(new Gateway((String) properties.get(GATEWAY_ID)),
+        	username=ServerSettings.getSystemUser();
+            registry = AiravataRegistryFactory.getRegistry(new Gateway(ServerSettings.getDefaultGatewayId()),
                     new AiravataUser(username));
         } catch (AiravataConfigurationException e) {
             log.error("Error initializing AiravataRegistry2");
@@ -118,7 +121,9 @@ public class RegistryUtils {
             log.error("Error initializing AiravataRegistry2");
         } catch (RegistryAccessorUndefinedException e) {
             log.error("Error initializing AiravataRegistry2");
-        }
+        } catch (ServerSettingsException e) {
+        	log.error("Error initializing AiravataRegistry2",e);
+		}
         return registry;
     }
 }

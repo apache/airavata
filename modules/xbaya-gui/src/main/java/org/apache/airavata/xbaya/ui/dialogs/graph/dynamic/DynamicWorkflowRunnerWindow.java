@@ -123,7 +123,7 @@ public class DynamicWorkflowRunnerWindow {
         this.workflow = this.engine.getGUI().getWorkflow();
         List<URI> urlList=null;
         try {
-            urlList = this.engine.getConfiguration().getJcrComponentRegistry().getAiravataAPI().getAiravataManager().getGFaCURLs();
+            urlList = this.engine.getConfiguration().getAiravataAPI().getAiravataManager().getGFaCURLs();
         } catch (AiravataAPIInvocationException e) {
             e.printStackTrace();
         }
@@ -356,7 +356,7 @@ public class DynamicWorkflowRunnerWindow {
             @Override
             public void run() {
                 XBayaConfiguration conf = DynamicWorkflowRunnerWindow.this.engine.getConfiguration();
-                WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(engine.getGUI().getWorkflow(),topicString,conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getJcrComponentRegistry().getAiravataAPI(), conf, DynamicWorkflowRunnerWindow.this.engine.getGUI(), DynamicWorkflowRunnerWindow.this.engine.getMonitor());
+                WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(engine.getGUI().getWorkflow(),topicString,conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getAiravataAPI(), conf, DynamicWorkflowRunnerWindow.this.engine.getGUI(), DynamicWorkflowRunnerWindow.this.engine.getMonitor());
                 workflowInterpreterConfiguration.setRunWithCrossProduct(isRunCrossProduct);
 
                 WorkflowInterpreter workflowInterpreter = new WorkflowInterpreter(
