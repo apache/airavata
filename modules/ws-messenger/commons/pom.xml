@@ -35,6 +35,10 @@
             <artifactId>axis2-kernel</artifactId>
             <version>${axis2.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-common-utils</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
