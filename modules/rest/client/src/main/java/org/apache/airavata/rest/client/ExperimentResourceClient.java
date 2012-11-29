@@ -65,7 +65,7 @@ public class ExperimentResourceClient {
         return UriBuilder.fromUri(baseURI).build();
     }
 
-    private WebResource getExperimentRegistryBaseResource (){
+    private WebResource getExperimentRegistryBaseResource() {
         ClientConfig config = new DefaultClientConfig();
         config.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING,
                 Boolean.TRUE);
@@ -75,7 +75,7 @@ public class ExperimentResourceClient {
         return webResource;
     }
 
-    public void addExperiment(String projectName, AiravataExperiment experiment){
+    public void addExperiment(String projectName, AiravataExperiment experiment) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String date = dateFormat.format(experiment.getSubmittedDate());
         webResource = getExperimentRegistryBaseResource().path(ResourcePathConstants.ExperimentResourcePathConstants.ADD_EXP);
@@ -91,13 +91,13 @@ public class ExperimentResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
 
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -105,7 +105,7 @@ public class ExperimentResourceClient {
         }
     }
 
-    public void removeExperiment(String experimentId){
+    public void removeExperiment(String experimentId) {
         webResource = getExperimentRegistryBaseResource().path(ResourcePathConstants.ExperimentResourcePathConstants.DELETE_EXP);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("experimentId", experimentId);
@@ -116,12 +116,12 @@ public class ExperimentResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).delete(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.delete(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -129,7 +129,7 @@ public class ExperimentResourceClient {
         }
     }
 
-    public List<AiravataExperiment> getExperiments(){
+    public List<AiravataExperiment> getExperiments() {
         webResource = getExperimentRegistryBaseResource().path(ResourcePathConstants.ExperimentResourcePathConstants.GET_ALL_EXPS);
         ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
@@ -138,12 +138,12 @@ public class ExperimentResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -152,14 +152,14 @@ public class ExperimentResourceClient {
 
         ExperimentList experimentList = response.getEntity(ExperimentList.class);
         AiravataExperiment[] experiments = experimentList.getExperiments();
-        List<AiravataExperiment>  airavataExperiments = new ArrayList<AiravataExperiment>();
-        for (AiravataExperiment airavataExperiment : experiments){
+        List<AiravataExperiment> airavataExperiments = new ArrayList<AiravataExperiment>();
+        for (AiravataExperiment airavataExperiment : experiments) {
             airavataExperiments.add(airavataExperiment);
         }
         return airavataExperiments;
     }
 
-    public List<AiravataExperiment> getExperiments(String projectName){
+    public List<AiravataExperiment> getExperiments(String projectName) {
         webResource = getExperimentRegistryBaseResource().path(ResourcePathConstants.ExperimentResourcePathConstants.GET_EXPS_BY_PROJECT);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("projectName", projectName);
@@ -171,12 +171,12 @@ public class ExperimentResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -186,14 +186,14 @@ public class ExperimentResourceClient {
         ExperimentList experimentList = response.getEntity(ExperimentList.class);
         AiravataExperiment[] experiments = experimentList.getExperiments();
 
-        List<AiravataExperiment>  airavataExperiments = new ArrayList<AiravataExperiment>();
-        for (AiravataExperiment airavataExperiment : experiments){
+        List<AiravataExperiment> airavataExperiments = new ArrayList<AiravataExperiment>();
+        for (AiravataExperiment airavataExperiment : experiments) {
             airavataExperiments.add(airavataExperiment);
         }
         return airavataExperiments;
     }
 
-    public List<AiravataExperiment> getExperiments(Date from, Date to){
+    public List<AiravataExperiment> getExperiments(Date from, Date to) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String fromDate = dateFormat.format(from);
         String toDate = dateFormat.format(to);
@@ -209,12 +209,12 @@ public class ExperimentResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -224,14 +224,14 @@ public class ExperimentResourceClient {
         ExperimentList experimentList = response.getEntity(ExperimentList.class);
         AiravataExperiment[] experiments = experimentList.getExperiments();
 
-        List<AiravataExperiment>  airavataExperiments = new ArrayList<AiravataExperiment>();
-        for (AiravataExperiment airavataExperiment : experiments){
+        List<AiravataExperiment> airavataExperiments = new ArrayList<AiravataExperiment>();
+        for (AiravataExperiment airavataExperiment : experiments) {
             airavataExperiments.add(airavataExperiment);
         }
         return airavataExperiments;
     }
 
-    public List<AiravataExperiment> getExperiments(String projectName, Date from, Date to){
+    public List<AiravataExperiment> getExperiments(String projectName, Date from, Date to) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String fromDate = dateFormat.format(from);
         String toDate = dateFormat.format(to);
@@ -248,12 +248,12 @@ public class ExperimentResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -263,14 +263,14 @@ public class ExperimentResourceClient {
         ExperimentList experimentList = response.getEntity(ExperimentList.class);
         AiravataExperiment[] experiments = experimentList.getExperiments();
 
-        List<AiravataExperiment>  airavataExperiments = new ArrayList<AiravataExperiment>();
-        for (AiravataExperiment airavataExperiment : experiments){
+        List<AiravataExperiment> airavataExperiments = new ArrayList<AiravataExperiment>();
+        for (AiravataExperiment airavataExperiment : experiments) {
             airavataExperiments.add(airavataExperiment);
         }
         return airavataExperiments;
     }
 
-    public boolean isExperimentExists(String experimentId){
+    public boolean isExperimentExists(String experimentId) {
         webResource = getExperimentRegistryBaseResource().path(ResourcePathConstants.ExperimentResourcePathConstants.EXP_EXISTS);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("experimentId", experimentId);
@@ -281,32 +281,32 @@ public class ExperimentResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.get(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
-                logger.error(response.getEntity(String.class));
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + status);
-            } else {
+            String exists = response.getEntity(String.class);
+            if (exists.equals("True")){
                 return true;
+            } else {
+                return false;
             }
-        }else {
-            return true;
+        }
+        else {
+            return false;
         }
     }
 
-    public boolean isExperimentExists(String experimentId, boolean createIfNotPresent){
+    public boolean isExperimentExists(String experimentId, boolean createIfNotPresent) {
         String createStatus = "false";
         webResource = getExperimentRegistryBaseResource().path(ResourcePathConstants.ExperimentResourcePathConstants.EXP_EXISTS_CREATE);
-        if (createIfNotPresent){
+        if (createIfNotPresent) {
             createStatus = "true";
         }
         MultivaluedMap formParams = new MultivaluedMapImpl();
-        formParams.add("experimentId", experimentId );
-        formParams.add("createIfNotPresent", createStatus );
+        formParams.add("experimentId", experimentId);
+        formParams.add("createIfNotPresent", createStatus);
 
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
@@ -315,20 +315,20 @@ public class ExperimentResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
-                logger.error(response.getEntity(String.class));
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + status);
-            }else {
+            String exists = response.getEntity(String.class);
+            if (exists.equals("True")){
                 return true;
+            } else {
+                return false;
             }
-        }else {
-            return true;
+        }
+        else {
+            return false;
         }
     }
 

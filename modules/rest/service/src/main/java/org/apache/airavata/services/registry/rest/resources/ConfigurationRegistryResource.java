@@ -50,13 +50,6 @@ public class ConfigurationRegistryResource {
     @Context
     ServletContext context;
 
-    public ConfigurationRegistryResource() {
-    }
-
-    /**
-     * ---------------------------------Configuration Registry----------------------------------*
-     */
-
     /**
      * This method will return the configuration value corrosponding to given config key
      *

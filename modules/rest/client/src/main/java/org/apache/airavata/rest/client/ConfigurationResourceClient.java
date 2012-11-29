@@ -55,7 +55,7 @@ public class ConfigurationResourceClient {
     private PasswordCallback callback;
     private String baseURI;
 
-    public ConfigurationResourceClient(String userName, String seriveURI,  PasswordCallback callback) {
+    public ConfigurationResourceClient(String userName, String seriveURI, PasswordCallback callback) {
         this.userName = userName;
         this.callback = callback;
         this.baseURI = seriveURI;
@@ -66,7 +66,7 @@ public class ConfigurationResourceClient {
         return UriBuilder.fromUri(baseURI).build();
     }
 
-    private WebResource getConfigurationBaseResource (){
+    private WebResource getConfigurationBaseResource() {
         ClientConfig config = new DefaultClientConfig();
         config.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING,
                 Boolean.TRUE);
@@ -88,12 +88,12 @@ public class ConfigurationResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.get(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -103,7 +103,7 @@ public class ConfigurationResourceClient {
         return output;
     }
 
-    public List<Object> getConfigurationList (String configKey) {
+    public List<Object> getConfigurationList(String configKey) {
         webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.GET_CONFIGURATION_LIST);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("key", configKey);
@@ -114,12 +114,12 @@ public class ConfigurationResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -128,14 +128,14 @@ public class ConfigurationResourceClient {
         ConfigurationList configurationList = response.getEntity(ConfigurationList.class);
         List<Object> configurationValueList = new ArrayList<Object>();
         Object[] configValList = configurationList.getConfigValList();
-        for(Object configVal : configValList){
+        for (Object configVal : configValList) {
             configurationValueList.add(configVal);
         }
 
         return configurationValueList;
     }
 
-    public void setConfiguration (String configKey, String configVal, Date date){
+    public void setConfiguration(String configKey, String configVal, Date date) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String formattedDate = dateFormat.format(date);
         webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.SAVE_CONFIGURATION);
@@ -151,12 +151,12 @@ public class ConfigurationResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class, formData);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.type(MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class, formData);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -164,7 +164,7 @@ public class ConfigurationResourceClient {
         }
     }
 
-    public void addConfiguration(String configKey, String configVal, Date date){
+    public void addConfiguration(String configKey, String configVal, Date date) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String formattedDate = dateFormat.format(date);
         webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.UPDATE_CONFIGURATION);
@@ -180,12 +180,12 @@ public class ConfigurationResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class, formData);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.type(MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class, formData);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -193,7 +193,7 @@ public class ConfigurationResourceClient {
         }
     }
 
-    public void removeAllConfiguration(String key){
+    public void removeAllConfiguration(String key) {
         webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_ALL_CONFIGURATION);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("key", key);
@@ -204,12 +204,12 @@ public class ConfigurationResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).delete(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.delete(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -218,7 +218,7 @@ public class ConfigurationResourceClient {
 
     }
 
-    public void removeConfiguration(String key, String value){
+    public void removeConfiguration(String key, String value) {
         webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_CONFIGURATION);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("key", key);
@@ -230,12 +230,12 @@ public class ConfigurationResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).delete(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.delete(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -243,9 +243,9 @@ public class ConfigurationResourceClient {
         }
     }
 
-    public List<URI> getGFacURIs(){
+    public List<URI> getGFacURIs() {
         List<URI> uriList = new ArrayList<URI>();
-        try{
+        try {
             webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.GET_GFAC_URI_LIST);
             ClientResponse response = webResource.get(ClientResponse.class);
             int status = response.getStatus();
@@ -254,9 +254,9 @@ public class ConfigurationResourceClient {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
-            } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-                webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-                response = webResource.get(ClientResponse.class);
+            } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+                WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+                response = builder.get(ClientResponse.class);
                 status = response.getStatus();
 
                 if (status != ClientConstant.HTTP_OK) {
@@ -268,7 +268,7 @@ public class ConfigurationResourceClient {
 
             URLList urlList = response.getEntity(URLList.class);
             String[] uris = urlList.getUris();
-            for (String url: uris){
+            for (String url : uris) {
                 URI uri = new URI(url);
                 uriList.add(uri);
             }
@@ -279,9 +279,9 @@ public class ConfigurationResourceClient {
         return uriList;
     }
 
-    public List<URI> getWorkflowInterpreterURIs(){
+    public List<URI> getWorkflowInterpreterURIs() {
         List<URI> uriList = new ArrayList<URI>();
-        try{
+        try {
             webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.GET_WFINTERPRETER_URI_LIST);
             ClientResponse response = webResource.get(ClientResponse.class);
             int status = response.getStatus();
@@ -290,12 +290,12 @@ public class ConfigurationResourceClient {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
-            } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-                webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-                response = webResource.get(ClientResponse.class);
+            } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+                WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+                response = builder.get(ClientResponse.class);
                 status = response.getStatus();
 
-                if (status != ClientConstant.HTTP_OK ) {
+                if (status != ClientConstant.HTTP_OK) {
                     logger.error(response.getEntity(String.class));
                     throw new RuntimeException("Failed : HTTP error code : "
                             + status);
@@ -303,7 +303,7 @@ public class ConfigurationResourceClient {
             }
             URLList urlList = response.getEntity(URLList.class);
             String[] uris = urlList.getUris();
-            for (String url: uris){
+            for (String url : uris) {
                 URI uri = new URI(url);
                 uriList.add(uri);
             }
@@ -314,8 +314,8 @@ public class ConfigurationResourceClient {
     }
 
 
-    public URI getEventingURI(){
-        try{
+    public URI getEventingURI() {
+        try {
             webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.GET_EVENTING_URI);
             ClientResponse response = webResource.get(ClientResponse.class);
             int status = response.getStatus();
@@ -324,12 +324,12 @@ public class ConfigurationResourceClient {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
-            } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-                webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-                response = webResource.get(ClientResponse.class);
+            } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+                WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+                response = builder.get(ClientResponse.class);
                 status = response.getStatus();
 
-                if (status != ClientConstant.HTTP_OK ) {
+                if (status != ClientConstant.HTTP_OK) {
                     logger.error(response.getEntity(String.class));
                     throw new RuntimeException("Failed : HTTP error code : "
                             + status);
@@ -344,8 +344,8 @@ public class ConfigurationResourceClient {
         }
     }
 
-    public URI getMsgBoxURI(){
-        try{
+    public URI getMsgBoxURI() {
+        try {
             webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.GET_MESSAGE_BOX_URI);
             ClientResponse response = webResource.get(ClientResponse.class);
             int status = response.getStatus();
@@ -354,9 +354,9 @@ public class ConfigurationResourceClient {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
-            } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-                webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-                response = webResource.get(ClientResponse.class);
+            } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+                WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+                response = builder.get(ClientResponse.class);
                 status = response.getStatus();
 
                 if (status != ClientConstant.HTTP_OK) {
@@ -386,9 +386,9 @@ public class ConfigurationResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -411,9 +411,9 @@ public class ConfigurationResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -436,9 +436,9 @@ public class ConfigurationResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -461,12 +461,12 @@ public class ConfigurationResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -489,9 +489,9 @@ public class ConfigurationResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -517,12 +517,12 @@ public class ConfigurationResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -545,9 +545,9 @@ public class ConfigurationResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -573,9 +573,9 @@ public class ConfigurationResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -586,7 +586,7 @@ public class ConfigurationResourceClient {
         }
     }
 
-    public void removeGFacURI(URI uri){
+    public void removeGFacURI(URI uri) {
         webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_GFAC_URI);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("uri", uri.toString());
@@ -597,12 +597,12 @@ public class ConfigurationResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).delete(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.delete(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -610,7 +610,7 @@ public class ConfigurationResourceClient {
         }
     }
 
-    public void removeAllGFacURI(){
+    public void removeAllGFacURI() {
         webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_ALL_GFAC_URIS);
         ClientResponse response = webResource.delete(ClientResponse.class);
         int status = response.getStatus();
@@ -619,12 +619,12 @@ public class ConfigurationResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.delete(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.delete(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -632,7 +632,7 @@ public class ConfigurationResourceClient {
         }
     }
 
-    public void removeWorkflowInterpreterURI(URI uri){
+    public void removeWorkflowInterpreterURI(URI uri) {
         webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_WFINTERPRETER_URI);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("uri", uri.toString());
@@ -643,9 +643,9 @@ public class ConfigurationResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).delete(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.delete(ClientResponse.class);
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -656,7 +656,7 @@ public class ConfigurationResourceClient {
         }
     }
 
-    public void removeAllWorkflowInterpreterURI(){
+    public void removeAllWorkflowInterpreterURI() {
         webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_ALL_WFINTERPRETER_URIS);
         ClientResponse response = webResource.delete(ClientResponse.class);
         int status = response.getStatus();
@@ -665,12 +665,12 @@ public class ConfigurationResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.delete(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.delete(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -678,7 +678,7 @@ public class ConfigurationResourceClient {
         }
     }
 
-    public void unsetEventingURI(){
+    public void unsetEventingURI() {
         webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_EVENTING_URI);
         ClientResponse response = webResource.delete(ClientResponse.class);
         int status = response.getStatus();
@@ -687,12 +687,12 @@ public class ConfigurationResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.delete(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.delete(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -700,7 +700,7 @@ public class ConfigurationResourceClient {
         }
     }
 
-    public void unsetMessageBoxURI(){
+    public void unsetMessageBoxURI() {
         webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_MSG_BOX_URI);
         ClientResponse response = webResource.delete(ClientResponse.class);
         int status = response.getStatus();
@@ -709,12 +709,12 @@ public class ConfigurationResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.delete(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.delete(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);

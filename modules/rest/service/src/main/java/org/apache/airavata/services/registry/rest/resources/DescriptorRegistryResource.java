@@ -74,11 +74,11 @@ public class DescriptorRegistryResource {
             state = airavataRegistry.isHostDescriptorExists(hostDescriptorName);
             if (state) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
-                builder.entity("Host Descriptor exists...");
+                builder.entity("True");
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("Host Descriptor does not exist..");
+                builder.entity("False");
                 return builder.build();
             }
         } catch (RegistryException e) {
@@ -173,8 +173,8 @@ public class DescriptorRegistryResource {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             HostDescription hostDescription = airavataRegistry.getHostDescriptor(hostName);
-            HostDescriptor hostDescriptor = DescriptorUtil.createHostDescriptor(hostDescription);
             if (hostDescription != null) {
+                HostDescriptor hostDescriptor = DescriptorUtil.createHostDescriptor(hostDescription);
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity(hostDescriptor);
                 return builder.build();
@@ -324,7 +324,7 @@ public class DescriptorRegistryResource {
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("Service descriptor does not exist...");
+                builder.entity("False");
                 return builder.build();
             }
         } catch (RegistryException e) {
@@ -419,8 +419,8 @@ public class DescriptorRegistryResource {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             ServiceDescription serviceDescription = airavataRegistry.getServiceDescriptor(serviceName);
-            ServiceDescriptor serviceDescriptor = DescriptorUtil.createServiceDescriptor(serviceDescription);
             if (serviceDescription != null) {
+                ServiceDescriptor serviceDescriptor = DescriptorUtil.createServiceDescriptor(serviceDescription);
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity(serviceDescriptor);
                 return builder.build();
@@ -536,7 +536,7 @@ public class DescriptorRegistryResource {
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("Application descriptor does not exist...");
+                builder.entity("False");
                 return builder.build();
             }
         } catch (RegistryException e) {
@@ -580,10 +580,10 @@ public class DescriptorRegistryResource {
                 } else {
                     serviceName = serviceDescriptor.getServiceName();
                 }
-                ServiceDescription serviceDescription = DescriptorUtil.createServiceDescription(serviceDescriptor);
-                if (!airavataRegistry.isServiceDescriptorExists(serviceName)) {
-                    airavataRegistry.addServiceDescriptor(serviceDescription);
-                }
+//                ServiceDescription serviceDescription = DescriptorUtil.createServiceDescription(serviceDescriptor);
+//                if (!airavataRegistry.isServiceDescriptorExists(serviceName)) {
+//                    airavataRegistry.addServiceDescriptor(serviceDescription);
+//                }
             } else {
                 serviceName = applicationDescriptor.getName();
             }
@@ -637,12 +637,12 @@ public class DescriptorRegistryResource {
                 } else {
                     serviceName = serviceDescriptor.getServiceName();
                 }
-                ServiceDescription serviceDescription = DescriptorUtil.createServiceDescription(serviceDescriptor);
-                if (airavataRegistry.isServiceDescriptorExists(serviceName)) {
-                    airavataRegistry.updateServiceDescriptor(serviceDescription);
-                } else {
-                    airavataRegistry.addServiceDescriptor(serviceDescription);
-                }
+//                ServiceDescription serviceDescription = DescriptorUtil.createServiceDescription(serviceDescriptor);
+//                if (airavataRegistry.isServiceDescriptorExists(serviceName)) {
+//                    airavataRegistry.updateServiceDescriptor(serviceDescription);
+//                } else {
+//                    airavataRegistry.addServiceDescriptor(serviceDescription);
+//                }
 
             } else {
                 serviceName = applicationDescriptor.getName();
@@ -684,13 +684,13 @@ public class DescriptorRegistryResource {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             ApplicationDeploymentDescription applicationDeploymentDescription = airavataRegistry.getApplicationDescriptor(serviceName, hostName, applicationName);
-            ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(applicationDeploymentDescription);
-            applicationDescriptor.setHostdescName(hostName);
-            ServiceDescription serviceDescription = airavataRegistry.getServiceDescriptor(serviceName);
-            ServiceDescriptor serviceDescriptor = DescriptorUtil.createServiceDescriptor(serviceDescription);
-            applicationDescriptor.setServiceDescriptor(serviceDescriptor);
-
             if (applicationDeploymentDescription != null) {
+                ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(applicationDeploymentDescription);
+                applicationDescriptor.setHostdescName(hostName);
+                ServiceDescription serviceDescription = airavataRegistry.getServiceDescriptor(serviceName);
+                ServiceDescriptor serviceDescriptor = DescriptorUtil.createServiceDescriptor(serviceDescription);
+                applicationDescriptor.setServiceDescriptor(serviceDescriptor);
+
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity(applicationDescriptor);
                 return builder.build();

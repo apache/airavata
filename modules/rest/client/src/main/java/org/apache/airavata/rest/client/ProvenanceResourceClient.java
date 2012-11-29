@@ -69,7 +69,7 @@ public class ProvenanceResourceClient {
         return UriBuilder.fromUri(baseURI).build();
     }
 
-    private WebResource getProvenanceRegistryBaseResource (){
+    private WebResource getProvenanceRegistryBaseResource() {
         ClientConfig config = new DefaultClientConfig();
         config.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING,
                 Boolean.TRUE);
@@ -79,7 +79,7 @@ public class ProvenanceResourceClient {
         return webResource;
     }
 
-    public void updateExperimentExecutionUser(String experimentId, String user){
+    public void updateExperimentExecutionUser(String experimentId, String user) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_EXPERIMENT_EXECUTIONUSER);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("experimentId", experimentId);
@@ -91,12 +91,12 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -104,7 +104,7 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public String getExperimentExecutionUser(String experimentId){
+    public String getExperimentExecutionUser(String experimentId) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENT_EXECUTIONUSER);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("experimentId", experimentId);
@@ -115,12 +115,12 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -131,7 +131,7 @@ public class ProvenanceResourceClient {
         return executionUser;
     }
 
-    public boolean isExperimentNameExist(String experimentName){
+    public boolean isExperimentNameExist(String experimentName) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.EXPERIMENTNAME_EXISTS);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("experimentName", experimentName);
@@ -141,20 +141,23 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
-                logger.error(response.getEntity(String.class));
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + status);
+            String exists = response.getEntity(String.class);
+            if (exists.equals("True")){
+                return true;
+            } else {
+                return false;
             }
         }
-        return true;
+        else {
+            return false;
+        }
     }
 
-    public String getExperimentName(String experimentId){
+    public String getExperimentName(String experimentId) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENT_NAME);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("experimentId", experimentId);
@@ -164,11 +167,11 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -179,7 +182,7 @@ public class ProvenanceResourceClient {
         return experimentName;
     }
 
-    public void updateExperimentName(String experimentId, String experimentName){
+    public void updateExperimentName(String experimentId, String experimentName) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_EXPERIMENTNAME);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("experimentId", experimentId);
@@ -191,11 +194,11 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -204,7 +207,7 @@ public class ProvenanceResourceClient {
 
     }
 
-    public String getExperimentMetadata(String experimentId){
+    public String getExperimentMetadata(String experimentId) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENTMETADATA);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("experimentId", experimentId);
@@ -214,11 +217,11 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -228,7 +231,7 @@ public class ProvenanceResourceClient {
         return experimentMetadata;
     }
 
-    public void updateExperimentMetadata(String experimentId, String metadata){
+    public void updateExperimentMetadata(String experimentId, String metadata) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_EXPERIMENTMETADATA);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("experimentId", experimentId);
@@ -240,11 +243,11 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -252,7 +255,7 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public String getWorkflowExecutionTemplateName(String workflowInstanceId){
+    public String getWorkflowExecutionTemplateName(String workflowInstanceId) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_WORKFLOWTEMPLATENAME);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("workflowInstanceId", workflowInstanceId);
@@ -262,11 +265,11 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -277,7 +280,7 @@ public class ProvenanceResourceClient {
         return workflowTemplateName;
     }
 
-    public void setWorkflowInstanceTemplateName(String workflowInstanceId, String templateName){
+    public void setWorkflowInstanceTemplateName(String workflowInstanceId, String templateName) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_WORKFLOWINSTANCETEMPLATENAME);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("workflowInstanceId", workflowInstanceId);
@@ -289,11 +292,11 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.post(ClientResponse.class, formParams);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -301,21 +304,21 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public List<WorkflowInstance> getExperimentWorkflowInstances(String experimentId){
+    public List<WorkflowInstance> getExperimentWorkflowInstances(String experimentId) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENTWORKFLOWINSTANCES);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("experimentId", experimentId);
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -326,14 +329,14 @@ public class ProvenanceResourceClient {
         WorkflowInstance[] workflowInstances = workflowInstancesList.getWorkflowInstances();
         List<WorkflowInstance> workflowInstanceList = new ArrayList<WorkflowInstance>();
 
-        for (WorkflowInstance workflowInstance : workflowInstances){
+        for (WorkflowInstance workflowInstance : workflowInstances) {
             workflowInstanceList.add(workflowInstance);
         }
 
         return workflowInstanceList;
     }
 
-    public boolean isWorkflowInstanceExists(String instanceId){
+    public boolean isWorkflowInstanceExists(String instanceId) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.WORKFLOWINSTANCE_EXIST_CHECK);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("instanceId", instanceId);
@@ -343,20 +346,23 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
-                logger.error(response.getEntity(String.class));
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + status);
+            String exists = response.getEntity(String.class);
+            if (exists.equals("True")){
+                return true;
+            } else {
+                return false;
             }
         }
-        return true;
+        else {
+            return false;
+        }
     }
 
-    public boolean isWorkflowInstanceExists(String instanceId, boolean createIfNotPresent){
+    public boolean isWorkflowInstanceExists(String instanceId, boolean createIfNotPresent) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.WORKFLOWINSTANCE_EXIST_CREATE);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("instanceId", instanceId);
@@ -368,20 +374,23 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
-                logger.error(response.getEntity(String.class));
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + status);
+            String exists = response.getEntity(String.class);
+            if (exists.equals("True")){
+                return true;
+            } else {
+                return false;
             }
         }
-        return true;
+        else {
+            return false;
+        }
     }
 
-    public void updateWorkflowInstanceStatus(String instanceId, WorkflowInstanceStatus.ExecutionStatus executionStatus){
+    public void updateWorkflowInstanceStatus(String instanceId, WorkflowInstanceStatus.ExecutionStatus executionStatus) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_WORKFLOWINSTANCESTATUS_INSTANCEID);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("instanceId", instanceId);
@@ -390,14 +399,14 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -405,7 +414,7 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public void updateWorkflowInstanceStatus(WorkflowInstanceStatus workflowInstanceStatus){
+    public void updateWorkflowInstanceStatus(WorkflowInstanceStatus workflowInstanceStatus) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String statusUpdateDate = dateFormat.format(workflowInstanceStatus.getStatusUpdateTime());
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_WORKFLOWINSTANCESTATUS);
@@ -420,11 +429,11 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -432,7 +441,7 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public WorkflowInstanceStatus getWorkflowInstanceStatus(String instanceId){
+    public WorkflowInstanceStatus getWorkflowInstanceStatus(String instanceId) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_WORKFLOWINSTANCESTATUS);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("instanceId", instanceId);
@@ -442,11 +451,11 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -457,7 +466,7 @@ public class ProvenanceResourceClient {
         return workflowInstanceStatus;
     }
 
-    public void updateWorkflowNodeInput(WorkflowInstanceNode node, String data){
+    public void updateWorkflowNodeInput(WorkflowInstanceNode node, String data) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_WORKFLOWNODEINPUT);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("nodeID", node.getNodeId());
@@ -470,11 +479,11 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -482,7 +491,7 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public void updateWorkflowNodeOutput(WorkflowInstanceNode node, String data){
+    public void updateWorkflowNodeOutput(WorkflowInstanceNode node, String data) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_WORKFLOWNODEOUTPUT);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("nodeID", node.getNodeId());
@@ -495,11 +504,11 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -507,7 +516,7 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public ExperimentData getExperiment(String experimentId){
+    public ExperimentData getExperiment(String experimentId) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENT);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("experimentId", experimentId);
@@ -517,11 +526,11 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -531,7 +540,7 @@ public class ProvenanceResourceClient {
         return experimentData;
     }
 
-    public ExperimentData getExperimentMetaInformation(String experimentId){
+    public ExperimentData getExperimentMetaInformation(String experimentId) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENT_METAINFORMATION);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("experimentId", experimentId);
@@ -541,11 +550,11 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -556,7 +565,7 @@ public class ProvenanceResourceClient {
         return experimentData;
     }
 
-    public List<ExperimentData> getAllExperimentMetaInformation(String user){
+    public List<ExperimentData> getAllExperimentMetaInformation(String user) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_ALL_EXPERIMENT_METAINFORMATION);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("user", user);
@@ -566,11 +575,11 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -580,13 +589,13 @@ public class ProvenanceResourceClient {
         ExperimentDataList experimentDataList = response.getEntity(ExperimentDataList.class);
         List<ExperimentDataImpl> dataList = experimentDataList.getExperimentDataList();
         List<ExperimentData> experimentDatas = new ArrayList<ExperimentData>();
-        for (ExperimentDataImpl experimentData : dataList){
+        for (ExperimentDataImpl experimentData : dataList) {
             experimentDatas.add(experimentData);
         }
         return experimentDatas;
     }
 
-    public List<ExperimentData> searchExperiments(String user, String experimentNameRegex){
+    public List<ExperimentData> searchExperiments(String user, String experimentNameRegex) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.SEARCH_EXPERIMENTS);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("user", user);
@@ -597,11 +606,11 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -611,13 +620,13 @@ public class ProvenanceResourceClient {
         ExperimentDataList experimentDataList = response.getEntity(ExperimentDataList.class);
         List<ExperimentDataImpl> dataList = experimentDataList.getExperimentDataList();
         List<ExperimentData> experimentDatas = new ArrayList<ExperimentData>();
-        for (ExperimentDataImpl experimentData : dataList){
+        for (ExperimentDataImpl experimentData : dataList) {
             experimentDatas.add(experimentData);
         }
         return experimentDatas;
     }
 
-    public List<String> getExperimentIdByUser(String user){
+    public List<String> getExperimentIdByUser(String user) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENT_ID_USER);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("username", user);
@@ -627,11 +636,11 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -643,7 +652,7 @@ public class ProvenanceResourceClient {
         return experimentIDs;
     }
 
-    public List<ExperimentData> getExperimentByUser(String user){
+    public List<ExperimentData> getExperimentByUser(String user) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENT_USER);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("username", user);
@@ -653,11 +662,11 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -666,13 +675,13 @@ public class ProvenanceResourceClient {
         ExperimentDataList experimentDataList = response.getEntity(ExperimentDataList.class);
         List<ExperimentDataImpl> dataList = experimentDataList.getExperimentDataList();
         List<ExperimentData> experimentDatas = new ArrayList<ExperimentData>();
-        for (ExperimentDataImpl experimentData : dataList){
+        for (ExperimentDataImpl experimentData : dataList) {
             experimentDatas.add(experimentData);
         }
         return experimentDatas;
     }
 
-    public void updateWorkflowNodeStatus(WorkflowInstanceNodeStatus workflowStatusNode){
+    public void updateWorkflowNodeStatus(WorkflowInstanceNodeStatus workflowStatusNode) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_WORKFLOWNODE_STATUS);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("workflowInstanceId", workflowStatusNode.getWorkflowInstanceNode().getWorkflowInstance().getWorkflowInstanceId());
@@ -685,11 +694,11 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -697,7 +706,7 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public void updateWorkflowNodeStatus(String workflowInstanceId, String nodeId, WorkflowInstanceStatus.ExecutionStatus executionStatus){
+    public void updateWorkflowNodeStatus(String workflowInstanceId, String nodeId, WorkflowInstanceStatus.ExecutionStatus executionStatus) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_WORKFLOWNODE_STATUS);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("workflowInstanceId", workflowInstanceId);
@@ -710,11 +719,11 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -722,7 +731,7 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public void updateWorkflowNodeStatus(WorkflowInstanceNode workflowNode, WorkflowInstanceStatus.ExecutionStatus executionStatus){
+    public void updateWorkflowNodeStatus(WorkflowInstanceNode workflowNode, WorkflowInstanceStatus.ExecutionStatus executionStatus) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_WORKFLOWNODE_STATUS);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("workflowInstanceId", workflowNode.getWorkflowInstance().getWorkflowInstanceId());
@@ -735,9 +744,9 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
@@ -747,7 +756,7 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public WorkflowInstanceNodeStatus getWorkflowNodeStatus(WorkflowInstanceNode workflowNode){
+    public WorkflowInstanceNodeStatus getWorkflowNodeStatus(WorkflowInstanceNode workflowNode) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_WORKFLOWNODE_STATUS);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("workflowInstanceId", workflowNode.getWorkflowInstance().getWorkflowInstanceId());
@@ -758,11 +767,11 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -773,7 +782,7 @@ public class ProvenanceResourceClient {
         return workflowInstanceNodeStatus;
     }
 
-    public Date getWorkflowNodeStartTime(WorkflowInstanceNode workflowNode){
+    public Date getWorkflowNodeStartTime(WorkflowInstanceNode workflowNode) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_WORKFLOWNODE_STARTTIME);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("workflowInstanceId", workflowNode.getWorkflowInstance().getWorkflowInstanceId());
@@ -784,11 +793,11 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -806,7 +815,7 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public Date getWorkflowStartTime(WorkflowInstance workflowInstance){
+    public Date getWorkflowStartTime(WorkflowInstance workflowInstance) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_WORKFLOW_STARTTIME);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("workflowInstanceId", workflowInstance.getWorkflowInstanceId());
@@ -816,11 +825,11 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -838,7 +847,7 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public void updateWorkflowNodeGramData(WorkflowNodeGramData workflowNodeGramData){
+    public void updateWorkflowNodeGramData(WorkflowNodeGramData workflowNodeGramData) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_WORKFLOWNODE_GRAMDATA);
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).type(MediaType.APPLICATION_JSON).post(ClientResponse.class, workflowNodeGramData);
         int status = response.getStatus();
@@ -846,11 +855,11 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).type(MediaType.APPLICATION_JSON).post(ClientResponse.class, workflowNodeGramData);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).type(MediaType.APPLICATION_JSON).post(ClientResponse.class, workflowNodeGramData);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -858,7 +867,7 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public WorkflowInstanceData getWorkflowInstanceData(String workflowInstanceId){
+    public WorkflowInstanceData getWorkflowInstanceData(String workflowInstanceId) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_WORKFLOWINSTANCEDATA);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("workflowInstanceId", workflowInstanceId);
@@ -868,11 +877,11 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -883,7 +892,7 @@ public class ProvenanceResourceClient {
         return workflowInstanceData;
     }
 
-    public boolean isWorkflowInstanceNodePresent(String workflowInstanceId, String nodeId){
+    public boolean isWorkflowInstanceNodePresent(String workflowInstanceId, String nodeId) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.WORKFLOWINSTANCE_NODE_EXIST);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("workflowInstanceId", workflowInstanceId);
@@ -894,20 +903,23 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-                logger.error(response.getEntity(String.class));
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + status);
+            String exists = response.getEntity(String.class);
+            if (exists.equals("True")){
+                return true;
+            } else {
+                return false;
             }
         }
-        return true;
+        else {
+            return false;
+        }
     }
 
-    public boolean isWorkflowInstanceNodePresent(String workflowInstanceId, String nodeId, boolean createIfNotPresent){
+    public boolean isWorkflowInstanceNodePresent(String workflowInstanceId, String nodeId, boolean createIfNotPresent) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.WORKFLOWINSTANCE_NODE_EXIST_CREATE);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("workflowInstanceId", workflowInstanceId);
@@ -919,20 +931,23 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
-                logger.error(response.getEntity(String.class));
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + status);
+            String exists = response.getEntity(String.class);
+            if (exists.equals("True")){
+                return true;
+            } else {
+                return false;
             }
         }
-        return true;
+        else {
+            return false;
+        }
     }
 
-    public WorkflowInstanceNodeData getWorkflowInstanceNodeData(String workflowInstanceId, String nodeId){
+    public WorkflowInstanceNodeData getWorkflowInstanceNodeData(String workflowInstanceId, String nodeId) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.WORKFLOWINSTANCE_NODE_DATA);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("workflowInstanceId", workflowInstanceId);
@@ -943,11 +958,11 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -958,7 +973,7 @@ public class ProvenanceResourceClient {
         return workflowInstanceNodeData;
     }
 
-    public void addWorkflowInstance(String experimentId, String workflowInstanceId, String templateName){
+    public void addWorkflowInstance(String experimentId, String workflowInstanceId, String templateName) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.ADD_WORKFLOWINSTANCE);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("experimentId", experimentId);
@@ -971,9 +986,9 @@ public class ProvenanceResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
                 logger.error(response.getEntity(String.class));
@@ -983,7 +998,7 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public void updateWorkflowNodeType(WorkflowInstanceNode node, WorkflowNodeType type){
+    public void updateWorkflowNodeType(WorkflowInstanceNode node, WorkflowNodeType type) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_WORKFLOWNODETYPE);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("workflowInstanceId", node.getWorkflowInstance().getWorkflowInstanceId());
@@ -993,14 +1008,14 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -1008,7 +1023,7 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public void addWorkflowInstanceNode(String workflowInstance, String nodeId){
+    public void addWorkflowInstanceNode(String workflowInstance, String nodeId) {
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.ADD_WORKFLOWINSTANCENODE);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("workflowInstanceId", workflowInstance);
@@ -1017,14 +1032,14 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        }else if( status == ClientConstant.HTTP_UNAUTHORIZED){
-            response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -1032,12 +1047,12 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public List<WorkflowNodeIOData> searchWorkflowInstanceNodeInput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx)  {
+    public List<WorkflowNodeIOData> searchWorkflowInstanceNodeInput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx) {
         //not implemented in Registry API
         return null;
     }
 
-    public List<WorkflowNodeIOData> searchWorkflowInstanceNodeOutput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx)  {
+    public List<WorkflowNodeIOData> searchWorkflowInstanceNodeOutput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx) {
         //not implemented in Registry API
         return null;
     }
@@ -1047,21 +1062,21 @@ public class ProvenanceResourceClient {
         return null;
     }
 
-    public List<WorkflowNodeIOData> getWorkflowInstanceNodeInput(String workflowInstanceId, String nodeType){
+    public List<WorkflowNodeIOData> getWorkflowInstanceNodeInput(String workflowInstanceId, String nodeType) {
         //not implemented in Registry API
         return null;
     }
 
-    public List<WorkflowNodeIOData> getWorkflowInstanceNodeOutput(String workflowInstanceId, String nodeType){
+    public List<WorkflowNodeIOData> getWorkflowInstanceNodeOutput(String workflowInstanceId, String nodeType) {
         //not implemented in Registry API
         return null;
     }
 
-    public void saveWorkflowExecutionOutput(String experimentId, String outputNodeName, String output){
+    public void saveWorkflowExecutionOutput(String experimentId, String outputNodeName, String output) {
         //not implemented in Registry API
     }
 
-    public void saveWorkflowExecutionOutput(String experimentId, WorkflowIOData data){
+    public void saveWorkflowExecutionOutput(String experimentId, WorkflowIOData data) {
         //not implemented in Registry API
     }
 
@@ -1075,7 +1090,7 @@ public class ProvenanceResourceClient {
         return null;
     }
 
-    public String[] getWorkflowExecutionOutputNames(String exeperimentId){
+    public String[] getWorkflowExecutionOutputNames(String exeperimentId) {
         //not implemented in Registry API
         return null;
     }

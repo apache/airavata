@@ -24,9 +24,12 @@ package org.apache.airavata.rest;
 
 import org.apache.airavata.rest.client.*;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 public class Test {
     public static void main(String[] args) {
-        configurationResourceClientTest();
+//        configurationResourceClientTest();
 //        hostDescriptorClientTest();
 //        serviceDescriptorClientTest();
 //          appDescriptorClientTest();
@@ -40,7 +43,12 @@ public class Test {
 
     public static void configurationResourceClientTest(){
         //configuration resource test
-//        ConfigurationResourceClient configurationResourceClient = new ConfigurationResourceClient("admin", new PasswordCallbackImpl("admin", "admin"));
+        ConfigurationResourceClient configurationResourceClient = new ConfigurationResourceClient("admin",
+                "http://localhost:9080/airavata-services/", new PasswordCallbackImpl("admin", "admin"));
+
+//        System.out.println("###############getConfiguration###############");
+//        Object configuration = configurationResourceClient.getConfiguration("gfac.url");
+//        System.out.println(configuration.toString());
 
 
 //        System.out.println("###############getConfiguration###############");
@@ -48,7 +56,11 @@ public class Test {
 //        System.out.println(configuration.toString());
 //
 //        System.out.println("###############getConfigurationList###############");
-//        configurationResourceClient.addWFInterpreterURI("http://192.168.17.1:8080/axis2/services/WorkflowInterpretor2");
+        try {
+            configurationResourceClient.addWFInterpreterURI(new URI("http://192.168.17.1:8080/axis2/services/WorkflowInterpretor2"));
+        } catch (URISyntaxException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
 //        List<Object> configurationList = configurationResourceClient.getConfigurationList("testKey1");
 //        for(Object object : configurationList){
 //            System.out.println(object.toString());
@@ -156,10 +168,12 @@ public class Test {
     }
 
     public static void serviceDescriptorClientTest (){
-//        DescriptorResourceClient descriptorResourceClient = new DescriptorResourceClient();
+
+        DescriptorResourceClient descriptorResourceClient = new DescriptorResourceClient("admin",
+                "http://localhost:9080/airavata-services/api", new PasswordCallbackImpl("admin", "admin"));
         //service descriptor exists
-//        boolean exists = descriptorResourceClient.isServiceDescriptorExists("echo");
-//        System.out.println(exists);
+        boolean exists = descriptorResourceClient.isServiceDescriptorExists("echo");
+        System.out.println(exists);
 
         //service descriptor save
 //        ServiceDescription serviceDescription = new ServiceDescription();

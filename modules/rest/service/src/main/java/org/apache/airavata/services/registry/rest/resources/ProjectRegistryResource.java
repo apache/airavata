@@ -65,11 +65,11 @@ public class ProjectRegistryResource {
             boolean result = airavataRegistry.isWorkspaceProjectExists(projectName);
             if (result) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
-                builder.entity("Project exists...");
+                builder.entity("True");
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NOT_FOUND);
-                builder.entity("Project does not exist...");
+                builder.entity("False");
                 return builder.build();
             }
         } catch (RegistryException e) {
@@ -95,20 +95,18 @@ public class ProjectRegistryResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response isWorkspaceProjectExistsCreate(@FormParam("projectName") String projectName,
                                              @FormParam("createIfNotExists") String createIfNotExists) {
-        boolean createIfNotExistStatus = false;
-        if (createIfNotExists.equals("true")) {
-            createIfNotExistStatus = true;
-        }
+        boolean createIfNotExistStatus = Boolean.valueOf(createIfNotExists);
+
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             boolean result = airavataRegistry.isWorkspaceProjectExists(projectName, createIfNotExistStatus);
             if (result) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
-                builder.entity("New project has been created...");
+                builder.entity("True");
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NOT_FOUND);
-                builder.entity("Could not create the project...");
+                builder.entity("False");
                 return builder.build();
             }
         } catch (RegistryException e) {

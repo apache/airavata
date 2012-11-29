@@ -67,7 +67,7 @@ public class DescriptorResourceClient {
         return UriBuilder.fromUri(baseURI).build();
     }
 
-    private WebResource getDescriptorRegistryBaseResource (){
+    private WebResource getDescriptorRegistryBaseResource() {
         ClientConfig config = new DefaultClientConfig();
         config.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING,
                 Boolean.TRUE);
@@ -77,7 +77,7 @@ public class DescriptorResourceClient {
         return webResource;
     }
 
-    public boolean isHostDescriptorExists(String hostDescriptorName){
+    public boolean isHostDescriptorExists(String hostDescriptorName) {
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.HOST_DESC_EXISTS);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("hostDescriptorName", hostDescriptorName);
@@ -88,24 +88,36 @@ public class DescriptorResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.get(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
-                logger.error(response.getEntity(String.class));
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + status);
-            }else{
+            String exists = response.getEntity(String.class);
+            if (exists.equals("True")){
                 return true;
+            } else {
+                return false;
             }
-        } else {
-            return true;
         }
+        else {
+            return false;
+        }
+
+
+//            if (status != ClientConstant.HTTP_OK) {
+//                logger.error(response.getEntity(String.class));
+//                throw new RuntimeException("Failed : HTTP error code : "
+//                        + status);
+//            } else {
+//                return true;
+//            }
+//        } else {
+//            return true;
+//        }
     }
 
-    public void addHostDescriptor (HostDescription hostDescription){
+    public void addHostDescriptor(HostDescription hostDescription) {
         HostDescriptor hostDescriptor = DescriptorUtil.createHostDescriptor(hostDescription);
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.HOST_DESC_SAVE);
         ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, hostDescriptor);
@@ -116,13 +128,13 @@ public class DescriptorResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, hostDescriptor);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, hostDescriptor);
 
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -130,7 +142,7 @@ public class DescriptorResourceClient {
         }
     }
 
-    public void updateHostDescriptor (HostDescription hostDescription){
+    public void updateHostDescriptor(HostDescription hostDescription) {
         HostDescriptor hostDescriptor = DescriptorUtil.createHostDescriptor(hostDescription);
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.HOST_DESC_UPDATE);
         ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, hostDescriptor);
@@ -141,13 +153,13 @@ public class DescriptorResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, hostDescriptor);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, hostDescriptor);
 
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -155,7 +167,7 @@ public class DescriptorResourceClient {
         }
     }
 
-    public HostDescription getHostDescriptor (String hostName){
+    public HostDescription getHostDescriptor(String hostName) {
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.HOST_DESC);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("hostName", hostName);
@@ -167,13 +179,13 @@ public class DescriptorResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -185,7 +197,7 @@ public class DescriptorResourceClient {
         return hostDescription;
     }
 
-    public void removeHostDescriptor(String hostName){
+    public void removeHostDescriptor(String hostName) {
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.HOST_DESC_DELETE);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("hostName", hostName);
@@ -196,12 +208,12 @@ public class DescriptorResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).delete(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.delete(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -219,13 +231,13 @@ public class DescriptorResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -234,15 +246,15 @@ public class DescriptorResourceClient {
         HostDescriptionList hostDescriptionList = response.getEntity(HostDescriptionList.class);
         HostDescriptor[] hostDescriptors = hostDescriptionList.getHostDescriptions();
         List<HostDescription> hostDescriptions = new ArrayList<HostDescription>();
-        for (HostDescriptor hostDescriptor : hostDescriptors){
-           HostDescription hostDescription = DescriptorUtil.createHostDescription(hostDescriptor);
+        for (HostDescriptor hostDescriptor : hostDescriptors) {
+            HostDescription hostDescription = DescriptorUtil.createHostDescription(hostDescriptor);
             hostDescriptions.add(hostDescription);
         }
 
         return hostDescriptions;
     }
 
-    public List<String> getHostDescriptorNames(){
+    public List<String> getHostDescriptorNames() {
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.GET_HOST_DESCS_NAMES);
         ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
@@ -252,13 +264,13 @@ public class DescriptorResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -269,7 +281,7 @@ public class DescriptorResourceClient {
         return descriptorNameList.getDescriptorNames();
     }
 
-    public boolean isServiceDescriptorExists(String serviceDescriptorName){
+    public boolean isServiceDescriptorExists(String serviceDescriptorName) {
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC_EXISTS);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("serviceDescriptorName", serviceDescriptorName);
@@ -280,24 +292,24 @@ public class DescriptorResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.get(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
-                logger.error(response.getEntity(String.class));
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + status);
-            }else {
+            String exists = response.getEntity(String.class);
+            if (exists.equals("True")){
                 return true;
+            } else {
+                return false;
             }
-        }else {
-            return true;
+        }
+        else {
+            return false;
         }
     }
 
-    public void addServiceDescriptor (ServiceDescription serviceDescription){
+    public void addServiceDescriptor(ServiceDescription serviceDescription) {
         ServiceDescriptor serviceDescriptor = DescriptorUtil.createServiceDescriptor(serviceDescription);
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC_SAVE);
         ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, serviceDescriptor);
@@ -308,13 +320,13 @@ public class DescriptorResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, serviceDescriptor);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, serviceDescriptor);
 
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -322,7 +334,7 @@ public class DescriptorResourceClient {
         }
     }
 
-    public void updateServiceDescriptor(ServiceDescription serviceDescription){
+    public void updateServiceDescriptor(ServiceDescription serviceDescription) {
         ServiceDescriptor serviceDescriptor = DescriptorUtil.createServiceDescriptor(serviceDescription);
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC_UPDATE);
         ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, serviceDescriptor);
@@ -333,13 +345,13 @@ public class DescriptorResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, serviceDescriptor);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, serviceDescriptor);
 
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -347,7 +359,7 @@ public class DescriptorResourceClient {
         }
     }
 
-    public ServiceDescription getServiceDescriptor (String serviceName){
+    public ServiceDescription getServiceDescriptor(String serviceName) {
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("serviceName", serviceName);
@@ -359,16 +371,18 @@ public class DescriptorResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_BAD_REQUEST) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else if (status == ClientConstant.HTTP_BAD_REQUEST){
+                return null;
             }
         }
 
@@ -377,7 +391,7 @@ public class DescriptorResourceClient {
         return serviceDescription;
     }
 
-    public void removeServiceDescriptor(String serviceName){
+    public void removeServiceDescriptor(String serviceName) {
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC_DELETE);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("serviceName", serviceName);
@@ -388,12 +402,12 @@ public class DescriptorResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).delete(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.delete(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -401,7 +415,7 @@ public class DescriptorResourceClient {
         }
     }
 
-    public List<ServiceDescription> getServiceDescriptors (){
+    public List<ServiceDescription> getServiceDescriptors() {
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.GET_SERVICE_DESCS);
         ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
@@ -411,13 +425,13 @@ public class DescriptorResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -427,14 +441,14 @@ public class DescriptorResourceClient {
         ServiceDescriptionList serviceDescriptionList = response.getEntity(ServiceDescriptionList.class);
         ServiceDescriptor[] serviceDescriptors = serviceDescriptionList.getServiceDescriptions();
         List<ServiceDescription> serviceDescriptions = new ArrayList<ServiceDescription>();
-        for (ServiceDescriptor serviceDescriptor : serviceDescriptors){
+        for (ServiceDescriptor serviceDescriptor : serviceDescriptors) {
             ServiceDescription serviceDescription = DescriptorUtil.createServiceDescription(serviceDescriptor);
             serviceDescriptions.add(serviceDescription);
         }
         return serviceDescriptions;
     }
 
-    public boolean isApplicationDescriptorExists (String serviceName, String hostName, String appDescriptorName){
+    public boolean isApplicationDescriptorExists(String serviceName, String hostName, String appDescriptorName) {
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.APPL_DESC_EXIST);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("serviceName", serviceName);
@@ -447,26 +461,36 @@ public class DescriptorResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.get(ClientResponse.class);
             status = response.getStatus();
-
-            if (status != ClientConstant.HTTP_OK ) {
-                logger.error(response.getEntity(String.class));
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + status);
-            }else {
+            String exists = response.getEntity(String.class);
+            if (exists.equals("True")){
                 return true;
+            } else {
+                return false;
             }
-        } else {
-            return true;
         }
+        else {
+            return false;
+        }
+
+//            if (status != ClientConstant.HTTP_OK) {
+//                logger.error(response.getEntity(String.class));
+//                throw new RuntimeException("Failed : HTTP error code : "
+//                        + status);
+//            } else {
+//                return true;
+//            }
+//        } else {
+//            return true;
+//        }
     }
 
     public void addApplicationDescriptor(ServiceDescription serviceDescription,
                                          HostDescription hostDescriptor,
-                                         ApplicationDeploymentDescription descriptor){
+                                         ApplicationDeploymentDescription descriptor) {
         ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(descriptor);
         applicationDescriptor.setHostdescName(hostDescriptor.getType().getHostName());
         ServiceDescriptor serviceDescriptor = DescriptorUtil.createServiceDescriptor(serviceDescription);
@@ -481,9 +505,9 @@ public class DescriptorResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
 
             status = response.getStatus();
 
@@ -495,7 +519,7 @@ public class DescriptorResourceClient {
         }
     }
 
-    public void addApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor){
+    public void addApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) {
         ServiceDescription serviceDescription = getServiceDescriptor(serviceName);
         ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(descriptor);
         applicationDescriptor.setHostdescName(hostName);
@@ -511,13 +535,13 @@ public class DescriptorResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
 
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -527,7 +551,7 @@ public class DescriptorResourceClient {
 
     public void udpateApplicationDescriptor(ServiceDescription serviceDescription,
                                             HostDescription hostDescriptor,
-                                            ApplicationDeploymentDescription descriptor){
+                                            ApplicationDeploymentDescription descriptor) {
         ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(descriptor);
         applicationDescriptor.setHostdescName(hostDescriptor.getType().getHostName());
         ServiceDescriptor serviceDescriptor = DescriptorUtil.createServiceDescriptor(serviceDescription);
@@ -542,13 +566,13 @@ public class DescriptorResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
 
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -556,7 +580,7 @@ public class DescriptorResourceClient {
         }
     }
 
-    public void updateApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor){
+    public void updateApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) {
         ServiceDescription serviceDescription = getServiceDescriptor(serviceName);
         ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(descriptor);
         applicationDescriptor.setHostdescName(hostName);
@@ -572,13 +596,13 @@ public class DescriptorResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
 
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -588,7 +612,7 @@ public class DescriptorResourceClient {
 
     public ApplicationDeploymentDescription getApplicationDescriptor(String serviceName,
                                                                      String hostname,
-                                                                     String applicationName){
+                                                                     String applicationName) {
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_DESCRIPTION);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("serviceName", serviceName);
@@ -603,9 +627,9 @@ public class DescriptorResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
             status = response.getStatus();
 
@@ -621,7 +645,7 @@ public class DescriptorResourceClient {
         return applicationDeploymentDescription;
     }
 
-    public ApplicationDeploymentDescription getApplicationDescriptors(String serviceName, String hostname){
+    public ApplicationDeploymentDescription getApplicationDescriptors(String serviceName, String hostname) {
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_PER_HOST_SERVICE);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("serviceName", serviceName);
@@ -635,13 +659,13 @@ public class DescriptorResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -653,7 +677,7 @@ public class DescriptorResourceClient {
         return applicationDeploymentDescription;
     }
 
-    public Map<String, ApplicationDeploymentDescription> getApplicationDescriptors(String serviceName){
+    public Map<String, ApplicationDeploymentDescription> getApplicationDescriptors(String serviceName) {
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_ALL_DESCS_SERVICE);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("serviceName", serviceName);
@@ -665,13 +689,13 @@ public class DescriptorResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -681,14 +705,14 @@ public class DescriptorResourceClient {
         ApplicationDescriptorList applicationDescriptorList = response.getEntity(ApplicationDescriptorList.class);
         ApplicationDescriptor[] applicationDescriptors = applicationDescriptorList.getApplicationDescriptors();
         Map<String, ApplicationDeploymentDescription> applicationDeploymentDescriptionMap = new HashMap<String, ApplicationDeploymentDescription>();
-        for (ApplicationDescriptor applicationDescriptor : applicationDescriptors){
+        for (ApplicationDescriptor applicationDescriptor : applicationDescriptors) {
             ApplicationDeploymentDescription applicationDeploymentDescription = DescriptorUtil.createApplicationDescription(applicationDescriptor);
             applicationDeploymentDescriptionMap.put(applicationDescriptor.getHostdescName(), applicationDeploymentDescription);
         }
         return applicationDeploymentDescriptionMap;
     }
 
-    public Map<String[], ApplicationDeploymentDescription> getApplicationDescriptors(){
+    public Map<String[], ApplicationDeploymentDescription> getApplicationDescriptors() {
         Map<String[], ApplicationDeploymentDescription> applicationDeploymentDescriptionMap = new HashMap<String[], ApplicationDeploymentDescription>();
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_ALL_DESCRIPTORS);
         ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
@@ -699,13 +723,13 @@ public class DescriptorResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -714,7 +738,7 @@ public class DescriptorResourceClient {
 
         ApplicationDescriptorList applicationDescriptorList = response.getEntity(ApplicationDescriptorList.class);
         ApplicationDescriptor[] applicationDescriptors = applicationDescriptorList.getApplicationDescriptors();
-        for (ApplicationDescriptor applicationDescriptor : applicationDescriptors){
+        for (ApplicationDescriptor applicationDescriptor : applicationDescriptors) {
             ApplicationDeploymentDescription applicationDeploymentDescription = DescriptorUtil.createApplicationDescription(applicationDescriptor);
             String[] descriptors = {applicationDescriptor.getServiceDescriptor().getServiceName(), applicationDescriptor.getHostdescName()};
             applicationDeploymentDescriptionMap.put(descriptors, applicationDeploymentDescription);
@@ -722,7 +746,7 @@ public class DescriptorResourceClient {
         return applicationDeploymentDescriptionMap;
     }
 
-    public List<String> getApplicationDescriptorNames (){
+    public List<String> getApplicationDescriptorNames() {
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_NAMES);
         ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
@@ -731,12 +755,12 @@ public class DescriptorResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -747,7 +771,7 @@ public class DescriptorResourceClient {
         return descriptorNameList.getDescriptorNames();
     }
 
-    public void removeApplicationDescriptor (String serviceName, String hostName, String applicationName){
+    public void removeApplicationDescriptor(String serviceName, String hostName, String applicationName) {
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_DELETE);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("serviceName", serviceName);
@@ -760,12 +784,12 @@ public class DescriptorResourceClient {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
-        } else if (status == ClientConstant.HTTP_UNAUTHORIZED){
-            webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, callback.getPassword(userName)));
-            response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).delete(ClientResponse.class);
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
+            response = builder.accept(MediaType.TEXT_PLAIN).delete(ClientResponse.class);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK ) {
+            if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);

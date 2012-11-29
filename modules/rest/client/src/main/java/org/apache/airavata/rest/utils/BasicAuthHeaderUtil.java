@@ -21,7 +21,11 @@
 
 package org.apache.airavata.rest.utils;
 
+import com.sun.jersey.api.client.WebResource;
+import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.commons.codec.binary.Base64;
+
+import javax.ws.rs.core.MultivaluedMap;
 
 public class BasicAuthHeaderUtil {
     /**
@@ -37,5 +41,12 @@ public class BasicAuthHeaderUtil {
         String credentials = userName + ":" + password;
         String encodedString = new String(Base64.encodeBase64(credentials.getBytes()));
         return "Basic " + encodedString;
+    }
+
+    public static WebResource.Builder getBuilder(WebResource webResource, MultivaluedMap queryParams, String userName, String password) {
+        if (queryParams != null){
+            webResource = webResource.queryParams(queryParams);
+        }
+        return webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, password));
     }
 }
