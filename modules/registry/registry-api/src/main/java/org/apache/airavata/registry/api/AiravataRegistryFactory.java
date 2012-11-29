@@ -27,14 +27,11 @@ import java.net.URL;
 import java.util.Properties;
 
 import org.apache.airavata.common.exception.AiravataConfigurationException;
-import org.apache.airavata.registry.api.exception.RegistryAccessorInstantiateException;
-import org.apache.airavata.registry.api.exception.RegistryAccessorInvalidException;
-import org.apache.airavata.registry.api.exception.RegistryAccessorNotFoundException;
-import org.apache.airavata.registry.api.exception.RegistryAccessorUndefinedException;
+import org.apache.airavata.registry.api.exception.*;
+import org.apache.airavata.registry.api.util.RegistrySettings;
 
 public class AiravataRegistryFactory {
 
-	private static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
 	private static final String REGISTRY_ACCESSOR_CLASS = "class.registry.accessor";
 	private static AiravataRegistryConnectionDataProvider dataProvider;
 
@@ -103,42 +100,33 @@ public class AiravataRegistryFactory {
 			RegistryAccessorUndefinedException,
 			RegistryAccessorInstantiateException,
 			AiravataConfigurationException {
-		Properties properties = new Properties();
-		URL url = AiravataRegistryFactory.class.getClassLoader().getResource(
-				REPOSITORY_PROPERTIES);
-		if (url != null) {
-			try {
-				properties.load(url.openStream());
-				String provRegAccessorClass = properties.getProperty(
-						registryClassKey, null);
-				if (provRegAccessorClass == null) {
-					throw new RegistryAccessorUndefinedException();
-				} else {
-					try {
-						Class<?> classInstance = AiravataRegistryFactory.class
-								.getClassLoader().loadClass(
-										provRegAccessorClass);
-						return classInstance.newInstance();
-					} catch (ClassNotFoundException e) {
-						throw new RegistryAccessorNotFoundException(
-								provRegAccessorClass, e);
-					} catch (InstantiationException e) {
-						throw new RegistryAccessorInstantiateException(
-								provRegAccessorClass, e);
-					} catch (IllegalAccessException e) {
-						throw new RegistryAccessorInstantiateException(
-								provRegAccessorClass, e);
-					}
-				}
-			} catch (IOException e) {
-				throw new AiravataConfigurationException(
-						"Error reading the configuration file", e);
-			}
-		}else{
-			throw new AiravataConfigurationException(
-					"Error loading the configuration file");
-		}
-	}
+
+        try {
+            String provRegAccessorClass = RegistrySettings.getSetting(REGISTRY_ACCESSOR_CLASS);
+            if (provRegAccessorClass == null) {
+                throw new RegistryAccessorUndefinedException();
+            } else {
+                try {
+                    Class<?> classInstance = AiravataRegistryFactory.class
+                            .getClassLoader().loadClass(
+                                    provRegAccessorClass);
+                    return classInstance.newInstance();
+                } catch (ClassNotFoundException e) {
+                    throw new RegistryAccessorNotFoundException(
+                            provRegAccessorClass, e);
+                } catch (InstantiationException e) {
+                    throw new RegistryAccessorInstantiateException(
+                            provRegAccessorClass, e);
+                } catch (IllegalAccessException e) {
+                    throw new RegistryAccessorInstantiateException(
+                            provRegAccessorClass, e);
+                }
+            }
+        } catch (RegistrySettingsException e) {
+            throw new AiravataConfigurationException(
+                    "Error reading the configuration file", e);
+        }
+    }
 
 	public static void registerRegistryConnectionDataProvider(AiravataRegistryConnectionDataProvider provider){
 		dataProvider=provider;

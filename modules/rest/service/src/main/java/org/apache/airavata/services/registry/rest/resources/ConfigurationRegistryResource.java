@@ -143,7 +143,6 @@ public class ConfigurationRegistryResource {
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date formattedDate = dateFormat.parse(date);
-            airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
             airavataRegistry.setConfiguration(key, value, formattedDate);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Configuration saved successfully...");
@@ -178,7 +177,6 @@ public class ConfigurationRegistryResource {
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date formattedDate = dateFormat.parse(date);
-            airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
             airavataRegistry.addConfiguration(key, value, formattedDate);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Configuration updated successfully...");

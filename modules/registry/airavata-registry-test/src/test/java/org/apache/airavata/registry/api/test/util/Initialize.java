@@ -21,11 +21,15 @@
 
 package org.apache.airavata.registry.api.test.util;
 
+import org.apache.airavata.common.exception.ServerSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
 import org.apache.airavata.persistance.registry.jpa.resources.Utils;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
+import org.apache.airavata.registry.api.exception.RegistrySettingsException;
+import org.apache.airavata.registry.api.util.RegistrySettings;
 import org.apache.derby.drda.NetworkServerControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,9 +46,6 @@ import java.util.StringTokenizer;
 
 public class Initialize {
     private static final Logger logger = LoggerFactory.getLogger(Initialize.class);
-    public static final String GATEWAY_ID = "gateway.id";
-    public static final String REGISTRY_USER = "registry.user";
-    public static final String REGISTRY_PASSWORD = "registry.password";
     public static final String DERBY_SERVER_MODE_SYS_PROPERTY = "derby.drda.startNetworkServer";
     private NetworkServerControl server;
     private static final String delimiter = ";";
@@ -76,18 +77,18 @@ public class Initialize {
     public void initializeDB() {
         String jdbcUrl = null;
         String jdbcDriver = null;
-        URL resource = this.getClass().getClassLoader().getResource("airavata-server.properties");
-        Properties properties = new Properties();
-        try {
-            properties.load(resource.openStream());
-        } catch (IOException e) {
-            System.out.println("Unable to read repository properties");
+        String jdbcUser = null;
+        String jdbcPassword = null;
+        try{
+            jdbcDriver = RegistrySettings.getSetting("registry.jdbc.driver");
+            jdbcUrl = RegistrySettings.getSetting("registry.jdbc.url");
+            jdbcUser = RegistrySettings.getSetting("registry.jdbc.user");
+            jdbcPassword = RegistrySettings.getSetting("registry.jdbc.password");
+            jdbcUrl = jdbcUrl + "?" + "user=" + jdbcUser + "&" + "password=" + jdbcPassword;
+        } catch (RegistrySettingsException e) {
+            logger.error("Unable to read properties" , e);
         }
-        jdbcDriver = properties.getProperty("registry.jdbc.driver");
-        jdbcUrl = properties.getProperty("registry.jdbc.url");
-        String jdbcUser = properties.getProperty("registry.jdbc.user");
-        String jdbcPassword = properties.getProperty("registry.jdbc.password");
-        jdbcUrl = jdbcUrl + "?" + "user=" + jdbcUser + "&" + "password=" + jdbcPassword;
+
 
         startDerbyInServerMode();
 //      startDerbyInEmbeddedMode();
@@ -117,28 +118,24 @@ public class Initialize {
             }
         }
 
-        GatewayResource gatewayResource = new GatewayResource();
-        gatewayResource.setGatewayName((String) properties.get(GATEWAY_ID));
-        gatewayResource.setOwner((String) properties.get(GATEWAY_ID));
-        gatewayResource.save();
+        try{
+            GatewayResource gatewayResource = new GatewayResource();
+            gatewayResource.setGatewayName(ServerSettings.getDefaultGatewayId());
+            gatewayResource.setOwner(ServerSettings.getDefaultGatewayId());
+            gatewayResource.save();
 
-        UserResource userResource1 = (UserResource) gatewayResource.create(ResourceType.USER);
-        userResource1.setUserName((String) properties.get(REGISTRY_USER));
-        userResource1.setPassword((String) properties.get(REGISTRY_PASSWORD));
-        userResource1.save();
+            UserResource userResource = (UserResource) gatewayResource.create(ResourceType.USER);
+            userResource.setUserName(ServerSettings.getSystemUser());
+            userResource.setPassword(ServerSettings.getSystemUserPassword());
+            userResource.save();
 
-        UserResource userResource2 = (UserResource) gatewayResource.create(ResourceType.USER);
-        userResource2.setUserName("testUser");
-        userResource2.setPassword("testPassword");
-        userResource2.save();
+            WorkerResource workerResource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
+            workerResource.setUser(userResource.getUserName());
+            workerResource.save();
+        } catch (ServerSettingsException e) {
+            logger.error("Unable to read properties" , e);
+        }
 
-        WorkerResource workerResource1 = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
-        workerResource1.setUser(userResource1.getUserName());
-        workerResource1.save();
-
-        WorkerResource workerResource2 = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
-        workerResource2.setUser(userResource2.getUserName());
-        workerResource2.save();
 
     }
 
@@ -174,41 +171,41 @@ public class Initialize {
         BufferedReader reader = null;
         try{
 
-        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("data-derby.sql");
-        reader = new BufferedReader(new InputStreamReader(inputStream));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            line = line.trim();
-            if (line.startsWith("//")) {
-                continue;
-            }
-            if (line.startsWith("--")) {
-                continue;
-            }
-            StringTokenizer st = new StringTokenizer(line);
-            if (st.hasMoreTokens()) {
-                String token = st.nextToken();
-                if ("REM".equalsIgnoreCase(token)) {
+            InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("data-derby.sql");
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (line.startsWith("//")) {
                     continue;
                 }
-            }
-            sql.append(" ").append(line);
+                if (line.startsWith("--")) {
+                    continue;
+                }
+                StringTokenizer st = new StringTokenizer(line);
+                if (st.hasMoreTokens()) {
+                    String token = st.nextToken();
+                    if ("REM".equalsIgnoreCase(token)) {
+                        continue;
+                    }
+                }
+                sql.append(" ").append(line);
 
-            // SQL defines "--" as a comment to EOL
-            // and in Oracle it may contain a hint
-            // so we cannot just remove it, instead we must end it
-            if (line.indexOf("--") >= 0) {
-                sql.append("\n");
+                // SQL defines "--" as a comment to EOL
+                // and in Oracle it may contain a hint
+                // so we cannot just remove it, instead we must end it
+                if (line.indexOf("--") >= 0) {
+                    sql.append("\n");
+                }
+                if ((checkStringBufferEndsWith(sql, delimiter))) {
+                    executeSQL(sql.substring(0, sql.length() - delimiter.length()), conn);
+                    sql.replace(0, sql.length(), "");
+                }
             }
-            if ((checkStringBufferEndsWith(sql, delimiter))) {
-                executeSQL(sql.substring(0, sql.length() - delimiter.length()), conn);
-                sql.replace(0, sql.length(), "");
+            // Catch any statements not followed by ;
+            if (sql.length() > 0) {
+                executeSQL(sql.toString(), conn);
             }
-        }
-        // Catch any statements not followed by ;
-        if (sql.length() > 0) {
-            executeSQL(sql.toString(), conn);
-        }
         }catch (IOException e){
             logger.error("Error occurred while executing SQL script for creating Airavata database", e);
             throw new Exception("Error occurred while executing SQL script for creating Airavata database", e);
@@ -312,3 +309,4 @@ public class Initialize {
         }
     }
 }
+

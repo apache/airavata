@@ -46,6 +46,8 @@ import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.tools.PeriodicExecutorThread;
+import org.apache.airavata.common.exception.ServerSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.client.stub.interpretor.NameValue;
 import org.apache.airavata.common.utils.ServiceUtils;
@@ -87,26 +89,17 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 	public static final String PROXYSERVER = "myproxy.url";
 	public static final String MSGBOX = "msgbox";
 	public static final String GFAC = "gfac";
-	public static final String DSC = "dsc";
 	public static final String BROKER = "broker";
     public static final String MYPROXY_USER = "myproxy.username";
     public static final String MYPROXY_PASS = "myproxy.password";
     public static final String MYPROXY_SERVER = "myproxy.url";
     public static final String MYPROXY_LIFETIME = "myproxy.lifetime";
     public static final String TRUSTED_CERT_LOCATION = "trusted.cert.location";
-    public static final String JCR_USER = "jcr.username";
-    public static final String JCR_PASS = "jcr.password";
-    public static final String SYSTEM_USER = "system.user";
-    public static final String SYSTEM_PASS = "system.password";
-    public static final String SYSTEM_GATEWAY = "system.gateway";
-    public static final String DEFAULT_GATEWAY = "gateway.id";
 
-    public static final String JCR_URL = "jcr.url";
     public static boolean provenance = false;
     public static final String PROVENANCE = "provenance";
     public static  String systemUserName = "";
     public static  String systemUserPW = "";
-    public static  String jcrURL = "";
     public static boolean runInThread = false;
     public static final String RUN_IN_THREAD = "runInThread";
     public static  Boolean gfacEmbeddedMode = false;
@@ -117,7 +110,6 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     public static final int JCR_AVAIALABILITY_WAIT_INTERVAL = 1000 * 10;
     public static final String GFAC_EMBEDDED = "gfac.embedded";
     public static  ConfigurationContext configurationContext;
-    public static final String OUTPUT_DATA_PATH = "outputDataPath";
     public static final String SERVICE_NAME="WorkflowInterpretor";
     public static boolean notInterrupted = true;
     private String gateway;
@@ -129,28 +121,19 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 	protected WIServiceThread thread;
     
     private AiravataAPI getRegistry(){
-        Properties properties = new Properties();
         try {
-
-            URL url = getXBayaPropertiesURL();
-            properties.load(url.openStream());
-            systemUserName = (String)properties.get(SYSTEM_USER);
-            systemUserPW = (String) properties.get(SYSTEM_PASS);
-            jcrURL = (String) properties.get(JCR_URL);
-            gateway = properties.getProperty(DEFAULT_GATEWAY);
+            systemUserName = ServerSettings.getSystemUser();
+            systemUserPW = ServerSettings.getSystemUserPassword();
+            gateway = ServerSettings.getDefaultGatewayId();
             jcrComponentRegistry = new JCRComponentRegistry(systemUserName, systemUserPW);
             return jcrComponentRegistry.getAiravataAPI();
         } catch (RegistryException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (IOException e) {
-			e.printStackTrace();
-		}
+            log.error("Unable to connect to registry", e);
+        } catch (ServerSettingsException e) {
+            log.error("Unable to read the properties file", e);
+        }
         return null;
     }
-
-	private URL getXBayaPropertiesURL() {
-		return this.getClass().getClassLoader().getResource("airavata-server.properties");
-	}
 
     public void startUp(final ConfigurationContext configctx, AxisService service) {
     	new Thread(){
@@ -161,27 +144,19 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 				} catch (InterruptedException e1) {
 					e1.printStackTrace();
 				}
-		        URL url = getXBayaPropertiesURL();
-		        Properties properties = new Properties();
 		        try {
-
-		            properties.load(url.openStream());
                     // Airavata deployer have to configure these properties,but if user send them alone the incoming message
                     // We are overwriting those values only for that particular request
-		            configctx.setProperty(MYPROXY_PASS, properties.get(MYPROXY_PASS));
-		            configctx.setProperty(MYPROXY_USER, properties.get(MYPROXY_USER));
-		            configctx.setProperty(MYPROXY_LIFETIME,properties.getProperty(MYPROXY_LIFETIME));
-                    configctx.setProperty(TRUSTED_CERT_LOCATION,properties.getProperty(TRUSTED_CERT_LOCATION));
-                    configctx.setProperty(MYPROXY_SERVER,properties.getProperty(MYPROXY_SERVER));
-//		            systemUserName = (String)properties.get(JCR_USER);
-//		            systemUserPW = (String) properties.get(JCR_PASS);
-//		            jcrURL = (String) properties.get(JCR_URL);
-		            provenanceWriterThreadPoolSize = Integer.parseInt((String) properties.get(PROVENANCE_WRITER_THREAD_POOL_SIZE));
-		            if("true".equals(properties.get(PROVENANCE))){
+		            configctx.setProperty(MYPROXY_PASS, ServerSettings.getSetting(MYPROXY_PASS));
+		            configctx.setProperty(MYPROXY_USER, ServerSettings.getSetting(MYPROXY_USER));
+		            configctx.setProperty(MYPROXY_LIFETIME,ServerSettings.getSetting(MYPROXY_LIFETIME));
+                    configctx.setProperty(TRUSTED_CERT_LOCATION,ServerSettings.getSetting(TRUSTED_CERT_LOCATION));
+                    configctx.setProperty(MYPROXY_SERVER,ServerSettings.getSetting(MYPROXY_SERVER));
+		            provenanceWriterThreadPoolSize = Integer.parseInt((String) ServerSettings.getSetting(PROVENANCE_WRITER_THREAD_POOL_SIZE));
+		            if("true".equals(ServerSettings.getSetting(PROVENANCE))){
 		                provenance = true;
 		                runner = new PredicatedTaskRunner(provenanceWriterThreadPoolSize);
 		                try {
-//		                    jcrComponentRegistry = new JCRComponentRegistry(systemUserName,systemUserPW);
                             List<HostDescription> hostList = getDefinedHostDescriptions();
                             for(HostDescription host:hostList){
                                 // This will avoid the changes user is doing to one of the predefined Hosts during a restart of the system
@@ -197,13 +172,13 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
                     }else{
 		                provenance = false;
 		            }
-		            if("true".equals(properties.get(RUN_IN_THREAD))){
+		            if("true".equals(ServerSettings.getSetting(RUN_IN_THREAD))){
 		                runInThread = true;
 		            }else{
 		                runInThread = false;
 		            }
 
-                     if("true".equals(properties.get(GFAC_EMBEDDED))){
+                     if("true".equals(ServerSettings.getSetting(GFAC_EMBEDDED))){
 		                gfacEmbeddedMode = true;
 		            }else{
 		                gfacEmbeddedMode = false;
@@ -224,7 +199,9 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 		        } catch (URISyntaxException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}
+				} catch (ServerSettingsException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
                 WorkflowInterpretorSkeleton.configurationContext = configctx;
     		}
     	}.start();
@@ -267,15 +244,15 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
              s = setupAndLaunch(workflowAsString, topic,
                     user,inputs, configuration, runInThread, workflowContextHeaderBuilder);
         } catch (XMLStreamException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.error(e.getMessage());
         } catch (RepositoryException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.error(e.getMessage());
         } catch (MalformedURLException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.error(e.getMessage());
         } catch (RegistryException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.error(e.getMessage());
         } catch (AiravataAPIInvocationException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.error(e.getMessage());
         }
         return s;
     }
@@ -311,9 +288,9 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
             configuration.put(GFAC, gfac);
             configuration.put(MSGBOX, msgBox);
         } catch (XmlException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.error(e.getMessage());
         } catch (AiravataAPIInvocationException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.error(e.getMessage());
         }
         return new WorkflowContextHeaderBuilder(parse.getContextHeader());
     }

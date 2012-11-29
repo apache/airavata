@@ -21,6 +21,7 @@
 
 package org.apache.airavata.services.registry.rest.utils;
 
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.registry.api.Gateway;
 import org.apache.airavata.rest.mappings.utils.RestServicesConstants;
 
@@ -36,16 +37,7 @@ public class RegistryListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         try {
             ServletContext servletContext = servletContextEvent.getServletContext();
-
-            URL url = this.getClass().getClassLoader().
-                    getResource(RestServicesConstants.AIRAVATA_SERVER_PROPERTIES);
-            Properties properties = new Properties();
-            try {
-                properties.load(url.openStream());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            String gatewayID = properties.getProperty(RestServicesConstants.GATEWAY_ID);
+            String gatewayID = ServerSettings.getDefaultGatewayId();
             Gateway gateway =  new Gateway(gatewayID);
 
             servletContext.setAttribute(RestServicesConstants.GATEWAY, gateway);
