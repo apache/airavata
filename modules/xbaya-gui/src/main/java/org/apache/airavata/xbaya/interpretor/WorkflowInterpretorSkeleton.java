@@ -85,14 +85,14 @@ import org.slf4j.LoggerFactory;
 public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     private static final Logger log = LoggerFactory.getLogger(WorkflowInterpretorSkeleton.class);
 
-	public static final String PROXYSERVER = "myproxy.url";
+//	public static final String PROXYSERVER = "myproxy.url";
 	public static final String MSGBOX = "msgbox";
 	public static final String GFAC = "gfac";
 	public static final String BROKER = "broker";
-    public static final String MYPROXY_USER = "myproxy.username";
-    public static final String MYPROXY_PASS = "myproxy.password";
-    public static final String MYPROXY_SERVER = "myproxy.url";
-    public static final String MYPROXY_LIFETIME = "myproxy.lifetime";
+    public static final String MYPROXY_USER = "myproxy.user";
+    public static final String MYPROXY_PASS = "myproxy.pass";
+    public static final String MYPROXY_SERVER = "myproxy.server";
+    public static final String MYPROXY_LIFETIME = "myproxy.life";
     public static final String TRUSTED_CERT_LOCATION = "trusted.cert.location";
 
     public static boolean provenance = false;
@@ -125,7 +125,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 			try {
 				systemUserName = ServerSettings.getSystemUser();
 				systemUserPW = ServerSettings.getSystemUserPassword();
-				gateway = ServerSettings.getDefaultGatewayId();
+				gateway = ServerSettings.getSystemUserGateway();
 				airavataAPI = AiravataAPIFactory.getAPI(gateway, systemUserName);
 			} catch (ServerSettingsException e) {
 				log.error("Unable to read the properties file", e);
@@ -242,7 +242,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 
         String s = null;
         try {
-             s = setupAndLaunch(workflowAsString, topic,
+             s = setupAndLaunch(workflowAsString, topic, ServerSettings.getDefaultGatewayId(),
                     user,inputs, configuration, runInThread, workflowContextHeaderBuilder);
         } catch (XMLStreamException e) {
             log.error(e.getMessage());
@@ -253,6 +253,8 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         } catch (RegistryException e) {
             log.error(e.getMessage());
         } catch (AiravataAPIInvocationException e) {
+            log.error(e.getMessage());
+        } catch (ServerSettingsException e) {
             log.error(e.getMessage());
         }
         return s;
@@ -296,7 +298,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         return new WorkflowContextHeaderBuilder(parse.getContextHeader());
     }
 
-    private String setupAndLaunch(String workflowAsString, String topic, String username,
+    private String setupAndLaunch(String workflowAsString, String topic, String gatewayId, String username,
                                   NameValue[] inputs,Map<String,String>configurations,boolean inNewThread,WorkflowContextHeaderBuilder builder) throws XMLStreamException, MalformedURLException, RepositoryException, RegistryException, AiravataAPIInvocationException {
         System.err.println("Launch is called for topi:");
 
@@ -335,7 +337,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         }
         WorkflowInterpretorEventListener listener = null;
         WorkflowInterpreter interpreter = null;
-        AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(gateway, username);
+        AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(gatewayId, username);
 		WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow,topic,conf.getMessageBoxURL(), conf.getBrokerURL(), airavataAPI, conf, null, null);
         workflowInterpreterConfiguration.setGfacEmbeddedMode(gfacEmbeddedMode);
         workflowInterpreterConfiguration.setActOnProvenance(provenance);
@@ -406,7 +408,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 		configuration.setMyProxyPort(XBayaConstants.DEFAULT_MYPROXY_PORT);
         //This null check will fix some test failures
         if (WorkflowInterpretorSkeleton.configurationContext != null) {
-            configuration.setMyProxyServer(findValue(vals, PROXYSERVER, (String) WorkflowInterpretorSkeleton.configurationContext.getProperty(MYPROXY_SERVER)));
+            configuration.setMyProxyServer(findValue(vals, MYPROXY_SERVER, (String) WorkflowInterpretorSkeleton.configurationContext.getProperty(MYPROXY_SERVER)));
             configuration.setMyProxyPassphrase(findValue(vals, MYPROXY_PASS, (String) WorkflowInterpretorSkeleton.configurationContext.getProperty(MYPROXY_PASS)));
             configuration.setMyProxyUsername(findValue(vals, MYPROXY_USER, (String) WorkflowInterpretorSkeleton.configurationContext.getProperty(MYPROXY_USER)));
             configuration.setTrustedCertLocation(findValue(vals, TRUSTED_CERT_LOCATION, (String) WorkflowInterpretorSkeleton.configurationContext.getProperty(TRUSTED_CERT_LOCATION)));

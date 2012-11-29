@@ -37,7 +37,7 @@ public class PublishWorkflowResourceTest extends AbstractResourceTest {
         super.setUp();
         gatewayResource = super.getGatewayResource();
         publishWorkflowResource = gatewayResource.createPublishedWorkflow("workflow1");
-        publishWorkflowResource.setCreatedUser("testUser");
+        publishWorkflowResource.setCreatedUser("admin");
         publishWorkflowResource.setContent("testContent");
         Calendar calender = Calendar.getInstance();
         java.util.Date d = calender.getTime();

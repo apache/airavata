@@ -21,8 +21,6 @@
 package org.apache.airavata.core.gfac.context;
 
 import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.registry.api.AiravataRegistry2;
-
 
 public class GFacConfiguration {
 
