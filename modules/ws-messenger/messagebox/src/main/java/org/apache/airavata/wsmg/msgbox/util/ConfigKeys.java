@@ -22,7 +22,7 @@
 package org.apache.airavata.wsmg.msgbox.util;
 
 public class ConfigKeys {
-    public static final String CONFIG_FILE_NAME = "airavata-server.properties";
+//    public static final String CONFIG_FILE_NAME = "airavata-server.properties";
     public static final String MSG_PRESV_DAYS = "messagePreservationDays";
     public static final String MSG_PRESV_HRS = "messagePreservationHours";
     public static final String MSG_PRESV_MINS = "messagePreservationMinutes";

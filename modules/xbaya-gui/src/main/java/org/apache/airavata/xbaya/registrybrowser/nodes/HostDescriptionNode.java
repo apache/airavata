@@ -29,7 +29,6 @@ import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.DeleteAction;
@@ -87,7 +86,7 @@ public class HostDescriptionNode extends AbstractAiravataTreeNode {
     }
     
 	private boolean editHostDescription(JTree tree) {
-		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(getXBayaEngine().getConfiguration().getJcrComponentRegistry().getAiravataAPI(),false,getHostDescription(), null);
+		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(getXBayaEngine().getConfiguration().getAiravataAPI(),false,getHostDescription(), null);
 		hostDescriptionDialog.open();
 		if (hostDescriptionDialog.isHostCreated()) {
 		    refresh();

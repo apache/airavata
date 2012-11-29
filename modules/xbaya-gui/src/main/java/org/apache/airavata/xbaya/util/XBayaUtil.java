@@ -149,10 +149,10 @@ public class XBayaUtil {
 
     public static boolean acquireJCRRegistry(XBayaEngine engine) {
         XBayaConfiguration configuration = engine.getConfiguration();
-        if (configuration.getJcrComponentRegistry() == null) {
+        if (configuration.getAiravataAPI() == null) {
         	updateJCRRegistryInfo(engine);
         }
-        return engine.getConfiguration().getJcrComponentRegistry() != null;
+        return engine.getConfiguration().getAiravataAPI() != null;
     }
     
     public static void updateJCRRegistryInfo(XBayaEngine xbayaEngine) {

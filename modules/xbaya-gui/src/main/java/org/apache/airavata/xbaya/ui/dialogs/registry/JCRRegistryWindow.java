@@ -26,9 +26,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.security.KeyStore;
 
-import javax.jcr.RepositoryException;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -38,9 +36,6 @@ import javax.swing.JPasswordField;
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
-import org.apache.airavata.registry.api.PasswordCallback;
-import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.registry.ComponentRegistryLoader;
@@ -119,16 +114,16 @@ public class JCRRegistryWindow {
 
         AiravataAPI airavataAPI = getAiravataAPI();
 
-        JCRComponentRegistry registry = null;
-        try {
-            registry = new JCRComponentRegistry(airavataAPI);
-        } catch (Exception e) {
-            this.engine.getGUI().getErrorWindow().error(e.getMessage());
-            return;
-        }
+//        JCRComponentRegistry registry = null;
+//        try {
+//            registry = new JCRComponentRegistry(airavataAPI);
+//        } catch (Exception e) {
+//            this.engine.getGUI().getErrorWindow().error(e.getMessage());
+//            return;
+//        }
         XBayaConfiguration configuration = this.engine.getConfiguration();
         this.engine.setAiravataAPI(airavataAPI);
-        configuration.setJcrComponentRegistry(registry);
+        configuration.setAiravataAPI(airavataAPI);
         configuration.setRegigstryUserName(userName);
         configuration.setRegistryPassphrase(password);
         configuration.setRegistryURL(url);

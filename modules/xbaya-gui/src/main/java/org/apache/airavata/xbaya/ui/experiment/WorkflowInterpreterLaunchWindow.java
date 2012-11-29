@@ -164,7 +164,7 @@ public class WorkflowInterpreterLaunchWindow {
             this.workflowInterpreterTextField.setText(XBayaConstants.DEFAULT_WORKFLOW_INTERPRETER_URL);
         }
 
-        AiravataAPI airavataAPI = config.getJcrComponentRegistry().getAiravataAPI();
+        AiravataAPI airavataAPI = config.getAiravataAPI();
         if (null != airavataAPI) {
             this.RegistryTextField.setText(config.getRegistryURL());
         } else {
@@ -374,7 +374,7 @@ public class WorkflowInterpreterLaunchWindow {
                             ,null,configuration.getMessageBoxURL().toASCIIString());
                     stub._getServiceClient().addHeader(AXIOMUtil.stringToOM(XMLUtil.xmlElementToString(builder.getXml())));
                     stub.launchWorkflow(workflow.toXMLText(), topicString, inputNameVals);
-                    AiravataAPI registry = engine.getConfiguration().getJcrComponentRegistry().getAiravataAPI();
+                    AiravataAPI registry = engine.getConfiguration().getAiravataAPI();
                     registry.getProvenanceManager().setExperimentName(topicString, instanceNameFinal);
                     registry.getProvenanceManager().setExperimentUser(topicString, registry.getAiravataManager().getUser().getUserName());
                 } catch (Exception e) {

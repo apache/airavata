@@ -1,16 +1,19 @@
 package org.apache.airavata.services.registry.rest.security.local;
 
-import org.apache.airavata.common.utils.DBUtil;
-import org.apache.airavata.services.registry.rest.utils.WebAppUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.servlet.ServletContext;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import javax.servlet.ServletContext;
+
+import org.apache.airavata.common.utils.DBUtil;
+import org.apache.airavata.registry.api.util.RegistrySettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * User store to maintain internal DB database.
@@ -22,11 +25,11 @@ public class LocalUserStore {
     private DBUtil dbUtil;
 
     public LocalUserStore(ServletContext servletContext) throws Exception {
-        Properties properties = WebAppUtil.getAiravataProperties(servletContext);
-        dbUtil = new DBUtil(properties.getProperty("registry.jdbc.url"),
-                properties.getProperty("registry.jdbc.user"),
-                properties.getProperty("registry.jdbc.password"),
-                        properties.getProperty("registry.jdbc.driver"));
+//        Properties properties = WebAppUtil.getAiravataProperties(servletContext);
+        dbUtil = new DBUtil(RegistrySettings.getSetting("registry.jdbc.url"),
+        		RegistrySettings.getSetting("registry.jdbc.user"),
+        		RegistrySettings.getSetting("registry.jdbc.password"),
+        		RegistrySettings.getSetting("registry.jdbc.driver"));
 
         dbUtil.init();
     }

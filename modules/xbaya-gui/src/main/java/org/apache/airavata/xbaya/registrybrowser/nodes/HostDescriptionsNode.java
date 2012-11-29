@@ -30,15 +30,14 @@ import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.HostDescription;
-//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.xbaya.model.registrybrowser.HostDescriptions;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.AddAction;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.DeleteAction;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.RefreshAction;
 import org.apache.airavata.xbaya.ui.dialogs.descriptors.HostDescriptionDialog;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class HostDescriptionsNode extends AbstractAiravataTreeNode {
     private HostDescriptions hostDescriptions;
@@ -86,7 +85,7 @@ public class HostDescriptionsNode extends AbstractAiravataTreeNode {
             deleteHostDescription(tree);
             return true;
         } else if (action.equals(AddAction.ID)) {
-            HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(getXBayaEngine().getConfiguration().getJcrComponentRegistry().getAiravataAPI(), null);
+            HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(getXBayaEngine().getConfiguration().getAiravataAPI(), null);
             hostDescriptionDialog.open();
             if (hostDescriptionDialog.isHostCreated()) {
                 refresh();

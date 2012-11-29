@@ -22,14 +22,15 @@ package org.apache.airavata.services.gfac.axis2.reciever;
  */
 
 import java.io.StringReader;
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
@@ -43,9 +44,11 @@ import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.util.RegistryUtils;
 import org.apache.airavata.registry.api.util.WebServiceUtil;
-import org.apache.airavata.schemas.gfac.*;
+import org.apache.airavata.schemas.gfac.Parameter;
+import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.services.gfac.axis2.GFacService;
 import org.apache.airavata.services.gfac.axis2.util.GFacServiceOperations;
@@ -324,7 +327,7 @@ public class GFacMessageReciever implements MessageReceiver {
      *
      */
     private AiravataRegistry2 getRegistry(ConfigurationContext context) {
-        return RegistryUtils.getRegistryFromConfig(this.getClass().getClassLoader().getResource(REPOSITORY_PROPERTIES));
+        return RegistryUtils.getRegistryFromServerSettings();
     }
 
     private String getOriginalServiceName(MessageContext messageContext) {

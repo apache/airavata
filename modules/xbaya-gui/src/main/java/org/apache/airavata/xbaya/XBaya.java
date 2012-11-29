@@ -24,7 +24,6 @@ package org.apache.airavata.xbaya;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
@@ -275,7 +274,7 @@ public class XBaya {
                     logger.error(message);
                     this.config.addError(new WorkflowException(message));
                 }
-                this.config.setJcrComponentRegistry(new JCRComponentRegistry(this.config.getAiravataAPI()));
+                this.config.setAiravataAPI(this.config.getAiravataAPI());
                 index++;
             }
         } catch (ArrayIndexOutOfBoundsException e) {

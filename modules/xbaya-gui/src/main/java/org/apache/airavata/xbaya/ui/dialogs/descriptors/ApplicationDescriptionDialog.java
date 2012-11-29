@@ -50,13 +50,10 @@ import javax.swing.SwingConstants;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-//import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
@@ -67,6 +64,7 @@ import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLinkButton;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
 import org.apache.xmlbeans.XmlException;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class ApplicationDescriptionDialog extends JDialog implements ActionListener {
     /**
@@ -121,7 +119,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     	setOriginalDeploymentDescription(originalDeploymentDescription);
     	setOriginalHost(originalHost);
     	setOriginalService(originalService);
-        setRegistry(engine.getConfiguration().getJcrComponentRegistry().getAiravataAPI());
+        setRegistry(engine.getConfiguration().getAiravataAPI());
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent arg0) {
@@ -356,7 +354,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             lnkNewHost.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     try {
-                        HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine.getConfiguration().getJcrComponentRegistry().getAiravataAPI(), null);
+                        HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine.getConfiguration().getAiravataAPI(), null);
                         hostDescriptionDialog.setLocationRelativeTo(getContentPane());
                         hostDescriptionDialog.open();
 

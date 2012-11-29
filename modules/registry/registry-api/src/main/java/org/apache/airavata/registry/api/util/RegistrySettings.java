@@ -24,7 +24,6 @@ package org.apache.airavata.registry.api.util;
 import java.net.URL;
 import java.util.Properties;
 
-import org.apache.airavata.common.exception.ServerSettingsException;
 import org.apache.airavata.registry.api.exception.RegistrySettingsException;
 import org.apache.airavata.registry.api.exception.RegistrySettingsLoadException;
 import org.apache.airavata.registry.api.exception.UnspecifiedRegistrySettingsException;

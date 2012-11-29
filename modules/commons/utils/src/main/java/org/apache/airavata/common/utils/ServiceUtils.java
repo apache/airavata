@@ -22,13 +22,9 @@
 package org.apache.airavata.common.utils;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.SocketException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
+import org.apache.airavata.common.exception.ServerSettingsException;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.TransportInDescription;
 import org.apache.axis2.util.Utils;
@@ -37,26 +33,24 @@ import org.slf4j.LoggerFactory;
 
 public class ServiceUtils {
     private static final Logger log = LoggerFactory.getLogger(ServiceUtils.class);
-    private static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
+//    private static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
     public static final String IP = "ip";
     public static final String PORT = "port";
 
 	public static String generateServiceURLFromConfigurationContext(
 			ConfigurationContext context, String serviceName) throws IOException {
-		URL url = ServiceUtils.class.getClassLoader()
-				.getResource(REPOSITORY_PROPERTIES);
+//		URL url = ServiceUtils.class.getClassLoader()
+//				.getResource(REPOSITORY_PROPERTIES);
 		 String localAddress = null;
         String port = null;
-        Properties properties = new Properties();
+//        Properties properties = new Properties();
         try {
-            properties.load(url.openStream());
-            localAddress = (String) properties.get(IP);
-            port = (String) properties.get(PORT);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//            properties.load(url.openStream());
+            localAddress = ServerSettings.getSetting(IP);
+            port = (String) ServerSettings.getSetting(PORT);
+        } catch (ServerSettingsException e) {
+			e.printStackTrace();
+		}
         if(localAddress == null){
         try {
             localAddress = Utils.getIpAddress(context

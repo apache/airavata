@@ -21,6 +21,14 @@
 
 package org.apache.airavata.core.gfac.services.impl;
 
+import java.lang.reflect.Array;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
@@ -36,22 +44,11 @@ import org.apache.airavata.core.gfac.extension.ExitableChain;
 import org.apache.airavata.core.gfac.extension.PostExecuteChain;
 import org.apache.airavata.core.gfac.extension.PreExecuteChain;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.jcr.RepositoryException;
-import java.lang.reflect.Array;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
 
 /**
  * This generic service implementation will load Registry service and Data Catalog from property file using (Apache
@@ -60,7 +57,7 @@ import java.util.Properties;
  */
 public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
-    public static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
+//    public static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
 
     private static Logger log = LoggerFactory.getLogger(PropertiesBasedServiceImpl.class+
             "." + WorkflowContextHeaderBuilder.getCurrentContextHeader().getWorkflowMonitoringContext().getExperimentId());

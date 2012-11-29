@@ -49,12 +49,10 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.ComponentException;
-import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.graph.GraphException;
@@ -63,8 +61,8 @@ import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.ws.monitor.MonitorException;
 import org.apache.airavata.ws.monitor.event.Event;
-import org.apache.airavata.ws.monitor.event.EventListener;
 import org.apache.airavata.ws.monitor.event.Event.Type;
+import org.apache.airavata.ws.monitor.event.EventListener;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.XBayaConstants;
@@ -830,9 +828,8 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
     private void loadDefaultGraph() {
         if (this.engine.getConfiguration().getWorkflow() != null) {
             this.newGraphCanvas(true, false);
-            JCRComponentRegistry jcrComponentRegistry = this.engine.getConfiguration().getJcrComponentRegistry();
             try {
-            	String xml = jcrComponentRegistry.getAiravataAPI().getWorkflowManager().getWorkflowAsString(this.engine.getConfiguration().getWorkflow());
+            	String xml = this.engine.getConfiguration().getAiravataAPI().getWorkflowManager().getWorkflowAsString(this.engine.getConfiguration().getWorkflow());
                 XmlElement xwf = XMLUtil.stringToXmlElement(xml);
                 Workflow workflow = new Workflow(xwf);
                 setWorkflow(workflow);

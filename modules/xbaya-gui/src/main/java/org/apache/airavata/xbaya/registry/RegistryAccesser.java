@@ -31,12 +31,10 @@ import javax.xml.namespace.QName;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
-//import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.workflow.model.component.ComponentException;
-import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaConfiguration;
@@ -47,6 +45,7 @@ import org.apache.airavata.xbaya.ui.experiment.RegistryWorkflowPublisherWindow;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.ietf.jgss.GSSCredential;
 import org.xmlpull.infoset.XmlElement;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class RegistryAccesser {
 
@@ -69,8 +68,7 @@ public class RegistryAccesser {
     }
 
     private AiravataAPI connectToRegistry() {
-        JCRComponentRegistry jcrComponentRegistry = this.engine.getConfiguration().getJcrComponentRegistry();
-        return jcrComponentRegistry.getAiravataAPI();
+        return this.engine.getConfiguration().getAiravataAPI();
     }
 
     /**

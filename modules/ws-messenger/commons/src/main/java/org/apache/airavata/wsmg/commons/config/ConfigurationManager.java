@@ -21,33 +21,39 @@
 
 package org.apache.airavata.wsmg.commons.config;
 
-import java.util.Properties;
+import org.apache.airavata.common.exception.ServerSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 
 public class ConfigurationManager {
 
-    protected Properties configurations = new Properties();
-
-    public ConfigurationManager(String configFileName) {
-        try {
-            configurations.load(this.getClass().getClassLoader().getResourceAsStream(configFileName));
-        } catch (Exception e) {
-            throw new RuntimeException("unable to load configurations:::" + configFileName, e);
-        }
-    }
+//    protected Properties configurations = new Properties();
+    
+//    public ConfigurationManager(String configFileName) {
+//        try {
+//            configurations.load(this.getClass().getClassLoader().getResourceAsStream(configFileName));
+//        } catch (Exception e) {
+//            throw new RuntimeException("unable to load configurations:::" + configFileName, e);
+//        }
+//    }
 
     public String getConfig(String configName) {
-        return configurations.getProperty(configName);
+        try {
+			return ServerSettings.getSetting(configName);
+		} catch (ServerSettingsException e) {
+			e.printStackTrace();
+			return null;
+		}
     }
 
     public String getConfig(String configName, String defaultVal) {
-        return configurations.getProperty(configName, defaultVal);
+        return ServerSettings.getSetting(configName, defaultVal);
     }
 
     public int getConfig(String configName, int defaultVal) {
-        return Integer.parseInt(configurations.getProperty(configName, Integer.toString(defaultVal)));
+        return Integer.parseInt(getConfig(configName, Integer.toString(defaultVal)));
     }
 
     public long getConfig(String configName, long defaultVal) {
-        return Long.parseLong(configurations.getProperty(configName, Long.toString(defaultVal)));
+        return Long.parseLong(getConfig(configName, Long.toString(defaultVal)));
     }
 }
