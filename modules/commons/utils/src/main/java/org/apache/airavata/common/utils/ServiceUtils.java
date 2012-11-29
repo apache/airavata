@@ -49,7 +49,8 @@ public class ServiceUtils {
             localAddress = ServerSettings.getSetting(IP);
             port = (String) ServerSettings.getSetting(PORT);
         } catch (ServerSettingsException e) {
-			e.printStackTrace();
+			//we will ignore this exception since the properties file will not contain the values
+			//when it is ok to retrieve them from the axis2 context
 		}
         if(localAddress == null){
         try {
