@@ -21,28 +21,23 @@
 
 package org.apache.airavata.persistance.registry.jpa.util;
 
-import org.apache.airavata.common.exception.ServerSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
-import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
 import org.apache.airavata.persistance.registry.jpa.resources.Utils;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 import org.apache.airavata.registry.api.exception.RegistrySettingsException;
 import org.apache.airavata.registry.api.util.RegistrySettings;
+import org.apache.derby.drda.NetworkServerControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.derby.drda.NetworkServerControl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.net.URL;
 import java.sql.*;
-import java.util.Properties;
 import java.util.StringTokenizer;
 
 public class Initialize {
@@ -121,23 +116,21 @@ public class Initialize {
 
         try{
             GatewayResource gatewayResource = new GatewayResource();
-            gatewayResource.setGatewayName(ServerSettings.getDefaultGatewayId());
-            gatewayResource.setOwner(ServerSettings.getDefaultGatewayId());
+            gatewayResource.setGatewayName(RegistrySettings.getSetting("default.registry.gateway"));
+            gatewayResource.setOwner(RegistrySettings.getSetting("default.registry.gateway"));
             gatewayResource.save();
 
             UserResource userResource = (UserResource) gatewayResource.create(ResourceType.USER);
-            userResource.setUserName(ServerSettings.getSystemUser());
-            userResource.setPassword(ServerSettings.getSystemUserPassword());
+            userResource.setUserName(RegistrySettings.getSetting("default.registry.user"));
+            userResource.setPassword(RegistrySettings.getSetting("default.registry.password"));
             userResource.save();
 
             WorkerResource workerResource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
             workerResource.setUser(userResource.getUserName());
             workerResource.save();
-        } catch (ServerSettingsException e) {
-            logger.error("Unable to read properties" , e);
+        } catch (RegistrySettingsException e) {
+            logger.error("Unable to read properties", e);
         }
-
-
     }
 
     public static boolean isDatabaseStructureCreated(String tableName, Connection conn) {
