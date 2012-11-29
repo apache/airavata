@@ -61,6 +61,15 @@ public class ServerSettings {
     	throw new UnspecifiedServerSettingsException(key);
     }
     
+    public static String getSetting(String key, String defaultValue) throws ServerSettingsException{
+    	validateSuccessfulPropertyFileLoad();
+    	if (properties.containsKey(key)){
+    		return properties.getProperty(key);
+    	}else{
+    		return defaultValue;
+    	}
+    }
+    
     public static String getDefaultGatewayId()throws ServerSettingsException{
     	return getSetting(DEFAULT_GATEWAY_ID);
     }

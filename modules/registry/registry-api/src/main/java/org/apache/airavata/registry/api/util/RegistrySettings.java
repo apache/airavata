@@ -24,6 +24,7 @@ package org.apache.airavata.registry.api.util;
 import java.net.URL;
 import java.util.Properties;
 
+import org.apache.airavata.common.exception.ServerSettingsException;
 import org.apache.airavata.registry.api.exception.RegistrySettingsException;
 import org.apache.airavata.registry.api.exception.RegistrySettingsLoadException;
 import org.apache.airavata.registry.api.exception.UnspecifiedRegistrySettingsException;
@@ -56,6 +57,15 @@ public class RegistrySettings {
     		return properties.getProperty(key);
     	}
     	throw new UnspecifiedRegistrySettingsException(key);
+    }
+    
+    public static String getSetting(String key, String defaultValue) throws RegistrySettingsException{
+    	validateSuccessfulPropertyFileLoad();
+    	if (properties.containsKey(key)){
+    		return properties.getProperty(key);
+    	}else{
+    		return defaultValue;
+    	}
     }
     
     public static String getRegistryAccessorClass() throws RegistrySettingsException{
