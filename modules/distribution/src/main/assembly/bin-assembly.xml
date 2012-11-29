@@ -120,6 +120,7 @@
 			<outputDirectory>standalone-server/conf</outputDirectory>
 			<includes>
 				<include>airavata-server.properties</include>
+				<include>registry.properties</include>
 				<include>log4j.properties</include>
 				<include>host.xml</include>
 				<include>persistence.xml</include>
