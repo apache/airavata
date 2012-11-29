@@ -20,11 +20,15 @@
 */
 package org.apache.airavata.registry.services;
 
+import org.apache.airavata.common.exception.ServerSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
 import org.apache.airavata.persistance.registry.jpa.resources.Utils;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
+import org.apache.airavata.registry.api.exception.RegistrySettingsException;
+import org.apache.airavata.registry.api.util.RegistrySettings;
 import org.apache.airavata.registry.services.utils.DatabaseCreator;
 import org.apache.airavata.registry.services.utils.JdbcStorage;
 import org.apache.axis2.context.ConfigurationContext;
@@ -45,10 +49,14 @@ public class RegistryService implements ServiceLifeCycle {
     private static final Logger logger = LoggerFactory.getLogger(RegistryService.class);
 
     public static final String PERSISTANT_DATA = "Configuration";
-    public static final String GATEWAY_ID = "gateway.id";
-    public static final String REGISTRY_USER = "registry.user";
-    public static final String REGISTRY_PASSWORD = "registry.password";
+    public static final String REGISTRY_DEFAULT_GATEWAY_ID = "default.registry.gateway";
+    public static final String REGISTRY_DEFAULT_USER = "default.registry.user";
+    public static final String REGISTRY_DEFAULT_USER_PASSWORD = "default.registry.user.password";
     public static final String DERBY_SERVER_MODE_SYS_PROPERTY = "derby.drda.startNetworkServer";
+    public static final String REGISTRY_JDBC_DRIVER = "registry.jdbc.driver";
+    public static final String REGISTRY_JDBC_URL = "registry.jdbc.url";
+    public static final String REGISTRY_JDBC_USER = "registry.jdbc.user";
+    public static final String REGISTRY_JDBC_PASSWORD = "registry.jdbc.password";
     private JdbcStorage db;
     private NetworkServerControl server;
 
@@ -87,18 +95,15 @@ public class RegistryService implements ServiceLifeCycle {
     private void initializeDB() {
         String jdbcUrl = null;
         String jdbcDriver = null;
-        URL resource = this.getClass().getClassLoader().getResource("airavata-server.properties");
-        Properties properties = new Properties();
-        try {
-            properties.load(resource.openStream());
-        } catch (IOException e) {
-            logger.error("Unable to read repository properties", e);
+        try{
+            jdbcDriver = RegistrySettings.getSetting(REGISTRY_JDBC_DRIVER);
+            jdbcUrl = RegistrySettings.getSetting(REGISTRY_JDBC_URL);
+            String jdbcUser = RegistrySettings.getSetting(REGISTRY_JDBC_USER);
+            String jdbcPassword = RegistrySettings.getSetting(REGISTRY_JDBC_PASSWORD);
+            jdbcUrl = jdbcUrl + "?" + "user=" + jdbcUser + "&" + "password=" + jdbcPassword;
+        } catch (RegistrySettingsException e) {
+            logger.error("Unable to read properties" , e);
         }
-        jdbcDriver = properties.getProperty("registry.jdbc.driver");
-        jdbcUrl = properties.getProperty("registry.jdbc.url");
-        String jdbcUser = properties.getProperty("registry.jdbc.user");
-        String jdbcPassword = properties.getProperty("registry.jdbc.password");
-        jdbcUrl = jdbcUrl + "?" + "user=" + jdbcUser + "&" + "password=" + jdbcPassword;
 
         if (Utils.getDBType().equals("derby") && Utils.isDerbyStartEnabled()) {
             startDerbyInServerMode();
@@ -129,17 +134,22 @@ public class RegistryService implements ServiceLifeCycle {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
         }
-        GatewayResource gatewayResource = new GatewayResource();
-        gatewayResource.setGatewayName((String) properties.get(GATEWAY_ID));
-        gatewayResource.setOwner((String) properties.get(GATEWAY_ID));
-        gatewayResource.save();
-        UserResource userResource = (UserResource) gatewayResource.create(ResourceType.USER);
-        userResource.setUserName((String) properties.get(REGISTRY_USER));
-        userResource.setPassword((String) properties.get(REGISTRY_PASSWORD));
-        userResource.save();
-        WorkerResource workerResource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
-        workerResource.setUser(userResource.getUserName());
-        workerResource.save();
+        try{
+            GatewayResource gatewayResource = new GatewayResource();
+            gatewayResource.setGatewayName(RegistrySettings.getSetting(REGISTRY_DEFAULT_GATEWAY_ID));
+            gatewayResource.setOwner(RegistrySettings.getSetting(REGISTRY_DEFAULT_GATEWAY_ID));
+            gatewayResource.save();
+            UserResource userResource = (UserResource) gatewayResource.create(ResourceType.USER);
+            userResource.setUserName(RegistrySettings.getSetting(REGISTRY_DEFAULT_USER));
+            userResource.setPassword(RegistrySettings.getSetting(REGISTRY_DEFAULT_USER_PASSWORD));
+            userResource.save();
+            WorkerResource workerResource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
+            workerResource.setUser(userResource.getUserName());
+            workerResource.save();
+        } catch (RegistrySettingsException e) {
+            logger.error("Unable to read properties", e);
+        }
+
     }
 
     @Override

@@ -46,24 +46,15 @@ import org.apache.airavata.persistance.registry.jpa.model.Users;
 import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
 import org.apache.airavata.registry.api.AiravataRegistryConnectionDataProvider;
 import org.apache.airavata.registry.api.AiravataRegistryFactory;
+import org.apache.airavata.registry.api.exception.RegistrySettingsException;
 import org.apache.airavata.registry.api.exception.UnknownRegistryConnectionDataException;
+import org.apache.airavata.registry.api.util.RegistrySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
 public class Utils {
     private final static Logger logger = LoggerFactory.getLogger(Utils.class);
-
-    public static Properties loadProperties(){
-        URL resource = Utils.class.getClassLoader().getResource("airavata-server.properties");
-        Properties properties = new Properties();
-        try {
-            properties.load(resource.openStream());
-        } catch (IOException e) {
-            logger.error("Unable to read airavata-server.properties ..", e);
-        }
-        return properties;
-    }
 
     public static String getJDBCFullURL(){
 		String jdbcUrl = getJDBCURL();
@@ -76,10 +67,10 @@ public class Utils {
     public static String getJDBCURL(){
     	try {
             return getProvider().getValue(JPAConstants.KEY_JDBC_URL).toString();
-		} catch (UnknownRegistryConnectionDataException e) {
+		} catch (RegistrySettingsException e) {
             logger.error(e.getMessage(), e);
             return null;
-		}
+        }
     }
 
     public static String getHost(){
@@ -124,7 +115,7 @@ public class Utils {
             if("true".equals(s)){
                 return true;
             }
-        } catch (UnknownRegistryConnectionDataException e) {
+        } catch (RegistrySettingsException e) {
             logger.error(e.getMessage(), e);
             return false;
         }
@@ -146,36 +137,40 @@ public class Utils {
     	try {
 			if (getProvider()!=null){
 				return getProvider().getValue(JPAConstants.KEY_JDBC_USER).toString();
-			}
-		} catch (UnknownRegistryConnectionDataException e) {
+			} else {
+                return RegistrySettings.getSetting(JPAConstants.KEY_JDBC_USER);
+            }
+		} catch (RegistrySettingsException e) {
             logger.error(e.getMessage(), e);
+            return null;
 		}
-        Properties properties = loadProperties();
-        return properties.getProperty(JPAConstants.KEY_JDBC_USER);
     }
 
     public static String getJDBCPassword(){
     	try {
 			if (getProvider()!=null){
 				return getProvider().getValue(JPAConstants.KEY_JDBC_PASSWORD).toString();
-			}
-		} catch (UnknownRegistryConnectionDataException e) {
+			}else {
+                return RegistrySettings.getSetting(JPAConstants.KEY_JDBC_PASSWORD);
+            }
+		} catch (RegistrySettingsException e) {
             logger.error(e.getMessage(), e);
+            return null;
 		}
-        Properties properties = loadProperties();
-        return properties.getProperty(JPAConstants.KEY_JDBC_PASSWORD);
+
     }
 
     public static String getJDBCDriver(){
     	try {
 			if (getProvider()!=null){
 				return getProvider().getValue(JPAConstants.KEY_JDBC_DRIVER).toString();
-			}
-		} catch (UnknownRegistryConnectionDataException e) {
+			}  else {
+                return RegistrySettings.getSetting(JPAConstants.KEY_JDBC_DRIVER);
+            }
+		} catch (RegistrySettingsException e) {
             logger.error(e.getMessage(), e);
+            return null;
 		}
-        Properties properties = loadProperties();
-        return properties.getProperty(JPAConstants.KEY_JDBC_DRIVER);
     }
 
     /**

@@ -21,9 +21,10 @@
 
 package org.apache.airavata.registry.api;
 
+import org.apache.airavata.registry.api.exception.RegistrySettingsException;
 import org.apache.airavata.registry.api.exception.UnknownRegistryConnectionDataException;
 
 public interface AiravataRegistryConnectionDataProvider {
 	public void setIdentity(Gateway gateway, AiravataUser use);
-	public Object getValue(String key) throws UnknownRegistryConnectionDataException;
+	public Object getValue(String key) throws RegistrySettingsException;
 }

@@ -34,9 +34,10 @@ import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.tools.PeriodicExecutorThread;
+import org.apache.airavata.common.exception.ServerSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ServiceUtils;
 import org.apache.airavata.core.gfac.context.GFacConfiguration;
-import org.apache.airavata.registry.api.*;
 import org.apache.airavata.services.gfac.axis2.dispatchers.GFacURIBasedDispatcher;
 import org.apache.airavata.services.gfac.axis2.handlers.AmazonSecurityHandler;
 import org.apache.airavata.services.gfac.axis2.handlers.MyProxySecurityHandler;
@@ -56,11 +57,9 @@ public class GFacService implements ServiceLifeCycle {
 
     public static final String SECURITY_CONTEXT = "security_context";
 
-    public static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
-
     public static final int JCR_AVAIALABILITY_WAIT_INTERVAL = 1000 * 10;
 
-    public static final String REGISTRY_USER = "registry.user";
+    public static final String SYSTEM_USER = "system.user";
 
     public static final String SERVICE_NAME = "GFacService";
 
@@ -73,8 +72,8 @@ public class GFacService implements ServiceLifeCycle {
     public static final String MYPROXY_PASS = "myproxy.pass";
     public static final String MYPROXY_LIFE = "myproxy.life";
     public static final String GFAC_CONFIGURATION = "gfacConfiguration";
-    public static final String GATEWAY_ID = "gateway.id";
-    public static final String REGISTRY_PASSWORD = "registry.password";
+    public static final String SYSTEM_GATEWAY = "system.gateway";
+    public static final String SYSTEM_PASSWORD = "system.password";
 //    public static final String REGISTRY_URL = "registry.jdbc.url";
 
     /*
@@ -113,33 +112,31 @@ public class GFacService implements ServiceLifeCycle {
                 String port = null;
                 String username = null;
                 String password = null;
+                String gatewayName = null;
                 AiravataAPI airavataAPI = null;
                 try {
-                    URL url = this.getClass().getClassLoader().getResource(REPOSITORY_PROPERTIES);
                     try {
                         Thread.sleep(JCR_AVAIALABILITY_WAIT_INTERVAL);
                     } catch (InterruptedException e1) {
                         e1.printStackTrace();
-                    }
-                    Properties properties = new Properties();
-                    try {
-                        properties.load(url.openStream());
-                        if (properties.get(REGISTRY_USER) != null) {
-                            username = (String) properties.get(REGISTRY_USER);
+
+                        try {
+                            if (ServerSettings.getSystemUser() != null) {
+                                username = ServerSettings.getSystemUser();
+                            }
+                            if (ServerSettings.getSystemUserPassword() != null) {
+                                password = ServerSettings.getSystemUserPassword();
+                            }
+                            gatewayName = ServerSettings.getDefaultGatewayId();
+                        }catch (ServerSettingsException e) {
+                            log.error("Unable to read properties", e);
                         }
-                        if (properties.get(REGISTRY_PASSWORD) != null) {
-                            password = (String) properties.get(REGISTRY_PASSWORD);
-                        }
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     }
-                    String gatewayName = properties.getProperty(GATEWAY_ID);
+
                     airavataAPI = AiravataAPIFactory.getAPI(gatewayName, username);
                     context.setProperty(GFAC_URL, ServiceUtils.generateServiceURLFromConfigurationContext(context,SERVICE_NAME));
-                    GFacConfiguration gfacConfig = new GFacConfiguration(properties.getProperty(MYPROXY_SERVER),properties.getProperty(MYPROXY_USER),
-                            properties.getProperty(MYPROXY_PASS),Integer.parseInt(properties.getProperty(MYPROXY_LIFE)),airavataAPI,properties.getProperty(TRUSTED_CERT_LOCATION));
+                    GFacConfiguration gfacConfig = new GFacConfiguration(ServerSettings.getSetting(MYPROXY_SERVER),ServerSettings.getSetting(MYPROXY_USER),
+                            ServerSettings.getSetting(MYPROXY_PASS),Integer.parseInt(ServerSettings.getSetting(MYPROXY_LIFE)),airavataAPI,ServerSettings.getSetting(TRUSTED_CERT_LOCATION));
 					context.setProperty(GFAC_CONFIGURATION,
 							gfacConfig);
 					/*

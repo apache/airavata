@@ -281,8 +281,8 @@ public class ExperimentRegistryResource {
         try {
             AiravataExperiment experiment = new AiravataExperiment();
             experiment.setExperimentId(experimentID);
-            Gateway gateway = (Gateway) context.getAttribute(RestServicesConstants.GATEWAY);
-            AiravataUser airavataUser = (AiravataUser) context.getAttribute(RestServicesConstants.REGISTRY_USER);
+            Gateway gateway = airavataRegistry.getGateway();
+            AiravataUser airavataUser = airavataRegistry.getAiravataUser();
             experiment.setGateway(gateway);
             experiment.setUser(airavataUser);
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

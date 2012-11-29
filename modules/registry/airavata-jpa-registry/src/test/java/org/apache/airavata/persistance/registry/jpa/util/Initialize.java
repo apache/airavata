@@ -21,12 +21,16 @@
 
 package org.apache.airavata.persistance.registry.jpa.util;
 
+import org.apache.airavata.common.exception.ServerSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
 import org.apache.airavata.persistance.registry.jpa.resources.Utils;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
+import org.apache.airavata.registry.api.exception.RegistrySettingsException;
+import org.apache.airavata.registry.api.util.RegistrySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.derby.drda.NetworkServerControl;
@@ -43,9 +47,6 @@ import java.util.StringTokenizer;
 
 public class Initialize {
     private static final Logger logger = LoggerFactory.getLogger(Initialize.class);
-    public static final String GATEWAY_ID = "gateway.id";
-    public static final String REGISTRY_USER = "registry.user";
-    public static final String REGISTRY_PASSWORD = "registry.password";
     public static final String DERBY_SERVER_MODE_SYS_PROPERTY = "derby.drda.startNetworkServer";
     private NetworkServerControl server;
     private static final String delimiter = ";";
@@ -77,18 +78,18 @@ public class Initialize {
     public void initializeDB() {
         String jdbcUrl = null;
         String jdbcDriver = null;
-        URL resource = this.getClass().getClassLoader().getResource("airavata-server.properties");
-        Properties properties = new Properties();
-        try {
-            properties.load(resource.openStream());
-        } catch (IOException e) {
-            System.out.println("Unable to read airavata-server.properties");
+        String jdbcUser = null;
+        String jdbcPassword = null;
+        try{
+            jdbcDriver = RegistrySettings.getSetting("registry.jdbc.driver");
+            jdbcUrl = RegistrySettings.getSetting("registry.jdbc.url");
+            jdbcUser = RegistrySettings.getSetting("registry.jdbc.user");
+            jdbcPassword = RegistrySettings.getSetting("registry.jdbc.password");
+            jdbcUrl = jdbcUrl + "?" + "user=" + jdbcUser + "&" + "password=" + jdbcPassword;
+        } catch (RegistrySettingsException e) {
+            logger.error("Unable to read properties" , e);
         }
-        jdbcDriver = properties.getProperty("registry.jdbc.driver");
-        jdbcUrl = properties.getProperty("registry.jdbc.url");
-        String jdbcUser = properties.getProperty("registry.jdbc.user");
-        String jdbcPassword = properties.getProperty("registry.jdbc.password");
-        jdbcUrl = jdbcUrl + "?" + "user=" + jdbcUser + "&" + "password=" + jdbcPassword;
+
 
         startDerbyInServerMode();
 //      startDerbyInEmbeddedMode();
@@ -118,19 +119,24 @@ public class Initialize {
             }
         }
 
-        GatewayResource gatewayResource = new GatewayResource();
-        gatewayResource.setGatewayName((String) properties.get(GATEWAY_ID));
-        gatewayResource.setOwner((String) properties.get(GATEWAY_ID));
-        gatewayResource.save();
+        try{
+            GatewayResource gatewayResource = new GatewayResource();
+            gatewayResource.setGatewayName(ServerSettings.getDefaultGatewayId());
+            gatewayResource.setOwner(ServerSettings.getDefaultGatewayId());
+            gatewayResource.save();
 
-        UserResource userResource = (UserResource) gatewayResource.create(ResourceType.USER);
-        userResource.setUserName((String) properties.get(REGISTRY_USER));
-        userResource.setPassword((String) properties.get(REGISTRY_PASSWORD));
-        userResource.save();
+            UserResource userResource = (UserResource) gatewayResource.create(ResourceType.USER);
+            userResource.setUserName(ServerSettings.getSystemUser());
+            userResource.setPassword(ServerSettings.getSystemUserPassword());
+            userResource.save();
 
-        WorkerResource workerResource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
-        workerResource.setUser(userResource.getUserName());
-        workerResource.save();
+            WorkerResource workerResource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
+            workerResource.setUser(userResource.getUserName());
+            workerResource.save();
+        } catch (ServerSettingsException e) {
+            logger.error("Unable to read properties" , e);
+        }
+
 
     }
 
