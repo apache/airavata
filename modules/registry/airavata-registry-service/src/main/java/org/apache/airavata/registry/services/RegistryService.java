@@ -51,7 +51,7 @@ public class RegistryService implements ServiceLifeCycle {
     public static final String PERSISTANT_DATA = "Configuration";
     public static final String REGISTRY_DEFAULT_GATEWAY_ID = "default.registry.gateway";
     public static final String REGISTRY_DEFAULT_USER = "default.registry.user";
-    public static final String REGISTRY_DEFAULT_USER_PASSWORD = "default.registry.user.password";
+    public static final String REGISTRY_DEFAULT_USER_PASSWORD = "default.registry.password";
     public static final String DERBY_SERVER_MODE_SYS_PROPERTY = "derby.drda.startNetworkServer";
     public static final String REGISTRY_JDBC_DRIVER = "registry.jdbc.driver";
     public static final String REGISTRY_JDBC_URL = "registry.jdbc.url";
