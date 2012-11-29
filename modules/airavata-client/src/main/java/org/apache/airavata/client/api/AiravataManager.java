@@ -127,6 +127,7 @@ public interface AiravataManager {
      * @return url or null if url is not defined
      * @throws AiravataAPIInvocationException
      */
+    @Deprecated
 	public URI getRegistryURL() throws AiravataAPIInvocationException;
 
     /**

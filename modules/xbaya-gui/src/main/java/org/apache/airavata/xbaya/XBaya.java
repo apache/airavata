@@ -275,7 +275,7 @@ public class XBaya {
                     logger.error(message);
                     this.config.addError(new WorkflowException(message));
                 }
-                this.config.setJcrComponentRegistry(new JCRComponentRegistry(this.config.getRegistryUserName(),this.config.getRegistryPassphrase()));
+                this.config.setJcrComponentRegistry(new JCRComponentRegistry(this.config.getAiravataAPI()));
                 index++;
             }
         } catch (ArrayIndexOutOfBoundsException e) {

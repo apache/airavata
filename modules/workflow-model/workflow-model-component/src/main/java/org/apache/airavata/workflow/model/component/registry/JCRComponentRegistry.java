@@ -36,6 +36,7 @@ import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.AiravataRegistryConnectionDataProvider;
 import org.apache.airavata.registry.api.AiravataRegistryFactory;
+import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.util.RegistryConstants;
 import org.apache.airavata.registry.api.util.WebServiceUtil;
@@ -51,6 +52,10 @@ public class JCRComponentRegistry extends ComponentRegistry {
     public static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
 
     private AiravataAPI airavataAPI;
+
+    public JCRComponentRegistry(AiravataAPI airavataAPI) {
+        this.airavataAPI = airavataAPI;
+    }
 
     public JCRComponentRegistry(String username, String password) throws RegistryException {
         String gatewayName=null;
@@ -95,8 +100,8 @@ public class JCRComponentRegistry extends ComponentRegistry {
         try {
             URI baseUri = new URI(registryURL);
             //TODO callback class
-            PasswordCallBackImpl passwordCallBack = new PasswordCallBackImpl(username, password);
-            this.airavataAPI = AiravataAPIFactory.getAPI(baseUri, gatewayName, username, passwordCallBack);
+//            PasswordCallBackImpl passwordCallBack = new PasswordCallBackImpl(username, password);
+            this.airavataAPI = AiravataAPIFactory.getAPI(baseUri, gatewayName, username, (PasswordCallback)null);
         }  catch (URISyntaxException e) {
             log.error("Error initializing Airavata Client");
         } catch (AiravataAPIInvocationException e) {

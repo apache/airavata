@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -35,11 +36,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.jcr.RepositoryException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.tools.PeriodicExecutorThread;
@@ -93,11 +96,16 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     public static final String TRUSTED_CERT_LOCATION = "trusted.cert.location";
     public static final String JCR_USER = "jcr.username";
     public static final String JCR_PASS = "jcr.password";
+    public static final String SYSTEM_USER = "system.user";
+    public static final String SYSTEM_PASS = "system.password";
+    public static final String SYSTEM_GATEWAY = "system.gateway";
+    public static final String DEFAULT_GATEWAY = "gateway.id";
+
     public static final String JCR_URL = "jcr.url";
     public static boolean provenance = false;
     public static final String PROVENANCE = "provenance";
-    public static  String jcrUserName = "";
-    public static  String jcrPassword = "";
+    public static  String systemUserName = "";
+    public static  String systemUserPW = "";
     public static  String jcrURL = "";
     public static boolean runInThread = false;
     public static final String RUN_IN_THREAD = "runInThread";
@@ -112,6 +120,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     public static final String OUTPUT_DATA_PATH = "outputDataPath";
     public static final String SERVICE_NAME="WorkflowInterpretor";
     public static boolean notInterrupted = true;
+    private String gateway;
 
 	protected static final String SERVICE_URL = "interpreter_service_url";
 
@@ -122,12 +131,14 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     private AiravataAPI getRegistry(){
         Properties properties = new Properties();
         try {
+
             URL url = getXBayaPropertiesURL();
             properties.load(url.openStream());
-            jcrUserName = (String)properties.get(JCR_USER);
-            jcrPassword = (String) properties.get(JCR_PASS);
+            systemUserName = (String)properties.get(SYSTEM_USER);
+            systemUserPW = (String) properties.get(SYSTEM_PASS);
             jcrURL = (String) properties.get(JCR_URL);
-            jcrComponentRegistry = new JCRComponentRegistry(jcrUserName,jcrPassword);
+            gateway = properties.getProperty(DEFAULT_GATEWAY);
+            jcrComponentRegistry = new JCRComponentRegistry(systemUserName, systemUserPW);
             return jcrComponentRegistry.getAiravataAPI();
         } catch (RegistryException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -153,6 +164,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 		        URL url = getXBayaPropertiesURL();
 		        Properties properties = new Properties();
 		        try {
+
 		            properties.load(url.openStream());
                     // Airavata deployer have to configure these properties,but if user send them alone the incoming message
                     // We are overwriting those values only for that particular request
@@ -161,19 +173,19 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 		            configctx.setProperty(MYPROXY_LIFETIME,properties.getProperty(MYPROXY_LIFETIME));
                     configctx.setProperty(TRUSTED_CERT_LOCATION,properties.getProperty(TRUSTED_CERT_LOCATION));
                     configctx.setProperty(MYPROXY_SERVER,properties.getProperty(MYPROXY_SERVER));
-		            jcrUserName = (String)properties.get(JCR_USER);
-		            jcrPassword = (String) properties.get(JCR_PASS);
-		            jcrURL = (String) properties.get(JCR_URL);
+//		            systemUserName = (String)properties.get(JCR_USER);
+//		            systemUserPW = (String) properties.get(JCR_PASS);
+//		            jcrURL = (String) properties.get(JCR_URL);
 		            provenanceWriterThreadPoolSize = Integer.parseInt((String) properties.get(PROVENANCE_WRITER_THREAD_POOL_SIZE));
 		            if("true".equals(properties.get(PROVENANCE))){
 		                provenance = true;
 		                runner = new PredicatedTaskRunner(provenanceWriterThreadPoolSize);
 		                try {
-		                    jcrComponentRegistry = new JCRComponentRegistry(jcrUserName,jcrPassword);
+//		                    jcrComponentRegistry = new JCRComponentRegistry(systemUserName,systemUserPW);
                             List<HostDescription> hostList = getDefinedHostDescriptions();
                             for(HostDescription host:hostList){
                                 // This will avoid the changes user is doing to one of the predefined Hosts during a restart of the system
-                                AiravataAPI registry = jcrComponentRegistry.getAiravataAPI();
+                                AiravataAPI registry = getRegistry();
 								if(!registry.getApplicationManager().isHostDescriptorExists(host.getType().getHostName())){
                                     log.info("Saving the predefined Host: " + host.getType().getHostName());
                                     registry.getApplicationManager().saveHostDescription(host);
@@ -181,9 +193,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
                             }
 		                } catch (AiravataAPIInvocationException e) {
 		                    e.printStackTrace();
-		                } catch (RegistryException e) {
-                            e.printStackTrace();
-                        }
+		                }
                     }else{
 		                provenance = false;
 		            }
@@ -203,7 +213,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
                     String localAddress = ServiceUtils.generateServiceURLFromConfigurationContext(configctx,SERVICE_NAME);
  					log.info("INTERPRETER_SERVICE_ADDRESS:" + localAddress);
  					configctx.setProperty(SERVICE_URL,new URI(localAddress));
- 					configctx.setProperty(JCR_REG,jcrComponentRegistry.getAiravataAPI());
+ 					configctx.setProperty(JCR_REG,getRegistry());
  					/*
 					 * Heart beat message to registry
 					 */
@@ -250,11 +260,21 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         }
         Map<String, String> configuration = new HashMap<String, String>();
         WorkflowContextHeaderBuilder workflowContextHeaderBuilder = parseContextHeader(workflowContext, configuration);
+        String user = workflowContextHeaderBuilder.getUserIdentifier();
+
         String s = null;
         try {
              s = setupAndLaunch(workflowAsString, topic,
-                    (String) configurationContext.getProperty(MYPROXY_USER), (String) configurationContext.getProperty(MYPROXY_PASS), inputs, configuration, runInThread, workflowContextHeaderBuilder);
+                    user,inputs, configuration, runInThread, workflowContextHeaderBuilder);
         } catch (XMLStreamException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (RepositoryException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (MalformedURLException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (RegistryException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (AiravataAPIInvocationException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         return s;
@@ -298,8 +318,8 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         return new WorkflowContextHeaderBuilder(parse.getContextHeader());
     }
 
-    private String setupAndLaunch(String workflowAsString, String topic, String password, String username,
-                                  NameValue[] inputs,Map<String,String>configurations,boolean inNewThread,WorkflowContextHeaderBuilder builder) throws XMLStreamException {
+    private String setupAndLaunch(String workflowAsString, String topic, String username,
+                                  NameValue[] inputs,Map<String,String>configurations,boolean inNewThread,WorkflowContextHeaderBuilder builder) throws XMLStreamException, MalformedURLException, RepositoryException, RegistryException, AiravataAPIInvocationException {
         System.err.println("Launch is called for topi:");
 
         Workflow workflow = null;
@@ -337,8 +357,8 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         }
         WorkflowInterpretorEventListener listener = null;
         WorkflowInterpreter interpreter = null;
-        AiravataAPI registry = getRegistry();
-		WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow,topic,conf.getMessageBoxURL(), conf.getBrokerURL(), registry, conf, null, null);
+        AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(gateway, username);
+		WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow,topic,conf.getMessageBoxURL(), conf.getBrokerURL(), airavataAPI, conf, null, null);
         workflowInterpreterConfiguration.setGfacEmbeddedMode(gfacEmbeddedMode);
         workflowInterpreterConfiguration.setActOnProvenance(provenance);
         // WorkflowInterpreter object should create prior creation of Listener, because listener needs the threadlocal variable

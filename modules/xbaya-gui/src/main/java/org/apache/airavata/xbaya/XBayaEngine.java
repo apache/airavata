@@ -67,6 +67,8 @@ public class XBayaEngine {
 
     private WorkflowInterpreter workflowInterpreter;
 
+    private AiravataAPI airavataAPI;
+
     /**
      * Constructs a ApplicationClient.
      *
@@ -271,4 +273,11 @@ public class XBayaEngine {
 		}
 	}
 
- }
+    public AiravataAPI getAiravataAPI() {
+        return airavataAPI;
+    }
+
+    public void setAiravataAPI(AiravataAPI airavataAPI) {
+        this.airavataAPI = airavataAPI;
+    }
+}
