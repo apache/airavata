@@ -83,7 +83,7 @@ public class WorkerResourceTest extends AbstractResourceTest {
 
     public void testSave() throws Exception {
         workerResource.save();
-        assertTrue("worker resource saved successfully", gatewayResource.isExists(ResourceType.USER, "testUser"));
+        assertTrue("worker resource saved successfully", gatewayResource.isExists(ResourceType.USER, "admin"));
         //remove
 //        ResourceUtils.removeGatewayWorker(gatewayResource, userResource);
 //        gatewayResource.remove(ResourceType.USER, "testUser");

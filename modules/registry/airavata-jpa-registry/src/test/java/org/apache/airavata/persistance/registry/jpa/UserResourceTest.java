@@ -37,7 +37,7 @@ public class UserResourceTest extends AbstractResourceTest {
 
     public void testSave() throws Exception {
         userResource.save();
-        assertTrue("user resource saved successfully", gatewayResource.isExists(ResourceType.USER, "testUser"));
+        assertTrue("user resource saved successfully", gatewayResource.isExists(ResourceType.USER, "admin"));
         //remove user
 //        gatewayResource.remove(ResourceType.USER, "testUser");
     }

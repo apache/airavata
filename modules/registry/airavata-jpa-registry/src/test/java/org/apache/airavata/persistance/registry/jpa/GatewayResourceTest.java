@@ -48,7 +48,7 @@ public class GatewayResourceTest extends AbstractResourceTest {
         workerResource = super.getWorkerResource();
         userResource = super.getUserResource();
         if (gatewayResource == null) {
-            gatewayResource = (GatewayResource) ResourceUtils.getGateway("gateway1");
+            gatewayResource = (GatewayResource) ResourceUtils.getGateway("default");
         }
         projectResource = (ProjectResource) gatewayResource.create(ResourceType.PROJECT);
         projectResource.setName("testProject");
@@ -89,7 +89,7 @@ public class GatewayResourceTest extends AbstractResourceTest {
         userWorkflowResource.save();
 
         publishWorkflowResource.setName("pubworkflow1");
-        publishWorkflowResource.setCreatedUser("testUser");
+        publishWorkflowResource.setCreatedUser("admin");
         publishWorkflowResource.setContent("testContent");
         Calendar c = Calendar.getInstance();
         java.util.Date da = c.getTime();
@@ -109,7 +109,7 @@ public class GatewayResourceTest extends AbstractResourceTest {
         gatewayResource.setOwner("owner1");
         gatewayResource.save();
 
-        boolean gatewayExist = ResourceUtils.isGatewayExist("gateway1");
+        boolean gatewayExist = ResourceUtils.isGatewayExist("default");
         assertTrue("The gateway exisits", gatewayExist);
 
     }
@@ -129,7 +129,7 @@ public class GatewayResourceTest extends AbstractResourceTest {
 
     @org.junit.Test
     public void testIsExists() throws Exception {
-        assertTrue(gatewayResource.isExists(ResourceType.USER, "testUser"));
+        assertTrue(gatewayResource.isExists(ResourceType.USER, "admin"));
         assertTrue(gatewayResource.isExists(ResourceType.PUBLISHED_WORKFLOW, "pubworkflow1"));
         assertTrue(gatewayResource.isExists(ResourceType.HOST_DESCRIPTOR, "testHostDesc"));
         assertTrue(gatewayResource.isExists(ResourceType.SERVICE_DESCRIPTOR, "testServiceDesc"));
@@ -139,7 +139,7 @@ public class GatewayResourceTest extends AbstractResourceTest {
 
     @org.junit.Test
     public void testGet() throws Exception {
-        assertNotNull(gatewayResource.get(ResourceType.USER, "testUser"));
+        assertNotNull(gatewayResource.get(ResourceType.USER, "admin"));
         assertNotNull(gatewayResource.get(ResourceType.PUBLISHED_WORKFLOW, "pubworkflow1"));
         assertNotNull(gatewayResource.get(ResourceType.HOST_DESCRIPTOR, "testHostDesc"));
         assertNotNull(gatewayResource.get(ResourceType.SERVICE_DESCRIPTOR, "testServiceDesc"));
@@ -204,7 +204,7 @@ public class GatewayResourceTest extends AbstractResourceTest {
         Timestamp currentTime = new Timestamp(d.getTime());
 
         publishWorkflowResource.setName("pubworkflow1");
-        publishWorkflowResource.setCreatedUser("testUser");
+        publishWorkflowResource.setCreatedUser("admin");
         publishWorkflowResource.setContent("testContent");
         Calendar c = Calendar.getInstance();
         java.util.Date da = c.getTime();

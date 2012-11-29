@@ -38,11 +38,11 @@ public abstract class AbstractResourceTest extends TestCase {
     public void setUp() throws Exception {
         initialize = new Initialize();
         initialize.initializeDB();
-        gatewayResource = (GatewayResource)ResourceUtils.getGateway("gateway1");
-        workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayName(), "testUser");
+        gatewayResource = (GatewayResource)ResourceUtils.getGateway("default");
+        workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayName(), "admin");
         userResource = (UserResource)gatewayResource.create(ResourceType.USER);
-        userResource.setUserName("testUser");
-        userResource.setPassword("testUser");
+        userResource.setUserName("admin");
+        userResource.setPassword("admin");
     }
 
     @Override
