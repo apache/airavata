@@ -493,7 +493,7 @@ public class RegistryClient extends AiravataRegistry2 {
 
 
     public List<WorkflowInstance> getExperimentWorkflowInstances(String experimentId) throws RegistryException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return getProvenanceResourceClient().getExperimentWorkflowInstances(experimentId);
     }
 
 
