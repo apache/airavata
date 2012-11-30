@@ -1004,6 +1004,7 @@ public class AiravataClient extends Observable implements AiravataAPI {
 	private void launchWorkflow(final String topic, final NameValue[] inputs,
 			final WorkflowContextHeaderBuilder builder) {
 		try {
+			builder.getWorkflowMonitoringContext().setExperimentId(topic);
 			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(
 					getClientConfiguration().getXbayaServiceURL().toString());
 			stub._getServiceClient().addHeader(
