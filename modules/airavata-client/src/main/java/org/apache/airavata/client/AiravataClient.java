@@ -407,6 +407,8 @@ public class AiravataClient extends Observable implements AiravataAPI {
 			String workflowInstanceName, WorkflowContextHeaderBuilder builder) throws AiravataConfigurationException {
 		String worflowoutput = null;
 		try {
+            builder.setUserIdentifier(getCurrentUser());
+            System.out.println("**********CURRENT USER **************" + getCurrentUser());
 			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(
 					getClientConfiguration().getXbayaServiceURL().toString());
 			OMElement omElement = AXIOMUtil.stringToOM(XMLUtil
@@ -500,6 +502,8 @@ public class AiravataClient extends Observable implements AiravataAPI {
 
         //TODO - fix user passing
         builder.setUserIdentifier(getCurrentUser());
+        System.out.println("**********CURRENT USER1 **************" + getCurrentUser());
+
 		try {
 			runPreWorkflowExecutionTasks(topic, user, metadata, experimentName);
 		} catch (RegistryException e) {
@@ -716,8 +720,18 @@ public class AiravataClient extends Observable implements AiravataAPI {
 	public String runWorkflow(String workflowName, List<WorkflowInput> inputs,
 			String user, String metadata, String workflowInstanceName,
 			String experimentID) throws AiravataAPIInvocationException {
+        Workflow workflowObj = null;
 		try {
-			Workflow workflowObj = getWorkflow(workflowName);
+            if(getWorkflowManager().isWorkflowExists(workflow)) {
+                workflowObj = getWorkflow(workflowName);
+            }else {
+                try{
+                    workflowObj = getWorkflowManager().getWorkflowFromString(workflowName);
+                }catch (AiravataAPIInvocationException e){
+                    getWorkflowManager().getWorkflow(workflowName);
+                }
+
+            }
 			String workflowString = XMLUtil.xmlElementToString(workflowObj
                     .toXML());
 			List<WSComponentPort> ports;
