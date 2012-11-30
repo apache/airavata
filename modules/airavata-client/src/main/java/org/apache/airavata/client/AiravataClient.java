@@ -37,6 +37,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -92,7 +93,7 @@ import org.apache.axis2.AxisFault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AiravataClient implements AiravataAPI {
+public class AiravataClient extends Observable implements AiravataAPI {
 
 	private static final Logger log = LoggerFactory
 			.getLogger(AiravataClient.class);

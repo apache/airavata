@@ -770,10 +770,15 @@ public class XBayaConfiguration extends Observable implements Observer {
             ((Observable) this.airavataAPI).deleteObserver(this);
         }
         this.airavataAPI = airavataAPI;
-        triggerObservers(airavataAPI);
         if (airavataAPI != null && airavataAPI instanceof Observable) {
             ((Observable) airavataAPI).addObserver(this);
         }
+        if (getJcrComponentRegistry()==null){
+        	setJcrComponentRegistry(new JCRComponentRegistry(airavataAPI));
+        }else{
+        	getJcrComponentRegistry().setAiravataAPI(airavataAPI);
+        }
+        triggerObservers(getJcrComponentRegistry());
     }
 
     public URI getRegistryURL() {
