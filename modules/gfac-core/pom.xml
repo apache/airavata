@@ -140,11 +140,63 @@
             <version>0.2.9</version>
             <type>jar</type>
         </dependency>
-         <!--dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-jpa-registry</artifactId>
-            <version>${project.version}</version>
-        </dependency-->
+        <!-- Unicore dependencies -->
+        <dependency>
+            <groupId>eu.unicore</groupId>
+            <artifactId>ogsabes-client</artifactId>
+            <version>1.5.1-rc3</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.unicore</groupId>
+            <artifactId>ogsabes-types</artifactId>
+            <version>1.5.1-rc3</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.unicore</groupId>
+            <artifactId>uas-client</artifactId>
+            <version>1.5.1-rc3</version>
+        </dependency>
+        <dependency>
+            <groupId>de.fzj.unicore</groupId>
+            <artifactId>jsdl-xmlbeans</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.unicore</groupId>
+            <artifactId>cis-u6-infoprovider-types</artifactId>
+            <version>1.5.1-rc3</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.unicore</groupId>
+            <artifactId>uas-types</artifactId>
+            <version>1.5.1-rc3</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.unicore</groupId>
+            <artifactId>uas-types</artifactId>
+            <version>1.5.1-rc3</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.unicore</groupId>
+            <artifactId>cis-u6-infoprovider-types</artifactId>
+            <version>1.5.1-rc3</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.unicore.services</groupId>
+            <artifactId>use-wsrfclient</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.unicore</groupId>
+            <artifactId>uftp</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+        <!-- unicore dependencies finished -->
     </dependencies>
 
 </project>
