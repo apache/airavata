@@ -185,10 +185,12 @@ public class DescriptorResourceClient {
 
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK) {
+            if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_BAD_REQUEST) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else if (status == ClientConstant.HTTP_BAD_REQUEST){
+                return null;
             }
         }
 
@@ -633,10 +635,12 @@ public class DescriptorResourceClient {
 
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK) {
+            if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_BAD_REQUEST) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else if (status == ClientConstant.HTTP_BAD_REQUEST){
+                return null;
             }
         }
 
