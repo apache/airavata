@@ -218,6 +218,9 @@ public class ProjectResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
             response = builder.get(ClientResponse.class);
             status = response.getStatus();
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return null;
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -229,6 +232,7 @@ public class ProjectResourceClient {
     }
 
     public List<WorkspaceProject> getWorkspaceProjects() {
+        List<WorkspaceProject> workspaceProjectsList = new ArrayList<WorkspaceProject>();
         webResource = getProjectRegistryBaseResource().path(ResourcePathConstants.ProjectResourcePathConstants.GET_PROJECTS);
         ClientResponse response = webResource.get(ClientResponse.class);
         int status = response.getStatus();
@@ -241,6 +245,9 @@ public class ProjectResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
             response = builder.get(ClientResponse.class);
             status = response.getStatus();
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return workspaceProjectsList;
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -250,7 +257,7 @@ public class ProjectResourceClient {
 
         WorkspaceProjectList workspaceProjectList = response.getEntity(WorkspaceProjectList.class);
         WorkspaceProject[] workspaceProjects = workspaceProjectList.getWorkspaceProjects();
-        List<WorkspaceProject> workspaceProjectsList = new ArrayList<WorkspaceProject>();
+
         for (WorkspaceProject workspaceProject : workspaceProjects) {
             workspaceProjectsList.add(workspaceProject);
         }

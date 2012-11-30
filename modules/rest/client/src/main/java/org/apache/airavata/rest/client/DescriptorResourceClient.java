@@ -224,6 +224,7 @@ public class DescriptorResourceClient {
     }
 
     public List<HostDescription> getHostDescriptors() {
+        List<HostDescription> hostDescriptions = new ArrayList<HostDescription>();
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.GET_HOST_DESCS);
         ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
@@ -239,6 +240,10 @@ public class DescriptorResourceClient {
 
             status = response.getStatus();
 
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return hostDescriptions;
+            }
+
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -247,7 +252,7 @@ public class DescriptorResourceClient {
         }
         HostDescriptionList hostDescriptionList = response.getEntity(HostDescriptionList.class);
         HostDescriptor[] hostDescriptors = hostDescriptionList.getHostDescriptions();
-        List<HostDescription> hostDescriptions = new ArrayList<HostDescription>();
+
         for (HostDescriptor hostDescriptor : hostDescriptors) {
             HostDescription hostDescription = DescriptorUtil.createHostDescription(hostDescriptor);
             hostDescriptions.add(hostDescription);
@@ -271,6 +276,9 @@ public class DescriptorResourceClient {
             response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
             status = response.getStatus();
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return new ArrayList<String>();
+            }
 
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
@@ -418,6 +426,7 @@ public class DescriptorResourceClient {
     }
 
     public List<ServiceDescription> getServiceDescriptors() {
+        List<ServiceDescription> serviceDescriptions = new ArrayList<ServiceDescription>();
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.GET_SERVICE_DESCS);
         ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
@@ -433,16 +442,21 @@ public class DescriptorResourceClient {
 
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK) {
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return serviceDescriptions;
+            }
+            if (status != ClientConstant.HTTP_OK ) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             }
+
+
         }
 
         ServiceDescriptionList serviceDescriptionList = response.getEntity(ServiceDescriptionList.class);
         ServiceDescriptor[] serviceDescriptors = serviceDescriptionList.getServiceDescriptions();
-        List<ServiceDescription> serviceDescriptions = new ArrayList<ServiceDescription>();
+
         for (ServiceDescriptor serviceDescriptor : serviceDescriptors) {
             ServiceDescription serviceDescription = DescriptorUtil.createServiceDescription(serviceDescriptor);
             serviceDescriptions.add(serviceDescription);
@@ -669,6 +683,10 @@ public class DescriptorResourceClient {
 
             status = response.getStatus();
 
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return null;
+            }
+
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -683,6 +701,7 @@ public class DescriptorResourceClient {
 
     public Map<String, ApplicationDeploymentDescription> getApplicationDescriptors(String serviceName) {
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_ALL_DESCS_SERVICE);
+        Map<String, ApplicationDeploymentDescription> applicationDeploymentDescriptionMap = new HashMap<String, ApplicationDeploymentDescription>();
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("serviceName", serviceName);
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
@@ -699,6 +718,10 @@ public class DescriptorResourceClient {
 
             status = response.getStatus();
 
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return applicationDeploymentDescriptionMap;
+            }
+
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -708,7 +731,7 @@ public class DescriptorResourceClient {
 
         ApplicationDescriptorList applicationDescriptorList = response.getEntity(ApplicationDescriptorList.class);
         ApplicationDescriptor[] applicationDescriptors = applicationDescriptorList.getApplicationDescriptors();
-        Map<String, ApplicationDeploymentDescription> applicationDeploymentDescriptionMap = new HashMap<String, ApplicationDeploymentDescription>();
+
         for (ApplicationDescriptor applicationDescriptor : applicationDescriptors) {
             ApplicationDeploymentDescription applicationDeploymentDescription = DescriptorUtil.createApplicationDescription(applicationDescriptor);
             applicationDeploymentDescriptionMap.put(applicationDescriptor.getHostdescName(), applicationDeploymentDescription);
@@ -732,6 +755,10 @@ public class DescriptorResourceClient {
             response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
             status = response.getStatus();
+
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return null;
+            }
 
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
@@ -763,6 +790,10 @@ public class DescriptorResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
             response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
+
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return new ArrayList<String>();
+            }
 
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));

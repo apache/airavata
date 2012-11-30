@@ -165,7 +165,9 @@ public class UserWorkflowResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
             response = builder.accept(MediaType.APPLICATION_FORM_URLENCODED).get(ClientResponse.class);
             status = response.getStatus();
-
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return null;
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -178,6 +180,7 @@ public class UserWorkflowResourceClient {
     }
 
     public Map<String, String> getWorkflows() {
+        Map<String, String> userWFMap = new HashMap<String, String>();
         webResource = getUserWFRegistryBaseResource().path(ResourcePathConstants.UserWFConstants.GET_WORKFLOWS);
         ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
@@ -190,7 +193,9 @@ public class UserWorkflowResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
             response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return userWFMap;
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -198,7 +203,6 @@ public class UserWorkflowResourceClient {
             }
         }
 
-        Map<String, String> userWFMap = new HashMap<String, String>();
         WorkflowList workflowList = response.getEntity(WorkflowList.class);
         List<Workflow> workflows = workflowList.getWorkflowList();
 

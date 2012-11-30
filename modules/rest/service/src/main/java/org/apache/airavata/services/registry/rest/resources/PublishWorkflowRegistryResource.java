@@ -71,7 +71,7 @@ public class PublishWorkflowRegistryResource {
                 builder.entity("True");
                 return builder.build();
             } else {
-                Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
+                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity("False");
                 return builder.build();
             }
@@ -177,7 +177,6 @@ public class PublishWorkflowRegistryResource {
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("Could not find workflow graph...");
                 return builder.build();
             }
         } catch (PublishedWorkflowDoesNotExistsException e) {
@@ -215,7 +214,6 @@ public class PublishWorkflowRegistryResource {
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("No published workflows available...");
                 return builder.build();
             }
         } catch (RegistryException e) {
@@ -256,7 +254,6 @@ public class PublishWorkflowRegistryResource {
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("Publish workflows does not exists...");
                 return builder.build();
             }
 

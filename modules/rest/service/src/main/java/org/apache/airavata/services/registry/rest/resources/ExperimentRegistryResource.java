@@ -109,7 +109,6 @@ public class ExperimentRegistryResource {
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("No experiments found...");
                 return builder.build();
             }
         } catch (RegistryException e) {
@@ -148,7 +147,6 @@ public class ExperimentRegistryResource {
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("No experiments available...");
                 return builder.build();
             }
         } catch (RegistryException e) {
@@ -193,7 +191,6 @@ public class ExperimentRegistryResource {
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("No experiments available...");
                 return builder.build();
             }
         } catch (RegistryException e) {
@@ -244,7 +241,6 @@ public class ExperimentRegistryResource {
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("No experiments available...");
                 return builder.build();
             }
         } catch (RegistryException e) {
@@ -297,7 +293,7 @@ public class ExperimentRegistryResource {
             builder.entity(e.getMessage());
             return builder.build();
         } catch (WorkspaceProjectDoesNotExistsException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.NOT_FOUND);
+            Response.ResponseBuilder builder = Response.status(Response.Status.BAD_REQUEST);
             builder.entity(e.getMessage());
             return builder.build();
         } catch (RegistryException e) {
@@ -329,7 +325,7 @@ public class ExperimentRegistryResource {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.isExperimentExists(experimentId);
-            Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
+            Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("True");
             return builder.build();
         } catch (ExperimentDoesNotExistsException e) {
@@ -337,7 +333,7 @@ public class ExperimentRegistryResource {
             builder.entity("False");
             return builder.build();
         } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.NOT_FOUND);
+            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity("Exprtiment does not exist...");
             return builder.build();
         } finally {
@@ -364,11 +360,11 @@ public class ExperimentRegistryResource {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.isExperimentExists(experimentId, createIfNotPresentStatus);
-            Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
+            Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("New experiment created...");
             return builder.build();
         } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.NOT_FOUND);
+            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
         } finally {

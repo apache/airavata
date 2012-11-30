@@ -119,7 +119,9 @@ public class ProvenanceResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
             response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
-
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return null;
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -171,6 +173,9 @@ public class ProvenanceResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
             response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return null;
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -221,6 +226,9 @@ public class ProvenanceResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
             response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return null;
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -269,6 +277,9 @@ public class ProvenanceResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
             response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return null;
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -305,6 +316,7 @@ public class ProvenanceResourceClient {
     }
 
     public List<WorkflowInstance> getExperimentWorkflowInstances(String experimentId) {
+        List<WorkflowInstance> workflowInstanceList = new ArrayList<WorkflowInstance>();
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENTWORKFLOWINSTANCES);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("experimentId", experimentId);
@@ -318,6 +330,9 @@ public class ProvenanceResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
             response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return workflowInstanceList;
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -327,7 +342,7 @@ public class ProvenanceResourceClient {
 
         WorkflowInstancesList workflowInstancesList = response.getEntity(WorkflowInstancesList.class);
         WorkflowInstance[] workflowInstances = workflowInstancesList.getWorkflowInstances();
-        List<WorkflowInstance> workflowInstanceList = new ArrayList<WorkflowInstance>();
+
 
         for (WorkflowInstance workflowInstance : workflowInstances) {
             workflowInstanceList.add(workflowInstance);
@@ -455,6 +470,9 @@ public class ProvenanceResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
             response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return null;
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -530,6 +548,9 @@ public class ProvenanceResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
             response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return null;
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -554,6 +575,9 @@ public class ProvenanceResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
             response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return null;
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -566,6 +590,7 @@ public class ProvenanceResourceClient {
     }
 
     public List<ExperimentData> getAllExperimentMetaInformation(String user) {
+        List<ExperimentData> experimentDatas = new ArrayList<ExperimentData>();
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_ALL_EXPERIMENT_METAINFORMATION);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("user", user);
@@ -579,6 +604,9 @@ public class ProvenanceResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
             response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return experimentDatas;
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -588,7 +616,7 @@ public class ProvenanceResourceClient {
 
         ExperimentDataList experimentDataList = response.getEntity(ExperimentDataList.class);
         List<ExperimentDataImpl> dataList = experimentDataList.getExperimentDataList();
-        List<ExperimentData> experimentDatas = new ArrayList<ExperimentData>();
+
         for (ExperimentDataImpl experimentData : dataList) {
             experimentDatas.add(experimentData);
         }
@@ -596,6 +624,7 @@ public class ProvenanceResourceClient {
     }
 
     public List<ExperimentData> searchExperiments(String user, String experimentNameRegex) {
+        List<ExperimentData> experimentDatas = new ArrayList<ExperimentData>();
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.SEARCH_EXPERIMENTS);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("user", user);
@@ -610,6 +639,9 @@ public class ProvenanceResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
             response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return experimentDatas;
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -619,7 +651,7 @@ public class ProvenanceResourceClient {
 
         ExperimentDataList experimentDataList = response.getEntity(ExperimentDataList.class);
         List<ExperimentDataImpl> dataList = experimentDataList.getExperimentDataList();
-        List<ExperimentData> experimentDatas = new ArrayList<ExperimentData>();
+
         for (ExperimentDataImpl experimentData : dataList) {
             experimentDatas.add(experimentData);
         }
@@ -640,6 +672,9 @@ public class ProvenanceResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
             response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return new ArrayList<String>();
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -653,6 +688,7 @@ public class ProvenanceResourceClient {
     }
 
     public List<ExperimentData> getExperimentByUser(String user) {
+        List<ExperimentData> experimentDatas = new ArrayList<ExperimentData>();
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENT_USER);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("username", user);
@@ -666,6 +702,9 @@ public class ProvenanceResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
             response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return experimentDatas;
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -674,7 +713,7 @@ public class ProvenanceResourceClient {
         }
         ExperimentDataList experimentDataList = response.getEntity(ExperimentDataList.class);
         List<ExperimentDataImpl> dataList = experimentDataList.getExperimentDataList();
-        List<ExperimentData> experimentDatas = new ArrayList<ExperimentData>();
+
         for (ExperimentDataImpl experimentData : dataList) {
             experimentDatas.add(experimentData);
         }
@@ -771,6 +810,9 @@ public class ProvenanceResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
             response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return null;
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -797,6 +839,9 @@ public class ProvenanceResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
             response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return null;
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -829,6 +874,9 @@ public class ProvenanceResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
             response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return null;
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -881,6 +929,9 @@ public class ProvenanceResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
             response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return null;
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -962,6 +1013,9 @@ public class ProvenanceResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
             response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return null;
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
