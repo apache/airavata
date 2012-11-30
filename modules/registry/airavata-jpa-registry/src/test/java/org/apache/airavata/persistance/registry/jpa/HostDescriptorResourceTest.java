@@ -33,7 +33,7 @@ public class HostDescriptorResourceTest extends AbstractResourceTest {
         super.setUp();
         gatewayResource = super.getGatewayResource();
         hostDescriptorResource = gatewayResource.createHostDescriptorResource("testHostDesc");
-        hostDescriptorResource.setUserName("testUser");
+        hostDescriptorResource.setUserName("admin");
         hostDescriptorResource.setContent("testContent");
     }
 

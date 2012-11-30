@@ -41,7 +41,7 @@ public class ApplicationDescriptorResourceTest extends AbstractResourceTest {
         applicationDescriptorResouce.setServiceDescName("testServiceDesc");
         applicationDescriptorResouce.setName("testAppDesc");
         applicationDescriptorResouce.setContent("testContent");
-        applicationDescriptorResouce.setUpdatedUser("testUser");
+        applicationDescriptorResouce.setUpdatedUser("admin");
         applicationDescriptorResouce.save();
 
         assertTrue("application descriptor saved successfully", gatewayResource.isExists(ResourceType.APPLICATION_DESCRIPTOR, "testAppDesc"));

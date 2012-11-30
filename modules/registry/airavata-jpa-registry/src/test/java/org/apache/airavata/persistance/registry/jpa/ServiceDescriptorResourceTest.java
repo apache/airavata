@@ -33,7 +33,7 @@ public class ServiceDescriptorResourceTest extends AbstractResourceTest {
         super.setUp();
         gatewayResource = super.getGatewayResource();
         serviceDescriptorResource = gatewayResource.createServiceDescriptorResource("testServiceDesc");
-        serviceDescriptorResource.setUserName("testUser");
+        serviceDescriptorResource.setUserName("admin");
         serviceDescriptorResource.setContent("testContent");
     }
 
