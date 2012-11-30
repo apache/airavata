@@ -49,7 +49,7 @@ public class XBayaWorkflowExperiments {
 	}
 	
 	public void initializeExperimentMap(Map<String, XBayaWorkflowExperiment> experiments) throws AiravataAPIInvocationException {
-		List<String> experimentIdByUser = getAiravataAPI().getProvenanceManager().getExperimentIdList(null);
+		List<String> experimentIdByUser = getAiravataAPI().getProvenanceManager().getExperimentIdList();
 		for (String id : experimentIdByUser) {
 			experiments.put(id, new XBayaWorkflowExperiment(id, getAiravataAPI()));
 		}

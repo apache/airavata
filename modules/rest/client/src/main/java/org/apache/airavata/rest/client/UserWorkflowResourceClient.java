@@ -60,7 +60,7 @@ public class UserWorkflowResourceClient {
     }
 
     private URI getBaseURI() {
-        logger.info("Creating Base URI");
+        logger.debug("Creating Base URI");
         return UriBuilder.fromUri(baseURI).build();
     }
 

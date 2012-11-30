@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.text.DateFormat;
@@ -65,7 +66,7 @@ public class ProvenanceResourceClient {
     }
 
     private URI getBaseURI() {
-        logger.info("Creating Base URI");
+        logger.debug("Creating Base URI");
         return UriBuilder.fromUri(baseURI).build();
     }
 
@@ -356,6 +357,7 @@ public class ProvenanceResourceClient {
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("instanceId", instanceId);
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
