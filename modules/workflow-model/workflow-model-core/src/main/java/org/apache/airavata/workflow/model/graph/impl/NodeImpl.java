@@ -93,7 +93,7 @@ public abstract class NodeImpl implements Node {
 
     protected transient boolean requireJoin = false;
     
-    private NodeExecutionState state;
+    private NodeExecutionState state = NodeExecutionState.WAITING;
     
     private List<NodeObserver> observers;
 
