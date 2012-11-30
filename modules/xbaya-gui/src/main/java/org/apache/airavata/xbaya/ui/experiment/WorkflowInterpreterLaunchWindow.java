@@ -37,25 +37,22 @@ import javax.swing.JPanel;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.stub.interpretor.NameValue;
 import org.apache.airavata.client.stub.interpretor.WorkflowInterpretorStub;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
-//import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.workflow.model.graph.ws.WSNode;
 import org.apache.airavata.workflow.model.ode.ODEClient;
 import org.apache.airavata.workflow.model.wf.Workflow;
+import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.apache.airavata.ws.monitor.MonitorConfiguration;
 import org.apache.airavata.ws.monitor.MonitorException;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
-import org.apache.airavata.xbaya.interpretor.HeaderConstants;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.graph.ws.WSNodeGUI;
@@ -64,13 +61,13 @@ import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
 import org.apache.airavata.xbaya.util.XBayaUtil;
-import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.v1.builder.XmlInfosetBuilder;
 
 import xsul.XmlConstants;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class WorkflowInterpreterLaunchWindow {
 
@@ -203,8 +200,8 @@ public class WorkflowInterpreterLaunchWindow {
         GridPanel infoPanel = new GridPanel();
         infoPanel.add(instanceNameLabel);
         infoPanel.add(this.instanceNameTextField);
-        infoPanel.add(topicLabel);
-        infoPanel.add(this.topicTextField);
+//        infoPanel.add(topicLabel);
+//        infoPanel.add(this.topicTextField);
         infoPanel.add(workflowInterpreterLabel);
         infoPanel.add(this.workflowInterpreterTextField);
         infoPanel.add(gfacLabel);
@@ -212,7 +209,7 @@ public class WorkflowInterpreterLaunchWindow {
 //        infoPanel.add(RegistryLabel);
 //        infoPanel.add(this.RegistryTextField);
 
-        infoPanel.layout(4, 2, GridPanel.WEIGHT_NONE, 1);
+        infoPanel.layout(3, 2, GridPanel.WEIGHT_NONE, 1);
 
         GridPanel mainPanel = new GridPanel();
         mainPanel.add(this.parameterPanel);
@@ -319,64 +316,72 @@ public class WorkflowInterpreterLaunchWindow {
             public void run() {
 
                 try {
-                    WorkflowInterpreterLaunchWindow.this.engine.getMonitor().getConfiguration().setTopic(topicString);
-
-                    WorkflowInterpreterLaunchWindow.this.engine.getMonitor().start();
-                } catch (MonitorException e1) {
-                    WorkflowInterpreterLaunchWindow.this.engine.getGUI().getErrorWindow().error(e1);
-                }
-                try {
 
                     WorkflowInterpretorStub stub = new WorkflowInterpretorStub(engine.getConfiguration()
                             .getWorkflowInterpreterURL().toString());
-                    NameValue[] configurations = new NameValue[6];
-                    configurations[0] = new NameValue();
-                    configurations[0].setName(HeaderConstants.HEADER_ELEMENT_GFAC);
-                    configurations[0].setValue(engine.getConfiguration().getGFacURL().toString());
-                    configurations[1] = new NameValue();
-                    configurations[1].setName(HeaderConstants.HEADER_ELEMENT_REGISTRY);
-                    if (null == engine.getConfiguration().getRegistryURL()) {
-                        configurations[1].setValue(XBayaConstants.REGISTRY_URL.toString());
-                    } else {
-                        configurations[1].setValue(engine.getConfiguration().getRegistryURL().toString());
-                    }
-                    configurations[2] = new NameValue();
-                    configurations[2].setName(HeaderConstants.HEADER_ELEMENT_PROXYSERVER);
-                    configurations[2].setValue(engine.getConfiguration().getMyProxyServer());
-
-                    configurations[3] = new NameValue();
-                    configurations[3].setName(HeaderConstants.HEADER_ELEMENT_BROKER);
-                    configurations[3].setValue(engine.getConfiguration().getBrokerURL().toString());
-
-                    configurations[4] = new NameValue();
-                    configurations[4].setName(HeaderConstants.HEADER_ELEMENT_MSGBOX);
-                    configurations[4].setValue(engine.getConfiguration().getMessageBoxURL().toString());
-
-                    configurations[5] = new NameValue();
-                    configurations[5].setName(HeaderConstants.HEADER_ELEMENT_DSC);
-                    configurations[5].setValue(engine.getConfiguration().getDSCURL().toString());
-
-                    NameValue[] inputNameVals = new NameValue[inputNodes.size()];
+//                    NameValue[] configurations = new NameValue[6];
+//                    configurations[0] = new NameValue();
+//                    configurations[0].setName(HeaderConstants.HEADER_ELEMENT_GFAC);
+//                    configurations[0].setValue(engine.getConfiguration().getGFacURL().toString());
+//                    configurations[1] = new NameValue();
+//                    configurations[1].setName(HeaderConstants.HEADER_ELEMENT_REGISTRY);
+//                    if (null == engine.getConfiguration().getRegistryURL()) {
+//                        configurations[1].setValue(XBayaConstants.REGISTRY_URL.toString());
+//                    } else {
+//                        configurations[1].setValue(engine.getConfiguration().getRegistryURL().toString());
+//                    }
+//                    configurations[2] = new NameValue();
+//                    configurations[2].setName(HeaderConstants.HEADER_ELEMENT_PROXYSERVER);
+//                    configurations[2].setValue(engine.getConfiguration().getMyProxyServer());
+//
+//                    configurations[3] = new NameValue();
+//                    configurations[3].setName(HeaderConstants.HEADER_ELEMENT_BROKER);
+//                    configurations[3].setValue(engine.getConfiguration().getBrokerURL().toString());
+//
+//                    configurations[4] = new NameValue();
+//                    configurations[4].setName(HeaderConstants.HEADER_ELEMENT_MSGBOX);
+//                    configurations[4].setValue(engine.getConfiguration().getMessageBoxURL().toString());
+//
+//                    configurations[5] = new NameValue();
+//                    configurations[5].setName(HeaderConstants.HEADER_ELEMENT_DSC);
+//                    configurations[5].setValue(engine.getConfiguration().getDSCURL().toString());
+                    List<WorkflowInput> workflowInputs=new ArrayList<WorkflowInput>();
+//                    NameValue[] inputNameVals = new NameValue[inputNodes.size()];
                     for (int i = 0; i < inputNodes.size(); i++) {
-                        inputNameVals[i] = new NameValue();
-                        InputNode inputNode = inputNodes.get(i);
-                        String id = inputNode.getID();
-                        String value = inputNode.getDefaultValue().toString();
-                        inputNameVals[i].setName(id);
-                        inputNameVals[i].setValue(value);
+                    	InputNode inputNode = inputNodes.get(i);
+                    	workflowInputs.add(new WorkflowInput(inputNode.getID(), inputNode.getDefaultValue().toString()));
+//                        inputNameVals[i] = new NameValue();
+//                        InputNode inputNode = inputNodes.get(i);
+//                        String id = inputNode.getID();
+//                        String value = inputNode.getDefaultValue().toString();
+//                        inputNameVals[i].setName(id);
+//                        inputNameVals[i].setValue(value);
                     }
                     XBayaConfiguration configuration = engine.getConfiguration();
-                    String myProxyUsername = configuration.getRegistryUserName();
-                    String myProxyPass = configuration.getRegistryPassphrase();
+//                    String myProxyUsername = configuration.getRegistryUserName();
+//                    String myProxyPass = configuration.getRegistryPassphrase();
                     //todo we need to add the workflowContext header in the message
+                    
                     WorkflowContextHeaderBuilder builder = new WorkflowContextHeaderBuilder(configuration.getBrokerURL().toASCIIString(),
                             configuration.getGFacURL().toASCIIString(),configuration.getRegistryURL().toASCIIString(),configuration.getTopic()
                             ,null,configuration.getMessageBoxURL().toASCIIString());
-                    stub._getServiceClient().addHeader(AXIOMUtil.stringToOM(XMLUtil.xmlElementToString(builder.getXml())));
-                    stub.launchWorkflow(workflow.toXMLText(), topicString, inputNameVals);
-                    AiravataAPI registry = engine.getConfiguration().getAiravataAPI();
-                    registry.getProvenanceManager().setExperimentName(topicString, instanceNameFinal);
-                    registry.getProvenanceManager().setExperimentUser(topicString, registry.getAiravataManager().getUser().getUserName());
+                    AiravataAPI api = engine.getConfiguration().getAiravataAPI();
+                    
+                    String experimentId = api.getExecutionManager().runExperiment(api.getWorkflowManager().getWorkflowAsString(workflow), workflowInputs,api.getCurrentUser(),null,instanceNameFinal,builder);
+                    try {
+                        WorkflowInterpreterLaunchWindow.this.engine.getMonitor().getConfiguration().setTopic(experimentId);
+
+                        WorkflowInterpreterLaunchWindow.this.engine.getMonitor().start();
+                    } catch (MonitorException e1) {
+                        WorkflowInterpreterLaunchWindow.this.engine.getGUI().getErrorWindow().error(e1);
+                    }
+                    
+                    
+//                    stub._getServiceClient().addHeader(AXIOMUtil.stringToOM(XMLUtil.xmlElementToString(builder.getXml())));
+//                    stub.launchWorkflow(workflow.toXMLText(), topicString, inputNameVals);
+//                    
+//                    api.getProvenanceManager().setExperimentName(topicString, instanceNameFinal);
+//                    api.getProvenanceManager().setExperimentUser(topicString, api.getAiravataManager().getUser().getUserName());
                 } catch (Exception e) {
                     WorkflowInterpreterLaunchWindow.this.engine.getGUI().getErrorWindow().error(e);
                 }
