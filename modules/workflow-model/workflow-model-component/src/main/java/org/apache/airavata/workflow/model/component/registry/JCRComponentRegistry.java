@@ -21,24 +21,12 @@
 
 package org.apache.airavata.workflow.model.component.registry;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
-import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.AiravataRegistryConnectionDataProvider;
-import org.apache.airavata.registry.api.AiravataRegistryFactory;
-import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.util.RegistryConstants;
 import org.apache.airavata.registry.api.util.WebServiceUtil;
 import org.apache.airavata.workflow.model.component.ComponentReference;
 import org.apache.airavata.workflow.model.component.ComponentRegistry;
@@ -54,7 +42,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
     private AiravataAPI airavataAPI;
 
     public JCRComponentRegistry(AiravataAPI airavataAPI) {
-        this.airavataAPI = airavataAPI;
+        this.setAiravataAPI(airavataAPI);
     }
 
 //    public JCRComponentRegistry(String username, String password) throws RegistryException {
@@ -132,7 +120,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
     public List<ComponentReference> getComponentReferenceList() {
         List<ComponentReference> tree = new ArrayList<ComponentReference>();
         try {
-            List<ServiceDescription> services = this.airavataAPI.getApplicationManager().getAllServiceDescriptions();
+            List<ServiceDescription> services = this.getAiravataAPI().getApplicationManager().getAllServiceDescriptions();
             for (ServiceDescription serviceDescription : services) {
                 String serviceName = serviceDescription.getType().getName();
                 JCRComponentReference jcr = new JCRComponentReference(serviceName,
@@ -167,4 +155,8 @@ public class JCRComponentRegistry extends ComponentRegistry {
     public AiravataAPI getAiravataAPI() {
         return airavataAPI;
     }
+
+	public void setAiravataAPI(AiravataAPI airavataAPI) {
+		this.airavataAPI = airavataAPI;
+	}
 }
