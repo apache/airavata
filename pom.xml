@@ -344,7 +344,6 @@
 		<url>http://unicore-dev.zam.kfa-juelich.de/maven</url>
 		</repository>
      </repositories>
-    </repositories>
     <profiles>
         <profile>
             <id>profile-test-suite</id>
