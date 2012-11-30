@@ -658,7 +658,7 @@ public class AiravataClient extends Observable implements AiravataAPI {
 			List<WorkflowInput> inputs, String user, String metadata,
 			String workflowInstanceName, WorkflowContextHeaderBuilder builder)
 			throws Exception {
-		Workflow workflowObj = getWorkflow(workflowTemplateId);
+		Workflow workflowObj = extractWorkflow(workflowTemplateId);
 		return runWorkflow(workflowObj, inputs, user, metadata,
 				workflowInstanceName, builder);
 	}
@@ -720,18 +720,8 @@ public class AiravataClient extends Observable implements AiravataAPI {
 	public String runWorkflow(String workflowName, List<WorkflowInput> inputs,
 			String user, String metadata, String workflowInstanceName,
 			String experimentID) throws AiravataAPIInvocationException {
-        Workflow workflowObj = null;
 		try {
-            if(getWorkflowManager().isWorkflowExists(workflow)) {
-                workflowObj = getWorkflow(workflowName);
-            }else {
-                try{
-                    workflowObj = getWorkflowManager().getWorkflowFromString(workflowName);
-                }catch (AiravataAPIInvocationException e){
-                    getWorkflowManager().getWorkflow(workflowName);
-                }
-
-            }
+            Workflow workflowObj = extractWorkflow(workflowName);
 			String workflowString = XMLUtil.xmlElementToString(workflowObj
                     .toXML());
 			List<WSComponentPort> ports;
@@ -774,7 +764,22 @@ public class AiravataClient extends Observable implements AiravataAPI {
         }
 	}
 
-	public List<WorkflowInput> getWorkflowInputs(String workflowTemplateId)
+    private Workflow extractWorkflow(String workflowName) throws AiravataAPIInvocationException {
+        Workflow workflowObj = null;
+        if(getWorkflowManager().isWorkflowExists(workflow)) {
+            workflowObj = getWorkflow(workflowName);
+        }else {
+            try{
+                workflowObj = getWorkflowManager().getWorkflowFromString(workflowName);
+            }catch (AiravataAPIInvocationException e){
+                getWorkflowManager().getWorkflow(workflowName);
+            }
+
+        }
+        return workflowObj;
+    }
+
+    public List<WorkflowInput> getWorkflowInputs(String workflowTemplateId)
 			throws AiravataAPIInvocationException {
 		try {
 			Workflow workflowTemplate = getWorkflow(workflowTemplateId);
