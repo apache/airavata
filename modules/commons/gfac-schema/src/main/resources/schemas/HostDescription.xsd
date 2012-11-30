@@ -59,6 +59,21 @@
         </complexContent>
     </complexType>
 
+    <complexType name="UnicoreHostType">
+        <complexContent>
+            <extension base="gfac:hostDescriptionType">
+                <sequence>
+                   <sequence>
+					<element name="gridFTPEndPoint" type="xsd:string"
+						minOccurs="0" maxOccurs="unbounded" />
+					<element name="unicoreHostAddress" type="xsd:string"
+						minOccurs="1" maxOccurs="unbounded" />
+				</sequence>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+
 		<!-- GSISSH Host Description -->
 	<complexType name="gsisshHostType">
 		<complexContent>
