@@ -361,7 +361,6 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
     public ServiceDescription getServiceDescriptor(String serviceName) throws DescriptorDoesNotExistsException, MalformedDescriptorException {
     	GatewayResource gateway = jpa.getGateway();
-    	System.out.println("AAA");
 		if (!gateway.isServiceDescriptorExists(serviceName)){
         	return null;
         }

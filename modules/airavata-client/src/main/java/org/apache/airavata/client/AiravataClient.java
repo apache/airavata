@@ -408,7 +408,6 @@ public class AiravataClient extends Observable implements AiravataAPI {
 		String worflowoutput = null;
 		try {
             builder.setUserIdentifier(getCurrentUser());
-            System.out.println("**********CURRENT USER **************" + getCurrentUser());
 			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(
 					getClientConfiguration().getXbayaServiceURL().toString());
 			OMElement omElement = AXIOMUtil.stringToOM(XMLUtil
@@ -502,8 +501,6 @@ public class AiravataClient extends Observable implements AiravataAPI {
 
         //TODO - fix user passing
         builder.setUserIdentifier(getCurrentUser());
-        System.out.println("**********CURRENT USER1 **************" + getCurrentUser());
-
 		try {
 			runPreWorkflowExecutionTasks(topic, user, metadata, experimentName);
 		} catch (RegistryException e) {

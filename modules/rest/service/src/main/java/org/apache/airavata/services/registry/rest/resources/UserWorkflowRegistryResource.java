@@ -69,7 +69,7 @@ public class UserWorkflowRegistryResource {
                 builder.entity("True");
                 return builder.build();
             } else {
-                Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
+                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity("False");
                 return builder.build();
             }
@@ -171,7 +171,6 @@ public class UserWorkflowRegistryResource {
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("Could not get workflow graph...");
                 return builder.build();
             }
         } catch (UserWorkflowDoesNotExistsException e) {
@@ -216,7 +215,6 @@ public class UserWorkflowRegistryResource {
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("User workflows do not exists...");
                 return builder.build();
             }
 

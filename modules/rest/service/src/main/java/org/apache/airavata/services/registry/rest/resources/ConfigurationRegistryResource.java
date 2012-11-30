@@ -69,7 +69,6 @@ public class ConfigurationRegistryResource {
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("Configuration does not exist...");
                 return builder.build();
             }
         } catch (Exception e) {
@@ -110,7 +109,6 @@ public class ConfigurationRegistryResource {
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("No configuration available with given config key...");
                 return builder.build();
             }
         } catch (Exception e) {
@@ -271,7 +269,6 @@ public class ConfigurationRegistryResource {
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("No GFac URIs available...");
                 return builder.build();
             }
         } catch (Exception e) {
@@ -309,7 +306,6 @@ public class ConfigurationRegistryResource {
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("No Workflow Interpreter URIs available...");
                 return builder.build();
             }
         } catch (Exception e) {
@@ -341,7 +337,6 @@ public class ConfigurationRegistryResource {
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("No eventing URI available...");
                 return builder.build();
             }
         } catch (Exception e) {
@@ -373,7 +368,6 @@ public class ConfigurationRegistryResource {
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("No message box URI available...");
                 return builder.build();
             }
         } catch (Exception e) {
@@ -485,7 +479,7 @@ public class ConfigurationRegistryResource {
         try {
             URI msgBoxURI = new URI(uri);
             airavataRegistry.setMessageBoxURI(msgBoxURI);
-            Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
+            Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("MessageBox URI set successfully...");
             return builder.build();
         } catch (Exception e) {

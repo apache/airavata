@@ -93,6 +93,10 @@ public class ConfigurationResourceClient {
             response = builder.get(ClientResponse.class);
             status = response.getStatus();
 
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return null;
+            }
+
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -104,6 +108,7 @@ public class ConfigurationResourceClient {
     }
 
     public List<Object> getConfigurationList(String configKey) {
+        List<Object> configurationValueList = new ArrayList<Object>();
         webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.GET_CONFIGURATION_LIST);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("key", configKey);
@@ -119,6 +124,9 @@ public class ConfigurationResourceClient {
             response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
 
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return configurationValueList;
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -126,7 +134,6 @@ public class ConfigurationResourceClient {
             }
         }
         ConfigurationList configurationList = response.getEntity(ConfigurationList.class);
-        List<Object> configurationValueList = new ArrayList<Object>();
         Object[] configValList = configurationList.getConfigValList();
         for (Object configVal : configValList) {
             configurationValueList.add(configVal);
@@ -259,6 +266,10 @@ public class ConfigurationResourceClient {
                 response = builder.get(ClientResponse.class);
                 status = response.getStatus();
 
+                if(status == ClientConstant.HTTP_NO_CONTENT){
+                    return uriList;
+                }
+
                 if (status != ClientConstant.HTTP_OK) {
                     logger.error(response.getEntity(String.class));
                     throw new RuntimeException("Failed : HTTP error code : "
@@ -295,6 +306,10 @@ public class ConfigurationResourceClient {
                 response = builder.get(ClientResponse.class);
                 status = response.getStatus();
 
+                if(status == ClientConstant.HTTP_NO_CONTENT){
+                    return uriList;
+                }
+
                 if (status != ClientConstant.HTTP_OK) {
                     logger.error(response.getEntity(String.class));
                     throw new RuntimeException("Failed : HTTP error code : "
@@ -329,6 +344,10 @@ public class ConfigurationResourceClient {
                 response = builder.get(ClientResponse.class);
                 status = response.getStatus();
 
+                if(status == ClientConstant.HTTP_NO_CONTENT){
+                    return null;
+                }
+
                 if (status != ClientConstant.HTTP_OK) {
                     logger.error(response.getEntity(String.class));
                     throw new RuntimeException("Failed : HTTP error code : "
@@ -358,6 +377,10 @@ public class ConfigurationResourceClient {
                 WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
                 response = builder.get(ClientResponse.class);
                 status = response.getStatus();
+
+                if(status == ClientConstant.HTTP_NO_CONTENT){
+                    return null;
+                }
 
                 if (status != ClientConstant.HTTP_OK) {
                     logger.error(response.getEntity(String.class));

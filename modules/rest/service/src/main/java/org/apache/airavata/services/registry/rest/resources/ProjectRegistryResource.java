@@ -68,7 +68,7 @@ public class ProjectRegistryResource {
                 builder.entity("True");
                 return builder.build();
             } else {
-                Response.ResponseBuilder builder = Response.status(Response.Status.NOT_FOUND);
+                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity("False");
                 return builder.build();
             }
@@ -105,7 +105,7 @@ public class ProjectRegistryResource {
                 builder.entity("True");
                 return builder.build();
             } else {
-                Response.ResponseBuilder builder = Response.status(Response.Status.NOT_FOUND);
+                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity("False");
                 return builder.build();
             }
@@ -230,7 +230,6 @@ public class ProjectRegistryResource {
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NOT_FOUND);
-                builder.entity("No workspace projects available...");
                 return builder.build();
             }
         } catch (WorkspaceProjectDoesNotExistsException e) {
@@ -271,7 +270,6 @@ public class ProjectRegistryResource {
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("No workspace projects available...");
                 return builder.build();
             }
         } catch (RegistryException e) {

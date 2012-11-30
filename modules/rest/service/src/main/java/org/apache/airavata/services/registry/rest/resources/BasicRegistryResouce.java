@@ -53,7 +53,6 @@ public class BasicRegistryResouce {
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("Gateway does not exist...");
                 return builder.build();
             }
         } catch (Exception e) {
@@ -80,7 +79,6 @@ public class BasicRegistryResouce {
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("Airavata User does not exist...");
                 return builder.build();
             }
         } catch (Exception e) {
@@ -151,7 +149,6 @@ public class BasicRegistryResouce {
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("Cannot retrieve Airavata version...");
                 return builder.build();
             }
         } catch (Exception e) {
@@ -178,7 +175,6 @@ public class BasicRegistryResouce {
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("Cannot retrieve registry connection URL...");
                 return builder.build();
             }
         } catch (Exception e) {

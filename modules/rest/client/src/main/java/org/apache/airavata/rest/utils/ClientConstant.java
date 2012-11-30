@@ -26,4 +26,5 @@ public class ClientConstant {
     public static final int HTTP_OK = 200;
     public static final int HTTP_UNAUTHORIZED = 401;
     public static final int HTTP_BAD_REQUEST = 400;
+    public static final int HTTP_NO_CONTENT = 204;
 }

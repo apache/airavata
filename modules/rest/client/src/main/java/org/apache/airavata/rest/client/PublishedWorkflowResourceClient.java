@@ -43,6 +43,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -166,7 +167,9 @@ public class PublishedWorkflowResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
             response = builder.accept(MediaType.APPLICATION_FORM_URLENCODED).get(ClientResponse.class);
             status = response.getStatus();
-
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return null;
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -191,7 +194,9 @@ public class PublishedWorkflowResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
             response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return new ArrayList<String>();
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -205,6 +210,7 @@ public class PublishedWorkflowResourceClient {
     }
 
     public Map<String, String> getPublishedWorkflows() {
+        Map<String, String> publishWFmap = new HashMap<String, String>();
         webResource = getPublishedWFRegistryBaseResource().path(ResourcePathConstants.PublishedWFConstants.GET_PUBLISHWORKFLOWS);
         ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
@@ -217,7 +223,9 @@ public class PublishedWorkflowResourceClient {
             WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
             response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return publishWFmap;
+            }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -225,7 +233,6 @@ public class PublishedWorkflowResourceClient {
             }
         }
 
-        Map<String, String> publishWFmap = new HashMap<String, String>();
         WorkflowList workflowList = response.getEntity(WorkflowList.class);
         List<Workflow> workflows = workflowList.getWorkflowList();
 

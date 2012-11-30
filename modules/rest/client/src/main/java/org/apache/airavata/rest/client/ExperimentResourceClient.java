@@ -130,6 +130,7 @@ public class ExperimentResourceClient {
     }
 
     public List<AiravataExperiment> getExperiments() {
+        List<AiravataExperiment> airavataExperiments = new ArrayList<AiravataExperiment>();
         webResource = getExperimentRegistryBaseResource().path(ResourcePathConstants.ExperimentResourcePathConstants.GET_ALL_EXPS);
         ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
@@ -143,6 +144,10 @@ public class ExperimentResourceClient {
             response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
 
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return airavataExperiments;
+            }
+
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -152,7 +157,6 @@ public class ExperimentResourceClient {
 
         ExperimentList experimentList = response.getEntity(ExperimentList.class);
         AiravataExperiment[] experiments = experimentList.getExperiments();
-        List<AiravataExperiment> airavataExperiments = new ArrayList<AiravataExperiment>();
         for (AiravataExperiment airavataExperiment : experiments) {
             airavataExperiments.add(airavataExperiment);
         }
@@ -161,6 +165,7 @@ public class ExperimentResourceClient {
 
     public List<AiravataExperiment> getExperiments(String projectName) {
         webResource = getExperimentRegistryBaseResource().path(ResourcePathConstants.ExperimentResourcePathConstants.GET_EXPS_BY_PROJECT);
+        List<AiravataExperiment> airavataExperiments = new ArrayList<AiravataExperiment>();
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("projectName", projectName);
 
@@ -176,6 +181,10 @@ public class ExperimentResourceClient {
             response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
 
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return airavataExperiments;
+            }
+
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -186,7 +195,6 @@ public class ExperimentResourceClient {
         ExperimentList experimentList = response.getEntity(ExperimentList.class);
         AiravataExperiment[] experiments = experimentList.getExperiments();
 
-        List<AiravataExperiment> airavataExperiments = new ArrayList<AiravataExperiment>();
         for (AiravataExperiment airavataExperiment : experiments) {
             airavataExperiments.add(airavataExperiment);
         }
@@ -194,6 +202,7 @@ public class ExperimentResourceClient {
     }
 
     public List<AiravataExperiment> getExperiments(Date from, Date to) {
+        List<AiravataExperiment> airavataExperiments = new ArrayList<AiravataExperiment>();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String fromDate = dateFormat.format(from);
         String toDate = dateFormat.format(to);
@@ -214,6 +223,10 @@ public class ExperimentResourceClient {
             response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
 
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return airavataExperiments;
+            }
+
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -224,7 +237,7 @@ public class ExperimentResourceClient {
         ExperimentList experimentList = response.getEntity(ExperimentList.class);
         AiravataExperiment[] experiments = experimentList.getExperiments();
 
-        List<AiravataExperiment> airavataExperiments = new ArrayList<AiravataExperiment>();
+
         for (AiravataExperiment airavataExperiment : experiments) {
             airavataExperiments.add(airavataExperiment);
         }
@@ -232,6 +245,7 @@ public class ExperimentResourceClient {
     }
 
     public List<AiravataExperiment> getExperiments(String projectName, Date from, Date to) {
+        List<AiravataExperiment> airavataExperiments = new ArrayList<AiravataExperiment>();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String fromDate = dateFormat.format(from);
         String toDate = dateFormat.format(to);
@@ -253,6 +267,10 @@ public class ExperimentResourceClient {
             response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
 
+            if(status == ClientConstant.HTTP_NO_CONTENT){
+                return airavataExperiments;
+            }
+
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -263,7 +281,7 @@ public class ExperimentResourceClient {
         ExperimentList experimentList = response.getEntity(ExperimentList.class);
         AiravataExperiment[] experiments = experimentList.getExperiments();
 
-        List<AiravataExperiment> airavataExperiments = new ArrayList<AiravataExperiment>();
+
         for (AiravataExperiment airavataExperiment : experiments) {
             airavataExperiments.add(airavataExperiment);
         }
