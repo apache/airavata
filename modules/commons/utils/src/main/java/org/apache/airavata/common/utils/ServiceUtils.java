@@ -45,25 +45,31 @@ public class ServiceUtils {
         String port = null;
 //        Properties properties = new Properties();
         try {
-//            properties.load(url.openStream());
             localAddress = ServerSettings.getSetting(IP);
-            port = (String) ServerSettings.getSetting(PORT);
         } catch (ServerSettingsException e) {
 			//we will ignore this exception since the properties file will not contain the values
 			//when it is ok to retrieve them from the axis2 context
 		}
         if(localAddress == null){
+	        try {
+	            localAddress = Utils.getIpAddress(context
+	                    .getAxisConfiguration());
+	        } catch (SocketException e) {
+	            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+	        }
+        }
+        
         try {
-            localAddress = Utils.getIpAddress(context
-                    .getAxisConfiguration());
-        } catch (SocketException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        }
-        TransportInDescription transportInDescription = context
-                .getAxisConfiguration().getTransportsIn()
-                .get("http");
+            port = (String) ServerSettings.getSetting(PORT);
+        } catch (ServerSettingsException e) {
+			//we will ignore this exception since the properties file will not contain the values
+			//when it is ok to retrieve them from the axis2 context
+		}
+        
         if (port == null) {
+            TransportInDescription transportInDescription = context
+                    .getAxisConfiguration().getTransportsIn()
+                    .get("http");
             if (transportInDescription != null
                     && transportInDescription.getParameter("port") != null) {
                 port = (String) transportInDescription
