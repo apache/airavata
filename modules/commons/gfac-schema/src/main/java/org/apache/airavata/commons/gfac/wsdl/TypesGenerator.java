@@ -235,14 +235,10 @@ public class TypesGenerator implements WSDLConstants {
 
         // types.setDocumentationElement(schema);
         SchemaImpl schemaImpl = new SchemaImpl();
-        // SchemaImportImpl schemaimport = new SchemaImportImpl();
-        // schemaimport.setNamespaceURI("http://www.extreme.indiana.edu/lead/xsd");
-        // schemaimport.setSchemaLocationURI("http://www.extreme.indiana.edu/gfac/gfac-simple-types.xsd");
-        // schemaImpl.addImport(schemaimport);
 
         Element importEle = doc.createElement("import");
-        importEle.setAttribute("namespace", "http://schemas.airavata.apache.org/gfac/type");
-        importEle.setAttribute("schemaLocation", "http://people.apache.org/~lahiru/GFacParameterTypes.xsd");
+        importEle.setAttribute("namespace", "http://airavata.apache.org/schemas/gfac/2012/12");
+        importEle.setAttribute("schemaLocation", "http://airavata.apache.org/schemas/gfac/2012/12/GFacParameterTypes.xsd");
         schema.insertBefore(importEle, schema.getFirstChild());
 
         // schema.appendChild();
