@@ -7,7 +7,7 @@
 	ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
 	the License. -->
 
-<schema targetNamespace="http://airavata.apache.org/schemas/workflow_tracking_types" xmlns:wft="http://airavata.apache.org/schemas/workflow_tracking_types"
+<schema targetNamespace="http://airavata.apache.org/schemas/wft/2011/08" xmlns:wft="http://airavata.apache.org/schemas/wft/2011/08"
 	xmlns="http://www.w3.org/2001/XMLSchema" attributeFormDefault="qualified" elementFormDefault="qualified">
 
 	<annotation>

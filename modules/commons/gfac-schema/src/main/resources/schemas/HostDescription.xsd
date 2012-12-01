@@ -9,8 +9,8 @@
 	OR CONDITIONS OF ANY ~ KIND, either express or implied. See the License for 
 	the specific language governing permissions and limitations under the License. -->
 
-<schema targetNamespace="http://schemas.airavata.apache.org/gfac/type"
-	xmlns:gfac="http://schemas.airavata.apache.org/gfac/type" xmlns="http://www.w3.org/2001/XMLSchema"
+<schema targetNamespace="http://airavata.apache.org/schemas/gfac/2012/12"
+	xmlns:gfac="http://airavata.apache.org/schemas/gfac/2012/12" xmlns="http://www.w3.org/2001/XMLSchema"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
 
 	<include schemaLocation="BasicTypes.xsd" />
