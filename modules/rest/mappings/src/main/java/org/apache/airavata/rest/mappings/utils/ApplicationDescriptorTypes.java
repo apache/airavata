@@ -23,7 +23,6 @@ package org.apache.airavata.rest.mappings.utils;
 
 public class ApplicationDescriptorTypes {
     public static final String APP_DEP_DESC_TYPE = "Default";
-    public static final String BATCH_APP_DEP_DESC_TYPE = "Batch";
-    public static final String GRAM_APP_DEP_DESC_TYPE = "Gram";
+    public static final String HPC_APP_DEP_DESC_TYPE = "HPC";
     public static final String HADOOP_APP_DEP_DESC_TYPE = "Hadoop";
 }

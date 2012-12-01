@@ -56,13 +56,13 @@ import org.apache.airavata.registry.api.exception.gateway.DescriptorDoesNotExist
 import org.apache.airavata.registry.api.exception.gateway.MalformedDescriptorException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
-import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
 import org.apache.airavata.xbaya.ui.menues.MenuIcons;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLinkButton;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
 import org.apache.xmlbeans.XmlException;
+import org.ggf.schemas.jsdl.x2006.x07.jsdlHpcpa.HPCProfileApplicationDocument;
 
 public class HostDeploymentDialog extends JDialog implements ActionListener {
     /**
@@ -498,7 +498,7 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
 				hostDescription = registry.getApplicationManager().getHostDescription(hostName);
 				if (hostDescription.getType() instanceof GlobusHostType) {
 				    getShellApplicationDescription().getType().changeType(
-				            GramApplicationDeploymentType.type);
+				            HPCProfileApplicationDocument.type);
 				} else {
 				    getShellApplicationDescription().getType().changeType(
 				            ApplicationDeploymentDescriptionType.type);
