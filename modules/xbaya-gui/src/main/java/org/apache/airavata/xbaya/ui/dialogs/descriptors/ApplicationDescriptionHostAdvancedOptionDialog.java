@@ -24,8 +24,8 @@ package org.apache.airavata.xbaya.ui.dialogs.descriptors;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.JobTypeType;
 import org.apache.airavata.schemas.gfac.JobTypeType.Enum;
 import org.apache.airavata.schemas.gfac.ProjectAccountType;
@@ -222,8 +222,8 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
         return descriptor;
     }
 
-    public GramApplicationDeploymentType getGramApplicationDescriptionType() {
-        return (GramApplicationDeploymentType)descriptor.getType();
+    public HpcApplicationDeploymentType getHPCApplicationDescriptionType() {
+        return (HpcApplicationDeploymentType)descriptor.getType();
     }
     
     public void setShellApplicationDescription(ApplicationDeploymentDescription shellApplicationDescription) {
@@ -236,31 +236,31 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
     
     private void saveApplicationDescriptionAdvancedOptions() {
 		if (isValueNotEmpty(cmbJobType.getText())) {
-			getGramApplicationDescriptionType().setJobType(
+		    getHPCApplicationDescriptionType().setJobType(
 					getJobTypeEnum(cmbJobType.getText()));
 		}
 		if (isValueNotEmpty(txtMaxWallTime.getText())) {
-			getGramApplicationDescriptionType().setMaxWallTime(
+		    getHPCApplicationDescriptionType().setMaxWallTime(
 					Integer.parseInt(txtMaxWallTime.getText()));
 		}
 		if (isValueNotEmpty(txtCpuCount.getText())) {
-			getGramApplicationDescriptionType().setCpuCount(
+		    getHPCApplicationDescriptionType().setCpuCount(
 					Integer.parseInt(txtCpuCount.getText()));
 		}
 		if (isValueNotEmpty(txtProcessorsPerNode.getText())) {
-			getGramApplicationDescriptionType().setProcessorsPerNode(
+		    getHPCApplicationDescriptionType().setProcessorsPerNode(
 					Integer.parseInt(txtProcessorsPerNode.getText()));
 		}
         if (isValueNotEmpty(txtNodeCount.getText())) {
-			getGramApplicationDescriptionType().setNodeCount(
+            getHPCApplicationDescriptionType().setNodeCount(
 					Integer.parseInt(txtNodeCount.getText()));
 		}
 		if (isValueNotEmpty(txtMinMemory.getText())) {
-			getGramApplicationDescriptionType().setMinMemory(
+		    getHPCApplicationDescriptionType().setMinMemory(
 					Integer.parseInt(txtMinMemory.getText()));
 		}
 	    if (isValueNotEmpty(txtMaxMemory.getText())) {
-	            getGramApplicationDescriptionType().setMaxMemory(
+	        getHPCApplicationDescriptionType().setMaxMemory(
 	                    Integer.parseInt(txtMaxMemory.getText()));
 	        }
 		ProjectAccountType projectAccount = getProjectAccountType();
@@ -280,17 +280,17 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
     }
 
 	private QueueType getQueueName() {
-		if (getGramApplicationDescriptionType().getQueue()==null){
-			getGramApplicationDescriptionType().addNewQueue();
+		if (getHPCApplicationDescriptionType().getQueue()==null){
+		    getHPCApplicationDescriptionType().addNewQueue();
 		}
-		return getGramApplicationDescriptionType().getQueue();
+		return getHPCApplicationDescriptionType().getQueue();
 	}
 
 	private ProjectAccountType getProjectAccountType() {
-		if (getGramApplicationDescriptionType().getProjectAccount()==null){
-			getGramApplicationDescriptionType().addNewProjectAccount();
+		if (getHPCApplicationDescriptionType().getProjectAccount()==null){
+		    getHPCApplicationDescriptionType().addNewProjectAccount();
 		}
-		return getGramApplicationDescriptionType().getProjectAccount();
+		return getHPCApplicationDescriptionType().getProjectAccount();
 	}
     
 	private String getPropValue(int num){
@@ -302,18 +302,18 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 	}
 	
     private void loadApplicationDescriptionAdvancedOptions() {
-    	GramApplicationDeploymentType gadType = getGramApplicationDescriptionType();
-		if (gadType.getJobType()!=null) {
-			cmbJobType.setSelectedItem(gadType
+        HpcApplicationDeploymentType hpcAppType = getHPCApplicationDescriptionType();
+		if (hpcAppType.getJobType()!=null) {
+			cmbJobType.setSelectedItem(hpcAppType
 					.getJobType().toString());
 		}
-    	txtMaxWallTime.setText(getPropValue(gadType.getMaxWallTime()));
-        txtCpuCount.setText(getPropValue(gadType.getCpuCount()));
-        txtNodeCount.setText(getPropValue(gadType.getNodeCount()));
-        txtProcessorsPerNode.setText(getPropValue(gadType.getProcessorsPerNode()));
-        txtMinMemory.setText(getPropValue(gadType.getMinMemory()));
-        txtMaxMemory.setText(getPropValue(gadType.getMaxMemory()));
-        txtNodeCount.setText(getPropValue(gadType.getNodeCount()));
+    	txtMaxWallTime.setText(getPropValue(hpcAppType.getMaxWallTime()));
+        txtCpuCount.setText(getPropValue(hpcAppType.getCpuCount()));
+        txtNodeCount.setText(getPropValue(hpcAppType.getNodeCount()));
+        txtProcessorsPerNode.setText(getPropValue(hpcAppType.getProcessorsPerNode()));
+        txtMinMemory.setText(getPropValue(hpcAppType.getMinMemory()));
+        txtMaxMemory.setText(getPropValue(hpcAppType.getMaxMemory()));
+        txtNodeCount.setText(getPropValue(hpcAppType.getNodeCount()));
 		ProjectAccountType projectAccount = getProjectAccountType();
 
 		txtProjectAccountNumber.setText(projectAccount.getProjectAccountNumber()==null? "":projectAccount.getProjectAccountNumber());

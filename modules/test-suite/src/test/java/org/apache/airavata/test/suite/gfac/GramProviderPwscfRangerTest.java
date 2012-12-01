@@ -44,7 +44,7 @@ import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
 import org.apache.airavata.core.gfac.services.impl.PropertiesBasedServiceImpl;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
-import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.JobTypeType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
@@ -79,8 +79,8 @@ public class GramProviderPwscfRangerTest {
         ((GlobusHostType) host.getType()).setGlobusGateKeeperEndPointArray(new String[]{properties.getProperty("gram.endpoints")});
 
         /* Application */
-        ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription(GramApplicationDeploymentType.type);
-        GramApplicationDeploymentType app = (GramApplicationDeploymentType) appDesc.getType();
+        ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription(HpcApplicationDeploymentType.type);
+        HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) appDesc.getType();
         app.setNodeCount(1);
         ApplicationDeploymentDescriptionType.ApplicationName name = appDesc.getType().addNewApplicationName();
         name.setStringValue("MockPwscfMPI");
@@ -90,7 +90,7 @@ public class GramProviderPwscfRangerTest {
         app.setCpuCount(4);
         app.setJobType(JobTypeType.MPI);
         app.setMaxWallTime(9);
-        ProjectAccountType projectAccountType = ((GramApplicationDeploymentType) appDesc.getType()).addNewProjectAccount();
+        ProjectAccountType projectAccountType = ((HpcApplicationDeploymentType) appDesc.getType()).addNewProjectAccount();
         projectAccountType.setProjectAccountNumber(properties.getProperty("allocation.charge.number"));
 
         /* Service */

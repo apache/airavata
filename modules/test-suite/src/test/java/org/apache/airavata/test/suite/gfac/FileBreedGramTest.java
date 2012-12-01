@@ -44,7 +44,7 @@ import org.apache.airavata.core.gfac.services.impl.PropertiesBasedServiceImpl;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.DataType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
-import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.ParameterType;
@@ -91,8 +91,8 @@ public class FileBreedGramTest {
         /*
         * Application deployment description
         */
-        ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription(GramApplicationDeploymentType.type);
-        GramApplicationDeploymentType app = (GramApplicationDeploymentType) appDesc.getType();
+        ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription(HpcApplicationDeploymentType.type);
+        HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) appDesc.getType();
         app.setCpuCount(1);
         app.setNodeCount(1);
         ApplicationDeploymentDescriptionType.ApplicationName name = appDesc.getType().addNewApplicationName();
@@ -100,7 +100,7 @@ public class FileBreedGramTest {
         app.setExecutableLocation("/bin/echo");
         app.setScratchWorkingDirectory(properties.getProperty("scratch.working.directory"));
         app.setCpuCount(1);
-        ProjectAccountType projectAccountType = ((GramApplicationDeploymentType) appDesc.getType()).addNewProjectAccount();
+        ProjectAccountType projectAccountType = ((HpcApplicationDeploymentType) appDesc.getType()).addNewProjectAccount();
         projectAccountType.setProjectAccountNumber(properties.getProperty("allocation.charge.number"));
         QueueType queueType = app.addNewQueue();
         queueType.setQueueName(properties.getProperty("defualt.queue"));

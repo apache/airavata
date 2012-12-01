@@ -33,7 +33,7 @@ import org.apache.airavata.core.gfac.context.message.MessageContext;
 import org.apache.airavata.core.gfac.exception.ProviderException;
 import org.apache.airavata.core.gfac.exception.ToolsException;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
-import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.NameValuePairType;
 import org.apache.airavata.schemas.gfac.QueueType;
 import org.apache.airavata.schemas.gfac.URIArrayType;
@@ -55,7 +55,7 @@ public class GramRSLGenerator {
     ;
 
     public static GramAttributes configureRemoteJob(InvocationContext context) throws ToolsException {
-        GramApplicationDeploymentType app = (GramApplicationDeploymentType) context.getExecutionDescription().getApp().getType();
+        HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) context.getExecutionDescription().getApp().getType();
         GramAttributes jobAttr = new GramAttributes();
         jobAttr.setExecutable(app.getExecutableLocation());
         jobAttr.setDirectory(app.getStaticWorkingDirectory());

@@ -22,7 +22,6 @@ package org.apache.airavata.core.gfac.provider.utils;
 
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.ToolsException;
-import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
 import org.apache.xmlbeans.XmlException;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.ApplicationType;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionDocument;

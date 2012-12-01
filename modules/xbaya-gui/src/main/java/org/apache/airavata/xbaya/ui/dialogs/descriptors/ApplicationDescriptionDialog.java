@@ -56,7 +56,7 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
-import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.ui.menues.MenuIcons;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
@@ -706,7 +706,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 				hostDescription = registry.getApplicationManager().getHostDescription(hostName);
 				if (hostDescription.getType() instanceof GlobusHostType) {
 					getShellApplicationDescription().getType().changeType(
-							GramApplicationDeploymentType.type);
+					        HpcApplicationDeploymentType.type);
 				} else {
 					getShellApplicationDescription().getType().changeType(
 							ApplicationDeploymentDescriptionType.type);
