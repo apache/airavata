@@ -14,7 +14,7 @@
 
     <!-- Use the "namespace" element to map a namespace to the Java package
         name that should be generated. -->
-    <xb:namespace uri="http://airavata.apache.org/schemas/workflow_tracking_types">
+    <xb:namespace uri="http://airavata.apache.org/schemas/wft/2011/08">
         <xb:package>org.apache.airavata.workflow.tracking.types</xb:package>
     </xb:namespace>
     

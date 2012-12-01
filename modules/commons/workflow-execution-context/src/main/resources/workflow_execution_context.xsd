@@ -7,8 +7,8 @@
 	ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
 	the License. -->
 
-<schema targetNamespace="http://schemas.airavata.apache.org/workflow-execution-context" xmlns="http://www.w3.org/2001/XMLSchema"
-	xmlns:wec="http://schemas.airavata.apache.org/workflow-execution-context" attributeFormDefault="qualified"
+<schema targetNamespace="http://airavata.apache.org/schemas/wec/2012/05" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:wec="http://airavata.apache.org/schemas/wec/2012/05" attributeFormDefault="qualified"
 	elementFormDefault="qualified">
 
 	<element name='context-header'>
