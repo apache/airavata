@@ -40,6 +40,7 @@ import org.apache.airavata.rest.utils.ClientConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
@@ -55,6 +56,8 @@ public class DescriptorResourceClient {
     private String userName;
     private PasswordCallback callback;
     private String baseURI;
+    private Cookie cookie;
+    private WebResource.Builder builder;
 
     public DescriptorResourceClient(String userName, String serviceURI, PasswordCallback callback) {
         this.userName = userName;
@@ -73,12 +76,14 @@ public class DescriptorResourceClient {
                 Boolean.TRUE);
         Client client = Client.create(config);
         WebResource baseWebResource = client.resource(getBaseURI());
-        webResource = baseWebResource.path(ResourcePathConstants.DecResourcePathConstants.DESC_RESOURCE_PATH);
+        webResource = baseWebResource.path(
+                ResourcePathConstants.DecResourcePathConstants.DESC_RESOURCE_PATH);
         return webResource;
     }
 
     public boolean isHostDescriptorExists(String hostDescriptorName) {
-        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.HOST_DESC_EXISTS);
+        webResource = getDescriptorRegistryBaseResource().path(
+                ResourcePathConstants.DecResourcePathConstants.HOST_DESC_EXISTS);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("hostDescriptorName", hostDescriptorName);
         ClientResponse response = webResource.queryParams(queryParams).get(ClientResponse.class);
@@ -89,8 +94,16 @@ public class DescriptorResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.get(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
+                response = builder.get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = builder.get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             String exists = response.getEntity(String.class);
@@ -119,8 +132,10 @@ public class DescriptorResourceClient {
 
     public void addHostDescriptor(HostDescription hostDescription) {
         HostDescriptor hostDescriptor = DescriptorUtil.createHostDescriptor(hostDescription);
-        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.HOST_DESC_SAVE);
-        ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, hostDescriptor);
+        webResource = getDescriptorRegistryBaseResource().path(
+                ResourcePathConstants.DecResourcePathConstants.HOST_DESC_SAVE);
+        ClientResponse response = webResource.accept(
+                MediaType.APPLICATION_JSON).post(ClientResponse.class, hostDescriptor);
 
         int status = response.getStatus();
 
@@ -129,8 +144,18 @@ public class DescriptorResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, hostDescriptor);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(
+                        MediaType.APPLICATION_JSON).post(ClientResponse.class, hostDescriptor);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(
+                        MediaType.APPLICATION_JSON).post(ClientResponse.class, hostDescriptor);
+                cookie = response.getCookies().get(0).toCookie();
+            }
 
             status = response.getStatus();
 
@@ -144,8 +169,10 @@ public class DescriptorResourceClient {
 
     public void updateHostDescriptor(HostDescription hostDescription) {
         HostDescriptor hostDescriptor = DescriptorUtil.createHostDescriptor(hostDescription);
-        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.HOST_DESC_UPDATE);
-        ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, hostDescriptor);
+        webResource = getDescriptorRegistryBaseResource().path(
+                ResourcePathConstants.DecResourcePathConstants.HOST_DESC_UPDATE);
+        ClientResponse response = webResource.accept(
+                MediaType.APPLICATION_JSON).post(ClientResponse.class, hostDescriptor);
 
         int status = response.getStatus();
 
@@ -154,8 +181,18 @@ public class DescriptorResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, hostDescriptor);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(
+                        MediaType.APPLICATION_JSON).post(ClientResponse.class, hostDescriptor);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(
+                        MediaType.APPLICATION_JSON).post(ClientResponse.class, hostDescriptor);
+                cookie = response.getCookies().get(0).toCookie();
+            }
 
             status = response.getStatus();
 
@@ -168,10 +205,13 @@ public class DescriptorResourceClient {
     }
 
     public HostDescription getHostDescriptor(String hostName) {
-        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.HOST_DESC);
+        webResource = getDescriptorRegistryBaseResource().path(
+                ResourcePathConstants.DecResourcePathConstants.HOST_DESC);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("hostName", hostName);
-        ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        ClientResponse response = webResource.queryParams(queryParams).accept(
+                MediaType.APPLICATION_JSON).type(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
         int status = response.getStatus();
 
@@ -180,8 +220,20 @@ public class DescriptorResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(
+                        MediaType.APPLICATION_JSON).type(
+                        MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = builder.accept(
+                        MediaType.APPLICATION_JSON).type(
+                        MediaType.APPLICATION_JSON).get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
 
             status = response.getStatus();
 
@@ -200,7 +252,8 @@ public class DescriptorResourceClient {
     }
 
     public void removeHostDescriptor(String hostName) {
-        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.HOST_DESC_DELETE);
+        webResource = getDescriptorRegistryBaseResource().path(
+                ResourcePathConstants.DecResourcePathConstants.HOST_DESC_DELETE);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("hostName", hostName);
         ClientResponse response = webResource.queryParams(queryParams).delete(ClientResponse.class);
@@ -211,8 +264,16 @@ public class DescriptorResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.delete(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
+                response = builder.delete(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = builder.delete(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -225,8 +286,10 @@ public class DescriptorResourceClient {
 
     public List<HostDescription> getHostDescriptors() {
         List<HostDescription> hostDescriptions = new ArrayList<HostDescription>();
-        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.GET_HOST_DESCS);
-        ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        webResource = getDescriptorRegistryBaseResource().path(
+                ResourcePathConstants.DecResourcePathConstants.GET_HOST_DESCS);
+        ClientResponse response = webResource.accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
         int status = response.getStatus();
 
@@ -235,9 +298,17 @@ public class DescriptorResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(
+                        MediaType.APPLICATION_JSON).get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if(status == ClientConstant.HTTP_NO_CONTENT){
@@ -262,8 +333,10 @@ public class DescriptorResourceClient {
     }
 
     public List<String> getHostDescriptorNames() {
-        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.GET_HOST_DESCS_NAMES);
-        ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        webResource = getDescriptorRegistryBaseResource().path(
+                ResourcePathConstants.DecResourcePathConstants.GET_HOST_DESCS_NAMES);
+        ClientResponse response = webResource.accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
         int status = response.getStatus();
 
@@ -272,9 +345,16 @@ public class DescriptorResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
             if(status == ClientConstant.HTTP_NO_CONTENT){
                 return new ArrayList<String>();
@@ -292,7 +372,8 @@ public class DescriptorResourceClient {
     }
 
     public boolean isServiceDescriptorExists(String serviceDescriptorName) {
-        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC_EXISTS);
+        webResource = getDescriptorRegistryBaseResource().path(
+                ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC_EXISTS);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("serviceDescriptorName", serviceDescriptorName);
         ClientResponse response = webResource.queryParams(queryParams).get(ClientResponse.class);
@@ -303,8 +384,16 @@ public class DescriptorResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.get(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
+                response = builder.get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = builder.get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             String exists = response.getEntity(String.class);
@@ -321,8 +410,10 @@ public class DescriptorResourceClient {
 
     public void addServiceDescriptor(ServiceDescription serviceDescription) {
         ServiceDescriptor serviceDescriptor = DescriptorUtil.createServiceDescriptor(serviceDescription);
-        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC_SAVE);
-        ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, serviceDescriptor);
+        webResource = getDescriptorRegistryBaseResource().path(
+                ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC_SAVE);
+        ClientResponse response = webResource.accept(
+                MediaType.APPLICATION_JSON).post(ClientResponse.class, serviceDescriptor);
 
         int status = response.getStatus();
 
@@ -331,8 +422,18 @@ public class DescriptorResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, serviceDescriptor);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(
+                        MediaType.APPLICATION_JSON).post(ClientResponse.class, serviceDescriptor);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(
+                        MediaType.APPLICATION_JSON).post(ClientResponse.class, serviceDescriptor);
+                cookie = response.getCookies().get(0).toCookie();
+            }
 
             status = response.getStatus();
 
@@ -346,8 +447,10 @@ public class DescriptorResourceClient {
 
     public void updateServiceDescriptor(ServiceDescription serviceDescription) {
         ServiceDescriptor serviceDescriptor = DescriptorUtil.createServiceDescriptor(serviceDescription);
-        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC_UPDATE);
-        ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, serviceDescriptor);
+        webResource = getDescriptorRegistryBaseResource().path(
+                ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC_UPDATE);
+        ClientResponse response = webResource.accept(
+                MediaType.APPLICATION_JSON).post(ClientResponse.class, serviceDescriptor);
 
         int status = response.getStatus();
 
@@ -356,9 +459,18 @@ public class DescriptorResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, serviceDescriptor);
-
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(
+                        MediaType.APPLICATION_JSON).post(ClientResponse.class, serviceDescriptor);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(
+                        MediaType.APPLICATION_JSON).post(ClientResponse.class, serviceDescriptor);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -370,10 +482,12 @@ public class DescriptorResourceClient {
     }
 
     public ServiceDescription getServiceDescriptor(String serviceName) {
-        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC);
+        webResource = getDescriptorRegistryBaseResource().path(
+                ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("serviceName", serviceName);
-        ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        ClientResponse response = webResource.queryParams(queryParams).accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
         int status = response.getStatus();
 
@@ -382,9 +496,16 @@ public class DescriptorResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName),cookie);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_BAD_REQUEST) {
@@ -395,14 +516,14 @@ public class DescriptorResourceClient {
                 return null;
             }
         }
-
         ServiceDescriptor serviceDescriptor = response.getEntity(ServiceDescriptor.class);
         ServiceDescription serviceDescription = DescriptorUtil.createServiceDescription(serviceDescriptor);
         return serviceDescription;
     }
 
     public void removeServiceDescriptor(String serviceName) {
-        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC_DELETE);
+        webResource = getDescriptorRegistryBaseResource().path(
+                ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC_DELETE);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("serviceName", serviceName);
         ClientResponse response = webResource.queryParams(queryParams).delete(ClientResponse.class);
@@ -413,8 +534,16 @@ public class DescriptorResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.delete(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
+                response = builder.delete(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = builder.delete(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -427,8 +556,10 @@ public class DescriptorResourceClient {
 
     public List<ServiceDescription> getServiceDescriptors() {
         List<ServiceDescription> serviceDescriptions = new ArrayList<ServiceDescription>();
-        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.GET_SERVICE_DESCS);
-        ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        webResource = getDescriptorRegistryBaseResource().path(
+                ResourcePathConstants.DecResourcePathConstants.GET_SERVICE_DESCS);
+        ClientResponse response = webResource.accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
         int status = response.getStatus();
 
@@ -437,9 +568,16 @@ public class DescriptorResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if(status == ClientConstant.HTTP_NO_CONTENT){
@@ -464,8 +602,11 @@ public class DescriptorResourceClient {
         return serviceDescriptions;
     }
 
-    public boolean isApplicationDescriptorExists(String serviceName, String hostName, String appDescriptorName) {
-        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.APPL_DESC_EXIST);
+    public boolean isApplicationDescriptorExists(String serviceName,
+                                                 String hostName,
+                                                 String appDescriptorName) {
+        webResource = getDescriptorRegistryBaseResource().path(
+                ResourcePathConstants.DecResourcePathConstants.APPL_DESC_EXIST);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("serviceName", serviceName);
         queryParams.add("hostName", hostName);
@@ -478,8 +619,16 @@ public class DescriptorResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.get(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
+                response = builder.get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = builder.get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
             String exists = response.getEntity(String.class);
             if (exists.equals("True")){
@@ -512,8 +661,10 @@ public class DescriptorResourceClient {
         ServiceDescriptor serviceDescriptor = DescriptorUtil.createServiceDescriptor(serviceDescription);
         applicationDescriptor.setServiceDescriptor(serviceDescriptor);
 
-        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_BUILD_SAVE);
-        ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
+        webResource = getDescriptorRegistryBaseResource().path(
+                ResourcePathConstants.DecResourcePathConstants.APP_DESC_BUILD_SAVE);
+        ClientResponse response = webResource.accept(
+                MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
 
         int status = response.getStatus();
 
@@ -522,9 +673,18 @@ public class DescriptorResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
-
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(
+                        MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(
+                        MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -535,15 +695,19 @@ public class DescriptorResourceClient {
         }
     }
 
-    public void addApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) {
+    public void addApplicationDescriptor(String serviceName,
+                                         String hostName,
+                                         ApplicationDeploymentDescription descriptor) {
         ServiceDescription serviceDescription = getServiceDescriptor(serviceName);
         ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(descriptor);
         applicationDescriptor.setHostdescName(hostName);
         ServiceDescriptor serviceDescriptor = DescriptorUtil.createServiceDescriptor(serviceDescription);
         applicationDescriptor.setServiceDescriptor(serviceDescriptor);
 
-        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_BUILD_SAVE);
-        ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
+        webResource = getDescriptorRegistryBaseResource().path(
+                ResourcePathConstants.DecResourcePathConstants.APP_DESC_BUILD_SAVE);
+        ClientResponse response = webResource.accept(
+                MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
 
         int status = response.getStatus();
 
@@ -552,9 +716,18 @@ public class DescriptorResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
-
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(
+                        MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(
+                        MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -573,8 +746,10 @@ public class DescriptorResourceClient {
         ServiceDescriptor serviceDescriptor = DescriptorUtil.createServiceDescriptor(serviceDescription);
         applicationDescriptor.setServiceDescriptor(serviceDescriptor);
 
-        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_UPDATE);
-        ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
+        webResource = getDescriptorRegistryBaseResource().path(
+                ResourcePathConstants.DecResourcePathConstants.APP_DESC_UPDATE);
+        ClientResponse response = webResource.accept(
+                MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
 
         int status = response.getStatus();
 
@@ -583,9 +758,18 @@ public class DescriptorResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
-
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(
+                        MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(
+                        MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -596,15 +780,19 @@ public class DescriptorResourceClient {
         }
     }
 
-    public void updateApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) {
+    public void updateApplicationDescriptor(String serviceName,
+                                            String hostName,
+                                            ApplicationDeploymentDescription descriptor) {
         ServiceDescription serviceDescription = getServiceDescriptor(serviceName);
         ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(descriptor);
         applicationDescriptor.setHostdescName(hostName);
         ServiceDescriptor serviceDescriptor = DescriptorUtil.createServiceDescriptor(serviceDescription);
         applicationDescriptor.setServiceDescriptor(serviceDescriptor);
 
-        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_UPDATE);
-        ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
+        webResource = getDescriptorRegistryBaseResource().path(
+                ResourcePathConstants.DecResourcePathConstants.APP_DESC_UPDATE);
+        ClientResponse response = webResource.accept(
+                MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
 
         int status = response.getStatus();
 
@@ -613,9 +801,18 @@ public class DescriptorResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
-
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(
+                        MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(
+                        MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -629,13 +826,15 @@ public class DescriptorResourceClient {
     public ApplicationDeploymentDescription getApplicationDescriptor(String serviceName,
                                                                      String hostname,
                                                                      String applicationName) {
-        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_DESCRIPTION);
+        webResource = getDescriptorRegistryBaseResource().path(
+                ResourcePathConstants.DecResourcePathConstants.APP_DESC_DESCRIPTION);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("serviceName", serviceName);
         queryParams.add("hostName", hostname);
         queryParams.add("applicationName", applicationName);
 
-        ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        ClientResponse response = webResource.queryParams(queryParams).accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
         int status = response.getStatus();
 
@@ -644,9 +843,17 @@ public class DescriptorResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = builder.accept(
+                        MediaType.APPLICATION_JSON).get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_BAD_REQUEST) {
@@ -659,17 +866,21 @@ public class DescriptorResourceClient {
         }
 
         ApplicationDescriptor applicationDescriptor = response.getEntity(ApplicationDescriptor.class);
-        ApplicationDeploymentDescription applicationDeploymentDescription = DescriptorUtil.createApplicationDescription(applicationDescriptor);
+        ApplicationDeploymentDescription applicationDeploymentDescription =
+                DescriptorUtil.createApplicationDescription(applicationDescriptor);
         return applicationDeploymentDescription;
     }
 
-    public ApplicationDeploymentDescription getApplicationDescriptors(String serviceName, String hostname) {
-        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_PER_HOST_SERVICE);
+    public ApplicationDeploymentDescription getApplicationDescriptors(String serviceName,
+                                                                      String hostname) {
+        webResource = getDescriptorRegistryBaseResource().path(
+                ResourcePathConstants.DecResourcePathConstants.APP_DESC_PER_HOST_SERVICE);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("serviceName", serviceName);
         queryParams.add("hostName", hostname);
 
-        ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        ClientResponse response = webResource.queryParams(queryParams).accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
         int status = response.getStatus();
 
@@ -678,9 +889,16 @@ public class DescriptorResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if(status == ClientConstant.HTTP_NO_CONTENT){
@@ -695,16 +913,19 @@ public class DescriptorResourceClient {
         }
 
         ApplicationDescriptor applicationDescriptor = response.getEntity(ApplicationDescriptor.class);
-        ApplicationDeploymentDescription applicationDeploymentDescription = DescriptorUtil.createApplicationDescription(applicationDescriptor);
+        ApplicationDeploymentDescription applicationDeploymentDescription =
+                DescriptorUtil.createApplicationDescription(applicationDescriptor);
         return applicationDeploymentDescription;
     }
 
     public Map<String, ApplicationDeploymentDescription> getApplicationDescriptors(String serviceName) {
-        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_ALL_DESCS_SERVICE);
+        webResource = getDescriptorRegistryBaseResource().path(
+                ResourcePathConstants.DecResourcePathConstants.APP_DESC_ALL_DESCS_SERVICE);
         Map<String, ApplicationDeploymentDescription> applicationDeploymentDescriptionMap = new HashMap<String, ApplicationDeploymentDescription>();
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("serviceName", serviceName);
-        ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        ClientResponse response = webResource.queryParams(queryParams).accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
         int status = response.getStatus();
 
@@ -713,9 +934,16 @@ public class DescriptorResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if(status == ClientConstant.HTTP_NO_CONTENT){
@@ -729,20 +957,26 @@ public class DescriptorResourceClient {
             }
         }
 
-        ApplicationDescriptorList applicationDescriptorList = response.getEntity(ApplicationDescriptorList.class);
-        ApplicationDescriptor[] applicationDescriptors = applicationDescriptorList.getApplicationDescriptors();
+        ApplicationDescriptorList applicationDescriptorList =
+                response.getEntity(ApplicationDescriptorList.class);
+        ApplicationDescriptor[] applicationDescriptors =
+                applicationDescriptorList.getApplicationDescriptors();
 
         for (ApplicationDescriptor applicationDescriptor : applicationDescriptors) {
-            ApplicationDeploymentDescription applicationDeploymentDescription = DescriptorUtil.createApplicationDescription(applicationDescriptor);
-            applicationDeploymentDescriptionMap.put(applicationDescriptor.getHostdescName(), applicationDeploymentDescription);
+            ApplicationDeploymentDescription applicationDeploymentDescription =
+                    DescriptorUtil.createApplicationDescription(applicationDescriptor);
+            applicationDeploymentDescriptionMap.put(
+                    applicationDescriptor.getHostdescName(), applicationDeploymentDescription);
         }
         return applicationDeploymentDescriptionMap;
     }
 
     public Map<String[], ApplicationDeploymentDescription> getApplicationDescriptors() {
         Map<String[], ApplicationDeploymentDescription> applicationDeploymentDescriptionMap = new HashMap<String[], ApplicationDeploymentDescription>();
-        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_ALL_DESCRIPTORS);
-        ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        webResource = getDescriptorRegistryBaseResource().path(
+                ResourcePathConstants.DecResourcePathConstants.APP_DESC_ALL_DESCRIPTORS);
+        ClientResponse response = webResource.accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
         int status = response.getStatus();
 
@@ -751,9 +985,16 @@ public class DescriptorResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if(status == ClientConstant.HTTP_NO_CONTENT){
@@ -767,19 +1008,26 @@ public class DescriptorResourceClient {
             }
         }
 
-        ApplicationDescriptorList applicationDescriptorList = response.getEntity(ApplicationDescriptorList.class);
-        ApplicationDescriptor[] applicationDescriptors = applicationDescriptorList.getApplicationDescriptors();
+        ApplicationDescriptorList applicationDescriptorList =
+                response.getEntity(ApplicationDescriptorList.class);
+        ApplicationDescriptor[] applicationDescriptors =
+                applicationDescriptorList.getApplicationDescriptors();
         for (ApplicationDescriptor applicationDescriptor : applicationDescriptors) {
-            ApplicationDeploymentDescription applicationDeploymentDescription = DescriptorUtil.createApplicationDescription(applicationDescriptor);
-            String[] descriptors = {applicationDescriptor.getServiceDescriptor().getServiceName(), applicationDescriptor.getHostdescName()};
+            ApplicationDeploymentDescription applicationDeploymentDescription =
+                    DescriptorUtil.createApplicationDescription(applicationDescriptor);
+            String[] descriptors =
+                    {applicationDescriptor.getServiceDescriptor().getServiceName(),
+                            applicationDescriptor.getHostdescName()};
             applicationDeploymentDescriptionMap.put(descriptors, applicationDeploymentDescription);
         }
         return applicationDeploymentDescriptionMap;
     }
 
     public List<String> getApplicationDescriptorNames() {
-        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_NAMES);
-        ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        webResource = getDescriptorRegistryBaseResource().path(
+                ResourcePathConstants.DecResourcePathConstants.APP_DESC_NAMES);
+        ClientResponse response = webResource.accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -787,8 +1035,17 @@ public class DescriptorResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(
+                        MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if(status == ClientConstant.HTTP_NO_CONTENT){
@@ -806,13 +1063,17 @@ public class DescriptorResourceClient {
         return descriptorNameList.getDescriptorNames();
     }
 
-    public void removeApplicationDescriptor(String serviceName, String hostName, String applicationName) {
-        webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_DELETE);
+    public void removeApplicationDescriptor(String serviceName,
+                                            String hostName,
+                                            String applicationName) {
+        webResource = getDescriptorRegistryBaseResource().path(
+                ResourcePathConstants.DecResourcePathConstants.APP_DESC_DELETE);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("serviceName", serviceName);
         queryParams.add("hostName", hostName);
         queryParams.add("appName", applicationName);
-        ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).delete(ClientResponse.class);
+        ClientResponse response = webResource.queryParams(queryParams).accept(
+                MediaType.TEXT_PLAIN).delete(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -820,8 +1081,16 @@ public class DescriptorResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.TEXT_PLAIN).delete(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.TEXT_PLAIN).delete(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.TEXT_PLAIN).delete(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {

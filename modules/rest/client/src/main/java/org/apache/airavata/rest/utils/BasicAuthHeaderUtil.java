@@ -25,6 +25,7 @@ import com.sun.jersey.api.client.WebResource;
 import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.commons.codec.binary.Base64;
 
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MultivaluedMap;
 
 public class BasicAuthHeaderUtil {
@@ -43,10 +44,20 @@ public class BasicAuthHeaderUtil {
         return "Basic " + encodedString;
     }
 
-    public static WebResource.Builder getBuilder(WebResource webResource, MultivaluedMap queryParams, String userName, String password) {
+    public static WebResource.Builder getBuilder(WebResource webResource,
+                                                 MultivaluedMap queryParams,
+                                                 String userName,
+                                                 String password,
+                                                 Cookie cookie) {
         if (queryParams != null){
             webResource = webResource.queryParams(queryParams);
         }
-        return webResource.header("Authorization", BasicAuthHeaderUtil.getBasicAuthHeader(userName, password));
+        WebResource.Builder builder = webResource.header("Authorization",
+                BasicAuthHeaderUtil.getBasicAuthHeader(userName, password));
+        if (cookie != null){
+            builder.cookie(cookie);
+        }
+
+        return builder;
     }
 }

@@ -38,6 +38,7 @@ import org.apache.airavata.rest.utils.ClientConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
@@ -55,6 +56,8 @@ public class BasicRegistryResourceClient {
     private String userName;
     private PasswordCallback callback;
     private String baseURI;
+    private Cookie cookie;
+    private WebResource.Builder builder;
 
     /**
      * Creates a BasicRegistryResourceClient
@@ -110,9 +113,16 @@ public class BasicRegistryResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(
-                    webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -140,9 +150,16 @@ public class BasicRegistryResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(
-                    webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -170,10 +187,19 @@ public class BasicRegistryResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(
-                    webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.TEXT_PLAIN).type(
-                    MediaType.APPLICATION_JSON).post(ClientResponse.class, gateway);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.TEXT_PLAIN).type(
+                        MediaType.APPLICATION_JSON).post(ClientResponse.class, gateway);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.TEXT_PLAIN).type(
+                        MediaType.APPLICATION_JSON).post(ClientResponse.class, gateway);
+                cookie = response.getCookies().get(0).toCookie();
+            }
+
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -200,11 +226,20 @@ public class BasicRegistryResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(
-                    webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.TEXT_PLAIN).type(
-                    MediaType.APPLICATION_JSON).post(ClientResponse.class, user);
-            status = response.getStatus();
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.TEXT_PLAIN).type(
+                        MediaType.APPLICATION_JSON).post(ClientResponse.class, user);
+                status = response.getStatus();
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.TEXT_PLAIN).type(
+                        MediaType.APPLICATION_JSON).post(ClientResponse.class, user);
+                status = response.getStatus();
+                cookie = response.getCookies().get(0).toCookie();
+            }
 
             if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
                 logger.error(response.getEntity(String.class));
@@ -230,9 +265,16 @@ public class BasicRegistryResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(
-                    webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -262,9 +304,16 @@ public class BasicRegistryResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-                WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName));
-                response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+                if (cookie != null){
+                    builder = BasicAuthHeaderUtil.getBuilder(
+                            webResource, null, userName, callback.getPassword(userName), cookie);
+                    response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+                } else {
+                    builder = BasicAuthHeaderUtil.getBuilder(
+                            webResource, null, userName, callback.getPassword(userName), null);
+                    response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+                    cookie = response.getCookies().get(0).toCookie();
+                }
                 status = response.getStatus();
 
                 if (status != ClientConstant.HTTP_OK) {
@@ -299,9 +348,16 @@ public class BasicRegistryResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(
-                    webResource, null, userName, callback.getPassword(userName));
-            response = builder.type(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.type(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.type(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {

@@ -37,9 +37,7 @@ import org.apache.airavata.rest.utils.ClientConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DateFormat;
@@ -54,6 +52,9 @@ public class ConfigurationResourceClient {
     private String userName;
     private PasswordCallback callback;
     private String baseURI;
+    private Cookie cookie;
+    private WebResource.Builder builder;
+    private ClientResponse response;
 
     public ConfigurationResourceClient(String userName, String seriveURI, PasswordCallback callback) {
         this.userName = userName;
@@ -72,16 +73,18 @@ public class ConfigurationResourceClient {
                 Boolean.TRUE);
         Client client = Client.create(config);
         WebResource baseWebResource = client.resource(getBaseURI());
-        webResource = baseWebResource.path(ResourcePathConstants.ConfigResourcePathConstants.CONFIGURATION_REGISTRY_RESOURCE);
+        webResource = baseWebResource.path(ResourcePathConstants.
+                ConfigResourcePathConstants.CONFIGURATION_REGISTRY_RESOURCE);
         return webResource;
     }
 
 
     public Object getConfiguration(String configKey) {
-        webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.GET_CONFIGURATION);
+        webResource = getConfigurationBaseResource().path(
+                ResourcePathConstants.ConfigResourcePathConstants.GET_CONFIGURATION);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("key", configKey);
-        ClientResponse response = webResource.queryParams(queryParams).get(ClientResponse.class);
+        response = webResource.queryParams(queryParams).get(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -89,8 +92,17 @@ public class ConfigurationResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.get(ClientResponse.class);
+            if (null != cookie){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams,userName, callback.getPassword(userName), cookie);
+                response = builder.get(ClientResponse.class);
+            }else{
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams,userName, callback.getPassword(userName), null);
+                response = builder.get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
+
             status = response.getStatus();
 
             if(status == ClientConstant.HTTP_NO_CONTENT){
@@ -109,10 +121,12 @@ public class ConfigurationResourceClient {
 
     public List<Object> getConfigurationList(String configKey) {
         List<Object> configurationValueList = new ArrayList<Object>();
-        webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.GET_CONFIGURATION_LIST);
+        webResource = getConfigurationBaseResource().path(
+                ResourcePathConstants.ConfigResourcePathConstants.GET_CONFIGURATION_LIST);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("key", configKey);
-        ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        response = webResource.queryParams(queryParams).accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -120,8 +134,19 @@ public class ConfigurationResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams,userName, callback.getPassword(userName), cookie);
+                response = webResource.queryParams(queryParams).accept(
+                        MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            }else{
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = webResource.queryParams(queryParams).accept(
+                        MediaType.APPLICATION_JSON).get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
+
             status = response.getStatus();
 
             if(status == ClientConstant.HTTP_NO_CONTENT){
@@ -145,13 +170,15 @@ public class ConfigurationResourceClient {
     public void setConfiguration(String configKey, String configVal, Date date) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String formattedDate = dateFormat.format(date);
-        webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.SAVE_CONFIGURATION);
+        webResource = getConfigurationBaseResource().path(
+                ResourcePathConstants.ConfigResourcePathConstants.SAVE_CONFIGURATION);
         MultivaluedMap formData = new MultivaluedMapImpl();
         formData.add("key", configKey);
         formData.add("value", configVal);
         formData.add("date", formattedDate);
 
-        ClientResponse response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class, formData);
+        response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED).post(
+                ClientResponse.class, formData);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -159,8 +186,19 @@ public class ConfigurationResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.type(MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class, formData);
+            if (cookie != null){
+                builder =  BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName,callback.getPassword(userName), cookie);
+                response = builder.type(MediaType.APPLICATION_FORM_URLENCODED).post(
+                        ClientResponse.class, formData);
+            } else {
+                builder =  BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.type(MediaType.APPLICATION_FORM_URLENCODED).post(
+                        ClientResponse.class, formData);
+                cookie = response.getCookies().get(0).toCookie();
+            }
+
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -174,13 +212,15 @@ public class ConfigurationResourceClient {
     public void addConfiguration(String configKey, String configVal, Date date) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String formattedDate = dateFormat.format(date);
-        webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.UPDATE_CONFIGURATION);
+        webResource = getConfigurationBaseResource().path(ResourcePathConstants.
+                ConfigResourcePathConstants.UPDATE_CONFIGURATION);
         MultivaluedMap formData = new MultivaluedMapImpl();
         formData.add("key", configKey);
         formData.add("value", configVal);
         formData.add("date", formattedDate);
 
-        ClientResponse response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class, formData);
+        response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED).
+                post(ClientResponse.class, formData);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -188,8 +228,18 @@ public class ConfigurationResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.type(MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class, formData);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null,userName, callback.getPassword(userName), cookie);
+                response = builder.type(MediaType.APPLICATION_FORM_URLENCODED).
+                        post(ClientResponse.class, formData);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(webResource, null,
+                        userName, callback.getPassword(userName), null);
+                response = builder.type(MediaType.APPLICATION_FORM_URLENCODED).
+                        post(ClientResponse.class, formData);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -201,10 +251,11 @@ public class ConfigurationResourceClient {
     }
 
     public void removeAllConfiguration(String key) {
-        webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_ALL_CONFIGURATION);
+        webResource = getConfigurationBaseResource().path(ResourcePathConstants.
+                ConfigResourcePathConstants.DELETE_ALL_CONFIGURATION);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("key", key);
-        ClientResponse response = webResource.queryParams(queryParams).delete(ClientResponse.class);
+        response = webResource.queryParams(queryParams).delete(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -212,8 +263,16 @@ public class ConfigurationResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.delete(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName,callback.getPassword(userName), cookie);
+                response = builder.delete(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName,callback.getPassword(userName), null);
+                response = builder.delete(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -226,11 +285,12 @@ public class ConfigurationResourceClient {
     }
 
     public void removeConfiguration(String key, String value) {
-        webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_CONFIGURATION);
+        webResource = getConfigurationBaseResource().path(ResourcePathConstants.
+                ConfigResourcePathConstants.DELETE_CONFIGURATION);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("key", key);
         queryParams.add("value", value);
-        ClientResponse response = webResource.queryParams(queryParams).delete(ClientResponse.class);
+        response = webResource.queryParams(queryParams).delete(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -238,8 +298,16 @@ public class ConfigurationResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.delete(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName,callback.getPassword(userName), cookie);
+                response = builder.delete(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName,callback.getPassword(userName), null);
+                response = builder.delete(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -253,8 +321,9 @@ public class ConfigurationResourceClient {
     public List<URI> getGFacURIs() {
         List<URI> uriList = new ArrayList<URI>();
         try {
-            webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.GET_GFAC_URI_LIST);
-            ClientResponse response = webResource.get(ClientResponse.class);
+            webResource = getConfigurationBaseResource().path(ResourcePathConstants.
+                    ConfigResourcePathConstants.GET_GFAC_URI_LIST);
+            response = webResource.get(ClientResponse.class);
             int status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -262,8 +331,16 @@ public class ConfigurationResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-                WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-                response = builder.get(ClientResponse.class);
+                if (cookie != null){
+                    builder = BasicAuthHeaderUtil.getBuilder(
+                            webResource, null, userName,callback.getPassword(userName), cookie);
+                    response = builder.get(ClientResponse.class);
+                } else {
+                    builder = BasicAuthHeaderUtil.getBuilder(
+                            webResource, null, userName,callback.getPassword(userName), null);
+                    response = builder.get(ClientResponse.class);
+                    cookie = response.getCookies().get(0).toCookie();
+                }
                 status = response.getStatus();
 
                 if(status == ClientConstant.HTTP_NO_CONTENT){
@@ -293,8 +370,9 @@ public class ConfigurationResourceClient {
     public List<URI> getWorkflowInterpreterURIs() {
         List<URI> uriList = new ArrayList<URI>();
         try {
-            webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.GET_WFINTERPRETER_URI_LIST);
-            ClientResponse response = webResource.get(ClientResponse.class);
+            webResource = getConfigurationBaseResource().path(ResourcePathConstants.
+                    ConfigResourcePathConstants.GET_WFINTERPRETER_URI_LIST);
+            response = webResource.get(ClientResponse.class);
             int status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -302,8 +380,16 @@ public class ConfigurationResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-                WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-                response = builder.get(ClientResponse.class);
+                if (cookie != null){
+                    builder = BasicAuthHeaderUtil.getBuilder(
+                            webResource, null, userName,callback.getPassword(userName), cookie);
+                    response = builder.get(ClientResponse.class);
+                } else {
+                    builder = BasicAuthHeaderUtil.getBuilder(
+                            webResource, null, userName,callback.getPassword(userName), null);
+                    response = builder.get(ClientResponse.class);
+                    cookie = response.getCookies().get(0).toCookie();
+                }
                 status = response.getStatus();
 
                 if(status == ClientConstant.HTTP_NO_CONTENT){
@@ -331,8 +417,9 @@ public class ConfigurationResourceClient {
 
     public URI getEventingURI() {
         try {
-            webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.GET_EVENTING_URI);
-            ClientResponse response = webResource.get(ClientResponse.class);
+            webResource = getConfigurationBaseResource().path(ResourcePathConstants.
+                    ConfigResourcePathConstants.GET_EVENTING_URI);
+            response = webResource.get(ClientResponse.class);
             int status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -340,8 +427,16 @@ public class ConfigurationResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-                WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-                response = builder.get(ClientResponse.class);
+                if (cookie != null){
+                    builder = BasicAuthHeaderUtil.getBuilder(
+                            webResource, null, userName,callback.getPassword(userName), cookie);
+                    response = builder.get(ClientResponse.class);
+                } else {
+                    builder = BasicAuthHeaderUtil.getBuilder(
+                            webResource, null, userName, callback.getPassword(userName), null);
+                    response = builder.get(ClientResponse.class);
+                    cookie = response.getCookies().get(0).toCookie();
+                }
                 status = response.getStatus();
 
                 if(status == ClientConstant.HTTP_NO_CONTENT){
@@ -365,8 +460,9 @@ public class ConfigurationResourceClient {
 
     public URI getMsgBoxURI() {
         try {
-            webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.GET_MESSAGE_BOX_URI);
-            ClientResponse response = webResource.get(ClientResponse.class);
+            webResource = getConfigurationBaseResource().path(ResourcePathConstants.
+                    ConfigResourcePathConstants.GET_MESSAGE_BOX_URI);
+            response = webResource.get(ClientResponse.class);
             int status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -374,8 +470,16 @@ public class ConfigurationResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-                WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-                response = builder.get(ClientResponse.class);
+                if (cookie != null){
+                    builder = BasicAuthHeaderUtil.getBuilder(
+                            webResource, null, userName,callback.getPassword(userName), cookie);
+                    response = builder.get(ClientResponse.class);
+                } else {
+                    builder = BasicAuthHeaderUtil.getBuilder(
+                            webResource, null, userName,callback.getPassword(userName), null);
+                    response = builder.get(ClientResponse.class);
+                    cookie = response.getCookies().get(0).toCookie();
+                }
                 status = response.getStatus();
 
                 if(status == ClientConstant.HTTP_NO_CONTENT){
@@ -398,11 +502,13 @@ public class ConfigurationResourceClient {
     }
 
     public void addGFacURI(URI uri) {
-        webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.ADD_GFAC_URI);
+        webResource = getConfigurationBaseResource().path(ResourcePathConstants.
+                ConfigResourcePathConstants.ADD_GFAC_URI);
         MultivaluedMap formData = new MultivaluedMapImpl();
         formData.add("uri", uri.toString());
 
-        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+        response = webResource.accept(MediaType.TEXT_PLAIN).
+                post(ClientResponse.class, formData);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -410,8 +516,16 @@ public class ConfigurationResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -423,11 +537,13 @@ public class ConfigurationResourceClient {
     }
 
     public void addWFInterpreterURI(URI uri) {
-        webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.ADD_WFINTERPRETER_URI);
+        webResource = getConfigurationBaseResource().path(
+                ResourcePathConstants.ConfigResourcePathConstants.ADD_WFINTERPRETER_URI);
         MultivaluedMap formData = new MultivaluedMapImpl();
         formData.add("uri", uri.toString());
 
-        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+        response = webResource.accept(MediaType.TEXT_PLAIN).post(
+                ClientResponse.class, formData);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -435,8 +551,17 @@ public class ConfigurationResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.TEXT_PLAIN).post(
+                        ClientResponse.class, formData);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -448,11 +573,13 @@ public class ConfigurationResourceClient {
     }
 
     public void setEventingURI(URI uri) {
-        webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.ADD_EVENTING_URI);
+        webResource = getConfigurationBaseResource().path(
+                ResourcePathConstants.ConfigResourcePathConstants.ADD_EVENTING_URI);
         MultivaluedMap formData = new MultivaluedMapImpl();
         formData.add("uri", uri.toString());
 
-        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+        response = webResource.accept(
+                MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -460,8 +587,17 @@ public class ConfigurationResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(
+                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -473,11 +609,13 @@ public class ConfigurationResourceClient {
     }
 
     public void setMessageBoxURI(URI uri) {
-        webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.ADD_MESSAGE_BOX_URI);
+        webResource = getConfigurationBaseResource().path(
+                ResourcePathConstants.ConfigResourcePathConstants.ADD_MESSAGE_BOX_URI);
         MultivaluedMap formData = new MultivaluedMapImpl();
         formData.add("uri", uri.toString());
 
-        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+        response = webResource.accept(
+                MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -485,8 +623,16 @@ public class ConfigurationResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+            if (cookie != null){
+                builder =BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+            } else {
+                builder =BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -500,12 +646,14 @@ public class ConfigurationResourceClient {
     public void addGFacURIByDate(URI uri, Date date) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String formattedDate = dateFormat.format(date);
-        webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.ADD_GFAC_URI_DATE);
+        webResource = getConfigurationBaseResource().path(
+                ResourcePathConstants.ConfigResourcePathConstants.ADD_GFAC_URI_DATE);
         MultivaluedMap formData = new MultivaluedMapImpl();
         formData.add("uri", uri.toString());
         formData.add("date", formattedDate);
 
-        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+        response = webResource.accept(
+                MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -513,8 +661,16 @@ public class ConfigurationResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+            if (cookie != null){
+                builder  = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+            } else {
+                builder  = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -528,12 +684,14 @@ public class ConfigurationResourceClient {
     public void addWorkflowInterpreterURI(URI uri, Date date) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String formattedDate = dateFormat.format(date);
-        webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.ADD_WFINTERPRETER_URI_DATE);
+        webResource = getConfigurationBaseResource().path(
+                ResourcePathConstants.ConfigResourcePathConstants.ADD_WFINTERPRETER_URI_DATE);
         MultivaluedMap formData = new MultivaluedMapImpl();
         formData.add("uri", uri.toString());
         formData.add("date", formattedDate);
 
-        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+        response = webResource.accept(
+                MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -541,8 +699,16 @@ public class ConfigurationResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+            if (cookie != null){
+                builder =BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+            } else {
+                builder =BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -556,12 +722,14 @@ public class ConfigurationResourceClient {
     public void setEventingURIByDate(URI uri, Date date) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String formattedDate = dateFormat.format(date);
-        webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.ADD_EVENTING_URI_DATE);
+        webResource = getConfigurationBaseResource().path(
+                ResourcePathConstants.ConfigResourcePathConstants.ADD_EVENTING_URI_DATE);
         MultivaluedMap formData = new MultivaluedMapImpl();
         formData.add("uri", uri.toString());
         formData.add("date", formattedDate);
 
-        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+        response = webResource.accept(
+                MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -569,8 +737,16 @@ public class ConfigurationResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -584,12 +760,13 @@ public class ConfigurationResourceClient {
     public void setMessageBoxURIByDate(URI uri, Date date) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String formattedDate = dateFormat.format(date);
-        webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.ADD_MSG_BOX_URI_DATE);
+        webResource = getConfigurationBaseResource().path(
+                ResourcePathConstants.ConfigResourcePathConstants.ADD_MSG_BOX_URI_DATE);
         MultivaluedMap formData = new MultivaluedMapImpl();
         formData.add("uri", uri.toString());
         formData.add("date", formattedDate);
 
-        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+        response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -597,8 +774,16 @@ public class ConfigurationResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formData);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -610,10 +795,11 @@ public class ConfigurationResourceClient {
     }
 
     public void removeGFacURI(URI uri) {
-        webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_GFAC_URI);
+        webResource = getConfigurationBaseResource().path(
+                ResourcePathConstants.ConfigResourcePathConstants.DELETE_GFAC_URI);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("uri", uri.toString());
-        ClientResponse response = webResource.queryParams(queryParams).delete(ClientResponse.class);
+        response = webResource.queryParams(queryParams).delete(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -621,8 +807,16 @@ public class ConfigurationResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.delete(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
+                response = builder.delete(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = builder.delete(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -634,8 +828,9 @@ public class ConfigurationResourceClient {
     }
 
     public void removeAllGFacURI() {
-        webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_ALL_GFAC_URIS);
-        ClientResponse response = webResource.delete(ClientResponse.class);
+        webResource = getConfigurationBaseResource().path(
+                ResourcePathConstants.ConfigResourcePathConstants.DELETE_ALL_GFAC_URIS);
+        response = webResource.delete(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -643,8 +838,16 @@ public class ConfigurationResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.delete(ClientResponse.class);
+            if(cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.delete(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.delete(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -656,10 +859,11 @@ public class ConfigurationResourceClient {
     }
 
     public void removeWorkflowInterpreterURI(URI uri) {
-        webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_WFINTERPRETER_URI);
+        webResource = getConfigurationBaseResource().path(
+                ResourcePathConstants.ConfigResourcePathConstants.DELETE_WFINTERPRETER_URI);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("uri", uri.toString());
-        ClientResponse response = webResource.queryParams(queryParams).delete(ClientResponse.class);
+        response = webResource.queryParams(queryParams).delete(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -667,8 +871,16 @@ public class ConfigurationResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.delete(ClientResponse.class);
+            if (cookie != null){
+                builder =BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
+                response = builder.delete(ClientResponse.class);
+            } else {
+                builder =BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = builder.delete(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -680,8 +892,9 @@ public class ConfigurationResourceClient {
     }
 
     public void removeAllWorkflowInterpreterURI() {
-        webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_ALL_WFINTERPRETER_URIS);
-        ClientResponse response = webResource.delete(ClientResponse.class);
+        webResource = getConfigurationBaseResource().path(
+                ResourcePathConstants.ConfigResourcePathConstants.DELETE_ALL_WFINTERPRETER_URIS);
+        response = webResource.delete(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -689,8 +902,16 @@ public class ConfigurationResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.delete(ClientResponse.class);
+            if (cookie != null){
+                builder =BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.delete(ClientResponse.class);
+            } else {
+                builder =BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.delete(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -702,8 +923,9 @@ public class ConfigurationResourceClient {
     }
 
     public void unsetEventingURI() {
-        webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_EVENTING_URI);
-        ClientResponse response = webResource.delete(ClientResponse.class);
+        webResource = getConfigurationBaseResource().path(
+                ResourcePathConstants.ConfigResourcePathConstants.DELETE_EVENTING_URI);
+        response = webResource.delete(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -711,8 +933,16 @@ public class ConfigurationResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.delete(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.delete(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.delete(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -724,8 +954,9 @@ public class ConfigurationResourceClient {
     }
 
     public void unsetMessageBoxURI() {
-        webResource = getConfigurationBaseResource().path(ResourcePathConstants.ConfigResourcePathConstants.DELETE_MSG_BOX_URI);
-        ClientResponse response = webResource.delete(ClientResponse.class);
+        webResource = getConfigurationBaseResource().path(
+                ResourcePathConstants.ConfigResourcePathConstants.DELETE_MSG_BOX_URI);
+        response = webResource.delete(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -733,8 +964,16 @@ public class ConfigurationResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.delete(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.delete(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.delete(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
