@@ -33,7 +33,7 @@ public class GFacSchemaConstants {
 
     public static final String _127_0_0_1 = "127.0.0.1";
 
-    public static final String GFAC_NAMESPACE = "http://schemas.airavata.apache.org/gfac/type";
+    public static final String GFAC_NAMESPACE = "http://airavata.apache.org/schemas/gfac/2012/12";
 
     public static final String TRANSPORT_LEVEL = "TransportLevel";
 

@@ -571,7 +571,7 @@ public class DeploymentDescriptionDialog extends JDialog {
     	setupMethod();
     	XmlCursor cursor = getServiceDescriptionType().getPortType().getMethod().newCursor();
     	cursor.toNextToken();
-		if (!cursor.setAttributeText(new QName("http://schemas.airavata.apache.org/gfac/type","forceFileStagingToWorkDir"),force.toString())){
+		if (!cursor.setAttributeText(new QName("http://airavata.apache.org/schemas/gfac/2012/12","forceFileStagingToWorkDir"),force.toString())){
 			cursor.insertAttributeWithValue("forceFileStagingToWorkDir",force.toString());
 		}
 		cursor.dispose();
