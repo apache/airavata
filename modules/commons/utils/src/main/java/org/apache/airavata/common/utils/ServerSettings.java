@@ -36,6 +36,8 @@ public class ServerSettings {
     private static final String SYSTEM_USER="system.user";
     private static final String SYSTEM_USER_PASSWORD="system.password";
     private static final String SYSTEM_USER_GATEWAY="system.gateway";
+    private static final String TOMCAT_PORT = "tomcat.port";
+
 
     static{
     	URL url = ServerSettings.class.getClassLoader()
@@ -87,5 +89,9 @@ public class ServerSettings {
     
     public static String getSystemUserGateway() throws ServerSettingsException{
     	return getSetting(SYSTEM_USER_GATEWAY);
+    }
+
+    public static String getTomcatPort() {
+        return properties.getProperty(TOMCAT_PORT);
     }
 }
