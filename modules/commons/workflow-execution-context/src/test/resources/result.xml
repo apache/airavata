@@ -7,7 +7,7 @@
 	the License. -->
 
 <wor:context-header
-      xmlns:wor="http://schemas.airavata.apache.org/workflow-execution-context">
+      xmlns:wor="http://airavata.apache.org/schemas/wec/2012/05">
     <wor:soa-service-eprs>
         <wor:gfac-url>gfacurl</wor:gfac-url>
         <wor:registry-url>registryurl</wor:registry-url>

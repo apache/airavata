@@ -45,7 +45,7 @@ public class MonitorUtil {
      * Workflow tracking namespace
      */
     public static final XmlNamespace WOR_NS = XMLUtil.BUILDER.newNamespace("wor",
-            "http://airavata.apache.org/schemas/workflow_tracking_types");
+            "http://airavata.apache.org/schemas/wft/2011/08");
 
     /**
      * XBaya events namespace
