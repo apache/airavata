@@ -309,6 +309,10 @@
     </dependencyManagement>
 
     <repositories>
+	<repository>
+    		<id>java.net</id>
+    		<url> http://repository.jboss.com/maven2/</url>
+	</repository>
         <repository>
             <id>central</id>
             <name>Maven Central</name>
@@ -596,6 +600,7 @@
                 <module>samples/simple-math-service</module>
                 <module>samples/complex-math-service</module>
                 <module>samples/levenshtein-distance-service</module>
+		<module>modules/server</module>
                 <module>modules/distribution</module>
                 <module>modules/test-suite</module>
             </modules>
