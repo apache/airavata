@@ -27,7 +27,7 @@
       <xgr:x>366</xgr:x>
       <xgr:y>121</xgr:y>
       <xgr:wsdl>RangerService</xgr:wsdl>
-      <xgr:portType>{http://schemas.airavata.apache.org/gfac/type}RangerService</xgr:portType>
+      <xgr:portType>{http://airavata.apache.org/schemas/gfac/2012/12}RangerService</xgr:portType>
       <xgr:operation>invoke</xgr:operation>
     </xgr:node>
     <xgr:node xgr:type="input">
@@ -38,7 +38,7 @@
       <xgr:y>75</xgr:y>
       <xgr:config>
         <xgr:description></xgr:description>
-        <xgr:dataType>{http://schemas.airavata.apache.org/gfac/type}StringParameterType</xgr:dataType>
+        <xgr:dataType>{http://airavata.apache.org/schemas/gfac/2012/12}StringParameterType</xgr:dataType>
         <xgr:value>testing123</xgr:value>
         <xgr:visibility>true</xgr:visibility>
       </xgr:config>
@@ -51,7 +51,7 @@
       <xgr:y>92</xgr:y>
       <xgr:config>
         <xgr:description></xgr:description>
-        <xgr:dataType>{http://schemas.airavata.apache.org/gfac/type}StringParameterType</xgr:dataType>
+        <xgr:dataType>{http://airavata.apache.org/schemas/gfac/2012/12}StringParameterType</xgr:dataType>
       </xgr:config>
     </xgr:node>
     <xgr:port xgr:type="ws">
@@ -94,13 +94,13 @@
     </xgr:edge>
   </xgr:graph>
   <xwf:wsdls>
-    <xwf:wsdl xwf:id="RangerService">&lt;wsdl:definitions name="RangerService" targetNamespace="http://schemas.airavata.apache.org/gfac/type"
-  xmlns:typens="http://schemas.airavata.apache.org/gfac/type/RangerService/xsd" xmlns:wsa="http://www.w3.org/2005/08/addressing" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns:globalTypens="http://schemas.airavata.apache.org/gfac/type/xsd"
-  xmlns:wsdlns="http://schemas.airavata.apache.org/gfac/type" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
-  xmlns:gfac="http://schemas.airavata.apache.org/gfac/type" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    <xwf:wsdl xwf:id="RangerService">&lt;wsdl:definitions name="RangerService" targetNamespace="http://airavata.apache.org/schemas/gfac/2012/12"
+  xmlns:typens="http://airavata.apache.org/schemas/gfac/2012/12/RangerService/xsd" xmlns:wsa="http://www.w3.org/2005/08/addressing" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:globalTypens="http://airavata.apache.org/schemas/gfac/2012/12/xsd"
+  xmlns:wsdlns="http://airavata.apache.org/schemas/gfac/2012/12" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:gfac="http://airavata.apache.org/schemas/gfac/2012/12" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   &lt;wsdl:types>
-    &lt;schema elementFormDefault="unqualified" targetNamespace="http://schemas.airavata.apache.org/gfac/type/RangerService/xsd" xmlns="http://www.w3.org/2001/XMLSchema">
+    &lt;schema elementFormDefault="unqualified" targetNamespace="http://airavata.apache.org/schemas/gfac/2012/12/RangerService/xsd" xmlns="http://www.w3.org/2001/XMLSchema">
       &lt;import namespace="http://airavata.apache.org/schemas/gfac/2012/12" schemaLocation="http://airavata.apache.org/schemas/gfac/2012/12/GFacParameterTypes.xsd" />
       &lt;element name="invoke_InputParams" type="typens:invoke_InputParamsType" />
       &lt;complexType name="invoke_InputParamsType">

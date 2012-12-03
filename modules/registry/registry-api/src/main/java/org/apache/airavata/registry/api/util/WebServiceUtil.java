@@ -177,7 +177,7 @@ public class WebServiceUtil {
             ServiceType type = service.getType().addNewService();
             ServiceType.ServiceName name = type.addNewServiceName();
             name.setStringValue(service.getType().getName());
-            name.setTargetNamespace("http://schemas.airavata.apache.org/gfac/type");
+            name.setTargetNamespace("http://airavata.apache.org/schemas/gfac/2012/12");
             if(service.getType().getPortType() == null){
                 PortTypeType portType = service.getType().addNewPortType();
                 MethodType methodType = portType.addNewMethod();

@@ -34,7 +34,7 @@ public class LEADTypes {
     /**
      * http://www.extreme.indiana.edu/lead/xsd
      */
-    public static final String LEAD_XSD_NS_URI = "http://schemas.airavata.apache.org/gfac/type";
+    public static final String LEAD_XSD_NS_URI = "http://airavata.apache.org/schemas/gfac/2012/12";
 
     // Simple types
 

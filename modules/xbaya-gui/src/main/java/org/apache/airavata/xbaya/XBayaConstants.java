@@ -189,7 +189,7 @@ public class XBayaConstants {
     public static final String REGISTRY_TYPE_APPLICATION_DESC = "ApplicationDesc";
     public static final String REGISTRY_TYPE_SERVICE_DESC = "ServiceDesc";
     public static final String REGISTRY_TYPE_WORKFLOW = "workflow";
-    public static final String HTTP_SCHEMAS_AIRAVATA_APACHE_ORG_GFAC_TYPE = "http://schemas.airavata.apache.org/gfac/type";
+    public static final String HTTP_SCHEMAS_AIRAVATA_APACHE_ORG_GFAC_TYPE = "http://airavata.apache.org/schemas/gfac/2012/12";
 
     /**
      * XRegistry Resource Types for OGCE Resource
