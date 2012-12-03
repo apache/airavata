@@ -221,7 +221,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 	public java.lang.String launchWorkflow(java.lang.String workflowAsString, java.lang.String topic, NameValue[] inputs) throws XMLStreamException {
         OMElement workflowContext = getWorkflowContextHeader();
         if(workflowContext == null){
-            workflowContext = AXIOMUtil.stringToOM("<wor:context-header xmlns:wor=\"http://schemas.airavata.apache.org/workflow-execution-context\">\n" +
+            workflowContext = AXIOMUtil.stringToOM("<wor:context-header xmlns:wor=\"http://airavata.apache.org/schemas/wec/2012/05\">\n" +
                 "    <wor:soa-service-eprs>\n" +
                 "        <wor:gfac-url></wor:gfac-url>\n" +
                 "        <wor:registry-url></wor:registry-url>\n" +
@@ -263,7 +263,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     private OMElement getWorkflowContextHeader() {
         MessageContext currentMessageContext = MessageContext.getCurrentMessageContext();
         SOAPHeader header = currentMessageContext.getEnvelope().getHeader();
-        Iterator childrenWithName = header.getChildrenWithName(new QName("http://schemas.airavata.apache.org/workflow-execution-context", "context-header"));
+        Iterator childrenWithName = header.getChildrenWithName(new QName("http://airavata.apache.org/schemas/wec/2012/05", "context-header"));
         if (childrenWithName.hasNext()) {
             return (OMElement) childrenWithName.next();
         } else {

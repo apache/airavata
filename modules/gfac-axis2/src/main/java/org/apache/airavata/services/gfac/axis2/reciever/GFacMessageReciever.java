@@ -340,7 +340,7 @@ public class GFacMessageReciever implements MessageReceiver {
     private String getEventBrokerURL(MessageContext context) {
         SOAPHeader header = context.getEnvelope().getHeader();
         OMElement contextHeader = header.getFirstChildWithName(new QName(
-                "http://schemas.airavata.apache.org/workflow-execution-context", "context-header"));
+                "http://airavata.apache.org/schemas/wec/2012/05", "context-header"));
         String address = null;
         try {
             ContextHeaderDocument document = ContextHeaderDocument.Factory.parse(contextHeader.toStringWithConsume());
@@ -370,7 +370,7 @@ public class GFacMessageReciever implements MessageReceiver {
     private OMElement getHeader(MessageContext context) {
         SOAPHeader header = context.getEnvelope().getHeader();
         OMElement contextHeader = header.getFirstChildWithName(new QName(
-                "http://schemas.airavata.apache.org/workflow-execution-context", "context-header"));
+                "http://airavata.apache.org/schemas/wec/2012/05", "context-header"));
         return contextHeader;
     }
 }
