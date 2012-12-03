@@ -37,6 +37,7 @@ import org.apache.airavata.rest.utils.ClientConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
@@ -50,6 +51,8 @@ public class ProjectResourceClient {
     private String userName;
     private PasswordCallback callback;
     private String baseURI;
+    private Cookie cookie;
+    private WebResource.Builder builder;
 
     public ProjectResourceClient(String userName, String serviceURI, PasswordCallback callback) {
         this.callback = callback;
@@ -68,12 +71,14 @@ public class ProjectResourceClient {
                 Boolean.TRUE);
         Client client = Client.create(config);
         WebResource baseWebResource = client.resource(getBaseURI());
-        webResource = baseWebResource.path(ResourcePathConstants.ProjectResourcePathConstants.REGISTRY_API_PROJECTREGISTRY);
+        webResource = baseWebResource.path(
+                ResourcePathConstants.ProjectResourcePathConstants.REGISTRY_API_PROJECTREGISTRY);
         return webResource;
     }
 
     public boolean isWorkspaceProjectExists(String projectName) {
-        webResource = getProjectRegistryBaseResource().path(ResourcePathConstants.ProjectResourcePathConstants.PROJECT_EXIST);
+        webResource = getProjectRegistryBaseResource().path(
+                ResourcePathConstants.ProjectResourcePathConstants.PROJECT_EXIST);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("projectName", projectName);
         ClientResponse response = webResource.queryParams(queryParams).get(ClientResponse.class);
@@ -84,8 +89,16 @@ public class ProjectResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = webResource.queryParams(queryParams).get(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
+                response = webResource.queryParams(queryParams).get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = webResource.queryParams(queryParams).get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
             String exists = response.getEntity(String.class);
             if (exists.equals("True")){
@@ -101,7 +114,8 @@ public class ProjectResourceClient {
 
     public boolean isWorkspaceProjectExists(String projectName, boolean createIfNotExists) {
         String createStatus = "false";
-        webResource = getProjectRegistryBaseResource().path(ResourcePathConstants.ProjectResourcePathConstants.PROJECT_EXIST);
+        webResource = getProjectRegistryBaseResource().path(
+                ResourcePathConstants.ProjectResourcePathConstants.PROJECT_EXIST);
         if (createIfNotExists) {
             createStatus = "true";
         }
@@ -117,8 +131,16 @@ public class ProjectResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
             String exists = response.getEntity(String.class);
             if (exists.equals("True")){
@@ -133,11 +155,13 @@ public class ProjectResourceClient {
     }
 
     public void addWorkspaceProject(WorkspaceProject project) {
-        webResource = getProjectRegistryBaseResource().path(ResourcePathConstants.ProjectResourcePathConstants.ADD_PROJECT);
+        webResource = getProjectRegistryBaseResource().path(
+                ResourcePathConstants.ProjectResourcePathConstants.ADD_PROJECT);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("projectName", project.getProjectName());
 
-        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        ClientResponse response = webResource.accept(
+                MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -145,8 +169,18 @@ public class ProjectResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(
+                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(
+                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
@@ -157,11 +191,13 @@ public class ProjectResourceClient {
     }
 
     public void updateWorkspaceProject(WorkspaceProject project) {
-        webResource = getProjectRegistryBaseResource().path(ResourcePathConstants.ProjectResourcePathConstants.UPDATE_PROJECT);
+        webResource = getProjectRegistryBaseResource().path(
+                ResourcePathConstants.ProjectResourcePathConstants.UPDATE_PROJECT);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("projectName", project.getProjectName());
 
-        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        ClientResponse response = webResource.accept(
+                MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -169,8 +205,18 @@ public class ProjectResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(
+                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(
+                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
@@ -181,7 +227,8 @@ public class ProjectResourceClient {
     }
 
     public void deleteWorkspaceProject(String projectName) {
-        webResource = getProjectRegistryBaseResource().path(ResourcePathConstants.ProjectResourcePathConstants.DELETE_PROJECT);
+        webResource = getProjectRegistryBaseResource().path(
+                ResourcePathConstants.ProjectResourcePathConstants.DELETE_PROJECT);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("projectName", projectName);
         ClientResponse response = webResource.queryParams(queryParams).delete(ClientResponse.class);
@@ -192,8 +239,16 @@ public class ProjectResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.delete(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
+                response = builder.delete(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = builder.delete(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
@@ -204,7 +259,8 @@ public class ProjectResourceClient {
     }
 
     public WorkspaceProject getWorkspaceProject(String projectName) {
-        webResource = getProjectRegistryBaseResource().path(ResourcePathConstants.ProjectResourcePathConstants.GET_PROJECT);
+        webResource = getProjectRegistryBaseResource().path(
+                ResourcePathConstants.ProjectResourcePathConstants.GET_PROJECT);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("projectName", projectName);
         ClientResponse response = webResource.queryParams(queryParams).get(ClientResponse.class);
@@ -215,8 +271,16 @@ public class ProjectResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.get(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
+                response = builder.get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = builder.get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
             if(status == ClientConstant.HTTP_NO_CONTENT){
                 return null;
@@ -233,7 +297,8 @@ public class ProjectResourceClient {
 
     public List<WorkspaceProject> getWorkspaceProjects() {
         List<WorkspaceProject> workspaceProjectsList = new ArrayList<WorkspaceProject>();
-        webResource = getProjectRegistryBaseResource().path(ResourcePathConstants.ProjectResourcePathConstants.GET_PROJECTS);
+        webResource = getProjectRegistryBaseResource().path(
+                ResourcePathConstants.ProjectResourcePathConstants.GET_PROJECTS);
         ClientResponse response = webResource.get(ClientResponse.class);
         int status = response.getStatus();
 
@@ -242,8 +307,16 @@ public class ProjectResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.get(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
             if(status == ClientConstant.HTTP_NO_CONTENT){
                 return workspaceProjectsList;

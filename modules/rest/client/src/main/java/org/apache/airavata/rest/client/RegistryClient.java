@@ -31,7 +31,6 @@ import org.apache.airavata.registry.api.exception.gateway.*;
 import org.apache.airavata.registry.api.exception.worker.*;
 import org.apache.airavata.registry.api.workflow.*;
 
-import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
@@ -87,37 +86,6 @@ public class RegistryClient extends AiravataRegistry2 {
         return userWorkflowResourceClient;
     }
 
-    public void setBasicRegistryResourceClient(BasicRegistryResourceClient basicRegistryResourceClient) {
-        this.basicRegistryResourceClient = basicRegistryResourceClient;
-    }
-
-    public void setConfigurationResourceClient(ConfigurationResourceClient configurationResourceClient) {
-        this.configurationResourceClient = configurationResourceClient;
-    }
-
-    public void setDescriptorResourceClient(DescriptorResourceClient descriptorResourceClient) {
-        this.descriptorResourceClient = descriptorResourceClient;
-    }
-
-    public void setExperimentResourceClient(ExperimentResourceClient experimentResourceClient) {
-        this.experimentResourceClient = experimentResourceClient;
-    }
-
-    public void setProjectResourceClient(ProjectResourceClient projectResourceClient) {
-        this.projectResourceClient = projectResourceClient;
-    }
-
-    public void setProvenanceResourceClient(ProvenanceResourceClient provenanceResourceClient) {
-        this.provenanceResourceClient = provenanceResourceClient;
-    }
-
-    public void setPublishedWorkflowResourceClient(PublishedWorkflowResourceClient publishedWorkflowResourceClient) {
-        this.publishedWorkflowResourceClient = publishedWorkflowResourceClient;
-    }
-
-    public void setUserWorkflowResourceClient(UserWorkflowResourceClient userWorkflowResourceClient) {
-        this.userWorkflowResourceClient = userWorkflowResourceClient;
-    }
 
     @Override
     protected void initialize() {
@@ -252,32 +220,32 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public void addHostDescriptor(HostDescription descriptor) throws DescriptorAlreadyExistsException, RegistryException {
+    public void addHostDescriptor(HostDescription descriptor) throws RegistryException {
         getDescriptorResourceClient().addHostDescriptor(descriptor);
     }
 
 
-    public void updateHostDescriptor(HostDescription descriptor) throws DescriptorDoesNotExistsException, RegistryException {
+    public void updateHostDescriptor(HostDescription descriptor) throws RegistryException {
         getDescriptorResourceClient().updateHostDescriptor(descriptor);
     }
 
 
-    public HostDescription getHostDescriptor(String hostName) throws DescriptorDoesNotExistsException, MalformedDescriptorException, RegistryException {
+    public HostDescription getHostDescriptor(String hostName) throws RegistryException {
         return getDescriptorResourceClient().getHostDescriptor(hostName);
     }
 
 
-    public void removeHostDescriptor(String hostName) throws DescriptorDoesNotExistsException, RegistryException {
+    public void removeHostDescriptor(String hostName) throws RegistryException {
         getDescriptorResourceClient().removeHostDescriptor(hostName);
     }
 
 
-    public List<HostDescription> getHostDescriptors() throws MalformedDescriptorException, RegistryException {
+    public List<HostDescription> getHostDescriptors() throws RegistryException {
         return getDescriptorResourceClient().getHostDescriptors();
     }
 
 
-    public ResourceMetadata getHostDescriptorMetadata(String hostName) throws DescriptorDoesNotExistsException, RegistryException {
+    public ResourceMetadata getHostDescriptorMetadata(String hostName) throws RegistryException {
         return null;
     }
 
@@ -287,87 +255,104 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public void addServiceDescriptor(ServiceDescription descriptor) throws DescriptorAlreadyExistsException, RegistryException {
+    public void addServiceDescriptor(ServiceDescription descriptor) throws RegistryException {
        getDescriptorResourceClient().addServiceDescriptor(descriptor);
     }
 
 
-    public void updateServiceDescriptor(ServiceDescription descriptor) throws DescriptorDoesNotExistsException, RegistryException {
+    public void updateServiceDescriptor(ServiceDescription descriptor) throws RegistryException {
         getDescriptorResourceClient().updateServiceDescriptor(descriptor);
     }
 
 
-    public ServiceDescription getServiceDescriptor(String serviceName) throws DescriptorDoesNotExistsException, MalformedDescriptorException, RegistryException {
+    public ServiceDescription getServiceDescriptor(String serviceName) throws RegistryException {
         return getDescriptorResourceClient().getServiceDescriptor(serviceName);
     }
 
 
-    public void removeServiceDescriptor(String serviceName) throws DescriptorDoesNotExistsException, RegistryException {
+    public void removeServiceDescriptor(String serviceName) throws RegistryException {
         getDescriptorResourceClient().removeServiceDescriptor(serviceName);
     }
 
 
-    public List<ServiceDescription> getServiceDescriptors() throws MalformedDescriptorException, RegistryException {
+    public List<ServiceDescription> getServiceDescriptors() throws RegistryException {
         return getDescriptorResourceClient().getServiceDescriptors();
     }
 
 
-    public ResourceMetadata getServiceDescriptorMetadata(String serviceName) throws DescriptorDoesNotExistsException, RegistryException {
+    public ResourceMetadata getServiceDescriptorMetadata(String serviceName) throws RegistryException {
         return null;
     }
 
 
-    public boolean isApplicationDescriptorExists(String serviceName, String hostName, String descriptorName) throws RegistryException {
+    public boolean isApplicationDescriptorExists(String serviceName,
+                                                 String hostName,
+                                                 String descriptorName) throws RegistryException {
         return getDescriptorResourceClient().isApplicationDescriptorExists(serviceName, hostName, descriptorName);
     }
 
 
-    public void addApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDeploymentDescription descriptor) throws DescriptorAlreadyExistsException, RegistryException {
+    public void addApplicationDescriptor(ServiceDescription serviceDescription,
+                                         HostDescription hostDescriptor,
+                                         ApplicationDeploymentDescription descriptor) throws RegistryException {
         getDescriptorResourceClient().addApplicationDescriptor(serviceDescription, hostDescriptor, descriptor);
     }
 
 
-    public void addApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) throws DescriptorAlreadyExistsException, RegistryException {
+    public void addApplicationDescriptor(String serviceName,
+                                         String hostName,
+                                         ApplicationDeploymentDescription descriptor) throws RegistryException {
         getDescriptorResourceClient().addApplicationDescriptor(serviceName, hostName, descriptor);
     }
 
 
-    public void udpateApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDeploymentDescription descriptor) throws DescriptorDoesNotExistsException, RegistryException {
+    public void udpateApplicationDescriptor(ServiceDescription serviceDescription,
+                                            HostDescription hostDescriptor,
+                                            ApplicationDeploymentDescription descriptor) throws RegistryException {
         getDescriptorResourceClient().udpateApplicationDescriptor(serviceDescription, hostDescriptor, descriptor);
     }
 
 
-    public void updateApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) throws DescriptorDoesNotExistsException, RegistryException {
+    public void updateApplicationDescriptor(String serviceName,
+                                            String hostName,
+                                            ApplicationDeploymentDescription descriptor) throws RegistryException {
         getDescriptorResourceClient().updateApplicationDescriptor(serviceName, hostName, descriptor);
     }
 
 
-    public ApplicationDeploymentDescription getApplicationDescriptor(String serviceName, String hostname, String applicationName) throws DescriptorDoesNotExistsException, MalformedDescriptorException, RegistryException {
+    public ApplicationDeploymentDescription getApplicationDescriptor(String serviceName,
+                                                                     String hostname,
+                                                                     String applicationName) throws RegistryException {
         return getDescriptorResourceClient().getApplicationDescriptor(serviceName, hostname, applicationName);
     }
 
 
-    public ApplicationDeploymentDescription getApplicationDescriptors(String serviceName, String hostname) throws MalformedDescriptorException, RegistryException {
+    public ApplicationDeploymentDescription getApplicationDescriptors(String serviceName,
+                                                                      String hostname) throws RegistryException {
         return getDescriptorResourceClient().getApplicationDescriptors(serviceName, hostname);
     }
 
 
-    public Map<String, ApplicationDeploymentDescription> getApplicationDescriptors(String serviceName) throws MalformedDescriptorException, RegistryException {
+    public Map<String, ApplicationDeploymentDescription> getApplicationDescriptors(String serviceName) throws RegistryException {
         return getDescriptorResourceClient().getApplicationDescriptors(serviceName);
     }
 
 
-    public Map<String[], ApplicationDeploymentDescription> getApplicationDescriptors() throws MalformedDescriptorException, RegistryException {
+    public Map<String[], ApplicationDeploymentDescription> getApplicationDescriptors() throws RegistryException {
         return getDescriptorResourceClient().getApplicationDescriptors();
     }
 
 
-    public void removeApplicationDescriptor(String serviceName, String hostName, String applicationName) throws DescriptorDoesNotExistsException, RegistryException {
+    public void removeApplicationDescriptor(String serviceName,
+                                            String hostName,
+                                            String applicationName) throws RegistryException {
         getDescriptorResourceClient().removeApplicationDescriptor(serviceName, hostName, applicationName);
     }
 
 
-    public ResourceMetadata getApplicationDescriptorMetadata(String serviceName, String hostName, String applicationName) throws DescriptorDoesNotExistsException, RegistryException {
+    public ResourceMetadata getApplicationDescriptorMetadata(String serviceName,
+                                                             String hostName,
+                                                             String applicationName) throws RegistryException {
         return null;
     }
 
@@ -377,27 +362,28 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public boolean isWorkspaceProjectExists(String projectName, boolean createIfNotExists) throws RegistryException {
+    public boolean isWorkspaceProjectExists(String projectName,
+                                            boolean createIfNotExists) throws RegistryException {
         return getProjectResourceClient().isWorkspaceProjectExists(projectName, createIfNotExists);
     }
 
 
-    public void addWorkspaceProject(WorkspaceProject project) throws WorkspaceProjectAlreadyExistsException, RegistryException {
+    public void addWorkspaceProject(WorkspaceProject project) throws RegistryException {
         getProjectResourceClient().addWorkspaceProject(project);
     }
 
 
-    public void updateWorkspaceProject(WorkspaceProject project) throws WorkspaceProjectDoesNotExistsException, RegistryException {
+    public void updateWorkspaceProject(WorkspaceProject project) throws RegistryException {
         getProjectResourceClient().updateWorkspaceProject(project);
     }
 
 
-    public void deleteWorkspaceProject(String projectName) throws WorkspaceProjectDoesNotExistsException, RegistryException {
+    public void deleteWorkspaceProject(String projectName) throws RegistryException {
         getProjectResourceClient().deleteWorkspaceProject(projectName);
     }
 
 
-    public WorkspaceProject getWorkspaceProject(String projectName) throws WorkspaceProjectDoesNotExistsException, RegistryException {
+    public WorkspaceProject getWorkspaceProject(String projectName) throws RegistryException {
         return getProjectResourceClient().getWorkspaceProject(projectName);
     }
 
@@ -407,7 +393,8 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public void addExperiment(String projectName, AiravataExperiment experiment) throws WorkspaceProjectDoesNotExistsException, ExperimentDoesNotExistsException, RegistryException {
+    public void addExperiment(String projectName,
+                              AiravataExperiment experiment) throws RegistryException {
         getExperimentResourceClient().addExperiment(projectName, experiment);
     }
 
@@ -432,7 +419,9 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public List<AiravataExperiment> getExperiments(String projectName, Date from, Date to) throws RegistryException {
+    public List<AiravataExperiment> getExperiments(String projectName,
+                                                   Date from,
+                                                   Date to) throws RegistryException {
         return getExperimentResourceClient().getExperiments(projectName, from, to);
     }
 
@@ -442,12 +431,14 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public boolean isExperimentExists(String experimentId, boolean createIfNotPresent) throws RegistryException {
+    public boolean isExperimentExists(String experimentId,
+                                      boolean createIfNotPresent) throws RegistryException {
         return getExperimentResourceClient().isExperimentExists(experimentId, createIfNotPresent);
     }
 
 
-    public void updateExperimentExecutionUser(String experimentId, String user) throws RegistryException {
+    public void updateExperimentExecutionUser(String experimentId,
+                                              String user) throws RegistryException {
         getProvenanceResourceClient().updateExperimentExecutionUser(experimentId, user);
     }
 
@@ -467,7 +458,8 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public void updateExperimentName(String experimentId, String experimentName) throws RegistryException {
+    public void updateExperimentName(String experimentId,
+                                     String experimentName) throws RegistryException {
         getProvenanceResourceClient().updateExperimentName(experimentId, experimentName);
     }
 
@@ -477,7 +469,8 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public void updateExperimentMetadata(String experimentId, String metadata) throws RegistryException {
+    public void updateExperimentMetadata(String experimentId,
+                                         String metadata) throws RegistryException {
         getProvenanceResourceClient().updateExperimentMetadata(experimentId, metadata);
     }
 
@@ -487,7 +480,8 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public void setWorkflowInstanceTemplateName(String workflowInstanceId, String templateName) throws RegistryException {
+    public void setWorkflowInstanceTemplateName(String workflowInstanceId,
+                                                String templateName) throws RegistryException {
         getProvenanceResourceClient().setWorkflowInstanceTemplateName(workflowInstanceId, templateName);
     }
 
@@ -502,12 +496,14 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public boolean isWorkflowInstanceExists(String instanceId, boolean createIfNotPresent) throws RegistryException {
+    public boolean isWorkflowInstanceExists(String instanceId,
+                                            boolean createIfNotPresent) throws RegistryException {
         return getProvenanceResourceClient().isWorkflowInstanceExists(instanceId, createIfNotPresent);
     }
 
 
-    public void updateWorkflowInstanceStatus(String instanceId, WorkflowInstanceStatus.ExecutionStatus status) throws RegistryException {
+    public void updateWorkflowInstanceStatus(String instanceId,
+                                             WorkflowInstanceStatus.ExecutionStatus status) throws RegistryException {
         getProvenanceResourceClient().updateWorkflowInstanceStatus(instanceId, status);
     }
 
@@ -532,37 +528,46 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public List<WorkflowNodeIOData> searchWorkflowInstanceNodeInput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx) throws RegistryException {
+    public List<WorkflowNodeIOData> searchWorkflowInstanceNodeInput(String experimentIdRegEx,
+                                                                    String workflowNameRegEx,
+                                                                    String nodeNameRegEx) throws RegistryException {
         return getProvenanceResourceClient().searchWorkflowInstanceNodeInput(experimentIdRegEx, workflowNameRegEx, nodeNameRegEx);
     }
 
 
-    public List<WorkflowNodeIOData> searchWorkflowInstanceNodeOutput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx) throws RegistryException {
+    public List<WorkflowNodeIOData> searchWorkflowInstanceNodeOutput(String experimentIdRegEx,
+                                                                     String workflowNameRegEx,
+                                                                     String nodeNameRegEx) throws RegistryException {
         return getProvenanceResourceClient().searchWorkflowInstanceNodeOutput(experimentIdRegEx, workflowNameRegEx, nodeNameRegEx);
     }
 
 
-    public List<WorkflowNodeIOData> getWorkflowInstanceNodeInput(String workflowInstanceId, String nodeType) throws RegistryException {
+    public List<WorkflowNodeIOData> getWorkflowInstanceNodeInput(String workflowInstanceId,
+                                                                 String nodeType) throws RegistryException {
         return getProvenanceResourceClient().getWorkflowInstanceNodeInput(workflowInstanceId, nodeType);
     }
 
 
-    public List<WorkflowNodeIOData> getWorkflowInstanceNodeOutput(String workflowInstanceId, String nodeType) throws RegistryException {
+    public List<WorkflowNodeIOData> getWorkflowInstanceNodeOutput(String workflowInstanceId,
+                                                                  String nodeType) throws RegistryException {
         return getProvenanceResourceClient().getWorkflowInstanceNodeOutput(workflowInstanceId, nodeType);
     }
 
 
-    public void saveWorkflowExecutionOutput(String experimentId, String outputNodeName, String output) throws RegistryException {
+    public void saveWorkflowExecutionOutput(String experimentId, String outputNodeName,
+                                            String output) throws RegistryException {
         getProvenanceResourceClient().saveWorkflowExecutionOutput(experimentId, outputNodeName, output);
     }
 
 
-    public void saveWorkflowExecutionOutput(String experimentId, WorkflowIOData data) throws RegistryException {
+    public void saveWorkflowExecutionOutput(String experimentId,
+                                            WorkflowIOData data) throws RegistryException {
         getProvenanceResourceClient().saveWorkflowExecutionOutput(experimentId, data);
     }
 
 
-    public WorkflowIOData getWorkflowExecutionOutput(String experimentId, String outputNodeName) throws RegistryException {
+    public WorkflowIOData getWorkflowExecutionOutput(String experimentId,
+                                                     String outputNodeName) throws RegistryException {
         return getProvenanceResourceClient().getWorkflowExecutionOutput(experimentId, outputNodeName);
     }
 
@@ -592,7 +597,8 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public List<ExperimentData> searchExperiments(String user, String experimentNameRegex) throws RegistryException {
+    public List<ExperimentData> searchExperiments(String user,
+                                                  String experimentNameRegex) throws RegistryException {
         return getProvenanceResourceClient().searchExperiments(user, experimentNameRegex);
     }
 
@@ -617,12 +623,14 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public void updateWorkflowNodeStatus(String workflowInstanceId, String nodeId, WorkflowInstanceStatus.ExecutionStatus status) throws RegistryException {
+    public void updateWorkflowNodeStatus(String workflowInstanceId, String nodeId,
+                                         WorkflowInstanceStatus.ExecutionStatus status) throws RegistryException {
         getProvenanceResourceClient().updateWorkflowNodeStatus(workflowInstanceId, nodeId, status);
     }
 
 
-    public void updateWorkflowNodeStatus(WorkflowInstanceNode workflowNode, WorkflowInstanceStatus.ExecutionStatus status) throws RegistryException {
+    public void updateWorkflowNodeStatus(WorkflowInstanceNode workflowNode,
+                                         WorkflowInstanceStatus.ExecutionStatus status) throws RegistryException {
         getProvenanceResourceClient().updateWorkflowNodeStatus(workflowNode, status);
     }
 
@@ -652,32 +660,38 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public boolean isWorkflowInstanceNodePresent(String workflowInstanceId, String nodeId) throws RegistryException {
+    public boolean isWorkflowInstanceNodePresent(String workflowInstanceId,
+                                                 String nodeId) throws RegistryException {
         return getProvenanceResourceClient().isWorkflowInstanceNodePresent(workflowInstanceId, nodeId);
     }
 
 
-    public boolean isWorkflowInstanceNodePresent(String workflowInstanceId, String nodeId, boolean createIfNotPresent) throws RegistryException {
+    public boolean isWorkflowInstanceNodePresent(String workflowInstanceId, String nodeId,
+                                                 boolean createIfNotPresent) throws RegistryException {
         return getProvenanceResourceClient().isWorkflowInstanceNodePresent(workflowInstanceId, nodeId, createIfNotPresent);
     }
 
 
-    public WorkflowInstanceNodeData getWorkflowInstanceNodeData(String workflowInstanceId, String nodeId) throws RegistryException {
+    public WorkflowInstanceNodeData getWorkflowInstanceNodeData(String workflowInstanceId,
+                                                                String nodeId) throws RegistryException {
         return getProvenanceResourceClient().getWorkflowInstanceNodeData(workflowInstanceId, nodeId);
     }
 
 
-    public void addWorkflowInstance(String experimentId, String workflowInstanceId, String templateName) throws RegistryException {
+    public void addWorkflowInstance(String experimentId, String workflowInstanceId,
+                                    String templateName) throws RegistryException {
         getProvenanceResourceClient().addWorkflowInstance(experimentId, workflowInstanceId, templateName);
     }
 
 
-    public void updateWorkflowNodeType(WorkflowInstanceNode node, WorkflowNodeType type) throws RegistryException {
+    public void updateWorkflowNodeType(WorkflowInstanceNode node,
+                                       WorkflowNodeType type) throws RegistryException {
         getProvenanceResourceClient().updateWorkflowNodeType(node, type);
     }
 
 
-    public void addWorkflowInstanceNode(String workflowInstance, String nodeId) throws RegistryException {
+    public void addWorkflowInstanceNode(String workflowInstance,
+                                        String nodeId) throws RegistryException {
         getProvenanceResourceClient().addWorkflowInstanceNode(workflowInstance, nodeId);
     }
 
@@ -687,17 +701,18 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public void publishWorkflow(String workflowName, String publishWorkflowName) throws PublishedWorkflowAlreadyExistsException, UserWorkflowDoesNotExistsException, RegistryException {
+    public void publishWorkflow(String workflowName,
+                                String publishWorkflowName) throws RegistryException {
         getPublishedWorkflowResourceClient().publishWorkflow(workflowName, publishWorkflowName);
     }
 
 
-    public void publishWorkflow(String workflowName) throws PublishedWorkflowAlreadyExistsException, UserWorkflowDoesNotExistsException, RegistryException {
+    public void publishWorkflow(String workflowName) throws RegistryException {
         getPublishedWorkflowResourceClient().publishWorkflow(workflowName);
     }
 
 
-    public String getPublishedWorkflowGraphXML(String workflowName) throws PublishedWorkflowDoesNotExistsException, RegistryException {
+    public String getPublishedWorkflowGraphXML(String workflowName) throws RegistryException {
         return getPublishedWorkflowResourceClient().getPublishedWorkflowGraphXML(workflowName);
     }
 
@@ -717,7 +732,7 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public void removePublishedWorkflow(String workflowName) throws PublishedWorkflowDoesNotExistsException, RegistryException {
+    public void removePublishedWorkflow(String workflowName) throws RegistryException {
         getUserWorkflowResourceClient().removeWorkflow(workflowName);
     }
 
@@ -727,17 +742,17 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public void addWorkflow(String workflowName, String workflowGraphXml) throws UserWorkflowAlreadyExistsException, RegistryException {
+    public void addWorkflow(String workflowName, String workflowGraphXml) throws RegistryException {
         getUserWorkflowResourceClient().addWorkflow(workflowName, workflowGraphXml);
     }
 
 
-    public void updateWorkflow(String workflowName, String workflowGraphXml) throws UserWorkflowDoesNotExistsException, RegistryException {
+    public void updateWorkflow(String workflowName, String workflowGraphXml) throws RegistryException {
         getUserWorkflowResourceClient().updateWorkflow(workflowName, workflowGraphXml);
     }
 
 
-    public String getWorkflowGraphXML(String workflowName) throws UserWorkflowDoesNotExistsException, RegistryException {
+    public String getWorkflowGraphXML(String workflowName) throws RegistryException {
         return getUserWorkflowResourceClient().getWorkflowGraphXML(workflowName);
     }
 
@@ -752,7 +767,7 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public void removeWorkflow(String workflowName) throws UserWorkflowDoesNotExistsException, RegistryException {
+    public void removeWorkflow(String workflowName) throws RegistryException {
         getUserWorkflowResourceClient().removeWorkflow(workflowName);
     }
 

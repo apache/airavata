@@ -655,7 +655,8 @@ public class AiravataClient extends Observable implements AiravataAPI {
 			List<WorkflowInput> inputs, String user, String metadata,
 			String workflowInstanceName, WorkflowContextHeaderBuilder builder)
 			throws Exception {
-		Workflow workflowObj = extractWorkflow(workflowTemplateId);
+        Workflow workflowObj = getWorkflowManager().getWorkflowFromString(workflowTemplateId);
+//		Workflow workflowObj = extractWorkflow(workflowTemplateId);
 		return runWorkflow(workflowObj, inputs, user, metadata,
 				workflowInstanceName, builder);
 	}
@@ -763,7 +764,7 @@ public class AiravataClient extends Observable implements AiravataAPI {
 
     private Workflow extractWorkflow(String workflowName) throws AiravataAPIInvocationException {
         Workflow workflowObj = null;
-        if(getWorkflowManager().isWorkflowExists(workflow)) {
+        if(getWorkflowManager().isWorkflowExists(workflowName)) {
             workflowObj = getWorkflow(workflowName);
         }else {
             try{

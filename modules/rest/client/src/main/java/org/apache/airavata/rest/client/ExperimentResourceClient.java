@@ -37,6 +37,7 @@ import org.apache.airavata.rest.utils.ClientConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
@@ -53,8 +54,12 @@ public class ExperimentResourceClient {
     private String userName;
     private PasswordCallback callback;
     private String baseURI;
+    private Cookie cookie;
+    private WebResource.Builder builder;
 
-    public ExperimentResourceClient(String userName, String serviceURI, PasswordCallback callback) {
+    public ExperimentResourceClient(String userName,
+                                    String serviceURI,
+                                    PasswordCallback callback) {
         this.userName = userName;
         this.callback = callback;
         this.baseURI = serviceURI;
@@ -71,20 +76,23 @@ public class ExperimentResourceClient {
                 Boolean.TRUE);
         Client client = Client.create(config);
         WebResource baseWebResource = client.resource(getBaseURI());
-        webResource = baseWebResource.path(ResourcePathConstants.ExperimentResourcePathConstants.EXP_RESOURCE_PATH);
+        webResource = baseWebResource.path(
+                ResourcePathConstants.ExperimentResourcePathConstants.EXP_RESOURCE_PATH);
         return webResource;
     }
 
     public void addExperiment(String projectName, AiravataExperiment experiment) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String date = dateFormat.format(experiment.getSubmittedDate());
-        webResource = getExperimentRegistryBaseResource().path(ResourcePathConstants.ExperimentResourcePathConstants.ADD_EXP);
+        webResource = getExperimentRegistryBaseResource().path(
+                ResourcePathConstants.ExperimentResourcePathConstants.ADD_EXP);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("projectName", projectName);
         formParams.add("experimentID", experiment.getExperimentId());
         formParams.add("submittedDate", date);
 
-        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        ClientResponse response = webResource.accept(
+                MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -92,9 +100,18 @@ public class ExperimentResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(
+                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(
+                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -106,7 +123,8 @@ public class ExperimentResourceClient {
     }
 
     public void removeExperiment(String experimentId) {
-        webResource = getExperimentRegistryBaseResource().path(ResourcePathConstants.ExperimentResourcePathConstants.DELETE_EXP);
+        webResource = getExperimentRegistryBaseResource().path(
+                ResourcePathConstants.ExperimentResourcePathConstants.DELETE_EXP);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("experimentId", experimentId);
         ClientResponse response = webResource.queryParams(queryParams).delete(ClientResponse.class);
@@ -117,8 +135,16 @@ public class ExperimentResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.delete(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
+                response = builder.delete(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = builder.delete(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
@@ -131,8 +157,10 @@ public class ExperimentResourceClient {
 
     public List<AiravataExperiment> getExperiments() {
         List<AiravataExperiment> airavataExperiments = new ArrayList<AiravataExperiment>();
-        webResource = getExperimentRegistryBaseResource().path(ResourcePathConstants.ExperimentResourcePathConstants.GET_ALL_EXPS);
-        ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        webResource = getExperimentRegistryBaseResource().path(
+                ResourcePathConstants.ExperimentResourcePathConstants.GET_ALL_EXPS);
+        ClientResponse response = webResource.accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -140,8 +168,18 @@ public class ExperimentResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(
+                        MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(
+                        MediaType.APPLICATION_JSON).get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if(status == ClientConstant.HTTP_NO_CONTENT){
@@ -164,12 +202,14 @@ public class ExperimentResourceClient {
     }
 
     public List<AiravataExperiment> getExperiments(String projectName) {
-        webResource = getExperimentRegistryBaseResource().path(ResourcePathConstants.ExperimentResourcePathConstants.GET_EXPS_BY_PROJECT);
+        webResource = getExperimentRegistryBaseResource().path(
+                ResourcePathConstants.ExperimentResourcePathConstants.GET_EXPS_BY_PROJECT);
         List<AiravataExperiment> airavataExperiments = new ArrayList<AiravataExperiment>();
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("projectName", projectName);
 
-        ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        ClientResponse response = webResource.queryParams(queryParams).accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -177,8 +217,16 @@ public class ExperimentResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if(status == ClientConstant.HTTP_NO_CONTENT){
@@ -206,12 +254,14 @@ public class ExperimentResourceClient {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String fromDate = dateFormat.format(from);
         String toDate = dateFormat.format(to);
-        webResource = getExperimentRegistryBaseResource().path(ResourcePathConstants.ExperimentResourcePathConstants.GET_EXPS_BY_DATE);
+        webResource = getExperimentRegistryBaseResource().path(
+                ResourcePathConstants.ExperimentResourcePathConstants.GET_EXPS_BY_DATE);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("fromDate", fromDate);
         queryParams.add("toDate", toDate);
 
-        ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        ClientResponse response = webResource.queryParams(queryParams).accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -219,10 +269,17 @@ public class ExperimentResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
-
             if(status == ClientConstant.HTTP_NO_CONTENT){
                 return airavataExperiments;
             }
@@ -249,13 +306,15 @@ public class ExperimentResourceClient {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String fromDate = dateFormat.format(from);
         String toDate = dateFormat.format(to);
-        webResource = getExperimentRegistryBaseResource().path(ResourcePathConstants.ExperimentResourcePathConstants.GET_EXPS_PER_PROJECT_BY_DATE);
+        webResource = getExperimentRegistryBaseResource().path(
+                ResourcePathConstants.ExperimentResourcePathConstants.GET_EXPS_PER_PROJECT_BY_DATE);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("projectName", projectName);
         queryParams.add("fromDate", fromDate);
         queryParams.add("toDate", toDate);
 
-        ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        ClientResponse response = webResource.queryParams(queryParams).accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -263,8 +322,16 @@ public class ExperimentResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if(status == ClientConstant.HTTP_NO_CONTENT){
@@ -289,7 +356,8 @@ public class ExperimentResourceClient {
     }
 
     public boolean isExperimentExists(String experimentId) {
-        webResource = getExperimentRegistryBaseResource().path(ResourcePathConstants.ExperimentResourcePathConstants.EXP_EXISTS);
+        webResource = getExperimentRegistryBaseResource().path(
+                ResourcePathConstants.ExperimentResourcePathConstants.EXP_EXISTS);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("experimentId", experimentId);
         ClientResponse response = webResource.queryParams(queryParams).get(ClientResponse.class);
@@ -300,8 +368,16 @@ public class ExperimentResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.get(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
+                response = builder.get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = builder.get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             String exists = response.getEntity(String.class);
@@ -318,7 +394,8 @@ public class ExperimentResourceClient {
 
     public boolean isExperimentExists(String experimentId, boolean createIfNotPresent) {
         String createStatus = "false";
-        webResource = getExperimentRegistryBaseResource().path(ResourcePathConstants.ExperimentResourcePathConstants.EXP_EXISTS_CREATE);
+        webResource = getExperimentRegistryBaseResource().path(
+                ResourcePathConstants.ExperimentResourcePathConstants.EXP_EXISTS_CREATE);
         if (createIfNotPresent) {
             createStatus = "true";
         }
@@ -326,7 +403,8 @@ public class ExperimentResourceClient {
         formParams.add("experimentId", experimentId);
         formParams.add("createIfNotPresent", createStatus);
 
-        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        ClientResponse response = webResource.accept(
+                MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -334,8 +412,18 @@ public class ExperimentResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(
+                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(
+                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             String exists = response.getEntity(String.class);

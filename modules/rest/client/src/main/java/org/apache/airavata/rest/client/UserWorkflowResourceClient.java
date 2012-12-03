@@ -38,6 +38,7 @@ import org.apache.airavata.rest.utils.ClientConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
@@ -52,8 +53,12 @@ public class UserWorkflowResourceClient {
     private String userName;
     private PasswordCallback callback;
     private String baseURI;
+    private Cookie cookie;
+    private WebResource.Builder builder;
 
-    public UserWorkflowResourceClient(String userName, String serviceURI, PasswordCallback callback) {
+    public UserWorkflowResourceClient(String userName,
+                                      String serviceURI,
+                                      PasswordCallback callback) {
         this.userName = userName;
         this.callback = callback;
         this.baseURI = serviceURI;
@@ -70,15 +75,18 @@ public class UserWorkflowResourceClient {
                 Boolean.TRUE);
         Client client = Client.create(config);
         WebResource baseWebResource = client.resource(getBaseURI());
-        webResource = baseWebResource.path(ResourcePathConstants.UserWFConstants.REGISTRY_API_USERWFREGISTRY);
+        webResource = baseWebResource.path(
+                ResourcePathConstants.UserWFConstants.REGISTRY_API_USERWFREGISTRY);
         return webResource;
     }
 
     public boolean isWorkflowExists(String workflowName) {
-        webResource = getUserWFRegistryBaseResource().path(ResourcePathConstants.UserWFConstants.WORKFLOW_EXIST);
+        webResource = getUserWFRegistryBaseResource().path(
+                ResourcePathConstants.UserWFConstants.WORKFLOW_EXIST);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("workflowname", workflowName);
-        ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+        ClientResponse response = webResource.queryParams(queryParams).accept(
+                MediaType.TEXT_PLAIN).get(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -86,8 +94,16 @@ public class UserWorkflowResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             String exists = response.getEntity(String.class);
@@ -103,20 +119,33 @@ public class UserWorkflowResourceClient {
     }
 
     public void addWorkflow(String workflowName, String workflowGraphXml) {
-        webResource = getUserWFRegistryBaseResource().path(ResourcePathConstants.UserWFConstants.ADD_WORKFLOW);
+        webResource = getUserWFRegistryBaseResource().path(
+                ResourcePathConstants.UserWFConstants.ADD_WORKFLOW);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("workflowName", workflowName);
         formParams.add("workflowGraphXml", workflowGraphXml);
 
-        ClientResponse response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED).accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        ClientResponse response = webResource.type(
+                MediaType.APPLICATION_FORM_URLENCODED).accept(
+                MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.type(MediaType.APPLICATION_FORM_URLENCODED).accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.type(MediaType.APPLICATION_FORM_URLENCODED).accept(
+                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.type(MediaType.APPLICATION_FORM_URLENCODED).accept(
+                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
@@ -127,20 +156,32 @@ public class UserWorkflowResourceClient {
     }
 
     public void updateWorkflow(String workflowName, String workflowGraphXml) {
-        webResource = getUserWFRegistryBaseResource().path(ResourcePathConstants.UserWFConstants.UPDATE_WORKFLOW);
+        webResource = getUserWFRegistryBaseResource().path(
+                ResourcePathConstants.UserWFConstants.UPDATE_WORKFLOW);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("workflowName", workflowName);
         formParams.add("workflowGraphXml", workflowGraphXml);
 
-        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).type(MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class, formParams);
+        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).type(
+                MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.TEXT_PLAIN).type(MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class, formParams);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.TEXT_PLAIN).type(
+                        MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class, formParams);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.TEXT_PLAIN).type(
+                        MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class, formParams);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
@@ -151,10 +192,12 @@ public class UserWorkflowResourceClient {
     }
 
     public String getWorkflowGraphXML(String workflowName) {
-        webResource = getUserWFRegistryBaseResource().path(ResourcePathConstants.UserWFConstants.GET_WORKFLOWGRAPH);
+        webResource = getUserWFRegistryBaseResource().path(
+                ResourcePathConstants.UserWFConstants.GET_WORKFLOWGRAPH);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("workflowName", workflowName);
-        ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_FORM_URLENCODED).get(ClientResponse.class);
+        ClientResponse response = webResource.queryParams(queryParams).accept(
+                MediaType.APPLICATION_FORM_URLENCODED).get(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -162,8 +205,18 @@ public class UserWorkflowResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_FORM_URLENCODED).get(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(
+                        MediaType.APPLICATION_FORM_URLENCODED).get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = builder.accept(
+                        MediaType.APPLICATION_FORM_URLENCODED).get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
             if(status == ClientConstant.HTTP_NO_CONTENT){
                 return null;
@@ -181,8 +234,10 @@ public class UserWorkflowResourceClient {
 
     public Map<String, String> getWorkflows() {
         Map<String, String> userWFMap = new HashMap<String, String>();
-        webResource = getUserWFRegistryBaseResource().path(ResourcePathConstants.UserWFConstants.GET_WORKFLOWS);
-        ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        webResource = getUserWFRegistryBaseResource().path(
+                ResourcePathConstants.UserWFConstants.GET_WORKFLOWS);
+        ClientResponse response = webResource.accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -190,8 +245,16 @@ public class UserWorkflowResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, null, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, null, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
             if(status == ClientConstant.HTTP_NO_CONTENT){
                 return userWFMap;
@@ -214,10 +277,12 @@ public class UserWorkflowResourceClient {
     }
 
     public void removeWorkflow(String workflowName) {
-        webResource = getUserWFRegistryBaseResource().path(ResourcePathConstants.UserWFConstants.REMOVE_WORKFLOW);
+        webResource = getUserWFRegistryBaseResource().path(
+                ResourcePathConstants.UserWFConstants.REMOVE_WORKFLOW);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("workflowName", workflowName);
-        ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).delete(ClientResponse.class);
+        ClientResponse response = webResource.queryParams(queryParams).accept(
+                MediaType.TEXT_PLAIN).delete(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -225,8 +290,16 @@ public class UserWorkflowResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            WebResource.Builder builder = BasicAuthHeaderUtil.getBuilder(webResource, queryParams, userName, callback.getPassword(userName));
-            response = builder.accept(MediaType.TEXT_PLAIN).delete(ClientResponse.class);
+            if (cookie != null){
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
+                response = builder.accept(MediaType.TEXT_PLAIN).delete(ClientResponse.class);
+            } else {
+                builder = BasicAuthHeaderUtil.getBuilder(
+                        webResource, queryParams, userName, callback.getPassword(userName), null);
+                response = builder.accept(MediaType.TEXT_PLAIN).delete(ClientResponse.class);
+                cookie = response.getCookies().get(0).toCookie();
+            }
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
