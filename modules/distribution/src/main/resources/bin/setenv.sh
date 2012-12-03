@@ -56,17 +56,17 @@ XBAYA_CLASSPATH=""
 
 
 
-for f in "$AIRAVATA_HOME"/standalone-server/lib/*.jar
+for f in "$AIRAVATA_HOME"/lib/*.jar
 do
   XBAYA_CLASSPATH="$XBAYA_CLASSPATH":$f
 done
 
-for f in "$AIRAVATA_HOME"/standalone-server/repository/services/*.jar
+for f in "$AIRAVATA_HOME"/repository/services/*.jar
 do
   XBAYA_CLASSPATH="$XBAYA_CLASSPATH":$f
 done
 
-XBAYA_CLASSPATH="$XBAYA_HOME":"$XBAYA_HOME/conf":"$JAVA_HOME/lib/tools.jar":"$XBAYA_CLASSPATH":"$CLASSPATH"
+XBAYA_CLASSPATH="$XBAYA_HOME":"$XBAYA_HOME/conf":"$XBAYA_CLASSPATH":"$CLASSPATH"
 
 
 

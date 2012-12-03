@@ -24,6 +24,37 @@ if [ -e $LOGO_FILE ]
 then
 	cat $LOGO_FILE
 fi
-cd $AIRAVATA_HOME/standalone-server/bin
 
-./axis2server.sh $*
+JAVA_OPTS=""
+while [ $# -ge 1 ]; do
+    case $1 in
+        -xdebug)
+            JAVA_OPTS="$JAVA_OPTS -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,address=8000"
+            shift
+        ;;
+        -security)
+            JAVA_OPTS="$JAVA_OPTS -Djava.security.manager -Djava.security.policy=$AIRAVATA_HOME/conf/axis2.policy -Daxis2.home=$AIRAVATA_HOME"
+            shift
+        ;;
+        -h)
+            echo "Usage: airavata-server.sh"
+            echo "commands:"
+            echo "  -xdebug    Start Airavata Server under JPDA debugger"
+            echo "  -security  Enable Java 2 security"
+            echo "  -h         help"
+            shift
+            exit 0
+        ;;
+        *)
+            echo "Error: unknown command:$1"
+            echo "For help: airavata-server.sh -h"
+            shift
+            exit 1
+    esac
+done
+
+java $JAVA_OPTS -classpath "$XBAYA_CLASSPATH" \
+    -Djava.endorsed.dirs="$AIRAVATA_HOME/lib/endorsed":"$JAVA_HOME/jre/lib/endorsed":"$JAVA_HOME/lib/endorsed" \
+    org.apache.airavata.server.ServerMain \
+    -repo "$AIRAVATA_HOME"/repository/services -conf "$AIRAVATA_HOME"/conf/axis2.xml $*
+

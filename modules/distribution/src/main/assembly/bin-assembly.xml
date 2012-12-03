@@ -38,7 +38,7 @@
 		<!-- ********************** copy axis2 distribution dependencies ********************** -->
 		<fileSet>
 			<directory>target/axis2-${used.axis2.release}/WEB-INF/lib</directory>
-			<outputDirectory>standalone-server/lib</outputDirectory>
+			<outputDirectory>lib</outputDirectory>
 			<includes>
 				<include>*.jar</include>
 			</includes>
@@ -49,7 +49,7 @@
 		</fileSet>
 		<fileSet>
 			<directory>target/axis2-${used.axis2.release}/WEB-INF/</directory>
-			<outputDirectory>standalone-server/repository</outputDirectory>
+			<outputDirectory>repository</outputDirectory>
 			<includes>
 				<include>services/*</include>
 				<include>modules/*</include>
@@ -80,7 +80,7 @@
 		<fileSet>
 			<directory>../ws-messenger/messagebroker/src/main/resources/database_scripts
 			</directory>
-			<outputDirectory>standalone-server/bin/database_scripts
+			<outputDirectory>bin/database_scripts
 			</outputDirectory>
 			<includes>
 				<include>*sql*</include>
@@ -89,7 +89,7 @@
 		<fileSet>
 			<directory>../ws-messenger/messagebox/src/main/resources/database_scripts
 			</directory>
-			<outputDirectory>standalone-server/bin/database_scripts
+			<outputDirectory>bin/database_scripts
 			</outputDirectory>
 			<includes>
 				<include>*sql*</include>
@@ -98,7 +98,7 @@
 		<fileSet>
 			<directory>../registry/airavata-jpa-registry/src/main/resources
 			</directory>
-			<outputDirectory>standalone-server/bin/database_scripts
+			<outputDirectory>bin/database_scripts
 			</outputDirectory>
 			<includes>
 				<include>*sql*</include>
@@ -117,7 +117,7 @@
 		</fileSet>
 		<fileSet>
 			<directory>../distribution/src/main/resources/conf</directory>
-			<outputDirectory>standalone-server/conf</outputDirectory>
+			<outputDirectory>bin</outputDirectory>
 			<includes>
 				<include>airavata-server.properties</include>
 				<include>registry.properties</include>
@@ -133,7 +133,7 @@
 		<fileSet>
 			<directory>../distribution/src/main/resources/axis2-standalone-bin
 			</directory>
-			<outputDirectory>standalone-server/bin</outputDirectory>
+			<outputDirectory>bin</outputDirectory>
 			<fileMode>777</fileMode>
 			<includes>
 				<include>*.sh</include>
@@ -146,7 +146,7 @@
 			<includes> <include>*.aar</include> </includes> </fileSet -->
 		<fileSet>
 			<directory>../../samples/complex-math-service/target</directory>
-			<outputDirectory>standalone-server/repository/services
+			<outputDirectory>repository/services
 			</outputDirectory>
 			<includes>
 				<include>*.aar</include>
@@ -155,8 +155,7 @@
 		<fileSet>
 			<directory>../../samples/levenshtein-distance-service/target
 			</directory>
-			<outputDirectory>standalone-server/repository/services
-			</outputDirectory>
+			<outputDirectory>repository/services</outputDirectory>
 			<includes>
 				<include>*.aar</include>
 			</includes>
@@ -177,7 +176,7 @@
 		</fileSet>
 		<fileSet>
 			<directory>src/main/resources/conf</directory>
-			<outputDirectory>standalone-server/conf</outputDirectory>
+			<outputDirectory>bin</outputDirectory>
 			<includes>
 				<include>**/*</include>
 			</includes>
@@ -186,9 +185,8 @@
 
 	<dependencySets>
 		<dependencySet>
-			<outputDirectory>standalone-server/lib</outputDirectory>
-			<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}
-			</outputFileNameMapping>
+			<outputDirectory>lib</outputDirectory>
+			<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
 			<includes>
 				<include>org.apache.derby:derby:jar</include>
 				<include>org.apache.derby:derbytools:jar</include>
@@ -197,7 +195,7 @@
 			</includes>
 		</dependencySet>
 		<dependencySet>
-			<outputDirectory>standalone-server/lib</outputDirectory>
+			<outputDirectory>lib</outputDirectory>
 			<includes>
 				<!--<include>org.apache.derby:derby:jar</include> -->
 				<!--<include>org.apache.derby:derbytools:jar</include> -->
@@ -244,25 +242,30 @@
 				<include>org.apache.airavata:airavata-jpa-registry:jar</include>
                 <include>org.apache.airavata:airavata-rest-mappings:jar</include>
                 <include>org.apache.airavata:airavata-rest-client:jar</include>
+                <include>org.apache.airavata:airavata-server:jar</include>
 				<include>org.apache.openjpa:openjpa-all:jar</include>
                 <include>com.sun.jersey:jersey-client:jar</include>
                 <include>com.sun.jersey:jersey-core:jar</include>
 				<include>edu.berkeley:yfilter</include>
 				<include>edu.berkeley:yfilter</include>
-				<include>javax.servlet:servlet-api</include>
 				<include>org.bouncycastle:bcprov-jdk15</include>
 				<include>org.bouncycastle:bcmail-jdk15</include>
+                <include>org.apache.tomcat:tomcat-jasper</include>
+                <include>org.apache.tomcat:tomcat-jasper-el</include>
+                <include>org.apache.tomcat:tomcat-jsp-api</include>
+                <include>org.apache.tomcat.embed:tomcat-embed-core</include>
+                <include>org.apache.tomcat.embed:tomcat-embed-jasper</include>
+                <include>org.apache.tomcat.embed:tomcat-embed-logging-juli</include>
+                <include>javax.servlet:javax.servlet-api</include>
 			</includes>
 		</dependencySet>
 		<dependencySet>
-			<outputDirectory>standalone-server/repository/services
-			</outputDirectory>
+			<outputDirectory>repository/services</outputDirectory>
 			<includes>
 				<include>org.apache.airavata:airavata-message-box:jar</include>
 				<include>org.apache.airavata:airavata-message-broker:jar</include>
 				<include>org.apache.airavata:airavata-xbaya-gui:jar</include>
-				<include>org.apache.airavata:airavata-gfac-axis2-interface:jar
-				</include>
+				<include>org.apache.airavata:airavata-gfac-axis2-interface:jar</include>
 				<include>org.apache.airavata:airavata-registry-service:jar</include>
 			</includes>
 		</dependencySet>
