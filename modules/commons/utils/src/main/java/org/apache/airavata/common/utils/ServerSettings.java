@@ -36,7 +36,7 @@ public class ServerSettings {
     private static final String SYSTEM_USER="system.user";
     private static final String SYSTEM_USER_PASSWORD="system.password";
     private static final String SYSTEM_USER_GATEWAY="system.gateway";
-    private static final String TOMCAT_PORT = "tomcat.port";
+    private static final String TOMCAT_PORT = "port";
 
 
     static{
