@@ -44,7 +44,7 @@ public class Test {
     public static void configurationResourceClientTest(){
         //configuration resource test
         ConfigurationResourceClient configurationResourceClient = new ConfigurationResourceClient("admin",
-                "http://localhost:9080/airavata-services/", new PasswordCallbackImpl("admin", "admin"));
+                "http://localhost:8080/airavata-registry/", new PasswordCallbackImpl("admin", "admin"));
 
 //        System.out.println("###############getConfiguration###############");
 //        Object configuration = configurationResourceClient.getConfiguration("gfac.url");
