@@ -29,7 +29,7 @@ import org.apache.airavata.rest.mappings.resourcemappings.ExperimentDataList;
 import org.apache.airavata.rest.mappings.resourcemappings.ExperimentIDList;
 import org.apache.airavata.rest.mappings.resourcemappings.WorkflowInstancesList;
 import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
-import org.apache.airavata.services.registry.rest.utils.RegPoolUtils;
+import org.apache.airavata.rest.mappings.utils.RegPoolUtils;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
@@ -789,7 +789,7 @@ public class ProvenanceRegistryResource {
     public Response getExperimentIdByUser(@QueryParam("username") String username) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            ArrayList<String> experiments = (ArrayList) airavataRegistry.getExperimentIdByUser(username);
+            List<String> experiments = airavataRegistry.getExperimentIdByUser(username);
             ExperimentIDList experimentIDList = new ExperimentIDList();
             experimentIDList.setExperimentIDList(experiments);
             if (experiments.size() != 0) {
@@ -1206,8 +1206,10 @@ public class ProvenanceRegistryResource {
                                            @FormParam("nodeType") String nodeType) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            WorkflowInstanceNodeData workflowInstanceNodeData = airavataRegistry.getWorkflowInstanceData(workflowInstanceId).getNodeData(nodeId);
-            WorkflowInstanceNode workflowInstanceNode = workflowInstanceNodeData.getWorkflowInstanceNode();
+            WorkflowInstanceNodeData workflowInstanceNodeData =
+                    airavataRegistry.getWorkflowInstanceData(workflowInstanceId).getNodeData(nodeId);
+            WorkflowInstanceNode workflowInstanceNode =
+                    workflowInstanceNodeData.getWorkflowInstanceNode();
             WorkflowNodeType workflowNodeType = new WorkflowNodeType();
 
             //currently from API only service node is being used
@@ -1307,7 +1309,8 @@ public class ProvenanceRegistryResource {
     public Response getExperimentMetaInformation(@QueryParam("experimentId") String experimentId) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            ExperimentDataImpl experimentMetaInformation = (ExperimentDataImpl) airavataRegistry.getExperimentMetaInformation(experimentId);
+            ExperimentDataImpl experimentMetaInformation =
+                    (ExperimentDataImpl) airavataRegistry.getExperimentMetaInformation(experimentId);
             if (experimentMetaInformation != null) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity(experimentMetaInformation);
@@ -1339,7 +1342,8 @@ public class ProvenanceRegistryResource {
     public Response getAllExperimentMetaInformation(@QueryParam("user") String user) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            List<ExperimentData> allExperimentMetaInformation = airavataRegistry.getAllExperimentMetaInformation(user);
+            List<ExperimentData> allExperimentMetaInformation =
+                    airavataRegistry.getAllExperimentMetaInformation(user);
             ExperimentDataList experimentDataList = new ExperimentDataList();
             List<ExperimentDataImpl> experimentDatas = new ArrayList<ExperimentDataImpl>();
             for (ExperimentData experimentData : allExperimentMetaInformation) {
@@ -1380,7 +1384,8 @@ public class ProvenanceRegistryResource {
                                       @QueryParam("experimentNameRegex") String experimentNameRegex) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            List<ExperimentData> experimentDataList = airavataRegistry.searchExperiments(user, experimentNameRegex);
+            List<ExperimentData> experimentDataList =
+                    airavataRegistry.searchExperiments(user, experimentNameRegex);
             ExperimentDataList experimentData = new ExperimentDataList();
             List<ExperimentDataImpl> experimentDatas = new ArrayList<ExperimentDataImpl>();
             for (ExperimentData experimentData1 : experimentDataList) {

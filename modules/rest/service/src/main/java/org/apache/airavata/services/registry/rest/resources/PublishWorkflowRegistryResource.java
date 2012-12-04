@@ -30,7 +30,7 @@ import org.apache.airavata.rest.mappings.resourcemappings.PublishWorkflowNamesLi
 import org.apache.airavata.rest.mappings.resourcemappings.Workflow;
 import org.apache.airavata.rest.mappings.resourcemappings.WorkflowList;
 import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
-import org.apache.airavata.services.registry.rest.utils.RegPoolUtils;
+import org.apache.airavata.rest.mappings.utils.RegPoolUtils;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
@@ -170,7 +170,8 @@ public class PublishWorkflowRegistryResource {
     public Response getPublishedWorkflowGraphXML(@QueryParam("workflowName") String workflowName) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            String publishedWorkflowGraphXML = airavataRegistry.getPublishedWorkflowGraphXML(workflowName);
+            String publishedWorkflowGraphXML =
+                    airavataRegistry.getPublishedWorkflowGraphXML(workflowName);
             if (publishedWorkflowGraphXML != null) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity(publishedWorkflowGraphXML);

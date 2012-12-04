@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.services.registry.rest.utils;
+package org.apache.airavata.rest.mappings.utils;
 
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.registry.api.Gateway;
@@ -43,7 +43,8 @@ public class RegistryListener implements ServletContextListener {
 
             servletContext.setAttribute(RestServicesConstants.GATEWAY, gateway);
             servletContext.setAttribute(RestServicesConstants.AIRAVATA_USER, user);
-            servletContext.setAttribute(RestServicesConstants.AIRAVATA_REGISTRY_POOL,new RegistryInstancesPool(100));
+            servletContext.setAttribute(
+                    RestServicesConstants.AIRAVATA_REGISTRY_POOL,new RegistryInstancesPool(100));
         } catch (Exception e) {
             e.printStackTrace();
         }
