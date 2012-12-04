@@ -104,6 +104,15 @@
 				<include>*sql*</include>
 			</includes>
 		</fileSet>
+        <fileSet>
+			<directory>../rest/service/src/main/resources
+			</directory>
+			<outputDirectory>bin
+			</outputDirectory>
+			<includes>
+				<include>authenticators.xml</include>
+			</includes>
+		</fileSet>
 		<fileSet>
 			<directory>../distribution/src/main/resources/bin</directory>
 			<outputDirectory>bin</outputDirectory>
