@@ -58,8 +58,8 @@ public class ServerMain {
                 File.separator + "bin" + File.separator + "axis2.xml");
         axis2Servlet.setLoadOnStartup(1);
 
-        StandardContext context = (StandardContext)tomcat.getTomcat().addContext("/registry", System.getenv("AIRAVATA_HOME"));
-        Wrapper registryServlet = tomcat.addServlet("/registry", "Airavata Web Application", "com.sun.jersey.spi.container.servlet.ServletContainer");
+        StandardContext context = (StandardContext)tomcat.getTomcat().addContext("/airavata-registry", System.getenv("AIRAVATA_HOME"));
+        Wrapper registryServlet = tomcat.addServlet("/airavata-registry", "Airavata Web Application", "com.sun.jersey.spi.container.servlet.ServletContainer");
         registryServlet.addInitParameter("com.sun.jersey.config.property.packages", "org.apache.airavata.services.registry.rest;org.codehaus.jackson.jaxrs");
         registryServlet.setLoadOnStartup(1);
 

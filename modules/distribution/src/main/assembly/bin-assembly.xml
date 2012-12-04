@@ -105,7 +105,7 @@
 			</includes>
 		</fileSet>
         <fileSet>
-			<directory>../rest/service/src/main/resources
+			<directory>../rest/webapp/src/main/resources
 			</directory>
 			<outputDirectory>bin
 			</outputDirectory>
@@ -275,6 +275,8 @@
                 <include>com.sun.jersey.contribs:jersey-multipart</include>
                 <include>com.sun.jersey:jersey-server</include>
                 <include>com.sun.jersey:jersey-client</include>
+                <include>org.codehaus.jackson:jackson-jaxrs</include>
+                <include>org.codehaus.jackson:jackson-core-asl</include>
 			</includes>
 		</dependencySet>
 		<dependencySet>
