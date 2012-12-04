@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.services.registry.rest.utils;
+package org.apache.airavata.rest.mappings.utils;
 
 import org.apache.airavata.common.context.RequestContext;
 import org.apache.airavata.common.context.WorkflowContext;
@@ -32,7 +32,6 @@ import org.apache.airavata.registry.api.exception.RegistryAccessorInstantiateExc
 import org.apache.airavata.registry.api.exception.RegistryAccessorInvalidException;
 import org.apache.airavata.registry.api.exception.RegistryAccessorNotFoundException;
 import org.apache.airavata.registry.api.exception.RegistryAccessorUndefinedException;
-import org.apache.airavata.rest.mappings.utils.RestServicesConstants;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
@@ -51,7 +50,8 @@ public class RegPoolUtils {
         Gateway gateway = (Gateway)context.getAttribute(RestServicesConstants.GATEWAY);
         AiravataUser airavataUser = new AiravataUser(user);
 
-        RegistryInstancesPool registryInstancesPool = (RegistryInstancesPool) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY_POOL);
+        RegistryInstancesPool registryInstancesPool =
+                (RegistryInstancesPool) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY_POOL);
         Map<RegIdentifier,AiravataRegistry2> registryMap = registryInstancesPool.getRegistryInstancesList();
         boolean foundReg=false;
         try{
@@ -59,11 +59,13 @@ public class RegPoolUtils {
                 synchronized (registryMap){
                     RegIdentifier identifier = new RegIdentifier(user, gateway.getGatewayName());
                     if (registryMap.size()==0){
-                        registryMap.put(identifier, AiravataRegistryFactory.getRegistry(gateway, airavataUser));
+                        registryMap.put(identifier,
+                                AiravataRegistryFactory.getRegistry(gateway, airavataUser));
                     }else {
                         airavataRegistry = registryMap.get(identifier);
                         if (airavataRegistry == null){
-                            registryMap.put(identifier, AiravataRegistryFactory.getRegistry(gateway, airavataUser));
+                            registryMap.put(identifier,
+                                    AiravataRegistryFactory.getRegistry(gateway, airavataUser));
                         }
                     }
                     airavataRegistry=registryMap.get(identifier);
@@ -86,10 +88,14 @@ public class RegPoolUtils {
     }
 
     public static void releaseRegistry(ServletContext context, AiravataRegistry2 airavataRegistry) {
-        RegistryInstancesPool registryInstancesPool = (RegistryInstancesPool)context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY_POOL);
-        Map<RegIdentifier, AiravataRegistry2> registryInstancesList = registryInstancesPool.getRegistryInstancesList();
+        RegistryInstancesPool registryInstancesPool =
+                (RegistryInstancesPool)context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY_POOL);
+        Map<RegIdentifier, AiravataRegistry2> registryInstancesList =
+                registryInstancesPool.getRegistryInstancesList();
         synchronized (registryInstancesList){
-            RegIdentifier regIdentifier = new RegIdentifier(airavataRegistry.getUser().getUserName(), airavataRegistry.getGateway().getGatewayName());
+            RegIdentifier regIdentifier =
+                    new RegIdentifier(airavataRegistry.getUser().getUserName(),
+                            airavataRegistry.getGateway().getGatewayName());
             registryInstancesList.put(regIdentifier, airavataRegistry);
         }
     }

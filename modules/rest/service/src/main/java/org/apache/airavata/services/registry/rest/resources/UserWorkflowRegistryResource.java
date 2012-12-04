@@ -28,7 +28,7 @@ import org.apache.airavata.registry.api.exception.worker.UserWorkflowDoesNotExis
 import org.apache.airavata.rest.mappings.resourcemappings.Workflow;
 import org.apache.airavata.rest.mappings.resourcemappings.WorkflowList;
 import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
-import org.apache.airavata.services.registry.rest.utils.RegPoolUtils;
+import org.apache.airavata.rest.mappings.utils.RegPoolUtils;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;

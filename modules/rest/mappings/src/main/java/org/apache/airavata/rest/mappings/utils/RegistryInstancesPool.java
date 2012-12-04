@@ -19,22 +19,32 @@
  *
  */
 
-package org.apache.airavata.services.registry.rest.utils;
+package org.apache.airavata.rest.mappings.utils;
 
-public class RegIdentifier {
-    private String user;
-    private String gateway;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 
-    public RegIdentifier(String user, String gateway) {
-        this.user = user;
-        this.gateway = gateway;
+import java.util.HashMap;
+import java.util.Map;
+
+public class RegistryInstancesPool {
+    private Map<RegIdentifier, AiravataRegistry2> registryInstancesList = new HashMap<RegIdentifier, AiravataRegistry2>();
+    private int maxSize;
+
+    public RegistryInstancesPool(int maxSize) {
+        this.maxSize = maxSize;
     }
 
-    public String getUser() {
-        return user;
+    public int getMaxSize() {
+        return maxSize;
     }
 
-    public String getGateway() {
-        return gateway;
+    public Map<RegIdentifier, AiravataRegistry2> getRegistryInstancesList() {
+        return registryInstancesList;
     }
+
+    public void setRegistryInstancesList(Map<RegIdentifier, AiravataRegistry2> registryInstancesList) {
+        this.registryInstancesList = registryInstancesList;
+    }
+
+
 }
