@@ -309,10 +309,7 @@
     </dependencyManagement>
 
     <repositories>
-	<repository>
-    		<id>java.net</id>
-    		<url> http://repository.jboss.com/maven2/</url>
-	</repository>
+
         <repository>
             <id>central</id>
             <name>Maven Central</name>
