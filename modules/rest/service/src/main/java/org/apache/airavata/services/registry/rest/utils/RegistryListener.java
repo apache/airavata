@@ -38,9 +38,11 @@ public class RegistryListener implements ServletContextListener {
         try {
             ServletContext servletContext = servletContextEvent.getServletContext();
             String gatewayID = ServerSettings.getDefaultGatewayId();
+            String user = ServerSettings.getSystemUser();
             Gateway gateway =  new Gateway(gatewayID);
 
             servletContext.setAttribute(RestServicesConstants.GATEWAY, gateway);
+            servletContext.setAttribute(RestServicesConstants.AIRAVATA_USER, user);
             servletContext.setAttribute(RestServicesConstants.AIRAVATA_REGISTRY_POOL,new RegistryInstancesPool(100));
         } catch (Exception e) {
             e.printStackTrace();

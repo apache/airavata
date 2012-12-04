@@ -25,5 +25,6 @@ import org.apache.commons.codec.binary.Base64;
 
 public class RestServicesConstants {
     public static final String GATEWAY = "gateway";
+    public static final String AIRAVATA_USER = "airavataUser";
     public static final String AIRAVATA_REGISTRY_POOL = "airavataRegistryPool";
 }

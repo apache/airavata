@@ -44,7 +44,10 @@ public class RegPoolUtils {
     public static AiravataRegistry2 acquireRegistry(ServletContext context) {
         AiravataRegistry2 airavataRegistry=null;
         RequestContext requestContext = WorkflowContext.get();
-        String user = requestContext.getUserIdentity();
+        String user =  (String)context.getAttribute(RestServicesConstants.AIRAVATA_USER);
+        if(requestContext != null){
+            user = requestContext.getUserIdentity();
+        }
         Gateway gateway = (Gateway)context.getAttribute(RestServicesConstants.GATEWAY);
         AiravataUser airavataUser = new AiravataUser(user);
 
