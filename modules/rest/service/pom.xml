@@ -23,56 +23,9 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>airavata-rest-services</artifactId>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>airavata-rest-services</name>
-	<build>
-		<finalName>airavata-rest-services</finalName>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.cargo</groupId>
-				<artifactId>cargo-maven2-plugin</artifactId>
-				<version>${cargo.version}</version>
-				<configuration>
-					<wait>true</wait>
-					<configuration>
-						<properties>
-							<cargo.servlet.port>9080</cargo.servlet.port>
-							<cargo.tomcat.ajp.port>9009</cargo.tomcat.ajp.port>
-							<cargo.rmi.port>9099</cargo.rmi.port>
-							<cargo.jvmargs>
-                                <![CDATA[-Xdebug -Xrunjdwp:transport=dt_socket,address=${cargo.debug.address},server=y,suspend=${cargo.debug.suspend} -noverify ${javaagent}]]>
-							</cargo.jvmargs>
-							<cargo.tomcat.context.reloadable>true</cargo.tomcat.context.reloadable>
-						</properties>
-						<home>${project.build.directory}/tomcat6x</home>
-						<deployables>
-							<deployable>
-								<groupId>org.apache.airavata</groupId>
-								<artifactId>airavata-rest-services</artifactId>
-								<type>war</type>
-								<properties>
-									<context>/airavata-services</context>
-								</properties>
-							</deployable>
-						</deployables>
-					</configuration>
-					<container>
-						<containerId>tomcat6x</containerId>
-						<timeout>180000</timeout>
-						<zipUrlInstaller>
-							<url>
-								http://archive.apache.org/dist/tomcat/tomcat-6/v6.0.32/bin/apache-tomcat-6.0.32.tar.gz
-							</url>
-						</zipUrlInstaller>
-						<systemProperties>
 
-						</systemProperties>
-					</container>
-				</configuration>
-			</plugin>
-		</plugins>
-
-	</build>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.derby</groupId>
