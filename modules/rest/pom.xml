@@ -32,6 +32,7 @@
             <modules>
                 <module>mappings</module>
                 <module>service</module>
+                <module>webapp</module>
                 <module>client</module>
             </modules>
         </profile>

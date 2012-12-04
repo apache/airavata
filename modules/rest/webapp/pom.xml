@@ -22,10 +22,57 @@
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>airavata-rest-services</artifactId>
-	<packaging>jar</packaging>
-	<name>airavata-rest-services</name>
+	<artifactId>airavata-rest-service-webapp</artifactId>
+	<packaging>war</packaging>
+	<name>airavata-rest-service-webapp</name>
+	<build>
+		<finalName>airavata-rest-service-webapp</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.cargo</groupId>
+				<artifactId>cargo-maven2-plugin</artifactId>
+				<version>${cargo.version}</version>
+				<configuration>
+					<wait>true</wait>
+					<configuration>
+						<properties>
+							<cargo.servlet.port>9080</cargo.servlet.port>
+							<cargo.tomcat.ajp.port>9009</cargo.tomcat.ajp.port>
+							<cargo.rmi.port>9099</cargo.rmi.port>
+							<cargo.jvmargs>
+                                <![CDATA[-Xdebug -Xrunjdwp:transport=dt_socket,address=${cargo.debug.address},server=y,suspend=${cargo.debug.suspend} -noverify ${javaagent}]]>
+							</cargo.jvmargs>
+							<cargo.tomcat.context.reloadable>true</cargo.tomcat.context.reloadable>
+						</properties>
+						<home>${project.build.directory}/tomcat6x</home>
+						<deployables>
+							<deployable>
+								<groupId>org.apache.airavata</groupId>
+								<artifactId>airavata-rest-service-webapp</artifactId>
+								<type>war</type>
+								<properties>
+									<context>/airavata-services</context>
+								</properties>
+							</deployable>
+						</deployables>
+					</configuration>
+					<container>
+						<containerId>tomcat6x</containerId>
+						<timeout>180000</timeout>
+						<zipUrlInstaller>
+							<url>
+								http://archive.apache.org/dist/tomcat/tomcat-6/v6.0.32/bin/apache-tomcat-6.0.32.tar.gz
+							</url>
+						</zipUrlInstaller>
+						<systemProperties>
 
+						</systemProperties>
+					</container>
+				</configuration>
+			</plugin>
+		</plugins>
+
+	</build>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.derby</groupId>
@@ -33,10 +80,35 @@
 			<version>${derby.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-servlet</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-json</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey.contribs</groupId>
+			<artifactId>jersey-multipart</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>com.sun.jersey.jersey-test-framework</groupId>
 			<artifactId>jersey-test-framework-grizzly2</artifactId>
 			<version>${jersey.version}</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-server</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>${jersey.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.shiro</groupId>
@@ -76,6 +148,11 @@
 			<artifactId>airavata-rest-mappings</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-rest-services</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 		<!-- Logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -96,5 +173,15 @@
 	</dependencies>
 	<properties>
 		<jersey.version>1.13</jersey.version>
+		<grizzly.version>2.0.0-M3</grizzly.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<cargo.version>1.2.1</cargo.version>
+		<!-- if you want a remote debugging on a different a address override on 
+			command line with -Dcargo.debug.addres=xxxx -->
+		<cargo.debug.address>5000</cargo.debug.address>
+		<!-- if you want to start remote debugging session suspended override on 
+			command line with -Dcargo.debug.suspend=y -->
+		<cargo.debug.suspend>n</cargo.debug.suspend>
+		<javaagent />
 	</properties>
 </project>
