@@ -33,7 +33,7 @@
             <artifactId>axis2-kernel</artifactId>
             <version>${axis2.version}</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.apache.ws.commons.axiom</groupId>
             <artifactId>axiom-api</artifactId>
             <version>1.2.8</version>
@@ -42,7 +42,7 @@
             <groupId>org.apache.ws.commons.axiom</groupId>
             <artifactId>axiom-impl</artifactId>
             <version>1.2.8</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
