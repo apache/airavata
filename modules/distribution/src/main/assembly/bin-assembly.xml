@@ -279,9 +279,6 @@
                 <include>org.codehaus.jackson:jackson-core-asl</include>
                 <include>org.codehaus.jackson:jackson-mapper-asl</include>
                 <include>org.codehaus.jackson:jackson-xc</include>
-                <include>javax.xml.bind:jaxb-api</include>
-                <include>com.sun.xml.bind:jaxb-impl</include>
-
 			</includes>
 		</dependencySet>
 		<dependencySet>
