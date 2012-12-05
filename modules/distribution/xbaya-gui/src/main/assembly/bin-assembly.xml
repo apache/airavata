@@ -45,6 +45,7 @@
 			<excludes>
 				<exclude>commons-logging*.jar</exclude>
 				<exclude>xom*.jar</exclude>
+                <exclude>xercesImpl*.jar</exclude>
 			</excludes>
 		</fileSet>
 		<fileSet>
@@ -66,32 +67,7 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../../xbaya-gui/src/main/resources/bin</directory>
-			<outputDirectory>bin</outputDirectory>
-			<fileMode>777</fileMode>
-			<includes>
-				<include>*.sh</include>
-				<include>*.bat</include>
-				<include>logo.txt</include>
-                <include>startNetworkServer</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../../xbaya-gui/src/main/resources/conf</directory>
-			<outputDirectory>bin</outputDirectory>
-			<includes>
-				<include>airavata-server.properties</include>
-				<include>registry.properties</include>
-				<include>log4j.properties</include>
-				<include>host.xml</include>
-				<include>persistence.xml</include>
-				<include>provenance.sql</include>
-			</includes>
-		</fileSet>
-
-
-		<fileSet>
-			<directory>../../xbaya-gui/src/test/resources/</directory>
+			<directory>../../../xbaya-gui/src/test/resources/</directory>
 			<outputDirectory>samples/workflows</outputDirectory>
 			<includes>
 				<include>*.xwf</include>
@@ -111,6 +87,13 @@
 				<include>**/*</include>
 			</includes>
 		</fileSet>
+        <fileSet>
+            <directory>src/main/resources/bin</directory>
+            <outputDirectory>bin</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
 	</fileSets>
 
 	<dependencySets>
@@ -127,6 +110,7 @@
 		<dependencySet>
 			<outputDirectory>lib</outputDirectory>
 			<includes>
+                <include>javax.jcr:jcr:jar</include>
 				<include>commons-collections:commons-collections</include>
 				<include>commons-configuration:commons-configuration</include>
 				<include>commons-lang:commons-lang</include>
@@ -165,12 +149,16 @@
 				<include>org.apache.openjpa:openjpa-all:jar</include>
                 <include>com.sun.jersey:jersey-client:jar</include>
                 <include>com.sun.jersey:jersey-core:jar</include>
+                <include>com.sun.jersey:jersey-servlet</include>
+                <include>com.sun.jersey:jersey-json</include>
+                <include>com.sun.jersey.contribs:jersey-multipart</include>
 				<include>edu.berkeley:yfilter</include>
 				<include>edu.berkeley:yfilter</include>
                 <include>org.codehaus.jackson:jackson-jaxrs</include>
                 <include>org.codehaus.jackson:jackson-core-asl</include>
                 <include>org.codehaus.jackson:jackson-mapper-asl</include>
                 <include>org.codehaus.jackson:jackson-xc</include>
+                <include>xerces:xercesImpl:jar:2.9.1</include>
 			</includes>
 		</dependencySet>
 	</dependencySets>
