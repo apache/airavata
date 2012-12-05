@@ -486,6 +486,11 @@
             <artifactId>jackson-core-asl</artifactId>
             <version>1.9.2</version>
         </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.9.1</version>
+        </dependency>
     </dependencies>
     <properties>
         <jersey.version>1.13</jersey.version>

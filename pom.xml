@@ -597,8 +597,8 @@
                 <module>samples/simple-math-service</module>
                 <module>samples/complex-math-service</module>
                 <module>samples/levenshtein-distance-service</module>
-		<module>modules/server</module>
-                <module>modules/distribution</module>
+		        <module>modules/server</module>
+                <!--module>modules/distribution</module-->
                 <module>modules/test-suite</module>
             </modules>
         </profile>
