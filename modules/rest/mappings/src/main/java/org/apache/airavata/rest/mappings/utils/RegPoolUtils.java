@@ -21,7 +21,6 @@
 
 package org.apache.airavata.rest.mappings.utils;
 
-import org.apache.airavata.common.context.RequestContext;
 import org.apache.airavata.common.context.WorkflowContext;
 import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.registry.api.AiravataRegistry2;
@@ -34,7 +33,6 @@ import org.apache.airavata.registry.api.exception.RegistryAccessorNotFoundExcept
 import org.apache.airavata.registry.api.exception.RegistryAccessorUndefinedException;
 
 import javax.servlet.ServletContext;
-import javax.ws.rs.core.Context;
 import java.util.Map;
 
 
@@ -42,12 +40,9 @@ public class RegPoolUtils {
 
     public static AiravataRegistry2 acquireRegistry(ServletContext context) {
         AiravataRegistry2 airavataRegistry=null;
-        RequestContext requestContext = WorkflowContext.get();
-        String user =  (String)context.getAttribute(RestServicesConstants.AIRAVATA_USER);
-        if(requestContext != null){
-            user = requestContext.getUserIdentity();
-        }
-        Gateway gateway = (Gateway)context.getAttribute(RestServicesConstants.GATEWAY);
+        String user =  WorkflowContext.getRequestUser();
+        String gatewayId = WorkflowContext.getGatewayId();
+        Gateway gateway = new Gateway(gatewayId);
         AiravataUser airavataUser = new AiravataUser(user);
 
         RegistryInstancesPool registryInstancesPool =
