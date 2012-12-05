@@ -119,21 +119,19 @@ public class GFacService implements ServiceLifeCycle {
                         Thread.sleep(JCR_AVAIALABILITY_WAIT_INTERVAL);
                     } catch (InterruptedException e1) {
                         e1.printStackTrace();
-
-                        try {
-                            if (ServerSettings.getSystemUser() != null) {
-                                username = ServerSettings.getSystemUser();
-                            }
-                            if (ServerSettings.getSystemUserPassword() != null) {
-                                password = ServerSettings.getSystemUserPassword();
-                            }
-                            gatewayName = ServerSettings.getDefaultGatewayId();
-                        }catch (ServerSettingsException e) {
-                            log.error("Unable to read properties", e);
-                        }
                     }
-
-                    airavataAPI = AiravataAPIFactory.getAPI(gatewayName, username);
+                    try {
+                        if (ServerSettings.getSystemUser() != null) {
+                            username = ServerSettings.getSystemUser();
+                        }
+                        if (ServerSettings.getSystemUserPassword() != null) {
+                            password = ServerSettings.getSystemUserPassword();
+                        }
+                        gatewayName = ServerSettings.getDefaultGatewayId();
+                    } catch (ServerSettingsException e) {
+                        log.error("Unable to read properties", e);
+                    }
+                    airavataAPI = AiravataAPIFactory.getAPI(ServerSettings.getDefaultGatewayId(), ServerSettings.getSystemUser());
                     context.setProperty(GFAC_URL, ServiceUtils.generateServiceURLFromConfigurationContext(context,SERVICE_NAME));
                     GFacConfiguration gfacConfig = new GFacConfiguration(ServerSettings.getSetting(MYPROXY_SERVER),ServerSettings.getSetting(MYPROXY_USER),
                             ServerSettings.getSetting(MYPROXY_PASS),Integer.parseInt(ServerSettings.getSetting(MYPROXY_LIFE)),airavataAPI,ServerSettings.getSetting(TRUSTED_CERT_LOCATION));
