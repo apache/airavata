@@ -19,12 +19,39 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>airavata-xbaya-gui</artifactId>
-    <name>distribution</name>
+    <name>xbaya-gui-distribution</name>
     <packaging>pom</packaging>
     <url>http://airavata.apache.org/</url>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.4</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>unpack-axis2</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.axis2</groupId>
+                                    <artifactId>axis2-webapp</artifactId>
+                                    <version>${axis2.version}</version>
+                                    <type>war</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>target/axis2-${axis2.version}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -189,6 +216,11 @@
         </dependency>
 
         <!-- AIRAVATA modules -->
+         <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-xbaya-gui</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-workflow-model-core</artifactId>
@@ -291,6 +323,7 @@
             <artifactId>derbyclient</artifactId>
             <version>${derby.version}</version>
         </dependency>
+
     </dependencies>
     <properties>
         <jersey.version>1.13</jersey.version>
