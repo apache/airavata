@@ -66,7 +66,7 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../xbaya-gui/src/main/resources/bin</directory>
+			<directory>../../xbaya-gui/src/main/resources/bin</directory>
 			<outputDirectory>bin</outputDirectory>
 			<fileMode>777</fileMode>
 			<includes>
@@ -77,7 +77,7 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../xbaya-gui/src/main/resources/conf</directory>
+			<directory>../../xbaya-gui/src/main/resources/conf</directory>
 			<outputDirectory>bin</outputDirectory>
 			<includes>
 				<include>airavata-server.properties</include>
@@ -91,14 +91,14 @@
 
 
 		<fileSet>
-			<directory>../xbaya-gui/src/test/resources/</directory>
+			<directory>../../xbaya-gui/src/test/resources/</directory>
 			<outputDirectory>samples/workflows</outputDirectory>
 			<includes>
 				<include>*.xwf</include>
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../../samples</directory>
+			<directory>../../../samples</directory>
 			<outputDirectory>samples</outputDirectory>
 			<includes>
 				<include>*.sh</include>
