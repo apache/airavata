@@ -18,7 +18,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>airavata-server</artifactId>
+    <artifactId>embedded-tomcat</artifactId>
     <name>Airavata Embedded Tomcat Implementation</name>
     <description>Module for starting embedded tomcat</description>
     <dependencies>
@@ -77,6 +77,12 @@
             <artifactId>tomcat-jsp-api</artifactId>
             <version>7.0.22</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-rest-mappings</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>
