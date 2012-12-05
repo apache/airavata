@@ -18,8 +18,8 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>airavata-server</artifactId>
-    <name>distribution</name>
+    <artifactId>airavata-server-distribution</artifactId>
+    <name>airavata-server-distribution</name>
     <packaging>pom</packaging>
     <url>http://airavata.apache.org/</url>
 

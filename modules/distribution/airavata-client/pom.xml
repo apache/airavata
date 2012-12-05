@@ -18,7 +18,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>airavata-xbaya-gui</artifactId>
+    <artifactId>airavata-client-distribution</artifactId>
     <name>airavata-client-distribution</name>
     <packaging>pom</packaging>
     <url>http://airavata.apache.org/</url>
