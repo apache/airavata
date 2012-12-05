@@ -21,6 +21,18 @@ public class RequestContext {
      */
     private String userIdentity;
 
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
+
+    /**
+     * The gateway id.
+     */
+    private String gatewayId;
 
 
 }
