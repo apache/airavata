@@ -1,5 +1,7 @@
 package org.apache.airavata.security;
 
+import org.apache.airavata.common.context.RequestContext;
+import org.apache.airavata.common.context.WorkflowContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,6 +83,15 @@ public abstract class AbstractAuthenticator implements Authenticator {
         }
 
         return authenticated;
+    }
+
+    protected void addToContext (String userName, String gatewayId) {
+
+        RequestContext requestContext = new RequestContext();
+        requestContext.setUserIdentity(userName);
+        requestContext.setGatewayId(gatewayId);
+
+        WorkflowContext.set(requestContext);
     }
 
 

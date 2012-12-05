@@ -20,8 +20,9 @@
 
 package org.apache.airavata.services.registry.rest.security.basic;
 
-import org.apache.airavata.common.context.RequestContext;
-import org.apache.airavata.common.context.WorkflowContext;
+import org.apache.airavata.common.exception.ServerSettingsException;
+import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.security.AbstractAuthenticator;
 import org.apache.airavata.security.AuthenticationException;
 import org.apache.airavata.security.UserStoreException;
@@ -45,7 +46,6 @@ public class BasicAccessAuthenticator extends AbstractAuthenticator {
      * Header names
      */
     private static final String AUTHORISATION_HEADER_NAME = "Authorization";
-    public static final String USER_IN_SESSION = "userName";
 
     public BasicAccessAuthenticator() {
         super(AUTHENTICATOR_NAME);
@@ -112,17 +112,16 @@ public class BasicAccessAuthenticator extends AbstractAuthenticator {
         }
     }
 
-    protected void addUserToSession(String userName, HttpServletRequest servletRequest) {
+    protected void addUserToSession(String userName, HttpServletRequest servletRequest) throws AuthenticationException {
+
+        String gatewayId = getGatewayId(servletRequest);
 
         if (servletRequest.getSession() != null) {
-            servletRequest.getSession().setAttribute(USER_IN_SESSION, userName);
+            servletRequest.getSession().setAttribute(Constants.USER_IN_SESSION, userName);
+            servletRequest.getSession().setAttribute(Constants.GATEWAY_NAME, gatewayId);
         }
 
-        // Add user to context - TODO We may need to abstract out this
-        RequestContext requestContext = new RequestContext();
-        requestContext.setUserIdentity(userName);
-
-        WorkflowContext.set(requestContext);
+        addToContext(userName, gatewayId);
     }
 
     @Override
@@ -182,7 +181,19 @@ public class BasicAccessAuthenticator extends AbstractAuthenticator {
 
         HttpSession httpSession = httpServletRequest.getSession();
 
-        return httpSession != null && httpSession.getAttribute(USER_IN_SESSION) != null;
+        boolean seenInSession = false;
+
+        if (httpSession != null) {
+            String user = (String)httpSession.getAttribute(Constants.USER_IN_SESSION);
+            String gateway = (String)httpSession.getAttribute(Constants.GATEWAY_NAME);
+
+            if (user != null && gateway != null) {
+                addToContext(user, gateway);
+                seenInSession = true;
+            }
+        }
+
+        return seenInSession;
 
     }
 
@@ -192,6 +203,20 @@ public class BasicAccessAuthenticator extends AbstractAuthenticator {
         HttpServletRequest httpServletRequest = (HttpServletRequest) credentials;
 
         return (httpServletRequest.getHeader(AUTHORISATION_HEADER_NAME) != null);
+    }
+
+    private String getGatewayId(HttpServletRequest request) throws AuthenticationException {
+        String gatewayId = request.getHeader(Constants.GATEWAY_NAME);
+
+        if (gatewayId == null) {
+            try {
+                gatewayId = ServerSettings.getDefaultGatewayId();
+            } catch (ServerSettingsException e) {
+                throw new AuthenticationException("Unable to retrieve default gateway", e);
+            }
+        }
+
+        return gatewayId;
     }
 
     @Override

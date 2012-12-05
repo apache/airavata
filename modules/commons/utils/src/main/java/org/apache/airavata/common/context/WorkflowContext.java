@@ -48,4 +48,15 @@ public class WorkflowContext {
 
         return null;
     }
+
+    public static synchronized String getGatewayId() {
+
+        RequestContext requestContext = (RequestContext) userThreadLocal.get();
+
+        if (requestContext != null) {
+            return requestContext.getGatewayId();
+        }
+
+        return null;
+    }
 }

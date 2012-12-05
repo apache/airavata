@@ -2,13 +2,14 @@
 <%@ page import="org.apache.airavata.services.registry.rest.security.basic.BasicAccessAuthenticator" %>
 <%@ page import="org.apache.airavata.services.registry.rest.security.HttpAuthenticatorFilter" %>
 <%@ page import="java.util.List" %>
+<%@ page import="org.apache.airavata.common.utils.Constants" %>
 <%
 
     LocalUserStore localUserStore = (LocalUserStore)session.getAttribute("LocalUserStore");
 
     if (localUserStore == null) {
 
-        String operatingUser = (String) session.getAttribute(BasicAccessAuthenticator.USER_IN_SESSION);
+        String operatingUser = (String) session.getAttribute(Constants.USER_IN_SESSION);
 
         if (operatingUser == null || !operatingUser.equals("admin")) {
             HttpAuthenticatorFilter.sendUnauthorisedError(response, "Insufficient privileges to perform user operations." +
