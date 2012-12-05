@@ -45,7 +45,7 @@
 			<excludes>
 				<exclude>commons-logging*.jar</exclude>
 				<exclude>xom*.jar</exclude>
-                <exclude>xercesImpl</exclude>
+                <exclude>xercesImpl*.jar</exclude>
 			</excludes>
 		</fileSet>
 		<fileSet>
@@ -79,7 +79,7 @@
 
 		<!-- ********************** copy database scripts ********************** -->
 		<fileSet>
-			<directory>../ws-messenger/messagebroker/src/main/resources/database_scripts
+			<directory>../../ws-messenger/messagebroker/src/main/resources/database_scripts
 			</directory>
 			<outputDirectory>bin/database_scripts
 			</outputDirectory>
@@ -88,7 +88,7 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../ws-messenger/messagebox/src/main/resources/database_scripts
+			<directory>../../ws-messenger/messagebox/src/main/resources/database_scripts
 			</directory>
 			<outputDirectory>bin/database_scripts
 			</outputDirectory>
@@ -97,7 +97,7 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../registry/airavata-jpa-registry/src/main/resources
+			<directory>../../registry/airavata-jpa-registry/src/main/resources
 			</directory>
 			<outputDirectory>bin/database_scripts
 			</outputDirectory>
@@ -106,7 +106,7 @@
 			</includes>
 		</fileSet>
         <fileSet>
-			<directory>../rest/webapp/src/main/resources
+			<directory>../../rest/webapp/src/main/resources
 			</directory>
 			<outputDirectory>bin
 			</outputDirectory>
@@ -115,7 +115,7 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../distribution/src/main/resources/bin</directory>
+			<directory>src/main/resources/bin</directory>
 			<outputDirectory>bin</outputDirectory>
 			<fileMode>777</fileMode>
 			<includes>
@@ -126,7 +126,7 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../distribution/src/main/resources/conf</directory>
+			<directory>src/main/resources/conf</directory>
 			<outputDirectory>bin</outputDirectory>
 			<includes>
 				<include>airavata-server.properties</include>
@@ -141,7 +141,7 @@
 		<!-- ********************** Copy Axis2 startup scripts to stand alone server 
 			********************** -->
 		<fileSet>
-			<directory>../distribution/src/main/resources/axis2-standalone-bin
+			<directory>src/main/resources/axis2-standalone-bin
 			</directory>
 			<outputDirectory>bin</outputDirectory>
 			<fileMode>777</fileMode>
@@ -155,7 +155,7 @@
 			<outputDirectory>standalone-server/repository/services</outputDirectory> 
 			<includes> <include>*.aar</include> </includes> </fileSet -->
 		<fileSet>
-			<directory>../../samples/complex-math-service/target</directory>
+			<directory>../../../samples/complex-math-service/target</directory>
 			<outputDirectory>repository/services
 			</outputDirectory>
 			<includes>
@@ -163,7 +163,7 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../../samples/levenshtein-distance-service/target
+			<directory>../../../samples/levenshtein-distance-service/target
 			</directory>
 			<outputDirectory>repository/services</outputDirectory>
 			<includes>
@@ -171,14 +171,14 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../xbaya-gui/src/test/resources/</directory>
+			<directory>../../xbaya-gui/src/test/resources/</directory>
 			<outputDirectory>samples/workflows</outputDirectory>
 			<includes>
 				<include>*.xwf</include>
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../../samples</directory>
+			<directory>../../../samples</directory>
 			<outputDirectory>samples</outputDirectory>
 			<includes>
 				<include>*.sh</include>

@@ -400,11 +400,11 @@
             <artifactId>jersey-client</artifactId>
             <version>${jersey.version}</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-common-utils</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-jasper</artifactId>
@@ -461,11 +461,11 @@
             <artifactId>jersey-server</artifactId>
             <version>${jersey.version}</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
             <version>${jersey.version}</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
