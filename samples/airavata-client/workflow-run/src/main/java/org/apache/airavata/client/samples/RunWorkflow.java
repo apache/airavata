@@ -30,6 +30,9 @@ import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -69,8 +72,9 @@ public class RunWorkflow {
         PasswordCallback passwordCallback = new PasswordCallbackImpl(getUserName(), getPassword());
         airavataAPI = AiravataAPIFactory.getAPI(new URI(getRegistryURL()),
                 getGatewayName(), getUserName(), passwordCallback);
-
-        String workflowName = "Echo";
+        System.out.println((new File("")).getAbsolutePath());
+        String workflowName = "Workflow1";
+        airavataAPI.getWorkflowManager().saveWorkflow(getWorkflowComposeContent());
         List<WorkflowInput> workflowInputs = new ArrayList<WorkflowInput>();
         String name = "echo_input";
         String type = "String";
@@ -83,7 +87,7 @@ public class RunWorkflow {
                 workflowName);
         System.out.println("Workflow Experiment ID Returned : " + result);
         List<ExperimentData> experimentDataList = airavataAPI.getProvenanceManager().getExperimentDataList(result);
-        for (ExperimentData data: experimentDataList){
+        for (ExperimentData data : experimentDataList) {
             System.out.println(data.getExperimentName() + ": " + data.getTopic());
         }
     }
@@ -114,5 +118,16 @@ public class RunWorkflow {
 
     public static String getPassword() {
         return password;
+    }
+
+    protected static String getWorkflowComposeContent() throws IOException {
+
+        BufferedReader reader = new BufferedReader(new FileReader("src/main/resources/EchoWorkflow.xwf"));
+        String line = null;
+        StringBuffer buffer = new StringBuffer();
+        while ((line = reader.readLine()) != null) {
+            buffer.append(line);
+        }
+        return buffer.toString();
     }
 }
