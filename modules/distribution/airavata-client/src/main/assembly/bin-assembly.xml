@@ -132,9 +132,9 @@
 				<!--<include>org.apache.airavata:airavata-workflow-model-component:jar</include>-->
 				<include>org.apache.airavata:airavata-message-monitor:jar</include>
 				<include>org.apache.airavata:airavata-client-api:jar</include>
-				<!--<include>org.apache.airavata:airavata-jpa-registry:jar</include>-->
+				<include>org.apache.airavata:airavata-jpa-registry:jar</include>
                 <include>org.apache.airavata:airavata-rest-client:jar</include>
-				<!--<include>org.apache.openjpa:openjpa-all:jar</include>-->
+				<include>org.apache.openjpa:openjpa-all:jar</include>
                 <include>xerces:xercesImpl:jar:2.9.1</include>
 			</includes>
 		</dependencySet>
