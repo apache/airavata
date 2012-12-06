@@ -30,11 +30,11 @@
         </dependency>
 
         <!-- Axis2 -->
-        <dependency>
+        <!--dependency>
             <groupId>org.apache.axis2</groupId>
             <artifactId>axis2-kernel</artifactId>
             <version>${axis2.version}</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-common-utils</artifactId>

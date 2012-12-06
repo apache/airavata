@@ -34,6 +34,11 @@
             <artifactId>airavata-messenger-commons</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>atomixmiser</groupId>
+            <artifactId>atomixmiser</artifactId>
+            <version>0.9.4</version>
+        </dependency>
         <!--dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-registry-api</artifactId>

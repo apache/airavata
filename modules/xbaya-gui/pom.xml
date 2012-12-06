@@ -181,6 +181,11 @@
             <version>1.2.6</version>
         </dependency>
         <dependency>
+            <groupId>xsul</groupId>
+            <artifactId>xsul</artifactId>
+            <version>2.10.5_b</version>
+        </dependency>
+        <dependency>
             <groupId>xsul5-ogce</groupId>
             <artifactId>xsul5-2007-02-27</artifactId>
             <version>1</version>

@@ -320,7 +320,7 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
             } catch (AiravataAPIInvocationException e) {
                 e.printStackTrace();
             }
-            log.info("Updated Workflow Interpreter service URL in to Repository");
+            log.info("Updated Eventing service URL in to Repository");
         }
 
     }

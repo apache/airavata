@@ -184,7 +184,7 @@ public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
         protected void updateRegistry(AiravataAPI registry) throws Exception {
             URI localAddress = (URI) this.context.getProperty(SERVICE_URL);
             registry.getAiravataManager().setMessageBoxURI(localAddress);
-            logger.info("Updated Workflow Interpreter service URL in to Repository");
+            logger.info("Updated Message box service URL in to Repository");
         }
     }
 
