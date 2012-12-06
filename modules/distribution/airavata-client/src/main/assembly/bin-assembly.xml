@@ -45,6 +45,7 @@
 			<excludes>
 				<exclude>commons-logging*.jar</exclude>
 				<exclude>xom*.jar</exclude>
+				<exclude>xercesImpl*.jar</exclude>
 			</excludes>
 		</fileSet>
 
@@ -71,15 +72,12 @@
 
 
 		<fileSet>
-			<directory>../airavata-client/src/main/resources/conf</directory>
-			<outputDirectory>conf</outputDirectory>
+			<directory>src/main/resources/conf</directory>
+			<outputDirectory>bin</outputDirectory>
 			<includes>
-				<include>airavata-server.properties</include>
+				<include>airavata-client.properties</include>
 				<include>registry.properties</include>
 				<include>log4j.properties</include>
-				<include>host.xml</include>
-				<include>persistence.xml</include>
-				<include>provenance.sql</include>
 			</includes>
 		</fileSet>
 		<fileSet>
@@ -94,13 +92,6 @@
 			<outputDirectory>samples</outputDirectory>
 			<includes>
 				<include>*.sh</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>src/main/resources/conf</directory>
-			<outputDirectory>conf</outputDirectory>
-			<includes>
-				<include>**/*</include>
 			</includes>
 		</fileSet>
 	</fileSets>
@@ -135,25 +126,26 @@
 				<include>xutil:xutil</include>
 				<include>jython:jython</include>
 				<include>xmlbeans:xbean</include>
-				<include>com.amazonaws:aws-java-sdk</include>
-				<include>amazon:MapReduce.Service.Client</include>
+				<!--<include>com.amazonaws:aws-java-sdk</include>-->
+				<!--<include>amazon:MapReduce.Service.Client</include>-->
 				<include>net.java.dev.jets3t:jets3t</include>
 				<include>atomixmiser:atomixmiser</include>
 				<include>org.apache.airavata:airavata-registry-api</include>
 				<include>org.apache.airavata:airavata-workflow-execution-context</include>
-				<include>org.apache.airavata:airavata-workflow-tracking</include>
-				<include>org.apache.airavata:airavata-gfac-core</include>
+				<!--<include>org.apache.airavata:airavata-workflow-tracking</include>-->
+				<!--<include>org.apache.airavata:airavata-gfac-core</include>-->
 				<include>org.apache.airavata:airavata-messenger-client</include>
 				<include>org.apache.airavata:airavata-messenger-commons</include>
 				<include>org.apache.airavata:airavata-gfac-schema-utils</include>
 				<include>org.apache.airavata:airavata-common-utils</include>
 				<include>org.apache.airavata:airavata-workflow-model-core:jar</include>
-				<include>org.apache.airavata:airavata-workflow-model-component:jar</include>
+				<!--<include>org.apache.airavata:airavata-workflow-model-component:jar</include>-->
 				<include>org.apache.airavata:airavata-message-monitor:jar</include>
 				<include>org.apache.airavata:airavata-client-api:jar</include>
-				<include>org.apache.airavata:airavata-jpa-registry:jar</include>
+				<!--<include>org.apache.airavata:airavata-jpa-registry:jar</include>-->
                 <include>org.apache.airavata:airavata-rest-client:jar</include>
-				<include>org.apache.openjpa:openjpa-all:jar</include>
+				<!--<include>org.apache.openjpa:openjpa-all:jar</include>-->
+                <include>xerces:xercesImpl:jar:2.9.1</include>
 			</includes>
 		</dependencySet>
 	</dependencySets>
