@@ -36,7 +36,7 @@
         <path id="javac.classpath">
             <pathelement path="${class.dir}"/>
             <pathelement path="${airavata.home}/lib"/>
-            <pathelement path="${airavata.home}/samples/create-workflow/src/main/resources"/>
+            <pathelement path="${airavata.home}/samples/create-application/src/main/resources"/>
             <fileset dir="${airavata.home}/lib">
                 <include name="**/*.jar"/>
             </fileset>
