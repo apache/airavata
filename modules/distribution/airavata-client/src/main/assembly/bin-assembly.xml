@@ -81,18 +81,8 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../../xbaya-gui/src/test/resources/</directory>
-			<outputDirectory>samples/workflows</outputDirectory>
-			<includes>
-				<include>*.xwf</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../../../samples</directory>
+			<directory>../../../samples/airavata-client</directory>
 			<outputDirectory>samples</outputDirectory>
-			<includes>
-				<include>*.sh</include>
-			</includes>
 		</fileSet>
 	</fileSets>
 
