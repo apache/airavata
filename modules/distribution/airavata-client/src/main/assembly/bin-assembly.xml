@@ -46,6 +46,30 @@
 				<exclude>commons-logging*.jar</exclude>
 				<exclude>xom*.jar</exclude>
 				<exclude>xercesImpl*.jar</exclude>
+                <exclude>axis2-corba*.jar</exclude>
+                <exclude>axis2-fastinfoset*.jar</exclude>
+                <exclude>axis2-java2wsdl*.jar</exclude>
+                <exclude>axis2-jaxbri*.jar</exclude>
+                <exclude>axis2-jaxws*.jar</exclude>
+                <exclude>axis2-jibx*.jar</exclude>
+                <exclude>axis2-json*.jar</exclude>
+                <exclude>axis2-metadata*.jar</exclude>
+                <exclude>axis2-mtompolicy*.jar</exclude>
+                <exclude>axis2-saaj*.jar</exclude>
+                <exclude>axis2-spring*.jar</exclude>
+                <exclude>axis2-xmlbeans*.jar</exclude>
+                <exclude>bcel*.jar</exclude>
+                <exclude>dom4j*.jar</exclude>
+                <exclude>geronimo-annotation_1.0_spec*.jar</exclude>
+                <exclude>geronimo-jaxws_2.1_spec-1.0*.jar</exclude>
+                <exclude>geronimo-saaj_1.3_spec-1.0.1*.jar</exclude>
+                <exclude>icu4j*.jar</exclude>
+                <exclude>jibx-bind*.jar</exclude>
+                <exclude>jibx-run*.jar</exclude>
+                <exclude>mex*.jar</exclude>
+                <exclude>soapmonitor*.jar</exclude>
+                <exclude>xml-resolver*.jar</exclude>
+                <exclude>jaxb-xjc*.jar</exclude>
 			</excludes>
 		</fileSet>
 
