@@ -94,22 +94,22 @@
 			<artifactId>jersey-multipart</artifactId>
 			<version>${jersey.version}</version>
 		</dependency>
-		<dependency>
+		<!--dependency>
 			<groupId>com.sun.jersey.jersey-test-framework</groupId>
 			<artifactId>jersey-test-framework-grizzly2</artifactId>
 			<version>${jersey.version}</version>
 			<scope>test</scope>
-		</dependency>
+		</dependency-->
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-server</artifactId>
 			<version>${jersey.version}</version>
 		</dependency>
-		<dependency>
+		<!--dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-client</artifactId>
 			<version>${jersey.version}</version>
-		</dependency>
+		</dependency-->
 		<dependency>
 			<groupId>org.apache.shiro</groupId>
 			<artifactId>shiro-core</artifactId>
@@ -153,7 +153,7 @@
         </dependency>
 
         <!-- Airavata -->
-		<dependency>
+		<!--dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-gfac-schema-utils</artifactId>
 			<version>${project.version}</version>
@@ -172,7 +172,7 @@
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-jpa-registry</artifactId>
 			<version>${project.version}</version>
-		</dependency>
+		</dependency-->
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-rest-mappings</artifactId>

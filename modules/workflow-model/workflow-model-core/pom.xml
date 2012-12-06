@@ -60,7 +60,7 @@
     </build>
 
     <dependencies>
-        <dependency>
+        <!--dependency>
             <groupId>xpp3</groupId>
             <artifactId>xpp3_xpath</artifactId>
             <version>1.1.4c</version>
@@ -84,13 +84,13 @@
             <groupId>xsul5-ogce</groupId>
             <artifactId>xsul5-2007-02-27</artifactId>
             <version>1</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>gpel</groupId>
             <artifactId>gpel_client</artifactId>
             <version>1.0.7-BETA</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>atomixmiser</groupId>
             <artifactId>atomixmiser</artifactId>
             <version>0.9.4</version>
@@ -119,7 +119,7 @@
             <groupId>cog-jglobus</groupId>
             <artifactId>cog-jglobus</artifactId>
             <version>1.8.0_1</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -129,7 +129,7 @@
             <artifactId>xsul</artifactId>
             <version>2.10.5_d</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>xmlbeans</groupId>
             <artifactId>xbean</artifactId>
             <version>${xmlbeans.version}</version>
@@ -183,10 +183,10 @@
             <groupId>org.apache.axis2</groupId>
             <artifactId>axis2-transport-http</artifactId>
             <version>${axis2.version}</version>
-        </dependency>
+        </dependency-->
 
         <!-- AMAZON STUFFS -->
-        <dependency>
+        <!--dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
             <version>1.3.20</version>
@@ -200,7 +200,7 @@
             <groupId>net.java.dev.jets3t</groupId>
             <artifactId>jets3t</artifactId>
             <version>0.8.0</version>
-        </dependency>
+        </dependency-->
 
         <!-- AIRAVATA modules -->
         <!--dependency>
@@ -219,19 +219,19 @@
             <artifactId>airavata-common-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-workflow-tracking</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency-->
 
         <!-- JCR Support -->
         <!-- TODO need clean up -->
-        <dependency>
+        <!--dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-gfac-schema-utils</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency-->
         <!--dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-gfac-core</artifactId>
@@ -253,7 +253,7 @@
             <version>${org.slf4j.version}</version>
             <scope>runtime</scope>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>javax.jcr</groupId>
             <artifactId>jcr</artifactId>
             <version>${jcr.version}</version>
@@ -267,7 +267,7 @@
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-workflow-execution-context</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency-->
          <!--dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-jpa-registry</artifactId>

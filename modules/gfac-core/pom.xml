@@ -46,7 +46,7 @@
             <type>jar</type>
             <version>cog-4_1_6</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>cog-4_1_6_rc2</groupId>
             <artifactId>cryptix32</artifactId>
             <version>cog-4_1_6</version>
@@ -55,13 +55,12 @@
             <groupId>cog-4_1_6_rc2</groupId>
             <artifactId>cryptix-asn1</artifactId>
             <version>cog-4_1_6</version>
-        </dependency>
-        <dependency>
+        </dependency-->
+        <!--dependency>
             <groupId>bouncycastle</groupId>
             <artifactId>bcprov-jdk15</artifactId>
             <version>143</version>
-        </dependency>
-
+        </dependency-->
         <dependency>
             <groupId>commons-configuration</groupId>
             <artifactId>commons-configuration</artifactId>
@@ -75,11 +74,11 @@
         </dependency>
 
         <!-- GFAC schemas -->
-        <dependency>
+        <!--dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-gfac-schema-utils</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-client-api</artifactId>

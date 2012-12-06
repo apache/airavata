@@ -29,11 +29,11 @@
             <artifactId>airavata-gfac-schema-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-common-utils</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency-->
         <!-- Test -->
         <dependency>
             <groupId>junit</groupId>
@@ -85,12 +85,12 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-workflow-model-core</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
-        </dependency>
+        </dependency-->
         <!--dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-registry-service</artifactId>

@@ -24,11 +24,11 @@
     <url>http://airavata.apache.org/</url>
 
     <dependencies>
-        <dependency>
+        <!--dependency>
             <groupId>javax.jcr</groupId>
             <artifactId>jcr</artifactId>
             <version>${jcr.version}</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -43,11 +43,11 @@
             <artifactId>airavata-common-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!--dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20090211</version>
-		</dependency>        
+		</dependency-->
         <!-- Test -->
         <dependency>
             <groupId>junit</groupId>

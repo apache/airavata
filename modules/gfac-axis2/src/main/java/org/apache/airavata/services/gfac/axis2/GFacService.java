@@ -184,7 +184,7 @@ public class GFacService implements ServiceLifeCycle {
         protected void updateRegistry(AiravataAPI airavataAPI) throws Exception {
             URI localAddress = new URI((String) this.context.getProperty(GFAC_URL));
             airavataAPI.getAiravataManager().addGFacURI(localAddress);
-            log.info("Updated Workflow Interpreter service URL in to Repository");
+            log.info("Updated GFac service URL in to Repository");
         }
     }
 }
