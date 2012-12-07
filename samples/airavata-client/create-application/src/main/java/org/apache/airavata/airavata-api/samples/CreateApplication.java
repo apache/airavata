@@ -66,6 +66,7 @@ public class CreateApplication {
         List<OutputParameterType> outputParameters = new ArrayList<OutputParameterType>();
         serviceDescription.getType().setName("Echo");
         serviceDescription.getType().setDescription("Echo service");
+        //Creating input parameters
         InputParameterType parameter = InputParameterType.Factory.newInstance();
         parameter.setParameterName("echo_input");
         parameter.setParameterDescription("echo input");
@@ -74,6 +75,7 @@ public class CreateApplication {
         parameterType.setName("String");
         inputParameters.add(parameter);
 
+        //Creating output parameters
         OutputParameterType outputParameter = OutputParameterType.Factory.newInstance();
         outputParameter.setParameterName("echo_output");
         outputParameter.setParameterDescription("Echo output");
@@ -82,13 +84,15 @@ public class CreateApplication {
         outputParaType.setName("String");
         outputParameters.add(outputParameter);
 
+        //Setting input and output parameters to serviceDescriptor
         serviceDescription.getType().setInputParametersArray(inputParameters.toArray(new InputParameterType[]{}));
         serviceDescription.getType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[]{}));
 
         log.info("Saving service description ...");
+        //Saving service descriptor
         airavataAPI.getApplicationManager().saveServiceDescription(serviceDescription);
 
-        // Deployment descriptor
+        // Deployment descriptor creation
         ApplicationDeploymentDescription applicationDeploymentDescription = new ApplicationDeploymentDescription();
         ApplicationDeploymentDescriptionType applicationDeploymentDescriptionType
                 = applicationDeploymentDescription.getType();
@@ -97,6 +101,8 @@ public class CreateApplication {
         applicationDeploymentDescriptionType.setScratchWorkingDirectory("/tmp");
 
         log.info("Saving deployment description ...");
+
+        //Saving deployment Descriptor with an association with given serviceName, Host name
         airavataAPI.getApplicationManager().saveDeploymentDescription(serviceDescription.getType().getName(),
                 descriptor.getType().getHostName(), applicationDeploymentDescription);
     }
