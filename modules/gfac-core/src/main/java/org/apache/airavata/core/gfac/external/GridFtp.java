@@ -195,7 +195,7 @@ public class GridFtp {
             srcClient.authenticate(gsCredential);
             srcClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
 
-            GridFTPClient destClient = new GridFTPClient(srcContactInfo.hostName, srcContactInfo.port);
+            GridFTPClient destClient = new GridFTPClient(destContactInfo.hostName, destContactInfo.port);
             destClient.setAuthorization(new HostAuthorization(GridFtp.HOST));
             destClient.authenticate(gsCredential);
             destClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
