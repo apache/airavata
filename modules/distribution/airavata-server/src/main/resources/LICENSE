@@ -210,31 +210,16 @@ code for Airavata is subject to the terms and conditions of the following licens
 The following components come under Apache Software License 2.0
 ===============================================================================
 
-bcel-5.1.jar, commons-codec-1.2.jar, httpcore-4.0.jar, jets3t-0.8.0.jar, 
-jettison-1.0-RC2.jar, neethi-2.0.4.jar, PDFBox libraries (pdfbox, jempbox, fontbox)
-aws-java-sdk-1.1.8.jar, apache geronimo, apache commons, apache axis2, apache jackrabbit
+apache axiom, apache axis2, apache commons, apache derby, apache geronimo,
+apache httpcore components, apache log4j, apache xmlbeans, apache xmlschema,
+aws-java-sdk-1.1.8.jar, bcel-5.1.jar, jets3t-0.8.0.jar, jettison-1.0-RC2.jar, 
+neethi-2.0.4.jar, PDFBox libraries (pdfbox, jempbox, fontbox),  wstx-asl-3.2.4.jar
 
 ===============================================================================
 The following components use Apache based Licenses
 ===============================================================================
 
-For: wstx-asl-3.2.4.jar
-    Containing Project URL: http://woodstox.codehaus.org/
-
-This copy of Woodstox XML processor is licensed under the
-Apache (Software) License, version 2.0 ("the License").
-See the License for details about distribution rights, and the
-specific rights regarding derivate works.
-
-You may obtain a copy of the License at:
-
-http://www.apache.org/licenses/
-
-A copy is also included in the downloadable source code package
-containing Woodstox, in file "ASL2.0", under the same directory
-as this file.
 ===============================================================================
-
 For: jdom-1.0.jar
     Containing Project URL: http://www.jdom.org/
 /*-- 
@@ -559,8 +544,14 @@ The following components are CDDL based License
 
 For activation-1.1.jar, jaxb-api-2.1.jar, mail-1.4.jar, junit, 
 Servlet Specification 2.5 API (servlet-api-2.5-6.1.14.jar),
-Classfish Jasper API (jsp-api-2.1-6.1.14.jar), and
+Classfish Jasper API (jsp-api-2.1-6.1.14.jar), jersey-client-1.13.jar
+jersey-core-1.13.jar, jersey-json-1.13.jar, jersey-multipart-1.13.jar
+jersey-server-1.13.jar, jersey-servlet-1.13.jar and
 JSP2.1 Jasper implementation from Glassfish (jsp-2.1-6.1.14.jar):
+
+NOTE: jersey is dual licensed (http://jersey.java.net/CDDL+GPL.html), 
+Apahce Airavata elects to include jersey in this distribution under the
+[CDDLv_1.0] license.
  
     COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0
 
@@ -1161,66 +1152,6 @@ Joseph Reagle <site-policy@w3.org>
 Last revised $Id: copyright-software-20021231.html,v 1.11 2004/07/06 16:02:49 slesch Exp $ 
 
 ==========================================================================================
-
-XPath parser (jackrabbit-spi-commons)
-    Containing Project URL: 
-
-    XPath 2.0/XQuery 1.0 Parser:
-    http://www.w3.org/2002/11/xquery-xpath-applets/xgrammar.zip
-
-    Copyright (C) 2002 World Wide Web Consortium, (Massachusetts Institute of
-    Technology, European Research Consortium for Informatics and Mathematics,
-    Keio University). All Rights Reserved.
-
-    This work is distributed under the W3C(R) Software License in the hope
-    that it will be useful, but WITHOUT ANY WARRANTY; without even the
-    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-    W3C(R) SOFTWARE NOTICE AND LICENSE
-    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231
-
-    This work (and included software, documentation such as READMEs, or
-    other related items) is being provided by the copyright holders under
-    the following license. By obtaining, using and/or copying this work,
-    you (the licensee) agree that you have read, understood, and will comply
-    with the following terms and conditions.
-
-    Permission to copy, modify, and distribute this software and its
-    documentation, with or without modification, for any purpose and
-    without fee or royalty is hereby granted, provided that you include
-    the following on ALL copies of the software and documentation or
-    portions thereof, including modifications:
-
-       1. The full text of this NOTICE in a location viewable to users
-          of the redistributed or derivative work.
-
-       2. Any pre-existing intellectual property disclaimers, notices,
-          or terms and conditions. If none exist, the W3C Software Short
-          Notice should be included (hypertext is preferred, text is
-          permitted) within the body of any redistributed or derivative code.
-
-       3. Notice of any changes or modifications to the files, including
-          the date changes were made. (We recommend you provide URIs to the
-          location from which the code is derived.)
-
-    THIS SOFTWARE AND DOCUMENTATION IS PROVIDED "AS IS," AND COPYRIGHT
-    HOLDERS MAKE NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED,
-    INCLUDING BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY OR FITNESS
-    FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE SOFTWARE OR
-    DOCUMENTATION WILL NOT INFRINGE ANY THIRD PARTY PATENTS, COPYRIGHTS,
-    TRADEMARKS OR OTHER RIGHTS.
-
-    COPYRIGHT HOLDERS WILL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL
-    OR CONSEQUENTIAL DAMAGES ARISING OUT OF ANY USE OF THE SOFTWARE OR
-    DOCUMENTATION.
-
-    The name and trademarks of copyright holders may NOT be used in
-    advertising or publicity pertaining to the software without specific,
-    written prior permission. Title to copyright in this software and
-    any associated documentation will at all times remain with
-    copyright holders.
-
-==============================================================================
 
 XML API library, org.w3c classes (xml-apis)
     Containing Project URL: 
