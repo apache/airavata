@@ -24,7 +24,10 @@ import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.PasswordCallback;
+import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeData;
 import org.apache.airavata.rest.client.PasswordCallbackImpl;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.slf4j.Logger;
@@ -54,13 +57,13 @@ public class RunWorkflow {
 
     private static AiravataAPI airavataAPI;
 
-    public static void main(String[] args) throws AiravataAPIInvocationException, IOException, URISyntaxException {
+    public static void main(String[] args) throws AiravataAPIInvocationException, IOException, URISyntaxException, ExperimentLazyLoadedException {
 
         //creating airavata client object //
         port = Integer.parseInt("8080");
         serverUrl = "localhost";
         serverContextName = "airavata-registry";
-
+        System.out.println((new File(".")).getAbsolutePath());
         log.info("Configurations - port : " + port);
         log.info("Configurations - serverUrl : " + serverUrl);
         log.info("Configurations - serverContext : " + serverContextName);
@@ -72,9 +75,13 @@ public class RunWorkflow {
         PasswordCallback passwordCallback = new PasswordCallbackImpl(getUserName(), getPassword());
         airavataAPI = AiravataAPIFactory.getAPI(new URI(getRegistryURL()),
                 getGatewayName(), getUserName(), passwordCallback);
-        System.out.println((new File("")).getAbsolutePath());
-        String workflowName = "Workflow1";
+
+        String workflowName = "EchoSample";
+        //Saving workflow method, workflow file has the workflow Name set to EchoSample, so when we use saveWorkflow method it will
+        //save the workflow with that name.
         airavataAPI.getWorkflowManager().saveWorkflow(getWorkflowComposeContent());
+
+        //Now workflow has saved, Now we have to set inputs
         List<WorkflowInput> workflowInputs = new ArrayList<WorkflowInput>();
         String name = "echo_input";
         String type = "String";
@@ -82,26 +89,22 @@ public class RunWorkflow {
         WorkflowInput workflowInput = new WorkflowInput(name, (type == null ||
                 type.isEmpty()) ? "String" : type, null, value, false);
         workflowInputs.add(workflowInput);
+
+        //Now inputs are set properly to the workflow, now we are about to run the workflow(submit the workflow run to intepreterService)
         String result
                 = airavataAPI.getExecutionManager().runExperiment(workflowName, workflowInputs, "admin", "",
                 workflowName);
         System.out.println("Workflow Experiment ID Returned : " + result);
-        List<ExperimentData> experimentDataList = airavataAPI.getProvenanceManager().getExperimentDataList(result);
-        for (ExperimentData data : experimentDataList) {
-            System.out.println(data.getExperimentName() + ": " + data.getTopic());
+        ExperimentData experimentData = airavataAPI.getProvenanceManager().getExperimentData(result);
+        List<WorkflowInstanceData> workflowInstanceData = experimentData.getWorkflowInstanceData();
+
+        for(WorkflowInstanceData data:workflowInstanceData){
+            List<WorkflowInstanceNodeData> nodeDataList = data.getNodeDataList();
+            for(WorkflowInstanceNodeData nodeData:nodeDataList){
+                System.out.println("Input : " + nodeData.getInputData().get(0));
+                System.out.println("Output :" + nodeData.getOutputData().get(0));
+            }
         }
-    }
-
-    public static int getPort() {
-        return port;
-    }
-
-    public static String getServerUrl() {
-        return serverUrl;
-    }
-
-    public static String getServerContextName() {
-        return serverContextName;
     }
 
     public static String getRegistryURL() {
@@ -121,7 +124,7 @@ public class RunWorkflow {
     }
 
     protected static String getWorkflowComposeContent() throws IOException {
-
+        System.out.println((new File(".")).getAbsolutePath());
         BufferedReader reader = new BufferedReader(new FileReader("src/main/resources/EchoWorkflow.xwf"));
         String line = null;
         StringBuffer buffer = new StringBuffer();

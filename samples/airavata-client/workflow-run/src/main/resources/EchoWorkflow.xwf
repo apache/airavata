@@ -1,7 +1,7 @@
 <?xml version="1.0"?><xwf:workflow xwf:version="0.5" xmlns:xwf="http://airavata.apache.org/xbaya/xwf">
   <xgr:graph xgr:version="0.5" xgr:type="ws" xmlns:xgr="http://airavata.apache.org/xbaya/graph">
-    <xgr:id>Workflow1</xgr:id>
-    <xgr:name>Workflow1</xgr:name>
+    <xgr:id>EchoSample</xgr:id>
+    <xgr:name>EchoSample</xgr:name>
     <xgr:description></xgr:description>
     <xgr:metadata>
       <appinfo xmlns="http://www.w3.org/2001/XMLSchema">
