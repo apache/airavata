@@ -4,34 +4,7 @@ Copyright 2012 The Apache Software Foundation
 This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
 
-===========================================================================
-Apache Jackrabbit Notice:
-
-Based on source code originally developed by
-Day Software (http://www.day.com/).
-
-This product includes software from the following contributions:
-
-Original BZip2 classes contributed by Keiron Liddle
-<keiron@aftexsw.com>, Aftex Software to the Apache Ant project
-
-Original Tar classes from contributors of the Apache Ant project
-
-Original Zip classes from contributors of the Apache Ant project
-
-Original CPIO classes contributed by Markus Kuss and the jRPM project
-(jrpm.sourceforge.net)
-
-The JDBC apis for small devices and JDBC3 (under java/stubs/jsr169 and
-java/stubs/jdbc3) were produced by trimming sources supplied by the
-Apache Harmony project. The following notice covers the Harmony sources:
-
-    Portions of Harmony were originally developed by
-    Intel Corporation and are licensed to the Apache Software
-    Foundation under the "Software Grant and Corporate Contribution
-    License Agreement", informally known as the "Intel Harmony CLA".
-
-=========================================================================
+===============================================================================
 Apache Xerces Java Notice:
 
    Portions of this software were originally based on the following:
@@ -183,4 +156,8 @@ The source code is available at:
 
 OpenJPA includes software written by Miroslav Nachev
 OpenJPA uses test code written by Charles Tillman.
+================================================================================================
+Apache XmlSchema Notice:
+
+Portions Copyright 2006 International Business Machines Corp.
 ================================================================================================
