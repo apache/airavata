@@ -120,14 +120,25 @@ public class ExperimentDataRetriever {
         }
         WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(workflowInstanceData.getWorkflowInstance(), rs.getString(10));
         WorkflowInstanceNodeData workflowInstanceNodeData = new WorkflowInstanceNodeData(workflowInstanceNode);
-        workflowInstanceNodeData.setInput(rs.getString(11));
-        workflowInstanceNodeData.setOutput(rs.getString(12));
+
+        String inputData = getStringValue(11, rs);
+        String outputData = getStringValue(12, rs);
+
+        workflowInstanceNodeData.setInput(inputData);
+        workflowInstanceNodeData.setOutput(outputData);
         workflowInstanceNodeData.setStatus(createExecutionStatus(rs.getString(16)), getTime(rs.getString(18)));
         workflowInstanceData.getNodeDataList().add(workflowInstanceNodeData);
     }
 
     private ExecutionStatus createExecutionStatus (String status){
        return status == null ? ExecutionStatus.UNKNOWN : ExecutionStatus.valueOf(status);
+    }
+
+    private String getStringValue (int parameterNumber,  ResultSet rs) throws SQLException {
+        Blob input = rs.getBlob(parameterNumber);
+        byte[] inputBytes = input.getBytes(1, (int) input.length());
+        String inputData = new String(inputBytes);
+        return inputData;
     }
 
     private Date getTime (String date) throws ParseException {
