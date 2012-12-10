@@ -144,9 +144,6 @@ public class HttpAuthenticatorFilter implements Filter {
 
     @Override
     public void destroy() {
-        if (this.authenticatorList != null) {
-            this.authenticatorList.clear();
-        }
 
         this.authenticatorList = null;
     }

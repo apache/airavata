@@ -84,7 +84,7 @@ public class UserWorkflowResourceClient {
         webResource = getUserWFRegistryBaseResource().path(
                 ResourcePathConstants.UserWFConstants.WORKFLOW_EXIST);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
-        queryParams.add("workflowname", workflowName);
+        queryParams.add("workflowName", workflowName);
         ClientResponse response = webResource.queryParams(queryParams).accept(
                 MediaType.TEXT_PLAIN).get(ClientResponse.class);
         int status = response.getStatus();

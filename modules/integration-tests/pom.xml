@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE file 
+    distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to you under 
+    the Apache License, Version 2.0 (theÏ "License"); you may not use this file except in compliance with the License. You may 
+    obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to 
+    in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF 
+    ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
+    the License. -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.apache.airavata</groupId>
+        <artifactId>airavata</artifactId>
+        <version>0.6-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>tomcat-distribution</artifactId>
+    <name>tomcat-distribution</name>
+    <url>http://airavata.apache.org/</url>
+    
+    <build>
+        <plugins>
+            <!--plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.4</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>unpack-tomcat</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.tomcat</groupId>
+                                    <artifactId>binary-distribution</artifactId>
+                                    <version>7.0.33</version>
+                                    <type>zip</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>target/tests</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin-->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>delete-tomcat-example</id>
+                        <phase>compile</phase>
+                        <configuration>
+                            <target>
+                                <get dest=".">
+                                    <url url="http://archive.apache.org/dist/tomcat/tomcat-${major.tomcat.version}/v${tomcat.version}/bin/apache-tomcat-${tomcat.version}.zip"/>
+                                </get>
+                                <unzip src="../distribution/airavata-server/target/apache-airavata-server-${project.version}-bin.zip" dest="target/tests"/>
+                                <unzip src="../distribution/xbaya-gui/target/apache-airavata-xbaya-gui-${project.version}-bin.zip" dest="target/tests"/>
+                                <unzip src="apache-tomcat-${tomcat.version}.zip" dest="target/tests"/>
+                                <delete dir="${tomcat.work.dir}/webapps/examples"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.4</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>unpack-axis2</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.axis2</groupId>
+                                    <artifactId>axis2-webapp</artifactId>
+                                    <version>${axis2.version}</version>
+                                    <type>war</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${tomcat.work.dir}/webapps/axis2</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-files</id>
+                        <phase>compile</phase>
+                        <configuration>
+                            <target>
+                                <copy todir="${tomcat.work.dir}/webapps/axis2/WEB-INF">
+                                    <fileset dir="${airavata.work.dir}/repository/"/>
+                                </copy>
+                                <copy todir="${tomcat.work.dir}/webapps/axis2/WEB-INF/lib">
+                                    <fileset dir="${airavata.work.dir}/lib/">
+                                            <exclude name="tomcat-*.jar"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${tomcat.work.dir}/webapps/axis2/WEB-INF/classes">
+                                    <fileset dir="${airavata.work.dir}/bin/">
+                                        <exclude name="axis2.xml"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${tomcat.work.dir}/webapps/axis2/WEB-INF/lib">
+                                    <fileset dir="${airavata.work.dir}/bin/">
+                                        <include name="*.properties"/>
+                                        <include name="authenticators.xml"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="src/test/resources" overwrite="true">
+                                    <fileset dir="${xbaya.work.dir}/bin/">
+                                        <include name="registry.properties"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${tomcat.work.dir}/webapps/axis2/WEB-INF/classes/database_scripts">
+                                    <fileset dir="${airavata.work.dir}/bin/database_scripts"/>
+                                </copy>
+                                <chmod dir="${tomcat.work.dir}/bin" perm="700"
+                                       includes="*.sh"/>
+                                <chmod dir="${tomcat.work.dir}/webapps/axis2" perm="700"
+                                       includes="**/*"/>
+                                <mkdir dir="${derby.work.dir}"/>
+                                <copy todir="${derby.work.dir}">
+                                    <fileset dir="${airavata.work.dir}/bin/">
+                                        <include name="derby.sh"/>
+                                        <include name="setenv.sh"/>
+                                        <include name="startNetworkServer"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${tomcat.work.dir}/webapps/axis2/WEB-INF/derby-bin">
+                                    <fileset dir="src/main/resources">
+                                        <include name="stop-derby.sh"/>
+                                    </fileset>
+                                </copy>
+                                <replace file="${derby.work.dir}/derby.sh">
+                                    <replacetoken>export DERBY_HOME=$AIRAVATA_HOME/standalone-server</replacetoken>
+                                    <replacevalue>export DERBY_HOME=..</replacevalue>
+                                </replace>
+                                <replace file="${derby.work.dir}/derby.sh">
+                                    <replacetoken>./startNetworkServer $*</replacetoken>
+                                    <replacevalue>./startNetworkServer $* &amp;</replacevalue>
+                                </replace>
+                                <replace file="${tomcat.work.dir}/conf/server.xml">
+                                    <replacetoken>8080</replacetoken>
+                                    <replacevalue>${test.running.port}</replacevalue>
+                                </replace>
+                                <chmod dir="${derby.work.dir}" perm="700"
+                                       includes="*"/>
+
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>start-derby</id>
+                        <phase>compile</phase>
+                        <configuration>
+                            <target>
+                                <exec dir="${derby.work.dir}" executable="./stop-derby.sh" output="derby-stop.txt" />
+                                <exec dir="${derby.work.dir}" executable="./derby.sh" output="derby-start.txt"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven2-plugin</artifactId>
+                <version>1.3.1</version>
+                <configuration>
+                    <!--wait>true</wait-->
+
+                    <container>
+                        <containerId>tomcat${major.tomcat.version}x</containerId>
+                        <type>installed</type>
+                        <home>${tomcat.work.dir}</home>
+                    </container>
+
+                    <configuration>
+                        <properties>
+                            <cargo.servlet.port>${test.running.port}</cargo.servlet.port>
+                            <cargo.tomcat.ajp.port>9009</cargo.tomcat.ajp.port>
+                            <cargo.rmi.port>9099</cargo.rmi.port>
+                            <!--cargo.jvmargs>
+                                -Xdebug
+                                -Xrunjdwp:transport=dt_socket,server=y,suspend=${cargo.debug.suspend},address=${cargo.debug.address}
+                                -Xnoagent
+                                -Djava.compiler=NONE
+                            </cargo.jvmargs-->
+                            <!--cargo.jvmargs>
+                                <![CDATA[-Xdebug -Xrunjdwp:transport=dt_socket,address=${cargo.debug.address},server=y,suspend=${cargo.debug.suspend} -noverify]]>
+                            </cargo.jvmargs-->
+                            <cargo.tomcat.context.reloadable>true</cargo.tomcat.context.reloadable>
+                        </properties>
+                        <type>existing</type>
+                        <home>${tomcat.work.dir}</home>
+
+                    </configuration>
+                    <deployables>
+                        <deployable>
+                            <groupId>org.apache.airavata</groupId>
+                            <artifactId>airavata-rest-services</artifactId>
+                            <type>war</type>
+                            <properties>
+                                <context>/${rest.service.context}</context>
+                            </properties>
+                        </deployable>
+                    </deployables>
+
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>start-container</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <!--goal>deployer-deploy</goal-->
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop-container</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <!--suiteXmlFiles>
+                        <suiteXmlFile>testng.xml</suiteXmlFile>
+                    </suiteXmlFiles-->
+                    <failIfNoTests>false</failIfNoTests>
+                    <systemPropertyVariables>
+                        <test.server.port>${test.running.port}</test.server.port>
+                        <test.server.url>localhost</test.server.url>
+                        <test.server.context>${rest.service.context}</test.server.context>
+                        <log4j.configuration>file:${basedir}/src/test/resources/log4j.properties</log4j.configuration>
+                        <property>
+                            <name>log4j.configuration</name>
+                            <value>file:target/test-classes/log4j.properties</value>
+                        </property>
+                    </systemPropertyVariables>
+
+                    <includes>
+                        <include>**/*IT.java</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>verify</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>stop-derby</id>
+                        <phase>install</phase>
+                        <configuration>
+                            <target>
+                                <exec dir="${derby.work.dir}" executable="./stop-derby.sh" output="derby-stop.txt" />
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>tomcat-zip</id>
+                        <phase>install</phase>
+                        <configuration>
+                            <target>
+                                <echo message="Creating airavata tomcat distribution. This may take a while ..."/>
+                                <sleep seconds="20"/>
+                                <zip destfile="${airavata.tomcat.distribution}"
+                                     basedir="${tomcat.work.dir}"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>distribution</artifactId>
+            <type>pom</type>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-rest-services</artifactId>
+            <type>war</type>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.axis2</groupId>
+            <artifactId>axis2-webapp</artifactId>
+            <version>${axis2.version}</version>
+            <type>war</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-rest-client</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-client-api</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-registry-api</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <archieve.name>apache-airavata</archieve.name>
+        <used.axis2.release>${axis2.version}</used.axis2.release>
+        <major.tomcat.version>7</major.tomcat.version>
+        <cargo.debug.address>8000</cargo.debug.address>
+        <cargo.debug.suspend>y</cargo.debug.suspend>
+        <test.running.port>8080</test.running.port>
+        <tomcat.work.dir>target/tests/apache-tomcat-${tomcat.version}</tomcat.work.dir>
+        <airavata.work.dir>target/tests/apache-airavata-server-${project.version}</airavata.work.dir>
+        <xbaya.work.dir>target/tests/apache-airavata-xbaya-gui-${project.version}</xbaya.work.dir>
+        <derby.work.dir>${tomcat.work.dir}/webapps/axis2/WEB-INF/derby-bin</derby.work.dir>
+        <airavata.tomcat.distribution>target/apache-airavata-tomcat.zip</airavata.tomcat.distribution>
+        <rest.service.context>airavata-registry</rest.service.context>
+    </properties>
+</project>

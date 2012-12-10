@@ -8,7 +8,7 @@ package org.apache.airavata.common.context;
  */
 public class WorkflowContext {
 
-    private static final ThreadLocal userThreadLocal = new ThreadLocal();
+    private static final ThreadLocal userThreadLocal = new InheritableThreadLocal();
 
     /**
      * Sets the context.
