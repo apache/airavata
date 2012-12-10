@@ -133,7 +133,7 @@ public class AiravataClient extends Observable implements AiravataAPI {
 
 	// private NameValue[] configurations = new NameValue[7];
 
-	private static final Version API_VERSION = new Version("Airavata", 0, 5,
+	private static final Version API_VERSION = new Version("Airavata", 0, 6,
 			null, null, null);
 
 	@Deprecated
