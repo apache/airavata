@@ -53,7 +53,13 @@ import org.apache.airavata.persistance.registry.jpa.resources.ServiceDescriptorR
 import org.apache.airavata.persistance.registry.jpa.resources.UserWorkflowResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkflowDataResource;
-import org.apache.airavata.registry.api.*;
+import org.apache.airavata.registry.api.AiravataExperiment;
+import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.AiravataUser;
+import org.apache.airavata.registry.api.Gateway;
+import org.apache.airavata.registry.api.PasswordCallback;
+import org.apache.airavata.registry.api.ResourceMetadata;
+import org.apache.airavata.registry.api.WorkspaceProject;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.UnimplementedRegistryOperationException;
 import org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException;
@@ -865,8 +871,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
     @Override
     public boolean isExperimentNameExist(String experimentName) throws RegistryException {
-        ExperimentDataRetriever experimentDataRetriever = new ExperimentDataRetriever();
-        return experimentDataRetriever.isExperimentNameExist(experimentName);
+        return (new ExperimentDataRetriever()).isExperimentNameExist(experimentName);
     }
 
 
@@ -876,8 +881,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		if (!isExperimentExists(experimentId)){
 			throw new ExperimentDoesNotExistsException(experimentId);
 		}
-        ExperimentDataRetriever experimentDataRetriever = new ExperimentDataRetriever();
-        return experimentDataRetriever.getExperimentName(experimentId);
+        return (new ExperimentDataRetriever()).getExperimentName(experimentId);
 	}
 
 
@@ -1150,9 +1154,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		if (!isExperimentExists(experimentId)){
 			throw new ExperimentDoesNotExistsException(experimentId);
 		}
-        ExperimentDataRetriever experimentDataRetriever = new ExperimentDataRetriever();
-        ExperimentData experimentData =  experimentDataRetriever.getExperiment(experimentId);
-        return experimentDataRetriever.getExperiment(experimentId);
+        return (new ExperimentDataRetriever()).getExperiment(experimentId);
 	}
 
 
@@ -1162,8 +1164,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         if(user == null){
             user = jpa.getWorker().getUser();
         }
-        ExperimentDataRetriever experimentDataRetriever = new ExperimentDataRetriever();
-        return experimentDataRetriever.getExperimentIdByUser(user);
+        return (new ExperimentDataRetriever()).getExperimentIdByUser(user);
 	}
 
 
@@ -1173,14 +1174,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         if(user == null){
             user = jpa.getWorker().getUser();
         }
-        ExperimentDataRetriever experimentDataRetriever = new ExperimentDataRetriever();
-        return experimentDataRetriever.getExperiments(user);
-//		List<String> experimentIdByUser = getExperimentIdByUser(user);
-//		List<ExperimentData> result=new ArrayList<ExperimentData>();
-//		for (String id : experimentIdByUser) {
-//			result.add(getExperiment(id));
-//		}
-//		return result;
+        return (new ExperimentDataRetriever()).getExperiments(user);
 	}
 
 
