@@ -388,7 +388,9 @@ public class ExperimentResourceClient {
             }
         }
         else {
-            return false;
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 
@@ -434,7 +436,9 @@ public class ExperimentResourceClient {
             }
         }
         else {
-            return false;
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 

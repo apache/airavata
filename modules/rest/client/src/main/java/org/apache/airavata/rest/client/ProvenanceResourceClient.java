@@ -190,7 +190,9 @@ public class ProvenanceResourceClient {
             }
         }
         else {
-            return false;
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 
@@ -487,7 +489,9 @@ public class ProvenanceResourceClient {
             }
         }
         else {
-            return false;
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 
@@ -525,7 +529,9 @@ public class ProvenanceResourceClient {
             }
         }
         else {
-            return false;
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 
@@ -1313,7 +1319,9 @@ public class ProvenanceResourceClient {
             }
         }
         else {
-            return false;
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 
@@ -1353,7 +1361,9 @@ public class ProvenanceResourceClient {
             }
         }
         else {
-            return false;
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 

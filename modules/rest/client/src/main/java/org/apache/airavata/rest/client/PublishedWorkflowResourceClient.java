@@ -86,7 +86,7 @@ public class PublishedWorkflowResourceClient {
         webResource = getPublishedWFRegistryBaseResource().path(
                 ResourcePathConstants.PublishedWFConstants.PUBLISHWF_EXIST);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
-        queryParams.add("workflowname", workflowName);
+        queryParams.add("workflowName", workflowName);
         ClientResponse response = webResource.queryParams(queryParams).accept(
                 MediaType.TEXT_PLAIN).get(ClientResponse.class);
         int status = response.getStatus();
@@ -116,7 +116,9 @@ public class PublishedWorkflowResourceClient {
             }
         }
         else {
-            return false;
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 

@@ -62,7 +62,7 @@ public class PublishWorkflowRegistryResource {
     @GET
     @Path(ResourcePathConstants.PublishedWFConstants.PUBLISHWF_EXIST)
     @Produces(MediaType.TEXT_PLAIN)
-    public Response isPublishedWorkflowExists(@QueryParam("workflowname") String workflowname) {
+    public Response isPublishedWorkflowExists(@QueryParam("workflowName") String workflowname) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             boolean workflowExists = airavataRegistry.isPublishedWorkflowExists(workflowname);

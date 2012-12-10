@@ -112,9 +112,10 @@ public class UserWorkflowResourceClient {
             } else {
                 return false;
             }
-        }
-        else {
-            return false;
+        }else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 
