@@ -208,17 +208,19 @@ public class HostDescriptorResource extends AbstractResource {
             em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
             Host_Descriptor hostDescriptor = new Host_Descriptor();
-            Gateway gateway = new Gateway();
-            gateway.setGateway_name(gatewayName);
-            Users user = new Users();
-            user.setUser_name(userName);
+            Gateway existingGateway = em.find(Gateway.class, gatewayName);
+            Users existingUser = em.find(Users.class, userName);
+//            Gateway gateway = new Gateway();
+//            gateway.setGateway_name(gatewayName);
+//            Users user = new Users();
+//            user.setUser_name(userName);
             hostDescriptor.setHost_descriptor_ID(getHostDescName());
-            hostDescriptor.setGateway(gateway);
+            hostDescriptor.setGateway(existingGateway);
             byte[] contentBytes = content.getBytes();
             hostDescriptor.setHost_descriptor_xml(contentBytes);
-            hostDescriptor.setUser(user);
+            hostDescriptor.setUser(existingUser);
             if (existingHost_desc != null) {
-                existingHost_desc.setUser(user);
+                existingHost_desc.setUser(existingUser);
                 existingHost_desc.setHost_descriptor_xml(contentBytes);
                 hostDescriptor = em.merge(existingHost_desc);
             } else {
