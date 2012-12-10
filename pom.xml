@@ -427,7 +427,7 @@
 		<module>modules/server</module>
                 <module>modules/distribution</module>
                 <module>modules/test-suite</module>
-                <module>modules/integration-tests</module>
+                <!--module>modules/integration-tests</module-->
             </modules>
         </profile>
     </profiles>
