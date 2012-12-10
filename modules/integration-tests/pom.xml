@@ -277,7 +277,7 @@
                         <log4j.configuration>file:${basedir}/src/test/resources/log4j.properties</log4j.configuration>
                         <property>
                             <name>log4j.configuration</name>
-                            <value>file:target/test-classes/log4j.properties</value>
+                            <value>file:${project.build.directory}/test-classes/log4j.properties</value>
                         </property>
                     </systemPropertyVariables>
 
@@ -432,11 +432,11 @@
         <cargo.debug.address>8000</cargo.debug.address>
         <cargo.debug.suspend>y</cargo.debug.suspend>
         <test.running.port>8080</test.running.port>
-        <tomcat.work.dir>target/tests/apache-tomcat-${tomcat.version}</tomcat.work.dir>
-        <airavata.work.dir>target/tests/apache-airavata-server-${project.version}</airavata.work.dir>
-        <xbaya.work.dir>target/tests/apache-airavata-xbaya-gui-${project.version}</xbaya.work.dir>
+        <tomcat.work.dir>${project.build.directory}/tests/apache-tomcat-${tomcat.version}</tomcat.work.dir>
+        <airavata.work.dir>${project.build.directory}/tests/apache-airavata-server-${project.version}</airavata.work.dir>
+        <xbaya.work.dir>${project.build.directory}/tests/apache-airavata-xbaya-gui-${project.version}</xbaya.work.dir>
         <derby.work.dir>${tomcat.work.dir}/webapps/axis2/WEB-INF/derby-bin</derby.work.dir>
-        <airavata.tomcat.distribution>target/apache-airavata-tomcat.zip</airavata.tomcat.distribution>
+        <airavata.tomcat.distribution>${project.build.directory}/apache-airavata-tomcat.zip</airavata.tomcat.distribution>
         <rest.service.context>airavata-registry</rest.service.context>
     </properties>
 </project>
