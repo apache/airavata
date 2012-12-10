@@ -136,9 +136,13 @@ public class ExperimentDataRetriever {
 
     private String getStringValue (int parameterNumber,  ResultSet rs) throws SQLException {
         Blob input = rs.getBlob(parameterNumber);
-        byte[] inputBytes = input.getBytes(1, (int) input.length());
-        String inputData = new String(inputBytes);
-        return inputData;
+        if (input != null){
+            byte[] inputBytes = input.getBytes(1, (int) input.length());
+            String inputData = new String(inputBytes);
+            return inputData;
+        }
+        return null;
+
     }
 
     private Date getTime (String date) throws ParseException {
