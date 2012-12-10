@@ -92,7 +92,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     private JPAResourceAccessor jpa;
     private boolean active=false;
     private static final String DEFAULT_PROJECT_NAME = "default";
-    private static final Version API_VERSION=new Version("Airavata Registry API",0,5,null,null,null);
+    private static final Version API_VERSION=new Version("Airavata Registry API",0,6,null,null,null);
     private URI registryConnectionURI;
 
     private PasswordCallback callback;
