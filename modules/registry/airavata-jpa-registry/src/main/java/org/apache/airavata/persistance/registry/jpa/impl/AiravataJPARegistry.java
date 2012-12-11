@@ -68,27 +68,11 @@ import org.apache.airavata.registry.api.exception.gateway.InsufficientDataExcept
 import org.apache.airavata.registry.api.exception.gateway.MalformedDescriptorException;
 import org.apache.airavata.registry.api.exception.gateway.PublishedWorkflowAlreadyExistsException;
 import org.apache.airavata.registry.api.exception.gateway.PublishedWorkflowDoesNotExistsException;
-import org.apache.airavata.registry.api.exception.worker.ExperimentDoesNotExistsException;
-import org.apache.airavata.registry.api.exception.worker.UserWorkflowAlreadyExistsException;
-import org.apache.airavata.registry.api.exception.worker.UserWorkflowDoesNotExistsException;
-import org.apache.airavata.registry.api.exception.worker.WorkflowInstanceAlreadyExistsException;
-import org.apache.airavata.registry.api.exception.worker.WorkflowInstanceDoesNotExistsException;
-import org.apache.airavata.registry.api.exception.worker.WorkflowInstanceNodeAlreadyExistsException;
-import org.apache.airavata.registry.api.exception.worker.WorkflowInstanceNodeDoesNotExistsException;
-import org.apache.airavata.registry.api.exception.worker.WorkspaceProjectAlreadyExistsException;
-import org.apache.airavata.registry.api.exception.worker.WorkspaceProjectDoesNotExistsException;
-import org.apache.airavata.registry.api.workflow.ExperimentData;
-import org.apache.airavata.registry.api.workflow.WorkflowIOData;
-import org.apache.airavata.registry.api.workflow.WorkflowInstance;
+import org.apache.airavata.registry.api.exception.worker.*;
+import org.apache.airavata.registry.api.impl.WorkflowInstanceDataImpl;
+import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeData;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeStatus;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
-import org.apache.airavata.registry.api.workflow.WorkflowNodeGramData;
-import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
-import org.apache.airavata.registry.api.workflow.WorkflowNodeType;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1288,16 +1272,23 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		if (!isWorkflowInstanceExists(workflowInstanceId,true)){
 			throw new WorkflowInstanceDoesNotExistsException(workflowInstanceId);
 		}
-		WorkflowDataResource resource = jpa.getWorker().getWorkflowInstance(workflowInstanceId);
-		WorkflowInstance workflowInstance = new WorkflowInstance(resource.getExperimentID(), resource.getWorkflowInstanceID());
-        workflowInstance.setTemplateName(resource.getTemplateName());
-		WorkflowInstanceData workflowInstanceData = new WorkflowInstanceData(null, workflowInstance, new WorkflowInstanceStatus(workflowInstance, resource.getStatus()==null? null:ExecutionStatus.valueOf(resource.getStatus()),resource.getLastUpdatedTime()), null);
-		List<NodeDataResource> nodeData = resource.getNodeData();
-		for (NodeDataResource nodeDataResource : nodeData) {
-			workflowInstanceData.getNodeDataList().add(getWorkflowInstanceNodeData(workflowInstanceId, nodeDataResource.getNodeID()));
-		}
-		return workflowInstanceData;
-	}
+		try{
+            WorkflowDataResource resource = jpa.getWorker().getWorkflowInstance(workflowInstanceId);
+            WorkflowInstance workflowInstance = new WorkflowInstance(resource.getExperimentID(), resource.getWorkflowInstanceID());
+            workflowInstance.setTemplateName(resource.getTemplateName());
+            ExperimentData experimentData = getExperiment(workflowInstanceId);
+//            WorkflowInstanceData workflowInstanceData = experimentData.getWorkflowInstance(workflowInstanceId);
+            WorkflowInstanceData workflowInstanceData = new WorkflowInstanceDataImpl(null, workflowInstance, new WorkflowInstanceStatus(workflowInstance, resource.getStatus()==null? null:ExecutionStatus.valueOf(resource.getStatus()),resource.getLastUpdatedTime()), null);
+            List<NodeDataResource> nodeData = resource.getNodeData();
+            for (NodeDataResource nodeDataResource : nodeData) {
+                workflowInstanceData.getNodeDataList().add(getWorkflowInstanceNodeData(workflowInstanceId, nodeDataResource.getNodeID()));
+            }
+            return workflowInstanceData;
+        } catch (ExperimentLazyLoadedException e) {
+            throw new RegistryException(e);
+        }
+
+    }
 
 
 	@Override

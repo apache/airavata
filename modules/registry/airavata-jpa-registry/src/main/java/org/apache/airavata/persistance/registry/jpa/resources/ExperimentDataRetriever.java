@@ -23,6 +23,7 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 
 import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
 import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
+import org.apache.airavata.registry.api.impl.WorkflowInstanceDataImpl;
 import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
 import org.slf4j.Logger;
@@ -112,7 +113,7 @@ public class ExperimentDataRetriever {
             workflowInstances.add(workflowInstance);
             Date lastUpdateDate = getTime(rs.getString(9));
             String wdStatus = rs.getString(7);
-            workflowInstanceData = new WorkflowInstanceData(null,
+            workflowInstanceData = new WorkflowInstanceDataImpl(null,
                     workflowInstance, new WorkflowInstanceStatus(workflowInstance,
                     createExecutionStatus(wdStatus),lastUpdateDate), null);
             workflowInstanceData.setExperimentData((ExperimentDataImpl)experimentData);

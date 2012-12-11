@@ -25,18 +25,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.workflow.ExperimentData;
-import org.apache.airavata.registry.api.workflow.WorkflowIOData;
-import org.apache.airavata.registry.api.workflow.WorkflowInstance;
+import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeData;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeStatus;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
-import org.apache.airavata.registry.api.workflow.WorkflowNodeType;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
-import org.apache.airavata.registry.api.workflow.WorkflowNodeGramData;
-import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
 
 public interface ProvenanceRegistry extends AiravataSubRegistry{
 

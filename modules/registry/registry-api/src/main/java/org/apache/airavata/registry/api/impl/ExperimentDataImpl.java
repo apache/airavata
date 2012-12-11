@@ -22,14 +22,12 @@
 package org.apache.airavata.registry.api.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
-import org.apache.airavata.registry.api.workflow.ExperimentData;
-import org.apache.airavata.registry.api.workflow.WorkflowIOData;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
-import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
+import org.apache.airavata.registry.api.workflow.*;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -64,7 +62,38 @@ public class ExperimentDataImpl implements ExperimentData{
 	public String getExperimentId() {
 		return experimentId;
 	}
-	public void setExperimentId(String experimentId) {
+
+    @Override
+    public String getWorkflowInstanceId() throws ExperimentLazyLoadedException {
+           return getWorkflowInstanceData().get(0).getWorkflowInstanceId();
+    }
+
+    @Override
+    public String getTemplateName() throws ExperimentLazyLoadedException {
+        return getWorkflowInstanceData().get(0).getTemplateName();
+    }
+
+    @Override
+    public WorkflowInstanceStatus.ExecutionStatus getStatus() throws ExperimentLazyLoadedException {
+        return getWorkflowInstanceData().get(0).getStatus();
+    }
+
+    @Override
+    public Date getStatusUpdateTime() throws ExperimentLazyLoadedException {
+        return getWorkflowInstanceData().get(0).getStatusUpdateTime();
+    }
+
+    @Override
+    public ExperimentDataImpl getExperimentData() throws ExperimentLazyLoadedException {
+        return getWorkflowInstanceData().get(0).getExperimentData();
+    }
+
+    @Override
+    public void setExperimentData(ExperimentDataImpl experimentData) throws ExperimentLazyLoadedException {
+        getWorkflowInstanceData().get(0).setExperimentData(experimentData);
+    }
+
+    public void setExperimentId(String experimentId) {
 		this.experimentId = experimentId;
 	}
 	public String getTopic() {
@@ -147,4 +176,24 @@ public class ExperimentDataImpl implements ExperimentData{
 	public void setLazyLoaded(boolean lazyLoaded) {
 		this.lazyLoaded = lazyLoaded;
 	}
+
+    @Override
+    public WorkflowInstance getWorkflowInstance() throws ExperimentLazyLoadedException{
+        return getWorkflowInstanceData().get(0).getWorkflowInstance();
+    }
+
+    @Override
+    public List<WorkflowInstanceNodeData> getNodeDataList() throws ExperimentLazyLoadedException{
+        return getWorkflowInstanceData().get(0).getNodeDataList();
+    }
+
+    @Override
+    public void addNodeData(WorkflowInstanceNodeData... nodeData) throws ExperimentLazyLoadedException {
+        getNodeDataList().addAll(Arrays.asList(nodeData));
+    }
+
+    @Override
+    public WorkflowInstanceNodeData getNodeData(String nodeId) throws ExperimentLazyLoadedException {
+        return getWorkflowInstanceData().get(0).getNodeData(nodeId);
+    }
 }
