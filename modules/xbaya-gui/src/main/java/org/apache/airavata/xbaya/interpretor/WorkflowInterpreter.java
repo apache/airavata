@@ -46,7 +46,10 @@ import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.registry.api.workflow.WorkflowInstance;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeType;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.amazon.InstanceComponent;
 import org.apache.airavata.workflow.model.component.amazon.TerminateInstanceComponent;
@@ -182,6 +185,13 @@ public class WorkflowInterpreter {
 				notifyViaInteractor(WorkflowExecutionMessage.NODE_STATE_CHANGED, null);
 				keywords[i] = ((InputNode) node).getName();
 				values[i] = ((InputNode) node).getDefaultValue();
+                //Saving workflow input Node data before running the workflow
+                WorkflowNodeType workflowNodeType = new WorkflowNodeType();
+                workflowNodeType.setNodeType(WorkflowNodeType.WorkflowNode.INPUTNODE);
+                WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(new WorkflowInstance(getConfig().getTopic(),
+                        getConfig().getTopic()), node.getID());
+                this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager().setWorkflowInstanceNodeInput(workflowInstanceNode, (String)values[i]);
+                this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager().setWorkflowNodeType(workflowInstanceNode, workflowNodeType);
 			}
 			this.config.getNotifier().workflowStarted(values, keywords);
 			while (this.getWorkflow().getExecutionState() != WorkflowExecutionState.STOPPED) {
@@ -206,9 +216,9 @@ public class WorkflowInterpreter {
 					if (this.getWorkflow().getExecutionState() == WorkflowExecutionState.PAUSED
 							|| this.getWorkflow().getExecutionState() == WorkflowExecutionState.STOPPED) {
 						break;
-						// stop executing and sleep in the outer loop cause we
-						// want
-						// recalculate the execution stack
+//						// stop executing and sleep in the outer loop cause we
+//						// want
+//						// recalculate the execution stack
 					}
 					executeDynamically(node);
 					if (this.getWorkflow().getExecutionState() == WorkflowExecutionState.STEP) {
@@ -287,8 +297,10 @@ public class WorkflowInterpreter {
             this.config.getNotifier().workflowFailed(e.getMessage());
 			this.getWorkflow().setExecutionState(WorkflowExecutionState.NONE);
 			raiseException(e);
-		}
-	}
+		} catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
 
 	/**
 	 * @param node
