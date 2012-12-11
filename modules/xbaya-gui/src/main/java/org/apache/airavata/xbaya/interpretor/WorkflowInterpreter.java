@@ -397,7 +397,7 @@ public class WorkflowInterpreter {
 		notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_CLEANUP, null);
 	}
 
-	private void sendOutputsDynamically() throws WorkflowException {
+	private void sendOutputsDynamically() throws WorkflowException, AiravataAPIInvocationException {
 		ArrayList<Node> outputNodes = getReadyOutputNodesDynamically();
 		if (outputNodes.size() != 0) {
 			LinkedList<Object> outputValues = new LinkedList<Object>();
@@ -423,6 +423,12 @@ public class WorkflowInterpreter {
 					} else {
 						((OutputNode) node).setDescription(val.toString());
 					}
+                    // Saving output Node data in to database
+                    WorkflowNodeType workflowNodeType = new WorkflowNodeType();
+                    workflowNodeType.setNodeType(WorkflowNodeType.WorkflowNode.OUTPUTNODE);
+                    WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(new WorkflowInstance(config.getTopic(), config.getTopic()), node.getID());
+                    this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager().setWorkflowInstanceNodeOutput(workflowInstanceNode, ((OutputNode) node).getDescription());
+                    this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager().setWorkflowNodeType(workflowInstanceNode, workflowNodeType);
 
 					if (this.config.isActOnProvenance()) {
 						try {
