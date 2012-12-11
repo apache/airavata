@@ -22,9 +22,14 @@ package org.apache.airavata.registry.api.workflow;/*
 import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
 import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 import java.util.List;
 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public interface WorkflowInstanceData {
     public WorkflowInstance getWorkflowInstance() throws ExperimentLazyLoadedException;
     public List<WorkflowInstanceNodeData> getNodeDataList() throws ExperimentLazyLoadedException;

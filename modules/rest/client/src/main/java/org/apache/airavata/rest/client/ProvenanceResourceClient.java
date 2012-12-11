@@ -30,6 +30,7 @@ import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
+import org.apache.airavata.registry.api.impl.WorkflowInstanceDataImpl;
 import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.rest.mappings.resourcemappings.ExperimentDataList;
 import org.apache.airavata.rest.mappings.resourcemappings.ExperimentIDList;
@@ -1282,7 +1283,7 @@ public class ProvenanceResourceClient {
             }
         }
 
-        WorkflowInstanceData workflowInstanceData = response.getEntity(WorkflowInstanceData.class);
+        WorkflowInstanceDataImpl workflowInstanceData = response.getEntity(WorkflowInstanceDataImpl.class);
         return workflowInstanceData;
     }
 

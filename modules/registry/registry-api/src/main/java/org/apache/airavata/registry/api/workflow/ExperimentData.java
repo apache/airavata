@@ -24,6 +24,7 @@ package org.apache.airavata.registry.api.workflow;
 import java.util.List;
 
 import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
+import org.apache.airavata.registry.api.impl.WorkflowInstanceDataImpl;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -45,7 +46,7 @@ public interface ExperimentData extends WorkflowInstanceData {
 //	public WorkflowIOData getOutput(String nodeId);
 	public String getMetadata();
 	public String getExperimentName();
-	public List<WorkflowInstanceData> getWorkflowInstanceData() throws ExperimentLazyLoadedException;
+	public List<WorkflowInstanceDataImpl> getWorkflowInstanceData() throws ExperimentLazyLoadedException;
 	
 	public void setExperimentId(String experimentId);
 	public void setTopic(String topic);

@@ -104,7 +104,7 @@ public class ExperimentDataRetriever {
     private void fillWorkflowInstanceData (ExperimentData experimentData,
                                                            ResultSet rs,
                                                            List<WorkflowInstance> workflowInstances) throws SQLException, ExperimentLazyLoadedException, ParseException {
-        WorkflowInstanceData workflowInstanceData = experimentData.getWorkflowInstance(rs.getString(5));
+        WorkflowInstanceDataImpl workflowInstanceData = (WorkflowInstanceDataImpl)experimentData.getWorkflowInstance(rs.getString(5));
         if (workflowInstanceData == null){
             WorkflowInstance workflowInstance = new WorkflowInstance(experimentData.getExperimentId(), rs.getString(5));
             workflowInstance.setTemplateName(rs.getString(6));
