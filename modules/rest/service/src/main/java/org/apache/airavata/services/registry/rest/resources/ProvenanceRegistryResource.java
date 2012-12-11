@@ -23,6 +23,7 @@ package org.apache.airavata.services.registry.rest.resources;
 
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
 import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
 import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.rest.mappings.resourcemappings.ExperimentDataList;
@@ -473,6 +474,10 @@ public class ProvenanceRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } catch (ExperimentLazyLoadedException e) {
+            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+            builder.entity(e.getMessage());
+            return builder.build();
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -538,6 +543,10 @@ public class ProvenanceRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } catch (ExperimentLazyLoadedException e) {
+            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+            builder.entity(e.getMessage());
+            return builder.build();
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -569,6 +578,10 @@ public class ProvenanceRegistryResource {
             builder.entity("Workflow node output saved successfully...");
             return builder.build();
         } catch (RegistryException e) {
+            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+            builder.entity(e.getMessage());
+            return builder.build();
+        } catch (ExperimentLazyLoadedException e) {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
@@ -910,6 +923,10 @@ public class ProvenanceRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } catch (ExperimentLazyLoadedException e) {
+            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+            builder.entity(e.getMessage());
+            return builder.build();
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -946,6 +963,10 @@ public class ProvenanceRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
+        } catch (ExperimentLazyLoadedException e) {
+            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+            builder.entity(e.getMessage());
+            return builder.build();
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -977,6 +998,10 @@ public class ProvenanceRegistryResource {
                 return builder.build();
             }
         } catch (RegistryException e) {
+            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+            builder.entity(e.getMessage());
+            return builder.build();
+        } catch (ExperimentLazyLoadedException e) {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
@@ -1220,6 +1245,10 @@ public class ProvenanceRegistryResource {
             builder.entity("Workflow instance node type updated successfully...");
             return builder.build();
         } catch (RegistryException e) {
+            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+            builder.entity(e.getMessage());
+            return builder.build();
+        } catch (ExperimentLazyLoadedException e) {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();

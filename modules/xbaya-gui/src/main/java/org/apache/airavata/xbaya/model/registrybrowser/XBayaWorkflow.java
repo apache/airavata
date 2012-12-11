@@ -26,8 +26,8 @@ import java.util.List;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
-import org.apache.airavata.registry.api.exception.RegistryException;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
 import org.apache.airavata.registry.api.workflow.WorkflowInstance;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeData;
@@ -53,8 +53,10 @@ public class XBayaWorkflow {
 				}
 			} catch (AiravataAPIInvocationException e) {
 				e.printStackTrace();
-			}
-		}
+			} catch (ExperimentLazyLoadedException e) {
+                e.printStackTrace();
+            }
+        }
 		return workflowServices;
 	}
 

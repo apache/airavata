@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public interface ExperimentData {
+public interface ExperimentData extends WorkflowInstanceData {
 
 	public String getExperimentId();
 	public String getTopic();
