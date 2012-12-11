@@ -42,7 +42,7 @@ public class ExperimentDataImpl implements ExperimentData{
 	private String experimentId;
 	private String metadata;
 	private String workflowInstanceName;
-	private List<WorkflowInstanceData> workflowInstanceDataList=new ArrayList<WorkflowInstanceData>();
+	private List<WorkflowInstanceDataImpl> workflowInstanceDataList=new ArrayList<WorkflowInstanceDataImpl>();
 	private boolean lazyLoaded=false;
 
     public ExperimentDataImpl() {
@@ -162,7 +162,7 @@ public class ExperimentDataImpl implements ExperimentData{
     }
 
     @Override
-	public List<WorkflowInstanceData> getWorkflowInstanceData() throws ExperimentLazyLoadedException{
+	public List<WorkflowInstanceDataImpl> getWorkflowInstanceData() throws ExperimentLazyLoadedException{
 		if (isLazyLoaded()){
 			throw new ExperimentLazyLoadedException(getExperimentId());
 		}

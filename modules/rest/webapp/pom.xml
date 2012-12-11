@@ -204,7 +204,7 @@
 	<properties>
 		<jersey.version>1.13</jersey.version>
 		<grizzly.version>2.0.0-M3</grizzly.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!--project.build.sourceEncoding>UTF-8</project.build.sourceEncoding-->
 		<cargo.version>1.2.1</cargo.version>
 		<!-- if you want a remote debugging on a different a address override on 
 			command line with -Dcargo.debug.addres=xxxx -->

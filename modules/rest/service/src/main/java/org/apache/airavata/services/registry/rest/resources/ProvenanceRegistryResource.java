@@ -25,6 +25,7 @@ import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
 import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
+import org.apache.airavata.registry.api.impl.WorkflowInstanceDataImpl;
 import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.rest.mappings.resourcemappings.ExperimentDataList;
 import org.apache.airavata.rest.mappings.resourcemappings.ExperimentIDList;
@@ -459,7 +460,8 @@ public class ProvenanceRegistryResource {
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date formattedDate = dateFormat.parse(statusUpdateTime);
-            WorkflowInstance workflowInstance = airavataRegistry.getWorkflowInstanceData(workflowInstanceId).getWorkflowInstance();
+            WorkflowInstanceDataImpl workflowInstanceData = (WorkflowInstanceDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
+            WorkflowInstance workflowInstance = workflowInstanceData.getWorkflowInstance();
             WorkflowInstanceStatus.ExecutionStatus status = WorkflowInstanceStatus.ExecutionStatus.valueOf(executionStatus);
             WorkflowInstanceStatus workflowInstanceStatus = new WorkflowInstanceStatus(workflowInstance, status, formattedDate);
             airavataRegistry.updateWorkflowInstanceStatus(workflowInstanceStatus);
@@ -471,10 +473,6 @@ public class ProvenanceRegistryResource {
             builder.entity(e.getMessage());
             return builder.build();
         } catch (ParseException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
-        } catch (ExperimentLazyLoadedException e) {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
@@ -533,7 +531,7 @@ public class ProvenanceRegistryResource {
                                             @FormParam("data") String data) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            WorkflowInstanceData workflowInstanceData = airavataRegistry.getWorkflowInstanceData(workflowInstanceID);
+            WorkflowInstanceDataImpl workflowInstanceData = (WorkflowInstanceDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceID);
             WorkflowInstanceNode workflowInstanceNode = workflowInstanceData.getNodeData(nodeID).getWorkflowInstanceNode();
             airavataRegistry.updateWorkflowNodeInput(workflowInstanceNode, data);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -543,11 +541,7 @@ public class ProvenanceRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
-        } catch (ExperimentLazyLoadedException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
-        } finally {
+        }  finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
@@ -571,17 +565,13 @@ public class ProvenanceRegistryResource {
                                              @FormParam("data") String data) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            WorkflowInstanceData workflowInstanceData = airavataRegistry.getWorkflowInstanceData(workflowInstanceID);
+            WorkflowInstanceDataImpl workflowInstanceData = (WorkflowInstanceDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceID);
             WorkflowInstanceNode workflowInstanceNode = workflowInstanceData.getNodeData(nodeID).getWorkflowInstanceNode();
             airavataRegistry.updateWorkflowNodeOutput(workflowInstanceNode, data);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Workflow node output saved successfully...");
             return builder.build();
         } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
-        } catch (ExperimentLazyLoadedException e) {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
@@ -908,7 +898,7 @@ public class ProvenanceRegistryResource {
                                           @QueryParam("nodeId") String nodeId) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            WorkflowInstanceData workflowInstanceData = airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
+            WorkflowInstanceDataImpl workflowInstanceData = (WorkflowInstanceDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
             WorkflowInstanceNode workflowInstanceNode = workflowInstanceData.getNodeData(nodeId).getWorkflowInstanceNode();
             WorkflowInstanceNodeStatus workflowNodeStatus = airavataRegistry.getWorkflowNodeStatus(workflowInstanceNode);
             if (workflowNodeStatus != null) {
@@ -920,10 +910,6 @@ public class ProvenanceRegistryResource {
                 return builder.build();
             }
         } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
-        } catch (ExperimentLazyLoadedException e) {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
@@ -948,7 +934,7 @@ public class ProvenanceRegistryResource {
                                              @QueryParam("nodeId") String nodeId) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            WorkflowInstanceData workflowInstanceData = airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
+            WorkflowInstanceDataImpl workflowInstanceData = (WorkflowInstanceDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
             WorkflowInstanceNode workflowInstanceNode = workflowInstanceData.getNodeData(nodeId).getWorkflowInstanceNode();
             Date workflowNodeStartTime = airavataRegistry.getWorkflowNodeStartTime(workflowInstanceNode);
             if (workflowNodeStartTime != null) {
@@ -960,10 +946,6 @@ public class ProvenanceRegistryResource {
                 return builder.build();
             }
         } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
-        } catch (ExperimentLazyLoadedException e) {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
@@ -986,7 +968,7 @@ public class ProvenanceRegistryResource {
     public Response getWorkflowStartTime(@QueryParam("workflowInstanceId") String workflowInstanceId) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            WorkflowInstanceData workflowInstanceData = airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
+            WorkflowInstanceDataImpl workflowInstanceData = (WorkflowInstanceDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
             WorkflowInstance workflowInstance = workflowInstanceData.getWorkflowInstance();
             Date workflowStartTime = airavataRegistry.getWorkflowStartTime(workflowInstance);
             if (workflowStartTime != null) {
@@ -998,10 +980,6 @@ public class ProvenanceRegistryResource {
                 return builder.build();
             }
         } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
-        } catch (ExperimentLazyLoadedException e) {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
@@ -1053,7 +1031,7 @@ public class ProvenanceRegistryResource {
     public Response getWorkflowInstanceData(@QueryParam("workflowInstanceId") String workflowInstanceId) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            WorkflowInstanceData workflowInstanceData = airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
+            WorkflowInstanceDataImpl workflowInstanceData = (WorkflowInstanceDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
             if (workflowInstanceData != null) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity(workflowInstanceData);
@@ -1231,8 +1209,9 @@ public class ProvenanceRegistryResource {
                                            @FormParam("nodeType") String nodeType) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
+            WorkflowInstanceDataImpl workflowInstanceData = (WorkflowInstanceDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
             WorkflowInstanceNodeData workflowInstanceNodeData =
-                    airavataRegistry.getWorkflowInstanceData(workflowInstanceId).getNodeData(nodeId);
+                    workflowInstanceData.getNodeData(nodeId);
             WorkflowInstanceNode workflowInstanceNode =
                     workflowInstanceNodeData.getWorkflowInstanceNode();
             WorkflowNodeType workflowNodeType = new WorkflowNodeType();
@@ -1245,10 +1224,6 @@ public class ProvenanceRegistryResource {
             builder.entity("Workflow instance node type updated successfully...");
             return builder.build();
         } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
-        } catch (ExperimentLazyLoadedException e) {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
