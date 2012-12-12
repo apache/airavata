@@ -21,6 +21,8 @@
 
 package org.apache.airavata.xbaya.registrybrowser.nodes;
 
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,9 +32,12 @@ import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.workflow.ExperimentName;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
 import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflowExperiment;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
+import org.apache.airavata.xbaya.ui.actions.registry.browser.CopyAction;
+import org.apache.airavata.xbaya.ui.actions.registry.browser.DeleteAction;
 
 public class XBayaWorkflowExperimentNode extends AbstractAiravataTreeNode {
 	private XBayaWorkflowExperiment experiment;
@@ -82,15 +87,37 @@ public class XBayaWorkflowExperimentNode extends AbstractAiravataTreeNode {
 
     @Override
     public List<String> getSupportedActions() {
-        return Arrays.asList();
+        return Arrays.asList(CopyAction.ID);
     }
 
     public boolean triggerAction(JTree tree, String action) throws Exception {
+        if (action.equals(CopyAction.ID)) {
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(getExperimentInfo()), null);
+        }
         return super.triggerAction(tree, action);
+    }
+
+    private String getExperimentName (){
+        String experimentId = getExperiment().getExperimentId();
+        try {
+            ExperimentName experimentName = getExperiment().getAiravataAPI().getProvenanceManager().getExperimentName(experimentId);
+            return experimentName.getInstanceName();
+        } catch (AiravataAPIInvocationException e) {
+            return null;
+        }
+    }
+
+    private String getExperimentInfo (){
+        String experimetName = getExperimentName();
+        String experimetID = getExperiment().getExperimentId();
+        return "[Experiment Name = " + experimetName + ", Experiment ID = " + experimetID + "]";
     }
 
     @Override
     public String getActionCaption(AbstractBrowserActionItem action) {
+        if (action.getID().equals(CopyAction.ID)) {
+            return "Copy Experiment Info to clipboard";
+        }
         return action.getDefaultCaption();
     }
 
