@@ -21,6 +21,8 @@
 
 package org.apache.airavata.xbaya.registrybrowser.nodes;
 
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,6 +32,7 @@ import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflow;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
+import org.apache.airavata.xbaya.ui.actions.registry.browser.CopyAction;
 
 public class XBayaWorkflowNode extends AbstractAiravataTreeNode {
     private XBayaWorkflow xbayaWorkflow;
@@ -68,15 +71,27 @@ public class XBayaWorkflowNode extends AbstractAiravataTreeNode {
 
     @Override
     public List<String> getSupportedActions() {
-        return Arrays.asList();
+        return Arrays.asList(CopyAction.ID);
     }
 
     public boolean triggerAction(JTree tree, String action) throws Exception {
+        if (action.equals(CopyAction.ID)) {
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(getWorkflowInfo()), null);
+        }
         return super.triggerAction(tree, action);
+    }
+
+    private String getWorkflowInfo (){
+        String workflowName = getXbayaWorkflow().getWorkflowName();
+        String workflowId = getXbayaWorkflow().getWorkflowId();
+        return "[Worklfow Name = " + workflowName + ", Workflow Instance ID = " + workflowId + "]";
     }
 
     @Override
     public String getActionCaption(AbstractBrowserActionItem action) {
+        if (action.getID().equals(CopyAction.ID)) {
+            return "Copy Workflow Info to clipboard";
+        }
         return action.getDefaultCaption();
     }
 
