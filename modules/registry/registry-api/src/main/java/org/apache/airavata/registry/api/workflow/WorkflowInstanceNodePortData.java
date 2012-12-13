@@ -69,4 +69,21 @@ public class WorkflowInstanceNodePortData {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	public String getId(){
+		return getName();
+	}
+	
+
+    public String getExperimentId(){
+    	return getWorkflowInstanceNode().getWorkflowInstance().getExperimentId();
+    }
+    
+    public String getWorkflowInstanceId(){
+    	return getWorkflowInstanceNode().getWorkflowInstance().getWorkflowInstanceId();
+    }
+    
+    public String getWorkflowInstanceNodeId(){
+    	return getWorkflowInstanceNode().getNodeId();
+    }
 }
