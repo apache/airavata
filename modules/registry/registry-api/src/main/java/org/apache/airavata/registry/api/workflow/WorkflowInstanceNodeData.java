@@ -155,4 +155,8 @@ public class WorkflowInstanceNodeData{
     public void setType(WorkflowNodeType.WorkflowNode type) {
         this.type = type;
     }
+    public String getId(){
+    	return getWorkflowInstanceNode().getNodeId();
+    }
+
 }

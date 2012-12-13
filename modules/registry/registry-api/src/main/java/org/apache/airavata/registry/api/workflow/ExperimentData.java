@@ -61,4 +61,5 @@ public interface ExperimentData extends WorkflowInstanceData {
 	public void setMetadata(String metadata);
 	public void setExperimentName(String experimentName);
     public WorkflowInstanceData getWorkflowInstance(String workflowInstanceID) throws ExperimentLazyLoadedException;
+    public String getId();
 }
