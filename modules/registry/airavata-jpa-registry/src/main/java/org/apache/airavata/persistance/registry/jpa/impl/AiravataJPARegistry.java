@@ -1301,6 +1301,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		WorkflowInstanceNodeData data = new WorkflowInstanceNodeData(new WorkflowInstanceNode(new WorkflowInstance(nodeData.getWorkflowDataResource().getExperimentID(),nodeData.getWorkflowDataResource().getWorkflowInstanceID()),nodeData.getNodeID()));
 		data.setInput(nodeData.getInputs());
 		data.setOutput(nodeData.getOutputs());
+        data.setType(WorkflowNodeType.WorkflowNode.valueOf(nodeData.getNodeType()));
 		//TODO setup status
 		return data;
 	}
@@ -1375,7 +1376,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 
-	@Override
+
+
+
+    @Override
 	public ExperimentData getExperimentMetaInformation(String experimentId)
 			throws RegistryException {
         if (!isExperimentExists(experimentId)){
