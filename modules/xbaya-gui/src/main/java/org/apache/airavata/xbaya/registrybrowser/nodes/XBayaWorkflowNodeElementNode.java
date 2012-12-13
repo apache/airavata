@@ -59,7 +59,7 @@ public class XBayaWorkflowNodeElementNode extends AbstractAiravataTreeNode {
 //        if (selected) {
 //			type = " <font color=\"#D3D3D3\">Service call</font>";
 //		}
-		return wrapAsHtml(getXbayaWorkflowNodeElement().getNodeId(),type);
+		return wrapAsHtml(getXbayaWorkflowNodeElement().getNodeId()," [", type, "]");
     }
 
     @Override
