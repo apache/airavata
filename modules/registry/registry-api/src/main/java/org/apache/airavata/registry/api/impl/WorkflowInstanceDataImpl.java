@@ -29,6 +29,7 @@ import java.util.List;
 import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
 import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeType.WorkflowNode;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -83,6 +84,9 @@ public class WorkflowInstanceDataImpl implements WorkflowInstanceData {
 		return workflowInstance.getWorkflowInstanceId();
 	}
 
+	/**
+	 * @deprecated Use getId() instead
+	 */
     public String getWorkflowInstanceId(){
         return workflowInstance.getWorkflowInstanceId();
     }
@@ -123,31 +127,38 @@ public class WorkflowInstanceDataImpl implements WorkflowInstanceData {
 	public void setExperimentData(ExperimentDataImpl experimentData) {
 		this.experimentData = experimentData;
 	}
+    public String getId(){
+        return workflowInstance.getWorkflowInstanceId();
+    }
 
     @Override
-    public List<WorkflowInstanceNodePortData> getWorkflowInput(String worklfowInstanceID) {
+    public List<WorkflowInstanceNodePortData> getWorkflowInput() {
         List<WorkflowInstanceNodePortData> workflowInstanceNodePortDatas = new ArrayList<WorkflowInstanceNodePortData>();
-        for (WorkflowInstanceNodeData workflowInstanceNodeData : getNodeDataList()){
-            if(getWorkflowNodeType(workflowInstanceNodeData, WorkflowNodeType.WorkflowNode.INPUTNODE)){
-                 workflowInstanceNodePortDatas.addAll(workflowInstanceNodeData.getInputData());
-            }
+        for (WorkflowInstanceNodeData workflowInstanceNodeData : getNodeDataList(WorkflowNodeType.WorkflowNode.INPUTNODE)){
+             workflowInstanceNodePortDatas.addAll(workflowInstanceNodeData.getOutputData());
         }
         return workflowInstanceNodePortDatas;
     }
 
-    private boolean getWorkflowNodeType(WorkflowInstanceNodeData workflowInstanceNodeData, WorkflowNodeType.WorkflowNode nodeType ) {
-        return workflowInstanceNodeData.getType().equals(nodeType);
-    }
-
     @Override
-    public List<WorkflowInstanceNodePortData> getWorkflowOutput(String worklfowInstanceID) {
-        List<WorkflowInstanceNodePortData> workflowInstanceNodePortDatas = new ArrayList<WorkflowInstanceNodePortData>();
-        for (WorkflowInstanceNodeData workflowInstanceNodeData : getNodeDataList()){
-            if(getWorkflowNodeType(workflowInstanceNodeData, WorkflowNodeType.WorkflowNode.OUTPUTNODE)){
-                workflowInstanceNodePortDatas.addAll(workflowInstanceNodeData.getInputData());
+    public List<WorkflowInstanceNodeData> getNodeDataList(WorkflowNode type) {
+        List<WorkflowInstanceNodeData> workflowInstanceNodePortDatas = new ArrayList<WorkflowInstanceNodeData>();
+    	for (WorkflowInstanceNodeData workflowInstanceNodeData : getNodeDataList()){
+            if(workflowInstanceNodeData.getType().equals(type)){
+                 workflowInstanceNodePortDatas.add(workflowInstanceNodeData);
             }
         }
         return workflowInstanceNodePortDatas;
+    }
+    
+    @Override
+    public List<WorkflowInstanceNodePortData> getWorkflowOutput() {
+        List<WorkflowInstanceNodePortData> workflowInstanceNodePortDatas = new ArrayList<WorkflowInstanceNodePortData>();
+        for (WorkflowInstanceNodeData workflowInstanceNodeData : getNodeDataList(WorkflowNodeType.WorkflowNode.OUTPUTNODE)){
+             workflowInstanceNodePortDatas.addAll(workflowInstanceNodeData.getInputData());
+        }
+        return workflowInstanceNodePortDatas;
+
     }
 
 }

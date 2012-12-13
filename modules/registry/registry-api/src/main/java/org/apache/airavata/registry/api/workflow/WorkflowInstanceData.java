@@ -21,6 +21,7 @@ package org.apache.airavata.registry.api.workflow;/*
 
 import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
 import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeType.WorkflowNode;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -33,6 +34,7 @@ import java.util.List;
 public interface WorkflowInstanceData {
     public WorkflowInstance getWorkflowInstance() throws ExperimentLazyLoadedException;
     public List<WorkflowInstanceNodeData> getNodeDataList() throws ExperimentLazyLoadedException;
+    public List<WorkflowInstanceNodeData> getNodeDataList(WorkflowNode type)throws ExperimentLazyLoadedException;
     public void addNodeData(WorkflowInstanceNodeData...nodeData) throws ExperimentLazyLoadedException;
     public WorkflowInstanceNodeData getNodeData(String nodeId) throws ExperimentLazyLoadedException;
     public String getExperimentId();
@@ -42,6 +44,7 @@ public interface WorkflowInstanceData {
     public Date getStatusUpdateTime() throws ExperimentLazyLoadedException;
     public ExperimentDataImpl getExperimentData() throws ExperimentLazyLoadedException;
     public void setExperimentData(ExperimentDataImpl experimentData) throws ExperimentLazyLoadedException;
-    public List<WorkflowInstanceNodePortData> getWorkflowInput (String worklfowInstanceID);
-    public List<WorkflowInstanceNodePortData> getWorkflowOutput (String worklfowInstanceID);
+    public List<WorkflowInstanceNodePortData> getWorkflowInput () throws ExperimentLazyLoadedException;
+    public List<WorkflowInstanceNodePortData> getWorkflowOutput ()throws ExperimentLazyLoadedException;
+    public String getId();
 }

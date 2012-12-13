@@ -22,16 +22,23 @@
 package org.apache.airavata.registry.api.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
-import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
-import org.apache.airavata.registry.api.workflow.*;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
+import org.apache.airavata.registry.api.workflow.ExperimentData;
+import org.apache.airavata.registry.api.workflow.WorkflowIOData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstance;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodePortData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeType.WorkflowNode;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
@@ -189,11 +196,32 @@ public class ExperimentDataImpl implements ExperimentData{
 
     @Override
     public void addNodeData(WorkflowInstanceNodeData... nodeData) throws ExperimentLazyLoadedException {
-        getNodeDataList().addAll(Arrays.asList(nodeData));
+    	getWorkflowInstanceData().get(0).addNodeData(nodeData);
     }
 
     @Override
     public WorkflowInstanceNodeData getNodeData(String nodeId) throws ExperimentLazyLoadedException {
         return getWorkflowInstanceData().get(0).getNodeData(nodeId);
     }
+
+	@Override
+	public String getId() {
+		return getExperimentId();
+	}
+
+	@Override
+	public List<WorkflowInstanceNodeData> getNodeDataList(WorkflowNode type)
+			throws ExperimentLazyLoadedException {
+		return getWorkflowInstanceData().get(0).getNodeDataList(type);
+	}
+
+	@Override
+	public List<WorkflowInstanceNodePortData> getWorkflowInput() throws ExperimentLazyLoadedException{
+		return getWorkflowInstanceData().get(0).getWorkflowInput();
+	}
+
+	@Override
+	public List<WorkflowInstanceNodePortData> getWorkflowOutput()throws ExperimentLazyLoadedException {
+		return getWorkflowInstanceData().get(0).getWorkflowOutput();
+	}
 }
