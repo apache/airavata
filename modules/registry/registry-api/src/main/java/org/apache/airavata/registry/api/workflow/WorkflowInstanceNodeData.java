@@ -159,4 +159,11 @@ public class WorkflowInstanceNodeData{
     	return getWorkflowInstanceNode().getNodeId();
     }
 
+    public String getExperimentId(){
+    	return getWorkflowInstanceNode().getWorkflowInstance().getExperimentId();
+    }
+    
+    public String getWorkflowInstanceId(){
+    	return getWorkflowInstanceNode().getWorkflowInstance().getWorkflowInstanceId();
+    }
 }
