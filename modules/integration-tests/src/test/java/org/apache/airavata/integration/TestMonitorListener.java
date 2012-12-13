@@ -3,6 +3,7 @@ package org.apache.airavata.integration;
 import junit.framework.Assert;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
+import org.apache.airavata.registry.api.impl.WorkflowInstanceDataImpl;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeData;
 import org.apache.airavata.ws.monitor.MonitorEvent;
@@ -54,9 +55,11 @@ public class TestMonitorListener implements MonitorEventListener {
 
         log.info("Verifying output ...");
 
-        List<WorkflowInstanceData> workflowInstanceData = experimentData.getWorkflowInstanceData();
+        List<WorkflowInstanceDataImpl> workflowInstanceData = experimentData.getWorkflowInstanceData();
 
-        for(WorkflowInstanceData data:workflowInstanceData){
+//        List<WorkflowInstanceData> workflowInstanceData = experimentData.getWorkflowInstanceData();
+
+        for(WorkflowInstanceDataImpl data:workflowInstanceData){
             List<WorkflowInstanceNodeData> nodeDataList = data.getNodeDataList();
             for(WorkflowInstanceNodeData nodeData:nodeDataList){
                 Assert.assertEquals("Airavata Test", nodeData.getOutputData().get(0).getValue());

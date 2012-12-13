@@ -233,7 +233,7 @@
                     <deployables>
                         <deployable>
                             <groupId>org.apache.airavata</groupId>
-                            <artifactId>airavata-rest-services</artifactId>
+                            <artifactId>airavata-rest-service-webapp</artifactId>
                             <type>war</type>
                             <properties>
                                 <context>/${rest.service.context}</context>
@@ -359,7 +359,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-rest-services</artifactId>
+            <artifactId>airavata-rest-service-webapp</artifactId>
             <type>war</type>
             <version>${project.version}</version>
             <exclusions>
@@ -384,6 +384,17 @@
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-rest-client</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-jpa-registry</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
