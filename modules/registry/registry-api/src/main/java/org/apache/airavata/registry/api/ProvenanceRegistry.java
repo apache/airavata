@@ -326,5 +326,4 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
     public void updateWorkflowNodeType(WorkflowInstanceNode node, WorkflowNodeType type) throws RegistryException;
     
     public void addWorkflowInstanceNode(String workflowInstance, String nodeId) throws RegistryException;
-    
 }

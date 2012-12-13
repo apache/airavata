@@ -42,4 +42,6 @@ public interface WorkflowInstanceData {
     public Date getStatusUpdateTime() throws ExperimentLazyLoadedException;
     public ExperimentDataImpl getExperimentData() throws ExperimentLazyLoadedException;
     public void setExperimentData(ExperimentDataImpl experimentData) throws ExperimentLazyLoadedException;
+    public List<WorkflowInstanceNodePortData> getWorkflowInput (String worklfowInstanceID);
+    public List<WorkflowInstanceNodePortData> getWorkflowOutput (String worklfowInstanceID);
 }

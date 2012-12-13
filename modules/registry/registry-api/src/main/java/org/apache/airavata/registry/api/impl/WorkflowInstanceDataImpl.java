@@ -124,4 +124,30 @@ public class WorkflowInstanceDataImpl implements WorkflowInstanceData {
 		this.experimentData = experimentData;
 	}
 
+    @Override
+    public List<WorkflowInstanceNodePortData> getWorkflowInput(String worklfowInstanceID) {
+        List<WorkflowInstanceNodePortData> workflowInstanceNodePortDatas = new ArrayList<WorkflowInstanceNodePortData>();
+        for (WorkflowInstanceNodeData workflowInstanceNodeData : getNodeDataList()){
+            if(getWorkflowNodeType(workflowInstanceNodeData, WorkflowNodeType.WorkflowNode.INPUTNODE)){
+                 workflowInstanceNodePortDatas.addAll(workflowInstanceNodeData.getInputData());
+            }
+        }
+        return workflowInstanceNodePortDatas;
+    }
+
+    private boolean getWorkflowNodeType(WorkflowInstanceNodeData workflowInstanceNodeData, WorkflowNodeType.WorkflowNode nodeType ) {
+        return workflowInstanceNodeData.getType().equals(nodeType);
+    }
+
+    @Override
+    public List<WorkflowInstanceNodePortData> getWorkflowOutput(String worklfowInstanceID) {
+        List<WorkflowInstanceNodePortData> workflowInstanceNodePortDatas = new ArrayList<WorkflowInstanceNodePortData>();
+        for (WorkflowInstanceNodeData workflowInstanceNodeData : getNodeDataList()){
+            if(getWorkflowNodeType(workflowInstanceNodeData, WorkflowNodeType.WorkflowNode.OUTPUTNODE)){
+                workflowInstanceNodePortDatas.addAll(workflowInstanceNodeData.getInputData());
+            }
+        }
+        return workflowInstanceNodePortDatas;
+    }
+
 }
