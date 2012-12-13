@@ -1301,7 +1301,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		WorkflowInstanceNodeData data = new WorkflowInstanceNodeData(new WorkflowInstanceNode(new WorkflowInstance(nodeData.getWorkflowDataResource().getExperimentID(),nodeData.getWorkflowDataResource().getWorkflowInstanceID()),nodeData.getNodeID()));
 		data.setInput(nodeData.getInputs());
 		data.setOutput(nodeData.getOutputs());
-        data.setType(WorkflowNodeType.WorkflowNode.valueOf(nodeData.getNodeType()));
+        data.setType(WorkflowNodeType.getType(nodeData.getNodeType()).getNodeType());
 		//TODO setup status
 		return data;
 	}

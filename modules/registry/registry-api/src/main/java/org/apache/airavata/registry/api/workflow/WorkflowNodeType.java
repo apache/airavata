@@ -27,6 +27,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
 public class WorkflowNodeType {
+    public WorkflowNodeType(WorkflowNode nodeType) {
+        this.nodeType = nodeType;
+    }
+
+    public WorkflowNodeType() {
+    }
+
     public enum WorkflowNode {
         SERVICENODE {
             public String toString() {
@@ -64,4 +71,14 @@ public class WorkflowNodeType {
     public void setNodeType(WorkflowNode nodeType) {
         this.nodeType = nodeType;
     }
+
+    public static WorkflowNodeType getType(String type){
+        for(WorkflowNode w:WorkflowNode.values()){
+            if (w.toString().equalsIgnoreCase(type)){
+                return new WorkflowNodeType(w);
+            }
+        }
+        return new WorkflowNodeType(WorkflowNode.UNKNOWN);
+    }
+
 }

@@ -128,6 +128,7 @@ public class ExperimentDataRetriever {
         workflowInstanceNodeData.setInput(inputData);
         workflowInstanceNodeData.setOutput(outputData);
         workflowInstanceNodeData.setStatus(createExecutionStatus(rs.getString(16)), getTime(rs.getString(18)));
+        workflowInstanceNodeData.setType(WorkflowNodeType.getType(rs.getString(15)).getNodeType());
         workflowInstanceData.getNodeDataList().add(workflowInstanceNodeData);
     }
 

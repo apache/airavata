@@ -1352,6 +1352,8 @@ public class AiravataRegistryAPITest extends TestCase {
         registry.addWorkflowInstance("testExp", "testWorkflow7", "template1");
 
         WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(new WorkflowInstance("testExp", "testWorkflow7"), "testNode");
+        WorkflowNodeType nodeType = new WorkflowNodeType(WorkflowNodeType.WorkflowNode.INPUTNODE);
+        registry.updateWorkflowNodeType(workflowInstanceNode, nodeType);
         registry.updateWorkflowNodeInput(workflowInstanceNode, "testData");
 
         WorkflowInstanceNodeData nodeData = registry.getWorkflowInstanceNodeData("testWorkflow7", "testNode");
