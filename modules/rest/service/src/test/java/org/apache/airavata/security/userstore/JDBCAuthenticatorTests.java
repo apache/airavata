@@ -20,22 +20,23 @@
 
 package org.apache.airavata.security.userstore;
 
-import junit.framework.TestCase;
-import org.apache.airavata.security.Authenticator;
+import org.apache.airavata.common.utils.DatabaseTestCases;
+import org.apache.airavata.common.utils.DerbyUtil;
 import org.apache.airavata.security.UserStore;
-import org.apache.airavata.security.configurations.AuthenticatorConfigurationReader;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.File;
-import java.util.List;
 
 /**
  * Test class for JDBC user store.
  */
-public class JDBCUserStoreTest extends TestCase {
+public class JDBCAuthenticatorTests extends DatabaseTestCases {
 
     /**
      * <specificConfigurations>
@@ -53,8 +54,25 @@ public class JDBCUserStoreTest extends TestCase {
      * @throws Exception
      */
 
+    @BeforeClass
+    public static void setUpDatabase() throws Exception{
+        DerbyUtil.startDerbyInServerMode(getHostAddress(), getPort(), getUserName(), getPassword());
 
+        waitTillServerStarts();
 
+        String createTable = "create table AIRAVATA_USER ( USERID varchar(255), PASSWORD varchar(255) )";
+        executeSQL(createTable);
+
+        String insertSQL = "INSERT INTO AIRAVATA_USER VALUES('amilaj', 'secret')";
+        executeSQL(insertSQL);
+    }
+
+    @AfterClass
+    public static void shutDownDatabase() throws Exception {
+        DerbyUtil.stopDerbyServer();
+    }
+
+    @Test
     public void testAuthenticate() throws Exception {
 
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -66,9 +84,9 @@ public class JDBCUserStoreTest extends TestCase {
         UserStore userStore = new JDBCUserStore();
         userStore.configure(configurations.item(0));
 
-        assertTrue(userStore.authenticate("amilaj", "secret"));
-        assertFalse(userStore.authenticate("amilaj", "1secret"));
-        assertFalse(userStore.authenticate("lahiru", "1234"));
+        Assert.assertTrue(userStore.authenticate("amilaj", "secret"));
+        Assert.assertFalse(userStore.authenticate("amilaj", "1secret"));
+        Assert.assertFalse(userStore.authenticate("lahiru", "1234"));
 
     }
 }

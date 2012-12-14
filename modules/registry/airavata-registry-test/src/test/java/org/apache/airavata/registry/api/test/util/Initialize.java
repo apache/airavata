@@ -21,6 +21,7 @@
 
 package org.apache.airavata.registry.api.test.util;
 
+import org.apache.airavata.common.utils.DerbyUtil;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
@@ -28,7 +29,6 @@ import org.apache.airavata.persistance.registry.jpa.resources.Utils;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 import org.apache.airavata.registry.api.exception.RegistrySettingsException;
 import org.apache.airavata.registry.api.util.RegistrySettings;
-import org.apache.derby.drda.NetworkServerControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,16 +36,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.URL;
 import java.sql.*;
-import java.util.Properties;
 import java.util.StringTokenizer;
 
 public class Initialize {
     private static final Logger logger = LoggerFactory.getLogger(Initialize.class);
-    public static final String DERBY_SERVER_MODE_SYS_PROPERTY = "derby.drda.startNetworkServer";
-    private NetworkServerControl server;
     private static final String delimiter = ";";
     public static final String PERSISTANT_DATA = "Configuration";
 
@@ -271,39 +266,29 @@ public class Initialize {
     }
 
     private void startDerbyInServerMode() {
+
         try {
-            System.setProperty(DERBY_SERVER_MODE_SYS_PROPERTY, "true");
-            server = new NetworkServerControl(InetAddress.getByName(Utils.getHost()),
-                    20000,
-                    Utils.getJDBCUser(), Utils.getJDBCUser());
-            java.io.PrintWriter consoleWriter = new java.io.PrintWriter(System.out, true);
-            server.start(consoleWriter);
-        } catch (IOException e) {
-            logger.error("Unable to start Apache derby in the server mode! Check whether " +
-                    "specified port is available");
+            DerbyUtil.startDerbyInServerMode(Utils.getHost(), 20000, Utils.getJDBCUser(), Utils.getJDBCUser());
         } catch (Exception e) {
             logger.error("Unable to start Apache derby in the server mode! Check whether " +
-                    "specified port is available");
+                    "specified port is available", e);
         }
 
     }
 
     private void startDerbyInEmbeddedMode(){
         try {
-            Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-            DriverManager.getConnection("jdbc:derby:memory:unit-testing-jpa;create=true").close();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (SQLException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            DerbyUtil.startDerbyInEmbeddedMode();
+        } catch (Exception e) {
+            logger.error("Error occurred while starting Derby in embedded mode", e);
         }
     }
 
     public void stopDerbyServer() {
         try {
-            server.shutdown();
+            DerbyUtil.stopDerbyServer();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error occurred while stopping Derby", e);
         }
     }
 }

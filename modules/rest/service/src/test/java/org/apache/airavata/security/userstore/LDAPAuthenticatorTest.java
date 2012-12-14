@@ -33,7 +33,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
  * User store test 2
  */
 @Ignore("Need LDAP server to run these tests")
-public class LDAPUserStoreTest extends TestCase{
+public class LDAPAuthenticatorTest extends TestCase{
 
     private LDAPUserStore ldapUserStore;
 

@@ -110,6 +110,35 @@ public class DBUtil {
         return null;
     }
 
+    /**
+     * Create table utility method.
+     * @param sql SQL to be executed.
+     * @throws SQLException If an error occurred while creating the table.
+     */
+    public void executeSQL(String sql) throws SQLException {
+
+        Connection connection = getConnection();
+
+        PreparedStatement ps = connection.prepareStatement(sql);
+
+        try {
+            ps.executeUpdate();
+            connection.commit();
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+
+                connection.close();
+
+            } catch (Exception ignore) {
+                log.error("An error occurred while closing database connections ", ignore);
+            }
+        }
+
+    }
+
     private void loadDriver() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         Class.forName(driverName).newInstance();
     }
