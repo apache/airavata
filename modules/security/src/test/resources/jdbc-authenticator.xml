@@ -26,10 +26,10 @@
         <specificConfigurations>
             <database>
                 <!--jdbcUrl>jdbc:h2:modules/commons/airavata-registry-rest/src/test/resources/testdb/test</jdbcUrl-->
-                <jdbcUrl>jdbc:h2:../../src/test/resources/testdb/test</jdbcUrl>
-                <userName>sa</userName>
-                <password>sa</password>
-                <databaseDriver>org.h2.Driver</databaseDriver>
+                <jdbcUrl>jdbc:derby://localhost:20000/persistent_data;create=true</jdbcUrl>
+                <userName>admin</userName>
+                <password>admin</password>
+                <databaseDriver>org.apache.derby.jdbc.ClientDriver</databaseDriver>
                 <userTableName>AIRAVATA_USER</userTableName>
                 <userNameColumnName>USERID</userNameColumnName>
                 <passwordColumnName>PASSWORD</passwordColumnName>

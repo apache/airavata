@@ -60,7 +60,8 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
         try {
             authenticationInfo = jdbcRealm.getAuthenticationInfo(authenticationToken);
         } catch (AuthenticationException e) {
-            log.warn(e.getLocalizedMessage(), e);
+            log.warn(e.getLocalizedMessage());
+            log.debug(e.getLocalizedMessage(), e);
             return false;
         }
 

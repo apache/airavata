@@ -24,6 +24,9 @@
 package org.apache.airavata.security.userstore;
 
 import junit.framework.TestCase;
+import org.apache.airavata.common.utils.DatabaseTestCases;
+import org.apache.airavata.common.utils.DerbyUtil;
+import org.junit.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -35,14 +38,40 @@ import java.io.InputStream;
 /**
  * Test class for session DB authenticator.
  */
-public class SessionDBUserStoreTest extends TestCase {
+
+public class SessionDBUserStoreTest extends DatabaseTestCases {
+
+    @BeforeClass
+    public static void setUpDatabase() throws Exception{
+        DerbyUtil.startDerbyInServerMode(getHostAddress(), getPort(), getUserName(), getPassword());
+
+        waitTillServerStarts();
+
+        String createTable = "create table Persons ( sessionId varchar(255) )";
+        executeSQL(createTable);
+
+        String insertSQL = "INSERT INTO Persons VALUES('1234')";
+        executeSQL(insertSQL);
+    }
+
+    @AfterClass
+    public static void shutDownDatabase() throws Exception {
+        DerbyUtil.stopDerbyServer();
+    }
+
+    @Before
+    public void setUp() throws Exception{
+
+        loadConfigurations();
+
+    }
 
     private SessionDBUserStore sessionDBUserStore = new SessionDBUserStore();
 
     private InputStream configurationFileStream
             = this.getClass().getClassLoader().getResourceAsStream("session-authenticator.xml");
 
-    public void setUp() throws Exception {
+    private void loadConfigurations () throws Exception {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         Document doc = dBuilder.parse(configurationFileStream);
@@ -52,12 +81,14 @@ public class SessionDBUserStoreTest extends TestCase {
         sessionDBUserStore.configure(specificConfigurations.item(0));
     }
 
+    @Test
     public void testAuthenticate() throws Exception {
-        assertTrue(sessionDBUserStore.authenticate("1234"));
+        Assert.assertTrue(sessionDBUserStore.authenticate("1234"));
 
     }
 
+    @Test
     public void testAuthenticateFailure() throws Exception  {
-        assertFalse(sessionDBUserStore.authenticate("12345"));
+        Assert.assertFalse(sessionDBUserStore.authenticate("12345"));
     }
 }
