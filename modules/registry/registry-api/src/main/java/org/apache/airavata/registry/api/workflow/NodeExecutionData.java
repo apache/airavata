@@ -30,19 +30,19 @@ import java.util.List;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class WorkflowInstanceNodeData{
+public class NodeExecutionData{
 	private WorkflowInstanceNode workflowInstanceNode;
-	private List<WorkflowInstanceNodePortData> inputData;
-	private List<WorkflowInstanceNodePortData> outputData;
+	private List<InputData> inputData;
+	private List<OutputData> outputData;
 	private String input;
 	private String output;
     private WorkflowInstanceNodeStatus status;
     private WorkflowNodeType.WorkflowNode type;
 
-    public WorkflowInstanceNodeData() {
+    public NodeExecutionData() {
     }
 
-    public WorkflowInstanceNodeData(WorkflowInstanceNode workflowInstanceNode) {
+    public NodeExecutionData(WorkflowInstanceNode workflowInstanceNode) {
 		setWorkflowInstanceNode(workflowInstanceNode);
 	}
 
@@ -62,7 +62,7 @@ public class WorkflowInstanceNodeData{
         this.status = status;
     }
 
-    public void setStatus(WorkflowInstanceStatus.ExecutionStatus status, Date date) {
+    public void setStatus(WorkflowExecutionStatus.State status, Date date) {
         setStatus(new WorkflowInstanceNodeStatus(this.workflowInstanceNode, status, date));
 
     }
@@ -96,33 +96,33 @@ public class WorkflowInstanceNodeData{
 		return parameters;
 	}
 	
-	public List<WorkflowInstanceNodePortData> getInputData() {
+	public List<InputData> getInputData() {
 		if (inputData==null){
-			inputData=new ArrayList<WorkflowInstanceNodePortData>();
+			inputData=new ArrayList<InputData>();
 			List<NameValue> data = getIOParameterData(getInput());
 			for (NameValue nameValue : data) {
-				inputData.add(new WorkflowInstanceNodePortData(getWorkflowInstanceNode(), nameValue.name, nameValue.value));
+				inputData.add(new InputData(getWorkflowInstanceNode(), nameValue.name, nameValue.value));
 			}
 		}
 		return inputData;
 	}
 
-	public void setInputData(List<WorkflowInstanceNodePortData> inputData) {
+	public void setInputData(List<InputData> inputData) {
 		this.inputData = inputData;
 	}
 
-	public List<WorkflowInstanceNodePortData> getOutputData() {
+	public List<OutputData> getOutputData() {
 		if (outputData==null){
-			outputData=new ArrayList<WorkflowInstanceNodePortData>();
+			outputData=new ArrayList<OutputData>();
 			List<NameValue> data = getIOParameterData(getOutput());
 			for (NameValue nameValue : data) {
-				outputData.add(new WorkflowInstanceNodePortData(getWorkflowInstanceNode(), nameValue.name, nameValue.value));
+				outputData.add(new OutputData(getWorkflowInstanceNode(), nameValue.name, nameValue.value));
 			}
 		}
 		return outputData;
 	}
 
-	public void setOutputData(List<WorkflowInstanceNodePortData> outputData) {
+	public void setOutputData(List<OutputData> outputData) {
 		this.outputData = outputData;
 	}
 
@@ -164,6 +164,6 @@ public class WorkflowInstanceNodeData{
     }
     
     public String getWorkflowInstanceId(){
-    	return getWorkflowInstanceNode().getWorkflowInstance().getWorkflowInstanceId();
+    	return getWorkflowInstanceNode().getWorkflowInstance().getWorkflowExecutionId();
     }
 }

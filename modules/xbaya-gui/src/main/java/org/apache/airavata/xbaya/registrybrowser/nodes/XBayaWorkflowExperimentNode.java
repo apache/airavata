@@ -33,7 +33,7 @@ import javax.swing.tree.TreeNode;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.workflow.ExperimentName;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus;
 import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflowExperiment;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.CopyAction;
@@ -67,7 +67,7 @@ public class XBayaWorkflowExperimentNode extends AbstractAiravataTreeNode {
 		}
     	String caption=workflowExecutionName;
     	try {
-			WorkflowInstanceStatus workflowExecutionStatus = getRegistry().getProvenanceManager().getWorkflowInstanceStatus(getExperiment().getExperimentId(), getExperiment().getExperimentId());
+			WorkflowExecutionStatus workflowExecutionStatus = getRegistry().getProvenanceManager().getWorkflowInstanceStatus(getExperiment().getExperimentId(), getExperiment().getExperimentId());
 			if (workflowExecutionStatus!=null && workflowExecutionStatus.getExecutionStatus()!=null){
 				caption += " - <i>" + workflowExecutionStatus.getExecutionStatus().toString()+"</i>";
 				if (workflowExecutionStatus.getStatusUpdateTime()!=null) {

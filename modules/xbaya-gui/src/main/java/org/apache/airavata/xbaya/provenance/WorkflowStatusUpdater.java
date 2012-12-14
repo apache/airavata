@@ -26,8 +26,8 @@ import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.workflow.WorkflowInstance;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowExecution;
+import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +42,7 @@ public class WorkflowStatusUpdater {
 
     public boolean workflowStarted(String experimentID){
         try {
-            airavataAPI.getProvenanceManager().setWorkflowInstanceStatus(experimentID, experimentID, WorkflowInstanceStatus.ExecutionStatus.STARTED);
+            airavataAPI.getProvenanceManager().setWorkflowInstanceStatus(experimentID, experimentID, WorkflowExecutionStatus.State.STARTED);
         } catch (AiravataAPIInvocationException e) {
             logger.error("Error updating Wokflow Node status !!");
             return false;
@@ -52,7 +52,7 @@ public class WorkflowStatusUpdater {
 
     public boolean workflowFailed(String experimentID){
         try {
-            airavataAPI.getProvenanceManager().setWorkflowInstanceStatus(experimentID, experimentID, WorkflowInstanceStatus.ExecutionStatus.FAILED);
+            airavataAPI.getProvenanceManager().setWorkflowInstanceStatus(experimentID, experimentID, WorkflowExecutionStatus.State.FAILED);
         } catch (AiravataAPIInvocationException e) {
             logger.error("Error updating Wokflow Node status !!");
             return false;
@@ -62,7 +62,7 @@ public class WorkflowStatusUpdater {
 
     public boolean workflowFinished(String experimentID){
         try {
-            airavataAPI.getProvenanceManager().setWorkflowInstanceStatus(experimentID, experimentID, WorkflowInstanceStatus.ExecutionStatus.FINISHED);
+            airavataAPI.getProvenanceManager().setWorkflowInstanceStatus(experimentID, experimentID, WorkflowExecutionStatus.State.FINISHED);
         } catch (AiravataAPIInvocationException e) {
             logger.error("Error updating Wokflow Node status !!");
             return false;
@@ -72,7 +72,7 @@ public class WorkflowStatusUpdater {
 
     public boolean workflowRunning(String experimentID){
         try {
-            airavataAPI.getProvenanceManager().setWorkflowInstanceStatus(experimentID, experimentID, WorkflowInstanceStatus.ExecutionStatus.RUNNING);
+            airavataAPI.getProvenanceManager().setWorkflowInstanceStatus(experimentID, experimentID, WorkflowExecutionStatus.State.RUNNING);
         } catch (AiravataAPIInvocationException e) {
             logger.error("Error updating Wokflow Node status !!");
             return false;
@@ -82,7 +82,7 @@ public class WorkflowStatusUpdater {
 
      public boolean workflowPaused(String experimentID){
         try {
-            airavataAPI.getProvenanceManager().setWorkflowInstanceStatus(experimentID, experimentID, WorkflowInstanceStatus.ExecutionStatus.PAUSED);
+            airavataAPI.getProvenanceManager().setWorkflowInstanceStatus(experimentID, experimentID, WorkflowExecutionStatus.State.PAUSED);
         } catch (AiravataAPIInvocationException e) {
             logger.error("Error updating Wokflow Node status !!");
             return false;
@@ -94,7 +94,7 @@ public class WorkflowStatusUpdater {
         Timestamp currentTime = new Timestamp((new java.util.Date()).getTime());
         try {
             airavataAPI.getProvenanceManager().setWorkflowInstanceTemplateName(workflowInstanceID, workflowTemplateID);
-            airavataAPI.getProvenanceManager().setWorkflowInstanceStatus(new WorkflowInstanceStatus(new WorkflowInstance(experimentID, workflowInstanceID), WorkflowInstanceStatus.ExecutionStatus.STARTED,currentTime));
+            airavataAPI.getProvenanceManager().setWorkflowInstanceStatus(new WorkflowExecutionStatus(new WorkflowExecution(experimentID, workflowInstanceID), WorkflowExecutionStatus.State.STARTED,currentTime));
         } catch (AiravataAPIInvocationException e) {
             logger.error("Error saving Workflow Data !!");
         }

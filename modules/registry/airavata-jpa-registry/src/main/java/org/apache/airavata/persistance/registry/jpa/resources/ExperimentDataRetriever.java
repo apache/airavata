@@ -23,9 +23,9 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 
 import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
 import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
-import org.apache.airavata.registry.api.impl.WorkflowInstanceDataImpl;
+import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
 import org.apache.airavata.registry.api.workflow.*;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +44,7 @@ public class ExperimentDataRetriever {
         Connection connection = null;
         ResultSet rs = null;
         Statement statement;
-        List<WorkflowInstance> experimentWorkflowInstances = new ArrayList<WorkflowInstance>();
+        List<WorkflowExecution> experimentWorkflowInstances = new ArrayList<WorkflowExecution>();
         ExperimentData experimentData = null;
         try {
             Class.forName(Utils.getJDBCDriver()).newInstance();
@@ -103,24 +103,24 @@ public class ExperimentDataRetriever {
 
     private void fillWorkflowInstanceData (ExperimentData experimentData,
                                                            ResultSet rs,
-                                                           List<WorkflowInstance> workflowInstances) throws SQLException, ExperimentLazyLoadedException, ParseException {
-        WorkflowInstanceDataImpl workflowInstanceData = (WorkflowInstanceDataImpl)experimentData.getWorkflowInstance(rs.getString(5));
+                                                           List<WorkflowExecution> workflowInstances) throws SQLException, ExperimentLazyLoadedException, ParseException {
+        WorkflowExecutionDataImpl workflowInstanceData = (WorkflowExecutionDataImpl)experimentData.getWorkflowExecutionData(rs.getString(5));
         if (workflowInstanceData == null){
-            WorkflowInstance workflowInstance = new WorkflowInstance(experimentData.getExperimentId(), rs.getString(5));
+            WorkflowExecution workflowInstance = new WorkflowExecution(experimentData.getExperimentId(), rs.getString(5));
             workflowInstance.setTemplateName(rs.getString(6));
             workflowInstance.setExperimentId(rs.getString(1));
-            workflowInstance.setWorkflowInstanceId(rs.getString(5));
+            workflowInstance.setWorkflowExecutionId(rs.getString(5));
             workflowInstances.add(workflowInstance);
             Date lastUpdateDate = getTime(rs.getString(9));
             String wdStatus = rs.getString(7);
-            workflowInstanceData = new WorkflowInstanceDataImpl(null,
-                    workflowInstance, new WorkflowInstanceStatus(workflowInstance,
+            workflowInstanceData = new WorkflowExecutionDataImpl(null,
+                    workflowInstance, new WorkflowExecutionStatus(workflowInstance,
                     createExecutionStatus(wdStatus),lastUpdateDate), null);
             workflowInstanceData.setExperimentData((ExperimentDataImpl)experimentData);
-            experimentData.getWorkflowInstanceData().add(workflowInstanceData);
+            experimentData.getWorkflowExecutionDataList().add(workflowInstanceData);
         }
-        WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(workflowInstanceData.getWorkflowInstance(), rs.getString(10));
-        WorkflowInstanceNodeData workflowInstanceNodeData = new WorkflowInstanceNodeData(workflowInstanceNode);
+        WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(workflowInstanceData.getWorkflowExecution(), rs.getString(10));
+        NodeExecutionData workflowInstanceNodeData = new NodeExecutionData(workflowInstanceNode);
 
         String inputData = getStringValue(11, rs);
         String outputData = getStringValue(12, rs);
@@ -132,8 +132,8 @@ public class ExperimentDataRetriever {
         workflowInstanceData.getNodeDataList().add(workflowInstanceNodeData);
     }
 
-    private ExecutionStatus createExecutionStatus (String status){
-       return status == null ? ExecutionStatus.UNKNOWN : ExecutionStatus.valueOf(status);
+    private State createExecutionStatus (String status){
+       return status == null ? State.UNKNOWN : State.valueOf(status);
     }
 
     private String getStringValue (int parameterNumber,  ResultSet rs) throws SQLException {
@@ -242,7 +242,7 @@ public class ExperimentDataRetriever {
         Statement statement;
         Map<String, ExperimentData> experimentDataMap = new HashMap<String, ExperimentData>();
         List<ExperimentData> experimentDataList = new ArrayList<ExperimentData>();
-        List<WorkflowInstance> experimentWorkflowInstances = new ArrayList<WorkflowInstance>();
+        List<WorkflowExecution> experimentWorkflowInstances = new ArrayList<WorkflowExecution>();
 
         try {
             Class.forName(Utils.getJDBCDriver()).newInstance();
@@ -311,7 +311,7 @@ public class ExperimentDataRetriever {
         Connection connection = null;
         ResultSet rs = null;
         Statement statement;
-        List<WorkflowInstance> experimentWorkflowInstances = new ArrayList<WorkflowInstance>();
+        List<WorkflowExecution> experimentWorkflowInstances = new ArrayList<WorkflowExecution>();
         ExperimentData experimentData = null;
         try {
             Class.forName(Utils.getJDBCDriver()).newInstance();
@@ -336,10 +336,10 @@ public class ExperimentDataRetriever {
                     experimentData.setMetadata(rs.getString(4));
                     experimentData.setTopic(rs.getString(1));
 
-                    WorkflowInstance workflowInstance = new WorkflowInstance(experimentId, rs.getString(5));
+                    WorkflowExecution workflowInstance = new WorkflowExecution(experimentId, rs.getString(5));
                     workflowInstance.setTemplateName(rs.getString(6));
                     workflowInstance.setExperimentId(rs.getString(1));
-                    workflowInstance.setWorkflowInstanceId(rs.getString(5));
+                    workflowInstance.setWorkflowExecutionId(rs.getString(5));
                     experimentWorkflowInstances.add(workflowInstance);
                 }
             }
@@ -400,7 +400,7 @@ public class ExperimentDataRetriever {
         ResultSet rs = null;
         Statement statement;
         List<ExperimentData> experimentDataList = new ArrayList<ExperimentData>();
-        List<WorkflowInstance> experimentWorkflowInstances = new ArrayList<WorkflowInstance>();
+        List<WorkflowExecution> experimentWorkflowInstances = new ArrayList<WorkflowExecution>();
         ExperimentData experimentData = null;
         try {
             Class.forName(Utils.getJDBCDriver()).newInstance();
@@ -426,10 +426,10 @@ public class ExperimentDataRetriever {
                     experimentData.setMetadata(rs.getString(4));
                     experimentData.setTopic(rs.getString(1));
 
-                    WorkflowInstance workflowInstance = new WorkflowInstance(rs.getString(1), rs.getString(5));
+                    WorkflowExecution workflowInstance = new WorkflowExecution(rs.getString(1), rs.getString(5));
                     workflowInstance.setTemplateName(rs.getString(6));
                     workflowInstance.setExperimentId(rs.getString(1));
-                    workflowInstance.setWorkflowInstanceId(rs.getString(5));
+                    workflowInstance.setWorkflowExecutionId(rs.getString(5));
                     experimentWorkflowInstances.add(workflowInstance);
                     experimentDataList.add(experimentData);
                 }

@@ -46,9 +46,9 @@ import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.registry.api.workflow.WorkflowInstance;
+import org.apache.airavata.registry.api.workflow.WorkflowExecution;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeType;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.amazon.InstanceComponent;
@@ -188,7 +188,7 @@ public class WorkflowInterpreter {
                 //Saving workflow input Node data before running the workflow
                 WorkflowNodeType workflowNodeType = new WorkflowNodeType();
                 workflowNodeType.setNodeType(WorkflowNodeType.WorkflowNode.INPUTNODE);
-                WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(new WorkflowInstance(getConfig().getTopic(),
+                WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(new WorkflowExecution(getConfig().getTopic(),
                         getConfig().getTopic()), node.getID());
                 this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager().setWorkflowInstanceNodeInput(workflowInstanceNode, (String)values[i]);
                 this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager().setWorkflowNodeType(workflowInstanceNode, workflowNodeType);
@@ -253,7 +253,7 @@ public class WorkflowInterpreter {
 
                     try {
                         this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager().setWorkflowInstanceStatus(
-                                this.config.getTopic(), this.config.getTopic(), ExecutionStatus.FINISHED);
+                                this.config.getTopic(), this.config.getTopic(), State.FINISHED);
                     } catch (Exception e) {
                         throw new WorkflowException(e);
                     }
@@ -264,7 +264,7 @@ public class WorkflowInterpreter {
 				if (this.config.isActOnProvenance()) {
 					try {
 						this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager().
-                                setWorkflowInstanceStatus(this.config.getTopic(),this.config.getTopic(), ExecutionStatus.FAILED);
+                                setWorkflowInstanceStatus(this.config.getTopic(),this.config.getTopic(), State.FAILED);
 					} catch (AiravataAPIInvocationException e) {
 						throw new WorkflowException(e);
 					}
@@ -426,7 +426,7 @@ public class WorkflowInterpreter {
                     // Saving output Node data in to database
                     WorkflowNodeType workflowNodeType = new WorkflowNodeType();
                     workflowNodeType.setNodeType(WorkflowNodeType.WorkflowNode.OUTPUTNODE);
-                    WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(new WorkflowInstance(config.getTopic(), config.getTopic()), node.getID());
+                    WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(new WorkflowExecution(config.getTopic(), config.getTopic()), node.getID());
                     this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager().setWorkflowInstanceNodeOutput(workflowInstanceNode, ((OutputNode) node).getDescription());
                     this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager().setWorkflowNodeType(workflowInstanceNode, workflowNodeType);
 

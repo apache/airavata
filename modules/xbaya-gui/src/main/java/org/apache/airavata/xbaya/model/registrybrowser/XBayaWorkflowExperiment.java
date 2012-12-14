@@ -28,7 +28,7 @@ import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.workflow.WorkflowInstance;
+import org.apache.airavata.registry.api.workflow.WorkflowExecution;
 
 public class XBayaWorkflowExperiment {
 	private List<XBayaWorkflow> workflows;
@@ -44,8 +44,8 @@ public class XBayaWorkflowExperiment {
 		if (workflows==null){
 			workflows=new ArrayList<XBayaWorkflow>();
 			try {
-				List<WorkflowInstance> experimentWorkflowInstances = getAiravataAPI().getProvenanceManager().getExperimentWorkflowInstances(getExperimentId());
-				for (WorkflowInstance workflowInstance : experimentWorkflowInstances) {
+				List<WorkflowExecution> experimentWorkflowInstances = getAiravataAPI().getProvenanceManager().getExperimentWorkflowInstances(getExperimentId());
+				for (WorkflowExecution workflowInstance : experimentWorkflowInstances) {
 					workflows.add(new XBayaWorkflow(workflowInstance, getAiravataAPI()));
 				}
 			}  catch (AiravataAPIInvocationException e) {

@@ -24,31 +24,31 @@ package org.apache.airavata.registry.api.workflow;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class WorkflowInstance {
+public class WorkflowExecution {
 	private String experimentId;
-	private String workflowInstanceId;
+	private String workflowExecutionId;
 	private String templateName;
 
-    public WorkflowInstance() {
+    public WorkflowExecution() {
     }
 
-    public WorkflowInstance(String experimentId,String instanceId) {
+    public WorkflowExecution(String experimentId,String instanceId) {
 		setExperimentId(experimentId);
-		setWorkflowInstanceId(instanceId);
+		setWorkflowExecutionId(instanceId);
 	}
 
-    public WorkflowInstance(String experimentId, String workflowInstanceId, String templateName) {
+    public WorkflowExecution(String experimentId, String workflowInstanceId, String templateName) {
         this.experimentId = experimentId;
-        this.workflowInstanceId = workflowInstanceId;
+        this.workflowExecutionId = workflowInstanceId;
         this.templateName = templateName;
     }
 
-    public String getWorkflowInstanceId() {
-		return workflowInstanceId;
+    public String getWorkflowExecutionId() {
+		return workflowExecutionId;
 	}
 
-	public void setWorkflowInstanceId(String workflowInstanceId) {
-		this.workflowInstanceId = workflowInstanceId;
+	public void setWorkflowExecutionId(String workflowExecutionId) {
+		this.workflowExecutionId = workflowExecutionId;
 	}
 
 	public String getExperimentId() {

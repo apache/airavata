@@ -25,7 +25,7 @@ import java.util.List;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeData;
+import org.apache.airavata.registry.api.workflow.NodeExecutionData;
 import org.apache.airavata.workflow.model.graph.Node;
 
 public class ProvenanceReader {
@@ -47,11 +47,11 @@ public class ProvenanceReader {
     public Object read() throws Exception {
         try {
             ExperimentData workflowExecution = airavataAPI.getProvenanceManager().getExperimentData(experimentId);
-            List<WorkflowInstanceNodeData> nodeDataList = workflowExecution.getWorkflowInstanceData().get(0).getNodeDataList();
+            List<NodeExecutionData> nodeDataList = workflowExecution.getWorkflowExecutionDataList().get(0).getNodeDataList();
             if (nodeDataList.size() == 0) {
                 return null;
             }
-            for (WorkflowInstanceNodeData data : nodeDataList) {
+            for (NodeExecutionData data : nodeDataList) {
                 if (this.node.getID().equals(data.getWorkflowInstanceNode().getNodeId())) {
                     return data.getOutputData().get(0).getValue();
                 }

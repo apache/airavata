@@ -24,17 +24,19 @@ package org.apache.airavata.xbaya.model.registrybrowser;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeData;
+import org.apache.airavata.registry.api.workflow.InputData;
+import org.apache.airavata.registry.api.workflow.OutputData;
+import org.apache.airavata.registry.api.workflow.NodeExecutionData;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodePortData;
 import org.apache.airavata.schemas.gfac.Parameter;
 
 public class XBayaWorkflowNodeElement {
 	private InputParameters inputParameters;
 	private OutputParameters outputParameters;
-	private WorkflowInstanceNodeData nodeData;
+	private NodeExecutionData nodeData;
 	private String nodeId;
 	
-	public XBayaWorkflowNodeElement(String nodeId, WorkflowInstanceNodeData nodeData) {
+	public XBayaWorkflowNodeElement(String nodeId, NodeExecutionData nodeData) {
 		setNodeId(nodeId);
 		setNodeData(nodeData);
 	}
@@ -42,15 +44,27 @@ public class XBayaWorkflowNodeElement {
 	public OutputParameters getOutputParameters() {
 		if (outputParameters==null){
 			outputParameters=new OutputParameters((NodeParameter[])null);
-			outputParameters.getParameters().addAll(generateParameterList(nodeData.getOutputData()));
+			outputParameters.getParameters().addAll(generateParameterListForOutput(nodeData.getOutputData()));
 		}
 		return outputParameters;
 	}
 
-	private List<NodeParameter> generateParameterList(
-			List<WorkflowInstanceNodePortData> outputData) {
+	private List<NodeParameter> generateParameterListForInput(
+			List<InputData> list) {
 		List<NodeParameter> params=new ArrayList<NodeParameter>();
-		for (WorkflowInstanceNodePortData portData : outputData) {
+		for (WorkflowInstanceNodePortData portData : list) {
+			Parameter parameter = Parameter.Factory.newInstance();
+			parameter.setParameterName(portData.getName());
+			NodeParameter serviceParameter = new NodeParameter(parameter, portData.getValue());
+			params.add(serviceParameter);
+		}
+		return params;
+	}
+	
+	private List<NodeParameter> generateParameterListForOutput(
+			List<OutputData> list) {
+		List<NodeParameter> params=new ArrayList<NodeParameter>();
+		for (WorkflowInstanceNodePortData portData : list) {
 			Parameter parameter = Parameter.Factory.newInstance();
 			parameter.setParameterName(portData.getName());
 			NodeParameter serviceParameter = new NodeParameter(parameter, portData.getValue());
@@ -66,7 +80,7 @@ public class XBayaWorkflowNodeElement {
 	public InputParameters getInputParameters() {
 		if (inputParameters==null){
 			inputParameters=new InputParameters((NodeParameter[])null);
-			inputParameters.getParameters().addAll(generateParameterList(nodeData.getInputData()));
+			inputParameters.getParameters().addAll(generateParameterListForInput(nodeData.getInputData()));
 		}
 		return inputParameters;
 	}
@@ -83,11 +97,11 @@ public class XBayaWorkflowNodeElement {
 		this.nodeId = nodeId;
 	}
 
-	public WorkflowInstanceNodeData getNodeData() {
+	public NodeExecutionData getNodeData() {
 		return nodeData;
 	}
 
-	public void setNodeData(WorkflowInstanceNodeData nodeData) {
+	public void setNodeData(NodeExecutionData nodeData) {
 		this.nodeData = nodeData;
 	}
 }

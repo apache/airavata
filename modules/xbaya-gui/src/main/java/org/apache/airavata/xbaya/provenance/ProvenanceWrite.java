@@ -29,7 +29,7 @@ import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.XMLUtil;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.workflow.WorkflowInstance;
+import org.apache.airavata.registry.api.workflow.WorkflowExecution;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.graph.DataPort;
@@ -178,7 +178,7 @@ public final class ProvenanceWrite implements PredicatedExecutable {
 			}
             if (inputs!=null) {
 				try {
-					this.airavataAPI.getProvenanceManager().setWorkflowInstanceNodeInput(new WorkflowInstanceNode(new WorkflowInstance(experimentId, experimentId), node.getID()), xsul5.XmlConstants.BUILDER.serializeToString(inputs));
+					this.airavataAPI.getProvenanceManager().setWorkflowInstanceNodeInput(new WorkflowInstanceNode(new WorkflowExecution(experimentId, experimentId), node.getID()), xsul5.XmlConstants.BUILDER.serializeToString(inputs));
                 } catch (AiravataAPIInvocationException e) {
 					throw new WorkflowException(e);
 				}
@@ -208,7 +208,7 @@ public final class ProvenanceWrite implements PredicatedExecutable {
 				}
 			}
             try {
-				this.airavataAPI.getProvenanceManager().setWorkflowInstanceNodeOutput(new WorkflowInstanceNode(new WorkflowInstance(experimentId,experimentId),node.getID()),xsul5.XmlConstants.BUILDER.serializeToString(outputs));
+				this.airavataAPI.getProvenanceManager().setWorkflowInstanceNodeOutput(new WorkflowInstanceNode(new WorkflowExecution(experimentId,experimentId),node.getID()),xsul5.XmlConstants.BUILDER.serializeToString(outputs));
             } catch (AiravataAPIInvocationException e) {
 				throw new WorkflowException(e);
 			}

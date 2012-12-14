@@ -27,11 +27,11 @@ public class WorkflowRunTimeData {
     String workflowInstanceID;
     String templateID;
     Timestamp startTime;
-    WorkflowInstanceStatus.ExecutionStatus workflowStatus;
+    WorkflowExecutionStatus.State workflowStatus;
     Timestamp lastUpdateTime;
 
     public WorkflowRunTimeData(String experimentID, String workflowInstanceID, String templateID,
-                               Timestamp startTime, WorkflowInstanceStatus.ExecutionStatus workflowStatus, Timestamp lastUpdateTime) {
+                               Timestamp startTime, WorkflowExecutionStatus.State workflowStatus, Timestamp lastUpdateTime) {
         this.experimentID = experimentID;
         this.workflowInstanceID = workflowInstanceID;
         this.templateID = templateID;
@@ -56,7 +56,7 @@ public class WorkflowRunTimeData {
         return startTime;
     }
 
-    public WorkflowInstanceStatus.ExecutionStatus getWorkflowStatus() {
+    public WorkflowExecutionStatus.State getWorkflowStatus() {
         return workflowStatus;
     }
 
@@ -80,7 +80,7 @@ public class WorkflowRunTimeData {
         this.startTime = startTime;
     }
 
-    public void setWorkflowStatus(WorkflowInstanceStatus.ExecutionStatus workflowStatus) {
+    public void setWorkflowStatus(WorkflowExecutionStatus.State workflowStatus) {
         this.workflowStatus = workflowStatus;
     }
 
