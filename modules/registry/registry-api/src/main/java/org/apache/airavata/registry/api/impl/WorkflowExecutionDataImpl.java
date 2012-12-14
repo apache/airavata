@@ -123,7 +123,7 @@ public class WorkflowExecutionDataImpl implements WorkflowExecutionData {
 		return null;
 	}
 
-	public ExperimentDataImpl getExperimentData() {
+	public ExperimentData getExperimentData() {
 		return experimentData;
 	}
 

@@ -900,7 +900,7 @@ public class ProvenanceRegistryResource {
         try {
             WorkflowExecutionDataImpl workflowInstanceData = (WorkflowExecutionDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
             WorkflowInstanceNode workflowInstanceNode = workflowInstanceData.getNodeData(nodeId).getWorkflowInstanceNode();
-            WorkflowInstanceNodeStatus workflowNodeStatus = airavataRegistry.getWorkflowNodeStatus(workflowInstanceNode);
+            NodeExecutionStatus workflowNodeStatus = airavataRegistry.getWorkflowNodeStatus(workflowInstanceNode);
             if (workflowNodeStatus != null) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity(workflowNodeStatus);

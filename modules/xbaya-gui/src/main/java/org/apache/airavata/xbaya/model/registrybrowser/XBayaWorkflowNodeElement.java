@@ -24,9 +24,9 @@ package org.apache.airavata.xbaya.model.registrybrowser;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.airavata.registry.api.workflow.NodeExecutionData;
 import org.apache.airavata.registry.api.workflow.InputData;
 import org.apache.airavata.registry.api.workflow.OutputData;
-import org.apache.airavata.registry.api.workflow.NodeExecutionData;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodePortData;
 import org.apache.airavata.schemas.gfac.Parameter;
 

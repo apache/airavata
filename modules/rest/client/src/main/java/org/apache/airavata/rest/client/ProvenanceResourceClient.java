@@ -967,7 +967,7 @@ public class ProvenanceResourceClient {
         return experimentDatas;
     }
 
-    public void updateWorkflowNodeStatus(WorkflowInstanceNodeStatus workflowStatusNode) {
+    public void updateWorkflowNodeStatus(NodeExecutionStatus workflowStatusNode) {
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_WORKFLOWNODE_STATUS);
         MultivaluedMap formParams = new MultivaluedMapImpl();
@@ -1085,7 +1085,7 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public WorkflowInstanceNodeStatus getWorkflowNodeStatus(WorkflowInstanceNode workflowNode) {
+    public NodeExecutionStatus getWorkflowNodeStatus(WorkflowInstanceNode workflowNode) {
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.GET_WORKFLOWNODE_STATUS);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
@@ -1120,8 +1120,8 @@ public class ProvenanceResourceClient {
             }
         }
 
-        WorkflowInstanceNodeStatus workflowInstanceNodeStatus =
-                response.getEntity(WorkflowInstanceNodeStatus.class);
+        NodeExecutionStatus workflowInstanceNodeStatus =
+                response.getEntity(NodeExecutionStatus.class);
         return workflowInstanceNodeStatus;
     }
 
@@ -1368,7 +1368,7 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public NodeExecutionData getWorkflowInstanceNodeData(String workflowInstanceId,
+    public NodeExecutionDataImpl getWorkflowInstanceNodeData(String workflowInstanceId,
                                                                 String nodeId) {
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.WORKFLOWINSTANCE_NODE_DATA);
@@ -1404,8 +1404,8 @@ public class ProvenanceResourceClient {
             }
         }
 
-        NodeExecutionData workflowInstanceNodeData =
-                response.getEntity(NodeExecutionData.class);
+        NodeExecutionDataImpl workflowInstanceNodeData =
+                response.getEntity(NodeExecutionDataImpl.class);
         return workflowInstanceNodeData;
     }
 

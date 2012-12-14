@@ -322,11 +322,11 @@ public interface ProvenanceManager {
 	
 	public void setWorkflowInstanceNodeStatus(String experimentId, String workflowInstaceId, String nodeId, State status) throws AiravataAPIInvocationException;
 	
-	public void setWorkflowInstanceNodeStatus(WorkflowInstanceNodeStatus status) throws AiravataAPIInvocationException;
+	public void setWorkflowInstanceNodeStatus(NodeExecutionStatus status) throws AiravataAPIInvocationException;
 	
-	public WorkflowInstanceNodeStatus getWorkflowInstanceNodeStatus(String experimentId, String workflowInstaceId, String nodeId) throws AiravataAPIInvocationException;
+	public NodeExecutionStatus getWorkflowInstanceNodeStatus(String experimentId, String workflowInstaceId, String nodeId) throws AiravataAPIInvocationException;
 	
-	public WorkflowInstanceNodeStatus getWorkflowInstanceNodeStatus(WorkflowInstanceNode node) throws AiravataAPIInvocationException;
+	public NodeExecutionStatus getWorkflowInstanceNodeStatus(WorkflowInstanceNode node) throws AiravataAPIInvocationException;
 	
 	public void addExperiment(String projectName, String experimentId, String experimentName) throws AiravataAPIInvocationException;
 	

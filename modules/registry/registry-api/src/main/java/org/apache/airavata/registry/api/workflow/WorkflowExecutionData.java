@@ -112,7 +112,7 @@ public interface WorkflowExecutionData {
     @Deprecated
     public WorkflowExecution getWorkflowExecution() throws ExperimentLazyLoadedException;
     @Deprecated
-    public ExperimentDataImpl getExperimentData() throws ExperimentLazyLoadedException;
+    public ExperimentData getExperimentData() throws ExperimentLazyLoadedException;
     @Deprecated
     public void setExperimentData(ExperimentDataImpl experimentData) throws ExperimentLazyLoadedException;
 }

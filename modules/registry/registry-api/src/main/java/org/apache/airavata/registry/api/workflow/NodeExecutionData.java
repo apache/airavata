@@ -21,149 +21,137 @@
 
 package org.apache.airavata.registry.api.workflow;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class NodeExecutionData{
-	private WorkflowInstanceNode workflowInstanceNode;
-	private List<InputData> inputData;
-	private List<OutputData> outputData;
-	private String input;
-	private String output;
-    private WorkflowInstanceNodeStatus status;
-    private WorkflowNodeType.WorkflowNode type;
+import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
 
-    public NodeExecutionData() {
-    }
+public interface NodeExecutionData {
 
-    public NodeExecutionData(WorkflowInstanceNode workflowInstanceNode) {
-		setWorkflowInstanceNode(workflowInstanceNode);
-	}
+	/**
+	 * Get id of the Node
+	 * @return
+	 */
+	public abstract String getId();
 
-	public WorkflowInstanceNode getWorkflowInstanceNode() {
-		return workflowInstanceNode;
-	}
+	/**
+	 * Get the id of the experiment which the workflow which has this node 
+	 * @return
+	 */
+	public abstract String getExperimentId();
 
-	public void setWorkflowInstanceNode(WorkflowInstanceNode workflowInstanceNode) {
-		this.workflowInstanceNode = workflowInstanceNode;
-	}
+	/**
+	 * Get the id of the workflow execution this node belongs to
+	 * @return
+	 */
+	public abstract String getWorkflowExecutionId();
 
-    public WorkflowInstanceNodeStatus getStatus() {
-        return status;
-    }
+	/**
+	 * @deprecated
+	 * @return
+	 */
+	public abstract WorkflowInstanceNode getWorkflowInstanceNode();
 
-    public void setStatus(WorkflowInstanceNodeStatus status) {
-        this.status = status;
-    }
+	/**
+	 * @deprecated
+	 * @param workflowInstanceNode
+	 */
+	public abstract void setWorkflowInstanceNode(WorkflowInstanceNode workflowInstanceNode);
 
-    public void setStatus(WorkflowExecutionStatus.State status, Date date) {
-        setStatus(new WorkflowInstanceNodeStatus(this.workflowInstanceNode, status, date));
-
-    }
-
-    private static class NameValue{
-		String name;
-		String value;
-		public NameValue(String name, String value) {
-			this.name=name;
-			this.value=value;
-		}
-	}
 	
-	private static List<NameValue> getIOParameterData(String data){
-		List<NameValue> parameters=new ArrayList<NameValue>();
-		if (data!=null) {
-			String[] pairs = data.split(",");
-			for (String paras : pairs) {
-				String[] nameVals = paras.trim().split("=");
-                NameValue pair = null;
-                if(nameVals.length >= 2){
-				 pair = new NameValue(nameVals[0].trim(),
-						nameVals.length>1? nameVals[1].trim():"");
-                }else if(nameVals.length == 1){
-                  pair = new NameValue(nameVals[0].trim(),
-						"");
-                }
-				parameters.add(pair);
-			}
-		}
-		return parameters;
-	}
-	
-	public List<InputData> getInputData() {
-		if (inputData==null){
-			inputData=new ArrayList<InputData>();
-			List<NameValue> data = getIOParameterData(getInput());
-			for (NameValue nameValue : data) {
-				inputData.add(new InputData(getWorkflowInstanceNode(), nameValue.name, nameValue.value));
-			}
-		}
-		return inputData;
-	}
-
-	public void setInputData(List<InputData> inputData) {
-		this.inputData = inputData;
-	}
-
-	public List<OutputData> getOutputData() {
-		if (outputData==null){
-			outputData=new ArrayList<OutputData>();
-			List<NameValue> data = getIOParameterData(getOutput());
-			for (NameValue nameValue : data) {
-				outputData.add(new OutputData(getWorkflowInstanceNode(), nameValue.name, nameValue.value));
-			}
-		}
-		return outputData;
-	}
-
-	public void setOutputData(List<OutputData> outputData) {
-		this.outputData = outputData;
-	}
-
-	public String getInput() {
-		return input;
-	}
-
-	public void setInput(String input) {
-		this.input = input;
-	}
-
-	public String getOutput() {
-		return output;
-	}
-
-	public void setOutput(String output) {
-		this.output = output;
-	}
-
-    public static void main(String[] args) {
-        String input="molecule_id=3pom, geom_mol2=http://ccg-mw1.ncsa.uiuc.edu/cgenff/x_baya/cgenff_project/3pom/3pom.mol2, toppar_main_tgz=/u/ac/ccguser/proposed_dir_structure/toppar/cgenff/releases/2b7/main.tgz, toppar_usr_tgz=gsiftp://login-ember.ncsa.teragrid.org, toppar_mol_str=http://ccg-mw1.ncsa.uiuc.edu/cgenff/x_baya/cgenff_project/3pom/toppar/3pom.str, molecule_dir_in_tgz=, GC_UserName=x_baya, GC_ProjectName=x_baya, GC_WorkflowName=3pom__1349212666 | opt_freq_input_gjf=/gpfs2/scratch/users/ccguser/xbaya-workdirs/login-ember.ncsa.teragrid.org_application_Tue_Oct_02_17_18_34_EDT_2012_0933dae4-f7c7-4022-87d9-ab370c49a8bd/3pom/gauss/3pom_opt_freq_mp2.gjf, charmm_miminized_crd=/gpfs2/scratch/users/ccguser/xbaya-workdirs/login-ember.ncsa.teragrid.org_application_Tue_Oct_02_17_18_34_EDT_2012_0933dae4-f7c7-4022-87d9-ab370c49a8bd/3pom/generate/3pom_min.crd, step1_log=/gpfs2/scratch/users/ccguser/xbaya-workdirs/login-ember.ncsa.teragrid.org_application_Tue_Oct_02_17_18_34_EDT_2012_0933dae4-f7c7-4022-87d9-ab370c49a8bd/3pom/generate/generate.out, molecule_dir_out_tgz=/gpfs2/scratch/users/ccguser/xbaya-workdirs/login-ember.ncsa.teragrid.org_application_Tue_Oct_02_17_18_34_EDT_2012_0933dae4-f7c7-4022-87d9-ab370c49a8bd/molecule_dir_out.tgz, gcvars=/gpfs2/scratch/users/ccguser/xbaya-workdirs/login-ember.ncsa.teragrid.org_application_Tue_Oct_02_17_18_34_EDT_2012_0933dae4-f7c7-4022-87d9-ab370c49a8bd/GCVARS";
-
-         getIOParameterData(input);
-    }
-
-    public WorkflowNodeType.WorkflowNode getType() {
-        return type;
-    }
-
-    public void setType(WorkflowNodeType.WorkflowNode type) {
-        this.type = type;
-    }
-    public String getId(){
-    	return getWorkflowInstanceNode().getNodeId();
-    }
-
-    public String getExperimentId(){
-    	return getWorkflowInstanceNode().getWorkflowInstance().getExperimentId();
-    }
+    /**
+     * Get current state of the execution of this workflow
+     * @return
+     * @throws ExperimentLazyLoadedException
+     */
+    public WorkflowExecutionStatus.State getState();
     
-    public String getWorkflowInstanceId(){
-    	return getWorkflowInstanceNode().getWorkflowInstance().getWorkflowExecutionId();
-    }
+    /**
+     * Get current state updated time
+     * @return
+     * @throws ExperimentLazyLoadedException
+     */
+    public Date getStatusUpdateTime();
+    
+	/**
+	 * @deprecated
+	 * Get the status of the execution of this node
+	 * @return
+	 */
+	public abstract NodeExecutionStatus getStatus();
+
+	/**
+	 * Update the execution status of the node
+	 * @param status
+	 */
+	public abstract void setStatus(NodeExecutionStatus status);
+
+	/**
+	 * Update the execution status of the node
+	 * @param status
+	 * @param date
+	 */
+	public abstract void setStatus(WorkflowExecutionStatus.State status,
+			Date date);
+
+	/**
+	 * Retrieve the input data to the node
+	 * @return
+	 */
+	public abstract List<InputData> getInputData();
+
+	/**
+	 * Retrieve the output data to the node
+	 * @return
+	 */
+	public abstract List<OutputData> getOutputData();
+	
+	/**
+	 * Setup input data for the node
+	 * @param inputData
+	 */
+	public abstract void setInputData(List<InputData> inputData);
+
+	/**
+	 * Setup output data for the node
+	 * @param outputData
+	 */
+	public abstract void setOutputData(List<OutputData> outputData);
+
+	/**
+	 * Get node input as comma separated name value pairs
+	 * @return
+	 */
+	public String getInput();
+	
+	/**
+	 * Get node output as comma separated name value pairs
+	 * @return
+	 */
+	public String getOutput();
+	
+	/**
+	 * Set input as comma separated name value pairs
+	 * @param input
+	 */
+	public void setInput(String input);
+
+	/**
+	 * Set output as comma separated name value pairs
+	 * @param output
+	 */
+	public void setOutput(String output);
+
+	/**
+	 * Get node type
+	 * @return
+	 */
+	public abstract WorkflowNodeType.WorkflowNode getType();
+
+	/**
+	 * Set node type
+	 * @param type
+	 */
+	public abstract void setType(WorkflowNodeType.WorkflowNode type);
+
 }

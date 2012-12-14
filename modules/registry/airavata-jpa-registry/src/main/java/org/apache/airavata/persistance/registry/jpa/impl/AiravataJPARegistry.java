@@ -1172,7 +1172,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
 	@Override
 	public void updateWorkflowNodeStatus(
-			WorkflowInstanceNodeStatus workflowStatusNode)
+			NodeExecutionStatus workflowStatusNode)
 			throws RegistryException {
 		WorkflowExecution workflowInstance = workflowStatusNode.getWorkflowInstanceNode().getWorkflowInstance();
 		String nodeId = workflowStatusNode.getWorkflowInstanceNode().getNodeId();
@@ -1203,12 +1203,12 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public void updateWorkflowNodeStatus(WorkflowInstanceNode workflowNode,
 			State status) throws RegistryException {
-		updateWorkflowNodeStatus(new WorkflowInstanceNodeStatus(workflowNode, status, Calendar.getInstance().getTime()));
+		updateWorkflowNodeStatus(new NodeExecutionStatus(workflowNode, status, Calendar.getInstance().getTime()));
 	}
 
 
 	@Override
-	public WorkflowInstanceNodeStatus getWorkflowNodeStatus(
+	public NodeExecutionStatus getWorkflowNodeStatus(
 			WorkflowInstanceNode workflowNode) throws RegistryException {
 		String id = workflowNode.getWorkflowInstance().getWorkflowExecutionId();
 		String nodeId = workflowNode.getNodeId();
@@ -1217,7 +1217,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		}
 		WorkflowDataResource workflowInstance = jpa.getWorker().getWorkflowInstance(id);
 		NodeDataResource nodeData = workflowInstance.getNodeData(nodeId);
-		return new WorkflowInstanceNodeStatus(new WorkflowInstanceNode(new WorkflowExecution(workflowInstance.getExperimentID(), workflowInstance.getWorkflowInstanceID()), nodeData.getNodeID()), nodeData.getStatus()==null?null:State.valueOf(nodeData.getStatus()),nodeData.getLastUpdateTime());
+		return new NodeExecutionStatus(new WorkflowInstanceNode(new WorkflowExecution(workflowInstance.getExperimentID(), workflowInstance.getWorkflowInstanceID()), nodeData.getNodeID()), nodeData.getStatus()==null?null:State.valueOf(nodeData.getStatus()),nodeData.getLastUpdateTime());
 	}
 
 
@@ -1292,13 +1292,13 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
 
 	@Override
-	public NodeExecutionData getWorkflowInstanceNodeData(
+	public NodeExecutionDataImpl getWorkflowInstanceNodeData(
 			String workflowInstanceId, String nodeId) throws RegistryException {
 		if (!isWorkflowInstanceNodePresent(workflowInstanceId, nodeId)){
 			throw new WorkflowInstanceNodeDoesNotExistsException(workflowInstanceId,nodeId);
 		}
 		NodeDataResource nodeData = jpa.getWorker().getWorkflowInstance(workflowInstanceId).getNodeData(nodeId);
-		NodeExecutionData data = new NodeExecutionData(new WorkflowInstanceNode(new WorkflowExecution(nodeData.getWorkflowDataResource().getExperimentID(),nodeData.getWorkflowDataResource().getWorkflowInstanceID()),nodeData.getNodeID()));
+		NodeExecutionDataImpl data = new NodeExecutionDataImpl(new WorkflowInstanceNode(new WorkflowExecution(nodeData.getWorkflowDataResource().getExperimentID(),nodeData.getWorkflowDataResource().getWorkflowInstanceID()),nodeData.getNodeID()));
 		data.setInput(nodeData.getInputs());
 		data.setOutput(nodeData.getOutputs());
         data.setType(WorkflowNodeType.getType(nodeData.getNodeType()).getNodeType());
