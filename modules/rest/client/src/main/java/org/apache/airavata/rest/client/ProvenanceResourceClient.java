@@ -29,8 +29,6 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import org.apache.airavata.registry.api.PasswordCallback;
-import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
-import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
 import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.rest.mappings.resourcemappings.ExperimentDataList;
 import org.apache.airavata.rest.mappings.resourcemappings.ExperimentIDList;
@@ -754,7 +752,7 @@ public class ProvenanceResourceClient {
                         + status);
             }
         }
-        ExperimentDataImpl experimentData = response.getEntity(ExperimentDataImpl.class);
+        ExperimentData experimentData = response.getEntity(ExperimentData.class);
         return experimentData;
     }
 
@@ -792,7 +790,7 @@ public class ProvenanceResourceClient {
             }
         }
 
-        ExperimentDataImpl experimentData = response.getEntity(ExperimentDataImpl.class);
+        ExperimentData experimentData = response.getEntity(ExperimentData.class);
         return experimentData;
     }
 
@@ -832,9 +830,9 @@ public class ProvenanceResourceClient {
         }
 
         ExperimentDataList experimentDataList = response.getEntity(ExperimentDataList.class);
-        List<ExperimentDataImpl> dataList = experimentDataList.getExperimentDataList();
+        List<ExperimentData> dataList = experimentDataList.getExperimentDataList();
 
-        for (ExperimentDataImpl experimentData : dataList) {
+        for (ExperimentData experimentData : dataList) {
             experimentDatas.add(experimentData);
         }
         return experimentDatas;
@@ -877,9 +875,9 @@ public class ProvenanceResourceClient {
         }
 
         ExperimentDataList experimentDataList = response.getEntity(ExperimentDataList.class);
-        List<ExperimentDataImpl> dataList = experimentDataList.getExperimentDataList();
+        List<ExperimentData> dataList = experimentDataList.getExperimentDataList();
 
-        for (ExperimentDataImpl experimentData : dataList) {
+        for (ExperimentData experimentData : dataList) {
             experimentDatas.add(experimentData);
         }
         return experimentDatas;
@@ -959,9 +957,9 @@ public class ProvenanceResourceClient {
             }
         }
         ExperimentDataList experimentDataList = response.getEntity(ExperimentDataList.class);
-        List<ExperimentDataImpl> dataList = experimentDataList.getExperimentDataList();
+        List<ExperimentData> dataList = experimentDataList.getExperimentDataList();
 
-        for (ExperimentDataImpl experimentData : dataList) {
+        for (ExperimentData experimentData : dataList) {
             experimentDatas.add(experimentData);
         }
         return experimentDatas;
@@ -1283,7 +1281,7 @@ public class ProvenanceResourceClient {
             }
         }
 
-        WorkflowExecutionDataImpl workflowInstanceData = response.getEntity(WorkflowExecutionDataImpl.class);
+        WorkflowExecutionData workflowInstanceData = response.getEntity(WorkflowExecutionData.class);
         return workflowInstanceData;
     }
 

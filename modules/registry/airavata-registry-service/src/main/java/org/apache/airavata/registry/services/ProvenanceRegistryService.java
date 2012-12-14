@@ -22,7 +22,7 @@
 package org.apache.airavata.registry.services;
 
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeStatus;
+import org.apache.airavata.registry.api.workflow.NodeExecutionStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeGramData;
 
 import javax.ws.rs.core.Response;
@@ -269,7 +269,7 @@ public interface ProvenanceRegistryService {
      * @return
      * @throws org.apache.airavata.registry.api.exception.RegistryException
      */
-    public Response updateWorkflowNodeStatus(WorkflowInstanceNodeStatus workflowStatusNode) throws RegistryException;
+    public Response updateWorkflowNodeStatus(NodeExecutionStatus workflowStatusNode) throws RegistryException;
 
     public Response updateWorkflowNodeStatus(String workflowInstanceId, String nodeId, String executionStatus)
             throws RegistryException;

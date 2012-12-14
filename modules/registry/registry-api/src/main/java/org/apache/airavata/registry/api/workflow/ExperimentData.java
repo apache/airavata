@@ -24,14 +24,17 @@ package org.apache.airavata.registry.api.workflow;
 import java.util.List;
 
 import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
+import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
 import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
 
+import javax.jws.WebService;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
+@WebService
+@XmlSeeAlso(ExperimentDataImpl.class)
 public interface ExperimentData extends WorkflowExecutionData {
     //Current Id and Topic values are similar
 

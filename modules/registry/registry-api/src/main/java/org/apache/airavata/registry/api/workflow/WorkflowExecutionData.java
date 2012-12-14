@@ -21,16 +21,19 @@ package org.apache.airavata.registry.api.workflow;/*
 
 import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
 import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
+import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeType.WorkflowNode;
 
+import javax.jws.WebService;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.Date;
 import java.util.List;
 
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
+@WebService
+@XmlSeeAlso(WorkflowExecutionDataImpl.class)
 public interface WorkflowExecutionData {
 	/**
 	 * Get workflow execution id
