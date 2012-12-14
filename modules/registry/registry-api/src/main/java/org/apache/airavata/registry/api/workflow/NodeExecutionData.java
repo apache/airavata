@@ -26,6 +26,11 @@ import java.util.List;
 
 import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
 
+import javax.jws.WebService;
+import javax.xml.bind.annotation.XmlSeeAlso;
+
+@WebService
+@XmlSeeAlso(NodeExecutionDataImpl.class)
 public interface NodeExecutionData {
 
 	/**

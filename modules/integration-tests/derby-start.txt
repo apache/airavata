@@ -1,1 +1,1 @@
-cd: 22: can't cd to /home/samindaw/prj-co/airavata/modules/integration-tests/target/tests/apache-tomcat-7.0.33/webapps/axis2/WEB-INF/bin
+./derby.sh: line 22: cd: /Users/chathuri/airavata/source/trunk_new/modules/integration-tests/target/tests/apache-tomcat-7.0.33/webapps/axis2/WEB-INF/bin: No such file or directory

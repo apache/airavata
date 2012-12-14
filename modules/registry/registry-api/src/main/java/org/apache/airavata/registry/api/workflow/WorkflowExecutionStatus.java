@@ -30,7 +30,13 @@ import java.util.Date;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
 public class WorkflowExecutionStatus {
+
     public WorkflowExecutionStatus() {
+    }
+
+    public WorkflowExecutionStatus(String experimentID, String workflowInstanceID) {
+        workflowInstance.setExperimentId(experimentID);
+        workflowInstance.setWorkflowExecutionId(workflowInstanceID);
     }
 
     public enum State {
