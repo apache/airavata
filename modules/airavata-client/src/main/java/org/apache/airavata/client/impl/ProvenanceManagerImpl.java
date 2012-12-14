@@ -348,7 +348,7 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	}
 
 	@Override
-	public void setWorkflowInstanceNodeStatus(WorkflowInstanceNodeStatus status)
+	public void setWorkflowInstanceNodeStatus(NodeExecutionStatus status)
 			throws AiravataAPIInvocationException {
 		try {
 			getClient().getRegistryClient().updateWorkflowNodeStatus(status);
@@ -358,14 +358,14 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	}
 
 	@Override
-	public WorkflowInstanceNodeStatus getWorkflowInstanceNodeStatus(
+	public NodeExecutionStatus getWorkflowInstanceNodeStatus(
 			String experimentId, String workflowInstaceId, String nodeId)
 			throws AiravataAPIInvocationException {
 		return getWorkflowInstanceNodeStatus(new WorkflowInstanceNode(new WorkflowExecution(experimentId,workflowInstaceId),nodeId));
 	}
 
 	@Override
-	public WorkflowInstanceNodeStatus getWorkflowInstanceNodeStatus(
+	public NodeExecutionStatus getWorkflowInstanceNodeStatus(
 			WorkflowInstanceNode node) throws AiravataAPIInvocationException {
 		try {
 			return getClient().getRegistryClient().getWorkflowNodeStatus(node);

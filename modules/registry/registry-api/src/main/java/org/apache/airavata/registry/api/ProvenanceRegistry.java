@@ -294,13 +294,13 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @param workflowStatusNode
      * @return
      */
-    public abstract void updateWorkflowNodeStatus(WorkflowInstanceNodeStatus workflowStatusNode)throws RegistryException;
+    public abstract void updateWorkflowNodeStatus(NodeExecutionStatus workflowStatusNode)throws RegistryException;
 
     public abstract void updateWorkflowNodeStatus(String workflowInstanceId, String nodeId, State status)throws RegistryException;
     
     public abstract void updateWorkflowNodeStatus(WorkflowInstanceNode workflowNode, State status)throws RegistryException;
 
-    public WorkflowInstanceNodeStatus getWorkflowNodeStatus(WorkflowInstanceNode workflowNode)throws RegistryException;
+    public NodeExecutionStatus getWorkflowNodeStatus(WorkflowInstanceNode workflowNode)throws RegistryException;
     
     public Date getWorkflowNodeStartTime(WorkflowInstanceNode workflowNode)throws RegistryException;
     
@@ -319,7 +319,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
     
     public boolean isWorkflowInstanceNodePresent(String workflowInstanceId, String nodeId, boolean createIfNotPresent)throws RegistryException;
     
-    public NodeExecutionData getWorkflowInstanceNodeData(String workflowInstanceId, String nodeId)throws RegistryException;
+    public NodeExecutionDataImpl getWorkflowInstanceNodeData(String workflowInstanceId, String nodeId)throws RegistryException;
 
     public void addWorkflowInstance(String experimentId, String workflowInstanceId, String templateName) throws RegistryException;
     

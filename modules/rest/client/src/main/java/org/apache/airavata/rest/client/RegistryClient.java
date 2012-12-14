@@ -39,13 +39,13 @@ import org.apache.airavata.registry.api.WorkspaceProject;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.worker.ExperimentDoesNotExistsException;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
-import org.apache.airavata.registry.api.workflow.NodeExecutionData;
+import org.apache.airavata.registry.api.workflow.NodeExecutionDataImpl;
 import org.apache.airavata.registry.api.workflow.WorkflowExecution;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionData;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowIOData;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeStatus;
+import org.apache.airavata.registry.api.workflow.NodeExecutionStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeGramData;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeType;
@@ -632,7 +632,7 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public void updateWorkflowNodeStatus(WorkflowInstanceNodeStatus workflowStatusNode) throws RegistryException {
+    public void updateWorkflowNodeStatus(NodeExecutionStatus workflowStatusNode) throws RegistryException {
         getProvenanceResourceClient().updateWorkflowNodeStatus(workflowStatusNode);
     }
 
@@ -649,7 +649,7 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public WorkflowInstanceNodeStatus getWorkflowNodeStatus(WorkflowInstanceNode workflowNode) throws RegistryException {
+    public NodeExecutionStatus getWorkflowNodeStatus(WorkflowInstanceNode workflowNode) throws RegistryException {
         return getProvenanceResourceClient().getWorkflowNodeStatus(workflowNode);
     }
 
@@ -686,7 +686,7 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public NodeExecutionData getWorkflowInstanceNodeData(String workflowInstanceId,
+    public NodeExecutionDataImpl getWorkflowInstanceNodeData(String workflowInstanceId,
                                                                 String nodeId) throws RegistryException {
         return getProvenanceResourceClient().getWorkflowInstanceNodeData(workflowInstanceId, nodeId);
     }
