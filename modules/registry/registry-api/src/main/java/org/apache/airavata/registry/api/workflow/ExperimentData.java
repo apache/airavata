@@ -33,19 +33,86 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public interface ExperimentData extends WorkflowInstanceData {
+    //Current Id and Topic values are similar
+
+    /**
+     * Returns the ExeperimentID of the workflow Run
+     * @return
+     */
     public String getId();
+
+    /**
+     * Returns the Experiment Topic... Currently the ID and the Topic are identical
+     * @return
+     */
 	public String getTopic();
+
+    /**
+     * Returns the user of the workflow run
+     * @return
+     */
 	public String getUser();
+
+    /**
+     * Returns metadata related to the workflow run
+     * @return
+     */
 	public String getMetadata();
+
+    /**
+     * Returns the Experiment Name of the workflow run, This is given in the XBaya-GUI when you user run a workflow
+     * @return
+     */
 	public String getExperimentName();
+
+    /**
+     * get data related to a particular experiment, this returns all the workflow runs for the given Experiment
+     * @return
+     * @throws ExperimentLazyLoadedException
+     */
 	public List<WorkflowInstanceDataImpl> getWorkflowInstanceData() throws ExperimentLazyLoadedException;
+
+    /**
+     * Reut
+     * @param workflowInstanceID
+     * @return
+     * @throws ExperimentLazyLoadedException
+     */
     public WorkflowInstanceData getWorkflowInstance(String workflowInstanceID) throws ExperimentLazyLoadedException;
 
+    /**
+     *
+     * @param experimentId
+     */
     public void setExperimentId(String experimentId);
+
+    /**
+     *
+     * @param topic
+     */
 	public void setTopic(String topic);
+
+    /**
+     *
+     * @param user
+     */
 	public void setUser(String user);
+
+    /**
+     *
+     * @param metadata
+     */
 	public void setMetadata(String metadata);
+
+    /**
+     *
+     * @param experimentName
+     */
 	public void setExperimentName(String experimentName);
-    
+
+    /**
+     *
+     * @return
+     */
 	public String getExperimentId();
 }
