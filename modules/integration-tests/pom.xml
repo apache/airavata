@@ -18,8 +18,8 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>tomcat-distribution</artifactId>
-    <name>tomcat-distribution</name>
+    <artifactId>integration-tests</artifactId>
+    <name>Airavata Integration Tests</name>
     <url>http://airavata.apache.org/</url>
     
     <build>
@@ -109,6 +109,12 @@
                         <phase>compile</phase>
                         <configuration>
                             <target>
+                                <copy todir="${tomcat.work.dir}/lib">
+                                    <fileset dir="${airavata.work.dir}/lib/">
+                                        <exclude name="tomcat-*.jar"/>
+                                        <exclude name="icu4j-*.jar"/>
+                                    </fileset>
+                                </copy>
                                 <copy todir="${tomcat.work.dir}/webapps/axis2/WEB-INF">
                                     <fileset dir="${airavata.work.dir}/repository/"/>
                                 </copy>
@@ -361,6 +367,18 @@
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-rest-service-webapp</artifactId>
             <type>war</type>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-jpa-registry</artifactId>
+            <type>jar</type>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
