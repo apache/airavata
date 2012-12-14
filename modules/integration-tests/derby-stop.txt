@@ -1,0 +1,2 @@
+./stop-derby.sh: 7: [[: not found
+Does not exist

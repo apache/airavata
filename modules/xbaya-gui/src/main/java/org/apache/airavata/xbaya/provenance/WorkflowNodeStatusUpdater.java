@@ -23,9 +23,9 @@ package org.apache.airavata.xbaya.provenance;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.workflow.WorkflowInstance;
+import org.apache.airavata.registry.api.workflow.WorkflowExecution;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,10 +44,10 @@ public class WorkflowNodeStatusUpdater {
             //todo we currently save only service nodes
             WorkflowNodeType workflowNodeType = new WorkflowNodeType();
             workflowNodeType.setNodeType(WorkflowNodeType.WorkflowNode.SERVICENODE);
-            WorkflowInstanceNode node = new WorkflowInstanceNode(new WorkflowInstance(workflowInstanceID,workflowInstanceID), nodeID);
+            WorkflowInstanceNode node = new WorkflowInstanceNode(new WorkflowExecution(workflowInstanceID,workflowInstanceID), nodeID);
 			airavataAPI.getProvenanceManager().setWorkflowInstanceNodeInput(node, inputs);
             airavataAPI.getProvenanceManager().setWorkflowNodeType(node, workflowNodeType);
-            airavataAPI.getProvenanceManager().setWorkflowInstanceNodeStatus(workflowInstanceID, workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.STARTED);
+            airavataAPI.getProvenanceManager().setWorkflowInstanceNodeStatus(workflowInstanceID, workflowInstanceID, nodeID, WorkflowExecutionStatus.State.STARTED);
         } catch (AiravataAPIInvocationException e) {
             logger.error("Error updating Wokflow Node status !!");
             return false;
@@ -57,8 +57,8 @@ public class WorkflowNodeStatusUpdater {
 
     public boolean workflowFailed(String workflowInstanceID,String nodeID){
         try {
-            airavataAPI.getProvenanceManager().setWorkflowInstanceNodeStatus(workflowInstanceID, workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.FAILED);
-            airavataAPI.getProvenanceManager().setWorkflowInstanceStatus(workflowInstanceID, workflowInstanceID, WorkflowInstanceStatus.ExecutionStatus.FAILED);
+            airavataAPI.getProvenanceManager().setWorkflowInstanceNodeStatus(workflowInstanceID, workflowInstanceID, nodeID, WorkflowExecutionStatus.State.FAILED);
+            airavataAPI.getProvenanceManager().setWorkflowInstanceStatus(workflowInstanceID, workflowInstanceID, WorkflowExecutionStatus.State.FAILED);
         } catch (AiravataAPIInvocationException e) {
             logger.error("Error updating Wokflow Node status !!");
             return false;
@@ -70,10 +70,10 @@ public class WorkflowNodeStatusUpdater {
         try {
         	WorkflowNodeType workflowNodeType = new WorkflowNodeType();
             workflowNodeType.setNodeType(WorkflowNodeType.WorkflowNode.SERVICENODE);
-            WorkflowInstanceNode node = new WorkflowInstanceNode(new WorkflowInstance(workflowInstanceID,workflowInstanceID), nodeID);
+            WorkflowInstanceNode node = new WorkflowInstanceNode(new WorkflowExecution(workflowInstanceID,workflowInstanceID), nodeID);
             airavataAPI.getProvenanceManager().setWorkflowInstanceNodeOutput(node, inputs);
             airavataAPI.getProvenanceManager().setWorkflowNodeType(node,workflowNodeType);
-            airavataAPI.getProvenanceManager().setWorkflowInstanceNodeStatus(workflowInstanceID, workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.FINISHED);
+            airavataAPI.getProvenanceManager().setWorkflowInstanceNodeStatus(workflowInstanceID, workflowInstanceID, nodeID, WorkflowExecutionStatus.State.FINISHED);
         } catch (AiravataAPIInvocationException e) {
             logger.error("Error updating Wokflow Node status !!");
             return false;
@@ -83,7 +83,7 @@ public class WorkflowNodeStatusUpdater {
 
     public boolean workflowRunning(String workflowInstanceID,String nodeID){
         try {
-            airavataAPI.getProvenanceManager().setWorkflowInstanceNodeStatus(workflowInstanceID, workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.RUNNING);
+            airavataAPI.getProvenanceManager().setWorkflowInstanceNodeStatus(workflowInstanceID, workflowInstanceID, nodeID, WorkflowExecutionStatus.State.RUNNING);
         } catch (AiravataAPIInvocationException e) {
             logger.error("Error updating Wokflow Node status !!");
             return false;
@@ -93,7 +93,7 @@ public class WorkflowNodeStatusUpdater {
 
      public boolean workflowPaused(String workflowInstanceID,String nodeID){
         try {
-            airavataAPI.getProvenanceManager().setWorkflowInstanceNodeStatus(workflowInstanceID, workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.PAUSED);
+            airavataAPI.getProvenanceManager().setWorkflowInstanceNodeStatus(workflowInstanceID, workflowInstanceID, nodeID, WorkflowExecutionStatus.State.PAUSED);
         } catch (AiravataAPIInvocationException e) {
             logger.error("Error updating Wokflow Node status !!");
             return false;

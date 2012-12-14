@@ -30,7 +30,7 @@ import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
-import org.apache.airavata.registry.api.impl.WorkflowInstanceDataImpl;
+import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
 import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.rest.mappings.resourcemappings.ExperimentDataList;
 import org.apache.airavata.rest.mappings.resourcemappings.ExperimentIDList;
@@ -411,8 +411,8 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public List<WorkflowInstance> getExperimentWorkflowInstances(String experimentId) {
-        List<WorkflowInstance> workflowInstanceList = new ArrayList<WorkflowInstance>();
+    public List<WorkflowExecution> getExperimentWorkflowInstances(String experimentId) {
+        List<WorkflowExecution> workflowInstanceList = new ArrayList<WorkflowExecution>();
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENTWORKFLOWINSTANCES);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
@@ -447,10 +447,10 @@ public class ProvenanceResourceClient {
         }
 
         WorkflowInstancesList workflowInstancesList = response.getEntity(WorkflowInstancesList.class);
-        WorkflowInstance[] workflowInstances = workflowInstancesList.getWorkflowInstances();
+        WorkflowExecution[] workflowInstances = workflowInstancesList.getWorkflowInstances();
 
 
-        for (WorkflowInstance workflowInstance : workflowInstances) {
+        for (WorkflowExecution workflowInstance : workflowInstances) {
             workflowInstanceList.add(workflowInstance);
         }
 
@@ -536,7 +536,7 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public void updateWorkflowInstanceStatus(String instanceId, WorkflowInstanceStatus.ExecutionStatus executionStatus) {
+    public void updateWorkflowInstanceStatus(String instanceId, WorkflowExecutionStatus.State executionStatus) {
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_WORKFLOWINSTANCESTATUS_INSTANCEID);
         MultivaluedMap formParams = new MultivaluedMapImpl();
@@ -570,14 +570,14 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public void updateWorkflowInstanceStatus(WorkflowInstanceStatus workflowInstanceStatus) {
+    public void updateWorkflowInstanceStatus(WorkflowExecutionStatus workflowInstanceStatus) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String statusUpdateDate = dateFormat.format(workflowInstanceStatus.getStatusUpdateTime());
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_WORKFLOWINSTANCESTATUS);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("workflowInstanceId",
-                workflowInstanceStatus.getWorkflowInstance().getWorkflowInstanceId());
+                workflowInstanceStatus.getWorkflowInstance().getWorkflowExecutionId());
         formParams.add("executionStatus",
                 workflowInstanceStatus.getExecutionStatus().name());
         formParams.add("statusUpdateTime",
@@ -611,7 +611,7 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public WorkflowInstanceStatus getWorkflowInstanceStatus(String instanceId) {
+    public WorkflowExecutionStatus getWorkflowInstanceStatus(String instanceId) {
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.GET_WORKFLOWINSTANCESTATUS);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
@@ -645,7 +645,7 @@ public class ProvenanceResourceClient {
             }
         }
 
-        WorkflowInstanceStatus workflowInstanceStatus = response.getEntity(WorkflowInstanceStatus.class);
+        WorkflowExecutionStatus workflowInstanceStatus = response.getEntity(WorkflowExecutionStatus.class);
         return workflowInstanceStatus;
     }
 
@@ -654,7 +654,7 @@ public class ProvenanceResourceClient {
                 ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_WORKFLOWNODEINPUT);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("nodeID", node.getNodeId());
-        formParams.add("workflowInstanceId", node.getWorkflowInstance().getWorkflowInstanceId());
+        formParams.add("workflowInstanceId", node.getWorkflowInstance().getWorkflowExecutionId());
         formParams.add("data", data);
 
         ClientResponse response = webResource.accept(
@@ -691,7 +691,7 @@ public class ProvenanceResourceClient {
                 ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_WORKFLOWNODEOUTPUT);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("nodeID", node.getNodeId());
-        formParams.add("workflowInstanceId", node.getWorkflowInstance().getWorkflowInstanceId());
+        formParams.add("workflowInstanceId", node.getWorkflowInstance().getWorkflowExecutionId());
         formParams.add("data", data);
 
         ClientResponse response = webResource.accept(
@@ -972,7 +972,7 @@ public class ProvenanceResourceClient {
                 ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_WORKFLOWNODE_STATUS);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("workflowInstanceId",
-                workflowStatusNode.getWorkflowInstanceNode().getWorkflowInstance().getWorkflowInstanceId());
+                workflowStatusNode.getWorkflowInstanceNode().getWorkflowInstance().getWorkflowExecutionId());
         formParams.add("nodeId",
                 workflowStatusNode.getWorkflowInstanceNode().getNodeId());
         formParams.add("executionStatus",
@@ -1009,7 +1009,7 @@ public class ProvenanceResourceClient {
 
     public void updateWorkflowNodeStatus(String workflowInstanceId,
                                          String nodeId,
-                                         WorkflowInstanceStatus.ExecutionStatus executionStatus) {
+                                         WorkflowExecutionStatus.State executionStatus) {
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_WORKFLOWNODE_STATUS);
         MultivaluedMap formParams = new MultivaluedMapImpl();
@@ -1047,12 +1047,12 @@ public class ProvenanceResourceClient {
     }
 
     public void updateWorkflowNodeStatus(WorkflowInstanceNode workflowNode,
-                                         WorkflowInstanceStatus.ExecutionStatus executionStatus) {
+                                         WorkflowExecutionStatus.State executionStatus) {
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_WORKFLOWNODE_STATUS);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("workflowInstanceId",
-                workflowNode.getWorkflowInstance().getWorkflowInstanceId());
+                workflowNode.getWorkflowInstance().getWorkflowExecutionId());
         formParams.add("nodeId", workflowNode.getNodeId());
         formParams.add("executionStatus", executionStatus.name());
 
@@ -1089,7 +1089,7 @@ public class ProvenanceResourceClient {
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.GET_WORKFLOWNODE_STATUS);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
-        queryParams.add("workflowInstanceId", workflowNode.getWorkflowInstance().getWorkflowInstanceId());
+        queryParams.add("workflowInstanceId", workflowNode.getWorkflowInstance().getWorkflowExecutionId());
         queryParams.add("nodeId", workflowNode.getNodeId());
         ClientResponse response = webResource.queryParams(queryParams).accept(
                 MediaType.APPLICATION_JSON).get(ClientResponse.class);
@@ -1129,7 +1129,7 @@ public class ProvenanceResourceClient {
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.GET_WORKFLOWNODE_STARTTIME);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
-        queryParams.add("workflowInstanceId", workflowNode.getWorkflowInstance().getWorkflowInstanceId());
+        queryParams.add("workflowInstanceId", workflowNode.getWorkflowInstance().getWorkflowExecutionId());
         queryParams.add("nodeId", workflowNode.getNodeId());
         ClientResponse response = webResource.queryParams(queryParams).accept(
                 MediaType.TEXT_PLAIN).get(ClientResponse.class);
@@ -1171,11 +1171,11 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public Date getWorkflowStartTime(WorkflowInstance workflowInstance) {
+    public Date getWorkflowStartTime(WorkflowExecution workflowInstance) {
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.GET_WORKFLOW_STARTTIME);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
-        queryParams.add("workflowInstanceId", workflowInstance.getWorkflowInstanceId());
+        queryParams.add("workflowInstanceId", workflowInstance.getWorkflowExecutionId());
         ClientResponse response = webResource.queryParams(queryParams).accept(
                 MediaType.TEXT_PLAIN).get(ClientResponse.class);
         int status = response.getStatus();
@@ -1249,7 +1249,7 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public WorkflowInstanceData getWorkflowInstanceData(String workflowInstanceId) {
+    public WorkflowExecutionData getWorkflowInstanceData(String workflowInstanceId) {
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.GET_WORKFLOWINSTANCEDATA);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
@@ -1283,7 +1283,7 @@ public class ProvenanceResourceClient {
             }
         }
 
-        WorkflowInstanceDataImpl workflowInstanceData = response.getEntity(WorkflowInstanceDataImpl.class);
+        WorkflowExecutionDataImpl workflowInstanceData = response.getEntity(WorkflowExecutionDataImpl.class);
         return workflowInstanceData;
     }
 
@@ -1368,7 +1368,7 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public WorkflowInstanceNodeData getWorkflowInstanceNodeData(String workflowInstanceId,
+    public NodeExecutionData getWorkflowInstanceNodeData(String workflowInstanceId,
                                                                 String nodeId) {
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.WORKFLOWINSTANCE_NODE_DATA);
@@ -1404,8 +1404,8 @@ public class ProvenanceResourceClient {
             }
         }
 
-        WorkflowInstanceNodeData workflowInstanceNodeData =
-                response.getEntity(WorkflowInstanceNodeData.class);
+        NodeExecutionData workflowInstanceNodeData =
+                response.getEntity(NodeExecutionData.class);
         return workflowInstanceNodeData;
     }
 
@@ -1453,7 +1453,7 @@ public class ProvenanceResourceClient {
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_WORKFLOWNODETYPE);
         MultivaluedMap formParams = new MultivaluedMapImpl();
-        formParams.add("workflowInstanceId", node.getWorkflowInstance().getWorkflowInstanceId());
+        formParams.add("workflowInstanceId", node.getWorkflowInstance().getWorkflowExecutionId());
         formParams.add("nodeId", node.getNodeId());
         formParams.add("nodeType", type.getNodeType().name());
 

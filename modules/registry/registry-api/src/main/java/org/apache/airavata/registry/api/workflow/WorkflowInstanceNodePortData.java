@@ -80,7 +80,7 @@ public class WorkflowInstanceNodePortData {
     }
     
     public String getWorkflowInstanceId(){
-    	return getWorkflowInstanceNode().getWorkflowInstance().getWorkflowInstanceId();
+    	return getWorkflowInstanceNode().getWorkflowInstance().getWorkflowExecutionId();
     }
     
     public String getWorkflowInstanceNodeId(){

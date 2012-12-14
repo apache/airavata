@@ -21,19 +21,34 @@
 
 package org.apache.airavata.rest.client;
 
-import org.apache.airavata.common.utils.Version;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
-import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.*;
-import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.exception.worker.*;
-import org.apache.airavata.registry.api.workflow.*;
-
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.airavata.common.utils.Version;
+import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.registry.api.AiravataExperiment;
+import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.AiravataUser;
+import org.apache.airavata.registry.api.PasswordCallback;
+import org.apache.airavata.registry.api.ResourceMetadata;
+import org.apache.airavata.registry.api.WorkspaceProject;
+import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.worker.ExperimentDoesNotExistsException;
+import org.apache.airavata.registry.api.workflow.ExperimentData;
+import org.apache.airavata.registry.api.workflow.NodeExecutionData;
+import org.apache.airavata.registry.api.workflow.WorkflowExecution;
+import org.apache.airavata.registry.api.workflow.WorkflowExecutionData;
+import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowIOData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeGramData;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeType;
 
 public class RegistryClient extends AiravataRegistry2 {
 
@@ -485,7 +500,7 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public List<WorkflowInstance> getExperimentWorkflowInstances(String experimentId) throws RegistryException {
+    public List<WorkflowExecution> getExperimentWorkflowInstances(String experimentId) throws RegistryException {
         return getProvenanceResourceClient().getExperimentWorkflowInstances(experimentId);
     }
 
@@ -502,17 +517,17 @@ public class RegistryClient extends AiravataRegistry2 {
 
 
     public void updateWorkflowInstanceStatus(String instanceId,
-                                             WorkflowInstanceStatus.ExecutionStatus status) throws RegistryException {
+                                             WorkflowExecutionStatus.State status) throws RegistryException {
         getProvenanceResourceClient().updateWorkflowInstanceStatus(instanceId, status);
     }
 
 
-    public void updateWorkflowInstanceStatus(WorkflowInstanceStatus status) throws RegistryException {
+    public void updateWorkflowInstanceStatus(WorkflowExecutionStatus status) throws RegistryException {
         getProvenanceResourceClient().updateWorkflowInstanceStatus(status);
     }
 
 
-    public WorkflowInstanceStatus getWorkflowInstanceStatus(String instanceId) throws RegistryException {
+    public WorkflowExecutionStatus getWorkflowInstanceStatus(String instanceId) throws RegistryException {
         return getProvenanceResourceClient().getWorkflowInstanceStatus(instanceId);
     }
 
@@ -623,13 +638,13 @@ public class RegistryClient extends AiravataRegistry2 {
 
 
     public void updateWorkflowNodeStatus(String workflowInstanceId, String nodeId,
-                                         WorkflowInstanceStatus.ExecutionStatus status) throws RegistryException {
+                                         WorkflowExecutionStatus.State status) throws RegistryException {
         getProvenanceResourceClient().updateWorkflowNodeStatus(workflowInstanceId, nodeId, status);
     }
 
 
     public void updateWorkflowNodeStatus(WorkflowInstanceNode workflowNode,
-                                         WorkflowInstanceStatus.ExecutionStatus status) throws RegistryException {
+                                         WorkflowExecutionStatus.State status) throws RegistryException {
         getProvenanceResourceClient().updateWorkflowNodeStatus(workflowNode, status);
     }
 
@@ -644,7 +659,7 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public Date getWorkflowStartTime(WorkflowInstance workflowInstance) throws RegistryException {
+    public Date getWorkflowStartTime(WorkflowExecution workflowInstance) throws RegistryException {
         return getProvenanceResourceClient().getWorkflowStartTime(workflowInstance);
     }
 
@@ -654,7 +669,7 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public WorkflowInstanceData getWorkflowInstanceData(String workflowInstanceId) throws RegistryException {
+    public WorkflowExecutionData getWorkflowInstanceData(String workflowInstanceId) throws RegistryException {
         return getProvenanceResourceClient().getWorkflowInstanceData(workflowInstanceId);
     }
 
@@ -671,7 +686,7 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 
-    public WorkflowInstanceNodeData getWorkflowInstanceNodeData(String workflowInstanceId,
+    public NodeExecutionData getWorkflowInstanceNodeData(String workflowInstanceId,
                                                                 String nodeId) throws RegistryException {
         return getProvenanceResourceClient().getWorkflowInstanceNodeData(workflowInstanceId, nodeId);
     }

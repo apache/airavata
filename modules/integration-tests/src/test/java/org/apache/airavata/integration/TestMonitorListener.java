@@ -3,9 +3,9 @@ package org.apache.airavata.integration;
 import junit.framework.Assert;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
-import org.apache.airavata.registry.api.impl.WorkflowInstanceDataImpl;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeData;
+import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
+import org.apache.airavata.registry.api.workflow.WorkflowExecutionData;
+import org.apache.airavata.registry.api.workflow.NodeExecutionData;
 import org.apache.airavata.ws.monitor.MonitorEvent;
 import org.apache.airavata.ws.monitor.MonitorEventData;
 import org.apache.airavata.ws.monitor.MonitorEventListener;
@@ -55,13 +55,13 @@ public class TestMonitorListener implements MonitorEventListener {
 
         log.info("Verifying output ...");
 
-        List<WorkflowInstanceDataImpl> workflowInstanceData = experimentData.getWorkflowInstanceData();
+        List<WorkflowExecutionDataImpl> workflowInstanceData = experimentData.getWorkflowExecutionDataList();
 
 //        List<WorkflowInstanceData> workflowInstanceData = experimentData.getWorkflowInstanceData();
 
-        for(WorkflowInstanceDataImpl data:workflowInstanceData){
-            List<WorkflowInstanceNodeData> nodeDataList = data.getNodeDataList();
-            for(WorkflowInstanceNodeData nodeData:nodeDataList){
+        for(WorkflowExecutionDataImpl data:workflowInstanceData){
+            List<NodeExecutionData> nodeDataList = data.getNodeDataList();
+            for(NodeExecutionData nodeData:nodeDataList){
                 Assert.assertEquals("Airavata Test", nodeData.getOutputData().get(0).getValue());
                 Assert.assertEquals(outputVerifyingString, nodeData.getInputData().get(0).getValue());
             }

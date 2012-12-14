@@ -18,21 +18,17 @@
  * under the License.
  *
  */
-package org.apache.airavata.rest.mappings.resourcemappings;
 
-import org.apache.airavata.registry.api.workflow.WorkflowExecution;
+package org.apache.airavata.registry.api.workflow;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement
-public class WorkflowInstancesList {
-    WorkflowExecution[] workflowInstances = new WorkflowExecution[]{};
-
-    public WorkflowExecution[] getWorkflowInstances() {
-        return workflowInstances;
-    }
-
-    public void setWorkflowInstances(WorkflowExecution[] workflowInstances) {
-        this.workflowInstances = workflowInstances;
-    }
+public class InputData extends WorkflowInstanceNodePortData {
+	public InputData() {
+		super();
+	}
+    public InputData(WorkflowInstanceNode workflowInstanceNode, String portName, String portValue) {
+		super(workflowInstanceNode, portName, portValue);
+	}
+	public InputData(WorkflowInstanceNode workflowInstanceNode, String data) {
+		super(workflowInstanceNode, data);
+	}
 }

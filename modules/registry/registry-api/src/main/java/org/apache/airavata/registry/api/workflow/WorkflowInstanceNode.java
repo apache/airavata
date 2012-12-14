@@ -28,22 +28,22 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
 public class WorkflowInstanceNode{
-	private WorkflowInstance workflowInstance;
+	private WorkflowExecution workflowInstance;
 	private String nodeId;
 
     public WorkflowInstanceNode() {
     }
 
-    public WorkflowInstanceNode(WorkflowInstance workflowInstance, String nodeId) {
+    public WorkflowInstanceNode(WorkflowExecution workflowInstance, String nodeId) {
 		setWorkflowInstance(workflowInstance);
 		setNodeId(nodeId);
 	}
 
-	public WorkflowInstance getWorkflowInstance() {
+	public WorkflowExecution getWorkflowInstance() {
 		return workflowInstance;
 	}
 
-	public void setWorkflowInstance(WorkflowInstance workflowInstance) {
+	public void setWorkflowInstance(WorkflowExecution workflowInstance) {
 		this.workflowInstance = workflowInstance;
 	}
 

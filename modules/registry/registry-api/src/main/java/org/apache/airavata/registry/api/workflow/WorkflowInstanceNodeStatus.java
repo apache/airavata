@@ -24,7 +24,7 @@ package org.apache.airavata.registry.api.workflow;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -33,18 +33,18 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
 public class WorkflowInstanceNodeStatus {
-    private ExecutionStatus executionStatus;
+    private State executionStatus;
     private Date statusUpdateTime = null;
     private WorkflowInstanceNode workflowInstanceNode;
 
     public WorkflowInstanceNodeStatus() {
     }
 
-    public ExecutionStatus getExecutionStatus() {
+    public State getExecutionStatus() {
         return executionStatus;
     }
 
-    public void setExecutionStatus(ExecutionStatus executionStatus) {
+    public void setExecutionStatus(State executionStatus) {
         this.executionStatus = executionStatus;
     }
 
@@ -56,11 +56,11 @@ public class WorkflowInstanceNodeStatus {
         this.statusUpdateTime = statusUpdateTime;
     }
 
-    public WorkflowInstanceNodeStatus(WorkflowInstanceNode workflowInstanceNode, ExecutionStatus executionStatus) {
+    public WorkflowInstanceNodeStatus(WorkflowInstanceNode workflowInstanceNode, State executionStatus) {
         this(workflowInstanceNode, executionStatus, null);
     }
 
-    public WorkflowInstanceNodeStatus(WorkflowInstanceNode workflowInstanceNode, ExecutionStatus executionStatus, Date statusUpdateTime) {
+    public WorkflowInstanceNodeStatus(WorkflowInstanceNode workflowInstanceNode, State executionStatus, Date statusUpdateTime) {
         statusUpdateTime = statusUpdateTime == null ? Calendar.getInstance().getTime() : statusUpdateTime;
         setWorkflowInstanceNode(workflowInstanceNode);
         setExecutionStatus(executionStatus);

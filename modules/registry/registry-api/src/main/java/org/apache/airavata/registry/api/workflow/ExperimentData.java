@@ -24,7 +24,7 @@ package org.apache.airavata.registry.api.workflow;
 import java.util.List;
 
 import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
-import org.apache.airavata.registry.api.impl.WorkflowInstanceDataImpl;
+import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public interface ExperimentData extends WorkflowInstanceData {
+public interface ExperimentData extends WorkflowExecutionData {
     //Current Id and Topic values are similar
 
     /**
@@ -70,15 +70,15 @@ public interface ExperimentData extends WorkflowInstanceData {
      * @return
      * @throws ExperimentLazyLoadedException
      */
-	public List<WorkflowInstanceDataImpl> getWorkflowInstanceData() throws ExperimentLazyLoadedException;
+	public List<WorkflowExecutionDataImpl> getWorkflowExecutionDataList() throws ExperimentLazyLoadedException;
 
     /**
      * Reut
-     * @param workflowInstanceID
+     * @param workflowExecutionID
      * @return
      * @throws ExperimentLazyLoadedException
      */
-    public WorkflowInstanceData getWorkflowInstance(String workflowInstanceID) throws ExperimentLazyLoadedException;
+    public WorkflowExecutionData getWorkflowExecutionData(String workflowExecutionID) throws ExperimentLazyLoadedException;
 
     /**
      *

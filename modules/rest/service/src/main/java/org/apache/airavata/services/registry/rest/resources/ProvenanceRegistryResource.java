@@ -25,7 +25,7 @@ import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
 import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
-import org.apache.airavata.registry.api.impl.WorkflowInstanceDataImpl;
+import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
 import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.rest.mappings.resourcemappings.ExperimentDataList;
 import org.apache.airavata.rest.mappings.resourcemappings.ExperimentIDList;
@@ -316,9 +316,9 @@ public class ProvenanceRegistryResource {
     public Response getExperimentWorkflowInstances(@QueryParam("experimentId") String experimentId) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            List<WorkflowInstance> experimentWorkflowInstances = airavataRegistry.getExperimentWorkflowInstances(experimentId);
+            List<WorkflowExecution> experimentWorkflowInstances = airavataRegistry.getExperimentWorkflowInstances(experimentId);
             WorkflowInstancesList workflowInstancesList = new WorkflowInstancesList();
-            WorkflowInstance[] workflowInstances = new WorkflowInstance[experimentWorkflowInstances.size()];
+            WorkflowExecution[] workflowInstances = new WorkflowExecution[experimentWorkflowInstances.size()];
             for (int i = 0; i < experimentWorkflowInstances.size(); i++) {
                 workflowInstances[i] = experimentWorkflowInstances.get(i);
             }
@@ -426,7 +426,7 @@ public class ProvenanceRegistryResource {
                                                            @FormParam("executionStatus") String executionStatus) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            WorkflowInstanceStatus.ExecutionStatus status = WorkflowInstanceStatus.ExecutionStatus.valueOf(executionStatus);
+            WorkflowExecutionStatus.State status = WorkflowExecutionStatus.State.valueOf(executionStatus);
             airavataRegistry.updateWorkflowInstanceStatus(instanceId, status);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Workflow instance status updated successfully...");
@@ -460,10 +460,10 @@ public class ProvenanceRegistryResource {
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date formattedDate = dateFormat.parse(statusUpdateTime);
-            WorkflowInstanceDataImpl workflowInstanceData = (WorkflowInstanceDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
-            WorkflowInstance workflowInstance = workflowInstanceData.getWorkflowInstance();
-            WorkflowInstanceStatus.ExecutionStatus status = WorkflowInstanceStatus.ExecutionStatus.valueOf(executionStatus);
-            WorkflowInstanceStatus workflowInstanceStatus = new WorkflowInstanceStatus(workflowInstance, status, formattedDate);
+            WorkflowExecutionDataImpl workflowInstanceData = (WorkflowExecutionDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
+            WorkflowExecution workflowInstance = workflowInstanceData.getWorkflowExecution();
+            WorkflowExecutionStatus.State status = WorkflowExecutionStatus.State.valueOf(executionStatus);
+            WorkflowExecutionStatus workflowInstanceStatus = new WorkflowExecutionStatus(workflowInstance, status, formattedDate);
             airavataRegistry.updateWorkflowInstanceStatus(workflowInstanceStatus);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Workflow instance status updated successfully...");
@@ -495,7 +495,7 @@ public class ProvenanceRegistryResource {
     public Response getWorkflowInstanceStatus(@QueryParam("instanceId") String instanceId) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            WorkflowInstanceStatus workflowInstanceStatus = airavataRegistry.getWorkflowInstanceStatus(instanceId);
+            WorkflowExecutionStatus workflowInstanceStatus = airavataRegistry.getWorkflowInstanceStatus(instanceId);
             if (workflowInstanceStatus != null) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity(workflowInstanceStatus);
@@ -531,7 +531,7 @@ public class ProvenanceRegistryResource {
                                             @FormParam("data") String data) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            WorkflowInstanceDataImpl workflowInstanceData = (WorkflowInstanceDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceID);
+            WorkflowExecutionDataImpl workflowInstanceData = (WorkflowExecutionDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceID);
             WorkflowInstanceNode workflowInstanceNode = workflowInstanceData.getNodeData(nodeID).getWorkflowInstanceNode();
             airavataRegistry.updateWorkflowNodeInput(workflowInstanceNode, data);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -565,7 +565,7 @@ public class ProvenanceRegistryResource {
                                              @FormParam("data") String data) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            WorkflowInstanceDataImpl workflowInstanceData = (WorkflowInstanceDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceID);
+            WorkflowExecutionDataImpl workflowInstanceData = (WorkflowExecutionDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceID);
             WorkflowInstanceNode workflowInstanceNode = workflowInstanceData.getNodeData(nodeID).getWorkflowInstanceNode();
             airavataRegistry.updateWorkflowNodeOutput(workflowInstanceNode, data);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -868,7 +868,7 @@ public class ProvenanceRegistryResource {
                                              @FormParam("executionStatus") String executionStatus) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            WorkflowInstanceStatus.ExecutionStatus status = WorkflowInstanceStatus.ExecutionStatus.valueOf(executionStatus);
+            WorkflowExecutionStatus.State status = WorkflowExecutionStatus.State.valueOf(executionStatus);
             airavataRegistry.updateWorkflowNodeStatus(workflowInstanceId, nodeId, status);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Workflow node status updated successfully...");
@@ -898,7 +898,7 @@ public class ProvenanceRegistryResource {
                                           @QueryParam("nodeId") String nodeId) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            WorkflowInstanceDataImpl workflowInstanceData = (WorkflowInstanceDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
+            WorkflowExecutionDataImpl workflowInstanceData = (WorkflowExecutionDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
             WorkflowInstanceNode workflowInstanceNode = workflowInstanceData.getNodeData(nodeId).getWorkflowInstanceNode();
             WorkflowInstanceNodeStatus workflowNodeStatus = airavataRegistry.getWorkflowNodeStatus(workflowInstanceNode);
             if (workflowNodeStatus != null) {
@@ -934,7 +934,7 @@ public class ProvenanceRegistryResource {
                                              @QueryParam("nodeId") String nodeId) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            WorkflowInstanceDataImpl workflowInstanceData = (WorkflowInstanceDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
+            WorkflowExecutionDataImpl workflowInstanceData = (WorkflowExecutionDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
             WorkflowInstanceNode workflowInstanceNode = workflowInstanceData.getNodeData(nodeId).getWorkflowInstanceNode();
             Date workflowNodeStartTime = airavataRegistry.getWorkflowNodeStartTime(workflowInstanceNode);
             if (workflowNodeStartTime != null) {
@@ -968,8 +968,8 @@ public class ProvenanceRegistryResource {
     public Response getWorkflowStartTime(@QueryParam("workflowInstanceId") String workflowInstanceId) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            WorkflowInstanceDataImpl workflowInstanceData = (WorkflowInstanceDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
-            WorkflowInstance workflowInstance = workflowInstanceData.getWorkflowInstance();
+            WorkflowExecutionDataImpl workflowInstanceData = (WorkflowExecutionDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
+            WorkflowExecution workflowInstance = workflowInstanceData.getWorkflowExecution();
             Date workflowStartTime = airavataRegistry.getWorkflowStartTime(workflowInstance);
             if (workflowStartTime != null) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -1031,7 +1031,7 @@ public class ProvenanceRegistryResource {
     public Response getWorkflowInstanceData(@QueryParam("workflowInstanceId") String workflowInstanceId) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            WorkflowInstanceDataImpl workflowInstanceData = (WorkflowInstanceDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
+            WorkflowExecutionDataImpl workflowInstanceData = (WorkflowExecutionDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
             if (workflowInstanceData != null) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity(workflowInstanceData);
@@ -1141,7 +1141,7 @@ public class ProvenanceRegistryResource {
                                                 @QueryParam("nodeId") String nodeId) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            WorkflowInstanceNodeData workflowInstanceNodeData = airavataRegistry.getWorkflowInstanceNodeData(workflowInstanceId, nodeId);
+            NodeExecutionData workflowInstanceNodeData = airavataRegistry.getWorkflowInstanceNodeData(workflowInstanceId, nodeId);
             if (workflowInstanceNodeData != null) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity(workflowInstanceNodeData);
@@ -1209,8 +1209,8 @@ public class ProvenanceRegistryResource {
                                            @FormParam("nodeType") String nodeType) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            WorkflowInstanceDataImpl workflowInstanceData = (WorkflowInstanceDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
-            WorkflowInstanceNodeData workflowInstanceNodeData =
+            WorkflowExecutionDataImpl workflowInstanceData = (WorkflowExecutionDataImpl)airavataRegistry.getWorkflowInstanceData(workflowInstanceId);
+            NodeExecutionData workflowInstanceNodeData =
                     workflowInstanceData.getNodeData(nodeId);
             WorkflowInstanceNode workflowInstanceNode =
                     workflowInstanceNodeData.getWorkflowInstanceNode();

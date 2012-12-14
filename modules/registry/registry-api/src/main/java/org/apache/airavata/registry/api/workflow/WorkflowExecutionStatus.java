@@ -29,11 +29,11 @@ import java.util.Date;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
-public class WorkflowInstanceStatus {
-    public WorkflowInstanceStatus() {
+public class WorkflowExecutionStatus {
+    public WorkflowExecutionStatus() {
     }
 
-    public enum ExecutionStatus {
+    public enum State {
         STARTED {
             public String toString() {
                 return "STARTED";
@@ -66,15 +66,15 @@ public class WorkflowInstanceStatus {
         }
     }
 
-    private ExecutionStatus executionStatus;
+    private State executionStatus;
     private Date statusUpdateTime = null;
-    private WorkflowInstance workflowInstance;
+    private WorkflowExecution workflowInstance;
 
-    public ExecutionStatus getExecutionStatus() {
+    public State getExecutionStatus() {
         return executionStatus;
     }
 
-    public void setExecutionStatus(ExecutionStatus executionStatus) {
+    public void setExecutionStatus(State executionStatus) {
         this.executionStatus = executionStatus;
     }
 
@@ -86,22 +86,22 @@ public class WorkflowInstanceStatus {
         this.statusUpdateTime = statusUpdateTime;
     }
 
-    public WorkflowInstanceStatus(WorkflowInstance workflowInstance, ExecutionStatus executionStatus) {
+    public WorkflowExecutionStatus(WorkflowExecution workflowInstance, State executionStatus) {
         this(workflowInstance, executionStatus, null);
     }
 
-    public WorkflowInstanceStatus(WorkflowInstance workflowInstance, ExecutionStatus executionStatus, Date statusUpdateTime) {
+    public WorkflowExecutionStatus(WorkflowExecution workflowInstance, State executionStatus, Date statusUpdateTime) {
         statusUpdateTime = statusUpdateTime == null ? Calendar.getInstance().getTime() : statusUpdateTime;
         setWorkflowInstance(workflowInstance);
         setExecutionStatus(executionStatus);
         setStatusUpdateTime(statusUpdateTime);
     }
 
-    public WorkflowInstance getWorkflowInstance() {
+    public WorkflowExecution getWorkflowInstance() {
         return workflowInstance;
     }
 
-    public void setWorkflowInstance(WorkflowInstance workflowInstance) {
+    public void setWorkflowInstance(WorkflowExecution workflowInstance) {
         this.workflowInstance = workflowInstance;
     }
 }
