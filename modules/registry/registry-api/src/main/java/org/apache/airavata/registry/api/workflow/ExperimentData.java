@@ -33,33 +33,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public interface ExperimentData extends WorkflowInstanceData {
-
-	public String getExperimentId();
+    public String getId();
 	public String getTopic();
-//	public WorkflowInstanceStatus getExecutionStatus();
 	public String getUser();
-//	public List<WorkflowNodeIOData> getServiceInput();
-//	public List<WorkflowNodeIOData> getServiceOutput();
-//	public List<WorkflowIOData> getOutput();
-//	public WorkflowNodeIOData getServiceInput(String nodeId);
-//	public WorkflowNodeIOData getServiceOutput(String nodeId);
-//	public WorkflowIOData getOutput(String nodeId);
 	public String getMetadata();
 	public String getExperimentName();
 	public List<WorkflowInstanceDataImpl> getWorkflowInstanceData() throws ExperimentLazyLoadedException;
-	
-	public void setExperimentId(String experimentId);
+    public WorkflowInstanceData getWorkflowInstance(String workflowInstanceID) throws ExperimentLazyLoadedException;
+
+    public void setExperimentId(String experimentId);
 	public void setTopic(String topic);
-//	public void setExecutionStatus(WorkflowInstanceStatus executionStatus);
 	public void setUser(String user);
-//	public void setServiceInput(List<WorkflowNodeIOData> serviceInputs);
-//	public void setServiceOutput(List<WorkflowNodeIOData> serviceOutputs);
-//	public void setOutput(List<WorkflowIOData> outputs);
-//	public void addServiceInput(WorkflowNodeIOData serviceInput);
-//	public void addServiceOutput(WorkflowNodeIOData serviceOutput);
-//	public void addOutput(WorkflowIOData output);
 	public void setMetadata(String metadata);
 	public void setExperimentName(String experimentName);
-    public WorkflowInstanceData getWorkflowInstance(String workflowInstanceID) throws ExperimentLazyLoadedException;
-    public String getId();
+    
+	public String getExperimentId();
 }
