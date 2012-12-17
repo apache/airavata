@@ -112,7 +112,7 @@
                                         <include name="registry.properties"/>
                                     </fileset>
                                 </copy>
-                                <copy todir="${tomcat.work.dir}/webapps/axis2/WEB-INF/classes/">
+                                <copy todir="${tomcat.work.dir}/webapps/axis2/WEB-INF/classes/database_scripts">
                                     <fileset dir="${airavata.work.dir}/bin/database_scripts"/>
                                 </copy>
                                 <chmod dir="${tomcat.work.dir}/bin" perm="700"
