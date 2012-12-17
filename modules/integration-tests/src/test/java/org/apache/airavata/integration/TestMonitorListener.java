@@ -6,7 +6,6 @@ import org.apache.airavata.registry.api.workflow.ExperimentData;
 import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
 import org.apache.airavata.registry.api.workflow.NodeExecutionData;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionData;
-import org.apache.airavata.registry.api.workflow.NodeExecutionDataImpl;
 import org.apache.airavata.ws.monitor.MonitorEvent;
 import org.apache.airavata.ws.monitor.MonitorEventData;
 import org.apache.airavata.ws.monitor.MonitorEventListener;
