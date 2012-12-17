@@ -1356,7 +1356,7 @@ public class AiravataRegistryAPITest extends TestCase {
         registry.updateWorkflowNodeType(workflowInstanceNode, nodeType);
         registry.updateWorkflowNodeInput(workflowInstanceNode, "testParameter=testData");
 
-        NodeExecutionDataImpl nodeData = registry.getWorkflowInstanceNodeData("testWorkflow7", "testNode");
+        NodeExecutionData nodeData = registry.getWorkflowInstanceNodeData("testWorkflow7", "testNode");
         assertTrue("workflow instance node input saved successfully", nodeData.getInput().equals("testParameter=testData"));
 
         registry.removeExperiment("testExp");
@@ -1383,7 +1383,7 @@ public class AiravataRegistryAPITest extends TestCase {
         WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(new WorkflowExecution("testExp", "testWorkflow8"), "testNode");
         registry.updateWorkflowNodeOutput(workflowInstanceNode, "testData");
 
-        NodeExecutionDataImpl nodeData = registry.getWorkflowInstanceNodeData("testWorkflow8", "testNode");
+        NodeExecutionData nodeData = registry.getWorkflowInstanceNodeData("testWorkflow8", "testNode");
         assertTrue("workflow instance node output saved successfully", nodeData.getOutput().equals("testData"));
 
         registry.removeExperiment("testExp");

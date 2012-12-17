@@ -120,7 +120,7 @@ public class ExperimentDataRetriever {
             experimentData.getWorkflowExecutionDataList().add(workflowInstanceData);
         }
         WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(workflowInstanceData.getWorkflowExecution(), rs.getString(10));
-        NodeExecutionDataImpl workflowInstanceNodeData = new NodeExecutionDataImpl(workflowInstanceNode);
+        NodeExecutionData workflowInstanceNodeData = new NodeExecutionData(workflowInstanceNode);
 
         String inputData = getStringValue(11, rs);
         String outputData = getStringValue(12, rs);

@@ -31,10 +31,7 @@ import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeType.WorkflowNode;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.*;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
@@ -43,6 +40,7 @@ public class WorkflowExecutionDataImpl implements WorkflowExecutionData {
 
 	@XmlTransient
 	private ExperimentDataImpl experimentData;
+
 	private WorkflowExecutionStatus workflowInstanceStatus;
 
 	private List<NodeExecutionData> nodeDataList;

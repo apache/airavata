@@ -31,7 +31,6 @@ import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedExc
 import org.apache.airavata.registry.api.workflow.NodeExecutionData;
 import org.apache.airavata.registry.api.workflow.WorkflowExecution;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionData;
-import org.apache.airavata.registry.api.workflow.NodeExecutionDataImpl;
 
 public class XBayaWorkflow {
 	private List<XBayaWorkflowNodeElement> workflowServices;
