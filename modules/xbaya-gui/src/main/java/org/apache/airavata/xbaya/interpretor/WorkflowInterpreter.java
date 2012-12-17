@@ -46,10 +46,8 @@ import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.registry.api.workflow.WorkflowExecution;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
+import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State;
-import org.apache.airavata.registry.api.workflow.WorkflowNodeType;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.amazon.InstanceComponent;
 import org.apache.airavata.workflow.model.component.amazon.TerminateInstanceComponent;
@@ -190,7 +188,7 @@ public class WorkflowInterpreter {
                 workflowNodeType.setNodeType(WorkflowNodeType.WorkflowNode.INPUTNODE);
                 WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(new WorkflowExecution(getConfig().getTopic(),
                         getConfig().getTopic()), node.getID());
-                this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager().setWorkflowInstanceNodeInput(workflowInstanceNode, (String)values[i]);
+                this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager().setWorkflowInstanceNodeInput(workflowInstanceNode, keywords[i] + "=" + (String) values[i]);
                 this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager().setWorkflowNodeType(workflowInstanceNode, workflowNodeType);
 			}
 			this.config.getNotifier().workflowStarted(values, keywords);
@@ -427,7 +425,9 @@ public class WorkflowInterpreter {
                     WorkflowNodeType workflowNodeType = new WorkflowNodeType();
                     workflowNodeType.setNodeType(WorkflowNodeType.WorkflowNode.OUTPUTNODE);
                     WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(new WorkflowExecution(config.getTopic(), config.getTopic()), node.getID());
-                    this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager().setWorkflowInstanceNodeOutput(workflowInstanceNode, ((OutputNode) node).getDescription());
+                    String portname = node.getName();
+                    String portValue = ((OutputNode) node).getDescription();
+                    this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager().setWorkflowInstanceNodeOutput(workflowInstanceNode, portname + "=" + portValue);
                     this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager().setWorkflowNodeType(workflowInstanceNode, workflowNodeType);
 
 					if (this.config.isActOnProvenance()) {
