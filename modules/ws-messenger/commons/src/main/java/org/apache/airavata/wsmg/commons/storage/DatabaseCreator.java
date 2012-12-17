@@ -239,7 +239,7 @@ public class DatabaseCreator {
     private static String getScriptLocation(String prefix, DatabaseType databaseType) {
         String scriptName = prefix + "-" + databaseType + ".sql";
         log.debug("Loading database script from :" + scriptName);
-        return "database_scripts" + File.separator + scriptName;
+        return "database_scripts" +  File.separator + scriptName;
     }
 
     private static void createDatabase(String prefix, Connection conn) throws Exception {
@@ -273,6 +273,9 @@ public class DatabaseCreator {
 
         try {
             InputStream is = DatabaseCreator.class.getClassLoader().getResourceAsStream(dbscriptName);
+            if(is == null){
+                is = DatabaseCreator.class.getClassLoader().getResourceAsStream((new File(dbscriptName)).getName());
+            }
             reader = new BufferedReader(new InputStreamReader(is));
             String line;
             while ((line = reader.readLine()) != null) {
