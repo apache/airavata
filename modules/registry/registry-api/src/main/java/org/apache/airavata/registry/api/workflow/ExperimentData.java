@@ -33,6 +33,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
+//@XmlRootElement
+//@XmlAccessorType(XmlAccessType.FIELD)
 @WebService
 @XmlSeeAlso(ExperimentDataImpl.class)
 public interface ExperimentData extends WorkflowExecutionData {

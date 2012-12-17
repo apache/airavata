@@ -29,6 +29,7 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import org.apache.airavata.registry.api.PasswordCallback;
+import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
 import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.rest.mappings.resourcemappings.ExperimentDataList;
 import org.apache.airavata.rest.mappings.resourcemappings.ExperimentIDList;
@@ -1281,7 +1282,7 @@ public class ProvenanceResourceClient {
             }
         }
 
-        WorkflowExecutionData workflowInstanceData = response.getEntity(WorkflowExecutionData.class);
+        WorkflowExecutionDataImpl workflowInstanceData = response.getEntity(WorkflowExecutionDataImpl.class);
         return workflowInstanceData;
     }
 
@@ -1366,7 +1367,7 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public NodeExecutionDataImpl getWorkflowInstanceNodeData(String workflowInstanceId,
+    public NodeExecutionData getWorkflowInstanceNodeData(String workflowInstanceId,
                                                                 String nodeId) {
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.WORKFLOWINSTANCE_NODE_DATA);
@@ -1402,8 +1403,8 @@ public class ProvenanceResourceClient {
             }
         }
 
-        NodeExecutionDataImpl workflowInstanceNodeData =
-                response.getEntity(NodeExecutionDataImpl.class);
+        NodeExecutionData workflowInstanceNodeData =
+                response.getEntity(NodeExecutionData.class);
         return workflowInstanceNodeData;
     }
 

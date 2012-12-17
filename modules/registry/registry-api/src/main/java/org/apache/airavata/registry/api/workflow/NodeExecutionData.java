@@ -21,142 +21,213 @@
 
 package org.apache.airavata.registry.api.workflow;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class NodeExecutionData {
+	private WorkflowInstanceNode workflowInstanceNode;
+	private List<InputData> inputData;
+	private List<OutputData> outputData;
+	private String input;
+	private String output;
+    private NodeExecutionStatus status;
+    private WorkflowNodeType.WorkflowNode type;
+    private String experimentId;
+    private String workflowExecutionId;
+    private String nodeId;
 
-import javax.jws.WebService;
-import javax.xml.bind.annotation.XmlSeeAlso;
+    public NodeExecutionData() {
+    }
 
-@WebService
-@XmlSeeAlso(NodeExecutionDataImpl.class)
-public interface NodeExecutionData {
-
-	/**
-	 * Get id of the Node
-	 * @return
-	 */
-	public abstract String getId();
-
-	/**
-	 * Get the id of the experiment which the workflow which has this node 
-	 * @return
-	 */
-	public abstract String getExperimentId();
-
-	/**
-	 * Get the id of the workflow execution this node belongs to
-	 * @return
-	 */
-	public abstract String getWorkflowExecutionId();
-
-	/**
-	 * @deprecated
-	 * @return
-	 */
-	public abstract WorkflowInstanceNode getWorkflowInstanceNode();
-
-	/**
-	 * @deprecated
-	 * @param workflowInstanceNode
-	 */
-	public abstract void setWorkflowInstanceNode(WorkflowInstanceNode workflowInstanceNode);
-
-	
     /**
-     * Get current state of the execution of this workflow
-     * @return
-     * @throws ExperimentLazyLoadedException
+     * deprecated Use <code>NodeExecutionData(String experimentId, String workflowExecutionId, String nodeId)</code> instead
+     * @param workflowInstanceNode
      */
-    public WorkflowExecutionStatus.State getState();
+    public NodeExecutionData(WorkflowInstanceNode workflowInstanceNode) {
+		this(workflowInstanceNode.getWorkflowInstance().getExperimentId(),workflowInstanceNode.getWorkflowInstance().getWorkflowExecutionId(),workflowInstanceNode.getNodeId());
+		setWorkflowInstanceNode(workflowInstanceNode);
+	}
     
-    /**
-     * Get current state updated time
-     * @return
-     * @throws ExperimentLazyLoadedException
-     */
-    public Date getStatusUpdateTime();
+    public NodeExecutionData(String experimentId, String workflowExecutionId, String nodeId) {
+		this.experimentId=experimentId;
+		this.workflowExecutionId=workflowExecutionId;
+		this.nodeId=nodeId;
+	}
+
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.registry.api.workflow.INodeExecutionData#getId()
+	 */
+	public String getId(){
+    	return nodeId;
+    }
+
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.registry.api.workflow.INodeExecutionData#getExperimentId()
+	 */
+	public String getExperimentId(){
+    	return experimentId;
+    }
     
-	/**
-	 * @deprecated
-	 * Get the status of the execution of this node
-	 * @return
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.registry.api.workflow.INodeExecutionData#getWorkflowExecutionId()
 	 */
-	public abstract NodeExecutionStatus getStatus();
+	public String getWorkflowExecutionId(){
+    	return workflowExecutionId;
+    }
+    
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.registry.api.workflow.INodeExecutionData#getWorkflowInstanceNode()
+	 */
+	public WorkflowInstanceNode getWorkflowInstanceNode() {
+		return workflowInstanceNode;
+	}
 
-	/**
-	 * Update the execution status of the node
-	 * @param status
+	/* (non-Javadoc)
+	 * @see org.apache.airavata.registry.api.workflow.INodeExecutionData#setWorkflowInstanceNode(org.apache.airavata.registry.api.workflow.WorkflowInstanceNode)
 	 */
-	public abstract void setStatus(NodeExecutionStatus status);
+	public void setWorkflowInstanceNode(WorkflowInstanceNode workflowInstanceNode) {
+		this.workflowInstanceNode = workflowInstanceNode;
+	}
 
-	/**
-	 * Update the execution status of the node
-	 * @param status
-	 * @param date
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.registry.api.workflow.INodeExecutionData#getStatus()
 	 */
-	public abstract void setStatus(WorkflowExecutionStatus.State status,
-			Date date);
+	public NodeExecutionStatus getStatus() {
+        return status;
+    }
 
-	/**
-	 * Retrieve the input data to the node
-	 * @return
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.registry.api.workflow.INodeExecutionData#setStatus(org.apache.airavata.registry.api.workflow.NodeExecutionStatus)
 	 */
-	public abstract List<InputData> getInputData();
+	public void setStatus(NodeExecutionStatus status) {
+        this.status = status;
+    }
 
-	/**
-	 * Retrieve the output data to the node
-	 * @return
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.registry.api.workflow.INodeExecutionData#setStatus(org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State, java.util.Date)
 	 */
-	public abstract List<OutputData> getOutputData();
+	public void setStatus(WorkflowExecutionStatus.State status, Date date) {
+        setStatus(new NodeExecutionStatus(this.workflowInstanceNode, status, date));
+
+    }
+
+	/* (non-Javadoc)
+	 * @see org.apache.airavata.registry.api.workflow.INodeExecutionData#getInputData()
+	 */
+	public List<InputData> getInputData() {
+		if (inputData==null){
+			inputData=new ArrayList<InputData>();
+			List<NameValue> data = getIOParameterData(getInput());
+			for (NameValue nameValue : data) {
+				inputData.add(new InputData(getWorkflowInstanceNode(), nameValue.name, nameValue.value));
+			}
+		}
+		return inputData;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.apache.airavata.registry.api.workflow.INodeExecutionData#getOutputData()
+	 */
+	public List<OutputData> getOutputData() {
+		if (outputData==null){
+			outputData=new ArrayList<OutputData>();
+			List<NameValue> data = getIOParameterData(getOutput());
+			for (NameValue nameValue : data) {
+				outputData.add(new OutputData(getWorkflowInstanceNode(), nameValue.name, nameValue.value));
+			}
+		}
+		return outputData;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.apache.airavata.registry.api.workflow.INodeExecutionData#setInputData(java.util.List)
+	 */
+	public void setInputData(List<InputData> inputData) {
+		this.inputData = inputData;
+	}
 	
-	/**
-	 * Setup input data for the node
-	 * @param inputData
+	/* (non-Javadoc)
+	 * @see org.apache.airavata.registry.api.workflow.INodeExecutionData#setOutputData(java.util.List)
 	 */
-	public abstract void setInputData(List<InputData> inputData);
+	public void setOutputData(List<OutputData> outputData) {
+		this.outputData = outputData;
+	}
 
-	/**
-	 * Setup output data for the node
-	 * @param outputData
-	 */
-	public abstract void setOutputData(List<OutputData> outputData);
+	public String getInput() {
+		return input;
+	}
 
-	/**
-	 * Get node input as comma separated name value pairs
-	 * @return
+	public void setInput(String input) {
+		this.input = input;
+	}
+
+	public String getOutput() {
+		return output;
+	}
+
+	public void setOutput(String output) {
+		this.output = output;
+	}
+
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.registry.api.workflow.INodeExecutionData#getType()
 	 */
-	public String getInput();
+	public WorkflowNodeType.WorkflowNode getType() {
+        return type;
+    }
+
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.registry.api.workflow.INodeExecutionData#setType(org.apache.airavata.registry.api.workflow.WorkflowNodeType.WorkflowNode)
+	 */
+	public void setType(WorkflowNodeType.WorkflowNode type) {
+        this.type = type;
+    }
+
+	public State getState() {
+		return status.getExecutionStatus();
+	}
+
+	public Date getStatusUpdateTime() {
+		return status.getStatusUpdateTime();
+	}
 	
-	/**
-	 * Get node output as comma separated name value pairs
-	 * @return
-	 */
-	public String getOutput();
+
+    private static class NameValue{
+		String name;
+		String value;
+		public NameValue(String name, String value) {
+			this.name=name;
+			this.value=value;
+		}
+	}
 	
-	/**
-	 * Set input as comma separated name value pairs
-	 * @param input
-	 */
-	public void setInput(String input);
-
-	/**
-	 * Set output as comma separated name value pairs
-	 * @param output
-	 */
-	public void setOutput(String output);
-
-	/**
-	 * Get node type
-	 * @return
-	 */
-	public abstract WorkflowNodeType.WorkflowNode getType();
-
-	/**
-	 * Set node type
-	 * @param type
-	 */
-	public abstract void setType(WorkflowNodeType.WorkflowNode type);
+	private static List<NameValue> getIOParameterData(String data){
+		List<NameValue> parameters=new ArrayList<NameValue>();
+		if (data!=null) {
+			String[] pairs = data.split(",");
+			for (String paras : pairs) {
+				String[] nameVals = paras.trim().split("=");
+                NameValue pair = null;
+                if(nameVals.length >= 2){
+				 pair = new NameValue(nameVals[0].trim(),
+						nameVals.length>1? nameVals[1].trim():"");
+                }else if(nameVals.length == 1){
+                  pair = new NameValue(nameVals[0].trim(),
+						"");
+                }
+				parameters.add(pair);
+			}
+		}
+		return parameters;
+	}
 
 }

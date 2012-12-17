@@ -30,15 +30,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
-import org.apache.airavata.registry.api.workflow.ExperimentData;
-import org.apache.airavata.registry.api.workflow.NodeExecutionData;
-import org.apache.airavata.registry.api.workflow.InputData;
-import org.apache.airavata.registry.api.workflow.OutputData;
-import org.apache.airavata.registry.api.workflow.WorkflowIOData;
-import org.apache.airavata.registry.api.workflow.WorkflowExecution;
-import org.apache.airavata.registry.api.workflow.WorkflowExecutionData;
-import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus;
-import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
+import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeType.WorkflowNode;
 
 @XmlAccessorType(XmlAccessType.FIELD)

@@ -319,7 +319,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
     
     public boolean isWorkflowInstanceNodePresent(String workflowInstanceId, String nodeId, boolean createIfNotPresent)throws RegistryException;
     
-    public NodeExecutionDataImpl getWorkflowInstanceNodeData(String workflowInstanceId, String nodeId)throws RegistryException;
+    public NodeExecutionData getWorkflowInstanceNodeData(String workflowInstanceId, String nodeId)throws RegistryException;
 
     public void addWorkflowInstance(String experimentId, String workflowInstanceId, String templateName) throws RegistryException;
     
