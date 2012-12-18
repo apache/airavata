@@ -85,6 +85,14 @@ public abstract class AbstractDatabaseAuthenticator extends AbstractAuthenticato
                 append(databaseUserName).append(" DB password - xxxxxx");
 
         log.info(stringBuilder.toString());
+
+        try {
+            getUserStore().configure(node);
+        } catch (UserStoreException e) {
+            String msg = "Error configuring user store associated with authenticator.";
+            log.error(msg, e);
+            throw new RuntimeException(msg, e);
+        }
     }
 
     public String getDatabaseURL() {

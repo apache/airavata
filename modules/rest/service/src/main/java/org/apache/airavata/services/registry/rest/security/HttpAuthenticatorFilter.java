@@ -45,6 +45,8 @@ public class HttpAuthenticatorFilter implements Filter {
 
     private static Logger log = LoggerFactory.getLogger(HttpAuthenticatorFilter.class);
 
+    private ServletRequestHelper servletRequestHelper = new ServletRequestHelper();
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         String authenticatorConfiguration = filterConfig.getInitParameter("authenticatorConfigurations");
@@ -103,6 +105,16 @@ public class HttpAuthenticatorFilter implements Filter {
 
         // Firs check whether authenticators are disabled
         if (! AuthenticatorConfigurationReader.isAuthenticationEnabled()) {
+
+            // Extract user id and gateway id
+            try {
+                servletRequestHelper.addIdentityInformationToSession((HttpServletRequest) servletRequest);
+            } catch (AuthenticationException e) {
+                log.warn("Error adding identity information to session.", e);
+                populateUnauthorisedData(servletResponse, "Error adding identity information to session.");
+
+            }
+
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }

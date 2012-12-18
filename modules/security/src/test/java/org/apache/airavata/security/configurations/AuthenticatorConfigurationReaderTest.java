@@ -54,16 +54,15 @@ public class AuthenticatorConfigurationReaderTest extends TestCase {
                 assertEquals("secret1", ((TestDBAuthenticator1) authenticator).getDatabasePassword());
                 assertNotNull(authenticator.getUserStore());
                 assertTrue(authenticator.getUserStore() instanceof JDBCUserStore);
+
+                JDBCUserStore jdbcUserStore = (JDBCUserStore)authenticator.getUserStore();
+                assertEquals("MD5", jdbcUserStore.getPasswordDigester().getHashMethod());
             } else if (authenticator instanceof TestDBAuthenticator2) {
                 assertEquals("dbAuthenticator2", authenticator.getAuthenticatorName());
                 assertEquals(7, authenticator.getPriority());
                 assertEquals(true, authenticator.isEnabled());
-                assertEquals("jdbc:sql:thin:@//myhost:1521/mysql2", ((TestDBAuthenticator2) authenticator).getDatabaseURL());
-                assertEquals("org.myqsql.Driver2", ((TestDBAuthenticator2) authenticator).getDatabaseDriver());
-                assertEquals("mysql2", ((TestDBAuthenticator2) authenticator).getDatabaseUserName());
-                assertEquals("secret2", ((TestDBAuthenticator2) authenticator).getDatabasePassword());
-                assertNotNull(authenticator.getUserStore());
                 assertTrue(authenticator.getUserStore() instanceof LDAPUserStore);
+
             }  else if (authenticator instanceof TestDBAuthenticator3) {
                 assertEquals("dbAuthenticator3", authenticator.getAuthenticatorName());
                 assertEquals(8, authenticator.getPriority());
@@ -74,6 +73,7 @@ public class AuthenticatorConfigurationReaderTest extends TestCase {
                 assertEquals("secret3", ((TestDBAuthenticator3) authenticator).getDatabasePassword());
                 assertNotNull(authenticator.getUserStore());
                 assertTrue(authenticator.getUserStore() instanceof JDBCUserStore);
+
             }
         }
 
@@ -97,4 +97,6 @@ public class AuthenticatorConfigurationReaderTest extends TestCase {
         assertFalse(AuthenticatorConfigurationReader.isAuthenticationEnabled());
 
     }
+
+
 }
