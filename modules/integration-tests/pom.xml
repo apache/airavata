@@ -86,6 +86,8 @@
                                     <fileset dir="${airavata.work.dir}/lib/">
                                         <exclude name="tomcat-*.jar"/>
                                         <exclude name="icu4j-*.jar"/>
+                                        <exclude name="airavata-embedded-*.jar"/>
+                                        <exclude name="airavata-registry-api-*.jar"/>
                                     </fileset>
                                 </copy>
                                 <copy todir="${tomcat.work.dir}/webapps/axis2/WEB-INF">
