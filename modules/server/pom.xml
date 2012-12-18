@@ -18,7 +18,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>embedded-tomcat</artifactId>
+    <artifactId>airavata-embedded-tomcat</artifactId>
     <name>Airavata Embedded Tomcat Implementation</name>
     <description>Module for starting embedded tomcat</description>
     <dependencies>

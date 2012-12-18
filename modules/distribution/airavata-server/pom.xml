@@ -367,7 +367,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>embedded-tomcat</artifactId>
+            <artifactId>airavata-embedded-tomcat</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
