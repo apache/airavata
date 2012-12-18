@@ -22,7 +22,7 @@
   -->
 <authenticators>
     <authenticator name="dbAuthenticator1" class="org.apache.airavata.security.configurations.TestDBAuthenticator1"
-                   enabled="true" priority="6" userstore="org.apache.airavata.security.userstore.JDBCUserStore">
+                   enabled="true" priority="6" userstore="org.apache.airavata.security.userstore.LDAPUserStore">
         <specificConfigurations>
             <ldap>
                 <!--

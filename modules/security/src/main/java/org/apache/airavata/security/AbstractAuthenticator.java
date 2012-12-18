@@ -85,14 +85,7 @@ public abstract class AbstractAuthenticator implements Authenticator {
         return authenticated;
     }
 
-    protected void addToContext (String userName, String gatewayId) {
 
-        RequestContext requestContext = new RequestContext();
-        requestContext.setUserIdentity(userName);
-        requestContext.setGatewayId(gatewayId);
-
-        WorkflowContext.set(requestContext);
-    }
 
 
     /**

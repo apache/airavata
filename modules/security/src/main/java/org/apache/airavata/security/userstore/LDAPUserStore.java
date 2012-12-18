@@ -25,6 +25,7 @@ package org.apache.airavata.security.userstore;
 
 import org.apache.airavata.security.UserStore;
 import org.apache.airavata.security.UserStoreException;
+import org.apache.airavata.security.util.PasswordDigester;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -48,9 +49,12 @@ public class LDAPUserStore implements UserStore {
 
     protected static Logger log = LoggerFactory.getLogger(LDAPUserStore.class);
 
+    private PasswordDigester passwordDigester;
+
     public boolean authenticate(String userName, Object credentials) throws UserStoreException {
 
-        AuthenticationToken authenticationToken = new UsernamePasswordToken(userName, (String)credentials);
+        AuthenticationToken authenticationToken = new UsernamePasswordToken(userName,
+                passwordDigester.getPasswordHashValue((String)credentials));
 
         AuthenticationInfo authenticationInfo;
         try {
@@ -99,6 +103,7 @@ public class LDAPUserStore implements UserStore {
         String systemUser = null;
         String systemUserPassword = null;
         String userTemplate = null;
+        String passwordHashMethod = null;
 
         if (configurationNode != null) {
             NodeList nodeList = configurationNode.getChildNodes();
@@ -118,10 +123,14 @@ public class LDAPUserStore implements UserStore {
                         systemUserPassword = element.getFirstChild().getNodeValue();
                     } else if (element.getNodeName().equals("userDNTemplate")) {
                         userTemplate = element.getFirstChild().getNodeValue();
+                    } else if (element.getNodeName().equals("passwordHashMethod")) {
+                        passwordHashMethod = element.getFirstChild().getNodeValue();
                     }
                 }
             }
         }
+
+        passwordDigester = new PasswordDigester(passwordHashMethod);
 
         initializeLDAP(url, systemUser, systemUserPassword, userTemplate);
 

@@ -8,63 +8,34 @@ Those configurations are reside inside &lt;specificConfigurations&gt; tags.
 -->
 
 <authenticators>
-    <authenticator name="dbAuthenticator1" class="org.apache.airavata.security.configurations.TestDBAuthenticator1"
-                   enabled="true" priority="6" userstore="org.apache.airavata.security.userstore.JDBCUserStore">
+    <authenticator name="sessionAuthenticator" class="org.apache.airavata.services.registry.rest.security.session.SessionAuthenticator"
+                   enabled="true" priority="6" userstore="org.apache.airavata.security.userstore.SessionDBUserStore">
         <specificConfigurations>
             <database>
-                <jdbcUrl>jdbc:sql:thin:@//myhost:1521/mysql1</jdbcUrl>
-                <userName>mysql1</userName>
-                <password>secret1</password>
-                <databaseDriver>org.myqsql.Driver1</databaseDriver>
-                <sessionTable>Session1</sessionTable>
-                <sessionColumn>sessioncolumn</sessionColumn>
-                <comparingColumn>comparecolumn</comparingColumn>
-                <!-- TODO add datasource.name></datasource.name -->
+                <!--jdbcUrl>jdbc:h2:modules/commons/airavata-registry-rest/src/test/resources/testdb/test</jdbcUrl-->
+                <jdbcUrl>jdbc:derby://localhost:20000/persistent_data;create=true</jdbcUrl>
+                <userName>admin</userName>
+                <password>admin</password>
+                <databaseDriver>org.apache.derby.jdbc.ClientDriver</databaseDriver>
+                <sessionTable>Persons</sessionTable>
+                <sessionColumn>sessionId</sessionColumn>
+                <comparingColumn>sessionId</comparingColumn>
             </database>
         </specificConfigurations>
     </authenticator>
 
-    <authenticator name="dbAuthenticator2" class="org.apache.airavata.security.configurations.TestDBAuthenticator2"
-                   enabled="true" priority="7" userstore="org.apache.airavata.security.userstore.LDAPUserStore">
+    <authenticator name="basicAccessAuthenticator" class="org.apache.airavata.services.registry.rest.security.basic.BasicAccessAuthenticator"
+                   enabled="true" priority="7" userstore="org.apache.airavata.security.userstore.JDBCUserStore">
         <specificConfigurations>
             <database>
-                <jdbcUrl>jdbc:sql:thin:@//myhost:1521/mysql2</jdbcUrl>
-                <userName>mysql2</userName>
-                <password>secret2</password>
-                <databaseDriver>org.myqsql.Driver2</databaseDriver>
-                <sessionTable>Session2</sessionTable>
-                <sessionColumn>sessioncolumn2</sessionColumn>
-                <comparingColumn>comparecolumn2</comparingColumn>
-            </database>
-        </specificConfigurations>
-    </authenticator>
-
-    <authenticator name="dbAuthenticator4" class="org.apache.airavata.security.configurations.TestDBAuthenticator2"
-                   enabled="false" priority="7" userstore="org.apache.airavata.security.userstore.JDBCUserStore">
-        <specificConfigurations>
-            <database>
-                <jdbcUrl>jdbc:sql:thin:@//myhost:1521/mysql2</jdbcUrl>
-                <userName>mysql2</userName>
-                <password>secret2</password>
-                <databaseDriver>org.myqsql.Driver2</databaseDriver>
-                <sessionTable>Session2</sessionTable>
-                <sessionColumn>sessioncolumn2</sessionColumn>
-                <comparingColumn>comparecolumn2</comparingColumn>
-            </database>
-        </specificConfigurations>
-    </authenticator>
-
-    <authenticator name="dbAuthenticator3" class="org.apache.airavata.security.configurations.TestDBAuthenticator3"
-                   enabled="true" priority="8" userstore="org.apache.airavata.security.userstore.JDBCUserStore">
-        <specificConfigurations>
-            <database>
-                <jdbcUrl>jdbc:sql:thin:@//myhost:1521/mysql3</jdbcUrl>
-                <userName>mysql3</userName>
-                <password>secret3</password>
-                <databaseDriver>org.myqsql.Driver3</databaseDriver>
-                <sessionTable>Session3</sessionTable>
-                <sessionColumn>sessioncolumn3</sessionColumn>
-                <comparingColumn>comparecolumn3</comparingColumn>
+                <!--jdbcUrl>jdbc:h2:modules/commons/airavata-registry-rest/src/test/resources/testdb/test</jdbcUrl-->
+                <jdbcUrl>jdbc:derby://localhost:20000/persistent_data;create=true</jdbcUrl>
+                <userName>admin</userName>
+                <password>admin</password>
+                <databaseDriver>org.apache.derby.jdbc.ClientDriver</databaseDriver>
+                <userTableName>AIRAVATA_USER</userTableName>
+                <userNameColumnName>USERID</userNameColumnName>
+                <passwordColumnName>PASSWORD</passwordColumnName>
             </database>
         </specificConfigurations>
     </authenticator>

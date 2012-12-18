@@ -26,6 +26,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.security.AbstractAuthenticator;
 import org.apache.airavata.security.AuthenticationException;
 import org.apache.airavata.security.UserStoreException;
+import org.apache.airavata.services.registry.rest.security.ServletRequestHelper;
 import org.apache.commons.codec.binary.Base64;
 import org.w3c.dom.Node;
 
@@ -42,18 +43,12 @@ public class BasicAccessAuthenticator extends AbstractAuthenticator {
 
     private static final String AUTHENTICATOR_NAME = "BasicAccessAuthenticator";
 
-    /**
-     * Header names
-     */
-    private static final String AUTHORISATION_HEADER_NAME = "Authorization";
+    private ServletRequestHelper servletRequestHelper = new ServletRequestHelper();
 
     public BasicAccessAuthenticator() {
         super(AUTHENTICATOR_NAME);
     }
 
-    private String decode(String encoded) {
-        return new String(Base64.decodeBase64(encoded.getBytes()));
-    }
 
     /**
      * Returns user name and password as an array. The first element is user name and second is password.
@@ -64,7 +59,7 @@ public class BasicAccessAuthenticator extends AbstractAuthenticator {
      */
     private String[] getUserNamePassword(HttpServletRequest httpServletRequest) throws AuthenticationException {
 
-        String basicHeader = httpServletRequest.getHeader(AUTHORISATION_HEADER_NAME);
+        String basicHeader = httpServletRequest.getHeader(ServletRequestHelper.AUTHORISATION_HEADER_NAME);
 
         if (basicHeader == null) {
             throw new AuthenticationException("Authorization Required");
@@ -76,7 +71,7 @@ public class BasicAccessAuthenticator extends AbstractAuthenticator {
             throw new AuthenticationException("Authorization Required");
         }
 
-        String decodedString = decode(userNamePasswordArray[1]);
+        String decodedString = servletRequestHelper.decode(userNamePasswordArray[1]);
 
         String[] array = decodedString.split(":");
 
@@ -112,17 +107,7 @@ public class BasicAccessAuthenticator extends AbstractAuthenticator {
         }
     }
 
-    protected void addUserToSession(String userName, HttpServletRequest servletRequest) throws AuthenticationException {
 
-        String gatewayId = getGatewayId(servletRequest);
-
-        if (servletRequest.getSession() != null) {
-            servletRequest.getSession().setAttribute(Constants.USER_IN_SESSION, userName);
-            servletRequest.getSession().setAttribute(Constants.GATEWAY_NAME, gatewayId);
-        }
-
-        addToContext(userName, gatewayId);
-    }
 
     @Override
     public void onSuccessfulAuthentication(Object authenticationInfo) {
@@ -136,7 +121,7 @@ public class BasicAccessAuthenticator extends AbstractAuthenticator {
 
             if (array != null) {
 
-                addUserToSession(array[0], httpServletRequest);
+                servletRequestHelper.addUserToSession(array[0], httpServletRequest);
 
                 stringBuilder.append(array[0]).append(" successfully logged into system at ").append(getCurrentTime());
                 log.info(stringBuilder.toString());
@@ -188,7 +173,7 @@ public class BasicAccessAuthenticator extends AbstractAuthenticator {
             String gateway = (String)httpSession.getAttribute(Constants.GATEWAY_NAME);
 
             if (user != null && gateway != null) {
-                addToContext(user, gateway);
+                servletRequestHelper.addToContext(user, gateway);
                 seenInSession = true;
             }
         }
@@ -202,22 +187,10 @@ public class BasicAccessAuthenticator extends AbstractAuthenticator {
 
         HttpServletRequest httpServletRequest = (HttpServletRequest) credentials;
 
-        return (httpServletRequest.getHeader(AUTHORISATION_HEADER_NAME) != null);
+        return (httpServletRequest.getHeader(ServletRequestHelper.AUTHORISATION_HEADER_NAME) != null);
     }
 
-    private String getGatewayId(HttpServletRequest request) throws AuthenticationException {
-        String gatewayId = request.getHeader(Constants.GATEWAY_NAME);
 
-        if (gatewayId == null) {
-            try {
-                gatewayId = ServerSettings.getDefaultGatewayId();
-            } catch (ServerSettingsException e) {
-                throw new AuthenticationException("Unable to retrieve default gateway", e);
-            }
-        }
-
-        return gatewayId;
-    }
 
     @Override
     public void configure(Node node) throws RuntimeException {

@@ -25,6 +25,7 @@ package org.apache.airavata.security.userstore;
 
 import org.apache.airavata.security.UserStoreException;
 import org.apache.airavata.common.utils.DBUtil;
+import org.apache.airavata.security.util.PasswordDigester;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -48,25 +49,31 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
 
     private JdbcRealm jdbcRealm;
 
+    private PasswordDigester passwordDigester;
+
     public JDBCUserStore() {
         jdbcRealm = new JdbcRealm();
     }
 
     @Override
     public boolean authenticate(String userName, Object credentials) throws UserStoreException{
-        AuthenticationToken authenticationToken = new UsernamePasswordToken(userName, (String)credentials);
+        AuthenticationToken authenticationToken = new UsernamePasswordToken(userName,
+                passwordDigester.getPasswordHashValue((String) credentials));
 
         AuthenticationInfo authenticationInfo;
         try {
+
             authenticationInfo = jdbcRealm.getAuthenticationInfo(authenticationToken);
+            return authenticationInfo != null;
+
         } catch (AuthenticationException e) {
             log.warn(e.getLocalizedMessage());
             log.debug(e.getLocalizedMessage(), e);
             return false;
         }
-
-        return authenticationInfo != null;
     }
+
+
 
     @Override
     public boolean authenticate(Object credentials) throws UserStoreException{
@@ -86,6 +93,7 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
          <databaseDriver></databaseDriver>
          <userName></userName>
          <password></password>
+         <passwordHashMethod>MD5</passwordHashMethod>
          <userTableName></userTableName>
          <userNameColumnName></userNameColumnName>
          <passwordColumnName></passwordColumnName>
@@ -109,6 +117,7 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
         String userTable = null;
         String userNameColumn = null;
         String passwordColumn = null;
+        String passwordHashMethod = null;
 
         if (databaseNode != null) {
             NodeList nodeList = databaseNode.getChildNodes();
@@ -126,10 +135,14 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
                         userNameColumn = element.getFirstChild().getNodeValue();
                     } else if (element.getNodeName().equals("passwordColumnName")) {
                         passwordColumn = element.getFirstChild().getNodeValue();
+                    } else if (element.getNodeName().equals("passwordHashMethod")) {
+                        passwordHashMethod = element.getFirstChild().getNodeValue();
                     }
                 }
             }
         }
+
+        passwordDigester = new PasswordDigester(passwordHashMethod);
 
         initializeDatabaseLookup(passwordColumn, userTable, userNameColumn);
 
@@ -139,6 +152,8 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
 
         log.info(stringBuilder.toString());
     }
+
+
 
     protected void initializeDatabaseLookup(String passwordColumn, String userTable,
                                             String userNameColumn) {
@@ -154,5 +169,9 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
                 .append(" WHERE ").append(userNameColumn).append(" = ?");
 
         jdbcRealm.setAuthenticationQuery(stringBuilder.toString());
+    }
+
+    public PasswordDigester getPasswordDigester() {
+        return passwordDigester;
     }
 }
