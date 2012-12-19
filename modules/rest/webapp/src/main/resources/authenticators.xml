@@ -37,6 +37,7 @@ The "enabled parameter at root level will say whether authenticators are enabled
                 <password>airavata</password>
                 <databaseDriver>org.apache.derby.jdbc.ClientDriver</databaseDriver>
                 <userTableName>Users</userTableName>
+                <passwordHashMethod>SHA</passwordHashMethod>
                 <userNameColumnName>user_name</userNameColumnName>
                 <passwordColumnName>password</passwordColumnName>
             </database>

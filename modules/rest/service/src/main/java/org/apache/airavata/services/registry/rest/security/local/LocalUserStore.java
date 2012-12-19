@@ -1,5 +1,6 @@
 package org.apache.airavata.services.registry.rest.security.local;
 
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,6 +12,7 @@ import java.util.List;
 import javax.servlet.ServletContext;
 
 import org.apache.airavata.common.utils.DBUtil;
+import org.apache.airavata.common.utils.SecurityUtil;
 import org.apache.airavata.registry.api.util.RegistrySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +26,13 @@ public class LocalUserStore {
 
     private DBUtil dbUtil;
 
+    private String hashMethod;
+
     public LocalUserStore(ServletContext servletContext) throws Exception {
 //        Properties properties = WebAppUtil.getAiravataProperties(servletContext);
+
+        hashMethod = RegistrySettings.getSetting("default.registry.password.hash.method");
+
         dbUtil = new DBUtil(RegistrySettings.getSetting("registry.jdbc.url"),
         		RegistrySettings.getSetting("registry.jdbc.user"),
         		RegistrySettings.getSetting("registry.jdbc.password"),
@@ -50,7 +57,8 @@ public class LocalUserStore {
             preparedStatement = connection.prepareStatement(sql);
 
             preparedStatement.setString(1, userName);
-            preparedStatement.setString(2, password);
+            preparedStatement.setString(2, SecurityUtil.digestString(password,
+                    hashMethod));
 
             preparedStatement.executeUpdate();
 
@@ -65,6 +73,11 @@ public class LocalUserStore {
             log.error(stringBuilder.toString(), e);
 
             throw new RuntimeException(stringBuilder.toString(), e);
+        } catch (NoSuchAlgorithmException e) {
+            String stringBuilder = "Error creating hash value for password.";
+            log.error(stringBuilder, e);
+
+            throw new RuntimeException(stringBuilder, e);
         } finally {
 
             dbUtil.cleanup(preparedStatement, connection);
@@ -129,8 +142,10 @@ public class LocalUserStore {
 
             String storedPassword = getPassword(userName, connection);
 
+            String oldDigestedPassword = SecurityUtil.digestString(oldPassword, hashMethod);
+
             if (storedPassword != null) {
-                if (!storedPassword.equals(oldPassword)) {
+                if (!storedPassword.equals(oldDigestedPassword)) {
                     throw new RuntimeException("Previous password did not match correctly. Please specify old password" +
                             " correctly.");
                 }
@@ -140,7 +155,7 @@ public class LocalUserStore {
 
             preparedStatement = connection.prepareStatement(sql);
 
-            preparedStatement.setString(1, newPassword);
+            preparedStatement.setString(1, SecurityUtil.digestString(newPassword, hashMethod));
             preparedStatement.setString(2, userName);
 
             preparedStatement.executeUpdate();
@@ -156,6 +171,11 @@ public class LocalUserStore {
             log.error(stringBuilder.toString(), e);
 
             throw new RuntimeException(stringBuilder.toString(), e);
+        } catch (NoSuchAlgorithmException e) {
+            String stringBuilder = "Error creating hash value for password.";
+            log.error(stringBuilder, e);
+
+            throw new RuntimeException(stringBuilder, e);
         } finally {
 
             dbUtil.cleanup(preparedStatement, connection);
@@ -175,7 +195,7 @@ public class LocalUserStore {
 
             preparedStatement = connection.prepareStatement(sql);
 
-            preparedStatement.setString(1, newPassword);
+            preparedStatement.setString(1, SecurityUtil.digestString(newPassword, hashMethod));
             preparedStatement.setString(2, userName);
 
             preparedStatement.executeUpdate();
@@ -191,6 +211,11 @@ public class LocalUserStore {
             log.error(stringBuilder.toString(), e);
 
             throw new RuntimeException(stringBuilder.toString(), e);
+        } catch (NoSuchAlgorithmException e) {
+            String stringBuilder = "Error creating hash value for password.";
+            log.error(stringBuilder, e);
+
+            throw new RuntimeException(stringBuilder, e);
         } finally {
 
             dbUtil.cleanup(preparedStatement, connection);
