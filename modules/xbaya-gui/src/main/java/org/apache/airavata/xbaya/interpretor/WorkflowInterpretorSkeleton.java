@@ -451,11 +451,15 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         ArrayList<HostDescription> hostDescriptions = new ArrayList<HostDescription>();
         XMLStreamReader reader = null;
         try {
-            File fXmlFile = new File(url.getPath());
-            reader = XMLInputFactory.newInstance().createXMLStreamReader(new FileReader(fXmlFile));
+            if (url != null) {
+                reader = XMLInputFactory.newInstance().createXMLStreamReader(url.openStream());
+            } else {
+                throw new RuntimeException("Error retrieving host.xml file. Should reside in " +
+                        "$SERVER_HOME/webapps/axis2/WEB-INF/classes/host.xml");
+            }
         } catch (XMLStreamException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         StAXOMBuilder builder = new StAXOMBuilder(reader);
