@@ -48,12 +48,14 @@ public class BasicAuthHeaderUtil {
                                                  MultivaluedMap queryParams,
                                                  String userName,
                                                  String password,
-                                                 Cookie cookie) {
+                                                 Cookie cookie,
+                                                 String gateway) {
         if (queryParams != null){
             webResource = webResource.queryParams(queryParams);
         }
         WebResource.Builder builder = webResource.header("Authorization",
                 BasicAuthHeaderUtil.getBasicAuthHeader(userName, password));
+        builder.header("gateway_id", gateway);
         if (cookie != null){
             builder.cookie(cookie);
         }

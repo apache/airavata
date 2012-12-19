@@ -97,14 +97,14 @@ public class RegistryClient extends AiravataRegistry2 {
         String userName = getUser().getUserName();
         callback = getCallback();
         String serviceURI = getConnectionURI().toString();
-        basicRegistryResourceClient = new BasicRegistryResourceClient(userName, serviceURI, callback);
-        configurationResourceClient = new ConfigurationResourceClient(userName, serviceURI,  callback);
-        descriptorResourceClient = new DescriptorResourceClient(userName, serviceURI, callback);
-        experimentResourceClient = new ExperimentResourceClient(userName, serviceURI, callback);
-        projectResourceClient = new ProjectResourceClient(userName, serviceURI, callback);
-        provenanceResourceClient = new ProvenanceResourceClient(userName, serviceURI, callback);
-        publishedWorkflowResourceClient = new PublishedWorkflowResourceClient(userName, serviceURI, callback);
-        userWorkflowResourceClient = new UserWorkflowResourceClient(userName,serviceURI,callback);
+        basicRegistryResourceClient = new BasicRegistryResourceClient(userName, getGateway().getGatewayName(), serviceURI, callback);
+        configurationResourceClient = new ConfigurationResourceClient(userName, getGateway().getGatewayName(),serviceURI,  callback);
+        descriptorResourceClient = new DescriptorResourceClient(userName, getGateway().getGatewayName(),serviceURI, callback);
+        experimentResourceClient = new ExperimentResourceClient(userName, getGateway().getGatewayName(),serviceURI, callback);
+        projectResourceClient = new ProjectResourceClient(userName, getGateway().getGatewayName(),serviceURI, callback);
+        provenanceResourceClient = new ProvenanceResourceClient(userName, getGateway().getGatewayName(),serviceURI, callback);
+        publishedWorkflowResourceClient = new PublishedWorkflowResourceClient(userName, getGateway().getGatewayName(),serviceURI, callback);
+        userWorkflowResourceClient = new UserWorkflowResourceClient(userName,getGateway().getGatewayName(),serviceURI,callback);
     }
 
     public Object getConfiguration(String key) {
