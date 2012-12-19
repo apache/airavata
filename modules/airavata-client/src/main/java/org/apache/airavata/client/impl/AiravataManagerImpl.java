@@ -30,13 +30,8 @@ import java.util.List;
 import org.apache.airavata.client.AiravataClient;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.AiravataManager;
-import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.Gateway;
-import org.apache.airavata.registry.api.exception.RegistryAccessorInstantiateException;
-import org.apache.airavata.registry.api.exception.RegistryAccessorInvalidException;
-import org.apache.airavata.registry.api.exception.RegistryAccessorNotFoundException;
-import org.apache.airavata.registry.api.exception.RegistryAccessorUndefinedException;
 
 public class AiravataManagerImpl implements AiravataManager {
 	private AiravataClient client;
