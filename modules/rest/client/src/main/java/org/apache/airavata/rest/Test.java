@@ -43,8 +43,8 @@ public class Test {
 
     public static void configurationResourceClientTest(){
         //configuration resource test
-        ConfigurationResourceClient configurationResourceClient = new ConfigurationResourceClient("admin",
-                "http://localhost:8080/airavata-registry/", new PasswordCallbackImpl("admin", "admin"));
+//        ConfigurationResourceClient configurationResourceClient = new ConfigurationResourceClient("admin",
+//                "http://localhost:8080/airavata-registry/", new PasswordCallbackImpl("admin", "admin"));
 
 //        System.out.println("###############getConfiguration###############");
 //        Object configuration = configurationResourceClient.getConfiguration("gfac.url");
@@ -56,11 +56,11 @@ public class Test {
 //        System.out.println(configuration.toString());
 //
 //        System.out.println("###############getConfigurationList###############");
-        try {
-            configurationResourceClient.addWFInterpreterURI(new URI("http://192.168.17.1:8080/axis2/services/WorkflowInterpretor2"));
-        } catch (URISyntaxException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+//        try {
+//            configurationResourceClient.addWFInterpreterURI(new URI("http://192.168.17.1:8080/axis2/services/WorkflowInterpretor2"));
+//        } catch (URISyntaxException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        }
 //        List<Object> configurationList = configurationResourceClient.getConfigurationList("testKey1");
 //        for(Object object : configurationList){
 //            System.out.println(object.toString());
@@ -169,11 +169,11 @@ public class Test {
 
     public static void serviceDescriptorClientTest (){
 
-        DescriptorResourceClient descriptorResourceClient = new DescriptorResourceClient("admin",
-                "http://localhost:9080/airavata-services/api", new PasswordCallbackImpl("admin", "admin"));
-        //service descriptor exists
-        boolean exists = descriptorResourceClient.isServiceDescriptorExists("echo");
-        System.out.println(exists);
+//        DescriptorResourceClient descriptorResourceClient = new DescriptorResourceClient("admin",
+//                "http://localhost:9080/airavata-services/api", new PasswordCallbackImpl("admin", "admin"));
+//        //service descriptor exists
+//        boolean exists = descriptorResourceClient.isServiceDescriptorExists("echo");
+//        System.out.println(exists);
 
         //service descriptor save
 //        ServiceDescription serviceDescription = new ServiceDescription();

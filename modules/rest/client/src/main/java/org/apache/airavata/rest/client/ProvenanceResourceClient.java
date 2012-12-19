@@ -57,13 +57,16 @@ public class ProvenanceResourceClient {
     private String baseURI;
     private Cookie cookie;
     private WebResource.Builder builder;
+    private String gateway;
 
     public ProvenanceResourceClient(String userName,
+                                    String gateway,
                                     String serviceURL,
                                     PasswordCallback callback) {
         this.userName = userName;
         this.callback = callback;
         this.baseURI = serviceURL;
+        this.gateway = gateway;
     }
 
     private URI getBaseURI() {
@@ -88,7 +91,9 @@ public class ProvenanceResourceClient {
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("experimentId", experimentId);
         formParams.add("user", user);
-        ClientResponse response = webResource.accept(
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
+        ClientResponse response = builder.accept(
                 MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
 
@@ -97,24 +102,24 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(
-                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), null);
-                response = builder.accept(
-                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(
+                    MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
 
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
     }
@@ -124,33 +129,40 @@ public class ProvenanceResourceClient {
                 ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENT_EXECUTIONUSER);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("experimentId", experimentId);
-        ClientResponse response = webResource.queryParams(queryParams).accept(
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+        ClientResponse response = builder.accept(
                 MediaType.TEXT_PLAIN).get(ClientResponse.class);
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+        if (status != ClientConstant.HTTP_OK &&
+                status != ClientConstant.HTTP_UNAUTHORIZED &&
+                status != ClientConstant.HTTP_NO_CONTENT) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
-            if(status == ClientConstant.HTTP_NO_CONTENT){
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
                 return null;
             }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return null;
+        }else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
 
@@ -163,7 +175,9 @@ public class ProvenanceResourceClient {
                 ResourcePathConstants.ProvenanceResourcePathConstants.EXPERIMENTNAME_EXISTS);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("experimentName", experimentName);
-        ClientResponse response = webResource.queryParams(queryParams).accept(
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+        ClientResponse response = builder.accept(
                 MediaType.TEXT_PLAIN).get(ClientResponse.class);
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -171,29 +185,33 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+            status = response.getStatus();
+            if (status == ClientConstant.HTTP_OK) {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+            String exists = response.getEntity(String.class);
+            if (exists.equals("True")) {
+                return true;
             } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+                return false;
+            }
+        } else {
+            if(response.getCookies().size() > 0){
                 cookie = response.getCookies().get(0).toCookie();
             }
-            status = response.getStatus();
             String exists = response.getEntity(String.class);
-            if (exists.equals("True")){
+            if (exists.equals("True")) {
                 return true;
             } else {
                 return false;
             }
         }
-        else {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
-        }
+
     }
 
     public String getExperimentName(String experimentId) {
@@ -201,32 +219,39 @@ public class ProvenanceResourceClient {
                 ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENT_NAME);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("experimentId", experimentId);
-        ClientResponse response = webResource.queryParams(queryParams).accept(
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+        ClientResponse response = builder.accept(
                 MediaType.TEXT_PLAIN).get(ClientResponse.class);
         int status = response.getStatus();
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+        if (status != ClientConstant.HTTP_OK &&
+                status != ClientConstant.HTTP_UNAUTHORIZED &&
+                status != ClientConstant.HTTP_NO_CONTENT) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
-            if(status == ClientConstant.HTTP_NO_CONTENT){
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
                 return null;
             }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return null;
+        }else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
 
@@ -240,29 +265,31 @@ public class ProvenanceResourceClient {
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("experimentId", experimentId);
         formParams.add("experimentName", experimentName);
-
-        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
+        ClientResponse response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
 
@@ -273,32 +300,39 @@ public class ProvenanceResourceClient {
                 ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENTMETADATA);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("experimentId", experimentId);
-        ClientResponse response = webResource.queryParams(queryParams).accept(
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+        ClientResponse response = builder.accept(
                 MediaType.TEXT_PLAIN).get(ClientResponse.class);
         int status = response.getStatus();
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+        if (status != ClientConstant.HTTP_OK &&
+                status != ClientConstant.HTTP_UNAUTHORIZED &&
+                status != ClientConstant.HTTP_NO_CONTENT) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
-            if(status == ClientConstant.HTTP_NO_CONTENT){
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
                 return null;
             }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return null;
+        } else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
         String experimentMetadata = response.getEntity(String.class);
@@ -311,29 +345,32 @@ public class ProvenanceResourceClient {
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("experimentId", experimentId);
         formParams.add("metadata", metadata);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
 
-        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        ClientResponse response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
     }
@@ -343,32 +380,40 @@ public class ProvenanceResourceClient {
                 ResourcePathConstants.ProvenanceResourcePathConstants.GET_WORKFLOWTEMPLATENAME);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("workflowInstanceId", workflowInstanceId);
-        ClientResponse response = webResource.queryParams(queryParams).accept(
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+
+        ClientResponse response = builder.accept(
                 MediaType.TEXT_PLAIN).get(ClientResponse.class);
         int status = response.getStatus();
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+        if (status != ClientConstant.HTTP_OK &&
+                status != ClientConstant.HTTP_UNAUTHORIZED &&
+                status != ClientConstant.HTTP_NO_CONTENT) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
-            if(status == ClientConstant.HTTP_NO_CONTENT){
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
                 return null;
             }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return null;
+        }else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
 
@@ -382,30 +427,34 @@ public class ProvenanceResourceClient {
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("workflowInstanceId", workflowInstanceId);
         formParams.add("templateName", templateName);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
 
-        ClientResponse response = webResource.accept(
+        ClientResponse response = builder.accept(
                 MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+        if (status != ClientConstant.HTTP_OK &&
+                status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), cookie);
-                response = builder.post(ClientResponse.class, formParams);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), null);
-                response = builder.post(ClientResponse.class, formParams);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
     }
@@ -416,32 +465,40 @@ public class ProvenanceResourceClient {
                 ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENTWORKFLOWINSTANCES);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("experimentId", experimentId);
-        ClientResponse response = webResource.queryParams(queryParams).accept(
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+
+        ClientResponse response = builder.accept(
                 MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+        if (status != ClientConstant.HTTP_OK &&
+                status != ClientConstant.HTTP_UNAUTHORIZED &&
+                status != ClientConstant.HTTP_NO_CONTENT) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-            if(status == ClientConstant.HTTP_NO_CONTENT){
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
                 return workflowInstanceList;
             }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return workflowInstanceList;
+        }else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
 
@@ -461,7 +518,10 @@ public class ProvenanceResourceClient {
                 ResourcePathConstants.ProvenanceResourcePathConstants.WORKFLOWINSTANCE_EXIST_CHECK);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("instanceId", instanceId);
-        ClientResponse response = webResource.queryParams(queryParams).accept(
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+
+        ClientResponse response = builder.accept(
                 MediaType.TEXT_PLAIN).get(ClientResponse.class);
 
         int status = response.getStatus();
@@ -470,29 +530,28 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
+            if (status == ClientConstant.HTTP_OK) {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
             String exists = response.getEntity(String.class);
-            if (exists.equals("True")){
+            if (exists.equals("True")) {
                 return true;
             } else {
                 return false;
             }
+        } else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
+            }
+            return true;
         }
-        else {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
-        }
+
     }
 
     public boolean isWorkflowInstanceExists(String instanceId, boolean createIfNotPresent) {
@@ -501,8 +560,10 @@ public class ProvenanceResourceClient {
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("instanceId", instanceId);
         formParams.add("createIfNotPresent", String.valueOf(createIfNotPresent));
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
 
-        ClientResponse response = webResource.accept(
+        ClientResponse response = builder.accept(
                 MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -510,29 +571,28 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
+            if (status == ClientConstant.HTTP_OK) {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
             String exists = response.getEntity(String.class);
-            if (exists.equals("True")){
+            if (exists.equals("True")) {
                 return true;
             } else {
                 return false;
             }
+        } else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
+            }
+            return true;
         }
-        else {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
-        }
+
     }
 
     public void updateWorkflowInstanceStatus(String instanceId, WorkflowExecutionStatus.State executionStatus) {
@@ -541,8 +601,10 @@ public class ProvenanceResourceClient {
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("instanceId", instanceId);
         formParams.add("executionStatus", executionStatus.name());
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
 
-        ClientResponse response = webResource.accept(
+        ClientResponse response = builder.accept(
                 MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -550,23 +612,25 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
+
     }
 
     public void updateWorkflowInstanceStatus(WorkflowExecutionStatus workflowInstanceStatus) {
@@ -581,8 +645,10 @@ public class ProvenanceResourceClient {
                 workflowInstanceStatus.getExecutionStatus().name());
         formParams.add("statusUpdateTime",
                 statusUpdateDate);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
 
-        ClientResponse response = webResource.accept(
+        ClientResponse response = builder.accept(
                 MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -590,24 +656,26 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), null);
-                response = builder.accept(
-                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(
+                    MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
+
     }
 
     public WorkflowExecutionStatus getWorkflowInstanceStatus(String instanceId) {
@@ -615,32 +683,40 @@ public class ProvenanceResourceClient {
                 ResourcePathConstants.ProvenanceResourcePathConstants.GET_WORKFLOWINSTANCESTATUS);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("instanceId", instanceId);
-        ClientResponse response = webResource.queryParams(queryParams).accept(
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+
+        ClientResponse response = builder.accept(
                 MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+        if (status != ClientConstant.HTTP_OK &&
+                status != ClientConstant.HTTP_UNAUTHORIZED &&
+                status != ClientConstant.HTTP_NO_CONTENT) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-            if(status == ClientConstant.HTTP_NO_CONTENT){
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
                 return null;
             }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return null;
+        } else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
 
@@ -655,8 +731,10 @@ public class ProvenanceResourceClient {
         formParams.add("nodeID", node.getNodeId());
         formParams.add("workflowInstanceId", node.getWorkflowInstance().getWorkflowExecutionId());
         formParams.add("data", data);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
 
-        ClientResponse response = webResource.accept(
+        ClientResponse response = builder.accept(
                 MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -664,23 +742,23 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(
-                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), null);
-                response = builder.accept(
-                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(
+                    MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
     }
@@ -692,8 +770,10 @@ public class ProvenanceResourceClient {
         formParams.add("nodeID", node.getNodeId());
         formParams.add("workflowInstanceId", node.getWorkflowInstance().getWorkflowExecutionId());
         formParams.add("data", data);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
 
-        ClientResponse response = webResource.accept(
+        ClientResponse response = builder.accept(
                 MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -701,21 +781,22 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
     }
@@ -725,32 +806,40 @@ public class ProvenanceResourceClient {
                 ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENT);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("experimentId", experimentId);
-        ClientResponse response = webResource.queryParams(queryParams).accept(
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+
+        ClientResponse response = builder.accept(
                 MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+        if (status != ClientConstant.HTTP_OK &&
+                status != ClientConstant.HTTP_UNAUTHORIZED &&
+                status != ClientConstant.HTTP_NO_CONTENT) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-            if(status == ClientConstant.HTTP_NO_CONTENT){
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
                 return null;
             }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        }else  if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return null;
+        }else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
         ExperimentData experimentData = response.getEntity(ExperimentData.class);
@@ -762,32 +851,40 @@ public class ProvenanceResourceClient {
                 ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENT_METAINFORMATION);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("experimentId", experimentId);
-        ClientResponse response = webResource.queryParams(queryParams).accept(
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+
+        ClientResponse response = builder.accept(
                 MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+        if (status != ClientConstant.HTTP_OK &&
+                status != ClientConstant.HTTP_UNAUTHORIZED &&
+                status != ClientConstant.HTTP_NO_CONTENT) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-            if(status == ClientConstant.HTTP_NO_CONTENT){
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
                 return null;
             }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return null;
+        }else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
 
@@ -801,32 +898,40 @@ public class ProvenanceResourceClient {
                 ResourcePathConstants.ProvenanceResourcePathConstants.GET_ALL_EXPERIMENT_METAINFORMATION);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("user", user);
-        ClientResponse response = webResource.queryParams(queryParams).accept(
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+
+        ClientResponse response = builder.accept(
                 MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+        if (status != ClientConstant.HTTP_OK &&
+                status != ClientConstant.HTTP_UNAUTHORIZED &&
+                status != ClientConstant.HTTP_NO_CONTENT) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-            if(status == ClientConstant.HTTP_NO_CONTENT){
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
                 return experimentDatas;
             }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return experimentDatas;
+        } else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
 
@@ -846,32 +951,40 @@ public class ProvenanceResourceClient {
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("user", user);
         queryParams.add("experimentNameRegex", experimentNameRegex);
-        ClientResponse response = webResource.queryParams(queryParams).accept(
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+
+        ClientResponse response = builder.accept(
                 MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+        if (status != ClientConstant.HTTP_OK &&
+                status != ClientConstant.HTTP_UNAUTHORIZED &&
+                status != ClientConstant.HTTP_NO_CONTENT) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-            if(status == ClientConstant.HTTP_NO_CONTENT){
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
                 return experimentDatas;
             }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return experimentDatas;
+        }else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
 
@@ -889,32 +1002,40 @@ public class ProvenanceResourceClient {
                 ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENT_ID_USER);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("username", user);
-        ClientResponse response = webResource.queryParams(queryParams).accept(
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+
+        ClientResponse response = builder.accept(
                 MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+        if (status != ClientConstant.HTTP_OK &&
+                status != ClientConstant.HTTP_UNAUTHORIZED &&
+                status != ClientConstant.HTTP_NO_CONTENT) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-            if(status == ClientConstant.HTTP_NO_CONTENT){
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
                 return new ArrayList<String>();
             }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return new ArrayList<String>();
+        }else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
 
@@ -929,32 +1050,40 @@ public class ProvenanceResourceClient {
                 ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENT_USER);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("username", user);
-        ClientResponse response = webResource.queryParams(queryParams).accept(
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+
+        ClientResponse response = builder.accept(
                 MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+        if (status != ClientConstant.HTTP_OK &&
+                status != ClientConstant.HTTP_UNAUTHORIZED &&
+                status != ClientConstant.HTTP_NO_CONTENT) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-            if(status == ClientConstant.HTTP_NO_CONTENT){
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
                 return experimentDatas;
             }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return experimentDatas;
+        }else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
         ExperimentDataList experimentDataList = response.getEntity(ExperimentDataList.class);
@@ -976,8 +1105,10 @@ public class ProvenanceResourceClient {
                 workflowStatusNode.getWorkflowInstanceNode().getNodeId());
         formParams.add("executionStatus",
                 workflowStatusNode.getExecutionStatus().name());
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
 
-        ClientResponse response = webResource.accept(
+        ClientResponse response = builder.accept(
                 MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -985,23 +1116,23 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(
-                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), null);
-                response = builder.accept(
-                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(
+                    MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
     }
@@ -1015,8 +1146,10 @@ public class ProvenanceResourceClient {
         formParams.add("workflowInstanceId", workflowInstanceId);
         formParams.add("nodeId", nodeId);
         formParams.add("executionStatus", executionStatus.name());
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
 
-        ClientResponse response = webResource.accept(
+        ClientResponse response = builder.accept(
                 MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -1024,23 +1157,23 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(
-                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), null);
-                response = builder.accept(
-                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(
+                    MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
     }
@@ -1054,8 +1187,10 @@ public class ProvenanceResourceClient {
                 workflowNode.getWorkflowInstance().getWorkflowExecutionId());
         formParams.add("nodeId", workflowNode.getNodeId());
         formParams.add("executionStatus", executionStatus.name());
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
 
-        ClientResponse response = webResource.accept(
+        ClientResponse response = builder.accept(
                 MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -1063,23 +1198,23 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(
-                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), null);
-                response = builder.accept(
-                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(
+                    MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
     }
@@ -1090,32 +1225,40 @@ public class ProvenanceResourceClient {
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("workflowInstanceId", workflowNode.getWorkflowInstance().getWorkflowExecutionId());
         queryParams.add("nodeId", workflowNode.getNodeId());
-        ClientResponse response = webResource.queryParams(queryParams).accept(
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+
+        ClientResponse response = builder.accept(
                 MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+        if (status != ClientConstant.HTTP_OK &&
+                status != ClientConstant.HTTP_UNAUTHORIZED &&
+                status != ClientConstant.HTTP_NO_CONTENT) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-            if(status == ClientConstant.HTTP_NO_CONTENT){
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
                 return null;
             }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return null;
+        }else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
 
@@ -1130,32 +1273,40 @@ public class ProvenanceResourceClient {
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("workflowInstanceId", workflowNode.getWorkflowInstance().getWorkflowExecutionId());
         queryParams.add("nodeId", workflowNode.getNodeId());
-        ClientResponse response = webResource.queryParams(queryParams).accept(
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+
+        ClientResponse response = builder.accept(
                 MediaType.TEXT_PLAIN).get(ClientResponse.class);
         int status = response.getStatus();
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+        if (status != ClientConstant.HTTP_OK &&
+                status != ClientConstant.HTTP_UNAUTHORIZED &&
+                status != ClientConstant.HTTP_NO_CONTENT) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
-            if(status == ClientConstant.HTTP_NO_CONTENT){
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
                 return null;
             }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return null;
+        }else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
 
@@ -1175,32 +1326,40 @@ public class ProvenanceResourceClient {
                 ResourcePathConstants.ProvenanceResourcePathConstants.GET_WORKFLOW_STARTTIME);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("workflowInstanceId", workflowInstance.getWorkflowExecutionId());
-        ClientResponse response = webResource.queryParams(queryParams).accept(
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+
+        ClientResponse response = builder.accept(
                 MediaType.TEXT_PLAIN).get(ClientResponse.class);
         int status = response.getStatus();
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+        if (status != ClientConstant.HTTP_OK &&
+                status != ClientConstant.HTTP_UNAUTHORIZED &&
+                status != ClientConstant.HTTP_NO_CONTENT) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
-            if(status == ClientConstant.HTTP_NO_CONTENT){
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
                 return null;
             }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return null;
+        } else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
 
@@ -1218,7 +1377,10 @@ public class ProvenanceResourceClient {
     public void updateWorkflowNodeGramData(WorkflowNodeGramData workflowNodeGramData) {
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_WORKFLOWNODE_GRAMDATA);
-        ClientResponse response = webResource.accept(
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
+
+        ClientResponse response = builder.accept(
                 MediaType.TEXT_PLAIN).type(
                 MediaType.APPLICATION_JSON).post(ClientResponse.class, workflowNodeGramData);
         int status = response.getStatus();
@@ -1227,23 +1389,23 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.TEXT_PLAIN).type(
-                        MediaType.APPLICATION_JSON).post(ClientResponse.class, workflowNodeGramData);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.TEXT_PLAIN).type(
-                        MediaType.APPLICATION_JSON).post(ClientResponse.class, workflowNodeGramData);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.TEXT_PLAIN).type(
+                    MediaType.APPLICATION_JSON).post(ClientResponse.class, workflowNodeGramData);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
     }
@@ -1253,32 +1415,40 @@ public class ProvenanceResourceClient {
                 ResourcePathConstants.ProvenanceResourcePathConstants.GET_WORKFLOWINSTANCEDATA);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("workflowInstanceId", workflowInstanceId);
-        ClientResponse response = webResource.queryParams(queryParams).accept(
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+
+        ClientResponse response = builder.accept(
                 MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+        if (status != ClientConstant.HTTP_OK &&
+                status != ClientConstant.HTTP_UNAUTHORIZED &&
+                status != ClientConstant.HTTP_NO_CONTENT) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-            if(status == ClientConstant.HTTP_NO_CONTENT){
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
                 return null;
             }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return null;
+        }else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
 
@@ -1292,7 +1462,10 @@ public class ProvenanceResourceClient {
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("workflowInstanceId", workflowInstanceId);
         queryParams.add("nodeId", nodeId);
-        ClientResponse response = webResource.queryParams(queryParams).accept(
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+
+        ClientResponse response = builder.accept(
                 MediaType.TEXT_PLAIN).get(ClientResponse.class);
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -1300,28 +1473,26 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
+            if (status == ClientConstant.HTTP_OK) {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
             String exists = response.getEntity(String.class);
-            if (exists.equals("True")){
+            if (exists.equals("True")) {
                 return true;
             } else {
                 return false;
             }
-        }
-        else {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        } else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
+            }
+            return true;
         }
     }
 
@@ -1334,7 +1505,10 @@ public class ProvenanceResourceClient {
         formParams.add("workflowInstanceId", workflowInstanceId);
         formParams.add("nodeId", nodeId);
         formParams.add("createIfNotPresent", String.valueOf(createIfNotPresent));
-        ClientResponse response = webResource.accept(
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
+
+        ClientResponse response = builder.accept(
                 MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -1342,64 +1516,70 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName),cookie);
-                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
+            if (status == ClientConstant.HTTP_OK) {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
             String exists = response.getEntity(String.class);
-            if (exists.equals("True")){
+            if (exists.equals("True")) {
                 return true;
             } else {
                 return false;
             }
-        }
-        else {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        } else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
+            }
+            return true;
         }
     }
 
     public NodeExecutionData getWorkflowInstanceNodeData(String workflowInstanceId,
-                                                                String nodeId) {
+                                                         String nodeId) {
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.WORKFLOWINSTANCE_NODE_DATA);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("workflowInstanceId", workflowInstanceId);
         queryParams.add("nodeId", nodeId);
-        ClientResponse response = webResource.queryParams(queryParams).accept(
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+
+        ClientResponse response = builder.accept(
                 MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+        if (status != ClientConstant.HTTP_OK &&
+                status != ClientConstant.HTTP_UNAUTHORIZED &&
+                status != ClientConstant.HTTP_NO_CONTENT) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, queryParams, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
-            if(status == ClientConstant.HTTP_NO_CONTENT){
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
                 return null;
             }
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        }else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return null;
+        }else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
 
@@ -1417,32 +1597,36 @@ public class ProvenanceResourceClient {
         formParams.add("experimentId", experimentId);
         formParams.add("workflowInstanceId", workflowInstanceId);
         formParams.add("templateName", templateName);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
 
-        ClientResponse response = webResource.accept(
+        ClientResponse response = builder.accept(
                 MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+        if (status != ClientConstant.HTTP_OK &&
+                status != ClientConstant.HTTP_UNAUTHORIZED &&
+                status != ClientConstant.HTTP_NO_CONTENT) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(
-                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), null);
-                response = builder.accept(
-                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(
+                    MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
     }
@@ -1455,32 +1639,35 @@ public class ProvenanceResourceClient {
         formParams.add("workflowInstanceId", node.getWorkflowInstance().getWorkflowExecutionId());
         formParams.add("nodeId", node.getNodeId());
         formParams.add("nodeType", type.getNodeType().name());
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
 
-        ClientResponse response = webResource.accept(
+        ClientResponse response = builder.accept(
                 MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+        if (status != ClientConstant.HTTP_OK &&
+                status != ClientConstant.HTTP_UNAUTHORIZED) {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(
-                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), null);
-                response = builder.accept(
-                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(
+                    MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
     }
@@ -1492,8 +1679,10 @@ public class ProvenanceResourceClient {
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("workflowInstanceId", workflowInstance);
         formParams.add("nodeId", nodeId);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
 
-        ClientResponse response = webResource.accept(
+        ClientResponse response = builder.accept(
                 MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
@@ -1501,22 +1690,22 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
-            if (cookie != null){
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), cookie);
-                response = builder.accept(
-                        MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-            } else {
-                builder = BasicAuthHeaderUtil.getBuilder(
-                        webResource, null, userName, callback.getPassword(userName), null);
-                response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
             if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            } else {
+                if(response.getCookies().size() > 0){
+                    cookie = response.getCookies().get(0).toCookie();
+                }
+            }
+        } else {
+            if(response.getCookies().size() > 0){
+                cookie = response.getCookies().get(0).toCookie();
             }
         }
     }
