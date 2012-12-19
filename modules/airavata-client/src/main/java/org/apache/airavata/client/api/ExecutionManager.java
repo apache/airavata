@@ -37,7 +37,7 @@ public interface ExecutionManager {
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public abstract String runExperiment(String workflowTemplateId,List<WorkflowInput> inputs) throws AiravataAPIInvocationException;
+	public String runExperiment(String workflowTemplateId,List<WorkflowInput> inputs) throws AiravataAPIInvocationException;
 
     /**
      * Run an experiment containing single workflow
@@ -46,7 +46,7 @@ public interface ExecutionManager {
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public abstract String runExperiment(Workflow workflow,List<WorkflowInput> inputs) throws AiravataAPIInvocationException;
+	public String runExperiment(Workflow workflow,List<WorkflowInput> inputs) throws AiravataAPIInvocationException;
 
     /**
      * Run an experiment containing single workflow
@@ -58,7 +58,7 @@ public interface ExecutionManager {
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public abstract String runExperiment(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName)throws AiravataAPIInvocationException;
+	public String runExperiment(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName)throws AiravataAPIInvocationException;
 
 	/**
      * Run an experiment containing single workflow
@@ -70,7 +70,7 @@ public interface ExecutionManager {
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public abstract String runExperiment(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName, String experimentName)throws AiravataAPIInvocationException;
+	public String runExperiment(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName, String experimentName)throws AiravataAPIInvocationException;
 
 	/**
 	 * Run an experiment containing single workflow
@@ -83,7 +83,7 @@ public interface ExecutionManager {
 	 * @return
 	 * @throws AiravataAPIInvocationException
 	 */
-	public abstract String runExperiment(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName, WorkflowContextHeaderBuilder builder)throws AiravataAPIInvocationException;
+	public String runExperiment(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName, WorkflowContextHeaderBuilder builder)throws AiravataAPIInvocationException;
 
     /**
      * Run an experiment containing single workflow
@@ -94,7 +94,7 @@ public interface ExecutionManager {
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public abstract String runExperiment(Workflow workflow,List<WorkflowInput> inputs, String user, String metadata)throws AiravataAPIInvocationException;
+	public String runExperiment(Workflow workflow,List<WorkflowInput> inputs, String user, String metadata)throws AiravataAPIInvocationException;
 
     /**
      * Get a monitor for a running experiment
