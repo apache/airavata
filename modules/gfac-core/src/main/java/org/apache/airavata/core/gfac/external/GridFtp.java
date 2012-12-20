@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.airavata.core.gfac.context.GFacConfiguration;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.ToolsException;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
@@ -91,6 +92,7 @@ public class GridFtp {
                     destClient.setAuthorization(new HostAuthorization(GridFtp.HOST));
                     destClient.authenticate(gssCred);
                     destClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
+                    makeExternalConfigurations(destClient, false);
 
                     if (!destClient.exists(destPath)) {
                         destClient.makeDir(destPath);
@@ -150,6 +152,7 @@ public class GridFtp {
             ftpClient.setAuthorization(new HostAuthorization(GridFtp.HOST));
             ftpClient.authenticate(gsCredential);
             ftpClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
+            makeExternalConfigurations(ftpClient, false);
 
             log.debug("Uploading file");
             if (checkBinaryExtensions(remoteFile)) {
@@ -194,14 +197,14 @@ public class GridFtp {
             srcClient.setAuthorization(new HostAuthorization(GridFtp.HOST));
             srcClient.authenticate(gsCredential);
             srcClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
-
+            makeExternalConfigurations(srcClient, true);
+            
             GridFTPClient destClient = new GridFTPClient(destContactInfo.hostName, destContactInfo.port);
             destClient.setAuthorization(new HostAuthorization(GridFtp.HOST));
             destClient.authenticate(gsCredential);
             destClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
-
-
-           log.debug("Uploading file");
+            makeExternalConfigurations(destClient, false);
+		log.debug("Uploading file");
             if (checkBinaryExtensions(remoteFile)) {
                 log.info("Transfer mode is set to Binary for a file upload");
                 srcClient.setType(Session.TYPE_IMAGE);
@@ -252,6 +255,7 @@ public class GridFtp {
             ftpClient.setAuthorization(new HostAuthorization(GridFtp.HOST));
             ftpClient.authenticate(gsCredential);
             ftpClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
+            makeExternalConfigurations(ftpClient, false);
 
             log.debug("Uploading file");
             if (checkBinaryExtensions(remoteFile)) {
@@ -304,6 +308,7 @@ public class GridFtp {
             ftpClient.setAuthorization(new HostAuthorization(GridFtp.HOST));
             ftpClient.authenticate(gsCredential);
             ftpClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
+            makeExternalConfigurations(ftpClient, true);
 
             log.debug("Downloading file");
             if (checkBinaryExtensions(remoteFile)) {
@@ -401,6 +406,8 @@ public class GridFtp {
             destClient = new GridFTPClient(desthost.getHost(), desthost.getPort());
             destClient.setAuthorization(new HostAuthorization(GridFtp.HOST));
             destClient.authenticate(gssCred);
+            makeExternalConfigurations(destClient, false);
+
             if (checkBinaryExtensions(desthost.getPath())) {
                 log.info("Transfer mode is set to Binary");
                 destClient.setType(Session.TYPE_IMAGE);
@@ -409,6 +416,8 @@ public class GridFtp {
             srcClient = new GridFTPClient(srchost.getHost(), srchost.getPort());
             srcClient.setAuthorization(new HostAuthorization(GridFtp.HOST));
             srcClient.authenticate(gssCred);
+            makeExternalConfigurations(srcClient, true);
+
             if (checkBinaryExtensions(srchost.getPath())) {
                 log.info("Transfer mode is set to Binary");
                 srcClient.setType(Session.TYPE_IMAGE);
@@ -483,6 +492,7 @@ public class GridFtp {
 				srcClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
 				srcClient.setType(Session.TYPE_ASCII);
 				srcClient.changeDir(dirURI.getPath());
+	            makeExternalConfigurations(srcClient, true);
 
 				Vector<Object> fileInfo = null;
 				try {
@@ -542,4 +552,30 @@ public class GridFtp {
         }
 
     }
+    
+    /**
+     * This function will call the external configuration handlers to configure the GridFTPClient
+     * object.
+     * @param client
+     * @param source
+     */
+	private void makeExternalConfigurations(GridFTPClient client, boolean source) {
+		GridConfigurationHandler[] handlers = GFacConfiguration.getGridConfigurationHandlers();
+		for(GridConfigurationHandler handler:handlers){
+			try {
+				if (source) {
+					handler.handleSourceFTPClient(client);
+				}else{
+					handler.handleDestinationFTPClient(client);
+				}
+			} catch (Exception e) {
+				//TODO Right now we are just catching & ignoring the exception. But later on we need 
+				//to throw this exception to notify the user of configuration errors of their 
+				//custom configuration handlers.
+				log.error("Error while configuring GridFTPClient for "
+								+ client.getHost(), e);
+			}
+		}
+		
+	}
 }

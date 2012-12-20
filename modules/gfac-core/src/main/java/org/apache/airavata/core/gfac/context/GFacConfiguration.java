@@ -20,9 +20,17 @@
 */
 package org.apache.airavata.core.gfac.context;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.core.gfac.external.GridConfigurationHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GFacConfiguration {
+    public static final Logger log = LoggerFactory.getLogger(GFacConfiguration.class);
 
     private String myProxyServer;
 
@@ -36,6 +44,29 @@ public class GFacConfiguration {
     private AiravataAPI airavataAPI;
 
     private String trustedCertLocation;
+    
+    private static List<GridConfigurationHandler> gridConfigurationHandlers;
+    private static String GRID_HANDLERS="airavata.grid.handlers";
+    
+    static{
+    	gridConfigurationHandlers=new ArrayList<GridConfigurationHandler>();
+    	String handlerString = ServerSettings.getSetting(GRID_HANDLERS, null);
+    	String[] handlers = handlerString.split(",");
+    	for (String handlerClass : handlers) {
+    		try {
+				@SuppressWarnings("unchecked")
+				Class<GridConfigurationHandler> classInstance = (Class<GridConfigurationHandler>) GFacConfiguration.class
+						.getClassLoader().loadClass(handlerClass);
+				gridConfigurationHandlers.add(classInstance.newInstance());
+			} catch (Exception e) {
+				log.error("Error while loading Grid Configuration Handler class "+handlerClass, e);
+			}
+		}
+    }
+    
+    public static GridConfigurationHandler[] getGridConfigurationHandlers(){
+    	return gridConfigurationHandlers.toArray(new GridConfigurationHandler[]{});
+    }
 
     public GFacConfiguration(String myProxyServer,
                              String myProxyUser,
