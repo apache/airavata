@@ -32,13 +32,24 @@ import org.apache.airavata.ws.monitor.MonitorEventListener;
 public interface ExecutionManager {
     /**
      * Run an experiment containing single workflow
-     * @param workflowTemplateId
+     * @param workflow - Workflow template Id or Workflow Graph XML
      * @param inputs
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public String runExperiment(String workflowTemplateId,List<WorkflowInput> inputs) throws AiravataAPIInvocationException;
+	public String runExperiment(String workflow,List<WorkflowInput> inputs) throws AiravataAPIInvocationException;
 
+    /**
+     * Run an experiment containing single workflow with custom settings for the experiment
+     * @param workflow - Workflow template Id or Workflow Graph XML
+     * @param inputs
+     * @param options
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
+	public String runExperiment(String workflow,List<WorkflowInput> inputs, ExperimentAdvanceOptions options) throws AiravataAPIInvocationException;
+
+	
     /**
      * Run an experiment containing single workflow
      * @param workflow
@@ -49,6 +60,7 @@ public interface ExecutionManager {
 	public String runExperiment(Workflow workflow,List<WorkflowInput> inputs) throws AiravataAPIInvocationException;
 
     /**
+     * @deprecated Use the function <code>runExperiment(String,List&ltWorkflowInput&gt,ExperimentAdvanceOptions)</code> instead. <br />
      * Run an experiment containing single workflow
      * @param workflowTemplateId
      * @param inputs
@@ -61,6 +73,7 @@ public interface ExecutionManager {
 	public String runExperiment(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName)throws AiravataAPIInvocationException;
 
 	/**
+	 * @deprecated Use the function <code>runExperiment(String,List&ltWorkflowInput&gt,ExperimentAdvanceOptions)</code> instead. <br />
      * Run an experiment containing single workflow
      * @param workflowTemplateId
      * @param inputs
@@ -73,6 +86,7 @@ public interface ExecutionManager {
 	public String runExperiment(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName, String experimentName)throws AiravataAPIInvocationException;
 
 	/**
+	 * @deprecated Use the function <code>runExperiment(String,List&ltWorkflowInput&gt,ExperimentAdvanceOptions)</code> instead. <br />
 	 * Run an experiment containing single workflow
 	 * @param workflowTemplateId
 	 * @param inputs
@@ -86,6 +100,7 @@ public interface ExecutionManager {
 	public String runExperiment(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName, WorkflowContextHeaderBuilder builder)throws AiravataAPIInvocationException;
 
     /**
+     * @deprecated Use the function <code>runExperiment(String,List&ltWorkflowInput&gt,ExperimentAdvanceOptions)</code> instead. <br />
      * Run an experiment containing single workflow
      * @param workflow
      * @param inputs
@@ -114,6 +129,7 @@ public interface ExecutionManager {
 	public Monitor getExperimentMonitor(String experimentId, MonitorEventListener listener) throws AiravataAPIInvocationException;
 
 	/**
+	 * @deprecated
 	 * Creates a WorkflowContextHeaderBuilder object that can be used to customize the scheduling of a workflow execution.
 	 * Once configured this object run the workflow using
 	 *   <code>runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName, WorkflowContextHeaderBuilder builder)</code>
@@ -123,11 +139,6 @@ public interface ExecutionManager {
 	public WorkflowContextHeaderBuilder createWorkflowContextHeader() throws AiravataAPIInvocationException;
 
 
-    /**
-     * Creates a DefaultExecutionContext.
-     * @return DefaultExecutionContext
-     * @throws AiravataAPIInvocationException AiravataAPIInvocationException
-     */
-//    public DefaultExecutionContext createDefaultExecutionContext() throws AiravataAPIInvocationException;
+    public ExperimentAdvanceOptions createExperimentAdvanceOptions() throws AiravataAPIInvocationException;
 
 }

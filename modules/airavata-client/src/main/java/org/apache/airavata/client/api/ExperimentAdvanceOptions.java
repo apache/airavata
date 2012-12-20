@@ -100,8 +100,9 @@ public interface ExperimentAdvanceOptions {
 	 * Users should use the function </i><code><b>setCustomWorkflowContext(...)</b></code><i> to do 
 	 * so</i>.
 	 * @return A WorkflowContextHeaderBuilder object.
+	 * @throws AiravataAPIInvocationException 
 	 */
-	public WorkflowContextHeaderBuilder newCustomWorkflowContext();
+	public WorkflowContextHeaderBuilder newCustomWorkflowContext() throws AiravataAPIInvocationException;
 	
 	/**
 	 * Create a unique experiment Id.<br />
