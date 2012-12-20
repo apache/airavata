@@ -8,6 +8,8 @@ import java.security.NoSuchAlgorithmException;
  */
 public class SecurityUtil {
 
+    public static final String PASSWORD_HASH_METHOD_PLAINTEXT = "PLAINTEXT";
+
     /**
      * Creates a hash of given string with the given hash algorithm.
      * @param stringToDigest The string to digest.
@@ -18,7 +20,7 @@ public class SecurityUtil {
     public static String digestString(String stringToDigest, String digestingAlgorithm)
             throws NoSuchAlgorithmException {
 
-        if (digestingAlgorithm == null) {
+        if (digestingAlgorithm == null || digestingAlgorithm.equals(PASSWORD_HASH_METHOD_PLAINTEXT)) {
             return stringToDigest;
         }
 

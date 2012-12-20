@@ -1,5 +1,6 @@
 package org.apache.airavata.security.util;
 
+import org.apache.airavata.common.utils.SecurityUtil;
 import org.apache.airavata.security.UserStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +14,6 @@ import java.security.NoSuchAlgorithmException;
 public class PasswordDigester {
 
     protected static Logger log = LoggerFactory.getLogger(PasswordDigester.class);
-
-    public static final String PASSWORD_HASH_METHOD_PLAINTEXT = "PLAINTEXT";
 
     private String hashMethod;
 
@@ -35,7 +34,7 @@ public class PasswordDigester {
      */
     public String getPasswordHashValue(String password) throws UserStoreException {
 
-        if (hashMethod.equals(PASSWORD_HASH_METHOD_PLAINTEXT)) {
+        if (hashMethod.equals(SecurityUtil.PASSWORD_HASH_METHOD_PLAINTEXT)) {
             return password;
         } else {
             MessageDigest messageDigest = null;
@@ -54,11 +53,11 @@ public class PasswordDigester {
 
         if (hashMethod == null) {
             log.warn("Password hash method is not configured. Setting default to plaintext.");
-            hashMethod = PASSWORD_HASH_METHOD_PLAINTEXT;
+            hashMethod = SecurityUtil.PASSWORD_HASH_METHOD_PLAINTEXT;
         } else {
 
             // Validating configured hash method is correct.
-            if (!hashMethod.equals(PASSWORD_HASH_METHOD_PLAINTEXT)) {
+            if (!hashMethod.equals(SecurityUtil.PASSWORD_HASH_METHOD_PLAINTEXT)) {
                 try {
                     MessageDigest.getInstance(hashMethod);
                 } catch (NoSuchAlgorithmException e) {

@@ -142,7 +142,15 @@ public class UserResource extends AbstractResource {
             throw new RuntimeException("Error reading hash algorithm from configurations", e);
         }
         if(existingUser != null){
-            existingUser.setPassword(password);
+            try {
+                existingUser.setPassword(SecurityUtil.digestString(password,
+                        RegistrySettings.getSetting("default.registry.password.hash.method")));
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException("Error hashing default admin password. Invalid hash algorithm.", e);
+            } catch (RegistrySettingsException e) {
+                throw new RuntimeException("Error reading hash algorithm from configurations", e);
+            }
+
             user = em.merge(existingUser);
         }else {
             em.persist(user);
