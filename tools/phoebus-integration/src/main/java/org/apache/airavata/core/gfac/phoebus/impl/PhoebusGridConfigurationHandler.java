@@ -23,6 +23,7 @@ package org.apache.airavata.core.gfac.phoebus.impl;
 
 import org.apache.airavata.core.gfac.external.GridConfigurationHandler;
 import org.apache.airavata.core.gfac.utils.PhoebusUtils;
+import org.globus.ftp.DataChannelAuthentication;
 import org.globus.ftp.GridFTPClient;
 
 public class PhoebusGridConfigurationHandler implements
@@ -30,8 +31,9 @@ public class PhoebusGridConfigurationHandler implements
 
 	@Override
 	public void handleSourceFTPClient(GridFTPClient client) throws Exception {
-		if (PhoebusUtils.isPhoebusDefined(client.getHost())) {
-			client.site("SITE SETNETSTACK " + PhoebusUtils.getPhoebusDataChannelXIODriver(client.getHost()));
+		if (PhoebusUtils.isPhoebusDriverConfigurationsDefined(client.getHost())) {
+			client.setDataChannelAuthentication(DataChannelAuthentication.NONE);
+			client.site("SITE SETNETSTACK phoebus:" + PhoebusUtils.getPhoebusDataChannelXIODriverParameters(client.getHost()));
 		}
 	}
 

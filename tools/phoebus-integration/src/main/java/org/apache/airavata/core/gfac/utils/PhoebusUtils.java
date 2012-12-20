@@ -26,19 +26,19 @@ import org.apache.airavata.common.utils.ServerSettings;
 
 public class PhoebusUtils {
 	
-	private static String PHOEBUS_DC_XIO_DRIVERS="phoebus.dc.xio_drivers";
+	private static String PHOEBUS_DC_XIO_DRIVERS="dc.phoebus.xio_driver_configurations";
 	
-	public static boolean isPhoebusDefined(String hostAddress) throws Exception{
+	public static boolean isPhoebusDriverConfigurationsDefined(String hostAddress) throws Exception{
 		try {
-			return getPhoebusDataChannelXIODriver(hostAddress)!=null;
+			return getPhoebusDataChannelXIODriverParameters(hostAddress)!=null;
 		} catch (UnspecifiedServerSettingsException e) {
 			return false;
 		}
 	}
 	
-	public static String getPhoebusDataChannelXIODriver(String hostAddress) throws Exception{
+	public static String getPhoebusDataChannelXIODriverParameters(String hostAddress) throws Exception{
 		String driverString = ServerSettings.getSetting(PHOEBUS_DC_XIO_DRIVERS);
-		String[] hostList = driverString.split(",");
+		String[] hostList = driverString.split(";");
 		for (String hostString : hostList) {
 			String[] driverData = hostString.split("=");
 			if (driverData.length!=2){

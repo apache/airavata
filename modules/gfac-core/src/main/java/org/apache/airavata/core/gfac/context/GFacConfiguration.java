@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.common.exception.ServerSettingsException;
+import org.apache.airavata.common.exception.UnspecifiedServerSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.core.gfac.external.GridConfigurationHandler;
 import org.slf4j.Logger;
@@ -50,17 +52,23 @@ public class GFacConfiguration {
     
     static{
     	gridConfigurationHandlers=new ArrayList<GridConfigurationHandler>();
-    	String handlerString = ServerSettings.getSetting(GRID_HANDLERS, null);
-    	String[] handlers = handlerString.split(",");
-    	for (String handlerClass : handlers) {
-    		try {
-				@SuppressWarnings("unchecked")
-				Class<GridConfigurationHandler> classInstance = (Class<GridConfigurationHandler>) GFacConfiguration.class
-						.getClassLoader().loadClass(handlerClass);
-				gridConfigurationHandlers.add(classInstance.newInstance());
-			} catch (Exception e) {
-				log.error("Error while loading Grid Configuration Handler class "+handlerClass, e);
+    	try {
+			String handlerString = ServerSettings.getSetting(GRID_HANDLERS);
+			String[] handlers = handlerString.split(",");
+			for (String handlerClass : handlers) {
+				try {
+					@SuppressWarnings("unchecked")
+					Class<GridConfigurationHandler> classInstance = (Class<GridConfigurationHandler>) GFacConfiguration.class
+							.getClassLoader().loadClass(handlerClass);
+					gridConfigurationHandlers.add(classInstance.newInstance());
+				} catch (Exception e) {
+					log.error("Error while loading Grid Configuration Handler class "+handlerClass, e);
+				}
 			}
+		} catch (UnspecifiedServerSettingsException e) {
+			//no handlers defined
+		} catch (ServerSettingsException e1) {
+			log.error("Error in reading Configuration handler data!!!",e1);
 		}
     }
     
