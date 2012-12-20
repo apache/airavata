@@ -421,10 +421,11 @@
                 <module>modules/airavata-client</module>
                 <module>modules/security</module>
                 <module>modules/rest</module>
+                <module>tools</module>
                 <module>samples/simple-math-service</module>
                 <module>samples/complex-math-service</module>
                 <module>samples/levenshtein-distance-service</module>
-		<module>modules/server</module>
+				<module>modules/server</module>
                 <module>modules/distribution</module>
                 <module>modules/test-suite</module>
                 <module>modules/integration-tests</module>
