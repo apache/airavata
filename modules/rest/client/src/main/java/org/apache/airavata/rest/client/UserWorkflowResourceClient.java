@@ -96,17 +96,23 @@ public class UserWorkflowResourceClient {
                 MediaType.TEXT_PLAIN).get(ClientResponse.class);
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
+            String exists = response.getEntity(String.class);
+            if (exists.equals("True")) {
+                return true;
+            } else {
+                return false;
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
             response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
             if (status == ClientConstant.HTTP_OK) {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
@@ -117,15 +123,9 @@ public class UserWorkflowResourceClient {
                 return false;
             }
         } else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
-            String exists = response.getEntity(String.class);
-            if (exists.equals("True")) {
-                return true;
-            } else {
-                return false;
-            }
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 
@@ -142,10 +142,11 @@ public class UserWorkflowResourceClient {
                 MediaType.APPLICATION_FORM_URLENCODED).accept(
                 MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, null, userName, callback.getPassword(userName), null, gateway);
@@ -157,14 +158,14 @@ public class UserWorkflowResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
         } else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 
@@ -180,10 +181,11 @@ public class UserWorkflowResourceClient {
         ClientResponse response = builder.accept(MediaType.TEXT_PLAIN).type(
                 MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class, formParams);
         int status = response.getStatus();
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, null, userName, callback.getPassword(userName), null, gateway);
@@ -195,14 +197,14 @@ public class UserWorkflowResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
         } else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 
@@ -218,12 +220,10 @@ public class UserWorkflowResourceClient {
                 MediaType.APPLICATION_FORM_URLENCODED).get(ClientResponse.class);
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK &&
-                status != ClientConstant.HTTP_UNAUTHORIZED &&
-                status != ClientConstant.HTTP_NO_CONTENT) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
@@ -238,16 +238,16 @@ public class UserWorkflowResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
         } else if (status == ClientConstant.HTTP_NO_CONTENT) {
             return null;
-        }else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
 
         String worlflowGraph = response.getEntity(String.class);
@@ -265,12 +265,10 @@ public class UserWorkflowResourceClient {
                 MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK &&
-                status != ClientConstant.HTTP_UNAUTHORIZED &&
-                status != ClientConstant.HTTP_NO_CONTENT) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, null, userName, callback.getPassword(userName), null, gateway);
@@ -286,14 +284,14 @@ public class UserWorkflowResourceClient {
             } else if (status == ClientConstant.HTTP_NO_CONTENT) {
                 return userWFMap;
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
         } else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
 
         WorkflowList workflowList = response.getEntity(WorkflowList.class);
@@ -318,10 +316,10 @@ public class UserWorkflowResourceClient {
                 MediaType.TEXT_PLAIN).delete(ClientResponse.class);
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
@@ -333,14 +331,14 @@ public class UserWorkflowResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
         } else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 

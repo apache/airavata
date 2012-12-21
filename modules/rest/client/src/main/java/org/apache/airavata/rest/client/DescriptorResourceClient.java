@@ -94,17 +94,23 @@ public class DescriptorResourceClient {
         ClientResponse response = builder.get(ClientResponse.class);
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
+            String exists = response.getEntity(String.class);
+            if (exists.equals("True")) {
+                return true;
+            } else {
+                return false;
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
             response = builder.get(ClientResponse.class);
             status = response.getStatus();
             if (status == ClientConstant.HTTP_OK) {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
@@ -116,15 +122,9 @@ public class DescriptorResourceClient {
                 return false;
             }
         } else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
-            String exists = response.getEntity(String.class);
-            if (exists.equals("True")) {
-                return true;
-            } else {
-                return false;
-            }
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 
@@ -141,10 +141,10 @@ public class DescriptorResourceClient {
 
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, null, userName, callback.getPassword(userName), null, gateway);
@@ -157,14 +157,14 @@ public class DescriptorResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
         } else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 
@@ -180,10 +180,10 @@ public class DescriptorResourceClient {
 
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, null, userName, callback.getPassword(userName), null, gateway);
@@ -197,14 +197,14 @@ public class DescriptorResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
         } else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 
@@ -222,12 +222,10 @@ public class DescriptorResourceClient {
 
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK &&
-                status != ClientConstant.HTTP_UNAUTHORIZED &&
-                status != ClientConstant.HTTP_BAD_REQUEST) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
@@ -244,16 +242,16 @@ public class DescriptorResourceClient {
             } else if (status == ClientConstant.HTTP_BAD_REQUEST) {
                 return null;
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
-        }else if (status == ClientConstant.HTTP_BAD_REQUEST) {
+        } else if (status == ClientConstant.HTTP_BAD_REQUEST) {
             return null;
-        }else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
 
         HostDescriptor hostDescriptor = response.getEntity(HostDescriptor.class);
@@ -272,10 +270,10 @@ public class DescriptorResourceClient {
         ClientResponse response = builder.delete(ClientResponse.class);
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
@@ -287,14 +285,14 @@ public class DescriptorResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
         } else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 
@@ -310,12 +308,10 @@ public class DescriptorResourceClient {
 
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK &&
-                status != ClientConstant.HTTP_UNAUTHORIZED &&
-                status != ClientConstant.HTTP_NO_CONTENT) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, null, userName, callback.getPassword(userName), null, gateway);
@@ -332,17 +328,18 @@ public class DescriptorResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
-        }else if (status == ClientConstant.HTTP_NO_CONTENT) {
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
             return hostDescriptions;
         } else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
+
         HostDescriptionList hostDescriptionList = response.getEntity(HostDescriptionList.class);
         HostDescriptor[] hostDescriptors = hostDescriptionList.getHostDescriptions();
 
@@ -365,12 +362,10 @@ public class DescriptorResourceClient {
 
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK &&
-                status != ClientConstant.HTTP_UNAUTHORIZED &&
-                status != ClientConstant.HTTP_NO_CONTENT) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, null, userName, callback.getPassword(userName), null, gateway);
@@ -385,16 +380,16 @@ public class DescriptorResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
-        }else if (status == ClientConstant.HTTP_NO_CONTENT) {
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
             return new ArrayList<String>();
-        }else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
 
         DescriptorNameList descriptorNameList = response.getEntity(DescriptorNameList.class);
@@ -412,17 +407,23 @@ public class DescriptorResourceClient {
         ClientResponse response = builder.get(ClientResponse.class);
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
+            String exists = response.getEntity(String.class);
+            if (exists.equals("True")) {
+                return true;
+            } else {
+                return false;
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
             response = builder.get(ClientResponse.class);
             status = response.getStatus();
             if (status == ClientConstant.HTTP_OK) {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
@@ -433,15 +434,9 @@ public class DescriptorResourceClient {
                 return false;
             }
         } else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
-            String exists = response.getEntity(String.class);
-            if (exists.equals("True")) {
-                return true;
-            } else {
-                return false;
-            }
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 
@@ -457,10 +452,10 @@ public class DescriptorResourceClient {
 
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, null, userName, callback.getPassword(userName), null, gateway);
@@ -474,14 +469,14 @@ public class DescriptorResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
         } else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 
@@ -497,10 +492,10 @@ public class DescriptorResourceClient {
 
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, null, userName, callback.getPassword(userName), null, gateway);
@@ -513,14 +508,14 @@ public class DescriptorResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
         } else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 
@@ -537,12 +532,10 @@ public class DescriptorResourceClient {
 
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK &&
-                status != ClientConstant.HTTP_UNAUTHORIZED &&
-                status != ClientConstant.HTTP_BAD_REQUEST) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
@@ -556,17 +549,18 @@ public class DescriptorResourceClient {
             } else if (status == ClientConstant.HTTP_BAD_REQUEST) {
                 return null;
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
-        }else if (status == ClientConstant.HTTP_BAD_REQUEST) {
+        } else if (status == ClientConstant.HTTP_BAD_REQUEST) {
             return null;
         } else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
+
         ServiceDescriptor serviceDescriptor = response.getEntity(ServiceDescriptor.class);
         ServiceDescription serviceDescription = DescriptorUtil.createServiceDescription(serviceDescriptor);
         return serviceDescription;
@@ -583,10 +577,10 @@ public class DescriptorResourceClient {
         ClientResponse response = builder.delete(ClientResponse.class);
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
@@ -598,14 +592,14 @@ public class DescriptorResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
         } else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 
@@ -618,15 +612,12 @@ public class DescriptorResourceClient {
 
         ClientResponse response = builder.accept(
                 MediaType.APPLICATION_JSON).get(ClientResponse.class);
-
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK &&
-                status != ClientConstant.HTTP_UNAUTHORIZED &&
-                status != ClientConstant.HTTP_NO_CONTENT) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, null, userName, callback.getPassword(userName), null, gateway);
@@ -641,18 +632,16 @@ public class DescriptorResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
-
-
         } else if (status == ClientConstant.HTTP_NO_CONTENT) {
             return serviceDescriptions;
-        }else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
 
         ServiceDescriptionList serviceDescriptionList = response.getEntity(ServiceDescriptionList.class);
@@ -680,17 +669,23 @@ public class DescriptorResourceClient {
         ClientResponse response = builder.get(ClientResponse.class);
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
+            String exists = response.getEntity(String.class);
+            if (exists.equals("True")) {
+                return true;
+            } else {
+                return false;
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
             response = builder.get(ClientResponse.class);
             status = response.getStatus();
             if (status == ClientConstant.HTTP_OK) {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
@@ -701,27 +696,10 @@ public class DescriptorResourceClient {
                 return false;
             }
         } else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
-            String exists = response.getEntity(String.class);
-            if (exists.equals("True")) {
-                return true;
-            } else {
-                return false;
-            }
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
-
-//            if (status != ClientConstant.HTTP_OK) {
-//                logger.error(response.getEntity(String.class));
-//                throw new RuntimeException("Failed : HTTP error code : "
-//                        + status);
-//            } else {
-//                return true;
-//            }
-//        } else {
-//            return true;
-//        }
     }
 
     public void addApplicationDescriptor(ServiceDescription serviceDescription,
@@ -742,10 +720,10 @@ public class DescriptorResourceClient {
 
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, null, userName, callback.getPassword(userName), null, gateway);
@@ -758,14 +736,14 @@ public class DescriptorResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
         } else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 
@@ -788,10 +766,10 @@ public class DescriptorResourceClient {
 
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, null, userName, callback.getPassword(userName), null, gateway);
@@ -804,14 +782,14 @@ public class DescriptorResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
         } else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 
@@ -833,10 +811,10 @@ public class DescriptorResourceClient {
 
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, null, userName, callback.getPassword(userName), null, gateway);
@@ -849,14 +827,14 @@ public class DescriptorResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
         } else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 
@@ -879,10 +857,10 @@ public class DescriptorResourceClient {
 
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, null, userName, callback.getPassword(userName), null, gateway);
@@ -895,14 +873,14 @@ public class DescriptorResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
         } else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 
@@ -924,12 +902,10 @@ public class DescriptorResourceClient {
 
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK &&
-                status != ClientConstant.HTTP_UNAUTHORIZED &&
-                status != ClientConstant.HTTP_BAD_REQUEST) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
@@ -944,16 +920,16 @@ public class DescriptorResourceClient {
             } else if (status == ClientConstant.HTTP_BAD_REQUEST) {
                 return null;
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
         } else if (status == ClientConstant.HTTP_BAD_REQUEST) {
             return null;
-        }else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
 
         ApplicationDescriptor applicationDescriptor = response.getEntity(ApplicationDescriptor.class);
@@ -977,12 +953,10 @@ public class DescriptorResourceClient {
 
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK &&
-                status != ClientConstant.HTTP_UNAUTHORIZED &&
-                status != ClientConstant.HTTP_NO_CONTENT) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
@@ -998,16 +972,16 @@ public class DescriptorResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
         } else if (status == ClientConstant.HTTP_NO_CONTENT) {
             return null;
-        }else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
 
         ApplicationDescriptor applicationDescriptor = response.getEntity(ApplicationDescriptor.class);
@@ -1030,12 +1004,10 @@ public class DescriptorResourceClient {
 
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK &&
-                status != ClientConstant.HTTP_UNAUTHORIZED  &&
-                status != ClientConstant.HTTP_NO_CONTENT) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
@@ -1051,16 +1023,16 @@ public class DescriptorResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
         } else if (status == ClientConstant.HTTP_NO_CONTENT) {
             return applicationDeploymentDescriptionMap;
-        }else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
 
         ApplicationDescriptorList applicationDescriptorList =
@@ -1089,12 +1061,10 @@ public class DescriptorResourceClient {
 
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK &&
-                status != ClientConstant.HTTP_UNAUTHORIZED  &&
-                status != ClientConstant.HTTP_NO_CONTENT ) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, null, userName, callback.getPassword(userName), null, gateway);
@@ -1110,16 +1080,16 @@ public class DescriptorResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
         } else if (status == ClientConstant.HTTP_NO_CONTENT) {
             return null;
-        }else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
 
         ApplicationDescriptorList applicationDescriptorList =
@@ -1147,12 +1117,10 @@ public class DescriptorResourceClient {
                 MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK &&
-                status != ClientConstant.HTTP_UNAUTHORIZED  &&
-                status != ClientConstant.HTTP_NO_CONTENT) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, null, userName, callback.getPassword(userName), null, gateway);
@@ -1168,16 +1136,16 @@ public class DescriptorResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
         } else if (status == ClientConstant.HTTP_NO_CONTENT) {
             return new ArrayList<String>();
-        }else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
 
         DescriptorNameList descriptorNameList = response.getEntity(DescriptorNameList.class);
@@ -1200,10 +1168,10 @@ public class DescriptorResourceClient {
                 MediaType.TEXT_PLAIN).delete(ClientResponse.class);
         int status = response.getStatus();
 
-        if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
-            logger.error(response.getEntity(String.class));
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + status);
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
@@ -1215,14 +1183,14 @@ public class DescriptorResourceClient {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
             } else {
-                if(response.getCookies().size() > 0){
+                if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
         } else {
-            if(response.getCookies().size() > 0){
-                cookie = response.getCookies().get(0).toCookie();
-            }
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
         }
     }
 }
