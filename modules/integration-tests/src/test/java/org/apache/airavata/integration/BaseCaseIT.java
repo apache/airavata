@@ -14,17 +14,13 @@ import junit.framework.Assert;
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.client.api.builder.DescriptorBuilder;
 import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.PasswordCallback;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.DataType;
-import org.apache.airavata.schemas.gfac.GlobusHostType;
-import org.apache.airavata.schemas.gfac.InputParameterType;
-import org.apache.airavata.schemas.gfac.OutputParameterType;
-import org.apache.airavata.schemas.gfac.ParameterType;
+import org.apache.airavata.schemas.gfac.*;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.apache.airavata.ws.monitor.Monitor;
@@ -219,56 +215,41 @@ public class BaseCaseIT {
 
     @Test
     public void testEchoService() throws Exception {
-        HostDescription hostDescription = new HostDescription(GlobusHostType.type);
-        hostDescription.getType().setHostName("localhost");
-        hostDescription.getType().setHostAddress("127.0.0.1");
 
-        log("Saving host description ....");
-        airavataAPI.getApplicationManager().saveHostDescription(hostDescription);
+        DescriptorBuilder descriptorBuilder = airavataAPI.getDescriptorBuilder();
+
+        HostDescription hostDescription
+                = descriptorBuilder.buildHostDescription(HostDescriptionType.type, "localhost", "127.0.0.1");
+
+        log("Adding host description ....");
+        airavataAPI.getApplicationManager().addHostDescription(hostDescription);
 
         Assert.assertTrue(airavataAPI.getApplicationManager().isHostDescriptorExists(hostDescription.getType()
                 .getHostName()));
 
-        ServiceDescription serviceDescription = new ServiceDescription();
+
         List<InputParameterType> inputParameters = new ArrayList<InputParameterType>();
+        inputParameters.add(descriptorBuilder.buildInputParameterType("echo_input", "echo input", DataType.STRING));
+
         List<OutputParameterType> outputParameters = new ArrayList<OutputParameterType>();
-        serviceDescription.getType().setName("Echo");
-        serviceDescription.getType().setDescription("Echo service");
-        InputParameterType parameter = InputParameterType.Factory.newInstance();
-        parameter.setParameterName("echo_input");
-        parameter.setParameterDescription("echo input");
-        ParameterType parameterType = parameter.addNewParameterType();
-        parameterType.setType(DataType.STRING);
-        parameterType.setName("String");
-        inputParameters.add(parameter);
+        outputParameters.add(descriptorBuilder.buildOutputParameterType("echo_output", "Echo output", DataType.STRING));
 
-        OutputParameterType outputParameter = OutputParameterType.Factory.newInstance();
-        outputParameter.setParameterName("echo_output");
-        outputParameter.setParameterDescription("Echo output");
-        ParameterType outputParaType = outputParameter.addNewParameterType();
-        outputParaType.setType(DataType.STRING);
-        outputParaType.setName("String");
-        outputParameters.add(outputParameter);
+        ServiceDescription serviceDescription = descriptorBuilder.buildServiceDescription("Echo", "Echo service",
+                inputParameters, outputParameters);
 
-        serviceDescription.getType().setInputParametersArray(inputParameters.toArray(new InputParameterType[]{}));
-        serviceDescription.getType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[]{}));
-
-        log("Saving service description ...");
-        airavataAPI.getApplicationManager().saveServiceDescription(serviceDescription);
+        log("Adding service description ...");
+        airavataAPI.getApplicationManager().addServiceDescription(serviceDescription);
         Assert.assertTrue(airavataAPI.getApplicationManager().isServiceDescriptorExists(serviceDescription.
                 getType().getName()));
 
         // Deployment descriptor
-        ApplicationDeploymentDescription applicationDeploymentDescription = new ApplicationDeploymentDescription();
-        ApplicationDeploymentDescriptionType applicationDeploymentDescriptionType
-                = applicationDeploymentDescription.getType();
-        applicationDeploymentDescriptionType.addNewApplicationName().setStringValue("EchoApplication");
-        applicationDeploymentDescriptionType.setExecutableLocation("/bin/echo");
-        applicationDeploymentDescriptionType.setScratchWorkingDirectory("/tmp");
+        ApplicationDeploymentDescription applicationDeploymentDescription
+                = descriptorBuilder.buildApplicationDeploymentDescription("EchoApplication", "/bin/echo", "/tmp");
 
-        log("Saving deployment description ...");
-        airavataAPI.getApplicationManager().saveDeploymentDescription(serviceDescription.getType().getName(),
-                hostDescription.getType().getHostName(), applicationDeploymentDescription);
+        log("Adding deployment description ...");
+        airavataAPI.getApplicationManager().addDeploymentDescription(serviceDescription,
+                hostDescription, applicationDeploymentDescription);
+
         Assert.assertTrue(airavataAPI.getApplicationManager().isDeploymentDescriptorExists(serviceDescription.getType().
                 getName(), hostDescription.getType().getHostName(),
                 applicationDeploymentDescription.getType().getApplicationName().getStringValue()));

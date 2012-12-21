@@ -21,6 +21,7 @@
 
 package org.apache.airavata.client.api;
 
+import org.apache.airavata.client.api.builder.DescriptorBuilder;
 import org.apache.airavata.common.utils.Version;
 
 
@@ -76,5 +77,12 @@ public interface AiravataAPI {
 	 * @return
 	 */
 	public Version getVersion();
+
+    /**
+     * Gets the DescriptorBuilder. DescriptorBuilder is a helper class to create various descriptors.
+     * E.g :- Build HostDescriptors, ServiceDescriptors etc ...
+     * @return DescriptorBuilder.
+     */
+    public DescriptorBuilder getDescriptorBuilder();
 
 }

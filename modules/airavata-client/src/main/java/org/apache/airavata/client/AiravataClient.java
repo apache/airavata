@@ -56,6 +56,7 @@ import org.apache.airavata.client.api.ExecutionManager;
 import org.apache.airavata.client.api.ProvenanceManager;
 import org.apache.airavata.client.api.UserManager;
 import org.apache.airavata.client.api.WorkflowManager;
+import org.apache.airavata.client.api.builder.DescriptorBuilder;
 import org.apache.airavata.client.impl.AiravataManagerImpl;
 import org.apache.airavata.client.impl.ApplicationManagerImpl;
 import org.apache.airavata.client.impl.ExecutionManagerImpl;
@@ -1014,7 +1015,12 @@ public class AiravataClient extends Observable implements AiravataAPI {
 		return API_VERSION;
 	}
 
-	public void setCurrentUser(String currentUser) {
+    @Override
+    public DescriptorBuilder getDescriptorBuilder() {
+        return new DescriptorBuilder();
+    }
+
+    public void setCurrentUser(String currentUser) {
 		this.currentUser = currentUser;
 	}
 
