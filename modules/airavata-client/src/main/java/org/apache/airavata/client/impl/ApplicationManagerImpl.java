@@ -29,10 +29,14 @@ import java.util.Map;
 import org.apache.airavata.client.AiravataClient;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.ApplicationManager;
+import org.apache.airavata.client.api.DescriptorRecordAlreadyExistsException;
+import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.UnimplementedRegistryOperationException;
+import org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException;
 
 public class ApplicationManagerImpl implements ApplicationManager {
 	private AiravataClient client;
@@ -81,7 +85,43 @@ public class ApplicationManagerImpl implements ApplicationManager {
 		}
 	}
 
-	@Override
+    @Override
+    public void addServiceDescription(ServiceDescription serviceDescription) throws AiravataAPIInvocationException,
+            DescriptorRecordAlreadyExistsException {
+        try {
+            getClient().getRegistryClient().addServiceDescriptor(serviceDescription);
+        } catch (DescriptorAlreadyExistsException e) {
+            throw new DescriptorRecordAlreadyExistsException("Service descriptor "
+                    + serviceDescription.getType().getName()
+                    + " already exists.", e);
+        } catch (RegistryException e) {
+            throw new AiravataAPIInvocationException("An internal error occurred while trying to add service descriptor"
+                    + serviceDescription.getType().getName(),
+                    e);
+        } catch (AiravataConfigurationException e) {
+            throw new AiravataAPIInvocationException("Error retrieving registry controller. " +
+                    "An error occurred while trying to " +
+                    "add service descriptor" + serviceDescription.getType().getName(), e);
+        }
+    }
+
+    @Override
+    public void updateServiceDescription(ServiceDescription serviceDescription) throws AiravataAPIInvocationException {
+        try {
+            getClient().getRegistryClient().updateServiceDescriptor(serviceDescription);
+        } catch (RegistryException e) {
+            throw new AiravataAPIInvocationException("An internal error occurred while trying to add service descriptor"
+                    + serviceDescription.getType().getName(),
+                    e);
+        } catch (AiravataConfigurationException e) {
+            throw new AiravataAPIInvocationException("Error retrieving registry controller. " +
+                    "An error occurred while trying to " +
+                    "add service descriptor" + serviceDescription.getType().getName(), e);
+        }
+    }
+
+
+    @Override
 	public void deleteServiceDescription(String serviceId)
 			throws AiravataAPIInvocationException {
 		try {
@@ -125,7 +165,66 @@ public class ApplicationManagerImpl implements ApplicationManager {
 		}
 	}
 
-	@Override
+
+    @Override
+    public void addDeploymentDescription(ServiceDescription serviceDescription, HostDescription hostDescription,
+                                         ApplicationDeploymentDescription applicationDeploymentDescription)
+            throws AiravataAPIInvocationException, DescriptorRecordAlreadyExistsException {
+
+        try {
+            getClient().getRegistryClient().addApplicationDescriptor(serviceDescription.getType().getName(),
+                    hostDescription.getType().getHostName(), applicationDeploymentDescription);
+        } catch (DescriptorAlreadyExistsException e) {
+            throw new DescriptorRecordAlreadyExistsException("Application descriptor " +
+                    applicationDeploymentDescription.getType().getApplicationName().getStringValue()
+                    + " already associated to host " + hostDescription.getType().getHostName()
+                    + " and service " + serviceDescription.getType().getName(), e);
+        } catch (RegistryException e) {
+
+            throw new AiravataAPIInvocationException("An internal error occurred while trying to add " +
+                    "application descriptor " +
+                    applicationDeploymentDescription.getType().getApplicationName().getStringValue()
+                    + " associated to host " + hostDescription.getType().getHostName()
+                    + " and service " + serviceDescription.getType().getName(), e);
+
+        } catch (AiravataConfigurationException e) {
+
+            throw new AiravataAPIInvocationException("Error retrieving registry controller. " +
+                    "An error occurred while trying to add application descriptor " +
+                    applicationDeploymentDescription.getType().getApplicationName().getStringValue()
+                    + " associated to host " + hostDescription.getType().getHostName()
+                    + " and service " + serviceDescription.getType().getName(), e);
+        }
+
+    }
+
+    @Override
+    public void updateDeploymentDescription(ServiceDescription serviceDescription, HostDescription hostDescription,
+                                            ApplicationDeploymentDescription applicationDeploymentDescription)
+            throws AiravataAPIInvocationException {
+        try {
+            getClient().getRegistryClient().updateApplicationDescriptor(serviceDescription.getType().getName(),
+                    hostDescription.getType().getHostName(), applicationDeploymentDescription);
+        } catch (RegistryException e) {
+
+            throw new AiravataAPIInvocationException("An internal error occurred while trying to add " +
+                    "application descriptor " +
+                    applicationDeploymentDescription.getType().getApplicationName().getStringValue()
+                    + " associated to host " + hostDescription.getType().getHostName()
+                    + " and service " + serviceDescription.getType().getName(), e);
+
+        } catch (AiravataConfigurationException e) {
+
+            throw new AiravataAPIInvocationException("Error retrieving registry controller. " +
+                    "An error occurred while trying to add application descriptor " +
+                    applicationDeploymentDescription.getType().getApplicationName().getStringValue()
+                    + " associated to host " + hostDescription.getType().getHostName()
+                    + " and service " + serviceDescription.getType().getName(), e);
+        }
+    }
+
+
+    @Override
 	public List<ApplicationDeploymentDescription> searchDeploymentDescription(
 			String serviceName, String hostName)
 			throws AiravataAPIInvocationException {
@@ -212,7 +311,44 @@ public class ApplicationManagerImpl implements ApplicationManager {
 		}
 	}
 
-	@Override
+    @Override
+    public void addHostDescription(HostDescription host) throws AiravataAPIInvocationException,
+            DescriptorRecordAlreadyExistsException {
+
+        try {
+            getClient().getRegistryClient().addHostDescriptor(host);
+        } catch (DescriptorAlreadyExistsException e) {
+            throw new DescriptorRecordAlreadyExistsException("Host descriptor " + host.getType().getHostName()
+                    + " already exists.", e);
+        } catch (RegistryException e) {
+            throw new AiravataAPIInvocationException("An internal error occurred while trying to add host descriptor"
+                    + host.getType().getHostName(),
+                    e);
+        } catch (AiravataConfigurationException e) {
+            throw new AiravataAPIInvocationException("Error retrieving registry controller. " +
+                    "An error occurred while trying to " +
+                    "add host descriptor" + host.getType().getHostName(), e);
+        }
+
+    }
+
+    @Override
+    public void updateHostDescription(HostDescription host) throws AiravataAPIInvocationException {
+        try {
+            getClient().getRegistryClient().updateHostDescriptor(host);
+        } catch (RegistryException e) {
+            throw new AiravataAPIInvocationException("An internal error occurred while trying to add host descriptor"
+                    + host.getType().getHostName(),
+                    e);
+        } catch (AiravataConfigurationException e) {
+            throw new AiravataAPIInvocationException("Error retrieving registry controller. " +
+                    "An error occurred while trying to " +
+                    "add host descriptor" + host.getType().getHostName(), e);
+        }
+    }
+
+
+    @Override
 	public List<HostDescription> searchHostDescription(String regExName)
 			throws AiravataAPIInvocationException {
 		throw new AiravataAPIInvocationException(new UnimplementedRegistryOperationException());
