@@ -161,17 +161,20 @@ public class DescriptorUtil {
     }
 
     public static HostDescription createHostDescription (HostDescriptor hostDescriptor){
-        HostDescription hostDescription = new HostDescription();
+        HostDescription hostDescription = new HostDescription(HostDescriptionType.type);
         hostDescription.getType().setHostAddress(hostDescriptor.getHostAddress());
         hostDescription.getType().setHostName(hostDescriptor.getHostname());
 
         if (hostDescriptor.getHostType() != null && !hostDescriptor.getHostType().isEmpty()) {
-            if (hostDescriptor.getHostType().equals(HostTypes.GLOBUS_HOST_TYPE)) {
+            if (hostDescriptor.getHostType().get(0).equals(HostTypes.GLOBUS_HOST_TYPE)) {
+                hostDescription.getType().changeType(GlobusHostType.type);
                 ((GlobusHostType) hostDescription.getType()).addGlobusGateKeeperEndPoint(hostDescriptor.getGlobusGateKeeperEndPoint().get(0));
                 ((GlobusHostType) hostDescription.getType()).addGridFTPEndPoint(hostDescriptor.getGridFTPEndPoint().get(0));
-            } else if (hostDescriptor.getHostType().equals(HostTypes.GSISSH_HOST_TYPE)) {
+            } else if (hostDescriptor.getHostType().get(0).equals(HostTypes.GSISSH_HOST_TYPE)) {
+                hostDescription.getType().changeType(GsisshHostType.type);
                 ((GsisshHostType) hostDescription).addGridFTPEndPoint(hostDescriptor.getGridFTPEndPoint().get(0));
-            } else if (hostDescriptor.getHostType().equals(HostTypes.EC2_HOST_TYPE)) {
+            } else if (hostDescriptor.getHostType().get(0).equals(HostTypes.EC2_HOST_TYPE)) {
+                hostDescription.getType().changeType(Ec2HostType.type);
                 ((Ec2HostType) hostDescription).addImageID(hostDescriptor.getImageID().get(0));
                 ((Ec2HostType) hostDescription).addInstanceID(hostDescriptor.getInstanceID().get(0));
             }
