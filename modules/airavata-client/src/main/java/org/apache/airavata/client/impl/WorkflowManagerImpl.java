@@ -21,6 +21,7 @@
 
 package org.apache.airavata.client.impl;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,8 +29,12 @@ import java.util.Map;
 
 import org.apache.airavata.client.AiravataClient;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.client.api.DescriptorRecordAlreadyExistsException;
 import org.apache.airavata.client.api.WorkflowManager;
+import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.worker.UserWorkflowAlreadyExistsException;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowData;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
@@ -55,12 +60,105 @@ public class WorkflowManagerImpl implements WorkflowManager {
 		return saveWorkflow(getWorkflowFromString(workflowAsString), workflowAsString, owner);
 	}
 
+    @Override
+    public void addOwnerWorkflow (String workflowAsString, String owner)
+            throws AiravataAPIInvocationException, DescriptorRecordAlreadyExistsException {
+         addWorkflow(getWorkflowFromString(workflowAsString), workflowAsString, owner);
+    }
+
+    @Override
+    public void updateOwnerWorkflow (String workflowAsString, String owner)
+            throws AiravataAPIInvocationException {
+        updateWorkflow(getWorkflowFromString(workflowAsString), workflowAsString, owner);
+    }
+
+    @Override
+    public void addOwnerWorkflow (URI workflowPath, String owner)
+            throws AiravataAPIInvocationException, DescriptorRecordAlreadyExistsException {
+        Workflow workflow = getWorkflowFromURI(workflowPath);
+        addWorkflow(workflow, XMLUtil.xmlElementToString(workflow.toXML()), owner);
+    }
+
+    @Override
+    public void updateOwnerWorkflow (URI workflowPath, String owner)
+            throws AiravataAPIInvocationException {
+        Workflow workflow = getWorkflowFromURI(workflowPath);
+        updateWorkflow(workflow, XMLUtil.xmlElementToString(workflow.toXML()), owner);
+    }
+
 	@Override
 	public boolean saveWorkflow(Workflow workflow, String owner)
 			throws AiravataAPIInvocationException {
 		return saveWorkflow(workflow, XMLUtil.xmlElementToString(workflow.toXML()), owner);
 	}
-	
+
+    @Override
+    public void addOwnerWorkflow (Workflow workflow, String owner) throws AiravataAPIInvocationException,
+            DescriptorRecordAlreadyExistsException {
+        addWorkflow(workflow, XMLUtil.xmlElementToString(workflow.toXML()), owner);
+    }
+
+    @Override
+    public void updateOwnerWorkflow (Workflow workflow, String owner) throws AiravataAPIInvocationException {
+        updateWorkflow(workflow, XMLUtil.xmlElementToString(workflow.toXML()), owner);
+    }
+
+    private void addWorkflow(Workflow workflow, String workflowAsString, String owner)
+            throws AiravataAPIInvocationException, DescriptorRecordAlreadyExistsException {
+        try {
+            getClient().getRegistryClient().addWorkflow(workflow.getName(), workflowAsString);
+        } catch (UserWorkflowAlreadyExistsException e) {
+            throw new DescriptorRecordAlreadyExistsException("Workflow " +
+                    workflow.getName()
+                    + " already exists in the system.", e);
+        } catch (RegistryException e) {
+            throw new AiravataAPIInvocationException("An internal error occurred while adding workflow " +
+                    workflow.getName(), e);
+        } catch (AiravataConfigurationException e) {
+            throw new AiravataAPIInvocationException("Error retrieving registry client for workflow " +
+                    workflow.getName(), e);
+        }
+
+        if (owner == null) {
+            try {
+                getClient().getRegistryClient().publishWorkflow(workflow.getName());
+            } catch (RegistryException e) {
+                throw new AiravataAPIInvocationException("An internal error occurred while adding workflow " +
+                        workflow.getName(), e);
+            } catch (AiravataConfigurationException e) {
+                throw new AiravataAPIInvocationException("Error retrieving registry client for workflow " +
+                        workflow.getName(), e);
+            }
+        }
+    }
+
+    private void updateWorkflow(Workflow workflow, String workflowAsString, String owner)
+            throws AiravataAPIInvocationException {
+        try {
+            getClient().getRegistryClient().updateWorkflow(workflow.getName(), workflowAsString);
+        } catch (RegistryException e) {
+            throw new AiravataAPIInvocationException("An internal error occurred while adding workflow " +
+                    workflow.getName(), e);
+        } catch (AiravataConfigurationException e) {
+            throw new AiravataAPIInvocationException("Error retrieving registry client for workflow " +
+                    workflow.getName(), e);
+        }
+
+        if (owner == null) {
+            try {
+                getClient().getRegistryClient().publishWorkflow(workflow.getName());
+            } catch (RegistryException e) {
+                throw new AiravataAPIInvocationException("An internal error occurred while adding workflow " +
+                        workflow.getName(), e);
+            } catch (AiravataConfigurationException e) {
+                throw new AiravataAPIInvocationException("Error retrieving registry client for workflow " +
+                        workflow.getName(), e);
+            }
+        }
+    }
+
+    // Remove once deprecated methods are removed from the API
+    @Deprecated
 	private boolean saveWorkflow(Workflow workflow, String workflowAsString,String owner)
 			throws AiravataAPIInvocationException {
 		try {
@@ -143,17 +241,72 @@ public class WorkflowManagerImpl implements WorkflowManager {
 		return saveWorkflow(workflowAsString, getCurrentUser());
 	}
 
+    @Override
+    public void addWorkflow (String workflowAsString) throws DescriptorRecordAlreadyExistsException,
+            AiravataAPIInvocationException {
+        addOwnerWorkflow(workflowAsString, getCurrentUser());
+    }
+
+    @Override
+    public void updateWorkflow (String workflowAsString) throws AiravataAPIInvocationException {
+        updateOwnerWorkflow(workflowAsString, getCurrentUser());
+    }
+
 	@Override
 	public boolean saveWorkflowAsPublic(String workflowAsString)
 			throws AiravataAPIInvocationException {
 		return saveWorkflow(workflowAsString, null);
 	}
 
+    @Override
+    public void addWorkflowAsPublic (String workflowAsString) throws AiravataAPIInvocationException,
+            DescriptorRecordAlreadyExistsException {
+        addOwnerWorkflow (workflowAsString, null);
+    }
+
+    @Override
+    public void updateWorkflowAsPublic (String workflowAsString) throws AiravataAPIInvocationException {
+        updateOwnerWorkflow(workflowAsString, null);
+    }
+
+    @Override
+    public void addWorkflowAsPublic (URI workflowPath) throws AiravataAPIInvocationException,
+            DescriptorRecordAlreadyExistsException {
+        addOwnerWorkflow (getWorkflowFromURI(workflowPath), null);
+    }
+
+    @Override
+    public void updateWorkflowAsPublic (URI workflowPath) throws AiravataAPIInvocationException {
+        updateOwnerWorkflow(getWorkflowFromURI(workflowPath), null);
+    }
+
 	@Override
 	public boolean saveWorkflow(Workflow workflow)
 			throws AiravataAPIInvocationException {
 		return saveWorkflow(workflow, getCurrentUser());
 	}
+
+    @Override
+    public void addWorkflow (Workflow workflow) throws AiravataAPIInvocationException,
+            DescriptorRecordAlreadyExistsException{
+        addOwnerWorkflow(workflow, getCurrentUser());
+    }
+
+    @Override
+    public void updateWorkflow (Workflow workflow) throws AiravataAPIInvocationException {
+        updateOwnerWorkflow(workflow, getCurrentUser());
+    }
+
+    @Override
+    public void addWorkflow (URI workflowPath) throws AiravataAPIInvocationException,
+            DescriptorRecordAlreadyExistsException {
+        addOwnerWorkflow(getWorkflowFromURI(workflowPath), getCurrentUser());
+    }
+
+    @Override
+    public void updateWorkflow (URI workflowPath) throws AiravataAPIInvocationException {
+        updateOwnerWorkflow(getWorkflowFromURI(workflowPath), getCurrentUser());
+    }
 
 	private String getCurrentUser() {
 		return getClient().getCurrentUser();
@@ -204,7 +357,16 @@ public class WorkflowManagerImpl implements WorkflowManager {
 		}
 	}
 
-	@Override
+    @Override
+    public Workflow getWorkflowFromURI(URI workflowPath) throws AiravataAPIInvocationException {
+        try {
+            return new Workflow(workflowPath);
+        } catch (Exception e) {
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
 	public String getWorkflowAsString(Workflow workflow)
 			throws AiravataAPIInvocationException {
 		return XMLUtil.xmlElementToString(workflow.toXML());
@@ -297,12 +459,12 @@ public class WorkflowManagerImpl implements WorkflowManager {
 	}
 
 	@Override
-	public List<WorkflowInput> getWorkflowInputs(String workflowName) throws AiravataAPIInvocationException, Exception {
+	public List<WorkflowInput> getWorkflowInputs(String workflowName) throws Exception {
 		return getWorkflow(workflowName).getWorkflowInputs();
 	}
 
 	@Override
-	public List<WorkflowInput> getWorkflowInputs(WorkflowData workflowData) throws AiravataAPIInvocationException, Exception {
+	public List<WorkflowInput> getWorkflowInputs(WorkflowData workflowData) throws Exception {
 		if (workflowData.isPublished()){
 			return getWorkflowFromString(getClient().getRegistryClient().getPublishedWorkflowGraphXML(workflowData.getName())).getWorkflowInputs();
 		}else{

@@ -21,6 +21,7 @@
 
 package org.apache.airavata.client.api;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -34,21 +35,94 @@ public interface WorkflowManager {
 
     /**
      * Save the workflow under the given user
-     * @param workflowAsString
-     * @param owner
-     * @return
-     * @throws AiravataAPIInvocationException
+     * @param workflowAsString The workflow as a string.
+     * @param owner Under which user workflow should be added. This is a privileged method and usually
+     *              only admin calls this.
+     * @return  <code>true</code> if successful else <code>false</code>.
+     * @throws AiravataAPIInvocationException If an error occurred while saving the workflow.
+     * @deprecated Use {@see #addOwnerWorkflow(String workflowAsString, String owner)} and
+     *                  {@see #updateOwnerWorkflow(String workflowAsString, String owner)} methods.
      */
+    @Deprecated
 	public boolean saveWorkflow(String workflowAsString, String owner) throws AiravataAPIInvocationException;
 
     /**
-     * Save the workflow under the given user
-     * @param workflow
-     * @param owner
-     * @return
-     * @throws AiravataAPIInvocationException
+     * Adds a new workflow. Workflow is added to users private space. i.e. only user who added the
+     * workflow will be able to retrieve it.
+     * @param workflowAsString The new workflow to add as a string.
+     * @param owner Under which user workflow should be added. This is a privileged method and usually
+     *              only admin calls this.
+     * @throws AiravataAPIInvocationException If an error occurred while adding a new workflow.
+     * @throws DescriptorRecordAlreadyExistsException If adding workflow already exists for the given owner.
      */
+    public void addOwnerWorkflow (String workflowAsString, String owner) throws AiravataAPIInvocationException,
+            DescriptorRecordAlreadyExistsException;
+
+    /**
+     * Adds a new workflow. Workflow is added to users private space. i.e. only user who added the
+     * workflow will be able to retrieve it.
+     * @param workflowPath File path of the workflow.
+     * @param owner Under which user workflow should be added. This is a privileged method and usually
+     *              only admin calls this.
+     * @throws AiravataAPIInvocationException If an error occurred while adding a new workflow.
+     * @throws DescriptorRecordAlreadyExistsException If adding workflow already exists for the given owner.
+     */
+    public void addOwnerWorkflow (URI workflowPath, String owner) throws AiravataAPIInvocationException,
+            DescriptorRecordAlreadyExistsException;
+
+    /**
+     * Adds a new workflow. Workflow is added to users private space. i.e. only user who added the
+     * workflow will be able to retrieve it.
+     * @param workflow The new workflow to add.
+     * @param owner Under which user workflow should be added. This is a privileged method and usually
+     *              only admin calls this.
+     * @throws AiravataAPIInvocationException If an error occurred while adding a new workflow.
+     * @throws DescriptorRecordAlreadyExistsException If adding workflow already exists for the given owner.
+     */
+    public void addOwnerWorkflow (Workflow workflow, String owner) throws AiravataAPIInvocationException,
+            DescriptorRecordAlreadyExistsException;
+
+    /**
+     * Updates a given workflow. Only user who added the workflow will be able to update it.
+     * @param workflowPath File path of the workflow.
+     * @param owner Under which user workflow should be added. This is a privileged method and usually
+     *              only admin calls this.
+     * @throws AiravataAPIInvocationException If an error occurred while updating the workflow.
+     */
+    public void updateOwnerWorkflow (URI workflowPath, String owner) throws AiravataAPIInvocationException;
+
+    /**
+     * Updates a given workflow. Only user who added the workflow will be able to update it.
+     * @param workflowAsString The workflow to update as a string. Workflow is uniquely identified by &lt;xgr:id&gt; tag..
+     * @param owner Under which user workflow should be added. This is a privileged method and usually
+     *              only admin calls this.
+     * @throws AiravataAPIInvocationException If an error occurred while updating the workflow.
+     */
+    public void updateOwnerWorkflow (String workflowAsString, String owner) throws AiravataAPIInvocationException;
+
+    /**
+     * Save the workflow under the given user
+     * @param workflow The workflow as a string.
+     * @param owner Under which user workflow should be added. This is a privileged method and usually
+     *              only admin calls this.
+     * @return <code>true</code> if successful else <code>false</code>.
+     * @throws AiravataAPIInvocationException If an error occurred while saving the workflow.
+     * @deprecated Use {@see #addOwnerWorkflow(Workflow workflow, String owner)} and
+     *                  {@see #updateOwnerWorkflow(Workflow workflow, String owner)} methods.
+     */
+    @Deprecated
     public boolean saveWorkflow(Workflow workflow, String owner) throws AiravataAPIInvocationException;
+
+
+
+    /**
+     * Updates a given workflow. Only user who added the workflow will be able to update it.
+     * @param workflow The workflow to update. Workflow is uniquely identified by &lt;xgr:id&gt; tag..
+     * @param owner Under which user workflow should be added. This is a privileged method and usually
+     *              only admin calls this.
+     * @throws AiravataAPIInvocationException If an error occurred while updating the workflow.
+     */
+    public void updateOwnerWorkflow (Workflow workflow, String owner) throws AiravataAPIInvocationException;
 
     /**
      * Retrieve workflows saved by the given user
@@ -97,27 +171,123 @@ public interface WorkflowManager {
 
     /**
      * Save the workflow
-     * @param workflowAsString
-     * @return
+     * @param workflowAsString Workflow as a string.
+     * @deprecated Use {@see #addWorkflow(String workflowAsString)} and
+     *          {@see #updateWorkflow(String workflowAsString)} methods.
      * @throws AiravataAPIInvocationException
      */
+    @Deprecated
 	public boolean saveWorkflow(String workflowAsString) throws AiravataAPIInvocationException;
 
     /**
      * Save the workflow as public
-     * @param workflowAsString
-     * @return
+     * @param workflowAsString Workflow as a string.
+     * @deprecated Use {@see #addWorkflowAsPublic(String workflowAsString)} and
+     *          {@see #updateWorkflowAsPublic(String workflowAsString)} methods.
      * @throws AiravataAPIInvocationException
      */
+    @Deprecated
 	public boolean saveWorkflowAsPublic(String workflowAsString) throws AiravataAPIInvocationException;
 
     /**
      * Save the workflow
-     * @param workflow
-     * @return
+     * @param workflow {@see Workflow} object to save.
+     * @deprecated Use {@see #addWorkflow(Workflow workflow)} and
+     *          {@see #updateWorkflow(Workflow workflow)} methods.
      * @throws AiravataAPIInvocationException
      */
+    @Deprecated
     public boolean saveWorkflow(Workflow workflow) throws AiravataAPIInvocationException;
+
+    /**
+     * Adds a new workflow. Workflow is added to users private space. i.e. only user who added the
+     * workflow will be able to retrieve it.
+     * @param workflowAsString The new workflow to add and its content as a string.
+     * @throws AiravataAPIInvocationException If an error occurred while adding a new workflow.
+     */
+    public void addWorkflowAsPublic (String workflowAsString) throws AiravataAPIInvocationException,
+            DescriptorRecordAlreadyExistsException;
+
+    /**
+     * Updates a given workflow. Only user who added the workflow will be able to update it.
+     * @param workflowAsString The workflow to update. Workflow is uniquely identified by &lt;xgr:id&gt; tag.
+     * @throws AiravataAPIInvocationException If an error occurred while updating the workflow.
+     */
+    public void updateWorkflowAsPublic (String workflowAsString) throws AiravataAPIInvocationException,
+            DescriptorRecordAlreadyExistsException;
+
+    /**
+     * Adds a new workflow. Workflow is added to users private space. i.e. only user who added the
+     * workflow will be able to retrieve it.
+     * @param workflowUri Where the workflow file (xml file) exists.
+     * @throws AiravataAPIInvocationException If an error occurred while adding a new workflow.
+     */
+    public void addWorkflowAsPublic (URI workflowUri) throws AiravataAPIInvocationException,
+            DescriptorRecordAlreadyExistsException;
+
+    /**
+     * Updates a given workflow. Only user who added the workflow will be able to update it.
+     * @param workflowUri Where the workflow file resides. File location is given as a URI.
+     *                    Workflow is uniquely identified by &lt;xgr:id&gt; tag.
+     * @throws AiravataAPIInvocationException If an error occurred while updating the workflow.
+     */
+    public void updateWorkflowAsPublic (URI workflowUri) throws AiravataAPIInvocationException,
+            DescriptorRecordAlreadyExistsException;
+
+
+    /**
+     * Adds a new workflow. Workflow is added to users private space. i.e. only user who added the
+     * workflow will be able to retrieve it.
+     * @param workflowAsString The new workflow to add and its content as a string.
+     * @throws AiravataAPIInvocationException If an error occurred while adding a new workflow.
+     */
+    public void addWorkflow (String workflowAsString) throws AiravataAPIInvocationException,
+            DescriptorRecordAlreadyExistsException;
+
+    /**
+     * Updates a given workflow. Only user who added the workflow will be able to update it.
+     * TODO : What exception should we throw if a different user tries to update the workflow ?
+     * @param workflowAsString The workflow to update. Workflow is uniquely identified by &lt;xgr:id&gt; tag..
+     * @throws AiravataAPIInvocationException If an error occurred while updating the workflow.
+     */
+    public void updateWorkflow (String workflowAsString) throws AiravataAPIInvocationException,
+            DescriptorRecordAlreadyExistsException;
+
+    /**
+     * Adds a new workflow. Workflow is added to users private space. i.e. only user who added the
+     * workflow will be able to retrieve it.
+     * @param workflow The new workflow to add.
+     * @throws AiravataAPIInvocationException If an error occurred while adding a new workflow.
+     */
+    public void addWorkflow (Workflow workflow) throws AiravataAPIInvocationException,
+            DescriptorRecordAlreadyExistsException;
+
+    /**
+     * Updates a given workflow. Only user who added the workflow will be able to update it.
+     * TODO : What exception should we throw if a different user tries to update the workflow ?
+     * @param workflow The workflow to update. Workflow is uniquely identified by &lt;xgr:id&gt; tag..
+     * @throws AiravataAPIInvocationException If an error occurred while updating the workflow.
+     */
+    public void updateWorkflow (Workflow workflow) throws AiravataAPIInvocationException,
+            DescriptorRecordAlreadyExistsException;
+
+    /**
+     * Adds a new workflow. Workflow is added to users private space. i.e. only user who added the
+     * workflow will be able to retrieve it.
+     * @param workflowUri New workflow file as a URI.
+     * @throws AiravataAPIInvocationException If an error occurred while adding a new workflow.
+     */
+    public void addWorkflow (URI workflowUri) throws AiravataAPIInvocationException,
+            DescriptorRecordAlreadyExistsException;
+
+    /**
+     * Updates a given workflow. Only user who added the workflow will be able to update it.
+     * TODO : What exception should we throw if a different user tries to update the workflow ?
+     * @param workflowUri The workflow to update as a URI.
+     * @throws AiravataAPIInvocationException If an error occurred while updating the workflow.
+     */
+    public void updateWorkflow (URI workflowUri) throws AiravataAPIInvocationException,
+            DescriptorRecordAlreadyExistsException;
 
     /**
      * Save the workflow as public
@@ -172,6 +342,16 @@ public interface WorkflowManager {
      * @throws AiravataAPIInvocationException
      */
     public Workflow getWorkflowFromString(String workflowAsString) throws AiravataAPIInvocationException;
+
+    /**
+     * Creates a workflow from a given URI. When we want to create a workflow from a file path
+     * we can use this method.
+     * @param workflowPath The workflow file path as a URI.
+     * @return A workflow object created using given workflow XML file.
+     * @throws AiravataAPIInvocationException If an error occurred while parsing the XML file.
+     */
+    public Workflow getWorkflowFromURI(URI workflowPath) throws AiravataAPIInvocationException;
+
 
     /**
      * Convert workflow in to a string
