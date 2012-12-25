@@ -24,6 +24,7 @@ package org.apache.airavata.workflow.model.wf;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -176,6 +177,25 @@ public class Workflow implements Cloneable {
             XmlElement workflowElement = XMLUtil.stringToXmlElement(workflowString);
             parse(workflowElement);
         } catch (RuntimeException e) {
+            throw new GraphException(e);
+        }
+    }
+
+    /**
+     * Constructs a workflow from a given URI.
+     * @param workflowFilePath The workflow URI path.
+     * @throws GraphException If an error occurred while creating workflow.
+     * @throws ComponentException If an error occurred while parsing the workflow content.
+     */
+    public Workflow(URI workflowFilePath) throws GraphException, ComponentException {
+        this();
+        try {
+            File filePath = new File(workflowFilePath);
+            XmlElement workflowElement = XMLUtil.loadXML(filePath);
+            parse(workflowElement);
+        } catch (RuntimeException e) {
+            throw new GraphException(e);
+        } catch (IOException e) {
             throw new GraphException(e);
         }
     }

@@ -256,8 +256,7 @@ public class BaseCaseIT {
 
         log("Saving workflow ...");
         Workflow workflow = new Workflow(getWorkflowComposeContent("src/test/resources/EchoWorkflow.xwf"));
-        airavataAPI.getWorkflowManager().
-                saveWorkflow(workflow);
+        airavataAPI.getWorkflowManager().addWorkflow(workflow);
 
         Assert.assertTrue(airavataAPI.getWorkflowManager().isWorkflowExists(workflow.getName()));
 
