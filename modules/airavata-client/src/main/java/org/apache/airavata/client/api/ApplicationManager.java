@@ -24,7 +24,7 @@ package org.apache.airavata.client.api;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 
@@ -101,7 +101,7 @@ public interface ApplicationManager {
      * @return
      * @throws AiravataAPIInvocationException
      */
-    public ApplicationDeploymentDescription getDeploymentDescription(String serviceName, String hostName)throws AiravataAPIInvocationException;
+    public ApplicationDescription getApplicationDescription(String serviceName, String hostName)throws AiravataAPIInvocationException;
 
     /**
      * Save deployment description on registry for a given service for a host
@@ -109,26 +109,26 @@ public interface ApplicationManager {
      * @param hostId The host descriptor id.
      * @param app The application deployment descriptor.
      * @return The application deployment descriptor name.
-     * @deprecated Deprecated since 0.6 release. Please use {@see #addDeploymentDescription} and
-     *              {@see #updateDeploymentDescription}.
+     * @deprecated Deprecated since 0.6 release. Please use {@see #addApplicationDescription} and
+     *              {@see #updateApplicationDescription}.
      * @throws AiravataAPIInvocationException If an error occurred while adding application deployment descriptor.
      */
     @Deprecated
-    public String saveDeploymentDescription(String serviceId, String hostId, ApplicationDeploymentDescription app)throws AiravataAPIInvocationException;
+    public String saveApplicationDescription(String serviceId, String hostId, ApplicationDescription app)throws AiravataAPIInvocationException;
 
 
     /**
      * Adds a new deployment description associating with given service description and given host description. If
      * an association already exists this will throw {@see DescriptorRecordAlreadyExistsException} exception. If you
-     * want to update an existing deployment descriptor use {@see #updateDeploymentDescription}.
+     * want to update an existing deployment descriptor use {@see #updateApplicationDescription}.
      * @param serviceDescription The service description to associate. Should be saved before passing to this method.
      * @param hostDescription The host description to associate, should have been saved before calling this method.
      * @param applicationDeploymentDescription The application descriptor to save.
      * @throws AiravataAPIInvocationException If an error occurred while saving application descriptor.
      * @throws DescriptorRecordAlreadyExistsException If deployment descriptor already exists in the system.
      */
-    public void addDeploymentDescription(ServiceDescription serviceDescription, HostDescription hostDescription,
-                                         ApplicationDeploymentDescription applicationDeploymentDescription)
+    public void addApplicationDescription(ServiceDescription serviceDescription, HostDescription hostDescription,
+                                          ApplicationDescription applicationDeploymentDescription)
         throws AiravataAPIInvocationException, DescriptorRecordAlreadyExistsException;
 
     /**
@@ -139,8 +139,8 @@ public interface ApplicationManager {
      * @param applicationDeploymentDescription The application descriptor to save.
      * @throws AiravataAPIInvocationException If an error occurred while saving application descriptor.
      */
-    public void updateDeploymentDescription(ServiceDescription serviceDescription, HostDescription hostDescription,
-                                         ApplicationDeploymentDescription applicationDeploymentDescription)
+    public void updateApplicationDescription(ServiceDescription serviceDescription, HostDescription hostDescription,
+                                             ApplicationDescription applicationDeploymentDescription)
             throws AiravataAPIInvocationException;
 
     /**
@@ -150,14 +150,14 @@ public interface ApplicationManager {
      * @return
      * @throws AiravataAPIInvocationException
      */
-    public List<ApplicationDeploymentDescription> searchDeploymentDescription(String serviceName, String hostName)throws AiravataAPIInvocationException;
+    public List<ApplicationDescription> searchApplicationDescription(String serviceName, String hostName)throws AiravataAPIInvocationException;
 
     /**
      * Retrieve all registered deployment descriptions, The key represents the service name & host name in string array
      * @return
      * @throws AiravataAPIInvocationException
      */
-    public Map<String[], ApplicationDeploymentDescription> getAllDeploymentDescriptions() throws AiravataAPIInvocationException;
+    public Map<String[], ApplicationDescription> getAllApplicationDescriptions() throws AiravataAPIInvocationException;
 
     /**
      * Retrieve list of registered deployment descriptions of the given regex service name, regex host name & regex application name 
@@ -167,7 +167,7 @@ public interface ApplicationManager {
      * @return
      * @throws AiravataAPIInvocationException
      */
-    public List<ApplicationDeploymentDescription> searchDeploymentDescription(String serviceName, String hostName,String applicationName) throws AiravataAPIInvocationException;
+    public List<ApplicationDescription> searchApplicationDescription(String serviceName, String hostName, String applicationName) throws AiravataAPIInvocationException;
 
     /**
      * Retrieve registered map of deployment descriptions for their host description of the given service name
@@ -175,7 +175,7 @@ public interface ApplicationManager {
      * @return
      * @throws AiravataAPIInvocationException
      */
-    public Map<HostDescription, List<ApplicationDeploymentDescription>> searchDeploymentDescription(String serviceName)throws AiravataAPIInvocationException;
+    public Map<HostDescription, List<ApplicationDescription>> searchApplicationDescription(String serviceName)throws AiravataAPIInvocationException;
 
     /**
      * Delete deployment description from the registry which is exposed as the service name in the host name 
@@ -184,7 +184,7 @@ public interface ApplicationManager {
      * @param applicationName
      * @throws AiravataAPIInvocationException
      */
-    public void deleteDeploymentDescription(String serviceName, String hostName, String applicationName)throws AiravataAPIInvocationException;
+    public void deleteApplicationDescription(String serviceName, String hostName, String applicationName)throws AiravataAPIInvocationException;
     
     //Host descriptors
 
@@ -258,7 +258,7 @@ public interface ApplicationManager {
      */
     public boolean deployServiceOnHost(String serviceName, String hostName)throws AiravataAPIInvocationException;
 
-    public Map<String,ApplicationDeploymentDescription> getApplicationDescriptors (String serviceName) throws AiravataAPIInvocationException;
+    public Map<String,ApplicationDescription> getApplicationDescriptors (String serviceName) throws AiravataAPIInvocationException;
 
     public boolean isHostDescriptorExists(String descriptorName) throws AiravataAPIInvocationException;
 
@@ -266,7 +266,7 @@ public interface ApplicationManager {
 
     public boolean isServiceDescriptorExists(String descriptorName) throws AiravataAPIInvocationException;
     
-    public boolean isDeploymentDescriptorExists(String serviceName, String hostName, String descriptorName)throws AiravataAPIInvocationException;
+    public boolean isApplicationDescriptorExists(String serviceName, String hostName, String descriptorName)throws AiravataAPIInvocationException;
 
     public void removeServiceDescriptor(String serviceName) throws AiravataAPIInvocationException;
 
@@ -276,7 +276,7 @@ public interface ApplicationManager {
 
     public void updateServiceDescriptor(ServiceDescription descriptor) throws AiravataAPIInvocationException;
 
-    public void updateApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) throws AiravataAPIInvocationException;
+    public void updateApplicationDescriptor(String serviceName, String hostName, ApplicationDescription descriptor) throws AiravataAPIInvocationException;
 
-    public ApplicationDeploymentDescription getApplicationDescriptor(String serviceName, String hostname, String applicationName) throws AiravataAPIInvocationException;
+    public ApplicationDescription getApplicationDescriptor(String serviceName, String hostname, String applicationName) throws AiravataAPIInvocationException;
 }

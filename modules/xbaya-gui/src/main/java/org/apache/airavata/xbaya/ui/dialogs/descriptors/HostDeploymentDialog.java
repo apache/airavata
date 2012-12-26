@@ -47,13 +47,10 @@ import javax.swing.SwingConstants;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.common.utils.SwingUtil;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.exception.gateway.DescriptorDoesNotExistsException;
-import org.apache.airavata.registry.api.exception.gateway.MalformedDescriptorException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.xbaya.ui.menues.MenuIcons;
@@ -73,7 +70,7 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
     private XBayaTextField txtTempDir;
 
     private AiravataAPI registry;
-    private ApplicationDeploymentDescription shellApplicationDescription;
+    private ApplicationDescription shellApplicationDescription;
     private JLabel lblError;
     private boolean applcationDescCreated = false;
     private JButton okButton;
@@ -83,7 +80,7 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
 
 	private JButton btnHostAdvanceOptions;
 	private boolean newDescriptor;
-	private ApplicationDeploymentDescription originalDeploymentDescription;
+	private ApplicationDescription originalDescription;
 	private String originalHost; 
 	private JButton btnTmpDirBrowse;
 	private JButton btnExecBrowse;
@@ -92,9 +89,9 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
     /**
      * Create the dialog.
      */
-    public HostDeploymentDialog(AiravataAPI registry, boolean newDescriptor, ApplicationDeploymentDescription originalDeploymentDescription, String originalHost, List<String> existingHostList) {
+    public HostDeploymentDialog(AiravataAPI registry, boolean newDescriptor, ApplicationDescription originalDescription, String originalHost, List<String> existingHostList) {
     	setNewDescriptor(newDescriptor);
-    	setOriginalDeploymentDescription(originalDeploymentDescription);
+    	setOriginalDescription(originalDescription);
     	setOriginalHost(originalHost);
         setRegistry(registry);
         setExistingHostList(existingHostList);
@@ -114,7 +111,7 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
         if (isNewDescriptor()) {
 			setTitle("New Application Deployment");
 		}else{
-			setTitle("Update Application Deployment: "+getOriginalDeploymentDescription().getType().getApplicationName().getStringValue());
+			setTitle("Update Application Deployment: "+ getOriginalDescription().getType().getApplicationName().getStringValue());
 		}
 		setBounds(100, 100, 600, 620);
         setModal(true);
@@ -359,9 +356,9 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
 	}
 
     private void loadData(){
-    	txtExecPath.setText(getOriginalDeploymentDescription().getType().getExecutableLocation());
+    	txtExecPath.setText(getOriginalDescription().getType().getExecutableLocation());
     	setExecutablePath(txtExecPath.getText());
-    	txtTempDir.setText(getOriginalDeploymentDescription().getType().getScratchWorkingDirectory());
+    	txtTempDir.setText(getOriginalDescription().getType().getScratchWorkingDirectory());
     	setTempDir(txtTempDir.getText());
 
     	cmbHostName.setSelectedItem(getOriginalHost());
@@ -385,13 +382,13 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
         updateHostName();
     }
 
-    public ApplicationDeploymentDescription getShellApplicationDescription() {
+    public ApplicationDescription getShellApplicationDescription() {
         if(shellApplicationDescription == null){
             if (isNewDescriptor()) {
-				shellApplicationDescription = new ApplicationDeploymentDescription();
+				shellApplicationDescription = new ApplicationDescription();
 			}else{
 				try {
-					shellApplicationDescription=ApplicationDeploymentDescription.fromXML(getOriginalDeploymentDescription().toXML());
+					shellApplicationDescription= ApplicationDescription.fromXML(getOriginalDescription().toXML());
 				} catch (XmlException e) {
 					//shouldn't happen (hopefully)
 				}
@@ -553,13 +550,13 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
 		this.newDescriptor = newDescriptor;
 	}
 
-	public ApplicationDeploymentDescription getOriginalDeploymentDescription() {
-		return originalDeploymentDescription;
+	public ApplicationDescription getOriginalDescription() {
+		return originalDescription;
 	}
 
-	public void setOriginalDeploymentDescription(
-			ApplicationDeploymentDescription originalDeploymentDescription) {
-		this.originalDeploymentDescription = originalDeploymentDescription;
+	public void setOriginalDescription(
+            ApplicationDescription originalDescription) {
+		this.originalDescription = originalDescription;
 	}
 
 	public String getOriginalHost() {
@@ -587,15 +584,15 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
 	
 	public static class HostDeployment{
 		private HostDescription hostDescription;
-		private ApplicationDeploymentDescription applicationDescription;
-		public HostDeployment(HostDescription hostDescription,ApplicationDeploymentDescription applicationDescription) {
+		private ApplicationDescription applicationDescription;
+		public HostDeployment(HostDescription hostDescription,ApplicationDescription applicationDescription) {
 			setHostDescription(hostDescription);
 			setApplicationDescription(applicationDescription);
 		}
-		public ApplicationDeploymentDescription getApplicationDescription() {
+		public ApplicationDescription getApplicationDescription() {
 			return applicationDescription;
 		}
-		public void setApplicationDescription(ApplicationDeploymentDescription applicationDescription) {
+		public void setApplicationDescription(ApplicationDescription applicationDescription) {
 			this.applicationDescription = applicationDescription;
 		}
 		public HostDescription getHostDescription() {

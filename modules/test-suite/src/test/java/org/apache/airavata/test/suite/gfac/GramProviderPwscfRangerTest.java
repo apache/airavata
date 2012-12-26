@@ -33,7 +33,7 @@ import java.util.Properties;
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
@@ -79,7 +79,7 @@ public class GramProviderPwscfRangerTest {
         ((GlobusHostType) host.getType()).setGlobusGateKeeperEndPointArray(new String[]{properties.getProperty("gram.endpoints")});
 
         /* Application */
-        ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription(HpcApplicationDeploymentType.type);
+        ApplicationDescription appDesc = new ApplicationDescription(HpcApplicationDeploymentType.type);
         HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) appDesc.getType();
         app.setNodeCount(1);
         ApplicationDeploymentDescriptionType.ApplicationName name = appDesc.getType().addNewApplicationName();
@@ -117,7 +117,7 @@ public class GramProviderPwscfRangerTest {
 
         /* Save to Registry */
         airavataAPI.getApplicationManager().saveHostDescription(host);
-        airavataAPI.getApplicationManager().saveDeploymentDescription(serv.getType().getName(), host.getType().getHostName(), appDesc);
+        airavataAPI.getApplicationManager().saveApplicationDescription(serv.getType().getName(), host.getType().getHostName(), appDesc);
         airavataAPI.getApplicationManager().saveServiceDescription(serv);
 //        jcrRegistry.deployServiceOnHost(serv.getType().getName(), host.getType().getHostName());
     }

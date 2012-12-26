@@ -21,8 +21,8 @@
 
 package org.apache.airavata.xbaya.interpreter;
 
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
@@ -72,8 +72,8 @@ public class RegistryServiceTest {
 		return serv;
 	}
 
-	private ApplicationDeploymentDescription createAppDeploymentDescription() {
-		ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription();
+	private ApplicationDescription createAppDeploymentDescription() {
+		ApplicationDescription appDesc = new ApplicationDescription();
 		ApplicationDeploymentDescriptionType app = appDesc.getType();
 		ApplicationDeploymentDescriptionType.ApplicationName name = ApplicationDeploymentDescriptionType.ApplicationName.Factory
 				.newInstance();

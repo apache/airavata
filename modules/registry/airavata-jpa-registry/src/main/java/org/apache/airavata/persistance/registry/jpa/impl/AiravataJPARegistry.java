@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.airavata.common.utils.Version;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.persistance.registry.jpa.JPAResourceAccessor;
@@ -401,11 +401,11 @@ public class AiravataJPARegistry extends AiravataRegistry2{
  		return jpa.getGateway().isApplicationDescriptorExists(createAppName(serviceName, hostName, descriptorName));
     }
 
-    public void addApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDeploymentDescription descriptor) throws RegistryException {
+    public void addApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDescription descriptor) throws RegistryException {
         addApplicationDescriptor(serviceDescription.getType().getName(), hostDescriptor.getType().getHostName(), descriptor);
     }
 
-    public void addApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) throws RegistryException {
+    public void addApplicationDescriptor(String serviceName, String hostName, ApplicationDescription descriptor) throws RegistryException {
     	if (serviceName==null || hostName==null){
     		throw new InsufficientDataException("Service name or Host name cannot be null");
     	}
@@ -424,11 +424,11 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         applicationDescriptorResource.save();
     }
 
-    public void udpateApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDeploymentDescription descriptor) throws RegistryException {
+    public void udpateApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDescription descriptor) throws RegistryException {
     	updateApplicationDescriptor(serviceDescription.getType().getName(),hostDescriptor.getType().getHostName(),descriptor);
     }
 
-    public void updateApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) throws RegistryException {
+    public void updateApplicationDescriptor(String serviceName, String hostName, ApplicationDescription descriptor) throws RegistryException {
     	if (serviceName==null || hostName==null){
     		throw new InsufficientDataException("Service name or Host name cannot be null");
     	}
@@ -442,17 +442,17 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         serviceDescriptorResource.setContent(descriptor.toXML());
         serviceDescriptorResource.save();
     }
-    private ApplicationDeploymentDescription createApplicationDescriptor(
+    private ApplicationDescription createApplicationDescriptor(
 			ApplicationDescriptorResource applicationDescriptorResource)
 			throws MalformedDescriptorException {
 		try {
-            return ApplicationDeploymentDescription.fromXML(applicationDescriptorResource.getContent());
+            return ApplicationDescription.fromXML(applicationDescriptorResource.getContent());
         } catch (XmlException e) {
             throw new MalformedDescriptorException(applicationDescriptorResource.getName(),e);
         }
 	}
 
-    public ApplicationDeploymentDescription getApplicationDescriptor(String serviceName, String hostname, String applicationName)throws DescriptorDoesNotExistsException, MalformedDescriptorException, RegistryException{
+    public ApplicationDescription getApplicationDescriptor(String serviceName, String hostname, String applicationName)throws DescriptorDoesNotExistsException, MalformedDescriptorException, RegistryException{
     	if (serviceName==null || hostname==null){
     		throw new InsufficientDataException("Service name or Host name cannot be null");
     	}
@@ -463,7 +463,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         return createApplicationDescriptor(gateway.getApplicationDescriptorResource(createAppName(serviceName, hostname, applicationName)));
     }
 
-    public ApplicationDeploymentDescription getApplicationDescriptors(String serviceName, String hostname) throws MalformedDescriptorException {
+    public ApplicationDescription getApplicationDescriptors(String serviceName, String hostname) throws MalformedDescriptorException {
     	GatewayResource gateway = jpa.getGateway();
 		List<ApplicationDescriptorResource> applicationDescriptorResources = gateway.getApplicationDescriptorResources(serviceName, hostname);
 		if (applicationDescriptorResources.size()>0){
@@ -472,9 +472,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		return null;
     }
 
-    public Map<String, ApplicationDeploymentDescription> getApplicationDescriptors(String serviceName) throws MalformedDescriptorException {
+    public Map<String, ApplicationDescription> getApplicationDescriptors(String serviceName) throws MalformedDescriptorException {
     	GatewayResource gateway = jpa.getGateway();
-		Map<String, ApplicationDeploymentDescription> map=new HashMap<String,ApplicationDeploymentDescription>();
+		Map<String, ApplicationDescription> map=new HashMap<String,ApplicationDescription>();
 		List<ApplicationDescriptorResource> applicationDescriptorResources = gateway.getApplicationDescriptorResources(serviceName, null);
 		for (ApplicationDescriptorResource resource : applicationDescriptorResources) {
 			map.put(resource.getHostDescName(),createApplicationDescriptor(resource));
@@ -482,9 +482,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		return map;
     }
 
-    public Map<String[],ApplicationDeploymentDescription> getApplicationDescriptors()throws MalformedDescriptorException, RegistryException{
+    public Map<String[],ApplicationDescription> getApplicationDescriptors()throws MalformedDescriptorException, RegistryException{
     	GatewayResource gateway = jpa.getGateway();
-		Map<String[], ApplicationDeploymentDescription> map=new HashMap<String[],ApplicationDeploymentDescription>();
+		Map<String[], ApplicationDescription> map=new HashMap<String[],ApplicationDescription>();
 		List<ApplicationDescriptorResource> applicationDescriptorResources = gateway.getApplicationDescriptorResources();
 		for (ApplicationDescriptorResource resource : applicationDescriptorResources) {
 			map.put(new String[]{resource.getServiceDescName(),resource.getHostDescName()},createApplicationDescriptor(resource));

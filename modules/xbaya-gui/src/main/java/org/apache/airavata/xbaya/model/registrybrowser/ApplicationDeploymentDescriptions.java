@@ -28,8 +28,8 @@ import java.util.Map;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.ApplicationManager;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
 
@@ -80,17 +80,17 @@ public class ApplicationDeploymentDescriptions {
             List<ServiceDescription> serviceDescriptors = applicationManager.getAllServiceDescriptions();
         	for (ServiceDescription serviceDescription : serviceDescriptors) {
         		String serviceName = serviceDescription.getType().getName();
-				Map<String,ApplicationDeploymentDescription> deploymentDescriptions = applicationManager.getApplicationDescriptors(serviceName);
+				Map<String,ApplicationDescription> deploymentDescriptions = applicationManager.getApplicationDescriptors(serviceName);
 				for (String hostName : deploymentDescriptions.keySet()) {
-					ApplicationDeploymentDescription descriptionWrap=deploymentDescriptions.get(hostName);
+					ApplicationDescription descriptionWrap=deploymentDescriptions.get(hostName);
 					list.add(new ApplicationDeploymentDescriptionWrap(getAiravataAPI(), descriptionWrap, serviceName,hostName));
 				}
 			}
 			
 		}else{
-			Map<String,ApplicationDeploymentDescription> deploymentDescriptions = getAiravataAPI().getApplicationManager().getApplicationDescriptors(serviceName);
+			Map<String,ApplicationDescription> deploymentDescriptions = getAiravataAPI().getApplicationManager().getApplicationDescriptors(serviceName);
 			for (String hostName : deploymentDescriptions.keySet()) {
-				ApplicationDeploymentDescription descriptionWrap=deploymentDescriptions.get(hostName);
+				ApplicationDescription descriptionWrap=deploymentDescriptions.get(hostName);
 				list.add(new ApplicationDeploymentDescriptionWrap(getAiravataAPI(), descriptionWrap, getServiceName(),hostName));
 			}
 		}

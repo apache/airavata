@@ -28,7 +28,7 @@ import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.PasswordCallback;
@@ -704,7 +704,7 @@ public class DescriptorResourceClient {
 
     public void addApplicationDescriptor(ServiceDescription serviceDescription,
                                          HostDescription hostDescriptor,
-                                         ApplicationDeploymentDescription descriptor) {
+                                         ApplicationDescription descriptor) {
         ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(descriptor);
         applicationDescriptor.setHostdescName(hostDescriptor.getType().getHostName());
         ServiceDescriptor serviceDescriptor = DescriptorUtil.createServiceDescriptor(serviceDescription);
@@ -749,7 +749,7 @@ public class DescriptorResourceClient {
 
     public void addApplicationDescriptor(String serviceName,
                                          String hostName,
-                                         ApplicationDeploymentDescription descriptor) {
+                                         ApplicationDescription descriptor) {
         ServiceDescription serviceDescription = getServiceDescriptor(serviceName);
         ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(descriptor);
         applicationDescriptor.setHostdescName(hostName);
@@ -795,7 +795,7 @@ public class DescriptorResourceClient {
 
     public void udpateApplicationDescriptor(ServiceDescription serviceDescription,
                                             HostDescription hostDescriptor,
-                                            ApplicationDeploymentDescription descriptor) {
+                                            ApplicationDescription descriptor) {
         ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(descriptor);
         applicationDescriptor.setHostdescName(hostDescriptor.getType().getHostName());
         ServiceDescriptor serviceDescriptor = DescriptorUtil.createServiceDescriptor(serviceDescription);
@@ -840,7 +840,7 @@ public class DescriptorResourceClient {
 
     public void updateApplicationDescriptor(String serviceName,
                                             String hostName,
-                                            ApplicationDeploymentDescription descriptor) {
+                                            ApplicationDescription descriptor) {
         ServiceDescription serviceDescription = getServiceDescriptor(serviceName);
         ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(descriptor);
         applicationDescriptor.setHostdescName(hostName);
@@ -884,7 +884,7 @@ public class DescriptorResourceClient {
         }
     }
 
-    public ApplicationDeploymentDescription getApplicationDescriptor(String serviceName,
+    public ApplicationDescription getApplicationDescriptor(String serviceName,
                                                                      String hostname,
                                                                      String applicationName) {
         webResource = getDescriptorRegistryBaseResource().path(
@@ -933,12 +933,12 @@ public class DescriptorResourceClient {
         }
 
         ApplicationDescriptor applicationDescriptor = response.getEntity(ApplicationDescriptor.class);
-        ApplicationDeploymentDescription applicationDeploymentDescription =
+        ApplicationDescription applicationDescription =
                 DescriptorUtil.createApplicationDescription(applicationDescriptor);
-        return applicationDeploymentDescription;
+        return applicationDescription;
     }
 
-    public ApplicationDeploymentDescription getApplicationDescriptors(String serviceName,
+    public ApplicationDescription getApplicationDescriptors(String serviceName,
                                                                       String hostname) {
         webResource = getDescriptorRegistryBaseResource().path(
                 ResourcePathConstants.DecResourcePathConstants.APP_DESC_PER_HOST_SERVICE);
@@ -985,15 +985,15 @@ public class DescriptorResourceClient {
         }
 
         ApplicationDescriptor applicationDescriptor = response.getEntity(ApplicationDescriptor.class);
-        ApplicationDeploymentDescription applicationDeploymentDescription =
+        ApplicationDescription applicationDescription =
                 DescriptorUtil.createApplicationDescription(applicationDescriptor);
-        return applicationDeploymentDescription;
+        return applicationDescription;
     }
 
-    public Map<String, ApplicationDeploymentDescription> getApplicationDescriptors(String serviceName) {
+    public Map<String, ApplicationDescription> getApplicationDescriptors(String serviceName) {
         webResource = getDescriptorRegistryBaseResource().path(
                 ResourcePathConstants.DecResourcePathConstants.APP_DESC_ALL_DESCS_SERVICE);
-        Map<String, ApplicationDeploymentDescription> applicationDeploymentDescriptionMap = new HashMap<String, ApplicationDeploymentDescription>();
+        Map<String, ApplicationDescription> applicationDeploymentDescriptionMap = new HashMap<String, ApplicationDescription>();
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("serviceName", serviceName);
         builder = BasicAuthHeaderUtil.getBuilder(
@@ -1041,16 +1041,16 @@ public class DescriptorResourceClient {
                 applicationDescriptorList.getApplicationDescriptors();
 
         for (ApplicationDescriptor applicationDescriptor : applicationDescriptors) {
-            ApplicationDeploymentDescription applicationDeploymentDescription =
+            ApplicationDescription applicationDescription =
                     DescriptorUtil.createApplicationDescription(applicationDescriptor);
             applicationDeploymentDescriptionMap.put(
-                    applicationDescriptor.getHostdescName(), applicationDeploymentDescription);
+                    applicationDescriptor.getHostdescName(), applicationDescription);
         }
         return applicationDeploymentDescriptionMap;
     }
 
-    public Map<String[], ApplicationDeploymentDescription> getApplicationDescriptors() {
-        Map<String[], ApplicationDeploymentDescription> applicationDeploymentDescriptionMap = new HashMap<String[], ApplicationDeploymentDescription>();
+    public Map<String[], ApplicationDescription> getApplicationDescriptors() {
+        Map<String[], ApplicationDescription> applicationDeploymentDescriptionMap = new HashMap<String[], ApplicationDescription>();
         webResource = getDescriptorRegistryBaseResource().path(
                 ResourcePathConstants.DecResourcePathConstants.APP_DESC_ALL_DESCRIPTORS);
         builder = BasicAuthHeaderUtil.getBuilder(
@@ -1097,12 +1097,12 @@ public class DescriptorResourceClient {
         ApplicationDescriptor[] applicationDescriptors =
                 applicationDescriptorList.getApplicationDescriptors();
         for (ApplicationDescriptor applicationDescriptor : applicationDescriptors) {
-            ApplicationDeploymentDescription applicationDeploymentDescription =
+            ApplicationDescription applicationDescription =
                     DescriptorUtil.createApplicationDescription(applicationDescriptor);
             String[] descriptors =
                     {applicationDescriptor.getServiceDescriptor().getServiceName(),
                             applicationDescriptor.getHostdescName()};
-            applicationDeploymentDescriptionMap.put(descriptors, applicationDeploymentDescription);
+            applicationDeploymentDescriptionMap.put(descriptors, applicationDescription);
         }
         return applicationDeploymentDescriptionMap;
     }

@@ -106,7 +106,7 @@ public class PropertiesBasedServiceImplTest {
 //		 * Save to registry
 //		 */
 //		jcrRegistry.saveHostDescription(host);
-//		jcrRegistry.saveDeploymentDescription(serv.getType().getName(), host
+//		jcrRegistry.saveApplicationDescription(serv.getType().getName(), host
 //				.getType().getHostName(), appDesc);
 //		jcrRegistry.saveServiceDescription(serv);
 //		jcrRegistry.deployServiceOnHost(serv.getType().getName(), host

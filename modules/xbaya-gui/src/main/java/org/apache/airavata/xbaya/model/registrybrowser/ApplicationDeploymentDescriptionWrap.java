@@ -23,32 +23,32 @@ package org.apache.airavata.xbaya.model.registrybrowser;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class ApplicationDeploymentDescriptionWrap {
-    private ApplicationDeploymentDescription applicationDeploymentDescription;
+    private ApplicationDescription applicationDescription;
     private String service;
     private String host;
 //    private AiravataRegistry2 registry;
     private AiravataAPI airavataAPI;
 
     public ApplicationDeploymentDescriptionWrap(AiravataAPI airavataAPI,
-            ApplicationDeploymentDescription applicationDeploymentDescription, String service, String host) {
-        setApplicationDeploymentDescription(applicationDeploymentDescription);
+            ApplicationDescription applicationDescription, String service, String host) {
+        setApplicationDescription(applicationDescription);
         setService(service);
         setHost(host);
         setAiravataAPI(airavataAPI);
     }
 
-    public ApplicationDeploymentDescription getDescription() {
-        return applicationDeploymentDescription;
+    public ApplicationDescription getDescription() {
+        return applicationDescription;
     }
 
-    public void setApplicationDeploymentDescription(ApplicationDeploymentDescription applicationDeploymentDescription) {
-        this.applicationDeploymentDescription = applicationDeploymentDescription;
+    public void setApplicationDescription(ApplicationDescription applicationDescription) {
+        this.applicationDescription = applicationDescription;
     }
 
     public String getService() {

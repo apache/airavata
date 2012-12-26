@@ -26,17 +26,17 @@ import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.XmlException;
 
-public class ApplicationDeploymentDescription implements Type {
+public class ApplicationDescription implements Type {
 
 	private ApplicationDeploymentDescriptionDocument appDocument;
 
-	public ApplicationDeploymentDescription() {
+	public ApplicationDescription() {
 		this.appDocument = ApplicationDeploymentDescriptionDocument.Factory
 				.newInstance();
 		this.appDocument.addNewApplicationDeploymentDescription();
 	}
 
-	public ApplicationDeploymentDescription(SchemaType type) {
+	public ApplicationDescription(SchemaType type) {
 		this();
 		this.appDocument.getApplicationDeploymentDescription().changeType(type);
 	}
@@ -49,9 +49,9 @@ public class ApplicationDeploymentDescription implements Type {
 		return appDocument.xmlText();
 	}
 
-	public static ApplicationDeploymentDescription fromXML(String xml)
+	public static ApplicationDescription fromXML(String xml)
 			throws XmlException {
-		ApplicationDeploymentDescription app = new ApplicationDeploymentDescription();
+		ApplicationDescription app = new ApplicationDescription();
 		app.appDocument = ApplicationDeploymentDescriptionDocument.Factory
 				.parse(xml);
 		return app;

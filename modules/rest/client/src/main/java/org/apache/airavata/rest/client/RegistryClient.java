@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.airavata.common.utils.Version;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.AiravataExperiment;
@@ -299,51 +299,51 @@ public class RegistryClient extends AiravataRegistry2 {
 
     public void addApplicationDescriptor(ServiceDescription serviceDescription,
                                          HostDescription hostDescriptor,
-                                         ApplicationDeploymentDescription descriptor) throws RegistryException {
+                                         ApplicationDescription descriptor) throws RegistryException {
         getDescriptorResourceClient().addApplicationDescriptor(serviceDescription, hostDescriptor, descriptor);
     }
 
 
     public void addApplicationDescriptor(String serviceName,
                                          String hostName,
-                                         ApplicationDeploymentDescription descriptor) throws RegistryException {
+                                         ApplicationDescription descriptor) throws RegistryException {
         getDescriptorResourceClient().addApplicationDescriptor(serviceName, hostName, descriptor);
     }
 
 
     public void udpateApplicationDescriptor(ServiceDescription serviceDescription,
                                             HostDescription hostDescriptor,
-                                            ApplicationDeploymentDescription descriptor) throws RegistryException {
+                                            ApplicationDescription descriptor) throws RegistryException {
         getDescriptorResourceClient().udpateApplicationDescriptor(serviceDescription, hostDescriptor, descriptor);
     }
 
 
     public void updateApplicationDescriptor(String serviceName,
                                             String hostName,
-                                            ApplicationDeploymentDescription descriptor) throws RegistryException {
+                                            ApplicationDescription descriptor) throws RegistryException {
         getDescriptorResourceClient().updateApplicationDescriptor(serviceName, hostName, descriptor);
     }
 
 
-    public ApplicationDeploymentDescription getApplicationDescriptor(String serviceName,
+    public ApplicationDescription getApplicationDescriptor(String serviceName,
                                                                      String hostname,
                                                                      String applicationName) throws RegistryException {
         return getDescriptorResourceClient().getApplicationDescriptor(serviceName, hostname, applicationName);
     }
 
 
-    public ApplicationDeploymentDescription getApplicationDescriptors(String serviceName,
+    public ApplicationDescription getApplicationDescriptors(String serviceName,
                                                                       String hostname) throws RegistryException {
         return getDescriptorResourceClient().getApplicationDescriptors(serviceName, hostname);
     }
 
 
-    public Map<String, ApplicationDeploymentDescription> getApplicationDescriptors(String serviceName) throws RegistryException {
+    public Map<String, ApplicationDescription> getApplicationDescriptors(String serviceName) throws RegistryException {
         return getDescriptorResourceClient().getApplicationDescriptors(serviceName);
     }
 
 
-    public Map<String[], ApplicationDeploymentDescription> getApplicationDescriptors() throws RegistryException {
+    public Map<String[], ApplicationDescription> getApplicationDescriptors() throws RegistryException {
         return getDescriptorResourceClient().getApplicationDescriptors();
     }
 

@@ -22,7 +22,7 @@
 package org.apache.airavata.registry.api.test;
 
 import junit.framework.TestCase;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
@@ -561,28 +561,28 @@ public class AiravataRegistryAPITest extends TestCase {
 
 
     public void testIsApplicationDescriptorExists() throws Exception {
-        ApplicationDeploymentDescription applicationDeploymentDescription = new ApplicationDeploymentDescription(ApplicationDeploymentDescriptionType.type);
-        ApplicationDeploymentDescriptionType.ApplicationName applicationName = applicationDeploymentDescription.getType().addNewApplicationName();
+        ApplicationDescription applicationDescription = new ApplicationDescription(ApplicationDeploymentDescriptionType.type);
+        ApplicationDeploymentDescriptionType.ApplicationName applicationName = applicationDescription.getType().addNewApplicationName();
         applicationName.setStringValue("testApplication");
-        applicationDeploymentDescription.getType().setApplicationName(applicationName);
-        applicationDeploymentDescription.getType().setInputDataDirectory("/bin");
-        applicationDeploymentDescription.getType().setExecutableLocation("/bin/echo");
-        applicationDeploymentDescription.getType().setOutputDataDirectory("/tmp");
+        applicationDescription.getType().setApplicationName(applicationName);
+        applicationDescription.getType().setInputDataDirectory("/bin");
+        applicationDescription.getType().setExecutableLocation("/bin/echo");
+        applicationDescription.getType().setOutputDataDirectory("/tmp");
 
-        registry.addApplicationDescriptor("testService", "testHost", applicationDeploymentDescription);
+        registry.addApplicationDescriptor("testService", "testHost", applicationDescription);
         assertTrue("application descriptor exists", registry.isApplicationDescriptorExists("testService", "testHost", "testApplication"));
         registry.removeApplicationDescriptor("testService", "testHost", "testApplication");
     }
 
 
     public void testAddApplicationDescriptorWithOtherDescriptors() throws Exception {
-        ApplicationDeploymentDescription applicationDeploymentDescription = new ApplicationDeploymentDescription(ApplicationDeploymentDescriptionType.type);
-        ApplicationDeploymentDescriptionType.ApplicationName applicationName = applicationDeploymentDescription.getType().addNewApplicationName();
+        ApplicationDescription applicationDescription = new ApplicationDescription(ApplicationDeploymentDescriptionType.type);
+        ApplicationDeploymentDescriptionType.ApplicationName applicationName = applicationDescription.getType().addNewApplicationName();
         applicationName.setStringValue("testApplication");
-        applicationDeploymentDescription.getType().setApplicationName(applicationName);
-        applicationDeploymentDescription.getType().setInputDataDirectory("/bin");
-        applicationDeploymentDescription.getType().setExecutableLocation("/bin/echo");
-        applicationDeploymentDescription.getType().setOutputDataDirectory("/tmp");
+        applicationDescription.getType().setApplicationName(applicationName);
+        applicationDescription.getType().setInputDataDirectory("/bin");
+        applicationDescription.getType().setExecutableLocation("/bin/echo");
+        applicationDescription.getType().setOutputDataDirectory("/tmp");
 
         HostDescription hostDescription = new HostDescription(GlobusHostType.type);
         hostDescription.getType().setHostName("testHost");
@@ -611,35 +611,35 @@ public class AiravataRegistryAPITest extends TestCase {
         serviceDescription.getType().setInputParametersArray(inputParameters.toArray(new InputParameterType[]{}));
         serviceDescription.getType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[]{}));
 
-        registry.addApplicationDescriptor(serviceDescription, hostDescription, applicationDeploymentDescription);
+        registry.addApplicationDescriptor(serviceDescription, hostDescription, applicationDescription);
         assertTrue("application hostDescription added successfully", registry.isApplicationDescriptorExists("testServiceDesc", "testHost", "testApplication"));
         registry.removeApplicationDescriptor("testServiceDesc", "testHost", "testApplication");
     }
 
 
     public void testAddApplicationDescriptor() throws Exception {
-        ApplicationDeploymentDescription applicationDeploymentDescription = new ApplicationDeploymentDescription(ApplicationDeploymentDescriptionType.type);
-        ApplicationDeploymentDescriptionType.ApplicationName applicationName = applicationDeploymentDescription.getType().addNewApplicationName();
+        ApplicationDescription applicationDescription = new ApplicationDescription(ApplicationDeploymentDescriptionType.type);
+        ApplicationDeploymentDescriptionType.ApplicationName applicationName = applicationDescription.getType().addNewApplicationName();
         applicationName.setStringValue("testApplication");
-        applicationDeploymentDescription.getType().setApplicationName(applicationName);
-        applicationDeploymentDescription.getType().setInputDataDirectory("/bin");
-        applicationDeploymentDescription.getType().setExecutableLocation("/bin/echo");
-        applicationDeploymentDescription.getType().setOutputDataDirectory("/tmp");
+        applicationDescription.getType().setApplicationName(applicationName);
+        applicationDescription.getType().setInputDataDirectory("/bin");
+        applicationDescription.getType().setExecutableLocation("/bin/echo");
+        applicationDescription.getType().setOutputDataDirectory("/tmp");
 
-        registry.addApplicationDescriptor("testService", "testHost", applicationDeploymentDescription);
+        registry.addApplicationDescriptor("testService", "testHost", applicationDescription);
         assertTrue("application descriptor added successfully", registry.isApplicationDescriptorExists("testService", "testHost", "testApplication"));
         registry.removeApplicationDescriptor("testService", "testHost", "testApplication");
     }
 
 
     public void testUpdateApplicationDescriptorWithOtherDescriptors() throws Exception {
-        ApplicationDeploymentDescription applicationDeploymentDescription = new ApplicationDeploymentDescription(ApplicationDeploymentDescriptionType.type);
-        ApplicationDeploymentDescriptionType.ApplicationName applicationName = applicationDeploymentDescription.getType().addNewApplicationName();
+        ApplicationDescription applicationDescription = new ApplicationDescription(ApplicationDeploymentDescriptionType.type);
+        ApplicationDeploymentDescriptionType.ApplicationName applicationName = applicationDescription.getType().addNewApplicationName();
         applicationName.setStringValue("testApplication");
-        applicationDeploymentDescription.getType().setApplicationName(applicationName);
-        applicationDeploymentDescription.getType().setInputDataDirectory("/bin");
-        applicationDeploymentDescription.getType().setExecutableLocation("/bin/echo");
-        applicationDeploymentDescription.getType().setOutputDataDirectory("/tmp");
+        applicationDescription.getType().setApplicationName(applicationName);
+        applicationDescription.getType().setInputDataDirectory("/bin");
+        applicationDescription.getType().setExecutableLocation("/bin/echo");
+        applicationDescription.getType().setOutputDataDirectory("/tmp");
 
         HostDescription hostDescription = new HostDescription(GlobusHostType.type);
         hostDescription.getType().setHostName("testHost");
@@ -668,14 +668,14 @@ public class AiravataRegistryAPITest extends TestCase {
         serviceDescription.getType().setInputParametersArray(inputParameters.toArray(new InputParameterType[]{}));
         serviceDescription.getType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[]{}));
 
-        registry.addApplicationDescriptor(serviceDescription, hostDescription, applicationDeploymentDescription);
+        registry.addApplicationDescriptor(serviceDescription, hostDescription, applicationDescription);
 
-        ApplicationDeploymentDescription applicationDescriptor = registry.getApplicationDescriptor("testServiceDesc", "testHost", "testApplication");
+        ApplicationDescription applicationDescriptor = registry.getApplicationDescriptor("testServiceDesc", "testHost", "testApplication");
         applicationDescriptor.getType().setExecutableLocation("/bin/echo1");
 
         registry.udpateApplicationDescriptor(serviceDescription, hostDescription, applicationDescriptor);
 
-        ApplicationDeploymentDescription descriptor = registry.getApplicationDescriptor("testServiceDesc", "testHost", "testApplication");
+        ApplicationDescription descriptor = registry.getApplicationDescriptor("testServiceDesc", "testHost", "testApplication");
         String executableLocation = descriptor.getType().getExecutableLocation();
 
         assertTrue("application descriptor updated successfully", executableLocation.equals("/bin/echo1"));
@@ -684,20 +684,20 @@ public class AiravataRegistryAPITest extends TestCase {
     }
 
     public void testUpdateApplicationDescriptor() throws Exception {
-        ApplicationDeploymentDescription applicationDeploymentDescription = new ApplicationDeploymentDescription(ApplicationDeploymentDescriptionType.type);
-        ApplicationDeploymentDescriptionType.ApplicationName applicationName = applicationDeploymentDescription.getType().addNewApplicationName();
+        ApplicationDescription applicationDescription = new ApplicationDescription(ApplicationDeploymentDescriptionType.type);
+        ApplicationDeploymentDescriptionType.ApplicationName applicationName = applicationDescription.getType().addNewApplicationName();
         applicationName.setStringValue("testApplication");
-        applicationDeploymentDescription.getType().setApplicationName(applicationName);
-        applicationDeploymentDescription.getType().setInputDataDirectory("/bin");
-        applicationDeploymentDescription.getType().setExecutableLocation("/bin/echo");
-        applicationDeploymentDescription.getType().setOutputDataDirectory("/tmp");
+        applicationDescription.getType().setApplicationName(applicationName);
+        applicationDescription.getType().setInputDataDirectory("/bin");
+        applicationDescription.getType().setExecutableLocation("/bin/echo");
+        applicationDescription.getType().setOutputDataDirectory("/tmp");
 
-        registry.addApplicationDescriptor("testService", "testHost", applicationDeploymentDescription);
-        ApplicationDeploymentDescription applicationDescriptor = registry.getApplicationDescriptor("testService", "testHost", "testApplication");
+        registry.addApplicationDescriptor("testService", "testHost", applicationDescription);
+        ApplicationDescription applicationDescriptor = registry.getApplicationDescriptor("testService", "testHost", "testApplication");
         applicationDescriptor.getType().setExecutableLocation("/bin/echo1");
         registry.updateApplicationDescriptor("testService", "testHost", applicationDescriptor);
 
-        ApplicationDeploymentDescription descriptor = registry.getApplicationDescriptor("testService", "testHost", "testApplication");
+        ApplicationDescription descriptor = registry.getApplicationDescriptor("testService", "testHost", "testApplication");
         String executableLocation = descriptor.getType().getExecutableLocation();
 
         assertTrue("application descriptor updated successfully", executableLocation.equals("/bin/echo1"));
@@ -707,54 +707,54 @@ public class AiravataRegistryAPITest extends TestCase {
 
 
     public void testGetApplicationDescriptor() throws Exception {
-        ApplicationDeploymentDescription applicationDeploymentDescription = new ApplicationDeploymentDescription(ApplicationDeploymentDescriptionType.type);
-        ApplicationDeploymentDescriptionType.ApplicationName applicationName = applicationDeploymentDescription.getType().addNewApplicationName();
+        ApplicationDescription applicationDescription = new ApplicationDescription(ApplicationDeploymentDescriptionType.type);
+        ApplicationDeploymentDescriptionType.ApplicationName applicationName = applicationDescription.getType().addNewApplicationName();
         applicationName.setStringValue("testApplication");
-        applicationDeploymentDescription.getType().setApplicationName(applicationName);
-        applicationDeploymentDescription.getType().setInputDataDirectory("/bin");
-        applicationDeploymentDescription.getType().setExecutableLocation("/bin/echo");
-        applicationDeploymentDescription.getType().setOutputDataDirectory("/tmp");
+        applicationDescription.getType().setApplicationName(applicationName);
+        applicationDescription.getType().setInputDataDirectory("/bin");
+        applicationDescription.getType().setExecutableLocation("/bin/echo");
+        applicationDescription.getType().setOutputDataDirectory("/tmp");
 
-        registry.addApplicationDescriptor("testService", "testHost", applicationDeploymentDescription);
-        ApplicationDeploymentDescription applicationDescriptor = registry.getApplicationDescriptor("testService", "testHost", "testApplication");
+        registry.addApplicationDescriptor("testService", "testHost", applicationDescription);
+        ApplicationDescription applicationDescriptor = registry.getApplicationDescriptor("testService", "testHost", "testApplication");
         applicationDescriptor.getType().setExecutableLocation("/bin/echo1");
         registry.updateApplicationDescriptor("testService", "testHost", applicationDescriptor);
 
-        ApplicationDeploymentDescription descriptor = registry.getApplicationDescriptor("testService", "testHost", "testApplication");
+        ApplicationDescription descriptor = registry.getApplicationDescriptor("testService", "testHost", "testApplication");
         assertNotNull("application descriptor retrieved successfully", descriptor);
         registry.removeApplicationDescriptor("testService", "testHost", "testApplication");
     }
 
 
     public void testGetApplicationDescriptorsForServiceAndHost() throws Exception {
-        ApplicationDeploymentDescription applicationDeploymentDescription = new ApplicationDeploymentDescription(ApplicationDeploymentDescriptionType.type);
-        ApplicationDeploymentDescriptionType.ApplicationName applicationName = applicationDeploymentDescription.getType().addNewApplicationName();
+        ApplicationDescription applicationDescription = new ApplicationDescription(ApplicationDeploymentDescriptionType.type);
+        ApplicationDeploymentDescriptionType.ApplicationName applicationName = applicationDescription.getType().addNewApplicationName();
         applicationName.setStringValue("testApplication");
-        applicationDeploymentDescription.getType().setApplicationName(applicationName);
-        applicationDeploymentDescription.getType().setInputDataDirectory("/bin");
-        applicationDeploymentDescription.getType().setExecutableLocation("/bin/echo");
-        applicationDeploymentDescription.getType().setOutputDataDirectory("/tmp");
+        applicationDescription.getType().setApplicationName(applicationName);
+        applicationDescription.getType().setInputDataDirectory("/bin");
+        applicationDescription.getType().setExecutableLocation("/bin/echo");
+        applicationDescription.getType().setOutputDataDirectory("/tmp");
 
-        registry.addApplicationDescriptor("testService", "testHost", applicationDeploymentDescription);
+        registry.addApplicationDescriptor("testService", "testHost", applicationDescription);
 
-        ApplicationDeploymentDescription description = registry.getApplicationDescriptors("testService", "testHost");
+        ApplicationDescription description = registry.getApplicationDescriptors("testService", "testHost");
         assertNotNull("application descriptor retrieved successfully", description);
         registry.removeApplicationDescriptor("testService", "testHost", "testApplication");
     }
 
     public void testGetApplicationDescriptorsForService() throws Exception {
-        ApplicationDeploymentDescription applicationDeploymentDescription = new ApplicationDeploymentDescription(ApplicationDeploymentDescriptionType.type);
-        ApplicationDeploymentDescriptionType.ApplicationName applicationName = applicationDeploymentDescription.getType().addNewApplicationName();
+        ApplicationDescription applicationDescription = new ApplicationDescription(ApplicationDeploymentDescriptionType.type);
+        ApplicationDeploymentDescriptionType.ApplicationName applicationName = applicationDescription.getType().addNewApplicationName();
         applicationName.setStringValue("testApplication");
-        applicationDeploymentDescription.getType().setApplicationName(applicationName);
-        applicationDeploymentDescription.getType().setInputDataDirectory("/bin");
-        applicationDeploymentDescription.getType().setExecutableLocation("/bin/echo");
-        applicationDeploymentDescription.getType().setOutputDataDirectory("/tmp");
+        applicationDescription.getType().setApplicationName(applicationName);
+        applicationDescription.getType().setInputDataDirectory("/bin");
+        applicationDescription.getType().setExecutableLocation("/bin/echo");
+        applicationDescription.getType().setOutputDataDirectory("/tmp");
 
-        registry.addApplicationDescriptor("testService", "testHost1", applicationDeploymentDescription);
-        registry.addApplicationDescriptor("testService", "testHost2", applicationDeploymentDescription);
+        registry.addApplicationDescriptor("testService", "testHost1", applicationDescription);
+        registry.addApplicationDescriptor("testService", "testHost2", applicationDescription);
 
-        Map<String,ApplicationDeploymentDescription> applicationDescriptors = registry.getApplicationDescriptors("testService");
+        Map<String,ApplicationDescription> applicationDescriptors = registry.getApplicationDescriptors("testService");
         assertTrue("application retrieved successfully", applicationDescriptors.size()==2);
 
         registry.removeApplicationDescriptor("testService", "testHost1", "testApplication");
@@ -763,18 +763,18 @@ public class AiravataRegistryAPITest extends TestCase {
 
 
     public void testGetApplicationDescriptors() throws Exception {
-        ApplicationDeploymentDescription applicationDeploymentDescription = new ApplicationDeploymentDescription(ApplicationDeploymentDescriptionType.type);
-        ApplicationDeploymentDescriptionType.ApplicationName applicationName = applicationDeploymentDescription.getType().addNewApplicationName();
+        ApplicationDescription applicationDescription = new ApplicationDescription(ApplicationDeploymentDescriptionType.type);
+        ApplicationDeploymentDescriptionType.ApplicationName applicationName = applicationDescription.getType().addNewApplicationName();
         applicationName.setStringValue("testApplication");
-        applicationDeploymentDescription.getType().setApplicationName(applicationName);
-        applicationDeploymentDescription.getType().setInputDataDirectory("/bin");
-        applicationDeploymentDescription.getType().setExecutableLocation("/bin/echo");
-        applicationDeploymentDescription.getType().setOutputDataDirectory("/tmp");
+        applicationDescription.getType().setApplicationName(applicationName);
+        applicationDescription.getType().setInputDataDirectory("/bin");
+        applicationDescription.getType().setExecutableLocation("/bin/echo");
+        applicationDescription.getType().setOutputDataDirectory("/tmp");
 
-        registry.addApplicationDescriptor("testService", "testHost1", applicationDeploymentDescription);
-        registry.addApplicationDescriptor("testService", "testHost2", applicationDeploymentDescription);
+        registry.addApplicationDescriptor("testService", "testHost1", applicationDescription);
+        registry.addApplicationDescriptor("testService", "testHost2", applicationDescription);
 
-        Map<String[], ApplicationDeploymentDescription> applicationDescriptors = registry.getApplicationDescriptors();
+        Map<String[], ApplicationDescription> applicationDescriptors = registry.getApplicationDescriptors();
         assertTrue("application retrieved successfully", applicationDescriptors.size()==2);
 
         registry.removeApplicationDescriptor("testService", "testHost1", "testApplication");
@@ -784,15 +784,15 @@ public class AiravataRegistryAPITest extends TestCase {
 
 
     public void testRemoveApplicationDescriptor() throws Exception {
-        ApplicationDeploymentDescription applicationDeploymentDescription = new ApplicationDeploymentDescription(ApplicationDeploymentDescriptionType.type);
-        ApplicationDeploymentDescriptionType.ApplicationName applicationName = applicationDeploymentDescription.getType().addNewApplicationName();
+        ApplicationDescription applicationDescription = new ApplicationDescription(ApplicationDeploymentDescriptionType.type);
+        ApplicationDeploymentDescriptionType.ApplicationName applicationName = applicationDescription.getType().addNewApplicationName();
         applicationName.setStringValue("testApplication");
-        applicationDeploymentDescription.getType().setApplicationName(applicationName);
-        applicationDeploymentDescription.getType().setInputDataDirectory("/bin");
-        applicationDeploymentDescription.getType().setExecutableLocation("/bin/echo");
-        applicationDeploymentDescription.getType().setOutputDataDirectory("/tmp");
+        applicationDescription.getType().setApplicationName(applicationName);
+        applicationDescription.getType().setInputDataDirectory("/bin");
+        applicationDescription.getType().setExecutableLocation("/bin/echo");
+        applicationDescription.getType().setOutputDataDirectory("/tmp");
 
-        registry.addApplicationDescriptor("testService", "testHost", applicationDeploymentDescription);
+        registry.addApplicationDescriptor("testService", "testHost", applicationDescription);
         registry.removeApplicationDescriptor("testService", "testHost", "testApplication");
 
         assertFalse("application descriptor removed successfully", registry.isApplicationDescriptorExists("testService", "testHost", "testApplication"));

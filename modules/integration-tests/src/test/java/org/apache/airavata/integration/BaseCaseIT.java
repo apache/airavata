@@ -16,7 +16,7 @@ import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.builder.DescriptorBuilder;
 import org.apache.airavata.common.utils.Version;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.PasswordCallback;
@@ -243,14 +243,14 @@ public class BaseCaseIT {
                 getType().getName()));
 
         // Deployment descriptor
-        ApplicationDeploymentDescription applicationDeploymentDescription
+        ApplicationDescription applicationDeploymentDescription
                 = descriptorBuilder.buildApplicationDeploymentDescription("EchoApplication", "/bin/echo", "/tmp");
 
         log("Adding deployment description ...");
-        airavataAPI.getApplicationManager().addDeploymentDescription(serviceDescription,
+        airavataAPI.getApplicationManager().addApplicationDescription(serviceDescription,
                 hostDescription, applicationDeploymentDescription);
 
-        Assert.assertTrue(airavataAPI.getApplicationManager().isDeploymentDescriptorExists(serviceDescription.getType().
+        Assert.assertTrue(airavataAPI.getApplicationManager().isApplicationDescriptorExists(serviceDescription.getType().
                 getName(), hostDescription.getType().getHostName(),
                 applicationDeploymentDescription.getType().getApplicationName().getStringValue()));
 

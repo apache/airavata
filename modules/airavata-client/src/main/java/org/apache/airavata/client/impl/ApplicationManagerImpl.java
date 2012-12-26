@@ -31,7 +31,7 @@ import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.ApplicationManager;
 import org.apache.airavata.client.api.DescriptorRecordAlreadyExistsException;
 import org.apache.airavata.common.exception.AiravataConfigurationException;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.exception.RegistryException;
@@ -139,8 +139,8 @@ public class ApplicationManagerImpl implements ApplicationManager {
 	}
 
 	@Override
-	public ApplicationDeploymentDescription getDeploymentDescription(
-			String serviceId, String hostId)
+	public ApplicationDescription getApplicationDescription(
+            String serviceId, String hostId)
 			throws AiravataAPIInvocationException {
 		try {
 			return getClient().getRegistryClient().getApplicationDescriptors(serviceId, hostId);
@@ -150,8 +150,8 @@ public class ApplicationManagerImpl implements ApplicationManager {
 	}
 
 	@Override
-	public String saveDeploymentDescription(String serviceId, String hostId,
-			ApplicationDeploymentDescription app)
+	public String saveApplicationDescription(String serviceId, String hostId,
+                                             ApplicationDescription app)
 			throws AiravataAPIInvocationException {
 		try {
 			if (getClient().getRegistryClient().isApplicationDescriptorExists(serviceId, hostId, app.getType().getApplicationName().getStringValue())) {
@@ -167,8 +167,8 @@ public class ApplicationManagerImpl implements ApplicationManager {
 
 
     @Override
-    public void addDeploymentDescription(ServiceDescription serviceDescription, HostDescription hostDescription,
-                                         ApplicationDeploymentDescription applicationDeploymentDescription)
+    public void addApplicationDescription(ServiceDescription serviceDescription, HostDescription hostDescription,
+                                          ApplicationDescription applicationDeploymentDescription)
             throws AiravataAPIInvocationException, DescriptorRecordAlreadyExistsException {
 
         try {
@@ -199,8 +199,8 @@ public class ApplicationManagerImpl implements ApplicationManager {
     }
 
     @Override
-    public void updateDeploymentDescription(ServiceDescription serviceDescription, HostDescription hostDescription,
-                                            ApplicationDeploymentDescription applicationDeploymentDescription)
+    public void updateApplicationDescription(ServiceDescription serviceDescription, HostDescription hostDescription,
+                                             ApplicationDescription applicationDeploymentDescription)
             throws AiravataAPIInvocationException {
         try {
             getClient().getRegistryClient().updateApplicationDescriptor(serviceDescription.getType().getName(),
@@ -225,14 +225,14 @@ public class ApplicationManagerImpl implements ApplicationManager {
 
 
     @Override
-	public List<ApplicationDeploymentDescription> searchDeploymentDescription(
-			String serviceName, String hostName)
+	public List<ApplicationDescription> searchApplicationDescription(
+            String serviceName, String hostName)
 			throws AiravataAPIInvocationException {
 		throw new AiravataAPIInvocationException(new UnimplementedRegistryOperationException());
 	}
 
 	@Override
-	public Map<String[], ApplicationDeploymentDescription> getAllDeploymentDescriptions()
+	public Map<String[], ApplicationDescription> getAllApplicationDescriptions()
 			throws AiravataAPIInvocationException {
 		try {
 			return getClient().getRegistryClient().getApplicationDescriptors();
@@ -242,20 +242,20 @@ public class ApplicationManagerImpl implements ApplicationManager {
 	}
 
 	@Override
-	public List<ApplicationDeploymentDescription> searchDeploymentDescription(
-			String serviceName, String hostName, String applicationName)
+	public List<ApplicationDescription> searchApplicationDescription(
+            String serviceName, String hostName, String applicationName)
 			throws AiravataAPIInvocationException {
 		throw new AiravataAPIInvocationException(new UnimplementedRegistryOperationException());
 	}
 
 	@Override
-	public Map<HostDescription, List<ApplicationDeploymentDescription>> searchDeploymentDescription(
-			String serviceName) throws AiravataAPIInvocationException {
+	public Map<HostDescription, List<ApplicationDescription>> searchApplicationDescription(
+            String serviceName) throws AiravataAPIInvocationException {
 		try {
-			Map<HostDescription, List<ApplicationDeploymentDescription>> map=new HashMap<HostDescription, List<ApplicationDeploymentDescription>>();
-			Map<String, ApplicationDeploymentDescription> applicationDescriptors = getClient().getRegistryClient().getApplicationDescriptors(serviceName);
+			Map<HostDescription, List<ApplicationDescription>> map=new HashMap<HostDescription, List<ApplicationDescription>>();
+			Map<String, ApplicationDescription> applicationDescriptors = getClient().getRegistryClient().getApplicationDescriptors(serviceName);
 			for (String hostName : applicationDescriptors.keySet()) {
-				ArrayList<ApplicationDeploymentDescription> list = new ArrayList<ApplicationDeploymentDescription>();
+				ArrayList<ApplicationDescription> list = new ArrayList<ApplicationDescription>();
 				list.add(applicationDescriptors.get(hostName));
 				map.put(getClient().getRegistryClient().getHostDescriptor(hostName),list);
 			}
@@ -266,8 +266,8 @@ public class ApplicationManagerImpl implements ApplicationManager {
 	}
 
 	@Override
-	public void deleteDeploymentDescription(String serviceName,
-			String hostName, String applicationName)
+	public void deleteApplicationDescription(String serviceName,
+                                             String hostName, String applicationName)
 			throws AiravataAPIInvocationException {
 		try {
 			getClient().getRegistryClient().removeApplicationDescriptor(serviceName, hostName, applicationName);
@@ -371,9 +371,9 @@ public class ApplicationManagerImpl implements ApplicationManager {
 	}
 
     @Override
-    public Map<String, ApplicationDeploymentDescription> getApplicationDescriptors(String serviceName) throws AiravataAPIInvocationException {
+    public Map<String, ApplicationDescription> getApplicationDescriptors(String serviceName) throws AiravataAPIInvocationException {
         try{
-            Map<String, ApplicationDeploymentDescription> applicationDescriptors = getClient().getRegistryClient().getApplicationDescriptors(serviceName);
+            Map<String, ApplicationDescription> applicationDescriptors = getClient().getRegistryClient().getApplicationDescriptors(serviceName);
             return applicationDescriptors;
         } catch (Exception e) {
             throw new AiravataAPIInvocationException(e);
@@ -444,7 +444,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
     }
 
     @Override
-    public void updateApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) throws AiravataAPIInvocationException {
+    public void updateApplicationDescriptor(String serviceName, String hostName, ApplicationDescription descriptor) throws AiravataAPIInvocationException {
         try {
             getClient().getRegistryClient().updateApplicationDescriptor(serviceName, hostName, descriptor);
         } catch (Exception e) {
@@ -453,7 +453,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
     }
 
     @Override
-    public ApplicationDeploymentDescription getApplicationDescriptor(String serviceName, String hostname, String applicationName) throws AiravataAPIInvocationException {
+    public ApplicationDescription getApplicationDescriptor(String serviceName, String hostname, String applicationName) throws AiravataAPIInvocationException {
         try {
             return getClient().getRegistryClient().getApplicationDescriptor(serviceName, hostname, applicationName);
         } catch (Exception e) {
@@ -470,8 +470,8 @@ public class ApplicationManagerImpl implements ApplicationManager {
 	}
 
 	@Override
-	public boolean isDeploymentDescriptorExists(String serviceName,
-			String hostName, String descriptorName)
+	public boolean isApplicationDescriptorExists(String serviceName,
+                                                 String hostName, String descriptorName)
 			throws AiravataAPIInvocationException {
         try {
             return getClient().getRegistryClient().isApplicationDescriptorExists(serviceName, hostName, descriptorName);

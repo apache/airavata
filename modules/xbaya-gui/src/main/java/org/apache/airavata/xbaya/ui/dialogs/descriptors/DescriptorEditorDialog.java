@@ -46,7 +46,7 @@ import javax.swing.event.ListSelectionListener;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.SwingUtil;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.xbaya.XBayaEngine;
@@ -67,7 +67,7 @@ public class DescriptorEditorDialog extends JDialog {
 
 	private JList descriptorList;
 
-	private Map<ApplicationDeploymentDescription,String> dlist;
+	private Map<ApplicationDescription,String> dlist;
 
 	private JButton editButton;
 
@@ -231,7 +231,7 @@ public class DescriptorEditorDialog extends JDialog {
 				}
 	    		break;
 	    	case APPLICATION:
-	    		ApplicationDeploymentDescription a = (ApplicationDeploymentDescription) getSelected();
+	    		ApplicationDescription a = (ApplicationDescription) getSelected();
 	    		String[] s = dlist.get(a).split("\\$");
 	    		ApplicationDescriptionDialog aDescriptionDialog = new ApplicationDescriptionDialog(engine,false,a,s[1],s[0]);
 	    		aDescriptionDialog.setLocationRelativeTo(this.engine.getGUI().getFrame());
@@ -296,7 +296,7 @@ public class DescriptorEditorDialog extends JDialog {
 	                    + d.getType().getName() + "\"?";
 	    		break;
 	    	case APPLICATION:
-	    		ApplicationDeploymentDescription a = (ApplicationDeploymentDescription) getSelected();
+	    		ApplicationDescription a = (ApplicationDescription) getSelected();
 	    		title = "Service description";
 	    		question = "Are you sure that you want to remove the service description \""
 	                    + a.getType().getApplicationName().getStringValue() + "\"?";
@@ -315,9 +315,9 @@ public class DescriptorEditorDialog extends JDialog {
 	    	        	getRegistry().getApplicationManager().deleteServiceDescription(d.getType().getName());
 	    	    		break;
 	    	    	case APPLICATION:
-	    	    		ApplicationDeploymentDescription a = (ApplicationDeploymentDescription) getSelected();
+	    	    		ApplicationDescription a = (ApplicationDescription) getSelected();
 	    	    		String[] s = dlist.get(a).split("\\$");
-	    	        	getRegistry().getApplicationManager().deleteDeploymentDescription(s[0], s[1], a.getType().getApplicationName().getStringValue());
+	    	        	getRegistry().getApplicationManager().deleteApplicationDescription(s[0], s[1], a.getType().getApplicationName().getStringValue());
 	    	    		break;
             	}
 				loadDescriptors();
@@ -342,12 +342,12 @@ public class DescriptorEditorDialog extends JDialog {
 	    		descriptors = getRegistry().getApplicationManager().getAllServiceDescriptions();
 	    		break;
 	    	case APPLICATION:
-	    		Map<String,ApplicationDeploymentDescription> temp =getRegistry().getApplicationManager().getApplicationDescriptors(null);
+	    		Map<String,ApplicationDescription> temp =getRegistry().getApplicationManager().getApplicationDescriptors(null);
                 for(String value:temp.keySet()) {
                     dlist.put(temp.get(value), value);
 
                 }
-	    		descriptors =Arrays.asList(dlist.keySet().toArray(new ApplicationDeploymentDescription[]{})); 
+	    		descriptors =Arrays.asList(dlist.keySet().toArray(new ApplicationDescription[]{}));
 	    		break;
     		}
     		for (Object d : descriptors) {
@@ -375,7 +375,7 @@ public class DescriptorEditorDialog extends JDialog {
 					((JLabel) c).setIcon(JCRBrowserIcons.SERVICE_ICON);
 		    		break;
 		    	case APPLICATION:
-		    		((JLabel) c).setText(((ApplicationDeploymentDescription)value).getType().getApplicationName().getStringValue());
+		    		((JLabel) c).setText(((ApplicationDescription)value).getType().getApplicationName().getStringValue());
 					((JLabel) c).setIcon(JCRBrowserIcons.APPLICATION_ICON);
 		    		break;
 				}

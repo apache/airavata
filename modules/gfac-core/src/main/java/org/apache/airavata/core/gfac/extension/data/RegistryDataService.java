@@ -25,7 +25,6 @@ import java.io.File;
 import java.util.Date;
 import java.util.UUID;
 
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
@@ -34,7 +33,7 @@ import org.apache.airavata.core.gfac.extension.DataServiceChain;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 
 /**
- * This plugin fills out all information that is missing in {@link ApplicationDeploymentDescription} based on Unix
+ * This plugin fills out all information that is missing in {@link org.apache.airavata.commons.gfac.type.ApplicationDescription} based on Unix
  * system. For instance, it will use "/tmp" as default temporary directory.
  * 
  */
