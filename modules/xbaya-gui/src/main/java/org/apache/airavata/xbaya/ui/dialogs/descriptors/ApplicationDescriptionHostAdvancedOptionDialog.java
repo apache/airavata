@@ -23,7 +23,7 @@ package org.apache.airavata.xbaya.ui.dialogs.descriptors;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.common.utils.SwingUtil;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.schemas.gfac.JobTypeType;
@@ -57,7 +57,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
     private XBayaTextField txtProcessorsPerNode = new XBayaTextField();
     private JButton okButton;
     private AiravataAPI registry;
-    private ApplicationDeploymentDescription descriptor;
+    private ApplicationDescription descriptor;
 	private XBayaLabel lblCpuCount;
 	private XBayaLabel lblProcessorPerNode;
     private XBayaLabel lbNodeCount;
@@ -65,7 +65,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
     /**
      * Create the dialog.
      */
-    public ApplicationDescriptionHostAdvancedOptionDialog(AiravataAPI registry, ApplicationDeploymentDescription descriptor) {
+    public ApplicationDescriptionHostAdvancedOptionDialog(AiravataAPI registry, ApplicationDescription descriptor) {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent arg0) {
@@ -218,7 +218,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		return null;
 	}
 	
-    public ApplicationDeploymentDescription getApplicationDescription() {
+    public ApplicationDescription getApplicationDescription() {
         return descriptor;
     }
 
@@ -226,7 +226,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
         return (HpcApplicationDeploymentType)descriptor.getType();
     }
     
-    public void setShellApplicationDescription(ApplicationDeploymentDescription shellApplicationDescription) {
+    public void setShellApplicationDescription(ApplicationDescription shellApplicationDescription) {
         this.descriptor = shellApplicationDescription;
     }
 
@@ -349,7 +349,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
     //
     // List<ApplicationDeploymentDescription> deploymentDescriptions=null;
     // try {
-    // deploymentDescriptions = getJCRComponentRegistry().getRegistry().searchDeploymentDescription(getServiceName(),
+    // deploymentDescriptions = getJCRComponentRegistry().getRegistry().searchApplicationDescription(getServiceName(),
     // getHostName(), Pattern.quote(getApplicationName()));
     // } catch (PathNotFoundException e) {
     // //what we want

@@ -44,7 +44,7 @@ import javax.swing.table.DefaultTableModel;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.common.utils.SwingUtil;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.NameValuePairType;
@@ -60,7 +60,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     private XBayaTextField txtSTDOUT;
     private XBayaTextField txtSTDERR;
     private JTable tblEnv;
-    private ApplicationDeploymentDescription shellApplicationDescription;
+    private ApplicationDescription shellApplicationDescription;
     private DefaultTableModel defaultTableModel;
     private boolean tableModelChanging = false;
     private JButton btnDeleteVariable;
@@ -85,7 +85,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     /**
      * Create the dialog.
      */
-    public ApplicationDescriptionAdvancedOptionDialog(AiravataAPI registry, ApplicationDeploymentDescription descriptor) {
+    public ApplicationDescriptionAdvancedOptionDialog(AiravataAPI registry, ApplicationDescription descriptor) {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent arg0) {
@@ -281,7 +281,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
         addNewRowIfLastIsNotEmpty();
     }
 
-    public ApplicationDeploymentDescription getApplicationDescription() {
+    public ApplicationDescription getApplicationDescription() {
         return shellApplicationDescription;
     }
 
@@ -289,7 +289,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
         return (ApplicationDeploymentDescriptionType)shellApplicationDescription.getType();
     }
     
-    public void setShellApplicationDescription(ApplicationDeploymentDescription shellApplicationDescription) {
+    public void setShellApplicationDescription(ApplicationDescription shellApplicationDescription) {
         this.shellApplicationDescription = shellApplicationDescription;
     }
 

@@ -23,13 +23,12 @@ package org.apache.airavata.core.gfac.provider;
 
 import java.util.Map;
 
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.ProviderException;
 
 /**
- * Main component in GFAC. It executes an application according to {@link ApplicationDeploymentDescription}.
+ * Main component in GFAC. It executes an application according to {@link org.apache.airavata.commons.gfac.type.ApplicationDescription}.
  */
 public interface Provider {
 

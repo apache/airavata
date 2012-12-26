@@ -29,9 +29,8 @@ import javax.xml.stream.XMLStreamException;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
@@ -91,10 +90,10 @@ public class SchedulerImpl implements Scheduler {
         /*
          * Load app
          */
-        ApplicationDeploymentDescription app = null;
+        ApplicationDescription app = null;
         try {
-            app = registryService.getApplicationManager().getDeploymentDescription(context.getServiceName(),
-                    getRegisteredHost(registryService,context.getServiceName()).getType().getHostName());
+            app = registryService.getApplicationManager().getApplicationDescription(context.getServiceName(),
+                    getRegisteredHost(registryService, context.getServiceName()).getType().getHostName());
         } catch (AiravataAPIInvocationException e2) {
             e2.printStackTrace();
         }
@@ -173,7 +172,7 @@ public class SchedulerImpl implements Scheduler {
         }
         log.info("Searching registry for some deployed application hosts");
         HostDescription result = null;
-        Map<HostDescription, List<ApplicationDeploymentDescription>> deploymentDescription = null;
+        Map<HostDescription, List<ApplicationDescription>> deploymentDescription = null;
         result = getRegisteredHost(regService, serviceName);
         // if user specify the host in the workflowcontext header we pick that host instead of picking the last hostName
         if(hostName != null){
@@ -210,7 +209,7 @@ public class SchedulerImpl implements Scheduler {
     private HostDescription getRegisteredHost(AiravataAPI regService, String serviceName) {
         HostDescription result = null;
         try {
-            Map<String, ApplicationDeploymentDescription> applicationDescriptors = regService.getApplicationManager().getApplicationDescriptors(serviceName);
+            Map<String, ApplicationDescription> applicationDescriptors = regService.getApplicationManager().getApplicationDescriptors(serviceName);
             for (String hostDescName : applicationDescriptors.keySet()) {
                 HostDescription hostDescriptor = regService.getApplicationManager().getHostDescription(hostDescName);
                 result = hostDescriptor;

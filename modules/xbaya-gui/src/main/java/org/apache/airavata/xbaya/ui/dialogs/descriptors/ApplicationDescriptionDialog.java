@@ -51,7 +51,7 @@ import javax.swing.SwingConstants;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.SwingUtil;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
@@ -76,7 +76,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     private XBayaTextField txtTempDir;
 
     private AiravataAPI registry;
-    private ApplicationDeploymentDescription shellApplicationDescription;
+    private ApplicationDescription shellApplicationDescription;
     private JLabel lblError;
     private boolean applcationDescCreated = false;
     private JButton okButton;
@@ -88,7 +88,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     private XBayaEngine engine;
 	private JButton btnHostAdvanceOptions;
 	private boolean newDescritor;
-	private ApplicationDeploymentDescription originalDeploymentDescription;
+	private ApplicationDescription originalDescription;
 	private String originalHost; 
 	private String originalService;
     private ServiceDescription serviceDescription=null;
@@ -114,9 +114,9 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     /**
      * Create the dialog.
      */
-    public ApplicationDescriptionDialog(XBayaEngine engine, boolean newDescritor, ApplicationDeploymentDescription originalDeploymentDescription, String originalHost, String originalService) {
+    public ApplicationDescriptionDialog(XBayaEngine engine, boolean newDescritor, ApplicationDescription originalDescription, String originalHost, String originalService) {
     	setNewDescritor(newDescritor);
-    	setOriginalDeploymentDescription(originalDeploymentDescription);
+    	setOriginalDescription(originalDescription);
     	setOriginalHost(originalHost);
     	setOriginalService(originalService);
         setRegistry(engine.getConfiguration().getAiravataAPI());
@@ -128,12 +128,12 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 					int i = 1;
 					String defaultName = baseName + i;
 					try {
-						ApplicationDeploymentDescription applicationDeploymentDescription = getRegistry()
-								.getApplicationManager().getDeploymentDescription(getServiceName(),
-										getHostName());
+						ApplicationDescription applicationDescription = getRegistry()
+								.getApplicationManager().getApplicationDescription(getServiceName(),
+                                        getHostName());
 						while (true) {
 							boolean notFound = true;
-							if (applicationDeploymentDescription.getType()
+							if (applicationDescription.getType()
 									.getApplicationName().getStringValue()
 									.equals(defaultName)) {
 								notFound = false;
@@ -180,7 +180,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         if (isNewDescritor()) {
 			setTitle("Application Description");
 		}else{
-			setTitle("Update Application Description: "+getOriginalDeploymentDescription().getType().getApplicationName().getStringValue());
+			setTitle("Update Application Description: "+ getOriginalDescription().getType().getApplicationName().getStringValue());
 		}
 		setBounds(100, 100, 600, 620);
         setModal(true);
@@ -501,11 +501,11 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 //    }
 
     private void loadData(){
-    	txtAppName.setText(getOriginalDeploymentDescription().getType().getApplicationName().getStringValue());
+    	txtAppName.setText(getOriginalDescription().getType().getApplicationName().getStringValue());
     	setApplicationName(txtAppName.getText());
-    	txtExecPath.setText(getOriginalDeploymentDescription().getType().getExecutableLocation());
+    	txtExecPath.setText(getOriginalDescription().getType().getExecutableLocation());
     	setExecutablePath(txtExecPath.getText());
-    	txtTempDir.setText(getOriginalDeploymentDescription().getType().getScratchWorkingDirectory());
+    	txtTempDir.setText(getOriginalDescription().getType().getScratchWorkingDirectory());
     	setTempDir(txtTempDir.getText());
 
     	cmbHostName.setSelectedItem(getOriginalHost());
@@ -533,13 +533,13 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         updateHostName();
     }
 
-    public ApplicationDeploymentDescription getShellApplicationDescription() {
+    public ApplicationDescription getShellApplicationDescription() {
         if(shellApplicationDescription == null){
             if (isNewDescritor()) {
-				shellApplicationDescription = new ApplicationDeploymentDescription();
+				shellApplicationDescription = new ApplicationDescription();
 			}else{
 				try {
-					shellApplicationDescription=ApplicationDeploymentDescription.fromXML(getOriginalDeploymentDescription().toXML());
+					shellApplicationDescription= ApplicationDescription.fromXML(getOriginalDescription().toXML());
 				} catch (XmlException e) {
 					//shouldn't happen (hopefully)
 				}
@@ -605,15 +605,15 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     public void saveApplicationDescription() {
         try {
 			try {
-				getRegistry().getApplicationManager().saveDeploymentDescription(getServiceName(), getHostName(), getShellApplicationDescription());
+				getRegistry().getApplicationManager().saveApplicationDescription(getServiceName(), getHostName(), getShellApplicationDescription());
 			} catch (AiravataAPIInvocationException e) {
 				getRegistry().getApplicationManager().updateApplicationDescriptor(getServiceName(), getHostName(), getShellApplicationDescription());
 			}
 			if (!isNewDescritor() && (!getServiceName().equals(getOriginalService()) || !getHostName().equals(getOriginalHost()))) {
 				try {
-					getRegistry().getApplicationManager().deleteDeploymentDescription(getOriginalService(),
-							getOriginalHost(),getOriginalDeploymentDescription().getType()
-							.getApplicationName().getStringValue());
+					getRegistry().getApplicationManager().deleteApplicationDescription(getOriginalService(),
+                            getOriginalHost(), getOriginalDescription().getType()
+                            .getApplicationName().getStringValue());
 				} catch (AiravataAPIInvocationException e) {
 					engine.getGUI().getErrorWindow().error(e);
 				}
@@ -656,14 +656,14 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             throw new Exception("Name of the application cannot be empty!!!");
         }
 
-        ApplicationDeploymentDescription deploymentDescriptions = null;
+        ApplicationDescription descriptions = null;
         try {
-            deploymentDescriptions = getRegistry().getApplicationManager().getApplicationDescriptor(getServiceName(), getHostName(),
+            descriptions = getRegistry().getApplicationManager().getApplicationDescriptor(getServiceName(), getHostName(),
                     getApplicationName());
         } catch (AiravataAPIInvocationException e) {
             throw e;
         }
-        if (deploymentDescriptions!=null && (isNewDescritor() || (!getServiceName().equals(getOriginalService()) || !getHostName().equals(getOriginalHost())))) {
+        if (descriptions !=null && (isNewDescritor() || (!getServiceName().equals(getOriginalService()) || !getHostName().equals(getOriginalHost())))) {
             throw new Exception("Application name already exists for the selected service & host!!!");
         }
 
@@ -777,13 +777,13 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 		this.newDescritor = newDescritor;
 	}
 
-	public ApplicationDeploymentDescription getOriginalDeploymentDescription() {
-		return originalDeploymentDescription;
+	public ApplicationDescription getOriginalDescription() {
+		return originalDescription;
 	}
 
-	public void setOriginalDeploymentDescription(
-			ApplicationDeploymentDescription originalDeploymentDescription) {
-		this.originalDeploymentDescription = originalDeploymentDescription;
+	public void setOriginalDescription(
+            ApplicationDescription originalDescription) {
+		this.originalDescription = originalDescription;
 	}
 
 	public String getOriginalService() {

@@ -24,8 +24,8 @@ package org.apache.airavata.registry.api;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException;
@@ -58,14 +58,14 @@ public interface DescriptorRegistry extends AiravataSubRegistry {
 	
 	//---------Application Descriptor data------------
 	public boolean isApplicationDescriptorExists(String serviceName, String hostName, String descriptorName)throws RegistryException;
-	public void addApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDeploymentDescription descriptor)throws DescriptorAlreadyExistsException, RegistryException;
-	public void addApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor)throws DescriptorAlreadyExistsException, RegistryException;
-	public void udpateApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDeploymentDescription descriptor)throws DescriptorDoesNotExistsException, RegistryException;
-	public void updateApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor)throws DescriptorDoesNotExistsException, RegistryException;
-	public ApplicationDeploymentDescription getApplicationDescriptor(String serviceName, String hostname, String applicationName)throws DescriptorDoesNotExistsException, MalformedDescriptorException, RegistryException;
-	public ApplicationDeploymentDescription getApplicationDescriptors(String serviceName, String hostname)throws MalformedDescriptorException, RegistryException;
-	public Map<String,ApplicationDeploymentDescription> getApplicationDescriptors(String serviceName)throws MalformedDescriptorException, RegistryException;
-	public Map<String[],ApplicationDeploymentDescription> getApplicationDescriptors()throws MalformedDescriptorException, RegistryException;
+	public void addApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDescription descriptor)throws DescriptorAlreadyExistsException, RegistryException;
+	public void addApplicationDescriptor(String serviceName, String hostName, ApplicationDescription descriptor)throws DescriptorAlreadyExistsException, RegistryException;
+	public void udpateApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDescription descriptor)throws DescriptorDoesNotExistsException, RegistryException;
+	public void updateApplicationDescriptor(String serviceName, String hostName, ApplicationDescription descriptor)throws DescriptorDoesNotExistsException, RegistryException;
+	public ApplicationDescription getApplicationDescriptor(String serviceName, String hostname, String applicationName)throws DescriptorDoesNotExistsException, MalformedDescriptorException, RegistryException;
+	public ApplicationDescription getApplicationDescriptors(String serviceName, String hostname)throws MalformedDescriptorException, RegistryException;
+	public Map<String,ApplicationDescription> getApplicationDescriptors(String serviceName)throws MalformedDescriptorException, RegistryException;
+	public Map<String[],ApplicationDescription> getApplicationDescriptors()throws MalformedDescriptorException, RegistryException;
 	public void removeApplicationDescriptor(String serviceName, String hostName, String applicationName)throws DescriptorDoesNotExistsException, RegistryException;
 	public ResourceMetadata getApplicationDescriptorMetadata(String serviceName, String hostName, String applicationName)throws DescriptorDoesNotExistsException, RegistryException;
 

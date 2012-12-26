@@ -21,7 +21,7 @@
 
 package org.apache.airavata.services.registry.rest.resources;
 
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.AiravataRegistry2;
@@ -567,7 +567,7 @@ public class DescriptorRegistryResource {
                 builder.entity("Given host does not exist...");
                 return builder.build();
             }
-            ApplicationDeploymentDescription applicationDeploymentDescription = DescriptorUtil.createApplicationDescription(applicationDescriptor);
+            ApplicationDescription applicationDescription = DescriptorUtil.createApplicationDescription(applicationDescriptor);
             ServiceDescriptor serviceDescriptor = applicationDescriptor.getServiceDescriptor();
             String serviceName;
             if (serviceDescriptor != null) {
@@ -584,7 +584,7 @@ public class DescriptorRegistryResource {
             } else {
                 serviceName = applicationDescriptor.getName();
             }
-            airavataRegistry.addApplicationDescriptor(serviceName, hostdescName, applicationDeploymentDescription);
+            airavataRegistry.addApplicationDescriptor(serviceName, hostdescName, applicationDescription);
 
 
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -624,7 +624,7 @@ public class DescriptorRegistryResource {
                 builder.entity("Host does not available...");
                 return builder.build();
             }
-            ApplicationDeploymentDescription applicationDeploymentDescription = DescriptorUtil.createApplicationDescription(applicationDescriptor);
+            ApplicationDescription applicationDescription = DescriptorUtil.createApplicationDescription(applicationDescriptor);
             ServiceDescriptor serviceDescriptor = applicationDescriptor.getServiceDescriptor();
             String serviceName;
             if (serviceDescriptor != null) {
@@ -644,7 +644,7 @@ public class DescriptorRegistryResource {
             } else {
                 serviceName = applicationDescriptor.getName();
             }
-            airavataRegistry.updateApplicationDescriptor(serviceName, hostdescName, applicationDeploymentDescription);
+            airavataRegistry.updateApplicationDescriptor(serviceName, hostdescName, applicationDescription);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Application descriptor updated successfully...");
             return builder.build();
@@ -680,9 +680,9 @@ public class DescriptorRegistryResource {
                                              @QueryParam("applicationName") String applicationName) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            ApplicationDeploymentDescription applicationDeploymentDescription = airavataRegistry.getApplicationDescriptor(serviceName, hostName, applicationName);
-            if (applicationDeploymentDescription != null) {
-                ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(applicationDeploymentDescription);
+            ApplicationDescription applicationDescription = airavataRegistry.getApplicationDescriptor(serviceName, hostName, applicationName);
+            if (applicationDescription != null) {
+                ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(applicationDescription);
                 applicationDescriptor.setHostdescName(hostName);
                 ServiceDescription serviceDescription = airavataRegistry.getServiceDescriptor(serviceName);
                 ServiceDescriptor serviceDescriptor = DescriptorUtil.createServiceDescriptor(serviceDescription);
@@ -721,14 +721,14 @@ public class DescriptorRegistryResource {
                                                            @QueryParam("hostName") String hostName) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            ApplicationDeploymentDescription applicationDeploymentDescription = airavataRegistry.getApplicationDescriptors(serviceName, hostName);
-            ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(applicationDeploymentDescription);
+            ApplicationDescription applicationDescription = airavataRegistry.getApplicationDescriptors(serviceName, hostName);
+            ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(applicationDescription);
             applicationDescriptor.setHostdescName(hostName);
             ServiceDescription serviceDescription = airavataRegistry.getServiceDescriptor(serviceName);
             ServiceDescriptor serviceDescriptor = DescriptorUtil.createServiceDescriptor(serviceDescription);
             applicationDescriptor.setServiceDescriptor(serviceDescriptor);
 
-            if (applicationDeploymentDescription != null) {
+            if (applicationDescription != null) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity(applicationDescriptor);
                 return builder.build();
@@ -760,13 +760,13 @@ public class DescriptorRegistryResource {
     public Response getApplicationDescriptors(@QueryParam("serviceName") String serviceName) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            Map<String, ApplicationDeploymentDescription> applicationDeploymentDescriptionMap = airavataRegistry.getApplicationDescriptors(serviceName);
+            Map<String, ApplicationDescription> applicationDeploymentDescriptionMap = airavataRegistry.getApplicationDescriptors(serviceName);
             ApplicationDescriptorList applicationDescriptorList = new ApplicationDescriptorList();
             ApplicationDescriptor[] applicationDescriptors = new ApplicationDescriptor[applicationDeploymentDescriptionMap.size()];
             int i = 0;
             for (String hostName : applicationDeploymentDescriptionMap.keySet()) {
-                ApplicationDeploymentDescription applicationDeploymentDescription = applicationDeploymentDescriptionMap.get(hostName);
-                ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(applicationDeploymentDescription);
+                ApplicationDescription applicationDescription = applicationDeploymentDescriptionMap.get(hostName);
+                ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(applicationDescription);
                 applicationDescriptor.setHostdescName(hostName);
 
                 ServiceDescription serviceDescription = airavataRegistry.getServiceDescriptor(serviceName);
@@ -811,13 +811,13 @@ public class DescriptorRegistryResource {
     public Response getApplicationDescriptors() {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            Map<String[], ApplicationDeploymentDescription> applicationDeploymentDescriptionMap = airavataRegistry.getApplicationDescriptors();
+            Map<String[], ApplicationDescription> applicationDeploymentDescriptionMap = airavataRegistry.getApplicationDescriptors();
             ApplicationDescriptorList applicationDescriptorList = new ApplicationDescriptorList();
             ApplicationDescriptor[] applicationDescriptors = new ApplicationDescriptor[applicationDeploymentDescriptionMap.size()];
             int i = 0;
             for (String[] descriptors : applicationDeploymentDescriptionMap.keySet()) {
-                ApplicationDeploymentDescription applicationDeploymentDescription = applicationDeploymentDescriptionMap.get(descriptors);
-                ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(applicationDeploymentDescription);
+                ApplicationDescription applicationDescription = applicationDeploymentDescriptionMap.get(descriptors);
+                ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(applicationDescription);
                 applicationDescriptor.setHostdescName(descriptors[1]);
                 ServiceDescription serviceDescription = airavataRegistry.getServiceDescriptor(descriptors[0]);
                 if (serviceDescription == null) {
@@ -864,12 +864,12 @@ public class DescriptorRegistryResource {
     public Response getApplicationDescriptorNames() {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            Map<String[], ApplicationDeploymentDescription> applicationDeploymentDescriptionMap = airavataRegistry.getApplicationDescriptors();
+            Map<String[], ApplicationDescription> applicationDeploymentDescriptionMap = airavataRegistry.getApplicationDescriptors();
             DescriptorNameList descriptorNameList = new DescriptorNameList();
             List<String> appDesNames = new ArrayList<String>();
             for (String[] descriptors : applicationDeploymentDescriptionMap.keySet()) {
-                ApplicationDeploymentDescription applicationDeploymentDescription = applicationDeploymentDescriptionMap.get(descriptors);
-                appDesNames.add(applicationDeploymentDescription.getType().getApplicationName().getStringValue());
+                ApplicationDescription applicationDescription = applicationDeploymentDescriptionMap.get(descriptors);
+                appDesNames.add(applicationDescription.getType().getApplicationName().getStringValue());
             }
             descriptorNameList.setDescriptorNames(appDesNames);
             if (applicationDeploymentDescriptionMap.size() != 0) {

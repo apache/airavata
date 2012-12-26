@@ -47,13 +47,10 @@ import javax.xml.namespace.QName;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.common.utils.SwingUtil;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.exception.gateway.DescriptorDoesNotExistsException;
-import org.apache.airavata.registry.api.exception.gateway.MalformedDescriptorException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.DataType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
@@ -478,7 +475,7 @@ public class DeploymentDescriptionDialog extends JDialog {
     	updateIODataTable(descType);
         getDeployments().clear();
         try {
-			Map<String, ApplicationDeploymentDescription> descs = getRegistry().getApplicationManager().getApplicationDescriptors(descType.getName());
+			Map<String, ApplicationDescription> descs = getRegistry().getApplicationManager().getApplicationDescriptors(descType.getName());
 			for (String hostDescName : descs.keySet()) {
 			    getDeployments().put(hostDescName, new HostDeployment(getRegistry().getApplicationManager().getHostDescription(hostDescName), descs.get(hostDescName)));
 			}
@@ -651,13 +648,13 @@ public class DeploymentDescriptionDialog extends JDialog {
             getRegistry().getApplicationManager().saveServiceDescription(getServiceDescription());
         }
         if (!isNewDescription()) {
-            Map<String, ApplicationDeploymentDescription> descs = getRegistry().getApplicationManager().getApplicationDescriptors(getServiceName());
+            Map<String, ApplicationDescription> descs = getRegistry().getApplicationManager().getApplicationDescriptors(getServiceName());
             for (String hostDescName : descs.keySet()) {
-                getRegistry().getApplicationManager().deleteDeploymentDescription(getServiceName(), hostDescName, descs.get(hostDescName).getType().getApplicationName().getStringValue());
+                getRegistry().getApplicationManager().deleteApplicationDescription(getServiceName(), hostDescName, descs.get(hostDescName).getType().getApplicationName().getStringValue());
             }
         }
         for (String hostName : getDeployments().keySet()) {
-            getRegistry().getApplicationManager().saveDeploymentDescription(getServiceName(), hostName, getDeployments().get(hostName).getApplicationDescription());
+            getRegistry().getApplicationManager().saveApplicationDescription(getServiceName(), hostName, getDeployments().get(hostName).getApplicationDescription());
         }
         setServiceCreated(true);
         JOptionPane.showMessageDialog(this, "Application '" + getServiceName() + "' is registered Successfully !");
@@ -697,13 +694,13 @@ public class DeploymentDescriptionDialog extends JDialog {
         getServiceDescriptionType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[] {}));
         getRegistry().getApplicationManager().saveServiceDescription(getServiceDescription());
         if (!isNewDescription()) {
-            Map<String, ApplicationDeploymentDescription> descs = getRegistry().getApplicationManager().getApplicationDescriptors(getServiceName());
+            Map<String, ApplicationDescription> descs = getRegistry().getApplicationManager().getApplicationDescriptors(getServiceName());
             for (String hostDescName : descs.keySet()) {
-                getRegistry().getApplicationManager().deleteDeploymentDescription(getServiceName(), hostDescName, descs.get(hostDescName).getType().getApplicationName().getStringValue());
+                getRegistry().getApplicationManager().deleteApplicationDescription(getServiceName(), hostDescName, descs.get(hostDescName).getType().getApplicationName().getStringValue());
             }
         }
         for (String hostName : getDeployments().keySet()) {
-            getRegistry().getApplicationManager().saveDeploymentDescription(getServiceName(), hostName, getDeployments().get(hostName).getApplicationDescription());
+            getRegistry().getApplicationManager().saveApplicationDescription(getServiceName(), hostName, getDeployments().get(hostName).getApplicationDescription());
         }
         setServiceCreated(true);
         JOptionPane.showMessageDialog(this, "Application '" + getServiceName() + "' is registered Successfully !");

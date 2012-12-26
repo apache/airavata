@@ -44,9 +44,8 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.common.utils.SwingUtil;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
@@ -67,7 +66,7 @@ public class DescriptorListDialog extends JDialog {
 
 	private JList descriptorList;
 
-	private Map<String[],ApplicationDeploymentDescription> dlist;
+	private Map<String[],ApplicationDescription> dlist;
 
 	private JButton okButton;
 	
@@ -202,8 +201,8 @@ public class DescriptorListDialog extends JDialog {
 	    		descriptors = getRegistry().getApplicationManager().getAllServiceDescriptions();
 	    		break;
 	    	case APPLICATION:
-	    		dlist=getRegistry().getApplicationManager().getAllDeploymentDescriptions();
-	    		descriptors =Arrays.asList(dlist.values().toArray(new ApplicationDeploymentDescription[]{})); 
+	    		dlist=getRegistry().getApplicationManager().getAllApplicationDescriptions();
+	    		descriptors =Arrays.asList(dlist.values().toArray(new ApplicationDescription[]{}));
 	    		break;
     		}
     		for (Object d : descriptors) {
@@ -234,7 +233,7 @@ public class DescriptorListDialog extends JDialog {
 					((JLabel) c).setIcon(JCRBrowserIcons.SERVICE_ICON);
 		    		break;
 		    	case APPLICATION:
-		    		((JLabel) c).setText(((ApplicationDeploymentDescription)value).getType().getApplicationName().getStringValue());
+		    		((JLabel) c).setText(((ApplicationDescription)value).getType().getApplicationName().getStringValue());
 					((JLabel) c).setIcon(JCRBrowserIcons.APPLICATION_ICON);
 		    		break;
 				}

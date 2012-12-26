@@ -21,7 +21,7 @@
 
 package org.apache.airavata.core.gfac.context.invocation;
 
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 
@@ -51,14 +51,14 @@ public interface ExecutionDescription {
      * 
      * @return ApplicationDeploymentDescription
      */
-    ApplicationDeploymentDescription getApp();
+    ApplicationDescription getApp();
 
     /**
      * Set ApplicationDeploymentDescription
      * 
      * @param app
      */
-    <T extends ApplicationDeploymentDescription> void setApp(T app);
+    <T extends ApplicationDescription> void setApp(T app);
 
     /**
      * Get ServiceDescription

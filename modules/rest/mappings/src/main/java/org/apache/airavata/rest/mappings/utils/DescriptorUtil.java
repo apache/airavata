@@ -21,7 +21,7 @@
 
 package org.apache.airavata.rest.mappings.utils;
 
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.rest.mappings.resourcemappings.ApplicationDescriptor;
@@ -53,10 +53,10 @@ public class DescriptorUtil {
         return host;
     }
 
-    public static ApplicationDeploymentDescription registerApplication(String appName, String exeuctableLocation, String scratchWorkingDirectory, String hostName,
+    public static ApplicationDescription registerApplication(String appName, String exeuctableLocation, String scratchWorkingDirectory, String hostName,
                                                                        String projAccNumber, String queueName, String cpuCount, String nodeCount, String maxMemory) throws Exception {
         // Create Application Description
-        ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription(HpcApplicationDeploymentType.type);
+        ApplicationDescription appDesc = new ApplicationDescription(HpcApplicationDeploymentType.type);
         HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) appDesc.getType();
         app.setCpuCount(Integer.parseInt(cpuCount));
         app.setNodeCount(Integer.parseInt(nodeCount));
@@ -251,18 +251,18 @@ public class DescriptorUtil {
         return serviceDescriptor;
     }
 
-    public static ApplicationDeploymentDescription createApplicationDescription(ApplicationDescriptor applicationDescriptor){
-        ApplicationDeploymentDescription applicationDeploymentDescription = new ApplicationDeploymentDescription();
+    public static ApplicationDescription createApplicationDescription(ApplicationDescriptor applicationDescriptor){
+        ApplicationDescription applicationDescription = new ApplicationDescription();
         ApplicationDeploymentDescriptionType.ApplicationName name = ApplicationDeploymentDescriptionType.ApplicationName.Factory.newInstance();
         name.setStringValue(applicationDescriptor.getName());
-        applicationDeploymentDescription.getType().setApplicationName(name);
-        applicationDeploymentDescription.getType().setExecutableLocation(applicationDescriptor.getExecutablePath());
-        applicationDeploymentDescription.getType().setOutputDataDirectory(applicationDescriptor.getWorkingDir());
+        applicationDescription.getType().setApplicationName(name);
+        applicationDescription.getType().setExecutableLocation(applicationDescriptor.getExecutablePath());
+        applicationDescription.getType().setOutputDataDirectory(applicationDescriptor.getWorkingDir());
 
         //set advanced options according app desc type
         if(applicationDescriptor.getApplicationDescType() != null && !applicationDescriptor.getApplicationDescType().isEmpty()){
             if (applicationDescriptor.getApplicationDescType().equals(ApplicationDescriptorTypes.HPC_APP_DEP_DESC_TYPE)){
-                ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription(HpcApplicationDeploymentType.type);
+                ApplicationDescription appDesc = new ApplicationDescription(HpcApplicationDeploymentType.type);
                 appDesc.getType().setApplicationName(name);
                 appDesc.getType().setExecutableLocation(applicationDescriptor.getExecutablePath());
                 appDesc.getType().setOutputDataDirectory(applicationDescriptor.getWorkingDir());
@@ -277,17 +277,17 @@ public class DescriptorUtil {
                 return appDesc;
             }
         }
-        return applicationDeploymentDescription;
+        return applicationDescription;
     }
 
-    public static ApplicationDescriptor createApplicationDescriptor (ApplicationDeploymentDescription applicationDeploymentDescription){
+    public static ApplicationDescriptor createApplicationDescriptor (ApplicationDescription applicationDescription){
         ApplicationDescriptor applicationDescriptor = new ApplicationDescriptor();
-        applicationDescriptor.setName(applicationDeploymentDescription.getType().getApplicationName().getStringValue());
-        applicationDescriptor.setExecutablePath(applicationDeploymentDescription.getType().getExecutableLocation());
-        applicationDescriptor.setWorkingDir(applicationDeploymentDescription.getType().getOutputDataDirectory());
-        if(applicationDeploymentDescription.getType() != null){
-            if(applicationDeploymentDescription.getType() instanceof HpcApplicationDeploymentType){
-                HpcApplicationDeploymentType gramApplicationDeploymentType = (HpcApplicationDeploymentType)applicationDeploymentDescription.getType();
+        applicationDescriptor.setName(applicationDescription.getType().getApplicationName().getStringValue());
+        applicationDescriptor.setExecutablePath(applicationDescription.getType().getExecutableLocation());
+        applicationDescriptor.setWorkingDir(applicationDescription.getType().getOutputDataDirectory());
+        if(applicationDescription.getType() != null){
+            if(applicationDescription.getType() instanceof HpcApplicationDeploymentType){
+                HpcApplicationDeploymentType gramApplicationDeploymentType = (HpcApplicationDeploymentType) applicationDescription.getType();
                 if(gramApplicationDeploymentType != null){
                     applicationDescriptor.setCpuCount(gramApplicationDeploymentType.getCpuCount());
                     applicationDescriptor.setNodeCount(gramApplicationDeploymentType.getNodeCount());

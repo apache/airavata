@@ -1,7 +1,7 @@
 package org.apache.airavata.client.api.builder;
 
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.schemas.gfac.*;
@@ -164,11 +164,11 @@ public class DescriptorBuilder {
 
     }
 
-    public ApplicationDeploymentDescription buildApplicationDeploymentDescription (String applicationName,
+    public ApplicationDescription buildApplicationDeploymentDescription (String applicationName,
                                                                                    String executablePath,
                                                                                    String workingDirectory) {
 
-        ApplicationDeploymentDescription applicationDeploymentDescription = new ApplicationDeploymentDescription();
+        ApplicationDescription applicationDeploymentDescription = new ApplicationDescription();
         ApplicationDeploymentDescriptionType applicationDeploymentDescriptionType
                 = applicationDeploymentDescription.getType();
         applicationDeploymentDescriptionType.addNewApplicationName().setStringValue(applicationName);

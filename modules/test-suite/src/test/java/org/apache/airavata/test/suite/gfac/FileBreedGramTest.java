@@ -32,7 +32,7 @@ import java.util.Properties;
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
@@ -91,7 +91,7 @@ public class FileBreedGramTest {
         /*
         * Application deployment description
         */
-        ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription(HpcApplicationDeploymentType.type);
+        ApplicationDescription appDesc = new ApplicationDescription(HpcApplicationDeploymentType.type);
         HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) appDesc.getType();
         app.setCpuCount(1);
         app.setNodeCount(1);
@@ -137,7 +137,7 @@ public class FileBreedGramTest {
         * Save deployment descriptions to registry
         */
         airavataAPI.getApplicationManager().saveHostDescription(host);
-        airavataAPI.getApplicationManager().saveDeploymentDescription(serv.getType().getName(), host.getType().getHostName(), appDesc);
+        airavataAPI.getApplicationManager().saveApplicationDescription(serv.getType().getName(), host.getType().getHostName(), appDesc);
         airavataAPI.getApplicationManager().saveServiceDescription(serv);
 //        jcrRegistry.deployServiceOnHost(serv.getType().getName(), host.getType().getHostName());
     }

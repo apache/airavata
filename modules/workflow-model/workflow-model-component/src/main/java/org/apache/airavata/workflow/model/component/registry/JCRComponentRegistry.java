@@ -144,12 +144,12 @@ public class JCRComponentRegistry extends ComponentRegistry {
         return NAME;
     }
 
-//    public String saveDeploymentDescription(String service, String host, ApplicationDeploymentDescription app) {
+//    public String saveApplicationDescription(String service, String host, ApplicationDeploymentDescription app) {
 //        // deploy the service on host
 //        registry.deployServiceOnHost(service, host);
 //
 //        // save deployment description
-//        return registry.saveDeploymentDescription(service, host, app);
+//        return registry.saveApplicationDescription(service, host, app);
 //    }
 
     public AiravataAPI getAiravataAPI() {

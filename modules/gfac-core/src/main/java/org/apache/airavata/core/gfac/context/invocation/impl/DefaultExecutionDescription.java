@@ -21,7 +21,7 @@
 
 package org.apache.airavata.core.gfac.context.invocation.impl;
 
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.core.gfac.context.invocation.ExecutionDescription;
@@ -32,7 +32,7 @@ import org.apache.airavata.core.gfac.context.invocation.ExecutionDescription;
  */
 public class DefaultExecutionDescription implements ExecutionDescription {
     private HostDescription host;
-    private ApplicationDeploymentDescription app;
+    private ApplicationDescription app;
     private ServiceDescription service;
 
     public HostDescription getHost() {
@@ -43,11 +43,11 @@ public class DefaultExecutionDescription implements ExecutionDescription {
         this.host = host;
     }
 
-    public ApplicationDeploymentDescription getApp() {
+    public ApplicationDescription getApp() {
         return app;
     }
 
-    public void setApp(ApplicationDeploymentDescription app) {
+    public void setApp(ApplicationDescription app) {
         this.app = app;
     }
 
