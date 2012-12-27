@@ -33,7 +33,6 @@ create table Configuration
         PRIMARY KEY(config_key, config_val)
 );
 
-create table Users
 (
         user_name varchar(255),
         password varchar(255),
@@ -191,7 +190,4 @@ create table Gram_Data
        PRIMARY KEY(workflow_instanceID, node_id),
        FOREIGN KEY (workflow_instanceID) REFERENCES Workflow_Data(workflow_instanceID) ON DELETE CASCADE
 );
-
-insert into Users values ('admin', 'admin');
-
 
