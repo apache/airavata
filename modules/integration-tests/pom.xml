@@ -158,7 +158,7 @@
                 </executions>
             </plugin>
 
-            <plugin>
+            <!--plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
@@ -175,7 +175,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin-->
 
 
             <plugin>
@@ -342,18 +342,6 @@
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-rest-service-webapp</artifactId>
             <type>war</type>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-jpa-registry</artifactId>
-            <type>jar</type>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>

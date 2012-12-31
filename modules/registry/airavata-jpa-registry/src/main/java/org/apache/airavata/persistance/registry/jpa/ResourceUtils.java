@@ -49,7 +49,7 @@ public class ResourceUtils {
             properties.put("openjpa.ConnectionUserName",Utils.getJDBCUser());
             properties.put("openjpa.ConnectionPassword",Utils.getJDBCPassword());
             properties.put("openjpa.DynamicEnhancementAgent","true");
-            properties.put("openjpa.RuntimeUnenhancedClasses","supported");
+            properties.put("openjpa.RuntimeUnenhancedClasses","unsupported");
             properties.put("openjpa.Log","SQL=ERROR");
             properties.put("openjpa.ReadLockLevel", "none");
             properties.put("openjpa.WriteLockLevel", "none");
