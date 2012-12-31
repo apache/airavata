@@ -25,7 +25,6 @@ import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException;
 import org.apache.airavata.registry.api.exception.gateway.DescriptorDoesNotExistsException;
 import org.apache.airavata.registry.api.exception.gateway.MalformedDescriptorException;
@@ -33,6 +32,7 @@ import org.apache.airavata.rest.mappings.resourcemappings.*;
 import org.apache.airavata.rest.mappings.utils.DescriptorUtil;
 import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
 import org.apache.airavata.rest.mappings.utils.RegPoolUtils;
+import org.apache.airavata.services.registry.rest.utils.WebAppUtil;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
@@ -81,10 +81,8 @@ public class DescriptorRegistryResource {
                 builder.entity("False");
                 return builder.build();
             }
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.DecResourcePathConstants.HOST_DESC_EXISTS, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -114,10 +112,8 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.BAD_REQUEST);
             builder.entity(e.getMessage());
             return builder.build();
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.DecResourcePathConstants.HOST_DESC_SAVE, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -147,10 +143,8 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.BAD_REQUEST);
             builder.entity(e.getMessage());
             return builder.build();
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.DecResourcePathConstants.HOST_DESC_UPDATE, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -183,10 +177,8 @@ public class DescriptorRegistryResource {
                 builder.entity("Host Descriptor does not exist...");
                 return builder.build();
             }
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.DecResourcePathConstants.HOST_DESC, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -215,10 +207,8 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.DecResourcePathConstants.HOST_DESC_DELETE, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -254,10 +244,8 @@ public class DescriptorRegistryResource {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
                 return builder.build();
             }
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.DecResourcePathConstants.GET_HOST_DESCS, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -279,8 +267,8 @@ public class DescriptorRegistryResource {
             List<HostDescription> hostDescriptionList = airavataRegistry.getHostDescriptors();
             List<String> hostDescriptorNames = new ArrayList<String>();
             DescriptorNameList descriptorNameList = new DescriptorNameList();
-            for (int i = 0; i < hostDescriptionList.size(); i++) {
-                hostDescriptorNames.add(hostDescriptionList.get(i).getType().getHostName());
+            for (HostDescription aHostDescriptionList : hostDescriptionList) {
+                hostDescriptorNames.add(aHostDescriptionList.getType().getHostName());
             }
             descriptorNameList.setDescriptorNames(hostDescriptorNames);
             if (hostDescriptionList.size() != 0) {
@@ -291,10 +279,8 @@ public class DescriptorRegistryResource {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
                 return builder.build();
             }
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.DecResourcePathConstants.GET_HOST_DESCS_NAMES, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -325,10 +311,8 @@ public class DescriptorRegistryResource {
                 builder.entity("False");
                 return builder.build();
             }
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC_EXISTS, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -358,10 +342,8 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.BAD_REQUEST);
             builder.entity(e.getMessage());
             return builder.build();
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC_SAVE, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -391,10 +373,8 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.BAD_REQUEST);
             builder.entity(e.getMessage());
             return builder.build();
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC_UPDATE, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -427,10 +407,8 @@ public class DescriptorRegistryResource {
                 builder.entity("No service descriptor available with given service name...");
                 return builder.build();
             }
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -458,10 +436,8 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC_DELETE, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -497,10 +473,8 @@ public class DescriptorRegistryResource {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
                 return builder.build();
             }
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.DecResourcePathConstants.GET_SERVICE_DESCS, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -536,10 +510,8 @@ public class DescriptorRegistryResource {
                 builder.entity("False");
                 return builder.build();
             }
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.DecResourcePathConstants.APPL_DESC_EXIST, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -594,10 +566,8 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.BAD_REQUEST);
             builder.entity(e.getMessage());
             return builder.build();
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.DecResourcePathConstants.APP_DESC_BUILD_SAVE, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -652,10 +622,8 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.BAD_REQUEST);
             builder.entity(e.getMessage());
             return builder.build();
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.DecResourcePathConstants.APP_DESC_UPDATE, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -696,10 +664,8 @@ public class DescriptorRegistryResource {
                 builder.entity("Application descriptor does not exist...");
                 return builder.build();
             }
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.DecResourcePathConstants.APP_DESC_DESCRIPTION, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -737,10 +703,8 @@ public class DescriptorRegistryResource {
                 builder.entity("Application descriptor does not exist...");
                 return builder.build();
             }
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.DecResourcePathConstants.APP_DESC_PER_HOST_SERVICE, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -789,10 +753,8 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.DecResourcePathConstants.APP_DESC_ALL_DESCS_SERVICE, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -842,10 +804,8 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.DecResourcePathConstants.APP_DESC_ALL_DESCRIPTORS, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -884,10 +844,8 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.DecResourcePathConstants.APP_DESC_NAMES, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -920,10 +878,8 @@ public class DescriptorRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
             builder.entity(e.getMessage());
             return builder.build();
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.DecResourcePathConstants.APP_DESC_DELETE, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);

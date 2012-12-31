@@ -27,6 +27,7 @@ import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.Gateway;
 import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
 import org.apache.airavata.rest.mappings.utils.RegPoolUtils;
+import org.apache.airavata.services.registry.rest.utils.WebAppUtil;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
@@ -55,10 +56,8 @@ public class BasicRegistryResouce {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
                 return builder.build();
             }
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.BasicRegistryConstants.GET_GATEWAY, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -81,10 +80,8 @@ public class BasicRegistryResouce {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
                 return builder.build();
             }
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.BasicRegistryConstants.GET_USER, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -103,10 +100,8 @@ public class BasicRegistryResouce {
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Gateway added successfully");
             return builder.build();
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.BasicRegistryConstants.SET_GATEWAY, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -125,10 +120,8 @@ public class BasicRegistryResouce {
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Airavata user added successfully");
             return builder.build();
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.BasicRegistryConstants.SET_USER, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -151,10 +144,8 @@ public class BasicRegistryResouce {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
                 return builder.build();
             }
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.BasicRegistryConstants.VERSION, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -177,10 +168,8 @@ public class BasicRegistryResouce {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
                 return builder.build();
             }
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.BasicRegistryConstants.GET_SERVICE_URL, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -199,10 +188,8 @@ public class BasicRegistryResouce {
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Connection URL updated successfully...");
             return builder.build();
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.BasicRegistryConstants.SET_SERVICE_URL, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);

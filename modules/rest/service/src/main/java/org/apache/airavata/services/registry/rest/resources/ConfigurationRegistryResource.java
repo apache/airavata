@@ -27,6 +27,7 @@ import org.apache.airavata.rest.mappings.resourcemappings.ConfigurationList;
 import org.apache.airavata.rest.mappings.resourcemappings.URLList;
 import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
 import org.apache.airavata.rest.mappings.utils.RegPoolUtils;
+import org.apache.airavata.services.registry.rest.utils.WebAppUtil;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
@@ -70,10 +71,8 @@ public class ConfigurationRegistryResource {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
                 return builder.build();
             }
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ConfigResourcePathConstants.GET_CONFIGURATION, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -110,10 +109,8 @@ public class ConfigurationRegistryResource {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
                 return builder.build();
             }
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ConfigResourcePathConstants.GET_CONFIGURATION_LIST, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -144,10 +141,8 @@ public class ConfigurationRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Configuration saved successfully...");
             return builder.build();
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ConfigResourcePathConstants.SAVE_CONFIGURATION, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -178,10 +173,8 @@ public class ConfigurationRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Configuration updated successfully...");
             return builder.build();
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ConfigResourcePathConstants.UPDATE_CONFIGURATION, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -205,10 +198,8 @@ public class ConfigurationRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("All configurations with given config key removed successfully...");
             return builder.build();
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ConfigResourcePathConstants.DELETE_ALL_CONFIGURATION, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -233,10 +224,8 @@ public class ConfigurationRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Configuration removed successfully...");
             return builder.build();
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ConfigResourcePathConstants.DELETE_CONFIGURATION, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -270,10 +259,8 @@ public class ConfigurationRegistryResource {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
                 return builder.build();
             }
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ConfigResourcePathConstants.GET_GFAC_URI_LIST, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -307,10 +294,8 @@ public class ConfigurationRegistryResource {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
                 return builder.build();
             }
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ConfigResourcePathConstants.GET_WFINTERPRETER_URI_LIST, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -338,10 +323,8 @@ public class ConfigurationRegistryResource {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
                 return builder.build();
             }
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ConfigResourcePathConstants.GET_EVENTING_URI, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -369,10 +352,8 @@ public class ConfigurationRegistryResource {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
                 return builder.build();
             }
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ConfigResourcePathConstants.GET_MESSAGE_BOX_URI, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -397,10 +378,8 @@ public class ConfigurationRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("GFac URI added successfully...");
             return builder.build();
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ConfigResourcePathConstants.ADD_GFAC_URI, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -425,10 +404,8 @@ public class ConfigurationRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Workflow interpreter URI added successfully...");
             return builder.build();
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ConfigResourcePathConstants.ADD_WFINTERPRETER_URI, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -453,10 +430,8 @@ public class ConfigurationRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Eventing URI set successfully...");
             return builder.build();
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ConfigResourcePathConstants.ADD_EVENTING_URI, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -481,10 +456,8 @@ public class ConfigurationRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("MessageBox URI set successfully...");
             return builder.build();
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ConfigResourcePathConstants.ADD_MESSAGE_BOX_URI, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -512,10 +485,8 @@ public class ConfigurationRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("GFac URI added successfully...");
             return builder.build();
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ConfigResourcePathConstants.ADD_GFAC_URI_DATE, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -543,10 +514,8 @@ public class ConfigurationRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Workflow interpreter URI added successfully...");
             return builder.build();
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ConfigResourcePathConstants.ADD_WFINTERPRETER_URI_DATE, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -574,10 +543,8 @@ public class ConfigurationRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Eventing URI added successfully...");
             return builder.build();
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ConfigResourcePathConstants.ADD_EVENTING_URI_DATE, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -605,10 +572,8 @@ public class ConfigurationRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Message box URI retrieved successfully...");
             return builder.build();
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ConfigResourcePathConstants.ADD_MSG_BOX_URI_DATE, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -633,10 +598,8 @@ public class ConfigurationRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("GFac URI deleted successfully...");
             return builder.build();
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ConfigResourcePathConstants.DELETE_GFAC_URI, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -659,10 +622,8 @@ public class ConfigurationRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("All GFac URIs deleted successfully...");
             return builder.build();
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ConfigResourcePathConstants.DELETE_ALL_GFAC_URIS, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -687,10 +648,8 @@ public class ConfigurationRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Workflow Interpreter URI deleted successfully...");
             return builder.build();
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ConfigResourcePathConstants.DELETE_WFINTERPRETER_URI, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -713,10 +672,8 @@ public class ConfigurationRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("All workflow interpreter URIs deleted successfully...");
             return builder.build();
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ConfigResourcePathConstants.DELETE_ALL_WFINTERPRETER_URIS, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -739,10 +696,8 @@ public class ConfigurationRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("Eventing URI deleted successfully...");
             return builder.build();
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ConfigResourcePathConstants.DELETE_EVENTING_URI, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -765,10 +720,8 @@ public class ConfigurationRegistryResource {
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("MessageBox URI deleted successfully...");
             return builder.build();
-        } catch (Exception e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ConfigResourcePathConstants.DELETE_MSG_BOX_URI, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);

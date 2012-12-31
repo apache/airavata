@@ -31,6 +31,7 @@ import org.apache.airavata.rest.mappings.resourcemappings.Workflow;
 import org.apache.airavata.rest.mappings.resourcemappings.WorkflowList;
 import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
 import org.apache.airavata.rest.mappings.utils.RegPoolUtils;
+import org.apache.airavata.services.registry.rest.utils.WebAppUtil;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
@@ -75,10 +76,8 @@ public class PublishWorkflowRegistryResource {
                 builder.entity("False");
                 return builder.build();
             }
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.PublishedWFConstants.PUBLISHWF_EXIST, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -105,17 +104,15 @@ public class PublishWorkflowRegistryResource {
             builder.entity("Workflow published successfully...");
             return builder.build();
         } catch (UserWorkflowDoesNotExistsException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+            Response.ResponseBuilder builder = Response.status(Response.Status.BAD_REQUEST);
             builder.entity(e.getMessage());
             return builder.build();
         } catch (PublishedWorkflowAlreadyExistsException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+            Response.ResponseBuilder builder = Response.status(Response.Status.BAD_REQUEST);
             builder.entity(e.getMessage());
             return builder.build();
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.PublishedWFConstants.PUBLISH_WORKFLOW, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -140,17 +137,15 @@ public class PublishWorkflowRegistryResource {
             builder.entity("Workflow published successfully...");
             return builder.build();
         } catch (UserWorkflowDoesNotExistsException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+            Response.ResponseBuilder builder = Response.status(Response.Status.BAD_REQUEST);
             builder.entity(e.getMessage());
             return builder.build();
         } catch (PublishedWorkflowAlreadyExistsException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+            Response.ResponseBuilder builder = Response.status(Response.Status.BAD_REQUEST);
             builder.entity(e.getMessage());
             return builder.build();
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.PublishedWFConstants.PUBLISH_DEFAULT_WORKFLOW, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -181,13 +176,11 @@ public class PublishWorkflowRegistryResource {
                 return builder.build();
             }
         } catch (PublishedWorkflowDoesNotExistsException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+            Response.ResponseBuilder builder = Response.status(Response.Status.BAD_REQUEST);
             builder.entity(e.getMessage());
             return builder.build();
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.PublishedWFConstants.GET_PUBLISHWORKFLOWGRAPH, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -217,10 +210,8 @@ public class PublishWorkflowRegistryResource {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
                 return builder.build();
             }
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.PublishedWFConstants.GET_PUBLISHWORKFLOWNAMES, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -258,10 +249,8 @@ public class PublishWorkflowRegistryResource {
                 return builder.build();
             }
 
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.PublishedWFConstants.GET_PUBLISHWORKFLOWS, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
@@ -286,13 +275,11 @@ public class PublishWorkflowRegistryResource {
             builder.entity("Publish workflow removed successfully...");
             return builder.build();
         } catch (PublishedWorkflowDoesNotExistsException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+            Response.ResponseBuilder builder = Response.status(Response.Status.BAD_REQUEST);
             builder.entity(e.getMessage());
             return builder.build();
-        } catch (RegistryException e) {
-            Response.ResponseBuilder builder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            builder.entity(e.getMessage());
-            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.PublishedWFConstants.REMOVE_PUBLISHWORKFLOW, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
