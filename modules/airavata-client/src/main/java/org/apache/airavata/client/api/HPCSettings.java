@@ -21,7 +21,7 @@
 
 package org.apache.airavata.client.api;
 
-public interface HPCSchedulingSettings {
+public interface HPCSettings {
 	
 	/**
 	 * Get the job manager to use for this job submission
@@ -33,13 +33,13 @@ public interface HPCSchedulingSettings {
 	 * Get the no of CPU cores to allocate for this job 
 	 * @return
 	 */
-	public int getCPUCount();
+	public Integer getCPUCount();
 	
 	/**
 	 * Get the no of nodes to allocate for this job
 	 * @return
 	 */
-	public int getNodeCount();
+	public Integer getNodeCount();
 	
 	/**
 	 * Get the job queue name 
@@ -51,7 +51,7 @@ public interface HPCSchedulingSettings {
 	 * Get the maximum time the job should be allocated for execution 
 	 * @return
 	 */
-	public int getMaxWallTime();
+	public Integer getMaxWallTime();
 	
 	/**
 	 * Set the job manager to use for this job submission

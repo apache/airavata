@@ -33,7 +33,7 @@ public interface HostSchedulingSettings {
 	 * Using WS-Gram or not (Pre WS-GRAM) 
 	 * @return
 	 */
-	public boolean isWSGRAMPreffered();
+	public Boolean isWSGRAMPreffered();
 	
 	/**
 	 * Get the gatekeeper endpoint reference
