@@ -121,34 +121,10 @@
                                        includes="*.sh"/>
                                 <chmod dir="${tomcat.work.dir}/webapps/axis2" perm="700"
                                        includes="**/*"/>
-                                <mkdir dir="${derby.work.dir}"/>
-                                <copy todir="${derby.work.dir}">
-                                    <fileset dir="${airavata.work.dir}/bin/">
-                                        <include name="derby.sh"/>
-                                        <include name="setenv.sh"/>
-                                        <include name="startNetworkServer"/>
-                                    </fileset>
-                                </copy>
-                                <copy todir="${tomcat.work.dir}/webapps/axis2/WEB-INF/derby-bin">
-                                    <fileset dir="src/main/resources">
-                                        <include name="stop-derby.sh"/>
-                                    </fileset>
-                                </copy>
-                                <replace file="${derby.work.dir}/derby.sh">
-                                    <replacetoken>export DERBY_HOME=$AIRAVATA_HOME/standalone-server</replacetoken>
-                                    <replacevalue>export DERBY_HOME=..</replacevalue>
-                                </replace>
-                                <replace file="${derby.work.dir}/derby.sh">
-                                    <replacetoken>./startNetworkServer $*</replacetoken>
-                                    <replacevalue>./startNetworkServer $* &amp;</replacevalue>
-                                </replace>
                                 <replace file="${tomcat.work.dir}/conf/server.xml">
                                     <replacetoken>8080</replacetoken>
                                     <replacevalue>${test.running.port}</replacevalue>
                                 </replace>
-                                <chmod dir="${derby.work.dir}" perm="700"
-                                       includes="*"/>
-
                             </target>
                         </configuration>
                         <goals>
@@ -157,25 +133,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!--plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>start-derby</id>
-                        <phase>compile</phase>
-                        <configuration>
-                            <target>
-                                <exec dir="${derby.work.dir}" executable="./stop-derby.sh" output="derby-stop.txt" />
-                                <exec dir="${derby.work.dir}" executable="./derby.sh" output="derby-start.txt"/>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin-->
 
 
             <plugin>
@@ -283,25 +240,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>stop-derby</id>
-                        <phase>install</phase>
-                        <configuration>
-                            <target>
-                                <exec dir="${derby.work.dir}" executable="./stop-derby.sh" output="derby-stop.txt" />
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
@@ -427,7 +365,6 @@
         <tomcat.work.dir>${project.build.directory}/tests/apache-tomcat-${tomcat.version}</tomcat.work.dir>
         <airavata.work.dir>${project.build.directory}/tests/apache-airavata-server-${project.version}</airavata.work.dir>
         <xbaya.work.dir>${project.build.directory}/tests/apache-airavata-xbaya-gui-${project.version}</xbaya.work.dir>
-        <derby.work.dir>${tomcat.work.dir}/webapps/axis2/WEB-INF/derby-bin</derby.work.dir>
         <airavata.tomcat.distribution>${project.build.directory}/apache-airavata-tomcat.zip</airavata.tomcat.distribution>
         <rest.service.context>airavata-registry</rest.service.context>
     </properties>
