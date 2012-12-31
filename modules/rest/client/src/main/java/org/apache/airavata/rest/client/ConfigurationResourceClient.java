@@ -401,7 +401,7 @@ public class ConfigurationResourceClient {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, null, userName, null, cookie, gateway);
 
-            response = builder.get(ClientResponse.class);
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             int status = response.getStatus();
 
             if (status == ClientConstant.HTTP_OK) {
@@ -411,7 +411,7 @@ public class ConfigurationResourceClient {
             } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
                 builder = BasicAuthHeaderUtil.getBuilder(
                         webResource, null, userName, callback.getPassword(userName), null, gateway);
-                response = builder.get(ClientResponse.class);
+                response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
                 status = response.getStatus();
 
                 if (status == ClientConstant.HTTP_NO_CONTENT) {
