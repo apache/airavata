@@ -45,7 +45,7 @@ public interface NodeSettings {
 	 * HPC settings for the grid application exposed by the service descriptor
 	 * @return
 	 */
-	public HPCSchedulingSettings getHPCSettings();
+	public HPCSettings getHPCSettings();
 	
 	/**
 	 * Set the node Id of the workflow
