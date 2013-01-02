@@ -33,13 +33,12 @@ create table Configuration
         PRIMARY KEY(config_key, config_val)
 );
 
+create table Users
 (
         user_name varchar(255),
         password varchar(255),
         PRIMARY KEY(user_name)
 );
-
-insert into Users
 
 create table Gateway_Worker
 (
