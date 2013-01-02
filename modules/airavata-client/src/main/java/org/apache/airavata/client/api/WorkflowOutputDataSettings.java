@@ -27,7 +27,7 @@ public interface WorkflowOutputDataSettings {
 	 * Retrive the list of application output data settings 
 	 * @return
 	 */
-	public OutputDataSettings[] getOutputDataSettings();
+	public OutputDataSettings[] getOutputDataSettingsList();
 	
 	/**
 	 * Add a new appliation output data settings

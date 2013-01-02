@@ -34,6 +34,8 @@ import org.apache.airavata.client.AiravataClientConfiguration;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.ExecutionManager;
 import org.apache.airavata.client.api.ExperimentAdvanceOptions;
+import org.apache.airavata.client.api.NodeSettings;
+import org.apache.airavata.client.api.OutputDataSettings;
 import org.apache.airavata.client.stub.interpretor.NameValue;
 import org.apache.airavata.client.stub.interpretor.WorkflowInterpretorStub;
 import org.apache.airavata.common.utils.XMLUtil;
@@ -126,9 +128,9 @@ public class ExecutionManagerImpl implements ExecutionManager {
 			throws AiravataAPIInvocationException {
 		AiravataClientConfiguration config = getClient().getClientConfiguration();
 		try {
-			return new WorkflowContextHeaderBuilder(config.getMessagebrokerURL().toString(),
-					config.getGfacURL().toString(),config.getRegistryURL().toString(),null,null,
-					config.getMessageboxURL().toString());
+			return new WorkflowContextHeaderBuilder(null,
+					null,null,null,null,
+					null);
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
@@ -188,10 +190,7 @@ public class ExecutionManagerImpl implements ExecutionManager {
 			}
 	        getClient().getProvenanceManager().setWorkflowInstanceTemplateName(experimentID,workflowTemplateName);
 	        
-			WorkflowContextHeaderBuilder builder=options.getCustomWorkflowContext();
-			if (builder==null){
-				builder=options.newCustomWorkflowContext();
-			}
+			WorkflowContextHeaderBuilder builder=createWorkflowContextHeader();
 			
 			//TODO - fix user passing
 	        String submissionUser = getClient().getUserManager().getAiravataUser();
@@ -199,6 +198,14 @@ public class ExecutionManagerImpl implements ExecutionManager {
 			String executionUser=options.getExperimentExecutionUser();
 			if (executionUser==null){
 				executionUser=submissionUser;
+			}
+			NodeSettings[] nodeSettingsList = options.getCustomWorkflowSchedulingSettings().getNodeSettingsList();
+			for (NodeSettings nodeSettings : nodeSettingsList) {
+				builder.addApplicationSchedulingContext(nodeSettings.getNodeId(), nodeSettings.getServiceId(), nodeSettings.getHostSettings().getHostId(), nodeSettings.getHostSettings().isWSGRAMPreffered(), nodeSettings.getHostSettings().getGatekeeperEPR(), nodeSettings.getHPCSettings().getJobManager(), nodeSettings.getHPCSettings().getCPUCount(), nodeSettings.getHPCSettings().getNodeCount(), nodeSettings.getHPCSettings().getQueueName(), nodeSettings.getHPCSettings().getMaxWallTime());
+			}
+			OutputDataSettings[] outputDataSettingsList = options.getCustomWorkflowOutputDataSettings().getOutputDataSettingsList();
+			for (OutputDataSettings outputDataSettings : outputDataSettingsList) {
+				builder.addApplicationOutputDataHandling(outputDataSettings.getOutputDataDirectory(), outputDataSettings.getDataRegistryUrl(), outputDataSettings.isDataPersistent());
 			}
 			runPreWorkflowExecutionTasks(experimentID, executionUser, options.getExperimentMetadata(), options.getExperimentName());
 			NameValue[] inputVals = inputValues.toArray(new NameValue[] {});
@@ -280,7 +287,18 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	@Override
 	public ExperimentAdvanceOptions createExperimentAdvanceOptions()
 			throws AiravataAPIInvocationException {
-		return new ExperimentAdavanceOptionsImpl(getClient());
+		return new ExperimentAdvanceOptions();
+	}
+
+	@Override
+	public ExperimentAdvanceOptions createExperimentAdvanceOptions(
+			String experimentName, String experimentUser,
+			String experimentMetadata) throws AiravataAPIInvocationException {
+		ExperimentAdvanceOptions options = createExperimentAdvanceOptions();
+		options.setExperimentName(experimentName);
+		options.setExperimentCustomMetadata(experimentMetadata);
+		options.setExperimentExecutionUser(experimentUser);
+		return options;
 	}
 
 }

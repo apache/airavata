@@ -14,6 +14,7 @@ import junit.framework.Assert;
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.client.api.ExperimentAdvanceOptions;
 import org.apache.airavata.client.api.builder.DescriptorBuilder;
 import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
@@ -279,17 +280,19 @@ public class BaseCaseIT {
             workflowInputs.get(i).setValue(valueString);
             ++i;
         }
+        ExperimentAdvanceOptions options = airavataAPI.getExecutionManager().createExperimentAdvanceOptions(workflowName,getUserName(),null);
+        String experimentId = airavataAPI.getExecutionManager().runExperiment(workflowName, workflowInputs, options);
+        
+//        String result
+//                = airavataAPI.getExecutionManager().runExperiment(workflowName, workflowInputs, getUserName(), "",
+//                workflowName);
 
-        String result
-                = airavataAPI.getExecutionManager().runExperiment(workflowName, workflowInputs, getUserName(), "",
-                workflowName);
-
-        Assert.assertNotNull(result);
+        Assert.assertNotNull(experimentId);
 
         log.info("Run workflow completed ....");
         log.info("Starting monitoring ....");
 
-        monitor(result);
+        monitor(experimentId);
 
     }
 

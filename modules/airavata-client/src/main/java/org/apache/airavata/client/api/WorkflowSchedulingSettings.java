@@ -27,7 +27,7 @@ public interface WorkflowSchedulingSettings {
 	 * Get all currently defined scheduling settings for the workflow node
 	 * @return
 	 */
-	public NodeSettings[] getNodeSettings();
+	public NodeSettings[] getNodeSettingsList();
 	
 	/**
 	 * Add and return a new Node scheduling settings  
