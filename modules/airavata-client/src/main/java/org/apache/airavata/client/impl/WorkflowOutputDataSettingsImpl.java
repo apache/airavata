@@ -32,7 +32,7 @@ public class WorkflowOutputDataSettingsImpl implements
 		WorkflowOutputDataSettings {
 	private List<OutputDataSettings> outputDataSettingsList;
 	
-	private List<OutputDataSettings> getOutputDataSettingsList(){
+	private List<OutputDataSettings> getOutputDataSettingsListArray(){
 		if (outputDataSettingsList==null){
 			outputDataSettingsList=new ArrayList<OutputDataSettings>();
 		}
@@ -40,35 +40,35 @@ public class WorkflowOutputDataSettingsImpl implements
 	}
 	
 	@Override
-	public OutputDataSettings[] getOutputDataSettings() {
-		return getOutputDataSettingsList().toArray(new OutputDataSettings[]{});
+	public OutputDataSettings[] getOutputDataSettingsList() {
+		return getOutputDataSettingsListArray().toArray(new OutputDataSettings[]{});
 	}
 
 	@Override
 	public OutputDataSettings addNewOutputDataSettings(
 			String outputDataDirectory, String dataRegistryURL,
 			boolean isDataPersistent) {
-		getOutputDataSettingsList().add(new ApplicationOutputDataSettingsImpl(outputDataDirectory, dataRegistryURL, isDataPersistent));
-		return getOutputDataSettingsList().get(getOutputDataSettingsList().size()-1);
+		getOutputDataSettingsListArray().add(new ApplicationOutputDataSettingsImpl(outputDataDirectory, dataRegistryURL, isDataPersistent));
+		return getOutputDataSettingsListArray().get(getOutputDataSettingsListArray().size()-1);
 	}
 
 	@Override
 	public void addNewOutputDataSettings(
 			OutputDataSettings... outputDataSettings) {
-		getOutputDataSettingsList().addAll(Arrays.asList(outputDataSettings));
+		getOutputDataSettingsListArray().addAll(Arrays.asList(outputDataSettings));
 
 	}
 
 	@Override
 	public void removeOutputDataSettings(OutputDataSettings outputDataSettings) {
-		if (getOutputDataSettingsList().contains(outputDataSettings)){
-			getOutputDataSettingsList().remove(outputDataSettings);
+		if (getOutputDataSettingsListArray().contains(outputDataSettings)){
+			getOutputDataSettingsListArray().remove(outputDataSettings);
 		}
 	}
 
 	@Override
 	public void removeAllOutputDataSettings() {
-		getOutputDataSettingsList().clear();
+		getOutputDataSettingsListArray().clear();
 	}
 
 }

@@ -138,7 +138,21 @@ public interface ExecutionManager {
 	 */
 	public WorkflowContextHeaderBuilder createWorkflowContextHeader() throws AiravataAPIInvocationException;
 
-
+	/**
+	 * Create a new experiment advance options
+	 * @return
+	 * @throws AiravataAPIInvocationException
+	 */
     public ExperimentAdvanceOptions createExperimentAdvanceOptions() throws AiravataAPIInvocationException;
+    
+    /**
+     * Create a new experiment advance options
+     * @param experimentName - Name of the running experiment
+     * @param experimentUser - Experiment submission user
+     * @param experimentMetadata - Experiment metadata 
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
+    public ExperimentAdvanceOptions createExperimentAdvanceOptions(String experimentName, String experimentUser, String experimentMetadata) throws AiravataAPIInvocationException;
 
 }

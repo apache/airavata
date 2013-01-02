@@ -33,7 +33,7 @@ public class WorkflowSchedulingSettingsImpl implements
 
 	private List<NodeSettings> nodeSettingsList;
 	
-	private List<NodeSettings> getNodeSettingsList(){
+	private List<NodeSettings> getNodeSettingsListArray(){
 		if (nodeSettingsList==null){
 			nodeSettingsList=new ArrayList<NodeSettings>();
 		}
@@ -41,14 +41,14 @@ public class WorkflowSchedulingSettingsImpl implements
 	}
 	
 	@Override
-	public NodeSettings[] getNodeSettings() {
-		return getNodeSettingsList().toArray(new NodeSettings[]{});
+	public NodeSettings[] getNodeSettingsList() {
+		return getNodeSettingsListArray().toArray(new NodeSettings[]{});
 	}
 
 	@Override
 	public NodeSettings addNewNodeSettings(String nodeId) {
-		getNodeSettingsList().add(new NodeSettingsImpl(nodeId));
-		return getNodeSettingsList().get(getNodeSettingsList().size()-1);
+		getNodeSettingsListArray().add(new NodeSettingsImpl(nodeId));
+		return getNodeSettingsListArray().get(getNodeSettingsListArray().size()-1);
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class WorkflowSchedulingSettingsImpl implements
 
 	@Override
 	public void addNewNodeSettings(NodeSettings... newNodeSettingsList) {
-		getNodeSettingsList().addAll(Arrays.asList(newNodeSettingsList));
+		getNodeSettingsListArray().addAll(Arrays.asList(newNodeSettingsList));
 	}
 
 	@Override
@@ -83,14 +83,14 @@ public class WorkflowSchedulingSettingsImpl implements
 	@Override
 	public void removeNodeSettings(String nodeId) {
 		if (hasNodeSettings(nodeId)){
-			getNodeSettingsList().remove(getNodeSettings(nodeId));
+			getNodeSettingsListArray().remove(getNodeSettings(nodeId));
 		}
 
 	}
 
 	@Override
 	public void removeAllNodeSettings() {
-		getNodeSettingsList().clear();
+		getNodeSettingsListArray().clear();
 	}
 
 }
