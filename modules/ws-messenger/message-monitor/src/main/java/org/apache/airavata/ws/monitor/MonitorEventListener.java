@@ -22,11 +22,37 @@
 package org.apache.airavata.ws.monitor;
 
 public interface MonitorEventListener {
+	
+	/**
+	 * Gets triggered when a new message is received relevant for the experiment subscribed to
+	 * @param eventData - Contains a collection of events up to this point in monitoring
+	 * @param event - the new message related to the experiment
+	 */
 	public void notify(MonitorEventData eventData, MonitorEvent event);
+	
+	/**
+	 * Set the Monitor object
+	 * @param monitor
+	 */
 	public void setExperimentMonitor(Monitor monitor);
+	
+	/**
+	 * Gets triggered just before the experiment monitoring is started
+	 */
 	public void monitoringPreStart();
+	
+	/**
+	 * Gets triggered just after the experiment monitoring is started
+	 */
 	public void monitoringPostStart();
 	
+	/**
+	 * Gets triggered just before the experiment monitoring is stopped
+	 */
 	public void monitoringPreStop();
+	
+	/**
+	 * Gets triggered just after the experiment monitoring is stopped
+	 */
 	public void monitoringPostStop();
 }
