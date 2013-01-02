@@ -75,7 +75,6 @@ create table Published_Workflow
 );
 
 create table User_Workflow
-
 (
        gateway_name varchar(255),
        owner varchar(255),
@@ -122,16 +121,6 @@ create table Application_Descriptor
          PRIMARY KEY(gateway_name,application_descriptor_ID),
          FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
          FOREIGN KEY (updated_user) REFERENCES Users(user_name) ON DELETE CASCADE
-);
-
-create table Gateway_Worker
-(
-      gateway_name varchar(255),
-      user_name varchar(255),
-      PRIMARY KEY (gateway_name, user_name),
-      FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
-      FOREIGN KEY (user_name) REFERENCES Users(user_name) ON DELETE CASCADE
-
 );
 
 create table Experiment
