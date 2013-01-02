@@ -125,6 +125,16 @@ create table Application_Descriptor
          FOREIGN KEY (updated_user) REFERENCES Users(user_name) ON DELETE CASCADE
 );
 
+create table Gateway_Worker
+(
+      gateway_name varchar(255),
+      user_name varchar(255),
+      PRIMARY KEY (gateway_name, user_name),
+      FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
+      FOREIGN KEY (user_name) REFERENCES Users(user_name) ON DELETE CASCADE
+
+);
+
 create table Experiment
 (
           project_name varchar(255),
