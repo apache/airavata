@@ -181,12 +181,12 @@ public class Monitor extends EventProducer {
      * @throws MonitorException
      */
     public synchronized void stop() throws MonitorException {
-    	getEventData().triggerListenerForPreMonitorStop();
         if (this.wsmgClient != null) {
+        	getEventData().triggerListenerForPreMonitorStop();
             unsubscribe(this.wsmgClient);
             this.wsmgClient = null;
+            getEventData().triggerListenerForPostMonitorStop();
         }
-        getEventData().triggerListenerForPostMonitorStop();
     }
 
     /**
