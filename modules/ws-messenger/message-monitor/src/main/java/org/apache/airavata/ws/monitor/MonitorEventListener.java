@@ -23,4 +23,10 @@ package org.apache.airavata.ws.monitor;
 
 public interface MonitorEventListener {
 	public void notify(MonitorEventData eventData, MonitorEvent event);
+	public void setExperimentMonitor(Monitor monitor);
+	public void monitoringPreStart();
+	public void monitoringPostStart();
+	
+	public void monitoringPreStop();
+	public void monitoringPostStop();
 }

@@ -449,6 +449,7 @@ public class AiravataClient extends Observable implements AiravataAPI {
 		final Monitor monitor = new Monitor(monitorConfiguration);
 		monitor.setPrint(true);
 		monitor.getEventData().registerEventListener(listener);
+		listener.setExperimentMonitor(monitor);
 		return monitor;
 	}
 

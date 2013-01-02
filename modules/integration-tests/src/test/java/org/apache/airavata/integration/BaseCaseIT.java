@@ -312,7 +312,7 @@ public class BaseCaseIT {
         while ((line = reader.readLine()) != null) {
             buffer.append(line);
         }
-
+        reader.close();
         log.debug("Workflow compose - " + buffer.toString());
         return buffer.toString();
     }
@@ -320,8 +320,9 @@ public class BaseCaseIT {
     public void monitor(String experimentId) throws Exception {
         AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(new URI(getRegistryURL()), getGatewayName(),
                 getUserName(), new PasswordCallbackImpl() );
-        Monitor experimentMonitor = airavataAPI.getExecutionManager().getExperimentMonitor(experimentId,     // TODO what is experiment name ?
-                new TestMonitorListener(this.airavataAPI, experimentId));
+        TestMonitorListener monitorListener = new TestMonitorListener(this.airavataAPI, experimentId);
+		Monitor experimentMonitor = airavataAPI.getExecutionManager().getExperimentMonitor(experimentId,     // TODO what is experiment name ?
+                monitorListener);
         experimentMonitor.startMonitoring();
     }
 
