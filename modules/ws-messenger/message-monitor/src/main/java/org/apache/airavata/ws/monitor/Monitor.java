@@ -97,6 +97,7 @@ public class Monitor extends EventProducer {
      */
     public synchronized void start() throws MonitorException {
         // Stop the previous monitoring if any.
+    	getEventData().triggerListenerForPreMonitorStart();
         asynchronousStop();
 
         subscribe();
@@ -119,6 +120,7 @@ public class Monitor extends EventProducer {
             }
 
         }
+        getEventData().triggerListenerForPostMonitorStart();
     }
     
     public void startMonitoring(){
@@ -128,6 +130,20 @@ public class Monitor extends EventProducer {
     		public void run() {
     			try {
 					m.start();
+				} catch (MonitorException e) {
+					e.printStackTrace();
+				}
+    		}
+    	}.start();
+    }
+    
+    public void stopMonitoring(){
+    	final Monitor m=this;
+    	new Thread(){
+    		@Override
+    		public void run() {
+    			try {
+					m.stop();
 				} catch (MonitorException e) {
 					e.printStackTrace();
 				}
@@ -165,10 +181,12 @@ public class Monitor extends EventProducer {
      * @throws MonitorException
      */
     public synchronized void stop() throws MonitorException {
+    	getEventData().triggerListenerForPreMonitorStop();
         if (this.wsmgClient != null) {
             unsubscribe(this.wsmgClient);
             this.wsmgClient = null;
         }
+        getEventData().triggerListenerForPostMonitorStop();
     }
 
     /**

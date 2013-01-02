@@ -137,18 +137,63 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
             // The muxmum of the slider changed regardless whether we move the
             // slider or not.
             fireSliderChanged();
-            for (MonitorEventListener listener : getMonitorEventListerners()) {
-				try {
-					listener.notify(this, event);
-				} catch (Exception e) {
-					//just in case
-					e.printStackTrace();
-				}
-			}
-
+            triggerListenerForMonitorEvent(event);
         }
 
     }
+    public void triggerListenerForPreMonitorStart() {
+		for (MonitorEventListener listener : getMonitorEventListerners()) {
+			try {
+				listener.monitoringPreStart();
+			} catch (Exception e) {
+				//just in case
+				e.printStackTrace();
+			}
+		}
+	}
+    
+    public void triggerListenerForPostMonitorStart() {
+		for (MonitorEventListener listener : getMonitorEventListerners()) {
+			try {
+				listener.monitoringPostStart();
+			} catch (Exception e) {
+				//just in case
+				e.printStackTrace();
+			}
+		}
+	}
+    
+    public void triggerListenerForPreMonitorStop() {
+		for (MonitorEventListener listener : getMonitorEventListerners()) {
+			try {
+				listener.monitoringPreStop();
+			} catch (Exception e) {
+				//just in case
+				e.printStackTrace();
+			}
+		}
+	}
+    
+    public void triggerListenerForPostMonitorStop() {
+		for (MonitorEventListener listener : getMonitorEventListerners()) {
+			try {
+				listener.monitoringPostStop();
+			} catch (Exception e) {
+				//just in case
+				e.printStackTrace();
+			}
+		}
+	}
+	private void triggerListenerForMonitorEvent(MonitorEvent event) {
+		for (MonitorEventListener listener : getMonitorEventListerners()) {
+			try {
+				listener.notify(this, event);
+			} catch (Exception e) {
+				//just in case
+				e.printStackTrace();
+			}
+		}
+	}
 
     /**
      * @return All events.
