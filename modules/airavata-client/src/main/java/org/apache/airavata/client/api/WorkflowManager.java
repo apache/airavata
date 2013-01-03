@@ -213,8 +213,7 @@ public interface WorkflowManager {
      * @param workflowAsString The workflow to update. Workflow is uniquely identified by &lt;xgr:id&gt; tag.
      * @throws AiravataAPIInvocationException If an error occurred while updating the workflow.
      */
-    public void updateWorkflowAsPublic (String workflowAsString) throws AiravataAPIInvocationException,
-            DescriptorRecordAlreadyExistsException;
+    public void updateWorkflowAsPublic (String workflowAsString) throws AiravataAPIInvocationException;
 
     /**
      * Adds a new workflow. Workflow is added to users private space. i.e. only user who added the
@@ -231,8 +230,7 @@ public interface WorkflowManager {
      *                    Workflow is uniquely identified by &lt;xgr:id&gt; tag.
      * @throws AiravataAPIInvocationException If an error occurred while updating the workflow.
      */
-    public void updateWorkflowAsPublic (URI workflowUri) throws AiravataAPIInvocationException,
-            DescriptorRecordAlreadyExistsException;
+    public void updateWorkflowAsPublic (URI workflowUri) throws AiravataAPIInvocationException;
 
 
     /**
@@ -250,8 +248,7 @@ public interface WorkflowManager {
      * @param workflowAsString The workflow to update. Workflow is uniquely identified by &lt;xgr:id&gt; tag..
      * @throws AiravataAPIInvocationException If an error occurred while updating the workflow.
      */
-    public void updateWorkflow (String workflowAsString) throws AiravataAPIInvocationException,
-            DescriptorRecordAlreadyExistsException;
+    public void updateWorkflow (String workflowAsString) throws AiravataAPIInvocationException;
 
     /**
      * Adds a new workflow. Workflow is added to users private space. i.e. only user who added the
@@ -268,8 +265,7 @@ public interface WorkflowManager {
      * @param workflow The workflow to update. Workflow is uniquely identified by &lt;xgr:id&gt; tag..
      * @throws AiravataAPIInvocationException If an error occurred while updating the workflow.
      */
-    public void updateWorkflow (Workflow workflow) throws AiravataAPIInvocationException,
-            DescriptorRecordAlreadyExistsException;
+    public void updateWorkflow (Workflow workflow) throws AiravataAPIInvocationException;
 
     /**
      * Adds a new workflow. Workflow is added to users private space. i.e. only user who added the
@@ -286,8 +282,7 @@ public interface WorkflowManager {
      * @param workflowUri The workflow to update as a URI.
      * @throws AiravataAPIInvocationException If an error occurred while updating the workflow.
      */
-    public void updateWorkflow (URI workflowUri) throws AiravataAPIInvocationException,
-            DescriptorRecordAlreadyExistsException;
+    public void updateWorkflow (URI workflowUri) throws AiravataAPIInvocationException;
 
     /**
      * Save the workflow as public
