@@ -14,6 +14,7 @@ import junit.framework.Assert;
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.client.api.DescriptorRecordAlreadyExistsException;
 import org.apache.airavata.client.api.ExperimentAdvanceOptions;
 import org.apache.airavata.client.api.builder.DescriptorBuilder;
 import org.apache.airavata.common.utils.Version;
@@ -22,6 +23,8 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.schemas.gfac.*;
+import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.apache.airavata.ws.monitor.Monitor;
@@ -267,6 +270,93 @@ public class BaseCaseIT {
         log("Workflow setting up completed ...");
 
         runWorkFlow(workflow, Arrays.asList("echo_output=Airavata Test"));
+    }
+
+    @Test(groups = { "echoGroup" }, dependsOnMethods = { "testEchoService" })
+    public void testUpdateEchoService() throws AiravataAPIInvocationException, IOException, ComponentException, GraphException {
+
+        DescriptorBuilder descriptorBuilder = airavataAPI.getDescriptorBuilder();
+
+        HostDescription hostDescription
+                = descriptorBuilder.buildHostDescription(HostDescriptionType.type, "localhost", "127.0.0.1");
+
+        log("Trying to add host description ....");
+        try {
+            airavataAPI.getApplicationManager().addHostDescription(hostDescription);
+            Assert.fail("Host Descriptor should already exists and should go to update.");
+        } catch (DescriptorRecordAlreadyExistsException e) {
+
+            log("Updating host description ....");
+            airavataAPI.getApplicationManager().updateHostDescription(hostDescription);
+        }
+
+        Assert.assertTrue(airavataAPI.getApplicationManager().isHostDescriptorExists(hostDescription.getType()
+                .getHostName()));
+
+
+        List<InputParameterType> inputParameters = new ArrayList<InputParameterType>();
+        inputParameters.add(descriptorBuilder.buildInputParameterType("echo_input", "echo input", DataType.STRING));
+
+        List<OutputParameterType> outputParameters = new ArrayList<OutputParameterType>();
+        outputParameters.add(descriptorBuilder.buildOutputParameterType("echo_output", "Echo output", DataType.STRING));
+
+        ServiceDescription serviceDescription = descriptorBuilder.buildServiceDescription("Echo", "Echo service",
+                inputParameters, outputParameters);
+
+        log("Adding service description ...");
+        try {
+            airavataAPI.getApplicationManager().addServiceDescription(serviceDescription);
+            Assert.fail("Service Descriptor should already exists and should go to update.");
+        } catch (DescriptorRecordAlreadyExistsException e) {
+
+            log("Updating service description ....");
+            airavataAPI.getApplicationManager().updateServiceDescription(serviceDescription);
+        }
+
+        Assert.assertTrue(airavataAPI.getApplicationManager().isServiceDescriptorExists(serviceDescription.
+                getType().getName()));
+
+        // Deployment descriptor
+        ApplicationDescription applicationDeploymentDescription
+                = descriptorBuilder.buildApplicationDeploymentDescription("EchoApplication", "/bin/echo", "/tmp");
+
+        log("Adding deployment description ...");
+        try {
+            airavataAPI.getApplicationManager().addApplicationDescription(serviceDescription,
+                    hostDescription, applicationDeploymentDescription);
+            Assert.fail("Application Descriptor should already exists and should go to update.");
+        } catch (DescriptorRecordAlreadyExistsException e) {
+
+            log("Updating application description ....");
+            airavataAPI.getApplicationManager().updateApplicationDescription(serviceDescription,
+                    hostDescription, applicationDeploymentDescription);
+        }
+
+        Assert.assertTrue(airavataAPI.getApplicationManager().isApplicationDescriptorExists(serviceDescription.getType().
+                getName(), hostDescription.getType().getHostName(),
+                applicationDeploymentDescription.getType().getApplicationName().getStringValue()));
+
+        log("Saving workflow ...");
+        Workflow workflow = new Workflow(getWorkflowComposeContent("src/test/resources/EchoWorkflow.xwf"));
+
+        try {
+            airavataAPI.getWorkflowManager().addWorkflow(workflow);
+            Assert.fail("Workflow should already exists and should go to update.");
+        } catch (DescriptorRecordAlreadyExistsException e) {
+
+            log("Updating workflow...");
+            airavataAPI.getWorkflowManager().updateWorkflow(workflow);
+        }
+
+        Assert.assertTrue(airavataAPI.getWorkflowManager().isWorkflowExists(workflow.getName()));
+
+        log("Workflow setting up completed ...");
+
+        try {
+            runWorkFlow(workflow, Arrays.asList("echo_output=Airavata Test"));
+        } catch (Exception e) {
+            log.error("An error occurred while invoking workflow", e);
+        }
     }
 
     protected void runWorkFlow(Workflow workflow, List<String> inputValues) throws Exception {

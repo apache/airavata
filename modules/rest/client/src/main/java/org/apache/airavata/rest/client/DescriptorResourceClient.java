@@ -32,6 +32,7 @@ import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.PasswordCallback;
+import org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException;
 import org.apache.airavata.rest.mappings.resourcemappings.*;
 import org.apache.airavata.rest.mappings.utils.DescriptorUtil;
 import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
@@ -129,7 +130,7 @@ public class DescriptorResourceClient {
     }
 
 
-    public void addHostDescriptor(HostDescription hostDescription) {
+    public void addHostDescriptor(HostDescription hostDescription) throws DescriptorAlreadyExistsException {
         HostDescriptor hostDescriptor = DescriptorUtil.createHostDescriptor(hostDescription);
         webResource = getDescriptorRegistryBaseResource().path(
                 ResourcePathConstants.DecResourcePathConstants.HOST_DESC_SAVE);
@@ -156,12 +157,19 @@ public class DescriptorResourceClient {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
+            }else if (status == ClientConstant.HTTP_BAD_REQUEST){
+                logger.debug("Descriptor already exists...");
+                throw new DescriptorAlreadyExistsException(hostDescription.getType().getHostName() + " already exists !!!");
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
-        } else {
+        }else if (status == ClientConstant.HTTP_BAD_REQUEST){
+            logger.debug("Descriptor already exists...");
+            throw new DescriptorAlreadyExistsException(hostDescription.getType().getHostName() + " already exists !!!");
+        }
+        else {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
@@ -440,7 +448,7 @@ public class DescriptorResourceClient {
         }
     }
 
-    public void addServiceDescriptor(ServiceDescription serviceDescription) {
+    public void addServiceDescriptor(ServiceDescription serviceDescription) throws DescriptorAlreadyExistsException {
         ServiceDescriptor serviceDescriptor = DescriptorUtil.createServiceDescriptor(serviceDescription);
         webResource = getDescriptorRegistryBaseResource().path(
                 ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC_SAVE);
@@ -464,7 +472,10 @@ public class DescriptorResourceClient {
 
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK) {
+            if (status == ClientConstant.HTTP_BAD_REQUEST){
+                logger.debug("Descriptor already exists...");
+                throw new DescriptorAlreadyExistsException(serviceDescriptor.getServiceName() + " already exists !!!");
+            } else if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -473,6 +484,9 @@ public class DescriptorResourceClient {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
+        } else if (status == ClientConstant.HTTP_BAD_REQUEST){
+            logger.debug("Descriptor already exists...");
+            throw new DescriptorAlreadyExistsException(serviceDescriptor.getServiceName() + " already exists !!!");
         } else {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
@@ -704,7 +718,7 @@ public class DescriptorResourceClient {
 
     public void addApplicationDescriptor(ServiceDescription serviceDescription,
                                          HostDescription hostDescriptor,
-                                         ApplicationDescription descriptor) {
+                                         ApplicationDescription descriptor) throws DescriptorAlreadyExistsException {
         ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(descriptor);
         applicationDescriptor.setHostdescName(hostDescriptor.getType().getHostName());
         ServiceDescriptor serviceDescriptor = DescriptorUtil.createServiceDescriptor(serviceDescription);
@@ -731,7 +745,10 @@ public class DescriptorResourceClient {
                     MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
+            if (status == ClientConstant.HTTP_BAD_REQUEST){
+                logger.debug("Descriptor already exists...");
+                throw new DescriptorAlreadyExistsException(applicationDescriptor.getName() + " already exists !!!");
+            } else if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -740,6 +757,9 @@ public class DescriptorResourceClient {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
+        } else if (status == ClientConstant.HTTP_BAD_REQUEST){
+            logger.debug("Descriptor already exists...");
+            throw new DescriptorAlreadyExistsException(applicationDescriptor.getName() + " already exists !!!");
         } else {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
@@ -749,7 +769,7 @@ public class DescriptorResourceClient {
 
     public void addApplicationDescriptor(String serviceName,
                                          String hostName,
-                                         ApplicationDescription descriptor) {
+                                         ApplicationDescription descriptor) throws DescriptorAlreadyExistsException {
         ServiceDescription serviceDescription = getServiceDescriptor(serviceName);
         ApplicationDescriptor applicationDescriptor = DescriptorUtil.createApplicationDescriptor(descriptor);
         applicationDescriptor.setHostdescName(hostName);
@@ -777,7 +797,10 @@ public class DescriptorResourceClient {
                     MediaType.APPLICATION_JSON).post(ClientResponse.class, applicationDescriptor);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK) {
+            if (status == ClientConstant.HTTP_BAD_REQUEST){
+                logger.debug("Descriptor already exists...");
+                throw new DescriptorAlreadyExistsException(applicationDescriptor.getName() + " already exists !!!");
+            } else if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -786,6 +809,9 @@ public class DescriptorResourceClient {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
+        } else if (status == ClientConstant.HTTP_BAD_REQUEST){
+            logger.debug("Descriptor already exists...");
+            throw new DescriptorAlreadyExistsException(applicationDescriptor.getName() + " already exists !!!");
         } else {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "

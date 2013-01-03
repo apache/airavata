@@ -30,6 +30,8 @@ import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.registry.api.ResourceMetadata;
+import org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException;
+import org.apache.airavata.registry.api.exception.worker.UserWorkflowAlreadyExistsException;
 import org.apache.airavata.rest.mappings.resourcemappings.Workflow;
 import org.apache.airavata.rest.mappings.resourcemappings.WorkflowList;
 import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
@@ -129,7 +131,7 @@ public class UserWorkflowResourceClient {
         }
     }
 
-    public void addWorkflow(String workflowName, String workflowGraphXml) {
+    public void addWorkflow(String workflowName, String workflowGraphXml) throws UserWorkflowAlreadyExistsException {
         webResource = getUserWFRegistryBaseResource().path(
                 ResourcePathConstants.UserWFConstants.ADD_WORKFLOW);
         MultivaluedMap formParams = new MultivaluedMapImpl();
@@ -153,7 +155,11 @@ public class UserWorkflowResourceClient {
             response = builder.type(MediaType.APPLICATION_FORM_URLENCODED).accept(
                     MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
             status = response.getStatus();
-            if (status != ClientConstant.HTTP_OK) {
+            if (status == ClientConstant.HTTP_BAD_REQUEST){
+                logger.debug("Workflow already exists...");
+                throw new UserWorkflowAlreadyExistsException(workflowName + " already exists !!!");
+            }
+            else if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
                         + status);
@@ -162,6 +168,9 @@ public class UserWorkflowResourceClient {
                     cookie = response.getCookies().get(0).toCookie();
                 }
             }
+        } else if (status == ClientConstant.HTTP_BAD_REQUEST){
+            logger.debug("Descriptor already exists...");
+            throw new UserWorkflowAlreadyExistsException(workflowName + " already exists !!!");
         } else {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
