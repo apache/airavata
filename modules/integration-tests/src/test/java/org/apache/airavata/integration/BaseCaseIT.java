@@ -25,11 +25,11 @@ import org.apache.airavata.schemas.gfac.*;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.apache.airavata.ws.monitor.Monitor;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
 
 /**
@@ -37,17 +37,17 @@ import org.slf4j.LoggerFactory;
  */
 public class BaseCaseIT {
 
-    private static final Logger log = LoggerFactory.getLogger(BaseCaseIT.class);
+    private final Logger log = LoggerFactory.getLogger(BaseCaseIT.class);
 
-    private static int port;
-    private static String serverUrl;
-    private static String serverContextName;
+    private int port;
+    private String serverUrl;
+    private String serverContextName;
 
-    private static String registryURL;
+    private String registryURL;
 
-    private static String gatewayName = "default";
-    private static String userName = "admin";
-    private static String password = "admin";
+    private String gatewayName = "default";
+    private String userName = "admin";
+    private String password = "admin";
 
     private static final int TIME_OUT = 20000;
 
@@ -55,35 +55,35 @@ public class BaseCaseIT {
 
     private AiravataAPI airavataAPI;
 
-    protected static void log(String message) {
+    protected void log(String message) {
         log.info(message);
     }
 
-    public static Logger getLog() {
+    public Logger getLog() {
         return log;
     }
 
-    public static int getPort() {
+    public int getPort() {
         return port;
     }
 
-    public static String getServerUrl() {
+    public String getServerUrl() {
         return serverUrl;
     }
 
-    public static String getServerContextName() {
+    public String getServerContextName() {
         return serverContextName;
     }
 
-    public static String getRegistryURL() {
+    public String getRegistryURL() {
         return registryURL;
     }
 
-    public static String getGatewayName() {
+    public String getGatewayName() {
         return gatewayName;
     }
 
-    public static String getUserName() {
+    public String getUserName() {
         return userName;
     }
 
@@ -91,12 +91,15 @@ public class BaseCaseIT {
         return airavataAPI;
     }
 
-    public static String getPassword() {
+    public String getPassword() {
         return password;
     }
 
-    @BeforeClass
-    public static void setUpEnvironment() throws Exception{
+    public BaseCaseIT() throws Exception {
+        setUpEnvironment();
+    }
+
+    public void setUpEnvironment() throws Exception{
 
         log("..................Validating server logs .............................");
         //TODO validate logs
@@ -146,7 +149,7 @@ public class BaseCaseIT {
     }
 
 
-    protected static void checkServerStartup (AiravataAPI airavataAPI) throws Exception {
+    protected void checkServerStartup (AiravataAPI airavataAPI) throws Exception {
 
         int tries = 0;
 
@@ -183,7 +186,7 @@ public class BaseCaseIT {
 
     }
 
-    @Before
+    @BeforeTest
     public void setUp() throws Exception {
 
         PasswordCallback passwordCallback = new PasswordCallbackImpl();
@@ -191,7 +194,7 @@ public class BaseCaseIT {
                 getGatewayName(), getUserName(), passwordCallback);
     }
 
-    @Test
+    @Test(groups = { "setupTests" })
     public void testSetup() {
 
         Version version = this.airavataAPI.getVersion();
@@ -202,7 +205,7 @@ public class BaseCaseIT {
 
     }
 
-    @Test
+    @Test(groups = { "setupTests" }, dependsOnMethods = { "testSetup" })
     public void testURLs() throws AiravataAPIInvocationException {
         URI eventingServiceURL = this.airavataAPI.getAiravataManager().getEventingServiceURL();
         Assert.assertNotNull(eventingServiceURL);
@@ -214,7 +217,7 @@ public class BaseCaseIT {
         Assert.assertNotNull(messageBoxServiceURL);
     }
 
-    @Test
+    @Test(groups = { "echoGroup" }, dependsOnGroups = { "setupTests" })
     public void testEchoService() throws Exception {
 
         DescriptorBuilder descriptorBuilder = airavataAPI.getDescriptorBuilder();
@@ -283,10 +286,6 @@ public class BaseCaseIT {
         ExperimentAdvanceOptions options = airavataAPI.getExecutionManager().createExperimentAdvanceOptions(workflowName,getUserName(),null);
         String experimentId = airavataAPI.getExecutionManager().runExperiment(workflowName, workflowInputs, options);
         
-//        String result
-//                = airavataAPI.getExecutionManager().runExperiment(workflowName, workflowInputs, getUserName(), "",
-//                workflowName);
-
         Assert.assertNotNull(experimentId);
 
         log.info("Run workflow completed ....");
