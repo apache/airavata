@@ -37,14 +37,14 @@ public class TestMonitorListener implements MonitorEventListener {
 
         Assert.assertNotNull(eventData);
         Assert.assertNotNull(event);
-
-        if (MonitorUtil.EventType.WORKFLOW_TERMINATED == event.getType()) {
+        if (MonitorUtil.EventType.WORKFLOW_TERMINATED.equals(event.getType())) {
             try {
                 verifyOutput("echo_output=Airavata Test");
-                getExperimentMonitor().stopMonitoring();
             } catch (Exception e) {
                 log.error("Error verifying output", e);
                 throw new RuntimeException(e);
+            }finally{
+                getExperimentMonitor().stopMonitoring();
             }
         }
 

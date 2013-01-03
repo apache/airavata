@@ -357,9 +357,20 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
+   		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-json</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
     </dependencies>
 
     <properties>
+		<jersey.version>1.13</jersey.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <archieve.name>apache-airavata</archieve.name>
         <used.axis2.release>${axis2.version}</used.axis2.release>
