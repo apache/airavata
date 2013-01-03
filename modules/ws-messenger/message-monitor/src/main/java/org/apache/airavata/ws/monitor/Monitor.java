@@ -54,6 +54,10 @@ public class Monitor extends EventProducer {
 
     protected boolean status = false;
     
+    private boolean monitoringCompleted=false;
+    
+    private boolean monitoringFailed=false;
+    
     /**
      * Constructs a Monitor.
      * 
@@ -97,6 +101,9 @@ public class Monitor extends EventProducer {
      */
     public synchronized void start() throws MonitorException {
         // Stop the previous monitoring if any.
+    	monitoringCompleted=false;
+    	monitoringFailed=false;
+    			
     	getEventData().triggerListenerForPreMonitorStart();
         asynchronousStop();
 
@@ -187,6 +194,7 @@ public class Monitor extends EventProducer {
             this.wsmgClient = null;
             getEventData().triggerListenerForPostMonitorStop();
         }
+        monitoringCompleted=true;
     }
 
     /**
@@ -260,5 +268,15 @@ public class Monitor extends EventProducer {
 
     public void setStatus(boolean status) {
         this.status = status;
+    }
+    
+    public void waitForCompletion(){
+    	while(!monitoringCompleted && !monitoringFailed){
+    		try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+    	}
     }
 }
