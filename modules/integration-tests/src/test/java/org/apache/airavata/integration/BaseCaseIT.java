@@ -324,6 +324,7 @@ public class BaseCaseIT {
 		Monitor experimentMonitor = airavataAPI.getExecutionManager().getExperimentMonitor(experimentId,     // TODO what is experiment name ?
                 monitorListener);
         experimentMonitor.startMonitoring();
+        experimentMonitor.waitForCompletion();
     }
 
 
