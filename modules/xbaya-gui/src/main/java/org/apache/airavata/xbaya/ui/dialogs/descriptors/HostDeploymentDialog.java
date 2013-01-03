@@ -53,6 +53,7 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.apache.airavata.xbaya.ui.menues.MenuIcons;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
@@ -495,7 +496,7 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
 				hostDescription = registry.getApplicationManager().getHostDescription(hostName);
 				if (hostDescription.getType() instanceof GlobusHostType) {
 				    getShellApplicationDescription().getType().changeType(
-				            HPCProfileApplicationDocument.type);
+                            HpcApplicationDeploymentType.type);
 				} else {
 				    getShellApplicationDescription().getType().changeType(
 				            ApplicationDeploymentDescriptionType.type);
