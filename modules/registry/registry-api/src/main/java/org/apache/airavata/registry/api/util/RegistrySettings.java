@@ -41,7 +41,7 @@ public class RegistrySettings {
     
     static{
     	String propertyFileName = REPOSITORY_PROPERTIES;
-    	if (!(new File(propertyFileName)).exists()) {
+    	if (!((new File(propertyFileName)).exists())) {
     		if (AiravataUtils.isServer()){
         		propertyFileName=SERVER_REPOSITORY_PROPERTIES;
         	}else{
