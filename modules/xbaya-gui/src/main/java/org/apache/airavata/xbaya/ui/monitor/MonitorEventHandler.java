@@ -48,8 +48,8 @@ import org.apache.airavata.workflow.model.graph.system.OutputNode;
 import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.workflow.model.graph.ws.WSGraph;
 import org.apache.airavata.workflow.model.wf.Workflow;
-import org.apache.airavata.ws.monitor.MonitorEvent;
-import org.apache.airavata.ws.monitor.MonitorEventData;
+import org.apache.airavata.ws.monitor.EventData;
+import org.apache.airavata.ws.monitor.EventDataRepository;
 import org.apache.airavata.ws.monitor.MonitorUtil;
 import org.apache.airavata.ws.monitor.MonitorUtil.EventType;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
@@ -145,8 +145,8 @@ public class MonitorEventHandler implements ChangeListener {
     public void stateChanged(ChangeEvent event) {
         try {
             Object source = event.getSource();
-            if (source instanceof MonitorEventData) {
-                handleChange((MonitorEventData) source);
+            if (source instanceof EventDataRepository) {
+                handleChange((EventDataRepository) source);
             }
         } catch (RuntimeException e) {
             // Don't want to pop up an error dialog every time XBaya received an
@@ -158,7 +158,7 @@ public class MonitorEventHandler implements ChangeListener {
     /**
      * @param model
      */
-    private void handleChange(MonitorEventData model) {
+    private void handleChange(EventDataRepository model) {
         int newValue = model.getValue();
 
         if (model.getEventSize() == 0) {
@@ -183,7 +183,7 @@ public class MonitorEventHandler implements ChangeListener {
         this.xbayaGUI.getGraphCanvas().repaint();
     }
 
-    private void handleEvent(MonitorEvent event, boolean forward) {
+    private void handleEvent(EventData event, boolean forward) {
         EventType type = event.getType();
         //todo currrently we do not set the workflowID properly its just node ID
         URI workflowID = event.getWorkflowID();
@@ -301,7 +301,7 @@ public class MonitorEventHandler implements ChangeListener {
      * @param forward
      * @param graph
      */
-    private void handleEvent(MonitorEvent event, boolean forward, Graph graph) {
+    private void handleEvent(EventData event, boolean forward, Graph graph) {
         EventType type = event.getType();
         String nodeID = event.getNodeID();
         Node node = graph.getNode(nodeID);

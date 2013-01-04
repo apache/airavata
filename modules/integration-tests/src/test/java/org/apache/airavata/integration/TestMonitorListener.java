@@ -9,8 +9,8 @@ import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
 import org.apache.airavata.registry.api.workflow.NodeExecutionData;
 import org.apache.airavata.ws.monitor.Monitor;
-import org.apache.airavata.ws.monitor.MonitorEvent;
-import org.apache.airavata.ws.monitor.MonitorEventData;
+import org.apache.airavata.ws.monitor.EventData;
+import org.apache.airavata.ws.monitor.EventDataRepository;
 import org.apache.airavata.ws.monitor.MonitorEventListener;
 import org.apache.airavata.ws.monitor.MonitorUtil;
 import org.slf4j.Logger;
@@ -33,7 +33,7 @@ public class TestMonitorListener implements MonitorEventListener {
     }
 
     @Override
-    public void notify(MonitorEventData eventData, MonitorEvent event) {
+    public void notify(EventDataRepository eventData, EventData event) {
 
         Assert.assertNotNull(eventData);
         Assert.assertNotNull(event);

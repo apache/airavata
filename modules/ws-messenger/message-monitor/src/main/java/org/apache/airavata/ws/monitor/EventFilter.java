@@ -23,5 +23,5 @@ package org.apache.airavata.ws.monitor;
 
 public interface EventFilter {
 
-    public boolean isAcceptable(MonitorEvent event);
+    public boolean isAcceptable(EventData event);
 }

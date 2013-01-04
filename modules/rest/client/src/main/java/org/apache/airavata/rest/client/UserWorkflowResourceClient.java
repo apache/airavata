@@ -98,7 +98,7 @@ public class UserWorkflowResourceClient {
         builder = BasicAuthHeaderUtil.getBuilder(
                 webResource, queryParams, userName, null, cookie, gateway);
 
-        ClientResponse response = builder.accept(
+        ClientResponse response = builder.type(MediaType.APPLICATION_FORM_URLENCODED).accept(
                 MediaType.TEXT_PLAIN).get(ClientResponse.class);
         int status = response.getStatus();
 
@@ -116,7 +116,8 @@ public class UserWorkflowResourceClient {
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
-            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+            response = builder.type(MediaType.APPLICATION_FORM_URLENCODED).accept(
+                    MediaType.TEXT_PLAIN).get(ClientResponse.class);
             status = response.getStatus();
             if (status == ClientConstant.HTTP_OK) {
                 if (response.getCookies().size() > 0) {

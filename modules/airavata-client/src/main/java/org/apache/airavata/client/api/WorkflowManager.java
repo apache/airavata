@@ -431,7 +431,7 @@ public interface WorkflowManager {
      * @throws AiravataAPIInvocationException
      * @throws Exception
      */
-	public List<WorkflowInput> getWorkflowInputs(String workflowName) throws AiravataAPIInvocationException, Exception;
+	public List<WorkflowInput> getWorkflowInputs(String workflowName) throws AiravataAPIInvocationException;
     
     /**
      * Retrieve the workflow inputs for a workflow
@@ -440,7 +440,7 @@ public interface WorkflowManager {
      * @throws AiravataAPIInvocationException
      * @throws Exception
      */
-    public List<WorkflowInput> getWorkflowInputs(WorkflowData workflowData) throws AiravataAPIInvocationException, Exception;
+    public List<WorkflowInput> getWorkflowInputs(WorkflowData workflowData) throws AiravataAPIInvocationException;
     
     /**
      * Retrieve all workflows in published space & user space accessible to the user. 
@@ -449,10 +449,27 @@ public interface WorkflowManager {
      */
     public List<WorkflowData> getAllWorkflows() throws AiravataAPIInvocationException;
 
+    /**
+     * Check to see if the workflow exists in user space
+     * @param workflowName
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
     public boolean isWorkflowExists(String workflowName) throws AiravataAPIInvocationException;
 
+    /**
+     * Update an existing workflow with the given workflow graph string
+     * @param workflowName
+     * @param workflowGraphXml
+     * @throws AiravataAPIInvocationException
+     */
     public void updateWorkflow(String workflowName, String workflowGraphXml) throws AiravataAPIInvocationException;
 
+    /**
+     * Delete the workflow from the user space
+     * @param workflowName
+     * @throws AiravataAPIInvocationException
+     */
     public void removeWorkflow(String workflowName) throws AiravataAPIInvocationException;
 
 }

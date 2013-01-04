@@ -222,7 +222,8 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	}
     private Workflow extractWorkflow(String workflowName) throws AiravataAPIInvocationException {
         Workflow workflowObj = null;
-        if(getClient().getWorkflowManager().isWorkflowExists(workflowName)) {
+        //FIXME - There should be a better way to figure-out if the passed string is a name or an xml
+        if(!workflowName.contains("http://airavata.apache.org/xbaya/xwf")){//(getClient().getWorkflowManager().isWorkflowExists(workflowName)) {
             workflowObj = getClient().getWorkflowManager().getWorkflow(workflowName);
         }else {
             try{

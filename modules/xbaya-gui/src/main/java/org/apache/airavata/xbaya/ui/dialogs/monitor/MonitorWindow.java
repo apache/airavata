@@ -29,7 +29,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.ws.monitor.MonitorEventData;
+import org.apache.airavata.ws.monitor.EventDataRepository;
 import org.apache.airavata.ws.monitor.MonitorUtil;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
@@ -92,20 +92,20 @@ public class MonitorWindow {
     private void init() {
         this.timeTextField = new XBayaTextField();
         this.timeTextField.setEditable(false);
-        XBayaLabel timeLabel = new XBayaLabel(MonitorEventData.Column.TIME.getName(), this.timeTextField);
+        XBayaLabel timeLabel = new XBayaLabel(EventDataRepository.Column.TIME.getName(), this.timeTextField);
 
         this.idTextField = new XBayaTextField();
         this.idTextField.setEditable(false);
-        XBayaLabel idLabel = new XBayaLabel(MonitorEventData.Column.ID.getName(), this.idTextField);
+        XBayaLabel idLabel = new XBayaLabel(EventDataRepository.Column.ID.getName(), this.idTextField);
 
         this.statusTextField = new XBayaTextField();
         this.statusTextField.setEditable(false);
-        XBayaLabel statusLabel = new XBayaLabel(MonitorEventData.Column.STATUS.getName(), this.statusTextField);
+        XBayaLabel statusLabel = new XBayaLabel(EventDataRepository.Column.STATUS.getName(), this.statusTextField);
 
         this.messageTextArea = new XBayaTextArea();
         this.messageTextArea.setSize(500, 500);
         this.messageTextArea.setEditable(false);
-        XBayaLabel messageLabel = new XBayaLabel(MonitorEventData.Column.MESSAGE.getName(), this.messageTextArea);
+        XBayaLabel messageLabel = new XBayaLabel(EventDataRepository.Column.MESSAGE.getName(), this.messageTextArea);
 
         GridPanel infoPanel = new GridPanel();
         infoPanel.add(timeLabel);

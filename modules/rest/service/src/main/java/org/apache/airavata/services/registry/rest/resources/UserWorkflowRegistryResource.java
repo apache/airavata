@@ -59,6 +59,7 @@ public class UserWorkflowRegistryResource {
      */
     @GET
     @Path(ResourcePathConstants.UserWFConstants.WORKFLOW_EXIST)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_PLAIN)
     public Response isWorkflowExists(@QueryParam("workflowName") String workflowName) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);

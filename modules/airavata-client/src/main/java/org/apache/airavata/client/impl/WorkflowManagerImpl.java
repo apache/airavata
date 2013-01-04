@@ -459,16 +459,24 @@ public class WorkflowManagerImpl implements WorkflowManager {
 	}
 
 	@Override
-	public List<WorkflowInput> getWorkflowInputs(String workflowName) throws Exception {
-		return getWorkflow(workflowName).getWorkflowInputs();
+	public List<WorkflowInput> getWorkflowInputs(String workflowName) throws AiravataAPIInvocationException {
+		try {
+			return getWorkflow(workflowName).getWorkflowInputs();
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
 	}
 
 	@Override
-	public List<WorkflowInput> getWorkflowInputs(WorkflowData workflowData) throws Exception {
-		if (workflowData.isPublished()){
-			return getWorkflowFromString(getClient().getRegistryClient().getPublishedWorkflowGraphXML(workflowData.getName())).getWorkflowInputs();
-		}else{
-			return getWorkflowInputs(workflowData.getName());
+	public List<WorkflowInput> getWorkflowInputs(WorkflowData workflowData) throws AiravataAPIInvocationException {
+		try {
+			if (workflowData.isPublished()){
+				return getWorkflowFromString(getClient().getRegistryClient().getPublishedWorkflowGraphXML(workflowData.getName())).getWorkflowInputs();
+			}else{
+				return getWorkflowInputs(workflowData.getName());
+			}
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
 		}
 	}
 

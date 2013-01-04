@@ -37,10 +37,9 @@ import javax.swing.JPanel;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.stub.interpretor.WorkflowInterpretorStub;
+import org.apache.airavata.client.api.ExperimentAdvanceOptions;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.workflow.model.graph.ws.WSNode;
@@ -307,81 +306,26 @@ public class WorkflowInterpreterLaunchWindow {
         }
         this.engine.getConfiguration().setTopic(topic);
 
-        final String topicString = topic;
         new Thread() {
-            /**
-             * @see java.lang.Thread#run()
-             */
             @Override
             public void run() {
 
                 try {
-
-                    WorkflowInterpretorStub stub = new WorkflowInterpretorStub(engine.getConfiguration()
-                            .getWorkflowInterpreterURL().toString());
-//                    NameValue[] configurations = new NameValue[6];
-//                    configurations[0] = new NameValue();
-//                    configurations[0].setName(HeaderConstants.HEADER_ELEMENT_GFAC);
-//                    configurations[0].setValue(engine.getConfiguration().getGFacURL().toString());
-//                    configurations[1] = new NameValue();
-//                    configurations[1].setName(HeaderConstants.HEADER_ELEMENT_REGISTRY);
-//                    if (null == engine.getConfiguration().getRegistryURL()) {
-//                        configurations[1].setValue(XBayaConstants.REGISTRY_URL.toString());
-//                    } else {
-//                        configurations[1].setValue(engine.getConfiguration().getRegistryURL().toString());
-//                    }
-//                    configurations[2] = new NameValue();
-//                    configurations[2].setName(HeaderConstants.HEADER_ELEMENT_PROXYSERVER);
-//                    configurations[2].setValue(engine.getConfiguration().getMyProxyServer());
-//
-//                    configurations[3] = new NameValue();
-//                    configurations[3].setName(HeaderConstants.HEADER_ELEMENT_BROKER);
-//                    configurations[3].setValue(engine.getConfiguration().getBrokerURL().toString());
-//
-//                    configurations[4] = new NameValue();
-//                    configurations[4].setName(HeaderConstants.HEADER_ELEMENT_MSGBOX);
-//                    configurations[4].setValue(engine.getConfiguration().getMessageBoxURL().toString());
-//
-//                    configurations[5] = new NameValue();
-//                    configurations[5].setName(HeaderConstants.HEADER_ELEMENT_DSC);
-//                    configurations[5].setValue(engine.getConfiguration().getDSCURL().toString());
                     List<WorkflowInput> workflowInputs=new ArrayList<WorkflowInput>();
-//                    NameValue[] inputNameVals = new NameValue[inputNodes.size()];
                     for (int i = 0; i < inputNodes.size(); i++) {
                     	InputNode inputNode = inputNodes.get(i);
                     	workflowInputs.add(new WorkflowInput(inputNode.getID(), inputNode.getDefaultValue().toString()));
-//                        inputNameVals[i] = new NameValue();
-//                        InputNode inputNode = inputNodes.get(i);
-//                        String id = inputNode.getID();
-//                        String value = inputNode.getDefaultValue().toString();
-//                        inputNameVals[i].setName(id);
-//                        inputNameVals[i].setValue(value);
                     }
-                    XBayaConfiguration configuration = engine.getConfiguration();
-//                    String myProxyUsername = configuration.getRegistryUserName();
-//                    String myProxyPass = configuration.getRegistryPassphrase();
-                    //todo we need to add the workflowContext header in the message
-                    
-                    WorkflowContextHeaderBuilder builder = new WorkflowContextHeaderBuilder(configuration.getBrokerURL().toASCIIString(),
-                            configuration.getGFacURL().toASCIIString(),configuration.getRegistryURL().toASCIIString(),configuration.getTopic()
-                            ,null,configuration.getMessageBoxURL().toASCIIString());
                     AiravataAPI api = engine.getConfiguration().getAiravataAPI();
                     
-                    String experimentId = api.getExecutionManager().runExperiment(api.getWorkflowManager().getWorkflowAsString(workflow), workflowInputs,api.getCurrentUser(),null,instanceNameFinal,builder);
+                    ExperimentAdvanceOptions options = api.getExecutionManager().createExperimentAdvanceOptions(instanceNameFinal, api.getCurrentUser(), null);
+                    String experimentId = api.getExecutionManager().runExperiment(api.getWorkflowManager().getWorkflowAsString(workflow), workflowInputs,options);
                     try {
                         WorkflowInterpreterLaunchWindow.this.engine.getMonitor().getConfiguration().setTopic(experimentId);
-
                         WorkflowInterpreterLaunchWindow.this.engine.getMonitor().start();
                     } catch (MonitorException e1) {
                         WorkflowInterpreterLaunchWindow.this.engine.getGUI().getErrorWindow().error(e1);
                     }
-                    
-                    
-//                    stub._getServiceClient().addHeader(AXIOMUtil.stringToOM(XMLUtil.xmlElementToString(builder.getXml())));
-//                    stub.launchWorkflow(workflow.toXMLText(), topicString, inputNameVals);
-//                    
-//                    api.getProvenanceManager().setExperimentName(topicString, instanceNameFinal);
-//                    api.getProvenanceManager().setExperimentUser(topicString, api.getAiravataManager().getUser().getUserName());
                 } catch (Exception e) {
                     WorkflowInterpreterLaunchWindow.this.engine.getGUI().getErrorWindow().error(e);
                 }
