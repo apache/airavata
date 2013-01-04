@@ -39,7 +39,7 @@ import org.apache.airavata.workflow.model.graph.system.OutputNode;
 import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.workflow.model.graph.ws.WSGraph;
 import org.apache.airavata.workflow.model.wf.Workflow;
-import org.apache.airavata.ws.monitor.MonitorEvent;
+import org.apache.airavata.ws.monitor.EventData;
 import org.apache.airavata.ws.monitor.MonitorException;
 import org.apache.airavata.ws.monitor.MonitorUtil;
 import org.apache.airavata.ws.monitor.MonitorUtil.EventType;
@@ -147,7 +147,7 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
         try {
             // String soapBody = WorkFlowUtils.getSoapBodyContent(message);
             XmlElement event = XMLUtil.stringToXmlElement(message);
-            handleEvent(new MonitorEvent(event), true, this.workflow.getGraph());
+            handleEvent(new EventData(event), true, this.workflow.getGraph());
 
             // } catch (XMLStreamException e) {
             // // Just log them because they can be unrelated messages sent to
@@ -160,7 +160,7 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
         }
     }
 
-    private void handleEvent(MonitorEvent event, boolean forward, Graph graph) {
+    private void handleEvent(EventData event, boolean forward, Graph graph) {
         EventType type = event.getType();
         String nodeID = event.getNodeID();
         Node node = graph.getNode(nodeID);

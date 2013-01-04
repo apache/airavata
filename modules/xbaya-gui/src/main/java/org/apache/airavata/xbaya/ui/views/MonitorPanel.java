@@ -43,7 +43,7 @@ import javax.swing.table.TableColumnModel;
 import org.apache.airavata.common.utils.BrowserLauncher;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.ws.monitor.Monitor;
-import org.apache.airavata.ws.monitor.MonitorEventData;
+import org.apache.airavata.ws.monitor.EventDataRepository;
 import org.apache.airavata.ws.monitor.MonitorUtil;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.monitor.MonitorWindow;
@@ -60,7 +60,7 @@ public class MonitorPanel implements XBayaComponent, TableModelListener {
 
     private XBayaGUI xbayaGUI;
 
-    private MonitorEventData tableSliderModel;
+    private EventDataRepository tableSliderModel;
 
     private JTable table;
 
@@ -171,7 +171,7 @@ public class MonitorPanel implements XBayaComponent, TableModelListener {
                 String tip = null;
                 Point point = event.getPoint();
                 int colIndex = columnAtPoint(point);
-                if (colIndex == MonitorEventData.Column.MESSAGE.ordinal()) {
+                if (colIndex == EventDataRepository.Column.MESSAGE.ordinal()) {
                     tip = "Double click here to see the full message.";
                 }
                 return tip;
@@ -194,7 +194,7 @@ public class MonitorPanel implements XBayaComponent, TableModelListener {
                     if (clickCount == 1) {
                         if (MonitorUtil.getType(message) == MonitorUtil.EventType.PUBLISH_URL) {
                             int column = MonitorPanel.this.table.columnAtPoint(point);
-                            if (column == MonitorEventData.Column.MESSAGE.ordinal()) {
+                            if (column == EventDataRepository.Column.MESSAGE.ordinal()) {
                                 String url = MonitorUtil.getLocation(message);
                                 try {
                                     BrowserLauncher.openURL(url);

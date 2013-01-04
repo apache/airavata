@@ -54,7 +54,7 @@ import org.apache.airavata.workflow.tracking.impl.publish.LoopbackPublisher;
 import org.apache.airavata.workflow.tracking.impl.publish.NotificationPublisher;
 import org.apache.airavata.ws.monitor.Monitor;
 import org.apache.airavata.ws.monitor.MonitorConfiguration;
-import org.apache.airavata.ws.monitor.MonitorEventData;
+import org.apache.airavata.ws.monitor.EventDataRepository;
 import org.apache.airavata.ws.monitor.MonitorException;
 import org.apache.airavata.ws.monitor.event.Event;
 import org.apache.airavata.ws.monitor.event.Event.Type;
@@ -134,7 +134,7 @@ public class WorkflowModificationTestCase extends XBayaTestCase {
             monitor = new Monitor(monitorConfiguration);
         }
 
-        MonitorEventData eventData = monitor.getEventData();
+        EventDataRepository eventData = monitor.getEventData();
         MonitorCallback callback = new MonitorCallback(eventData);
         LoopbackPublisher publisher = new LoopbackPublisher(callback, this.configuration.getTopic());
         MonitorNotifier notifier = new MonitorNotifier(publisher);
@@ -344,14 +344,14 @@ public class WorkflowModificationTestCase extends XBayaTestCase {
 
     private class MonitorCallback implements Callback {
 
-        private MonitorEventData eventData;
+        private EventDataRepository eventData;
 
         /**
          * Constructs a MonitorCallback.
          * 
          * @param eventData
          */
-        public MonitorCallback(MonitorEventData eventData) {
+        public MonitorCallback(EventDataRepository eventData) {
             this.eventData = eventData;
         }
 

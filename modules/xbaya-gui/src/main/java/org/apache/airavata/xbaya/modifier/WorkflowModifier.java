@@ -44,8 +44,8 @@ import org.apache.airavata.workflow.model.graph.ws.WSGraph;
 import org.apache.airavata.workflow.model.graph.ws.WSNode;
 import org.apache.airavata.workflow.model.graph.ws.WSPort;
 import org.apache.airavata.workflow.model.wf.Workflow;
-import org.apache.airavata.ws.monitor.MonitorEvent;
-import org.apache.airavata.ws.monitor.MonitorEventData;
+import org.apache.airavata.ws.monitor.EventData;
+import org.apache.airavata.ws.monitor.EventDataRepository;
 import org.apache.airavata.ws.monitor.MonitorException;
 import org.apache.airavata.ws.monitor.MonitorUtil;
 import org.apache.airavata.ws.monitor.MonitorUtil.EventType;
@@ -64,7 +64,7 @@ public class WorkflowModifier {
 
     private Workflow modifiedWorkflow;
 
-    private MonitorEventData eventData;
+    private EventDataRepository eventData;
 
     /**
      * Constructs a WorkflowModifier.
@@ -72,7 +72,7 @@ public class WorkflowModifier {
      * @param modifiedWorkflow
      * @param eventData
      */
-    public WorkflowModifier(Workflow modifiedWorkflow, MonitorEventData eventData) {
+    public WorkflowModifier(Workflow modifiedWorkflow, EventDataRepository eventData) {
         this.modifiedWorkflow = modifiedWorkflow;
         this.eventData = eventData;
     }
@@ -195,8 +195,8 @@ public class WorkflowModifier {
 
     private String getWorkflowInput(String nodeID) throws MonitorException {
         logger.debug("Node:" + nodeID);
-        List<MonitorEvent> events = this.eventData.getEvents();
-        for (MonitorEvent event : events) {
+        List<EventData> events = this.eventData.getEvents();
+        for (EventData event : events) {
             EventType type = event.getType();
             // TODO change this to read from the notification from GPEL.
             if (type != EventType.INVOKING_SERVICE) {
@@ -229,8 +229,8 @@ public class WorkflowModifier {
     }
 
     private String getOutput(String nodeID, String messageName, String parameterName) throws MonitorException {
-        List<MonitorEvent> events = this.eventData.getEvents();
-        for (MonitorEvent event : events) {
+        List<EventData> events = this.eventData.getEvents();
+        for (EventData event : events) {
             // We need to find the notification that contains the output of the
             // service invocation.
             EventType type = event.getType();

@@ -44,7 +44,7 @@ public class Monitor extends EventProducer {
 
     protected static final String DEFAULT_MODEL_KEY = "_DEFAULT_MODEL_KEY";
 
-    protected Map<String, MonitorEventData> eventDataMap = new HashMap<String, MonitorEventData>();
+    protected Map<String, EventDataRepository> eventDataMap = new HashMap<String, EventDataRepository>();
 
     protected WsmgClient wsmgClient;
 
@@ -68,7 +68,7 @@ public class Monitor extends EventProducer {
         // The first one is special and it is for the main event panel display
         // and
         // it does not have and filters
-        this.eventDataMap.put(DEFAULT_MODEL_KEY, new MonitorEventData());
+        this.eventDataMap.put(DEFAULT_MODEL_KEY, new EventDataRepository());
 
 
     }
@@ -83,7 +83,7 @@ public class Monitor extends EventProducer {
     /**
      * @return The event data;
      */
-    public MonitorEventData getEventData() {
+    public EventDataRepository getEventData() {
         // send the first one cos that is the default one
         return this.eventDataMap.get(DEFAULT_MODEL_KEY);
     }
@@ -91,7 +91,7 @@ public class Monitor extends EventProducer {
     /**
      * @return The event data;
      */
-    public MonitorEventData getEventData(String nodeID) {
+    public EventDataRepository getEventData(String nodeID) {
         // send the first one cos that is the default one
         return this.eventDataMap.get(nodeID);
     }
@@ -116,11 +116,11 @@ public class Monitor extends EventProducer {
 
                 final String nodeID = string;
                 // for each wsnode there is one data model which
-                this.eventDataMap.put(nodeID, new MonitorEventData(new EventFilter() {
+                this.eventDataMap.put(nodeID, new EventDataRepository(new EventFilter() {
                     /**
-                     * @see org.apache.airavata.ws.monitor.EventFilter#isAcceptable(org.apache.airavata.ws.monitor.MonitorEvent)
+                     * @see org.apache.airavata.ws.monitor.EventFilter#isAcceptable(org.apache.airavata.ws.monitor.EventData)
                      */
-                    public boolean isAcceptable(MonitorEvent event) {
+                    public boolean isAcceptable(EventData event) {
                         return event != null && event.getNodeID() != null && event.getNodeID().equals(nodeID);
                     }
                 }));
@@ -208,7 +208,7 @@ public class Monitor extends EventProducer {
         LinkedList<String> keysToBeRemoved = new LinkedList<String>();
         // Remove everthing leaving only the last one
         for (String key : keys) {
-            MonitorEventData monitorEventData = this.eventDataMap.get(key);
+            EventDataRepository monitorEventData = this.eventDataMap.get(key);
             monitorEventData.removeAllEvents();
             if (!key.equals(DEFAULT_MODEL_KEY)) {
                 keysToBeRemoved.add(key);

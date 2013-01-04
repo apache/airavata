@@ -25,10 +25,10 @@ public interface MonitorEventListener {
 	
 	/**
 	 * Gets triggered when a new message is received relevant for the experiment subscribed to
-	 * @param eventData - Contains a collection of events up to this point in monitoring
-	 * @param event - the new message related to the experiment
+	 * @param eventDataRepo - Contains a collection of events up to this point in monitoring
+	 * @param eventData - the new message related to the experiment
 	 */
-	public void notify(MonitorEventData eventData, MonitorEvent event);
+	public void notify(EventDataRepository eventDataRepo, EventData eventData);
 	
 	/**
 	 * Set the Monitor object

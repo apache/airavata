@@ -72,7 +72,7 @@ public class WorkflowExecutionStatus {
         }
     }
 
-    private State executionStatus;
+    private State executionStatus=State.UNKNOWN;
     private Date statusUpdateTime = null;
     private WorkflowExecution workflowInstance;
 

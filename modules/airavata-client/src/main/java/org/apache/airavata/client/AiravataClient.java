@@ -766,7 +766,7 @@ public class AiravataClient extends Observable implements AiravataAPI {
 
     private Workflow extractWorkflow(String workflowName) throws AiravataAPIInvocationException {
         Workflow workflowObj = null;
-        if(getWorkflowManager().isWorkflowExists(workflowName)) {
+        if(!workflowName.contains("http://airavata.apache.org/xbaya/xwf")){//(getClient().getWorkflowManager().isWorkflowExists(workflowName)) {
             workflowObj = getWorkflow(workflowName);
         }else {
             try{
