@@ -35,6 +35,7 @@ import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
 import org.apache.airavata.rest.utils.BasicAuthHeaderUtil;
 import org.apache.airavata.rest.utils.ClientConstant;
+import org.apache.airavata.rest.utils.CookieManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +60,7 @@ public class BasicRegistryResourceClient {
     private Cookie cookie;
     private WebResource.Builder builder;
     private String gatewayName;
+//    private CookieManager cookieManager = new CookieManager();
 
     /**
      * Creates a BasicRegistryResourceClient
@@ -70,11 +72,13 @@ public class BasicRegistryResourceClient {
     public BasicRegistryResourceClient(String userName,
                                        String gateway,
                                        String seriveURI,
-                                       PasswordCallback callback) {
+                                       PasswordCallback callback,
+                                       Cookie cookie) {
         this.userName = userName;
         this.callback = callback;
         this.baseURI = seriveURI;
         this.gatewayName = gateway;
+        this.cookie = cookie;
     }
 
     /**
@@ -121,6 +125,7 @@ public class BasicRegistryResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -136,6 +141,7 @@ public class BasicRegistryResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -164,6 +170,7 @@ public class BasicRegistryResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -178,6 +185,7 @@ public class BasicRegistryResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -206,6 +214,7 @@ public class BasicRegistryResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -221,6 +230,7 @@ public class BasicRegistryResourceClient {
             } else if (status == ClientConstant.HTTP_OK) {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -248,6 +258,7 @@ public class BasicRegistryResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -263,6 +274,7 @@ public class BasicRegistryResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -290,6 +302,7 @@ public class BasicRegistryResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -305,6 +318,7 @@ public class BasicRegistryResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -334,6 +348,7 @@ public class BasicRegistryResourceClient {
             if (status == ClientConstant.HTTP_OK) {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
                 builder = BasicAuthHeaderUtil.getBuilder(
@@ -349,6 +364,7 @@ public class BasicRegistryResourceClient {
                 } else {
                     if (response.getCookies().size() > 0) {
                         cookie = response.getCookies().get(0).toCookie();
+                        CookieManager.setCookie(cookie);
                     }
                 }
             } else {
@@ -385,6 +401,7 @@ public class BasicRegistryResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -400,6 +417,7 @@ public class BasicRegistryResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {

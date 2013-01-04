@@ -40,6 +40,7 @@ import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.worker.ExperimentDoesNotExistsException;
 import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.workflow.NodeExecutionData;
+import org.apache.airavata.rest.utils.CookieManager;
 
 public class RegistryClient extends AiravataRegistry2 {
 
@@ -54,6 +55,8 @@ public class RegistryClient extends AiravataRegistry2 {
     private ProvenanceResourceClient provenanceResourceClient;
     private PublishedWorkflowResourceClient publishedWorkflowResourceClient;
     private UserWorkflowResourceClient userWorkflowResourceClient;
+
+//    private CookieManager cookieManager = new CookieManager();
 
 
     public RegistryClient() {
@@ -97,14 +100,30 @@ public class RegistryClient extends AiravataRegistry2 {
         String userName = getUser().getUserName();
         callback = getCallback();
         String serviceURI = getConnectionURI().toString();
-        basicRegistryResourceClient = new BasicRegistryResourceClient(userName, getGateway().getGatewayName(), serviceURI, callback);
-        configurationResourceClient = new ConfigurationResourceClient(userName, getGateway().getGatewayName(),serviceURI,  callback);
-        descriptorResourceClient = new DescriptorResourceClient(userName, getGateway().getGatewayName(),serviceURI, callback);
-        experimentResourceClient = new ExperimentResourceClient(userName, getGateway().getGatewayName(),serviceURI, callback);
-        projectResourceClient = new ProjectResourceClient(userName, getGateway().getGatewayName(),serviceURI, callback);
-        provenanceResourceClient = new ProvenanceResourceClient(userName, getGateway().getGatewayName(),serviceURI, callback);
-        publishedWorkflowResourceClient = new PublishedWorkflowResourceClient(userName, getGateway().getGatewayName(),serviceURI, callback);
-        userWorkflowResourceClient = new UserWorkflowResourceClient(userName,getGateway().getGatewayName(),serviceURI,callback);
+        basicRegistryResourceClient =
+                new BasicRegistryResourceClient(
+                        userName, getGateway().getGatewayName(), serviceURI, callback, CookieManager.getCookie());
+        configurationResourceClient =
+                new ConfigurationResourceClient(
+                        userName, getGateway().getGatewayName(),serviceURI,  callback, CookieManager.getCookie());
+        descriptorResourceClient =
+                new DescriptorResourceClient(
+                        userName, getGateway().getGatewayName(),serviceURI, callback, CookieManager.getCookie());
+        experimentResourceClient =
+                new ExperimentResourceClient(
+                        userName, getGateway().getGatewayName(),serviceURI, callback, CookieManager.getCookie());
+        projectResourceClient =
+                new ProjectResourceClient(
+                        userName, getGateway().getGatewayName(),serviceURI, callback, CookieManager.getCookie());
+        provenanceResourceClient =
+                new ProvenanceResourceClient(
+                        userName, getGateway().getGatewayName(),serviceURI, callback, CookieManager.getCookie());
+        publishedWorkflowResourceClient =
+                new PublishedWorkflowResourceClient(
+                        userName, getGateway().getGatewayName(),serviceURI, callback, CookieManager.getCookie());
+        userWorkflowResourceClient =
+                new UserWorkflowResourceClient(
+                        userName,getGateway().getGatewayName(),serviceURI,callback, CookieManager.getCookie());
     }
 
     public Object getConfiguration(String key) {
