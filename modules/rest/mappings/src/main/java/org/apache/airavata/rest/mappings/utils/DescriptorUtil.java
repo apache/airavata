@@ -125,9 +125,8 @@ public class DescriptorUtil {
 
             String[] gridFTPEndPointArray = globusHostType.getGridFTPEndPointArray();
             for (int i = 0; i < gridFTPEndPointArray.length ; i++){
-                gridFTPEndPoint.add(globusGateKeeperEndPointArray[i]);
+                gridFTPEndPoint.add(gridFTPEndPointArray[i]);
             }
-
         }else if (hostDescriptionType instanceof GsisshHostType){
             GsisshHostType gsisshHostType = (GsisshHostType) hostDescriptionType;
             hostType.add(HostTypes.GSISSH_HOST_TYPE);
@@ -257,7 +256,7 @@ public class DescriptorUtil {
         name.setStringValue(applicationDescriptor.getName());
         applicationDescription.getType().setApplicationName(name);
         applicationDescription.getType().setExecutableLocation(applicationDescriptor.getExecutablePath());
-        applicationDescription.getType().setOutputDataDirectory(applicationDescriptor.getWorkingDir());
+        applicationDescription.getType().setScratchWorkingDirectory(applicationDescriptor.getWorkingDir());
 
         //set advanced options according app desc type
         if(applicationDescriptor.getApplicationDescType() != null && !applicationDescriptor.getApplicationDescType().isEmpty()){
@@ -265,8 +264,14 @@ public class DescriptorUtil {
                 ApplicationDescription appDesc = new ApplicationDescription(HpcApplicationDeploymentType.type);
                 appDesc.getType().setApplicationName(name);
                 appDesc.getType().setExecutableLocation(applicationDescriptor.getExecutablePath());
-                appDesc.getType().setOutputDataDirectory(applicationDescriptor.getWorkingDir());
+                appDesc.getType().setScratchWorkingDirectory(applicationDescriptor.getWorkingDir());
                 HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) appDesc.getType();
+
+                ProjectAccountType projectAccountType = app.addNewProjectAccount();
+                projectAccountType.setProjectAccountNumber(applicationDescriptor.getProjectNumber());
+                projectAccountType.setProjectAccountDescription(applicationDescriptor.getProjectDescription());
+                app.setProjectAccount(projectAccountType);
+
                 app.setCpuCount(applicationDescriptor.getCpuCount());
                 app.setJobType(JobTypeType.Enum.forString(applicationDescriptor.getJobType()));
                 app.setMaxMemory(applicationDescriptor.getMaxMemory());
@@ -274,6 +279,11 @@ public class DescriptorUtil {
                 app.setMaxWallTime(applicationDescriptor.getMaxWallTime());
                 app.setNodeCount(applicationDescriptor.getNodeCount());
                 app.setProcessorsPerNode(applicationDescriptor.getProcessorsPerNode());
+
+                QueueType queueType = app.addNewQueue();
+                queueType.setQueueName(applicationDescriptor.getQueueName());
+                app.setQueue(queueType);
+
                 return appDesc;
             }
         }
@@ -284,9 +294,10 @@ public class DescriptorUtil {
         ApplicationDescriptor applicationDescriptor = new ApplicationDescriptor();
         applicationDescriptor.setName(applicationDescription.getType().getApplicationName().getStringValue());
         applicationDescriptor.setExecutablePath(applicationDescription.getType().getExecutableLocation());
-        applicationDescriptor.setWorkingDir(applicationDescription.getType().getOutputDataDirectory());
+        applicationDescriptor.setWorkingDir(applicationDescription.getType().getScratchWorkingDirectory());
         if(applicationDescription.getType() != null){
             if(applicationDescription.getType() instanceof HpcApplicationDeploymentType){
+                applicationDescriptor.setApplicationDescType(ApplicationDescriptorTypes.HPC_APP_DEP_DESC_TYPE);
                 HpcApplicationDeploymentType gramApplicationDeploymentType = (HpcApplicationDeploymentType) applicationDescription.getType();
                 if(gramApplicationDeploymentType != null){
                     applicationDescriptor.setCpuCount(gramApplicationDeploymentType.getCpuCount());
@@ -294,9 +305,13 @@ public class DescriptorUtil {
                     applicationDescriptor.setMaxMemory(gramApplicationDeploymentType.getMaxMemory());
                     applicationDescriptor.setMinMemory(gramApplicationDeploymentType.getMinMemory());
                     applicationDescriptor.setMaxWallTime(gramApplicationDeploymentType.getMaxWallTime());
+                    applicationDescriptor.setJobType(gramApplicationDeploymentType.getJobType().toString());
+                    applicationDescriptor.setProjectNumber(gramApplicationDeploymentType.getProjectAccount().getProjectAccountNumber());
+                    applicationDescriptor.setProjectDescription(gramApplicationDeploymentType.getProjectAccount().getProjectAccountDescription());
                     if(gramApplicationDeploymentType.getQueue() != null){
                         applicationDescriptor.setQueueName(gramApplicationDeploymentType.getQueue().getQueueName());
                     }
+                    applicationDescriptor.setProcessorsPerNode(gramApplicationDeploymentType.getProcessorsPerNode());
                 }
             }
         }
