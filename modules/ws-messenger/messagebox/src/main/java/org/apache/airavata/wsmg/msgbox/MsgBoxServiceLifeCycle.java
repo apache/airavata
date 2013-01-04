@@ -27,6 +27,7 @@ import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.tools.PeriodicExecutorThread;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ServiceUtils;
 import org.apache.airavata.wsmg.commons.config.ConfigurationManager;
@@ -88,7 +89,7 @@ public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
     }
 
     public void startUp(ConfigurationContext configurationcontext, AxisService axisservice) {
-
+    	AiravataUtils.setExecutionAsServer();
         Axis2Utils.overrideAddressingPhaseHander(configurationcontext, new StoreMessageHandler());
 
         // Load the configuration file from the classpath

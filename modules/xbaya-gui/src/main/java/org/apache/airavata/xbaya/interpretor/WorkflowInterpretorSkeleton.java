@@ -47,6 +47,7 @@ import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.stub.interpretor.NameValue;
 import org.apache.airavata.client.tools.PeriodicExecutorThread;
 import org.apache.airavata.common.exception.ServerSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ServiceUtils;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
@@ -137,6 +138,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     }
 
     public void startUp(final ConfigurationContext configctx, AxisService service) {
+    	AiravataUtils.setExecutionAsServer();
     	new Thread(){
 			@Override
     		public void run() {

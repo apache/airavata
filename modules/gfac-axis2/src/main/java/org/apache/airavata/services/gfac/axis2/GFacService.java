@@ -35,6 +35,7 @@ import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.tools.PeriodicExecutorThread;
 import org.apache.airavata.common.exception.ServerSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ServiceUtils;
 import org.apache.airavata.core.gfac.context.GFacConfiguration;
@@ -82,6 +83,7 @@ public class GFacService implements ServiceLifeCycle {
     private Thread thread;
 
     public void startUp(ConfigurationContext configctx, AxisService service) {
+    	AiravataUtils.setExecutionAsServer();
         AxisConfiguration config = null;
         List<Phase> phases = null;
         config = service.getAxisConfiguration();
