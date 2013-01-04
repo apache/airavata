@@ -35,6 +35,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.airavata.registry.api.PasswordCallback;
+import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
 import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
 import org.apache.airavata.registry.api.workflow.NodeExecutionData;
@@ -851,7 +852,7 @@ public class ProvenanceResourceClient {
                     + status);
         }
 
-        ExperimentData experimentData = response.getEntity(ExperimentData.class);
+        ExperimentData experimentData = response.getEntity(ExperimentDataImpl.class);
         return experimentData;
     }
 
