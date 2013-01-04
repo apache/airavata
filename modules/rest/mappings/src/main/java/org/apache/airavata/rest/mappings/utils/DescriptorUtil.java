@@ -167,15 +167,28 @@ public class DescriptorUtil {
         if (hostDescriptor.getHostType() != null && !hostDescriptor.getHostType().isEmpty()) {
             if (hostDescriptor.getHostType().get(0).equals(HostTypes.GLOBUS_HOST_TYPE)) {
                 hostDescription.getType().changeType(GlobusHostType.type);
-                ((GlobusHostType) hostDescription.getType()).addGlobusGateKeeperEndPoint(hostDescriptor.getGlobusGateKeeperEndPoint().get(0));
-                ((GlobusHostType) hostDescription.getType()).addGridFTPEndPoint(hostDescriptor.getGridFTPEndPoint().get(0));
+                if (!hostDescriptor.getGlobusGateKeeperEndPoint().isEmpty() && hostDescriptor.getGlobusGateKeeperEndPoint() != null){
+                    ((GlobusHostType) hostDescription.getType()).addGlobusGateKeeperEndPoint(hostDescriptor.getGlobusGateKeeperEndPoint().get(0));
+                }
+                if (!hostDescriptor.getGridFTPEndPoint().isEmpty() && hostDescriptor.getGridFTPEndPoint() != null){
+                    ((GlobusHostType) hostDescription.getType()).addGridFTPEndPoint(hostDescriptor.getGridFTPEndPoint().get(0));
+                }
+
             } else if (hostDescriptor.getHostType().get(0).equals(HostTypes.GSISSH_HOST_TYPE)) {
                 hostDescription.getType().changeType(GsisshHostType.type);
-                ((GsisshHostType) hostDescription).addGridFTPEndPoint(hostDescriptor.getGridFTPEndPoint().get(0));
+                if (!hostDescriptor.getGridFTPEndPoint().isEmpty() && hostDescriptor.getGridFTPEndPoint() != null){
+                    ((GsisshHostType) hostDescription).addGridFTPEndPoint(hostDescriptor.getGridFTPEndPoint().get(0));
+                }
+
             } else if (hostDescriptor.getHostType().get(0).equals(HostTypes.EC2_HOST_TYPE)) {
                 hostDescription.getType().changeType(Ec2HostType.type);
-                ((Ec2HostType) hostDescription).addImageID(hostDescriptor.getImageID().get(0));
-                ((Ec2HostType) hostDescription).addInstanceID(hostDescriptor.getInstanceID().get(0));
+                if (!hostDescriptor.getImageID().isEmpty() && hostDescriptor.getImageID() != null ){
+                    ((Ec2HostType) hostDescription).addImageID(hostDescriptor.getImageID().get(0));
+                }
+                if (!hostDescriptor.getInstanceID().isEmpty() && hostDescriptor.getInstanceID() != null){
+                    ((Ec2HostType) hostDescription).addInstanceID(hostDescriptor.getInstanceID().get(0));
+                }
+
             }
         }
 
