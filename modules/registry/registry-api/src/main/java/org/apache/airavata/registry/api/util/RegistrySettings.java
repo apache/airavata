@@ -21,22 +21,35 @@
 
 package org.apache.airavata.registry.api.util;
 
+import java.io.File;
 import java.net.URL;
 import java.util.Properties;
 
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.registry.api.exception.RegistrySettingsException;
 import org.apache.airavata.registry.api.exception.RegistrySettingsLoadException;
 import org.apache.airavata.registry.api.exception.UnspecifiedRegistrySettingsException;
 
 public class RegistrySettings {
     private static final String REPOSITORY_PROPERTIES = "registry.properties";
+    private static final String SERVER_REPOSITORY_PROPERTIES = ServerSettings.REPOSITORY_PROPERTIES;
+    private static final String CLIENT_REPOSITORY_PROPERTIES = "airavata-client.properties";
     private static Properties properties = new Properties();
     private static Exception propertyLoadException;
     private static final String REGISTRY_ACCESSOR_CLASS = "class.registry.accessor";
     
     static{
-    	URL url = RegistrySettings.class.getClassLoader()
-				.getResource(REPOSITORY_PROPERTIES);
+    	String propertyFileName = REPOSITORY_PROPERTIES;
+    	if (!(new File(propertyFileName)).exists()) {
+    		if (AiravataUtils.isServer()){
+        		propertyFileName=SERVER_REPOSITORY_PROPERTIES;
+        	}else{
+        		propertyFileName=CLIENT_REPOSITORY_PROPERTIES;
+        	}
+		}
+		URL url = RegistrySettings.class.getClassLoader()
+				.getResource(propertyFileName);
         try {
             properties.load(url.openStream());
         } catch (Exception e) {

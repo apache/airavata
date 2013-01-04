@@ -29,7 +29,7 @@ import org.apache.airavata.common.exception.ServerSettingsLoadException;
 import org.apache.airavata.common.exception.UnspecifiedServerSettingsException;
 
 public class ServerSettings {
-    private static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
+    public static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
     private static Properties properties = new Properties();
     private static Exception propertyLoadException;
     private static final String DEFAULT_GATEWAY_ID="gateway.id";

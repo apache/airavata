@@ -28,6 +28,7 @@ import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.tools.PeriodicExecutorThread;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ServiceUtils;
 import org.apache.airavata.wsmg.broker.handler.PublishedMessageHandler;
@@ -113,7 +114,7 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
     }
 
     public void startUp(ConfigurationContext configContext, AxisService axisService) {
-
+    	AiravataUtils.setExecutionAsServer();
         Boolean inited = (Boolean) configContext.getProperty(WsmgCommonConstants.BROKER_INITED);
 
         if (inited == null || inited == false) {
