@@ -32,6 +32,7 @@ public class ApplicationDescriptor {
     private String workingDir;
     private String jobType;
     private String projectNumber;
+    private String projectDescription;
     private String queueName;
     private int maxWallTime;
     private int cpuCount;
@@ -169,5 +170,13 @@ public class ApplicationDescriptor {
 
     public void setServiceDescriptor(ServiceDescriptor serviceDescriptor) {
         this.serviceDescriptor = serviceDescriptor;
+    }
+
+    public String getProjectDescription() {
+        return projectDescription;
+    }
+
+    public void setProjectDescription(String projectDescription) {
+        this.projectDescription = projectDescription;
     }
 }
