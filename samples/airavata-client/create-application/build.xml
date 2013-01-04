@@ -29,7 +29,7 @@
         <delete dir="${class.dir}" quiet="true"/>
     </target>
     <target name="run" depends="compile">
-        <java classname="org.apache.airavata.client.samples.CreateApplication" classpathref="javac.classpath" fork="true"/>
+        <java classname="org.apache.airavata.api.samples.CreateApplication" classpathref="javac.classpath" fork="true"/>
     </target>
     <target name="init">
         <mkdir dir="${class.dir}"/>

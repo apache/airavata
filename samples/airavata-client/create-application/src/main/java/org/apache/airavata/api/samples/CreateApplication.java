@@ -1,9 +1,10 @@
-package org.apache.airavata.client.samples;
+package org.apache.airavata.api.samples;
 
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.client.api.DescriptorRecordAlreadyExistsException;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.PasswordCallback;
@@ -33,7 +34,7 @@ public class CreateApplication {
 
     private static AiravataAPI airavataAPI;
 
-    public static void main(String[] args) throws AiravataAPIInvocationException, IOException, URISyntaxException {
+    public static void main(String[] args) throws AiravataAPIInvocationException, IOException, URISyntaxException, DescriptorRecordAlreadyExistsException {
 
         //creating airavata client object //
         port = Integer.parseInt("8080");
@@ -93,7 +94,7 @@ public class CreateApplication {
         airavataAPI.getApplicationManager().saveServiceDescription(serviceDescription);
 
         // Deployment descriptor creation
-        ApplicationDeploymentDescription applicationDeploymentDescription = new ApplicationDeploymentDescription();
+        ApplicationDescription applicationDeploymentDescription = new ApplicationDescription();
         ApplicationDeploymentDescriptionType applicationDeploymentDescriptionType
                 = applicationDeploymentDescription.getType();
         applicationDeploymentDescriptionType.addNewApplicationName().setStringValue("EchoApplication");
@@ -103,8 +104,8 @@ public class CreateApplication {
         log.info("Saving deployment description ...");
 
         //Saving deployment Descriptor with an association with given serviceName, Host name
-        airavataAPI.getApplicationManager().saveDeploymentDescription(serviceDescription.getType().getName(),
-                descriptor.getType().getHostName(), applicationDeploymentDescription);
+        airavataAPI.getApplicationManager().addApplicationDescription(serviceDescription,
+                descriptor, applicationDeploymentDescription);
     }
 
     public static int getPort() {

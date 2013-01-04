@@ -41,7 +41,7 @@ public interface ExperimentData extends WorkflowExecutionData {
     //Current Id and Topic values are similar
 
     /**
-     * Returns the ExeperimentID of the workflow Run
+     * Returns the ExperimentID of the workflow Run
      * @return
      */
     public String getId();
