@@ -169,9 +169,9 @@ public class BPELScript {
     private XmlNamespace bpelNS;
 
     /**
-     * 
+     *
      * Constructs a BPELScript.
-     * 
+     *
      * @param workflow
      */
     public BPELScript(Workflow workflow) {
@@ -180,7 +180,7 @@ public class BPELScript {
 
     /**
      * Constructs a BPELScript.
-     * 
+     *
      * @param workflow
      */
     public BPELScript(Workflow workflow, String operationName) {
@@ -191,7 +191,7 @@ public class BPELScript {
 
     /**
      * Returns the GPEL Process.
-     * 
+     *
      * @return The GPEL Process
      */
     public GpelProcess getGpelProcess() {
@@ -207,7 +207,7 @@ public class BPELScript {
 
     /**
      * Returns the WSDLs of components in the workflow.
-     * 
+     *
      * @return The WSDLs of components.
      */
     public Collection<XmlElement> getWSDLs() {
@@ -350,7 +350,7 @@ public class BPELScript {
             // Validate
             this.process.xmlValidate();
 
-            logger.info(this.process.xmlStringPretty());
+            logger.debug(this.process.xmlStringPretty());
         } catch (RuntimeException e) {
             throw new GraphException(e);
         }
@@ -479,7 +479,7 @@ public class BPELScript {
 
     // TODO: Add xml to BPEL
     private void addSingle(Node node, Collection<Node> block, GpelSequence sequence) throws GraphException {
-        logger.info("Processing + " + node.getID());
+        logger.debug("Processing + " + node.getID());
         if (node instanceof WSNode) {
             addInvoke((WSNode) node, sequence);
         } else if (node instanceof ConstantNode) {
@@ -590,7 +590,7 @@ public class BPELScript {
 
     /**
      * Creates BpelAssignCopyFrom for a specified port.
-     * 
+     *
      * @param port
      * @return The BpelAssignCopyFrom created
      * @throws GraphException
@@ -656,7 +656,7 @@ public class BPELScript {
 
     /**
      * Creates BpelAssignCopyFrom for a specified port.
-     * 
+     *
      * @param toPort
      * @param input
      * @return The GpelAssignCopyTo created
@@ -718,7 +718,7 @@ public class BPELScript {
     /**
      * Checks is a specified node can be executed next. A node can be executed if all the previous node are done or
      * there is no input ports.
-     * 
+     *
      * @param node
      *            the specified node
      * @param nodes
