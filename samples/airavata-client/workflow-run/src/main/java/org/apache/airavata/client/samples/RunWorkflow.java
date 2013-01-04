@@ -25,9 +25,10 @@ import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
+import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeData;
+import org.apache.airavata.registry.api.workflow.WorkflowExecutionData;
+import org.apache.airavata.registry.api.workflow.NodeExecutionData;
 import org.apache.airavata.rest.client.PasswordCallbackImpl;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.slf4j.Logger;
@@ -96,11 +97,12 @@ public class RunWorkflow {
                 workflowName);
         System.out.println("Workflow Experiment ID Returned : " + result);
         ExperimentData experimentData = airavataAPI.getProvenanceManager().getExperimentData(result);
-        List<WorkflowInstanceData> workflowInstanceData = experimentData.getWorkflowInstanceData();
+        List<WorkflowExecutionDataImpl> workflowInstanceData
+                = experimentData.getWorkflowExecutionDataList();
 
-        for(WorkflowInstanceData data:workflowInstanceData){
-            List<WorkflowInstanceNodeData> nodeDataList = data.getNodeDataList();
-            for(WorkflowInstanceNodeData nodeData:nodeDataList){
+        for(WorkflowExecutionDataImpl data:workflowInstanceData){
+            List<NodeExecutionData> nodeDataList = data.getNodeDataList();
+            for(NodeExecutionData nodeData:nodeDataList){
                 System.out.println("Input : " + nodeData.getInputData().get(0));
                 System.out.println("Output :" + nodeData.getOutputData().get(0));
             }
