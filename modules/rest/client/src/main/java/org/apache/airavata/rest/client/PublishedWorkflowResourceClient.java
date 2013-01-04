@@ -36,6 +36,7 @@ import org.apache.airavata.rest.mappings.resourcemappings.WorkflowList;
 import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
 import org.apache.airavata.rest.utils.BasicAuthHeaderUtil;
 import org.apache.airavata.rest.utils.ClientConstant;
+import org.apache.airavata.rest.utils.CookieManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,15 +59,18 @@ public class PublishedWorkflowResourceClient {
     private Cookie cookie;
     private WebResource.Builder builder;
     private String gateway;
+//    private CookieManager cookieManager = new CookieManager();
 
     public PublishedWorkflowResourceClient(String userName,
                                            String gateway,
                                            String serviceURI,
-                                           PasswordCallback callback) {
+                                           PasswordCallback callback,
+                                           Cookie cookie) {
         this.userName = userName;
         this.callback = callback;
         this.baseURI = serviceURI;
         this.gateway = gateway;
+        this.cookie = cookie;
     }
 
     private URI getBaseURI() {
@@ -100,6 +104,7 @@ public class PublishedWorkflowResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
             String exists = response.getEntity(String.class);
             if (exists.equals("True")) {
@@ -115,6 +120,7 @@ public class PublishedWorkflowResourceClient {
             if (status == ClientConstant.HTTP_OK) {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
             String exists = response.getEntity(String.class);
@@ -146,6 +152,7 @@ public class PublishedWorkflowResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -159,6 +166,7 @@ public class PublishedWorkflowResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -183,6 +191,7 @@ public class PublishedWorkflowResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -196,6 +205,7 @@ public class PublishedWorkflowResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -220,6 +230,7 @@ public class PublishedWorkflowResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -237,6 +248,7 @@ public class PublishedWorkflowResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else if (status == ClientConstant.HTTP_NO_CONTENT) {
@@ -265,6 +277,7 @@ public class PublishedWorkflowResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -281,6 +294,7 @@ public class PublishedWorkflowResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else if (status == ClientConstant.HTTP_NO_CONTENT) {
@@ -311,6 +325,7 @@ public class PublishedWorkflowResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -327,6 +342,7 @@ public class PublishedWorkflowResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else if (status == ClientConstant.HTTP_NO_CONTENT) {
@@ -362,6 +378,7 @@ public class PublishedWorkflowResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -376,6 +393,7 @@ public class PublishedWorkflowResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {

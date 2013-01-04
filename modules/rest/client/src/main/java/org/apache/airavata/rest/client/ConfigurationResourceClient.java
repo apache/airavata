@@ -34,6 +34,7 @@ import org.apache.airavata.rest.mappings.resourcemappings.URLList;
 import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
 import org.apache.airavata.rest.utils.BasicAuthHeaderUtil;
 import org.apache.airavata.rest.utils.ClientConstant;
+import org.apache.airavata.rest.utils.CookieManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,12 +57,18 @@ public class ConfigurationResourceClient {
     private WebResource.Builder builder;
     private ClientResponse response;
     private String gateway;
+//    private CookieManager cookieManager = new CookieManager();
 
-    public ConfigurationResourceClient(String userName, String gateway, String seriveURI, PasswordCallback callback) {
+    public ConfigurationResourceClient(String userName,
+                                       String gateway,
+                                       String seriveURI,
+                                       PasswordCallback callback,
+                                       Cookie cookie) {
         this.userName = userName;
         this.callback = callback;
         this.baseURI = seriveURI;
         this.gateway = gateway;
+        this.cookie = cookie;
     }
 
     private URI getBaseURI() {
@@ -95,6 +102,7 @@ public class ConfigurationResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -114,6 +122,7 @@ public class ConfigurationResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -141,6 +150,7 @@ public class ConfigurationResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -161,6 +171,7 @@ public class ConfigurationResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -197,6 +208,7 @@ public class ConfigurationResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -213,6 +225,7 @@ public class ConfigurationResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -241,6 +254,7 @@ public class ConfigurationResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(webResource, null,
@@ -256,6 +270,7 @@ public class ConfigurationResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -279,6 +294,7 @@ public class ConfigurationResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -293,6 +309,7 @@ public class ConfigurationResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -317,6 +334,7 @@ public class ConfigurationResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -331,6 +349,7 @@ public class ConfigurationResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -354,6 +373,7 @@ public class ConfigurationResourceClient {
             if (status == ClientConstant.HTTP_OK) {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
                 builder = BasicAuthHeaderUtil.getBuilder(
@@ -372,6 +392,7 @@ public class ConfigurationResourceClient {
                 } else {
                     if (response.getCookies().size() > 0) {
                         cookie = response.getCookies().get(0).toCookie();
+                        CookieManager.setCookie(cookie);
                     }
                 }
             } else {
@@ -407,6 +428,7 @@ public class ConfigurationResourceClient {
             if (status == ClientConstant.HTTP_OK) {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
                 builder = BasicAuthHeaderUtil.getBuilder(
@@ -425,6 +447,7 @@ public class ConfigurationResourceClient {
                 } else {
                     if (response.getCookies().size() > 0) {
                         cookie = response.getCookies().get(0).toCookie();
+                        CookieManager.setCookie(cookie);
                     }
                 }
             } else {
@@ -459,6 +482,7 @@ public class ConfigurationResourceClient {
             if (status == ClientConstant.HTTP_OK) {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
                 builder = BasicAuthHeaderUtil.getBuilder(
@@ -477,6 +501,7 @@ public class ConfigurationResourceClient {
                 } else {
                     if (response.getCookies().size() > 0) {
                         cookie = response.getCookies().get(0).toCookie();
+                        CookieManager.setCookie(cookie);
                     }
                 }
             } else {
@@ -507,6 +532,7 @@ public class ConfigurationResourceClient {
                 if (response.getCookies().size() > 0) {
                     if (response.getCookies().size() > 0) {
                         cookie = response.getCookies().get(0).toCookie();
+                        CookieManager.setCookie(cookie);
                     }
                 }
             } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
@@ -526,6 +552,7 @@ public class ConfigurationResourceClient {
                 } else {
                     if (response.getCookies().size() > 0) {
                         cookie = response.getCookies().get(0).toCookie();
+                        CookieManager.setCookie(cookie);
                     }
                 }
             } else {
@@ -557,6 +584,7 @@ public class ConfigurationResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -571,6 +599,7 @@ public class ConfigurationResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -595,6 +624,7 @@ public class ConfigurationResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -609,6 +639,7 @@ public class ConfigurationResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -633,6 +664,7 @@ public class ConfigurationResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -647,6 +679,7 @@ public class ConfigurationResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -671,6 +704,7 @@ public class ConfigurationResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -685,6 +719,7 @@ public class ConfigurationResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -712,6 +747,7 @@ public class ConfigurationResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -726,6 +762,7 @@ public class ConfigurationResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -753,6 +790,7 @@ public class ConfigurationResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -767,6 +805,7 @@ public class ConfigurationResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -794,6 +833,7 @@ public class ConfigurationResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -808,6 +848,7 @@ public class ConfigurationResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -834,6 +875,7 @@ public class ConfigurationResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -848,6 +890,7 @@ public class ConfigurationResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -871,6 +914,7 @@ public class ConfigurationResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -885,6 +929,7 @@ public class ConfigurationResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -906,6 +951,7 @@ public class ConfigurationResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -920,6 +966,7 @@ public class ConfigurationResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -943,6 +990,7 @@ public class ConfigurationResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -957,6 +1005,7 @@ public class ConfigurationResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -978,6 +1027,7 @@ public class ConfigurationResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -992,6 +1042,7 @@ public class ConfigurationResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -1013,6 +1064,7 @@ public class ConfigurationResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -1027,6 +1079,7 @@ public class ConfigurationResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
@@ -1048,6 +1101,7 @@ public class ConfigurationResourceClient {
         if (status == ClientConstant.HTTP_OK) {
             if (response.getCookies().size() > 0) {
                 cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
             }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
@@ -1062,6 +1116,7 @@ public class ConfigurationResourceClient {
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
                 }
             }
         } else {
