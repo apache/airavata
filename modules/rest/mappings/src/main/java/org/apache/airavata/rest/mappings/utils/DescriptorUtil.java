@@ -268,12 +268,19 @@ public class DescriptorUtil {
                 HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) appDesc.getType();
 
                 ProjectAccountType projectAccountType = app.addNewProjectAccount();
-                projectAccountType.setProjectAccountNumber(applicationDescriptor.getProjectNumber());
-                projectAccountType.setProjectAccountDescription(applicationDescriptor.getProjectDescription());
+                if (applicationDescriptor.getProjectNumber() != null){
+                    projectAccountType.setProjectAccountNumber(applicationDescriptor.getProjectNumber());
+                }
+                if (applicationDescriptor.getProjectDescription() != null){
+                    projectAccountType.setProjectAccountDescription(applicationDescriptor.getProjectDescription());
+                }
                 app.setProjectAccount(projectAccountType);
 
                 app.setCpuCount(applicationDescriptor.getCpuCount());
-                app.setJobType(JobTypeType.Enum.forString(applicationDescriptor.getJobType()));
+                if (applicationDescriptor.getJobType() != null){
+                    app.setJobType(JobTypeType.Enum.forString(applicationDescriptor.getJobType()));
+                }
+
                 app.setMaxMemory(applicationDescriptor.getMaxMemory());
                 app.setMinMemory(applicationDescriptor.getMinMemory());
                 app.setMaxWallTime(applicationDescriptor.getMaxWallTime());
@@ -281,7 +288,9 @@ public class DescriptorUtil {
                 app.setProcessorsPerNode(applicationDescriptor.getProcessorsPerNode());
 
                 QueueType queueType = app.addNewQueue();
-                queueType.setQueueName(applicationDescriptor.getQueueName());
+                if (applicationDescriptor.getQueueName() != null){
+                    queueType.setQueueName(applicationDescriptor.getQueueName());
+                }
                 app.setQueue(queueType);
 
                 return appDesc;
@@ -305,9 +314,19 @@ public class DescriptorUtil {
                     applicationDescriptor.setMaxMemory(gramApplicationDeploymentType.getMaxMemory());
                     applicationDescriptor.setMinMemory(gramApplicationDeploymentType.getMinMemory());
                     applicationDescriptor.setMaxWallTime(gramApplicationDeploymentType.getMaxWallTime());
-                    applicationDescriptor.setJobType(gramApplicationDeploymentType.getJobType().toString());
-                    applicationDescriptor.setProjectNumber(gramApplicationDeploymentType.getProjectAccount().getProjectAccountNumber());
-                    applicationDescriptor.setProjectDescription(gramApplicationDeploymentType.getProjectAccount().getProjectAccountDescription());
+                    if (gramApplicationDeploymentType.getJobType() != null)  {
+                        applicationDescriptor.setJobType(gramApplicationDeploymentType.getJobType().toString());
+                    }
+                    if (gramApplicationDeploymentType.getProjectAccount() != null){
+                        if (gramApplicationDeploymentType.getProjectAccount().getProjectAccountNumber() != null){
+                            applicationDescriptor.setProjectNumber(gramApplicationDeploymentType.getProjectAccount().getProjectAccountNumber());
+                        }
+                    }
+                    if (gramApplicationDeploymentType.getProjectAccount() != null){
+                        if (gramApplicationDeploymentType.getProjectAccount().getProjectAccountDescription() != null){
+                            applicationDescriptor.setProjectDescription(gramApplicationDeploymentType.getProjectAccount().getProjectAccountDescription());
+                        }
+                    }
                     if(gramApplicationDeploymentType.getQueue() != null){
                         applicationDescriptor.setQueueName(gramApplicationDeploymentType.getQueue().getQueueName());
                     }
