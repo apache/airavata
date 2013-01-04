@@ -125,6 +125,8 @@ public class ConfigurationResourceClient {
                     CookieManager.setCookie(cookie);
                 }
             }
+        } else  if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return null;
         } else {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
@@ -174,6 +176,8 @@ public class ConfigurationResourceClient {
                     CookieManager.setCookie(cookie);
                 }
             }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return configurationValueList;
         } else {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
@@ -395,6 +399,8 @@ public class ConfigurationResourceClient {
                         CookieManager.setCookie(cookie);
                     }
                 }
+            } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+                return uriList;
             } else {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -450,6 +456,8 @@ public class ConfigurationResourceClient {
                         CookieManager.setCookie(cookie);
                     }
                 }
+            } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+                return uriList;
             } else {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -504,6 +512,8 @@ public class ConfigurationResourceClient {
                         CookieManager.setCookie(cookie);
                     }
                 }
+            } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+                return null;
             } else {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -555,6 +565,8 @@ public class ConfigurationResourceClient {
                         CookieManager.setCookie(cookie);
                     }
                 }
+            } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+                return null;
             } else {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
