@@ -102,25 +102,21 @@ public class RunWorkflow {
         ExperimentData experimentData = airavataAPI.getProvenanceManager().getExperimentData(result);
         List<WorkflowExecutionDataImpl> workflowInstanceData
                 = experimentData.getWorkflowExecutionDataList();
-
+        System.out.println("Experiment Results");
+        System.out.println("==================");
         for(WorkflowExecutionDataImpl data:workflowInstanceData){
             List<NodeExecutionData> nodeDataList = data.getNodeDataList();
             for(NodeExecutionData nodeData:nodeDataList){
-            	System.out.println(nodeData.getId());
+            	System.out.println();
+            	System.out.println(nodeData.getType()+" : "+nodeData.getId());
             	List<InputData> inputs=nodeData.getInputData();
-                if(inputs.size()>0){
-                	System.out.println("\tInput ");
-                	for(InputData input:inputs){
-                		System.out.println("\t\t" + input.getName()+"\t: "+input.getValue());
-                	}
-                }
+            	for(InputData input:inputs){
+            		System.out.println("\t\t[Input] \t" + input.getName()+"\t: "+input.getValue());
+            	}
                 List<OutputData> outputs=nodeData.getOutputData();
-                if(outputs.size()>0){
-                	System.out.println("\tOutput ");
-                	for(OutputData output:outputs){
-                		System.out.println("\t\t" + output.getName()+"\t: "+output.getValue());
-                	}
-                }
+            	for(OutputData output:outputs){
+            		System.out.println("\t\t[Output] \t" + output.getName()+"\t: "+output.getValue());
+            	}
             }
         }
     }
@@ -152,4 +148,5 @@ public class RunWorkflow {
         return buffer.toString();
     }
 }
+
 
