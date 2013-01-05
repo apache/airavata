@@ -154,5 +154,12 @@ public interface ExecutionManager {
      * @throws AiravataAPIInvocationException
      */
     public ExperimentAdvanceOptions createExperimentAdvanceOptions(String experimentName, String experimentUser, String experimentMetadata) throws AiravataAPIInvocationException;
+    
+    /**
+     * Returns when the given experiment has completed
+     * @param experimentId
+     * @throws AiravataAPIInvocationException
+     */
+    public void waitForExperimentTermination(String experimentId) throws AiravataAPIInvocationException;
 
 }

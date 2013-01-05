@@ -40,13 +40,20 @@ import org.apache.airavata.client.stub.interpretor.NameValue;
 import org.apache.airavata.client.stub.interpretor.WorkflowInterpretorStub;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
+import org.apache.airavata.registry.api.workflow.WorkflowExecution;
+import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
+import org.apache.airavata.ws.monitor.EventData;
+import org.apache.airavata.ws.monitor.EventDataRepository;
 import org.apache.airavata.ws.monitor.Monitor;
 import org.apache.airavata.ws.monitor.MonitorEventListener;
+import org.apache.airavata.ws.monitor.MonitorEventListenerAdapter;
+import org.apache.airavata.ws.monitor.MonitorUtil.EventType;
 import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
 import org.apache.axis2.AxisFault;
 
@@ -300,6 +307,31 @@ public class ExecutionManagerImpl implements ExecutionManager {
 		options.setExperimentCustomMetadata(experimentMetadata);
 		options.setExperimentExecutionUser(experimentUser);
 		return options;
+	}
+
+	@Override
+	public void waitForExperimentTermination(String experimentId)
+			throws AiravataAPIInvocationException {
+		Monitor experimentMonitor = getExperimentMonitor(experimentId, new MonitorEventListenerAdapter() {
+			@Override
+			public void notify(EventDataRepository eventDataRepo,
+					EventData eventData) {
+				if (eventData.getType()==EventType.WORKFLOW_TERMINATED){
+					getMonitor().stopMonitoring();
+				}
+			}
+		});
+		experimentMonitor.startMonitoring();
+		try {
+			WorkflowExecutionStatus workflowInstanceStatus = getClient().getProvenanceManager().getWorkflowInstanceStatus(experimentId, experimentId);
+			if (workflowInstanceStatus.getExecutionStatus()==State.FINISHED || workflowInstanceStatus.getExecutionStatus()==State.FAILED){
+				experimentMonitor.stopMonitoring();
+				return;
+			}
+		} catch (AiravataAPIInvocationException e) {
+			//Workflow may not have started yet. Best to use the monitor to follow the progress 
+		}
+		experimentMonitor.waitForCompletion();
 	}
 
 }
