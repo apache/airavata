@@ -31,6 +31,8 @@ import org.apache.airavata.registry.api.workflow.WorkflowExecutionData;
 import org.apache.airavata.registry.api.workflow.NodeExecutionData;
 import org.apache.airavata.rest.client.PasswordCallbackImpl;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
+import org.apache.airavata.registry.api.workflow.InputData;
+import org.apache.airavata.registry.api.workflow.OutputData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,6 +98,7 @@ public class RunWorkflow {
                 = airavataAPI.getExecutionManager().runExperiment(workflowName, workflowInputs, "admin", "",
                 workflowName);
         System.out.println("Workflow Experiment ID Returned : " + result);
+		airavataAPI.getExecutionManager().waitForExperimentTermination(result);
         ExperimentData experimentData = airavataAPI.getProvenanceManager().getExperimentData(result);
         List<WorkflowExecutionDataImpl> workflowInstanceData
                 = experimentData.getWorkflowExecutionDataList();
@@ -103,8 +106,21 @@ public class RunWorkflow {
         for(WorkflowExecutionDataImpl data:workflowInstanceData){
             List<NodeExecutionData> nodeDataList = data.getNodeDataList();
             for(NodeExecutionData nodeData:nodeDataList){
-                System.out.println("Input : " + nodeData.getInputData().get(0));
-                System.out.println("Output :" + nodeData.getOutputData().get(0));
+            	System.out.println(nodeData.getId());
+            	List<InputData> inputs=nodeData.getInputData();
+                if(inputs.size()>0){
+                	System.out.println("\tInput ");
+                	for(InputData input:inputs){
+                		System.out.println("\t\t" + input.getName()+"\t: "+input.getValue());
+                	}
+                }
+                List<OutputData> outputs=nodeData.getOutputData();
+                if(outputs.size()>0){
+                	System.out.println("\tOutput ");
+                	for(OutputData output:outputs){
+                		System.out.println("\t\t" + output.getName()+"\t: "+output.getValue());
+                	}
+                }
             }
         }
     }
@@ -136,3 +152,4 @@ public class RunWorkflow {
         return buffer.toString();
     }
 }
+
