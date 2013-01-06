@@ -52,7 +52,7 @@ public class Monitor extends EventProducer {
 
     protected long timeout = 20000L;
 
-    protected boolean status = false;
+    protected boolean monitoring = false;
     
     private boolean monitoringCompleted=false;
     
@@ -81,18 +81,20 @@ public class Monitor extends EventProducer {
     }
 
     /**
-     * @return The event data;
+     * Return the event data repository containing all the notifications
+     * @return 
      */
-    public EventDataRepository getEventData() {
+    public EventDataRepository getEventDataRepository() {
         // send the first one cos that is the default one
         return this.eventDataMap.get(DEFAULT_MODEL_KEY);
     }
 
     /**
-     * @return The event data;
+     * Return the event data repository containing all the notifications for the node
+     * @param nodeID
+     * @return
      */
-    public EventDataRepository getEventData(String nodeID) {
-        // send the first one cos that is the default one
+    public EventDataRepository getEventDataRepository(String nodeID){
         return this.eventDataMap.get(nodeID);
     }
 
@@ -104,7 +106,7 @@ public class Monitor extends EventProducer {
     	monitoringCompleted=false;
     	monitoringFailed=false;
     			
-    	getEventData().triggerListenerForPreMonitorStart();
+    	getEventDataRepository().triggerListenerForPreMonitorStart();
         asynchronousStop();
 
         subscribe();
@@ -127,7 +129,7 @@ public class Monitor extends EventProducer {
             }
 
         }
-        getEventData().triggerListenerForPostMonitorStart();
+        getEventDataRepository().triggerListenerForPostMonitorStart();
     }
     
     public void startMonitoring(){
@@ -145,41 +147,25 @@ public class Monitor extends EventProducer {
     }
     
     public void stopMonitoring(){
-    	final Monitor m=this;
-    	new Thread(){
-    		@Override
-    		public void run() {
-    			try {
-					m.stop();
-				} catch (MonitorException e) {
-					e.printStackTrace();
-				}
-    		}
-    	}.start();
+		asynchronousStop();
     }
 
     /**
      * Stops monitoring.
      */
-    public synchronized void asynchronousStop() {
-        if (this.wsmgClient != null) {
-            // To make thread safe.
-            final WsmgClient client = this.wsmgClient;
-            this.wsmgClient = null;
-
-            // Users don't need to know the end of unsubscription.
-            new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        unsubscribe(client);
-                    } catch (WorkflowException e) {
-                        // Ignore the error in unsubscription.
-                        logger.error(e.getMessage(), e);
-                    }
+    protected void asynchronousStop() {
+        // Users don't need to know the end of unsubscription.
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                	Monitor.this.stop();
+                } catch (WorkflowException e) {
+                    // Ignore the error in unsubscription.
+                    logger.error(e.getMessage(), e);
                 }
-            }.start();
-        }
+            }
+        }.start();
     }
 
     /**
@@ -190,10 +176,10 @@ public class Monitor extends EventProducer {
     public synchronized void stop() throws MonitorException {
         try {
 			if (this.wsmgClient != null) {
-				getEventData().triggerListenerForPreMonitorStop();
+				getEventDataRepository().triggerListenerForPreMonitorStop();
 			    unsubscribe(this.wsmgClient);
 			    this.wsmgClient = null;
-			    getEventData().triggerListenerForPostMonitorStop();
+			    getEventDataRepository().triggerListenerForPostMonitorStop();
 			}
 		} finally{
 	        monitoringCompleted=true;
@@ -236,10 +222,10 @@ public class Monitor extends EventProducer {
 
     private void subscribe() throws MonitorException {
         this.wsmgClient = new WsmgClient(this);
-        this.wsmgClient.setTimeout(this.getTimeout());
+        this.wsmgClient.setTimeout(this.getMessagePullTimeout());
         //Users can set the timeout and interval for the subscription using wsmg setter methods, here we use the default values
         this.wsmgClient.subscribe();
-        this.status = true;
+        setMonitoring(true);
 
         // Enable/disable some menu items and show the monitor panel.
         sendSafeEvent(new Event(Type.MONITOR_STARTED));
@@ -250,29 +236,12 @@ public class Monitor extends EventProducer {
         sendSafeEvent(new Event(Type.MONITOR_STOPED));
 
         client.unsubscribe();
-        this.status = false;
-    }
-
-    public void setPrint(boolean print) {
-        this.print = print;
-    }
-
-    public long getTimeout() {
-        return timeout;
-    }
-
-    public void setTimeout(long timeout) {
-        this.timeout = timeout;
-    }
-
-    public boolean isStatus() {
-        return status;
-    }
-
-    public void setStatus(boolean status) {
-        this.status = status;
+        setMonitoring(false);
     }
     
+    /**
+     * Wait until the monitoring is completed
+     */
     public void waitForCompletion(){
     	while(!monitoringCompleted && !monitoringFailed){
     		try {
@@ -281,5 +250,66 @@ public class Monitor extends EventProducer {
 				e.printStackTrace();
 			}
     	}
+    }
+    
+    /**
+     * Print the raw notification messages to the console as they arrive
+     * @param print - if <code>true</code> raw notifications are printed
+     */
+    public void printRawMessage(boolean print){
+    	this.print = print;
+    }
+    
+    /**
+     * Retrieve the timeout in milliseconds for pulling messages
+     * @return
+     */
+    public long getMessagePullTimeout() {
+        return timeout;
+    }
+
+    /**
+     * Set the timeout in milliseconds for pulling messages
+     * @param timeout
+     */
+    public void setMessagePullTimeout(long timeout) {
+        this.timeout = timeout;
+    }
+
+    /**
+     * is the monitoring active
+     * @return
+     */
+    public boolean isMonitoring() {
+        return monitoring;
+    }
+
+    private void setMonitoring(boolean monitoring) {
+        this.monitoring = monitoring;
+    }
+    
+    /**
+     * @deprecated - Use <code>getEventDataRepository()</code> instead
+     * @return
+     */
+    public EventDataRepository getEventData(){
+    	return getEventDataRepository();
+    }
+    
+    /**
+     * @deprecated - Use <code>getEventDataRepository(...)</code> instead
+     * @param nodeID
+     * @return
+     */
+    public EventDataRepository getEventData(String nodeID) {
+        return getEventDataRepository(nodeID);
+    }
+    
+    /**
+     * @deprecated - Use <code>printRawMessage(...)</code> instead
+     * @param print - if <code>true</code> raw notifications are printed
+     */
+    public void setPrint(boolean print) {
+        this.print = print;
     }
 }
