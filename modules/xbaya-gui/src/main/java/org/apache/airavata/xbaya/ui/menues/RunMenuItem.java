@@ -40,8 +40,8 @@ import org.apache.airavata.ws.monitor.Monitor;
 import org.apache.airavata.ws.monitor.MonitorConfiguration;
 import org.apache.airavata.ws.monitor.MonitorException;
 import org.apache.airavata.ws.monitor.event.Event;
-import org.apache.airavata.ws.monitor.event.EventListener;
 import org.apache.airavata.ws.monitor.event.Event.Type;
+import org.apache.airavata.ws.monitor.event.EventListener;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.XBayaEngine;
@@ -221,7 +221,7 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
         AbstractAction action = new AbstractAction() {
             public void actionPerformed(ActionEvent event) {
                 try {
-                    engine.getMonitor().asynchronousStop();
+                    engine.getMonitor().stopMonitoring();
                 } catch (RuntimeException e) {
                     engine.getGUI().getErrorWindow().error(ErrorMessages.MONITOR_ERROR, e);
                 } catch (Error e) {
@@ -312,7 +312,7 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
         AbstractAction action = new AbstractAction() {
             private WorkflowInterpreterLaunchWindow window;
             public void actionPerformed(ActionEvent e) {
-                if(engine.getMonitor().isStatus()){
+                if(engine.getMonitor().isMonitoring()){
                     if (JOptionPane.showConfirmDialog(null,
                             "A previous workflow execution data needs to be cleared before launching another workflow. Do you wish to continue?",
                             "Run Workflow", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION){

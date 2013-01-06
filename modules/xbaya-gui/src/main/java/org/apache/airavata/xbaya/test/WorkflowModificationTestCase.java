@@ -134,7 +134,7 @@ public class WorkflowModificationTestCase extends XBayaTestCase {
             monitor = new Monitor(monitorConfiguration);
         }
 
-        EventDataRepository eventData = monitor.getEventData();
+        EventDataRepository eventData = monitor.getEventDataRepository();
         MonitorCallback callback = new MonitorCallback(eventData);
         LoopbackPublisher publisher = new LoopbackPublisher(callback, this.configuration.getTopic());
         MonitorNotifier notifier = new MonitorNotifier(publisher);

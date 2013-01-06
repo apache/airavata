@@ -30,7 +30,6 @@ import java.util.UUID;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.airavata.client.AiravataClient;
-import org.apache.airavata.client.AiravataClientConfiguration;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.ExecutionManager;
 import org.apache.airavata.client.api.ExperimentAdvanceOptions;
@@ -40,7 +39,6 @@ import org.apache.airavata.client.stub.interpretor.NameValue;
 import org.apache.airavata.client.stub.interpretor.WorkflowInterpretorStub;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
-import org.apache.airavata.registry.api.workflow.WorkflowExecution;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State;
 import org.apache.airavata.workflow.model.component.ComponentException;
@@ -133,7 +131,6 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	@Override
 	public WorkflowContextHeaderBuilder createWorkflowContextHeader()
 			throws AiravataAPIInvocationException {
-		AiravataClientConfiguration config = getClient().getClientConfiguration();
 		try {
 			return new WorkflowContextHeaderBuilder(null,
 					null,null,null,null,

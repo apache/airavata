@@ -89,7 +89,7 @@ public class MonitorPanel implements XBayaComponent, TableModelListener {
     public MonitorPanel(XBayaGUI xbayaGUI, String nodeID, Monitor monitor) {
         this.xbayaGUI=xbayaGUI;
         if (null == nodeID) {
-            this.tableSliderModel = monitor.getEventData();
+            this.tableSliderModel = monitor.getEventDataRepository();
         } else {
             this.tableSliderModel = monitor.getEventData(nodeID);
         }
