@@ -272,7 +272,13 @@ public class BaseCaseIT {
         runWorkFlow(workflow, Arrays.asList("echo_output=Airavata Test"));
     }
 
-    @Test(groups = { "echoGroup" }, dependsOnMethods = { "testEchoService" })
+    @Test(groups = { "performanceTesting" } )
+    public void testExistsHostDescriptor() throws AiravataAPIInvocationException {
+
+        airavataAPI.getApplicationManager().isHostDescriptorExists("localhost");
+    }
+
+    @Test(groups = { "echoGroup" }/*, dependsOnMethods = { "testEchoService" }*/)
     public void testUpdateEchoService() throws AiravataAPIInvocationException, IOException, ComponentException, GraphException {
 
         DescriptorBuilder descriptorBuilder = airavataAPI.getDescriptorBuilder();
@@ -392,7 +398,7 @@ public class BaseCaseIT {
 
         File echoWorkflow = new File(fileName);
         if (!echoWorkflow.exists()) {
-            fileName = "modules/tomcat-distribution/src/test/resources/EchoWorkflow.xwf";
+            fileName = "modules/integration-tests/src/test/resources/EchoWorkflow.xwf";
         }
 
         BufferedReader reader = new BufferedReader(new FileReader(fileName));

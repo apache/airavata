@@ -38,20 +38,23 @@ import java.util.Map;
 
 public class RegPoolUtils {
 
+    private final static Object lock = new Object();
+
+
     public static AiravataRegistry2 acquireRegistry(ServletContext context) {
         AiravataRegistry2 airavataRegistry=null;
         String user =  WorkflowContext.getRequestUser();
         String gatewayId = WorkflowContext.getGatewayId();
         Gateway gateway = new Gateway(gatewayId);
         AiravataUser airavataUser = new AiravataUser(user);
-
-        RegistryInstancesPool registryInstancesPool =
+        /*RegistryInstancesPool registryInstancesPool =
                 (RegistryInstancesPool) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY_POOL);
         Map<RegIdentifier,AiravataRegistry2> registryMap = registryInstancesPool.getRegistryInstancesList();
-        boolean foundReg=false;
+        boolean foundReg=false;*/
         try{
-            while(!foundReg){
-                synchronized (registryMap){
+            return AiravataRegistryFactory.getRegistry(gateway, airavataUser);
+            /*while(!foundReg){
+                synchronized (lock){
                     RegIdentifier identifier = new RegIdentifier(user, gateway.getGatewayName());
                     if (registryMap.size()==0){
                         registryMap.put(identifier,
@@ -67,7 +70,7 @@ public class RegPoolUtils {
                     registryMap.remove(identifier);
                     foundReg=true;
                 }
-            }
+            }*/
         }catch (RegistryAccessorInvalidException e) {
             e.printStackTrace();
         } catch (RegistryAccessorInstantiateException e) {
@@ -83,16 +86,16 @@ public class RegPoolUtils {
     }
 
     public static void releaseRegistry(ServletContext context, AiravataRegistry2 airavataRegistry) {
-        RegistryInstancesPool registryInstancesPool =
+        /*RegistryInstancesPool registryInstancesPool =
                 (RegistryInstancesPool)context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY_POOL);
         Map<RegIdentifier, AiravataRegistry2> registryInstancesList =
                 registryInstancesPool.getRegistryInstancesList();
-        synchronized (registryInstancesList){
+        synchronized (lock){
             RegIdentifier regIdentifier =
                     new RegIdentifier(airavataRegistry.getUser().getUserName(),
                             airavataRegistry.getGateway().getGatewayName());
             registryInstancesList.put(regIdentifier, airavataRegistry);
-        }
+        } */
     }
 
 }
