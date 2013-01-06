@@ -82,14 +82,6 @@
                         <phase>compile</phase>
                         <configuration>
                             <target>
-                                <copy todir="${tomcat.work.dir}/lib">
-                                    <fileset dir="${airavata.work.dir}/lib/">
-                                        <exclude name="tomcat-*.jar"/>
-                                        <exclude name="icu4j-*.jar"/>
-                                        <exclude name="airavata-embedded-*.jar"/>
-                                        <exclude name="airavata-registry-api-*.jar"/>
-                                    </fileset>
-                                </copy>
                                 <copy todir="${tomcat.work.dir}/webapps/axis2/WEB-INF">
                                     <fileset dir="${airavata.work.dir}/repository/"/>
                                 </copy>
@@ -348,26 +340,6 @@
                     <artifactId>slf4j-simple</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.9.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-xc</artifactId>
-            <version>1.9.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-jaxrs</artifactId>
-            <version>1.9.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-core-asl</artifactId>
-            <version>1.9.2</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
