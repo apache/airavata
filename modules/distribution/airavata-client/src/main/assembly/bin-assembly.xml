@@ -107,6 +107,12 @@
 		<fileSet>
 			<directory>../../../samples/airavata-client</directory>
 			<outputDirectory>samples</outputDirectory>
+			<excludes>
+				<exclude>**/*.iml</exclude>
+				<exclude>**/pom.xml</exclude>
+				<exclude>**/target/**</exclude>
+			</excludes>
+
 		</fileSet>
 	</fileSets>
 

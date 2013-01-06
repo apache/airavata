@@ -43,7 +43,7 @@
         </path>
     </target>
     <target name="compile" depends="init" description="Compile all Java">
-        <javac srcdir="src" destdir="${class.dir}">
+        <javac srcdir="src" destdir="${class.dir}" debug="on">
             <classpath refid="javac.classpath"/>
         </javac>
     </target>

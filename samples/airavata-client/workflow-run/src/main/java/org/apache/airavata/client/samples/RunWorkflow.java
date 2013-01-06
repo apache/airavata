@@ -23,6 +23,7 @@ package org.apache.airavata.client.samples;
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.client.api.ExperimentAdvanceOptions;
 import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
 import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
@@ -94,9 +95,10 @@ public class RunWorkflow {
         workflowInputs.add(workflowInput);
 
         //Now inputs are set properly to the workflow, now we are about to run the workflow(submit the workflow run to intepreterService)
+
         String result
-                = airavataAPI.getExecutionManager().runExperiment(workflowName, workflowInputs, "admin", "",
-                workflowName);
+                = airavataAPI.getExecutionManager().runExperiment(workflowName, workflowInputs);
+
         System.out.println("Workflow Experiment ID Returned : " + result);
 		airavataAPI.getExecutionManager().waitForExperimentTermination(result);
         ExperimentData experimentData = airavataAPI.getProvenanceManager().getExperimentData(result);
