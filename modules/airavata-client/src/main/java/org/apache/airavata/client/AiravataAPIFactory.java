@@ -75,15 +75,4 @@ public class AiravataAPIFactory {
 		return getAPI(registryURL, null, username, alternateUsername, new PasswordCallBackImpl(username, password));
 	}
 
-    @Deprecated
-	public static AiravataAPI getAPI(Map<String,String> configuration) throws MalformedURLException{
-		AiravataClient apiObj = new AiravataClient(configuration);
-		return apiObj;
-	}
-
-    @Deprecated
-	public static AiravataAPI getAPI(String filename) throws MalformedURLException, RegistryException, IOException{
-		AiravataClient apiObj = new AiravataClient(filename);
-		return apiObj;
-	}
 }

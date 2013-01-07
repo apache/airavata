@@ -31,6 +31,12 @@ public interface WorkflowOutputDataSettings {
 	
 	/**
 	 * Add a new appliation output data settings
+	 * @return
+	 */
+	public OutputDataSettings addNewOutputDataSettings();
+	
+	/**
+	 * Add a new appliation output data settings
 	 * @param outputDataDirectory
 	 * @param dataRegistryURL
 	 * @param isDataPersistent

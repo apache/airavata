@@ -71,4 +71,9 @@ public class WorkflowOutputDataSettingsImpl implements
 		getOutputDataSettingsListArray().clear();
 	}
 
+	@Override
+	public OutputDataSettings addNewOutputDataSettings() {
+		return new ApplicationOutputDataSettingsImpl();
+	}
+
 }

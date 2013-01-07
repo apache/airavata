@@ -215,16 +215,15 @@ public class NodeExecutionData {
 		if (data!=null) {
 			String[] pairs = data.split(",");
 			for (String paras : pairs) {
-				String[] nameVals = paras.trim().split("=");
-                NameValue pair = null;
-                if(nameVals.length >= 2){
-				 pair = new NameValue(nameVals[0].trim(),
-						nameVals.length>1? nameVals[1].trim():"");
-                }else if(nameVals.length == 1){
-                  pair = new NameValue(nameVals[0].trim(),
-						"");
-                }
-				parameters.add(pair);
+				String name=paras.trim();
+				String value="";
+				int i = name.indexOf("=");
+				//if the paras has a value as well
+				if (i!=-1){
+					value=name.substring(i+1);
+					name=name.substring(0,i);
+				}
+				parameters.add(new NameValue(name,value));
 			}
 		}
 		return parameters;

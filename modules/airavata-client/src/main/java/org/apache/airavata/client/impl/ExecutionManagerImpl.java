@@ -41,6 +41,8 @@ import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State;
+import org.apache.airavata.schemas.wec.ApplicationOutputDataHandlingDocument.ApplicationOutputDataHandling;
+import org.apache.airavata.schemas.wec.ApplicationSchedulingContextDocument.ApplicationSchedulingContext;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
 import org.apache.airavata.workflow.model.graph.GraphException;
@@ -65,37 +67,67 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	@Override
 	public String runExperiment(String workflowTemplateId,
 			List<WorkflowInput> inputs) throws AiravataAPIInvocationException {
-		return runExperiment(workflowTemplateId, inputs ,getClient().getCurrentUser(),null, workflowTemplateId+"_"+Calendar.getInstance().getTime().toString());
+		ExperimentAdvanceOptions options = createExperimentAdvanceOptions(workflowTemplateId+"_"+Calendar.getInstance().getTime().toString(), getClient().getCurrentUser(), null);
+		return runExperiment(workflowTemplateId, inputs ,options);
 	}
-
+	
 	@Override
-	public String runExperiment(Workflow workflow, List<WorkflowInput> inputs)
+	public String runExperiment(String workflow,
+			List<WorkflowInput> inputs, ExperimentAdvanceOptions options)
 			throws AiravataAPIInvocationException {
-		return runExperiment(workflow,inputs, getClient().getCurrentUser(),null);
+		return runWorkflow(workflow, inputs, options);
 	}
+	
 
 	@Override
-	public String runExperiment(String workflowTemplateId,
-			List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName)
+	public String runExperiment(Workflow workflow, List<WorkflowInput> inputs, ExperimentAdvanceOptions options)
 			throws AiravataAPIInvocationException {
-		try {
-			return getClient().runWorkflow(workflowTemplateId, inputs, user, metadata, workflowInstanceName);
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
+		return runExperimentGeneral(workflow,inputs, options, null).toString();
+	}
+	
 
+	@Override
+	public ExperimentAdvanceOptions createExperimentAdvanceOptions()
+			throws AiravataAPIInvocationException {
+		return new ExperimentAdvanceOptions();
 	}
 
 	@Override
-	public String runExperiment(Workflow workflow, List<WorkflowInput> inputs,
-			String user, String metadata) throws AiravataAPIInvocationException {
-		try {
-			return getClient().runWorkflow(workflow, inputs, user, metadata,workflow.getName()+"_"+Calendar.getInstance().getTime().toString());
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
+	public ExperimentAdvanceOptions createExperimentAdvanceOptions(
+			String experimentName, String experimentUser,
+			String experimentMetadata) throws AiravataAPIInvocationException {
+		ExperimentAdvanceOptions options = createExperimentAdvanceOptions();
+		options.setExperimentName(experimentName);
+		options.setExperimentCustomMetadata(experimentMetadata);
+		options.setExperimentExecutionUser(experimentUser);
+		return options;
 	}
 
+	@Override
+	public void waitForExperimentTermination(String experimentId)
+			throws AiravataAPIInvocationException {
+		Monitor experimentMonitor = getExperimentMonitor(experimentId, new MonitorEventListenerAdapter() {
+			@Override
+			public void notify(EventDataRepository eventDataRepo,
+					EventData eventData) {
+				if (eventData.getType()==EventType.WORKFLOW_TERMINATED){
+					getMonitor().stopMonitoring();
+				}
+			}
+		});
+		experimentMonitor.startMonitoring();
+		try {
+			WorkflowExecutionStatus workflowInstanceStatus = getClient().getProvenanceManager().getWorkflowInstanceStatus(experimentId, experimentId);
+			if (workflowInstanceStatus.getExecutionStatus()==State.FINISHED || workflowInstanceStatus.getExecutionStatus()==State.FAILED){
+				experimentMonitor.stopMonitoring();
+				return;
+			}
+		} catch (AiravataAPIInvocationException e) {
+			//Workflow may not have started yet. Best to use the monitor to follow the progress 
+		}
+		experimentMonitor.waitForCompletion();
+	}
+	
 	@Override
 	public Monitor getExperimentMonitor(String experimentId)
 			throws AiravataAPIInvocationException {
@@ -103,30 +135,56 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	}
 
 	@Override
-	public Monitor getExperimentMonitor(String experimentId,
-			MonitorEventListener listener)
+	public Monitor getExperimentMonitor(String experimentId,MonitorEventListener listener)
 			throws AiravataAPIInvocationException {
 		return getClient().getWorkflowExecutionMonitor(experimentId,listener);
 	}
 
-	public AiravataClient getClient() {
-		return client;
-	}
-	public void setClient(AiravataClient client) {
-		this.client = client;
+	//------------------Deprecated Functions---------------------//
+	
+	@Override
+	public String runExperiment(String workflowTemplateId,
+			List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName)
+			throws AiravataAPIInvocationException {
+		ExperimentAdvanceOptions options = createExperimentAdvanceOptions(workflowInstanceName, user, metadata);
+		return runExperiment(workflowTemplateId, inputs, options);
+
 	}
 
+	@Override
+	public String runExperiment(Workflow workflow, List<WorkflowInput> inputs,
+			String user, String metadata) throws AiravataAPIInvocationException {
+		ExperimentAdvanceOptions options=createExperimentAdvanceOptions(workflow.getName()+"_"+Calendar.getInstance().getTime().toString(), user, metadata);
+		return runExperiment(workflow,inputs,options);
+	}
+	
 	@Override
 	public String runExperiment(String workflowTemplateId,
 			List<WorkflowInput> inputs, String user, String metadata,
 			String workflowInstanceName, WorkflowContextHeaderBuilder builder)
 			throws AiravataAPIInvocationException {
-		try {
-			return getClient().runWorkflow(workflowTemplateId, inputs, user, metadata, workflowInstanceName,builder);
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
+		ExperimentAdvanceOptions options = createExperimentAdvanceOptions(workflowInstanceName, user, metadata);
+		ApplicationSchedulingContext[] nodeSchedules = builder.getWorkflowSchedulingContext().getApplicationSchedulingContextArray();
+		for (ApplicationSchedulingContext context : nodeSchedules) {
+			NodeSettings nodeSettings = options.getCustomWorkflowSchedulingSettings().addNewNodeSettings(context.getWorkflowNodeId());
+			if (context.isSetServiceId()) nodeSettings.setServiceId(context.getServiceId());
+			if (context.isSetGatekeeperEpr()) nodeSettings.getHostSettings().setGatekeeperEPR(context.getGatekeeperEpr());
+			if (context.isSetHostName()) nodeSettings.getHostSettings().setHostId(context.getHostName());
+			if (context.isSetWsgramPreferred()) nodeSettings.getHostSettings().setWSGramPreffered(context.getWsgramPreferred());
+			if (context.isSetCpuCount()) nodeSettings.getHPCSettings().setCPUCount(context.getCpuCount());
+			if (context.isSetJobManager()) nodeSettings.getHPCSettings().setJobManager(context.getJobManager());
+			if (context.isSetMaxWallTime()) nodeSettings.getHPCSettings().setMaxWallTime(context.getMaxWallTime());
+			if (context.isSetNodeCount()) nodeSettings.getHPCSettings().setNodeCount(context.getNodeCount());
+			if (context.isSetQueueName()) nodeSettings.getHPCSettings().setQueueName(context.getQueueName());
 		}
+		ApplicationOutputDataHandling[] dataHandlingSettings = builder.getWorkflowOutputDataHandling().getApplicationOutputDataHandlingArray();
+		for (ApplicationOutputDataHandling handling : dataHandlingSettings) {
+			options.getCustomWorkflowOutputDataSettings().addNewOutputDataSettings(handling.getOutputDataDirectory(),handling.getDataRegistryUrl(),handling.getDataPersistance());
+		}
+		//TODO rest of the builder configurations as they are added to the experiment options
+		return runExperiment(workflowTemplateId, inputs, options);
 	}
+	
 
 	@Override
 	public WorkflowContextHeaderBuilder createWorkflowContextHeader()
@@ -145,28 +203,41 @@ public class ExecutionManagerImpl implements ExecutionManager {
 			List<WorkflowInput> inputs, String user, String metadata,
 			String workflowInstanceName, String experimentName)
 			throws AiravataAPIInvocationException {
-		try {
-			return getClient().runWorkflow(workflowName, inputs, user, metadata, workflowInstanceName,experimentName);
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
+		ExperimentAdvanceOptions options = createExperimentAdvanceOptions(workflowInstanceName, user, metadata);
+		options.setCustomExperimentId(experimentName);
+		return runExperiment(workflowName, inputs, options);
+	}
+	
+	//------------------End of Deprecated Functions---------------------//
+
+	public AiravataClient getClient() {
+		return client;
+	}
+	public void setClient(AiravataClient client) {
+		this.client = client;
 	}
 
-	@Override
-	public String runExperiment(String workflow,
-			List<WorkflowInput> inputs, ExperimentAdvanceOptions options)
-			throws AiravataAPIInvocationException {
-		return runWorkflow(workflow, inputs, options);
-	}
-	
 	private String runWorkflow(String workflowName, List<WorkflowInput> inputs, ExperimentAdvanceOptions options) throws AiravataAPIInvocationException {
-		Workflow workflowObj = extractWorkflow(workflowName);
-		return runWorkflow(workflowName, workflowObj, inputs, options);
+		return runExperimentGeneral(extractWorkflow(workflowName), inputs, options, null).toString();
 	}
 	
-	private String runWorkflow(String workflowName, Workflow workflowObj, List<WorkflowInput> inputs, ExperimentAdvanceOptions options) throws AiravataAPIInvocationException {
+    private Workflow extractWorkflow(String workflowName) throws AiravataAPIInvocationException {
+        Workflow workflowObj = null;
+        //FIXME - There should be a better way to figure-out if the passed string is a name or an xml
+        if(!workflowName.contains("http://airavata.apache.org/xbaya/xwf")){//(getClient().getWorkflowManager().isWorkflowExists(workflowName)) {
+            workflowObj = getClient().getWorkflowManager().getWorkflow(workflowName);
+        }else {
+            try{
+                workflowObj = getClient().getWorkflowManager().getWorkflowFromString(workflowName);
+            }catch (AiravataAPIInvocationException e){
+            	getClient().getWorkflowManager().getWorkflow(workflowName);
+            }
+        }
+        return workflowObj;
+    }
+    
+	private Object runExperimentGeneral(Workflow workflowObj, List<WorkflowInput> inputs, ExperimentAdvanceOptions options, MonitorEventListener listener) throws AiravataAPIInvocationException {
 		try {
-	        
 			String workflowString = XMLUtil.xmlElementToString(workflowObj.toXML());
 			List<WSComponentPort> ports = getWSComponentPortInputs(workflowObj);
 			for (WorkflowInput input : inputs) {
@@ -213,9 +284,16 @@ public class ExecutionManagerImpl implements ExecutionManager {
 			}
 			runPreWorkflowExecutionTasks(experimentID, executionUser, options.getExperimentMetadata(), options.getExperimentName());
 			NameValue[] inputVals = inputValues.toArray(new NameValue[] {});
+			Monitor monitorObj=null;
+			if (listener!=null){
+				monitorObj=getExperimentMonitor(experimentID, listener);
+			}
 			launchWorkflow(experimentID, workflowString, inputVals, builder);
-			return experimentID;
-			
+			if (listener==null){
+				return experimentID;	
+			}else{
+				return monitorObj;
+			}
 		}  catch (GraphException e) {
 			throw new AiravataAPIInvocationException(e);
 		} catch (ComponentException e) {
@@ -224,21 +302,6 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	        throw new AiravataAPIInvocationException("Error working with Airavata Registry: " + e.getLocalizedMessage(), e);
 	    }
 	}
-    private Workflow extractWorkflow(String workflowName) throws AiravataAPIInvocationException {
-        Workflow workflowObj = null;
-        //FIXME - There should be a better way to figure-out if the passed string is a name or an xml
-        if(!workflowName.contains("http://airavata.apache.org/xbaya/xwf")){//(getClient().getWorkflowManager().isWorkflowExists(workflowName)) {
-            workflowObj = getClient().getWorkflowManager().getWorkflow(workflowName);
-        }else {
-            try{
-                workflowObj = getClient().getWorkflowManager().getWorkflowFromString(workflowName);
-            }catch (AiravataAPIInvocationException e){
-            	getClient().getWorkflowManager().getWorkflow(workflowName);
-            }
-
-        }
-        return workflowObj;
-    }
     
 	private List<WSComponentPort> getWSComponentPortInputs(Workflow workflow)
 			throws GraphException, ComponentException {
@@ -287,48 +350,6 @@ public class ExecutionManagerImpl implements ExecutionManager {
 			experimentName = experimentId;
 		}
 		getClient().getProvenanceManager().setExperimentName(experimentId, experimentName);
-	}
-	
-	@Override
-	public ExperimentAdvanceOptions createExperimentAdvanceOptions()
-			throws AiravataAPIInvocationException {
-		return new ExperimentAdvanceOptions();
-	}
-
-	@Override
-	public ExperimentAdvanceOptions createExperimentAdvanceOptions(
-			String experimentName, String experimentUser,
-			String experimentMetadata) throws AiravataAPIInvocationException {
-		ExperimentAdvanceOptions options = createExperimentAdvanceOptions();
-		options.setExperimentName(experimentName);
-		options.setExperimentCustomMetadata(experimentMetadata);
-		options.setExperimentExecutionUser(experimentUser);
-		return options;
-	}
-
-	@Override
-	public void waitForExperimentTermination(String experimentId)
-			throws AiravataAPIInvocationException {
-		Monitor experimentMonitor = getExperimentMonitor(experimentId, new MonitorEventListenerAdapter() {
-			@Override
-			public void notify(EventDataRepository eventDataRepo,
-					EventData eventData) {
-				if (eventData.getType()==EventType.WORKFLOW_TERMINATED){
-					getMonitor().stopMonitoring();
-				}
-			}
-		});
-		experimentMonitor.startMonitoring();
-		try {
-			WorkflowExecutionStatus workflowInstanceStatus = getClient().getProvenanceManager().getWorkflowInstanceStatus(experimentId, experimentId);
-			if (workflowInstanceStatus.getExecutionStatus()==State.FINISHED || workflowInstanceStatus.getExecutionStatus()==State.FAILED){
-				experimentMonitor.stopMonitoring();
-				return;
-			}
-		} catch (AiravataAPIInvocationException e) {
-			//Workflow may not have started yet. Best to use the monitor to follow the progress 
-		}
-		experimentMonitor.waitForCompletion();
 	}
 
 }

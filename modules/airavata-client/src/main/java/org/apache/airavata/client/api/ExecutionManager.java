@@ -57,7 +57,7 @@ public interface ExecutionManager {
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public String runExperiment(Workflow workflow,List<WorkflowInput> inputs) throws AiravataAPIInvocationException;
+	public String runExperiment(Workflow workflow,List<WorkflowInput> inputs, ExperimentAdvanceOptions options) throws AiravataAPIInvocationException;
 
     /**
      * @deprecated Use the function <code>runExperiment(String,List&ltWorkflowInput&gt,ExperimentAdvanceOptions)</code> instead. <br />
@@ -127,7 +127,7 @@ public interface ExecutionManager {
      * @throws AiravataAPIInvocationException
      */
 	public Monitor getExperimentMonitor(String experimentId, MonitorEventListener listener) throws AiravataAPIInvocationException;
-
+	
 	/**
 	 * @deprecated
 	 * Creates a WorkflowContextHeaderBuilder object that can be used to customize the scheduling of a workflow execution.
