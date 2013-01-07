@@ -289,6 +289,14 @@ public class Monitor extends EventProducer {
     }
     
     /**
+     * Return the id of the experiment which the monitoring is done 
+     * @return
+     */
+    public String getExperimentId(){
+    	return getConfiguration().getTopic();
+    }
+    
+    /**
      * @deprecated - Use <code>getEventDataRepository()</code> instead
      * @return
      */
