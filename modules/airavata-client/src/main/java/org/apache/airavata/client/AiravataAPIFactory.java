@@ -48,7 +48,7 @@ public class AiravataAPIFactory {
     
     public static AiravataAPI getAPI(URI registryURL, String gateway, String username, String alternateUsername, PasswordCallback callback) throws AiravataAPIInvocationException{
         try {
-			AiravataClient apiObj = new AiravataClient();
+			AiravataAPI apiObj = new AiravataClient();
 			apiObj.setCurrentUser(alternateUsername);
 			apiObj.setCallBack(callback);
 			apiObj.setRegitryURI(registryURL);

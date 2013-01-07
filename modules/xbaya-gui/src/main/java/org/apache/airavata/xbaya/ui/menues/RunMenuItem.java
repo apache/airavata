@@ -241,7 +241,7 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
         item.setMnemonic(KeyEvent.VK_R);
         item.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent event) {
-                engine.getMonitor().reset();
+                engine.getMonitor().resetEventData();
             }
         });
         item.setVisible(false);

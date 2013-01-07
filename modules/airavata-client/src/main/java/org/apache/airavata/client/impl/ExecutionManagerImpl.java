@@ -21,6 +21,7 @@
 
 package org.apache.airavata.client.impl;
 
+import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -51,6 +52,7 @@ import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.apache.airavata.ws.monitor.EventData;
 import org.apache.airavata.ws.monitor.EventDataRepository;
 import org.apache.airavata.ws.monitor.Monitor;
+import org.apache.airavata.ws.monitor.MonitorConfiguration;
 import org.apache.airavata.ws.monitor.MonitorEventListener;
 import org.apache.airavata.ws.monitor.MonitorEventListenerAdapter;
 import org.apache.airavata.ws.monitor.MonitorUtil.EventType;
@@ -131,13 +133,25 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	@Override
 	public Monitor getExperimentMonitor(String experimentId)
 			throws AiravataAPIInvocationException {
-		return getClient().getWorkflowExecutionMonitor(experimentId);
+		return getExperimentMonitor(experimentId,null);
 	}
 
 	@Override
 	public Monitor getExperimentMonitor(String experimentId,MonitorEventListener listener)
 			throws AiravataAPIInvocationException {
-		return getClient().getWorkflowExecutionMonitor(experimentId,listener);
+		MonitorConfiguration monitorConfiguration;
+		try {
+			monitorConfiguration = new MonitorConfiguration(
+					getClient().getClientConfiguration().getMessagebrokerURL().toURI(), experimentId,
+					true, getClient().getClientConfiguration().getMessageboxURL().toURI());
+			final Monitor monitor = new Monitor(monitorConfiguration);
+			monitor.printRawMessage(false);
+			monitor.getEventDataRepository().registerEventListener(listener);
+			listener.setExperimentMonitor(monitor);
+			return monitor;
+		} catch (URISyntaxException e) {
+			throw new AiravataAPIInvocationException(e);
+		}
 	}
 
 	//------------------Deprecated Functions---------------------//

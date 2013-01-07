@@ -22,7 +22,6 @@ package org.apache.airavata.client;
 
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +31,7 @@ import java.util.Observable;
 import javax.jcr.RepositoryException;
 
 import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.AiravataManager;
 import org.apache.airavata.client.api.ApplicationManager;
 import org.apache.airavata.client.api.ExecutionManager;
@@ -55,9 +55,7 @@ import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.Gateway;
 import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.ws.monitor.Monitor;
 import org.apache.airavata.ws.monitor.MonitorConfiguration;
-import org.apache.airavata.ws.monitor.MonitorEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -208,24 +206,30 @@ public class AiravataClient extends Observable implements AiravataAPI {
 		}
 		return config;
 	 }
-	protected void initialize() throws MalformedURLException, AiravataConfigurationException, RepositoryException, RegistryException {
-		if (!configCreated){
-			configuration=createConfig(getRegitryURI(), getCurrentUser(), getPassword());
-			configCreated=true;
+	 
+	 @Override
+	public void initialize() throws AiravataAPIInvocationException {
+		try {
+			if (!configCreated){
+				configuration=createConfig(getRegitryURI(), getCurrentUser(), getPassword());
+				configCreated=true;
+			}
+			updateClientConfiguration(configuration);
+
+			// At this point we do not know the workflowExperimentId
+			// FIXME: Registry URL is set null as its not used. Set this when we
+			// have rest services
+			builder = new WorkflowContextHeaderBuilder(configuration.get(BROKER),
+					configuration.get(GFAC), null, null, null,
+					configuration.get(MSGBOX));
+
+			// TODO: At some point this should contain the current user the airavata
+			// client is
+			// logged in to the Airavata system
+			setCurrentUser(getClientConfiguration().getJcrUsername());
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException("Error while initializing the Airavata API",e);
 		}
-		updateClientConfiguration(configuration);
-
-		// At this point we do not know the workflowExperimentId
-		// FIXME: Registry URL is set null as its not used. Set this when we
-		// have rest services
-		builder = new WorkflowContextHeaderBuilder(configuration.get(BROKER),
-				configuration.get(GFAC), null, null, null,
-				configuration.get(MSGBOX));
-
-		// TODO: At some point this should contain the current user the airavata
-		// client is
-		// logged in to the Airavata system
-		setCurrentUser(getClientConfiguration().getJcrUsername());
 	}
 
 	private void updateClientConfiguration(Map<String, String> configuration)
@@ -409,27 +413,29 @@ public class AiravataClient extends Observable implements AiravataAPI {
 //		// log.info("Workflow output : " + worflowoutput);
 //		return worflowoutput;
 //	}
-
-	public Monitor getWorkflowExecutionMonitor(String topic) {
-		return getWorkflowExecutionMonitor(topic, null);
-	}
-
-	public Monitor getWorkflowExecutionMonitor(String topic,
-			MonitorEventListener listener) {
-		final String fTopic = topic;
-		try {
-			monitorConfiguration = new MonitorConfiguration(new URI(
-					configuration.get(BROKER)), fTopic, true, new URI(
-					configuration.get(MSGBOX)));
-		} catch (URISyntaxException e1) {
-			e1.printStackTrace();
-		}
-		final Monitor monitor = new Monitor(monitorConfiguration);
-		monitor.setPrint(false);
-		monitor.getEventDataRepository().registerEventListener(listener);
-		listener.setExperimentMonitor(monitor);
-		return monitor;
-	}
+//
+//	public Monitor getWorkflowExecutionMonitor(String topic) {
+//		return getWorkflowExecutionMonitor(topic, null);
+//	}
+//
+//	public Monitor getWorkflowExecutionMonitor(String topic,
+//			MonitorEventListener listener) {
+//		final String fTopic = topic;
+//		MonitorConfiguration monitorConfiguration;
+//		try {
+//			monitorConfiguration = new MonitorConfiguration(
+//					getClientConfiguration().getMessagebrokerURL().toURI(), fTopic,
+//					true, getClientConfiguration().getMessageboxURL().toURI());
+//			final Monitor monitor = new Monitor(monitorConfiguration);
+//			monitor.printRawMessage(false);
+//			monitor.getEventDataRepository().registerEventListener(listener);
+//			listener.setExperimentMonitor(monitor);
+//			return monitor;
+//		} catch (URISyntaxException e) {
+//			e.printStackTrace();
+//		}
+//		
+//	}
 //
 //	private void runPreWorkflowExecutionTasks(String topic, String user,
 //			String metadata, String experimentName) throws RegistryException, AiravataConfigurationException {
