@@ -231,14 +231,14 @@ public class DescriptorEditorDialog extends JDialog {
 				}
 	    		break;
 	    	case APPLICATION:
-	    		ApplicationDescription a = (ApplicationDescription) getSelected();
-	    		String[] s = dlist.get(a).split("\\$");
-	    		ApplicationDescriptionDialog aDescriptionDialog = new ApplicationDescriptionDialog(engine,false,a,s[1],s[0]);
-	    		aDescriptionDialog.setLocationRelativeTo(this.engine.getGUI().getFrame());
-	    		aDescriptionDialog.open();
-			if (aDescriptionDialog.isApplicationDescCreated()) {
-				loadDescriptors();
-			}
+                ApplicationDescription a = (ApplicationDescription) getSelected();
+                String[] s = dlist.get(a).split("\\$");
+                ApplicationDescriptionDialog aDescriptionDialog = new ApplicationDescriptionDialog(engine, false, a, s[1], s[0]);
+                aDescriptionDialog.setLocationRelativeTo(this.engine.getGUI().getFrame());
+                aDescriptionDialog.open();
+                if (aDescriptionDialog.isApplicationDescCreated()) {
+                    loadDescriptors();
+                }
 			break;
     	}
 	}
@@ -277,7 +277,7 @@ public class DescriptorEditorDialog extends JDialog {
 		return descriptorList.getModel().getElementAt(descriptorList.getSelectedIndex());
 	}
 	protected boolean askQuestion(String title, String question) {
-        return JOptionPane.showConfirmDialog(null, question, title, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+        return JOptionPane.showConfirmDialog(this, question, title, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
     }
     private boolean deleteDescriptor() throws AiravataAPIInvocationException{
     	String title=null;
@@ -309,18 +309,21 @@ public class DescriptorEditorDialog extends JDialog {
 	    	    	case HOST:
 	    	    		HostDescription h = (HostDescription) getSelected();
 	    	        	getRegistry().getApplicationManager().deleteHostDescription(h.getType().getHostName());
+                        loadDescriptors();
 	    	    		break;
 	    	    	case SERVICE:
 	    	        	ServiceDescription d = (ServiceDescription) getSelected();
 	    	        	getRegistry().getApplicationManager().deleteServiceDescription(d.getType().getName());
+                        loadDescriptors();
 	    	    		break;
 	    	    	case APPLICATION:
 	    	    		ApplicationDescription a = (ApplicationDescription) getSelected();
 	    	    		String[] s = dlist.get(a).split("\\$");
 	    	        	getRegistry().getApplicationManager().deleteApplicationDescription(s[0], s[1], a.getType().getApplicationName().getStringValue());
-	    	    		break;
+	    	    		loadDescriptors();
+                        break;
             	}
-				loadDescriptors();
+//				loadDescriptors();
         }
         return true;
     }
