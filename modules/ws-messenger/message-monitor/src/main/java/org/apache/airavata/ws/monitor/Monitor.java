@@ -102,12 +102,14 @@ public class Monitor extends EventProducer {
      * @throws MonitorException
      */
     public synchronized void start() throws MonitorException {
+
+        stop();
+
         // Stop the previous monitoring if any.
     	monitoringCompleted=false;
     	monitoringFailed=false;
     			
     	getEventDataRepository().triggerListenerForPreMonitorStart();
-        asynchronousStop();
 
         subscribe();
 
