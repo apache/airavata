@@ -48,9 +48,9 @@ public class Monitor extends EventProducer {
 
     protected WsmgClient wsmgClient;
 
-    protected boolean print;
+    protected boolean printRawMessages;
 
-    protected long timeout = 20000L;
+    protected long messagePullTimeout = 20000L;
 
     protected boolean monitoring = false;
     
@@ -58,23 +58,14 @@ public class Monitor extends EventProducer {
     
     private boolean monitoringFailed=false;
     
-    /**
-     * Constructs a Monitor.
-     * 
-     * @param configuration
-     */
     public Monitor(MonitorConfiguration configuration) {
         this.configuration = configuration;
-        // The first one is special and it is for the main event panel display
-        // and
-        // it does not have and filters
+        // First one keeps all event data & it doesn't have filters
         this.eventDataMap.put(DEFAULT_MODEL_KEY, new EventDataRepository());
-
-
     }
 
     /**
-     * @return The configuration
+     * @return The configuration for monitoring
      */
     public MonitorConfiguration getConfiguration() {
         return this.configuration;
@@ -85,7 +76,6 @@ public class Monitor extends EventProducer {
      * @return 
      */
     public EventDataRepository getEventDataRepository() {
-        // send the first one cos that is the default one
         return this.eventDataMap.get(DEFAULT_MODEL_KEY);
     }
 
@@ -102,13 +92,15 @@ public class Monitor extends EventProducer {
      * @throws MonitorException
      */
     public synchronized void start() throws MonitorException {
-
+    	
+    	//Make sure currently we are not doing any monitoring
         stop();
 
-        // Stop the previous monitoring if any.
+        // Reset monitoring variables
     	monitoringCompleted=false;
     	monitoringFailed=false;
-    			
+
+    	//Notify listeners that the monitoring is about to start
     	getEventDataRepository().triggerListenerForPreMonitorStart();
 
         subscribe();
@@ -121,9 +113,6 @@ public class Monitor extends EventProducer {
                 final String nodeID = string;
                 // for each wsnode there is one data model which
                 this.eventDataMap.put(nodeID, new EventDataRepository(new EventFilter() {
-                    /**
-                     * @see org.apache.airavata.ws.monitor.EventFilter#isAcceptable(org.apache.airavata.ws.monitor.EventData)
-                     */
                     public boolean isAcceptable(EventData event) {
                         return event != null && event.getNodeID() != null && event.getNodeID().equals(nodeID);
                     }
@@ -132,42 +121,6 @@ public class Monitor extends EventProducer {
 
         }
         getEventDataRepository().triggerListenerForPostMonitorStart();
-    }
-    
-    public void startMonitoring(){
-    	final Monitor m=this;
-    	new Thread(){
-    		@Override
-    		public void run() {
-    			try {
-					m.start();
-				} catch (MonitorException e) {
-					e.printStackTrace();
-				}
-    		}
-    	}.start();
-    }
-    
-    public void stopMonitoring(){
-		asynchronousStop();
-    }
-
-    /**
-     * Stops monitoring.
-     */
-    protected void asynchronousStop() {
-        // Users don't need to know the end of unsubscription.
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                	Monitor.this.stop();
-                } catch (WorkflowException e) {
-                    // Ignore the error in unsubscription.
-                    logger.error(e.getMessage(), e);
-                }
-            }
-        }.start();
     }
 
     /**
@@ -189,9 +142,43 @@ public class Monitor extends EventProducer {
     }
 
     /**
-     * Resets the graph and clear the monitoring table. Remove all the extra tablemodels available
+     * Start monitoring asynchronously
      */
-    public void reset() {
+    public void startMonitoring(){
+    	new Thread(){
+    		@Override
+    		public void run() {
+    			try {
+    				Monitor.this.start();
+				} catch (MonitorException e) {
+					e.printStackTrace();
+				}
+    		}
+    	}.start();
+    }
+    
+    /**
+     * Stop monitoring asynchronously
+     */
+    public void stopMonitoring(){
+    	// Users don't need to know the end of unsubscription.
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                	Monitor.this.stop();
+                } catch (WorkflowException e) {
+                    // Ignore the error in unsubscription.
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        }.start();
+    }
+
+    /**
+     * Resets the graph and clear the monitoring table. Remove all the extra table models available
+     */
+    public void resetEventData() {
         Set<String> keys = this.eventDataMap.keySet();
         LinkedList<String> keysToBeRemoved = new LinkedList<String>();
         // Remove everthing leaving only the last one
@@ -211,10 +198,10 @@ public class Monitor extends EventProducer {
     /**
      * @param event
      */
-    public synchronized void handleNotification(XmlElement event) {
+    protected synchronized void handleNotification(XmlElement event) {
         Set<String> keys = this.eventDataMap.keySet();
         // Remove everthing leaving only the last one
-        if(print){
+        if(printRawMessages){
             System.out.println(XMLUtil.xmlElementToString(event));
         }
         for (String key : keys) {
@@ -222,10 +209,14 @@ public class Monitor extends EventProducer {
         }
     }
 
+    /**
+     * Subscribe to the WS Messenger client to pull notifications from the message box
+     * @throws MonitorException
+     */
     private void subscribe() throws MonitorException {
         this.wsmgClient = new WsmgClient(this);
-        this.wsmgClient.setTimeout(this.getMessagePullTimeout());
         //Users can set the timeout and interval for the subscription using wsmg setter methods, here we use the default values
+        this.wsmgClient.setTimeout(this.getMessagePullTimeout());
         this.wsmgClient.subscribe();
         setMonitoring(true);
 
@@ -233,10 +224,14 @@ public class Monitor extends EventProducer {
         sendSafeEvent(new Event(Type.MONITOR_STARTED));
     }
 
+    /**
+     * Unsubcribe from the ws messager client
+     * @param client
+     * @throws MonitorException
+     */
     private void unsubscribe(WsmgClient client) throws MonitorException {
         // Enable/disable some menu items.
         sendSafeEvent(new Event(Type.MONITOR_STOPED));
-
         client.unsubscribe();
         setMonitoring(false);
     }
@@ -259,7 +254,7 @@ public class Monitor extends EventProducer {
      * @param print - if <code>true</code> raw notifications are printed
      */
     public void printRawMessage(boolean print){
-    	this.print = print;
+    	this.printRawMessages = print;
     }
     
     /**
@@ -267,7 +262,7 @@ public class Monitor extends EventProducer {
      * @return
      */
     public long getMessagePullTimeout() {
-        return timeout;
+        return messagePullTimeout;
     }
 
     /**
@@ -275,7 +270,7 @@ public class Monitor extends EventProducer {
      * @param timeout
      */
     public void setMessagePullTimeout(long timeout) {
-        this.timeout = timeout;
+        this.messagePullTimeout = timeout;
     }
 
     /**
@@ -320,6 +315,6 @@ public class Monitor extends EventProducer {
      * @param print - if <code>true</code> raw notifications are printed
      */
     public void setPrint(boolean print) {
-        this.print = print;
+        this.printRawMessages = print;
     }
 }

@@ -21,8 +21,11 @@
 
 package org.apache.airavata.client.api;
 
+import java.net.URI;
+
 import org.apache.airavata.client.api.builder.DescriptorBuilder;
 import org.apache.airavata.common.utils.Version;
+import org.apache.airavata.registry.api.PasswordCallback;
 
 
 /**
@@ -84,5 +87,15 @@ public interface AiravataAPI {
      * @return DescriptorBuilder.
      */
     public DescriptorBuilder getDescriptorBuilder();
+
+	public void setCurrentUser(String alternateUsername);
+
+	public void setCallBack(PasswordCallback callback);
+
+	public void setRegitryURI(URI registryURL);
+
+	public void initialize() throws AiravataAPIInvocationException;
+
+	public void setGateway(String gateway);
 
 }

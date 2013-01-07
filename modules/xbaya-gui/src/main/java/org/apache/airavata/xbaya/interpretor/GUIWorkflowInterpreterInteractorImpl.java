@@ -119,7 +119,7 @@ public class GUIWorkflowInterpreterInteractorImpl implements
 			} catch (MonitorException e) {
 				e.printStackTrace();
 			} finally {
-				this.engine.getMonitor().reset();
+				this.engine.getMonitor().resetEventData();
 			}
 			break;
 		case HANDLE_DEPENDENT_NODES_DIFFERED_INPUTS:
