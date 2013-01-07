@@ -32,6 +32,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
+import org.apache.airavata.ws.monitor.MonitorUtil.EventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
@@ -89,7 +90,7 @@ public class EventDataRepository implements TableModel, BoundedRangeModel {
 
     private EventFilter filter;
 
-    private List<MonitorEventListener> monitorEventListerners;
+    private List<EventDataListener> monitorEventListerners;
 
     /**
      * 
@@ -142,7 +143,7 @@ public class EventDataRepository implements TableModel, BoundedRangeModel {
 
     }
     public void triggerListenerForPreMonitorStart() {
-		for (MonitorEventListener listener : getMonitorEventListerners()) {
+		for (EventDataListener listener : getMonitorEventListerners()) {
 			try {
 				listener.monitoringPreStart();
 			} catch (Exception e) {
@@ -153,7 +154,7 @@ public class EventDataRepository implements TableModel, BoundedRangeModel {
 	}
     
     public void triggerListenerForPostMonitorStart() {
-		for (MonitorEventListener listener : getMonitorEventListerners()) {
+		for (EventDataListener listener : getMonitorEventListerners()) {
 			try {
 				listener.monitoringPostStart();
 			} catch (Exception e) {
@@ -164,7 +165,7 @@ public class EventDataRepository implements TableModel, BoundedRangeModel {
 	}
     
     public void triggerListenerForPreMonitorStop() {
-		for (MonitorEventListener listener : getMonitorEventListerners()) {
+		for (EventDataListener listener : getMonitorEventListerners()) {
 			try {
 				listener.monitoringPreStop();
 			} catch (Exception e) {
@@ -175,7 +176,7 @@ public class EventDataRepository implements TableModel, BoundedRangeModel {
 	}
     
     public void triggerListenerForPostMonitorStop() {
-		for (MonitorEventListener listener : getMonitorEventListerners()) {
+		for (EventDataListener listener : getMonitorEventListerners()) {
 			try {
 				listener.monitoringPostStop();
 			} catch (Exception e) {
@@ -185,9 +186,14 @@ public class EventDataRepository implements TableModel, BoundedRangeModel {
 		}
 	}
 	private void triggerListenerForMonitorEvent(EventData event) {
-		for (MonitorEventListener listener : getMonitorEventListerners()) {
+		for (EventDataListener listener : getMonitorEventListerners()) {
 			try {
 				listener.notify(this, event);
+				if (event.getType()==EventType.WORKFLOW_TERMINATED){
+					listener.onCompletion(event);
+				}else if (event.getType()==EventType.SENDING_FAULT){
+					listener.onFail(event);
+				}
 			} catch (Exception e) {
 				//just in case
 				e.printStackTrace();
@@ -475,20 +481,20 @@ public class EventDataRepository implements TableModel, BoundedRangeModel {
             listener.stateChanged(this.tableModelChangeEvent);
         }
     }
-	private List<MonitorEventListener> getMonitorEventListerners() {
+	private List<EventDataListener> getMonitorEventListerners() {
 		if (monitorEventListerners==null){
-			monitorEventListerners=new ArrayList<MonitorEventListener>();
+			monitorEventListerners=new ArrayList<EventDataListener>();
 		}
 		return monitorEventListerners;
 	}
 
-	public void registerEventListener(MonitorEventListener listener){
+	public void registerEventListener(EventDataListener listener){
 		if (listener!=null) {
 			getMonitorEventListerners().add(listener);
 		}
 	}
 	
-	public void unregisterEventListener(MonitorEventListener listener){
+	public void unregisterEventListener(EventDataListener listener){
 		if (getMonitorEventListerners().contains(listener)) {
 			getMonitorEventListerners().remove(listener);
 		}

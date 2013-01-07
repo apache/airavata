@@ -27,7 +27,7 @@ import org.apache.airavata.common.workflow.execution.context.WorkflowContextHead
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.apache.airavata.ws.monitor.Monitor;
-import org.apache.airavata.ws.monitor.MonitorEventListener;
+import org.apache.airavata.ws.monitor.EventDataListener;
 
 public interface ExecutionManager {
     /**
@@ -49,6 +49,16 @@ public interface ExecutionManager {
      */
 	public String runExperiment(String workflow,List<WorkflowInput> inputs, ExperimentAdvanceOptions options) throws AiravataAPIInvocationException;
 
+    /**
+     * Run an experiment containing single workflow with custom settings for the experiment & listen 
+     * for notification events 
+     * @param workflow - Workflow template Id or Workflow Graph XML
+     * @param inputs
+     * @param options
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
+	public String runExperiment(String workflow,List<WorkflowInput> inputs, ExperimentAdvanceOptions options, EventDataListener listener) throws AiravataAPIInvocationException;
 	
     /**
      * Run an experiment containing single workflow
@@ -126,7 +136,7 @@ public interface ExecutionManager {
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public Monitor getExperimentMonitor(String experimentId, MonitorEventListener listener) throws AiravataAPIInvocationException;
+	public Monitor getExperimentMonitor(String experimentId, EventDataListener listener) throws AiravataAPIInvocationException;
 	
 	/**
 	 * @deprecated

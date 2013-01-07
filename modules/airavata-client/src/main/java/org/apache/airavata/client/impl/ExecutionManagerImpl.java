@@ -53,8 +53,8 @@ import org.apache.airavata.ws.monitor.EventData;
 import org.apache.airavata.ws.monitor.EventDataRepository;
 import org.apache.airavata.ws.monitor.Monitor;
 import org.apache.airavata.ws.monitor.MonitorConfiguration;
-import org.apache.airavata.ws.monitor.MonitorEventListener;
-import org.apache.airavata.ws.monitor.MonitorEventListenerAdapter;
+import org.apache.airavata.ws.monitor.EventDataListener;
+import org.apache.airavata.ws.monitor.EventDataListenerAdapter;
 import org.apache.airavata.ws.monitor.MonitorUtil.EventType;
 import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
 import org.apache.axis2.AxisFault;
@@ -77,7 +77,7 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	public String runExperiment(String workflow,
 			List<WorkflowInput> inputs, ExperimentAdvanceOptions options)
 			throws AiravataAPIInvocationException {
-		return runWorkflow(workflow, inputs, options);
+		return runExperimentGeneral(extractWorkflow(workflow), inputs, options, null);
 	}
 	
 
@@ -108,7 +108,7 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	@Override
 	public void waitForExperimentTermination(String experimentId)
 			throws AiravataAPIInvocationException {
-		Monitor experimentMonitor = getExperimentMonitor(experimentId, new MonitorEventListenerAdapter() {
+		Monitor experimentMonitor = getExperimentMonitor(experimentId, new EventDataListenerAdapter() {
 			@Override
 			public void notify(EventDataRepository eventDataRepo,
 					EventData eventData) {
@@ -137,7 +137,7 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	}
 
 	@Override
-	public Monitor getExperimentMonitor(String experimentId,MonitorEventListener listener)
+	public Monitor getExperimentMonitor(String experimentId,final EventDataListener listener)
 			throws AiravataAPIInvocationException {
 		MonitorConfiguration monitorConfiguration;
 		try {
@@ -146,12 +146,167 @@ public class ExecutionManagerImpl implements ExecutionManager {
 					true, getClient().getClientConfiguration().getMessageboxURL().toURI());
 			final Monitor monitor = new Monitor(monitorConfiguration);
 			monitor.printRawMessage(false);
-			monitor.getEventDataRepository().registerEventListener(listener);
-			listener.setExperimentMonitor(monitor);
+			if (listener!=null) {
+				monitor.getEventDataRepository().registerEventListener(listener);
+				listener.setExperimentMonitor(monitor);
+			}
+			if (!monitor.getExperimentId().equals(">")){
+				monitor.getEventDataRepository().registerEventListener(new EventDataListenerAdapter() {
+					@Override
+					public void notify(EventDataRepository eventDataRepo, EventData eventData) {
+						if (eventData.getType()==EventType.WORKFLOW_TERMINATED || eventData.getType()==EventType.SENDING_FAULT){
+							monitor.stopMonitoring();
+						} 
+					}
+				});
+			}
 			return monitor;
 		} catch (URISyntaxException e) {
 			throw new AiravataAPIInvocationException(e);
 		}
+	}
+
+	@Override
+	public String runExperiment(String workflow, List<WorkflowInput> inputs,
+			ExperimentAdvanceOptions options, EventDataListener listener)
+			throws AiravataAPIInvocationException {
+		return runExperimentGeneral(extractWorkflow(workflow), inputs, options, listener);
+	}
+	
+	public AiravataClient getClient() {
+		return client;
+	}
+	public void setClient(AiravataClient client) {
+		this.client = client;
+	}
+	private String runExperimentGeneral(Workflow workflowObj, List<WorkflowInput> inputs, ExperimentAdvanceOptions options, EventDataListener listener) throws AiravataAPIInvocationException {
+		try {
+			String workflowString = XMLUtil.xmlElementToString(workflowObj.toXML());
+			List<WSComponentPort> ports = getWSComponentPortInputs(workflowObj);
+			for (WorkflowInput input : inputs) {
+				WSComponentPort port = getWSComponentPort(input.getName(),
+						ports);
+				if (port != null) {
+					port.setValue(input.getValue());
+				}
+			}
+			List<NameValue> inputValues = new ArrayList<NameValue>();
+			for (WSComponentPort port : ports) {
+				NameValue nameValue = new NameValue();
+				nameValue.setName(port.getName());
+				if (port.getValue() == null) {
+					nameValue.setValue(port.getDefaultValue());
+				} else {
+					nameValue.setValue(port.getValue().toString());
+				}
+				inputValues.add(nameValue);
+			}
+			String experimentID=options.getCustomExperimentId();
+			String workflowTemplateName = workflowObj.getName();
+			if (experimentID == null || experimentID.isEmpty()) {
+				experimentID = workflowTemplateName + "_" + UUID.randomUUID();
+			}
+	        getClient().getProvenanceManager().setWorkflowInstanceTemplateName(experimentID,workflowTemplateName);
+	        
+			WorkflowContextHeaderBuilder builder=createWorkflowContextHeader();
+			
+			//TODO - fix user passing
+	        String submissionUser = getClient().getUserManager().getAiravataUser();
+			builder.setUserIdentifier(submissionUser);
+			String executionUser=options.getExperimentExecutionUser();
+			if (executionUser==null){
+				executionUser=submissionUser;
+			}
+			NodeSettings[] nodeSettingsList = options.getCustomWorkflowSchedulingSettings().getNodeSettingsList();
+			for (NodeSettings nodeSettings : nodeSettingsList) {
+				builder.addApplicationSchedulingContext(nodeSettings.getNodeId(), nodeSettings.getServiceId(), nodeSettings.getHostSettings().getHostId(), nodeSettings.getHostSettings().isWSGRAMPreffered(), nodeSettings.getHostSettings().getGatekeeperEPR(), nodeSettings.getHPCSettings().getJobManager(), nodeSettings.getHPCSettings().getCPUCount(), nodeSettings.getHPCSettings().getNodeCount(), nodeSettings.getHPCSettings().getQueueName(), nodeSettings.getHPCSettings().getMaxWallTime());
+			}
+			OutputDataSettings[] outputDataSettingsList = options.getCustomWorkflowOutputDataSettings().getOutputDataSettingsList();
+			for (OutputDataSettings outputDataSettings : outputDataSettingsList) {
+				builder.addApplicationOutputDataHandling(outputDataSettings.getOutputDataDirectory(), outputDataSettings.getDataRegistryUrl(), outputDataSettings.isDataPersistent());
+			}
+			runPreWorkflowExecutionTasks(experimentID, executionUser, options.getExperimentMetadata(), options.getExperimentName());
+			NameValue[] inputVals = inputValues.toArray(new NameValue[] {});
+			if (listener!=null){
+				getExperimentMonitor(experimentID, listener).startMonitoring();
+			}
+			launchWorkflow(experimentID, workflowString, inputVals, builder);
+			return experimentID;	
+		}  catch (GraphException e) {
+			throw new AiravataAPIInvocationException(e);
+		} catch (ComponentException e) {
+			throw new AiravataAPIInvocationException(e);
+		} catch (Exception e) {
+	        throw new AiravataAPIInvocationException("Error working with Airavata Registry: " + e.getLocalizedMessage(), e);
+	    }
+	}
+
+//	private String runWorkflow(String workflowName, List<WorkflowInput> inputs, ExperimentAdvanceOptions options) throws AiravataAPIInvocationException {
+//		return runExperimentGeneral(extractWorkflow(workflowName), inputs, options, null);
+//	}
+	
+    private Workflow extractWorkflow(String workflowName) throws AiravataAPIInvocationException {
+        Workflow workflowObj = null;
+        //FIXME - There should be a better way to figure-out if the passed string is a name or an xml
+        if(!workflowName.contains("http://airavata.apache.org/xbaya/xwf")){//(getClient().getWorkflowManager().isWorkflowExists(workflowName)) {
+            workflowObj = getClient().getWorkflowManager().getWorkflow(workflowName);
+        }else {
+            try{
+                workflowObj = getClient().getWorkflowManager().getWorkflowFromString(workflowName);
+            }catch (AiravataAPIInvocationException e){
+            	getClient().getWorkflowManager().getWorkflow(workflowName);
+            }
+        }
+        return workflowObj;
+    }
+    
+	private List<WSComponentPort> getWSComponentPortInputs(Workflow workflow)
+			throws GraphException, ComponentException {
+		workflow.createScript();
+		List<WSComponentPort> inputs = workflow.getInputs();
+		return inputs;
+	}
+
+	private WSComponentPort getWSComponentPort(String name,
+			List<WSComponentPort> ports) {
+		for (WSComponentPort port : ports) {
+			if (port.getName().equals(name)) {
+				return port;
+			}
+		}
+		return null;
+	}
+	
+	private void launchWorkflow(String experimentId, String workflowGraph, NameValue[] inputs,
+			WorkflowContextHeaderBuilder builder) throws AiravataAPIInvocationException {
+		try {
+			builder.getWorkflowMonitoringContext().setExperimentId(experimentId);
+			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(getClient().getAiravataManager().getWorkflowInterpreterServiceURL().toString());
+			stub._getServiceClient().addHeader(
+					AXIOMUtil.stringToOM(XMLUtil.xmlElementToString(builder
+							.getXml())));
+			stub.launchWorkflow(workflowGraph, experimentId, inputs);
+		} catch (AxisFault e) {
+			e.printStackTrace();
+		} catch (XMLStreamException e) {
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void runPreWorkflowExecutionTasks(String experimentId, String user,
+			String metadata, String experimentName) throws AiravataAPIInvocationException {
+		if (user != null) {
+			getClient().getProvenanceManager().setExperimentUser(experimentId, user);
+		}
+		if (metadata != null) {
+			getClient().getProvenanceManager().setExperimentMetadata(experimentId, metadata);
+		}
+		if (experimentName == null) {
+			experimentName = experimentId;
+		}
+		getClient().getProvenanceManager().setExperimentName(experimentId, experimentName);
 	}
 
 	//------------------Deprecated Functions---------------------//
@@ -223,147 +378,5 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	}
 	
 	//------------------End of Deprecated Functions---------------------//
-
-	public AiravataClient getClient() {
-		return client;
-	}
-	public void setClient(AiravataClient client) {
-		this.client = client;
-	}
-
-	private String runWorkflow(String workflowName, List<WorkflowInput> inputs, ExperimentAdvanceOptions options) throws AiravataAPIInvocationException {
-		return runExperimentGeneral(extractWorkflow(workflowName), inputs, options, null).toString();
-	}
-	
-    private Workflow extractWorkflow(String workflowName) throws AiravataAPIInvocationException {
-        Workflow workflowObj = null;
-        //FIXME - There should be a better way to figure-out if the passed string is a name or an xml
-        if(!workflowName.contains("http://airavata.apache.org/xbaya/xwf")){//(getClient().getWorkflowManager().isWorkflowExists(workflowName)) {
-            workflowObj = getClient().getWorkflowManager().getWorkflow(workflowName);
-        }else {
-            try{
-                workflowObj = getClient().getWorkflowManager().getWorkflowFromString(workflowName);
-            }catch (AiravataAPIInvocationException e){
-            	getClient().getWorkflowManager().getWorkflow(workflowName);
-            }
-        }
-        return workflowObj;
-    }
-    
-	private Object runExperimentGeneral(Workflow workflowObj, List<WorkflowInput> inputs, ExperimentAdvanceOptions options, MonitorEventListener listener) throws AiravataAPIInvocationException {
-		try {
-			String workflowString = XMLUtil.xmlElementToString(workflowObj.toXML());
-			List<WSComponentPort> ports = getWSComponentPortInputs(workflowObj);
-			for (WorkflowInput input : inputs) {
-				WSComponentPort port = getWSComponentPort(input.getName(),
-						ports);
-				if (port != null) {
-					port.setValue(input.getValue());
-				}
-			}
-			List<NameValue> inputValues = new ArrayList<NameValue>();
-			for (WSComponentPort port : ports) {
-				NameValue nameValue = new NameValue();
-				nameValue.setName(port.getName());
-				if (port.getValue() == null) {
-					nameValue.setValue(port.getDefaultValue());
-				} else {
-					nameValue.setValue(port.getValue().toString());
-				}
-				inputValues.add(nameValue);
-			}
-			String experimentID=options.getCustomExperimentId();
-			String workflowTemplateName = workflowObj.getName();
-			if (experimentID == null || experimentID.isEmpty()) {
-				experimentID = workflowTemplateName + "_" + UUID.randomUUID();
-			}
-	        getClient().getProvenanceManager().setWorkflowInstanceTemplateName(experimentID,workflowTemplateName);
-	        
-			WorkflowContextHeaderBuilder builder=createWorkflowContextHeader();
-			
-			//TODO - fix user passing
-	        String submissionUser = getClient().getUserManager().getAiravataUser();
-			builder.setUserIdentifier(submissionUser);
-			String executionUser=options.getExperimentExecutionUser();
-			if (executionUser==null){
-				executionUser=submissionUser;
-			}
-			NodeSettings[] nodeSettingsList = options.getCustomWorkflowSchedulingSettings().getNodeSettingsList();
-			for (NodeSettings nodeSettings : nodeSettingsList) {
-				builder.addApplicationSchedulingContext(nodeSettings.getNodeId(), nodeSettings.getServiceId(), nodeSettings.getHostSettings().getHostId(), nodeSettings.getHostSettings().isWSGRAMPreffered(), nodeSettings.getHostSettings().getGatekeeperEPR(), nodeSettings.getHPCSettings().getJobManager(), nodeSettings.getHPCSettings().getCPUCount(), nodeSettings.getHPCSettings().getNodeCount(), nodeSettings.getHPCSettings().getQueueName(), nodeSettings.getHPCSettings().getMaxWallTime());
-			}
-			OutputDataSettings[] outputDataSettingsList = options.getCustomWorkflowOutputDataSettings().getOutputDataSettingsList();
-			for (OutputDataSettings outputDataSettings : outputDataSettingsList) {
-				builder.addApplicationOutputDataHandling(outputDataSettings.getOutputDataDirectory(), outputDataSettings.getDataRegistryUrl(), outputDataSettings.isDataPersistent());
-			}
-			runPreWorkflowExecutionTasks(experimentID, executionUser, options.getExperimentMetadata(), options.getExperimentName());
-			NameValue[] inputVals = inputValues.toArray(new NameValue[] {});
-			Monitor monitorObj=null;
-			if (listener!=null){
-				monitorObj=getExperimentMonitor(experimentID, listener);
-			}
-			launchWorkflow(experimentID, workflowString, inputVals, builder);
-			if (listener==null){
-				return experimentID;	
-			}else{
-				return monitorObj;
-			}
-		}  catch (GraphException e) {
-			throw new AiravataAPIInvocationException(e);
-		} catch (ComponentException e) {
-			throw new AiravataAPIInvocationException(e);
-		} catch (Exception e) {
-	        throw new AiravataAPIInvocationException("Error working with Airavata Registry: " + e.getLocalizedMessage(), e);
-	    }
-	}
-    
-	private List<WSComponentPort> getWSComponentPortInputs(Workflow workflow)
-			throws GraphException, ComponentException {
-		workflow.createScript();
-		List<WSComponentPort> inputs = workflow.getInputs();
-		return inputs;
-	}
-
-	private WSComponentPort getWSComponentPort(String name,
-			List<WSComponentPort> ports) {
-		for (WSComponentPort port : ports) {
-			if (port.getName().equals(name)) {
-				return port;
-			}
-		}
-		return null;
-	}
-	
-	private void launchWorkflow(String experimentId, String workflowGraph, NameValue[] inputs,
-			WorkflowContextHeaderBuilder builder) throws AiravataAPIInvocationException {
-		try {
-			builder.getWorkflowMonitoringContext().setExperimentId(experimentId);
-			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(getClient().getAiravataManager().getWorkflowInterpreterServiceURL().toString());
-			stub._getServiceClient().addHeader(
-					AXIOMUtil.stringToOM(XMLUtil.xmlElementToString(builder
-							.getXml())));
-			stub.launchWorkflow(workflowGraph, experimentId, inputs);
-		} catch (AxisFault e) {
-			e.printStackTrace();
-		} catch (XMLStreamException e) {
-			e.printStackTrace();
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private void runPreWorkflowExecutionTasks(String experimentId, String user,
-			String metadata, String experimentName) throws AiravataAPIInvocationException {
-		if (user != null) {
-			getClient().getProvenanceManager().setExperimentUser(experimentId, user);
-		}
-		if (metadata != null) {
-			getClient().getProvenanceManager().setExperimentMetadata(experimentId, metadata);
-		}
-		if (experimentName == null) {
-			experimentName = experimentId;
-		}
-		getClient().getProvenanceManager().setExperimentName(experimentId, experimentName);
-	}
 
 }
