@@ -21,16 +21,12 @@
 
 package org.apache.airavata.client;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.util.Map;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.impl.PasswordCallBackImpl;
 import org.apache.airavata.registry.api.PasswordCallback;
-import org.apache.airavata.registry.api.exception.RegistryException;
 
 public class AiravataAPIFactory {
 	

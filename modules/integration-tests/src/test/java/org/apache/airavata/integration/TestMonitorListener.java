@@ -11,7 +11,7 @@ import org.apache.airavata.registry.api.workflow.NodeExecutionData;
 import org.apache.airavata.ws.monitor.Monitor;
 import org.apache.airavata.ws.monitor.EventData;
 import org.apache.airavata.ws.monitor.EventDataRepository;
-import org.apache.airavata.ws.monitor.MonitorEventListener;
+import org.apache.airavata.ws.monitor.EventDataListener;
 import org.apache.airavata.ws.monitor.MonitorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Monitor class for integration tests.
  */
-public class TestMonitorListener implements MonitorEventListener {
+public class TestMonitorListener implements EventDataListener {
 
     private static final Logger log = LoggerFactory.getLogger(BaseCaseIT.class);
 
@@ -94,6 +94,14 @@ public class TestMonitorListener implements MonitorEventListener {
 
 	@Override
 	public void monitoringPostStop() {
+	}
+
+	@Override
+	public void onFail(EventData failNotification) {
+	}
+
+	@Override
+	public void onCompletion(EventData completionNotification) {
 	}
 
 }

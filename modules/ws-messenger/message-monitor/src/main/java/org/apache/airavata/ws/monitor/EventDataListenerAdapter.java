@@ -21,7 +21,7 @@
 
 package org.apache.airavata.ws.monitor;
 
-public abstract class MonitorEventListenerAdapter implements MonitorEventListener {
+public abstract class EventDataListenerAdapter implements EventDataListener {
 	private Monitor monitor;
 	
 	@Override
@@ -48,13 +48,23 @@ public abstract class MonitorEventListenerAdapter implements MonitorEventListene
 	public void monitoringPostStop() {
 		//Nothing to do
 	}
-
+	
 	protected Monitor getMonitor() {
 		return monitor;
 	}
 
 	private void setMonitor(Monitor monitor) {
 		this.monitor = monitor;
+	}
+
+	@Override
+	public void onFail(EventData failNotification) {
+		//Nothing to do
+	}
+
+	@Override
+	public void onCompletion(EventData completionNotification) {
+		//Nothing to do
 	}
 
 }
