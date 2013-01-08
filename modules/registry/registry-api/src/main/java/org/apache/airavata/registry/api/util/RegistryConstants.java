@@ -25,5 +25,11 @@ public class RegistryConstants {
     public static final String KEY_DEFAULT_GATEWAY_ID = "gateway.id";
     public static final String KEY_DEFAULT_REGISTRY_USER = "registry.user";
     public static final String KEY_DEFAULT_REGISTRY_URL = "registry.jdbc.url";
+    public static final String CONFIGURATION_REGISTRY_ACCESSOR_CLASS = "class.configuration.registry.accessor";
+    public static final String DESCRIPTOR_REGISTRY_ACCESSOR_CLASS = "class.descriptor.registry.accessor";
+    public static final String PROJECT_REGISTRY_ACCESSOR_CLASS = "class.project.registry.accessor";
+    public static final String PROVENANCE_REGISTRY_ACCESSOR_CLASS = "class.provenance.registry.accessor";
+    public static final String USER_WF_REGISTRY_ACCESSOR_CLASS = "class.user.workflow.registry.accessor";
+    public static final String PUBLISHED_WF_REGISTRY_ACCESSOR_CLASS = "class.published.workflow.registry.accessor";
 
 }

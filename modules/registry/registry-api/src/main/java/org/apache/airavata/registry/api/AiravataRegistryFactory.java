@@ -48,10 +48,10 @@ public class AiravataRegistryFactory {
 	 * @throws RegistryAccessorInvalidException
 	 */
 	public static AiravataRegistry2 getRegistry(Gateway gateway,
-			AiravataUser user) throws RegistryAccessorNotFoundException,
-			RegistryAccessorUndefinedException,
-			RegistryAccessorInstantiateException,
-			AiravataConfigurationException, RegistryAccessorInvalidException {
+			AiravataUser user) throws RegistryException,
+            RegistryAccessorUndefinedException,
+            RegistryAccessorInstantiateException,
+            AiravataConfigurationException, RegistryAccessorInvalidException {
 		return getRegistry(null, gateway, user, null);
 	}
 	
@@ -70,10 +70,10 @@ public class AiravataRegistryFactory {
 	 * @throws RegistryAccessorInvalidException
 	 */
 	public static AiravataRegistry2 getRegistry(URI connectionURI, Gateway gateway,
-			AiravataUser user, PasswordCallback callback) throws RegistryAccessorNotFoundException,
-			RegistryAccessorUndefinedException,
-			RegistryAccessorInstantiateException,
-			AiravataConfigurationException, RegistryAccessorInvalidException {
+			AiravataUser user, PasswordCallback callback) throws RegistryException,
+            RegistryAccessorUndefinedException,
+            RegistryAccessorInstantiateException,
+            AiravataConfigurationException, RegistryAccessorInvalidException {
 		Object registryObj = getRegistryClass(REGISTRY_ACCESSOR_CLASS);
 		if (registryObj instanceof AiravataRegistry2) {
 			AiravataRegistry2 registry = (AiravataRegistry2) registryObj;
@@ -85,7 +85,7 @@ public class AiravataRegistryFactory {
 	}
 
 	/***
-	 * Given the key in the <code>REPOSITORY_PROPERTIES</code> file it will
+	 * Given the key in the registry settings file it will
 	 * attempt to instantiate a class from the value of the property
 	 *
 	 * @param registryClassKey
@@ -95,31 +95,31 @@ public class AiravataRegistryFactory {
 	 * @throws RegistryAccessorInstantiateException
 	 * @throws AiravataConfigurationException
 	 */
-	private static Object getRegistryClass(String registryClassKey)
+	public static Object getRegistryClass(String registryClassKey)
 			throws RegistryAccessorNotFoundException,
 			RegistryAccessorUndefinedException,
 			RegistryAccessorInstantiateException,
 			AiravataConfigurationException {
 
         try {
-            String provRegAccessorClass = RegistrySettings.getSetting(REGISTRY_ACCESSOR_CLASS);
-            if (provRegAccessorClass == null) {
+            String regAccessorClass = RegistrySettings.getSetting(registryClassKey);
+            if (regAccessorClass == null) {
                 throw new RegistryAccessorUndefinedException();
             } else {
                 try {
                     Class<?> classInstance = AiravataRegistryFactory.class
                             .getClassLoader().loadClass(
-                                    provRegAccessorClass);
+                                    regAccessorClass);
                     return classInstance.newInstance();
                 } catch (ClassNotFoundException e) {
                     throw new RegistryAccessorNotFoundException(
-                            provRegAccessorClass, e);
+                            regAccessorClass, e);
                 } catch (InstantiationException e) {
                     throw new RegistryAccessorInstantiateException(
-                            provRegAccessorClass, e);
+                            regAccessorClass, e);
                 } catch (IllegalAccessException e) {
                     throw new RegistryAccessorInstantiateException(
-                            provRegAccessorClass, e);
+                            regAccessorClass, e);
                 }
             }
         } catch (RegistrySettingsException e) {

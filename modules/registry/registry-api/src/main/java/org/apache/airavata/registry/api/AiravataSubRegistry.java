@@ -27,35 +27,71 @@ import org.apache.airavata.common.utils.Version;
 
 public interface AiravataSubRegistry {
 
-	public abstract void setAiravataRegistry(AiravataRegistry2 registry);
+    /**
+     * Determines whether this registry is active. If true the registry is ready to do the
+     * transaction
+     * @return
+     */
+    public abstract boolean isActive();
 
-	public abstract void setAiravataUser(AiravataUser user);
+    /**
+     * Set airavata registry instrance
+     * @param registry instance of <code>AiravataRegistry2</code>
+     */
+    public abstract void setAiravataRegistry(AiravataRegistry2 registry);
 
-	public abstract void setGateway(Gateway gateway);
+    /**
+     * Set airavata user
+     * @param user current airavata registry user
+     */
+    public abstract void setAiravataUser(AiravataUser user);
 
+    /**
+     * Set gateway of the airavata system
+     * @param gateway airavata gateway
+     */
+    public abstract void setGateway(Gateway gateway);
+
+    /**
+     * Set connection url for the registry
+     * @param connectionURI connection url for the database
+     */
+    public void setConnectionURI(URI connectionURI);
+
+    /**
+     * Set custom <code>PasswordCallback</code> implementation class
+     * @param callback instance of PasswordCallback implementation
+     */
+    public void setCallback(PasswordCallback callback);
+
+    /**
+     * Retrieve the gateway of the airavata system
+     * @return gateway
+     */
     public abstract Gateway getGateway();
 
+    /**
+     * Retrieve the current registry user of the system
+     * @return current registry user
+     */
     public abstract AiravataUser getAiravataUser();
 
 	/**
-	 * Determines whether this registry is active. If true the registry is ready to do the 
-	 * transaction
-	 * @return
-	 */
-	public abstract boolean isActive();
-	
-	/**
 	 * Return the version of the Registry API
-	 * @return
+	 * @return version
 	 */
 	public Version getVersion();
-	
-	public void setConnectionURI(URI connectionURI);
-	
-	public URI getConnectionURI();
-	
-	public void setCallback(PasswordCallback callback);
-	
-	public PasswordCallback getCallback();
+
+    /**
+     * Retrieve connection URI for the database
+     * @return database connection URI
+     */
+    public URI getConnectionURI();
+
+    /**
+     * Retrieve PasswordCallback implementation class
+     * @return PasswordCallback impl
+     */
+    public PasswordCallback getCallback();
 	
 }

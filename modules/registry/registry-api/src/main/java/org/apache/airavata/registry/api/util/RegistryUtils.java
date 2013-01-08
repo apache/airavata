@@ -123,7 +123,9 @@ public class RegistryUtils {
             log.error("Error initializing AiravataRegistry2");
         } catch (ServerSettingsException e) {
         	log.error("Error initializing AiravataRegistry2",e);
-		}
+		} catch (RegistryException e) {
+            log.error("Error initializing AiravataRegistry2",e);
+        }
         return registry;
     }
 }

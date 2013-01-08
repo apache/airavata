@@ -27,10 +27,7 @@ import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataRegistryFactory;
 import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.Gateway;
-import org.apache.airavata.registry.api.exception.RegistryAccessorInstantiateException;
-import org.apache.airavata.registry.api.exception.RegistryAccessorInvalidException;
-import org.apache.airavata.registry.api.exception.RegistryAccessorNotFoundException;
-import org.apache.airavata.registry.api.exception.RegistryAccessorUndefinedException;
+import org.apache.airavata.registry.api.exception.*;
 
 import javax.servlet.ServletContext;
 import java.util.Map;
@@ -80,6 +77,8 @@ public class RegPoolUtils {
         } catch (RegistryAccessorNotFoundException e) {
             e.printStackTrace();
         } catch (AiravataConfigurationException e) {
+            e.printStackTrace();
+        } catch (RegistryException e) {
             e.printStackTrace();
         }
         return airavataRegistry;
