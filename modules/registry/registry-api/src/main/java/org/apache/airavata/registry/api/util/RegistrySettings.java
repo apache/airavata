@@ -69,7 +69,8 @@ public class RegistrySettings {
     	if (properties.containsKey(key)){
     		return properties.getProperty(key);
     	}
-    	throw new UnspecifiedRegistrySettingsException(key);
+        return null;
+//    	throw new UnspecifiedRegistrySettingsException(key);
     }
     
     public static String getSetting(String key, String defaultValue){

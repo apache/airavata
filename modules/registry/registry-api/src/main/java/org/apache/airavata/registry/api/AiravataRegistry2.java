@@ -21,6 +21,8 @@
 
 package org.apache.airavata.registry.api;
 
+import org.apache.airavata.registry.api.exception.RegistryException;
+
 import java.net.URI;
 import java.util.Observable;
 
@@ -38,7 +40,7 @@ public abstract class AiravataRegistry2 extends Observable implements Descriptor
 		setCallback(callback);
 	}
 	
-	protected abstract void initialize();
+	protected abstract void initialize() throws RegistryException;
 	
 	public Gateway getGateway() {
 		return gateway;

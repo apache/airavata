@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -53,15 +54,8 @@ import org.apache.airavata.persistance.registry.jpa.resources.ServiceDescriptorR
 import org.apache.airavata.persistance.registry.jpa.resources.UserWorkflowResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkflowDataResource;
-import org.apache.airavata.registry.api.AiravataExperiment;
-import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.AiravataUser;
-import org.apache.airavata.registry.api.Gateway;
-import org.apache.airavata.registry.api.PasswordCallback;
-import org.apache.airavata.registry.api.ResourceMetadata;
-import org.apache.airavata.registry.api.WorkspaceProject;
-import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.exception.UnimplementedRegistryOperationException;
+import org.apache.airavata.registry.api.*;
+import org.apache.airavata.registry.api.exception.*;
 import org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException;
 import org.apache.airavata.registry.api.exception.gateway.DescriptorDoesNotExistsException;
 import org.apache.airavata.registry.api.exception.gateway.InsufficientDataException;
@@ -70,6 +64,7 @@ import org.apache.airavata.registry.api.exception.gateway.PublishedWorkflowAlrea
 import org.apache.airavata.registry.api.exception.gateway.PublishedWorkflowDoesNotExistsException;
 import org.apache.airavata.registry.api.exception.worker.*;
 import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
+import org.apache.airavata.registry.api.util.RegistryConstants;
 import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionData;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State;
@@ -84,15 +79,52 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     private static final String DEFAULT_PROJECT_NAME = "default";
     private static final Version API_VERSION=new Version("Airavata Registry API",0,6,null,null,null);
     private URI registryConnectionURI;
+    private ConfigurationRegistry configurationRegistry;
+    private DescriptorRegistry descriptorRegistry;
+    private ProjectsRegistry projectsRegistry;
+    private ProvenanceRegistry provenanceRegistry;
+    private UserWorkflowRegistry userWorkflowRegistry;
+    private PublishedWorkflowRegistry publishedWorkflowRegistry;
+
 
     private PasswordCallback callback;
 
     @Override
-    protected void initialize() {
+    protected void initialize() throws RegistryException {
     	jpa = new JPAResourceAccessor(this);
     	//TODO check if the db connections are proper & accessible & the relevant db/tables are
     	//present
     	active=true;
+
+        // retrieving user defined registry classes from registry settings
+        try {
+            configurationRegistry = (ConfigurationRegistry)AiravataRegistryFactory.getRegistryClass(RegistryConstants.CONFIGURATION_REGISTRY_ACCESSOR_CLASS);
+            configurationRegistry.setAiravataRegistry(this);
+            descriptorRegistry = (DescriptorRegistry)AiravataRegistryFactory.getRegistryClass(RegistryConstants.DESCRIPTOR_REGISTRY_ACCESSOR_CLASS);
+            descriptorRegistry.setAiravataRegistry(this);
+            projectsRegistry = (ProjectsRegistry)AiravataRegistryFactory.getRegistryClass(RegistryConstants.PROJECT_REGISTRY_ACCESSOR_CLASS);
+            projectsRegistry.setAiravataRegistry(this);
+            provenanceRegistry = (ProvenanceRegistry)AiravataRegistryFactory.getRegistryClass(RegistryConstants.PROVENANCE_REGISTRY_ACCESSOR_CLASS);
+            provenanceRegistry.setAiravataRegistry(this);
+            userWorkflowRegistry = (UserWorkflowRegistry)AiravataRegistryFactory.getRegistryClass(RegistryConstants.USER_WF_REGISTRY_ACCESSOR_CLASS);
+            userWorkflowRegistry.setAiravataRegistry(this);
+            publishedWorkflowRegistry = (PublishedWorkflowRegistry)AiravataRegistryFactory.getRegistryClass(RegistryConstants.PUBLISHED_WF_REGISTRY_ACCESSOR_CLASS);
+            publishedWorkflowRegistry.setAiravataRegistry(this);
+        } catch (RegistryAccessorNotFoundException e) {
+            throw new RegistryException("Airavata Registry custom implementation class not defined in registry settings", e);
+        } catch (RegistryAccessorUndefinedException e) {
+            configurationRegistry = null;
+            descriptorRegistry = null;
+            projectsRegistry = null;
+            provenanceRegistry = null;
+            userWorkflowRegistry = null;
+            publishedWorkflowRegistry = null;
+            logger.debug("Airavata Registry custom implementation class not defined in registry settings");
+        } catch (RegistryAccessorInstantiateException e) {
+            throw new RegistryException("Airavata Registry custom implementation class not defined in registry settings", e);
+        } catch (AiravataConfigurationException e) {
+            throw new RegistryException("Airavata Registry custom implementation class not defined in registry settings", e);
+        }
     }
 
 
@@ -109,39 +141,63 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
     // Not sure about this.. need some description
     public List<Object> getConfigurationList(String key) {
-    	List<Object> values = new ArrayList<Object>();
-    	List<ConfigurationResource> configurations = ResourceUtils.getConfigurations(key);
-        for (ConfigurationResource configurationResource : configurations) {
-			values.add(configurationResource.getConfigVal());
-		}
-		return values;
+        if (configurationRegistry != null){
+            return configurationRegistry.getConfigurationList(key);
+        } else {
+            List<Object> values = new ArrayList<Object>();
+            List<ConfigurationResource> configurations = ResourceUtils.getConfigurations(key);
+            for (ConfigurationResource configurationResource : configurations) {
+                values.add(configurationResource.getConfigVal());
+            }
+            return values;
+        }
+
     }
 
     public void setConfiguration(String key, String value, Date expire) {
-    	ConfigurationResource config;
-		if (ResourceUtils.isConfigurationExist(key)) {
-			config = ResourceUtils.getConfiguration(key);
-		}else{
-			config = ResourceUtils.createConfiguration(key);
-		}
-    	config.setConfigVal(value);
-    	config.setExpireDate(new Timestamp(expire.getTime()));
-    	config.save();
+        if (configurationRegistry != null){
+            configurationRegistry.setConfiguration(key, value, expire);
+        }else {
+            ConfigurationResource config;
+            if (ResourceUtils.isConfigurationExist(key)) {
+                config = ResourceUtils.getConfiguration(key);
+            }else{
+                config = ResourceUtils.createConfiguration(key);
+            }
+            config.setConfigVal(value);
+            config.setExpireDate(new Timestamp(expire.getTime()));
+            config.save();
+        }
     }
 
     public void addConfiguration(String key, String value, Date expire) {
-    	ConfigurationResource config = ResourceUtils.createConfiguration(key);
-    	config.setConfigVal(value);
-    	config.setExpireDate(new Timestamp(expire.getTime()));
-    	config.save();
+        if (configurationRegistry != null){
+            configurationRegistry.addConfiguration(key, value, expire);
+        } else {
+            ConfigurationResource config = ResourceUtils.createConfiguration(key);
+            config.setConfigVal(value);
+            config.setExpireDate(new Timestamp(expire.getTime()));
+            config.save();
+        }
+
+
     }
 
     public void removeAllConfiguration(String key) {
-    	ResourceUtils.removeConfiguration(key);
+        if (configurationRegistry  != null){
+            configurationRegistry.removeAllConfiguration(key);
+        } else {
+            ResourceUtils.removeConfiguration(key);
+        }
+
     }
 
     public void removeConfiguration(String key, String value) {
-    	ResourceUtils.removeConfiguration(key, value);
+        if (configurationRegistry != null){
+            configurationRegistry.removeConfiguration(key, value);
+        } else {
+            ResourceUtils.removeConfiguration(key, value);
+        }
     }
 
     private static final String GFAC_URL="gfac.url";
@@ -150,7 +206,11 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     private static final String EVENTING_URL="eventing.url";
 
     public List<URI> getGFacURIs() {
-    	return retrieveURIsFromConfiguration(GFAC_URL);
+        if (configurationRegistry != null) {
+            return configurationRegistry.getGFacURIs();
+        } else {
+            return retrieveURIsFromConfiguration(GFAC_URL);
+        }
     }
 
 	private List<URI> retrieveURIsFromConfiguration(String urlType) {
@@ -167,21 +227,36 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
     public List<URI> getWorkflowInterpreterURIs() {
-    	return retrieveURIsFromConfiguration(INTERPRETER_URL);
+        if (configurationRegistry != null) {
+            return configurationRegistry.getWorkflowInterpreterURIs();
+        }  else {
+            return retrieveURIsFromConfiguration(INTERPRETER_URL);
+        }
     }
 
     public URI getEventingServiceURI() {
-    	List<URI> eventingURLs = retrieveURIsFromConfiguration(EVENTING_URL);
-		return eventingURLs.size()==0? null: eventingURLs.get(0);
+        if (configurationRegistry != null) {
+           return configurationRegistry.getEventingServiceURI();
+        }else {
+            List<URI> eventingURLs = retrieveURIsFromConfiguration(EVENTING_URL);
+            return eventingURLs.size()==0? null: eventingURLs.get(0);
+        }
     }
 
     public URI getMessageBoxURI() {
+        if (configurationRegistry != null) {
+            return configurationRegistry.getMessageBoxURI();
+        }
     	List<URI> messageboxURLs = retrieveURIsFromConfiguration(MESSAGE_BOX_URL);
 		return messageboxURLs.size()==0? null: messageboxURLs.get(0);
     }
 
     public void addGFacURI(URI uri) {
-        addConfigurationURL(GFAC_URL, uri);
+        if (configurationRegistry != null) {
+            addGFacURI(uri);
+        } else {
+            addConfigurationURL(GFAC_URL, uri);
+        }
     }
 
 	private void addConfigurationURL(String urlType,URI uri) {
@@ -196,93 +271,162 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
     public void addWorkflowInterpreterURI(URI uri) {
-        addConfigurationURL(INTERPRETER_URL,uri);
+        if (configurationRegistry != null) {
+            configurationRegistry.addWorkflowInterpreterURI(uri);
+        }else {
+            addConfigurationURL(INTERPRETER_URL,uri);
+        }
     }
 
     public void setEventingURI(URI uri) {
-    	addConfigurationURL(EVENTING_URL,uri);
+        if (configurationRegistry != null) {
+            configurationRegistry.setEventingURI(uri);
+        } else {
+            addConfigurationURL(EVENTING_URL,uri);
+        }
     }
 
     public void setMessageBoxURI(URI uri) {
-    	addConfigurationURL(MESSAGE_BOX_URL,uri);
+        if (configurationRegistry != null) {
+            configurationRegistry.setMessageBoxURI(uri);
+        } else {
+            addConfigurationURL(MESSAGE_BOX_URL,uri);
+        }
     }
 
     public void addGFacURI(URI uri, Date expire) {
-    	addConfigurationURL(GFAC_URL, uri, expire);
+        if (configurationRegistry != null) {
+            configurationRegistry.addGFacURI(uri, expire);
+        } else {
+            addConfigurationURL(GFAC_URL, uri, expire);
+        }
     }
 
     public void addWorkflowInterpreterURI(URI uri, Date expire) {
-    	addConfigurationURL(INTERPRETER_URL, uri, expire);
+        if (configurationRegistry != null) {
+            configurationRegistry.addWorkflowInterpreterURI(uri, expire);
+        } else {
+            addConfigurationURL(INTERPRETER_URL, uri, expire);
+        }
     }
 
     public void setEventingURI(URI uri, Date expire) {
-    	addConfigurationURL(EVENTING_URL, uri, expire);
+        if (configurationRegistry != null) {
+            configurationRegistry.setEventingURI(uri, expire);
+        } else {
+            addConfigurationURL(EVENTING_URL, uri, expire);
+        }
     }
 
     public void setMessageBoxURI(URI uri, Date expire) {
-    	addConfigurationURL(MESSAGE_BOX_URL, uri, expire);
+        if (configurationRegistry != null) {
+            configurationRegistry.setMessageBoxURI(uri, expire);
+        } else {
+    	    addConfigurationURL(MESSAGE_BOX_URL, uri, expire);
+        }
     }
 
     public void removeGFacURI(URI uri) {
-        removeConfiguration(GFAC_URL, uri.toString());
+        if (configurationRegistry != null) {
+            configurationRegistry.removeGFacURI(uri);
+        } else {
+            removeConfiguration(GFAC_URL, uri.toString());
+        }
     }
 
     public void removeWorkflowInterpreterURI(URI uri) {
-    	removeConfiguration(INTERPRETER_URL, uri.toString());
+        if (configurationRegistry != null) {
+            configurationRegistry.removeWorkflowInterpreterURI(uri);
+        } else {
+            removeConfiguration(INTERPRETER_URL, uri.toString());
+        }
     }
 
     public void removeAllGFacURI() {
-        removeAllConfiguration(GFAC_URL);
+        if (configurationRegistry != null) {
+            configurationRegistry.removeAllGFacURI();
+        } else {
+            removeAllConfiguration(GFAC_URL);
+        }
     }
 
     public void removeAllWorkflowInterpreterURI() {
-    	removeAllConfiguration(INTERPRETER_URL);
+        if (configurationRegistry != null) {
+            configurationRegistry.removeAllWorkflowInterpreterURI();
+        } else {
+            removeAllConfiguration(INTERPRETER_URL);
+        }
     }
 
     public void unsetEventingURI() {
-        removeAllConfiguration(EVENTING_URL);
+        if (configurationRegistry != null) {
+            configurationRegistry.unsetEventingURI();
+        } else {
+            removeAllConfiguration(EVENTING_URL);
+        }
+
     }
 
     public void unsetMessageBoxURI() {
-    	removeAllConfiguration(MESSAGE_BOX_URL);
+        if (configurationRegistry != null) {
+            configurationRegistry.unsetMessageBoxURI();
+        } else {
+            removeAllConfiguration(MESSAGE_BOX_URL);
+        }
+
     }
 
     /**---------------------------------Descriptor Registry----------------------------------**/
 
     public boolean isHostDescriptorExists(String descriptorName)throws RegistryException{
+        if (descriptorRegistry != null){
+            return descriptorRegistry.isHostDescriptorExists(descriptorName);
+        }
     	return jpa.getGateway().isHostDescriptorExists(descriptorName);
     }
     public void addHostDescriptor(HostDescription descriptor) throws RegistryException {
-        GatewayResource gateway = jpa.getGateway();
-        WorkerResource workerResource = jpa.getWorker();
-        String hostName = descriptor.getType().getHostName();
-		if (isHostDescriptorExists(hostName)){
-        	throw new DescriptorAlreadyExistsException(hostName);
+        if (descriptorRegistry != null){
+            descriptorRegistry.addHostDescriptor(descriptor);
+        } else {
+            GatewayResource gateway = jpa.getGateway();
+            WorkerResource workerResource = jpa.getWorker();
+            String hostName = descriptor.getType().getHostName();
+            if (isHostDescriptorExists(hostName)){
+                throw new DescriptorAlreadyExistsException(hostName);
+            }
+            HostDescriptorResource hostDescriptorResource = gateway.createHostDescriptorResource(hostName);
+            hostDescriptorResource.setUserName(workerResource.getUser());
+            hostDescriptorResource.setContent(descriptor.toXML());
+            hostDescriptorResource.save();
         }
-        HostDescriptorResource hostDescriptorResource = gateway.createHostDescriptorResource(hostName);
-        hostDescriptorResource.setUserName(workerResource.getUser());
-        hostDescriptorResource.setContent(descriptor.toXML());
-        hostDescriptorResource.save();
     }
 
     public void updateHostDescriptor(HostDescription descriptor) throws RegistryException {
-    	GatewayResource gateway = jpa.getGateway();
-        String hostName = descriptor.getType().getHostName();
-		if (!isHostDescriptorExists(hostName)){
-        	throw new DescriptorDoesNotExistsException(hostName);
+        if (descriptorRegistry != null){
+            descriptorRegistry.updateHostDescriptor(descriptor);
+        } else {
+            GatewayResource gateway = jpa.getGateway();
+            String hostName = descriptor.getType().getHostName();
+            if (!isHostDescriptorExists(hostName)){
+                throw new DescriptorDoesNotExistsException(hostName);
+            }
+            HostDescriptorResource hostDescriptorResource = gateway.getHostDescriptorResource(hostName);
+            hostDescriptorResource.setContent(descriptor.toXML());
+            hostDescriptorResource.save();
         }
-        HostDescriptorResource hostDescriptorResource = gateway.getHostDescriptorResource(hostName);
-        hostDescriptorResource.setContent(descriptor.toXML());
-        hostDescriptorResource.save();
     }
 
     public HostDescription getHostDescriptor(String hostName) throws RegistryException {
-        GatewayResource gateway = jpa.getGateway();
-		if (!isHostDescriptorExists(hostName)){
-        	return null;
+        if (descriptorRegistry != null){
+            return descriptorRegistry.getHostDescriptor(hostName);
+        } else {
+            GatewayResource gateway = jpa.getGateway();
+            if (!isHostDescriptorExists(hostName)){
+                return null;
+            }
+            HostDescriptorResource hostDescriptorResource = gateway.getHostDescriptorResource(hostName);
+            return createHostDescriptor(hostDescriptorResource);
         }
-        HostDescriptorResource hostDescriptorResource = gateway.getHostDescriptorResource(hostName);
-        return createHostDescriptor(hostDescriptorResource);
     }
 
 	private HostDescription createHostDescriptor(
@@ -296,17 +440,24 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
     public void removeHostDescriptor(String hostName) throws RegistryException {
-    	GatewayResource gateway = jpa.getGateway();
-		if (!isHostDescriptorExists(hostName)){
-        	throw new DescriptorDoesNotExistsException(hostName);
+        if (descriptorRegistry != null){
+            descriptorRegistry.removeHostDescriptor(hostName);
+        } else {
+            GatewayResource gateway = jpa.getGateway();
+            if (!isHostDescriptorExists(hostName)){
+                throw new DescriptorDoesNotExistsException(hostName);
+            }
+            gateway.removeHostDescriptor(hostName);
         }
-		gateway.removeHostDescriptor(hostName);
     }
 
 
 	@Override
 	public List<HostDescription> getHostDescriptors()
 			throws MalformedDescriptorException, RegistryException {
+        if (descriptorRegistry != null){
+            return descriptorRegistry.getHostDescriptors();
+        }
 		GatewayResource gateway = jpa.getGateway();
 		List<HostDescription> list=new ArrayList<HostDescription>();
 		List<HostDescriptorResource> hostDescriptorResources = gateway.getHostDescriptorResources();
@@ -317,45 +468,63 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
     public ResourceMetadata getHostDescriptorMetadata(String hostName) throws RegistryException {
+    	if (descriptorRegistry != null) {
+            return descriptorRegistry.getHostDescriptorMetadata(hostName);
+        }
     	//TODO
         throw new UnimplementedRegistryOperationException();
     }
 
     public boolean isServiceDescriptorExists(String descriptorName)throws RegistryException{
+        if (descriptorRegistry != null) {
+            return descriptorRegistry.isServiceDescriptorExists(descriptorName);
+        }
     	return jpa.getGateway().isServiceDescriptorExists(descriptorName);
     }
 
     public void addServiceDescriptor(ServiceDescription descriptor) throws RegistryException {
-    	GatewayResource gateway = jpa.getGateway();
-        WorkerResource workerResource = jpa.getWorker();
-        String serviceName = descriptor.getType().getName();
-		if (isServiceDescriptorExists(serviceName)){
-        	throw new DescriptorAlreadyExistsException(serviceName);
+        if (descriptorRegistry != null) {
+            descriptorRegistry.addServiceDescriptor(descriptor);
+        }else {
+            GatewayResource gateway = jpa.getGateway();
+            WorkerResource workerResource = jpa.getWorker();
+            String serviceName = descriptor.getType().getName();
+            if (isServiceDescriptorExists(serviceName)){
+                throw new DescriptorAlreadyExistsException(serviceName);
+            }
+            ServiceDescriptorResource serviceDescriptorResource = gateway.createServiceDescriptorResource(serviceName);
+            serviceDescriptorResource.setUserName(workerResource.getUser());
+            serviceDescriptorResource.setContent(descriptor.toXML());
+            serviceDescriptorResource.save();
         }
-        ServiceDescriptorResource serviceDescriptorResource = gateway.createServiceDescriptorResource(serviceName);
-        serviceDescriptorResource.setUserName(workerResource.getUser());
-        serviceDescriptorResource.setContent(descriptor.toXML());
-        serviceDescriptorResource.save();
     }
 
     public void updateServiceDescriptor(ServiceDescription descriptor) throws RegistryException {
-    	GatewayResource gateway = jpa.getGateway();
-        String serviceName = descriptor.getType().getName();
-		if (!isServiceDescriptorExists(serviceName)){
-        	throw new DescriptorDoesNotExistsException(serviceName);
+        if (descriptorRegistry != null) {
+            descriptorRegistry.updateServiceDescriptor(descriptor);
+        }else {
+            GatewayResource gateway = jpa.getGateway();
+            String serviceName = descriptor.getType().getName();
+            if (!isServiceDescriptorExists(serviceName)){
+                throw new DescriptorDoesNotExistsException(serviceName);
+            }
+            ServiceDescriptorResource serviceDescriptorResource = gateway.getServiceDescriptorResource(serviceName);
+            serviceDescriptorResource.setContent(descriptor.toXML());
+            serviceDescriptorResource.save();
         }
-        ServiceDescriptorResource serviceDescriptorResource = gateway.getServiceDescriptorResource(serviceName);
-        serviceDescriptorResource.setContent(descriptor.toXML());
-        serviceDescriptorResource.save();
     }
 
-    public ServiceDescription getServiceDescriptor(String serviceName) throws DescriptorDoesNotExistsException, MalformedDescriptorException {
-    	GatewayResource gateway = jpa.getGateway();
-		if (!gateway.isServiceDescriptorExists(serviceName)){
-        	return null;
+    public ServiceDescription getServiceDescriptor(String serviceName) throws RegistryException, MalformedDescriptorException {
+        if (descriptorRegistry != null) {
+            return descriptorRegistry.getServiceDescriptor(serviceName);
+        }else {
+            GatewayResource gateway = jpa.getGateway();
+            if (!gateway.isServiceDescriptorExists(serviceName)){
+                return null;
+            }
+            ServiceDescriptorResource serviceDescriptorResource = gateway.getServiceDescriptorResource(serviceName);
+            return createServiceDescriptor(serviceDescriptorResource);
         }
-        ServiceDescriptorResource serviceDescriptorResource = gateway.getServiceDescriptorResource(serviceName);
-        return createServiceDescriptor(serviceDescriptorResource);
     }
 
 	private ServiceDescription createServiceDescriptor(
@@ -369,78 +538,116 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
     public void removeServiceDescriptor(String serviceName) throws RegistryException {
-    	GatewayResource gateway = jpa.getGateway();
-		if (!isServiceDescriptorExists(serviceName)){
-        	throw new DescriptorDoesNotExistsException(serviceName);
+        if (descriptorRegistry != null) {
+            descriptorRegistry.removeServiceDescriptor(serviceName);
+        }else {
+            GatewayResource gateway = jpa.getGateway();
+            if (!isServiceDescriptorExists(serviceName)){
+                throw new DescriptorDoesNotExistsException(serviceName);
+            }
+            gateway.removeServiceDescriptor(serviceName);
         }
-		gateway.removeServiceDescriptor(serviceName);
     }
 
     @Override
 	public List<ServiceDescription> getServiceDescriptors()
 			throws MalformedDescriptorException, RegistryException {
-		GatewayResource gateway = jpa.getGateway();
-		List<ServiceDescription> list=new ArrayList<ServiceDescription>();
-		List<ServiceDescriptorResource> serviceDescriptorResources = gateway.getServiceDescriptorResources();
-		for (ServiceDescriptorResource resource : serviceDescriptorResources) {
-			list.add(createServiceDescriptor(resource));
-		}
-		return list;
+        if (descriptorRegistry != null) {
+            return descriptorRegistry.getServiceDescriptors();
+        }else {
+            GatewayResource gateway = jpa.getGateway();
+            List<ServiceDescription> list=new ArrayList<ServiceDescription>();
+            List<ServiceDescriptorResource> serviceDescriptorResources = gateway.getServiceDescriptorResources();
+            for (ServiceDescriptorResource resource : serviceDescriptorResources) {
+                list.add(createServiceDescriptor(resource));
+            }
+            return list;
+        }
 	}
 
-    public ResourceMetadata getServiceDescriptorMetadata(String serviceName) throws UnimplementedRegistryOperationException {
-    	//TODO
-        throw new UnimplementedRegistryOperationException();
+    public ResourceMetadata getServiceDescriptorMetadata(String serviceName) throws RegistryException {
+        if (descriptorRegistry != null) {
+            return descriptorRegistry.getServiceDescriptorMetadata(serviceName);
+        }else {
+            //TODO
+            throw new UnimplementedRegistryOperationException();
+        }
     }
 
     private String createAppName(String serviceName, String hostName, String applicationName){
     	return serviceName+"/"+hostName+"/"+applicationName;
     }
 
-    public boolean isApplicationDescriptorExists(String serviceName, String hostName, String descriptorName)throws RegistryException{
- 		return jpa.getGateway().isApplicationDescriptorExists(createAppName(serviceName, hostName, descriptorName));
+    public boolean isApplicationDescriptorExists(String serviceName,
+                                                 String hostName,
+                                                 String descriptorName)throws RegistryException{
+        if (descriptorRegistry != null) {
+            return descriptorRegistry.isApplicationDescriptorExists(serviceName, hostName, descriptorName);
+        }else {
+            return jpa.getGateway().isApplicationDescriptorExists(createAppName(serviceName, hostName, descriptorName));
+        }
     }
 
-    public void addApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDescription descriptor) throws RegistryException {
-        addApplicationDescriptor(serviceDescription.getType().getName(), hostDescriptor.getType().getHostName(), descriptor);
+    public void addApplicationDescriptor(ServiceDescription serviceDescription,
+                                         HostDescription hostDescriptor,
+                                         ApplicationDescription descriptor) throws RegistryException {
+        if (descriptorRegistry != null) {
+            descriptorRegistry.addApplicationDescriptor(serviceDescription, hostDescriptor, descriptor);
+        }else {
+            addApplicationDescriptor(serviceDescription.getType().getName(), hostDescriptor.getType().getHostName(), descriptor);
+        }
     }
 
     public void addApplicationDescriptor(String serviceName, String hostName, ApplicationDescription descriptor) throws RegistryException {
-    	if (serviceName==null || hostName==null){
-    		throw new InsufficientDataException("Service name or Host name cannot be null");
-    	}
-    	GatewayResource gateway = jpa.getGateway();
-        WorkerResource workerResource = jpa.getWorker();
-        String applicationName = descriptor.getType().getApplicationName().getStringValue();
-        applicationName = createAppName(serviceName, hostName, applicationName);
-		if (isApplicationDescriptorExists(serviceName,hostName,descriptor.getType().getApplicationName().getStringValue())){
-        	throw new DescriptorAlreadyExistsException(applicationName);
+        if (descriptorRegistry != null){
+            descriptorRegistry.addApplicationDescriptor(serviceName, hostName, descriptor);
+        }  else {
+            if (serviceName==null || hostName==null){
+                throw new InsufficientDataException("Service name or Host name cannot be null");
+            }
+            GatewayResource gateway = jpa.getGateway();
+            WorkerResource workerResource = jpa.getWorker();
+            String applicationName = descriptor.getType().getApplicationName().getStringValue();
+            applicationName = createAppName(serviceName, hostName, applicationName);
+            if (isApplicationDescriptorExists(serviceName,hostName,descriptor.getType().getApplicationName().getStringValue())){
+                throw new DescriptorAlreadyExistsException(applicationName);
+            }
+            ApplicationDescriptorResource applicationDescriptorResource = gateway.createApplicationDescriptorResource(applicationName);
+            applicationDescriptorResource.setUpdatedUser(workerResource.getUser());
+            applicationDescriptorResource.setServiceDescName(serviceName);
+            applicationDescriptorResource.setHostDescName(hostName);
+            applicationDescriptorResource.setContent(descriptor.toXML());
+            applicationDescriptorResource.save();
         }
-        ApplicationDescriptorResource applicationDescriptorResource = gateway.createApplicationDescriptorResource(applicationName);
-        applicationDescriptorResource.setUpdatedUser(workerResource.getUser());
-        applicationDescriptorResource.setServiceDescName(serviceName);
-        applicationDescriptorResource.setHostDescName(hostName);
-        applicationDescriptorResource.setContent(descriptor.toXML());
-        applicationDescriptorResource.save();
     }
 
-    public void udpateApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDescription descriptor) throws RegistryException {
-    	updateApplicationDescriptor(serviceDescription.getType().getName(),hostDescriptor.getType().getHostName(),descriptor);
+    public void udpateApplicationDescriptor(ServiceDescription serviceDescription,
+                                            HostDescription hostDescriptor,
+                                            ApplicationDescription descriptor) throws RegistryException {
+        if (descriptorRegistry != null){
+            descriptorRegistry.udpateApplicationDescriptor(serviceDescription,hostDescriptor,descriptor);
+        } else {
+            updateApplicationDescriptor(serviceDescription.getType().getName(),hostDescriptor.getType().getHostName(),descriptor);
+        }
     }
 
     public void updateApplicationDescriptor(String serviceName, String hostName, ApplicationDescription descriptor) throws RegistryException {
-    	if (serviceName==null || hostName==null){
-    		throw new InsufficientDataException("Service name or Host name cannot be null");
-    	}
-    	GatewayResource gateway = jpa.getGateway();
-    	String applicationName = descriptor.getType().getApplicationName().getStringValue();
-        applicationName = createAppName(serviceName, hostName, applicationName);
-		if (!isApplicationDescriptorExists(serviceName,hostName,descriptor.getType().getApplicationName().getStringValue())){
-        	throw new DescriptorDoesNotExistsException(applicationName);
+    	if (descriptorRegistry != null){
+            descriptorRegistry.updateApplicationDescriptor(serviceName, hostName, descriptor);
+        } else {
+            if (serviceName==null || hostName==null){
+                throw new InsufficientDataException("Service name or Host name cannot be null");
+            }
+            GatewayResource gateway = jpa.getGateway();
+            String applicationName = descriptor.getType().getApplicationName().getStringValue();
+            applicationName = createAppName(serviceName, hostName, applicationName);
+            if (!isApplicationDescriptorExists(serviceName,hostName,descriptor.getType().getApplicationName().getStringValue())){
+                throw new DescriptorDoesNotExistsException(applicationName);
+            }
+            ApplicationDescriptorResource serviceDescriptorResource = gateway.getApplicationDescriptorResource(applicationName);
+            serviceDescriptorResource.setContent(descriptor.toXML());
+            serviceDescriptorResource.save();
         }
-        ApplicationDescriptorResource serviceDescriptorResource = gateway.getApplicationDescriptorResource(applicationName);
-        serviceDescriptorResource.setContent(descriptor.toXML());
-        serviceDescriptorResource.save();
     }
     private ApplicationDescription createApplicationDescriptor(
 			ApplicationDescriptorResource applicationDescriptorResource)
@@ -453,7 +660,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
     public ApplicationDescription getApplicationDescriptor(String serviceName, String hostname, String applicationName)throws DescriptorDoesNotExistsException, MalformedDescriptorException, RegistryException{
-    	if (serviceName==null || hostname==null){
+        if (descriptorRegistry != null){
+            return descriptorRegistry.getApplicationDescriptor(serviceName, hostname, applicationName);
+        }
+        if (serviceName==null || hostname==null){
     		throw new InsufficientDataException("Service name or Host name cannot be null");
     	}
     	GatewayResource gateway = jpa.getGateway();
@@ -463,8 +673,11 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         return createApplicationDescriptor(gateway.getApplicationDescriptorResource(createAppName(serviceName, hostname, applicationName)));
     }
 
-    public ApplicationDescription getApplicationDescriptors(String serviceName, String hostname) throws MalformedDescriptorException {
-    	GatewayResource gateway = jpa.getGateway();
+    public ApplicationDescription getApplicationDescriptors(String serviceName, String hostname) throws RegistryException {
+        if (descriptorRegistry != null){
+            return descriptorRegistry.getApplicationDescriptors(serviceName, hostname);
+        }
+        GatewayResource gateway = jpa.getGateway();
 		List<ApplicationDescriptorResource> applicationDescriptorResources = gateway.getApplicationDescriptorResources(serviceName, hostname);
 		if (applicationDescriptorResources.size()>0){
 			return createApplicationDescriptor(applicationDescriptorResources.get(0));
@@ -472,8 +685,11 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		return null;
     }
 
-    public Map<String, ApplicationDescription> getApplicationDescriptors(String serviceName) throws MalformedDescriptorException {
-    	GatewayResource gateway = jpa.getGateway();
+    public Map<String, ApplicationDescription> getApplicationDescriptors(String serviceName) throws RegistryException {
+        if (descriptorRegistry != null){
+            return descriptorRegistry.getApplicationDescriptors(serviceName);
+        }
+        GatewayResource gateway = jpa.getGateway();
 		Map<String, ApplicationDescription> map=new HashMap<String,ApplicationDescription>();
 		List<ApplicationDescriptorResource> applicationDescriptorResources = gateway.getApplicationDescriptorResources(serviceName, null);
 		for (ApplicationDescriptorResource resource : applicationDescriptorResources) {
@@ -483,7 +699,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public Map<String[],ApplicationDescription> getApplicationDescriptors()throws MalformedDescriptorException, RegistryException{
-    	GatewayResource gateway = jpa.getGateway();
+        if (descriptorRegistry != null){
+            return descriptorRegistry.getApplicationDescriptors();
+        }
+        GatewayResource gateway = jpa.getGateway();
 		Map<String[], ApplicationDescription> map=new HashMap<String[],ApplicationDescription>();
 		List<ApplicationDescriptorResource> applicationDescriptorResources = gateway.getApplicationDescriptorResources();
 		for (ApplicationDescriptorResource resource : applicationDescriptorResources) {
@@ -493,15 +712,23 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public void removeApplicationDescriptor(String serviceName, String hostName, String applicationName) throws RegistryException {
-    	GatewayResource gateway = jpa.getGateway();
-    	String appName = createAppName(serviceName, hostName, applicationName);
-    	if (!isApplicationDescriptorExists(serviceName,hostName,applicationName)){
-			throw new DescriptorDoesNotExistsException(appName);
-		}
-        gateway.removeApplicationDescriptor(appName);
+        if (descriptorRegistry != null){
+             descriptorRegistry.removeApplicationDescriptor(serviceName, hostName, applicationName);
+        } else {
+            GatewayResource gateway = jpa.getGateway();
+            String appName = createAppName(serviceName, hostName, applicationName);
+            if (!isApplicationDescriptorExists(serviceName,hostName,applicationName)){
+                throw new DescriptorDoesNotExistsException(appName);
+            }
+            gateway.removeApplicationDescriptor(appName);
+        }
+
     }
 
-    public ResourceMetadata getApplicationDescriptorMetadata(String serviceName, String hostName, String applicationName) throws UnimplementedRegistryOperationException {
+    public ResourceMetadata getApplicationDescriptorMetadata(String serviceName, String hostName, String applicationName) throws RegistryException {
+    	if (descriptorRegistry != null) {
+            return descriptorRegistry.getApplicationDescriptorMetadata(serviceName, hostName, applicationName);
+        }
     	//TODO
         throw new UnimplementedRegistryOperationException();
     }
@@ -524,12 +751,18 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public boolean isWorkspaceProjectExists(String projectName)
 			throws RegistryException {
+        if (projectsRegistry != null){
+            return projectsRegistry.isWorkspaceProjectExists(projectName);
+        }
 		return isWorkspaceProjectExists(projectName, false);
 	}
 
 	@Override
 	public boolean isWorkspaceProjectExists(String projectName,
 			boolean createIfNotExists) throws RegistryException {
+        if (projectsRegistry != null){
+            return projectsRegistry.isWorkspaceProjectExists(projectName, createIfNotExists);
+        }
 		if (jpa.getWorker().isProjectExists(createProjName(projectName))){
 			return true;
 		}else if (createIfNotExists){
@@ -550,23 +783,34 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public void updateWorkspaceProject(WorkspaceProject project) throws RegistryException {
-    	WorkerResource worker = jpa.getWorker();
-		if (!isWorkspaceProjectExists(project.getProjectName())){
-        	throw new WorkspaceProjectDoesNotExistsException(createProjName(project.getProjectName()));
+        if (projectsRegistry != null){
+            projectsRegistry.updateWorkspaceProject(project);
+        }else {
+            WorkerResource worker = jpa.getWorker();
+            if (!isWorkspaceProjectExists(project.getProjectName())){
+                throw new WorkspaceProjectDoesNotExistsException(createProjName(project.getProjectName()));
+            }
+            ProjectResource projectResource = worker.getProject(createProjName(project.getProjectName()));
+            projectResource.save();
         }
-		ProjectResource projectResource = worker.getProject(createProjName(project.getProjectName()));
-		projectResource.save();
     }
 
     public void deleteWorkspaceProject(String projectName) throws RegistryException {
-    	WorkerResource worker = jpa.getWorker();
-		if (!isWorkspaceProjectExists(projectName)){
-        	throw new WorkspaceProjectDoesNotExistsException(createProjName(projectName));
+        if (projectsRegistry != null){
+            projectsRegistry.deleteWorkspaceProject(projectName);
+        }else {
+            WorkerResource worker = jpa.getWorker();
+            if (!isWorkspaceProjectExists(projectName)){
+                throw new WorkspaceProjectDoesNotExistsException(createProjName(projectName));
+            }
+            worker.removeProject(createProjName(projectName));
         }
-		worker.removeProject(createProjName(projectName));
     }
 
     public WorkspaceProject getWorkspaceProject(String projectName) throws RegistryException {
+        if (projectsRegistry != null){
+            return projectsRegistry.getWorkspaceProject(projectName);
+        }
     	WorkerResource worker = jpa.getWorker();
 		if (!isWorkspaceProjectExists(projectName)){
         	throw new WorkspaceProjectDoesNotExistsException(createProjName(projectName));
@@ -576,6 +820,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public List<WorkspaceProject> getWorkspaceProjects() throws RegistryException{
+        if (projectsRegistry != null){
+            return projectsRegistry.getWorkspaceProjects();
+        }
     	WorkerResource worker = jpa.getWorker();
     	List<WorkspaceProject> projects=new ArrayList<WorkspaceProject>();
     	List<ProjectResource> projectResouces = worker.getProjects();
@@ -586,29 +833,40 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public void addExperiment(String projectName, AiravataExperiment experiment) throws RegistryException {
-    	WorkspaceProject workspaceProject = getWorkspaceProject(projectName);
-    	ProjectResource project = jpa.getWorker().getProject(createProjName(workspaceProject.getProjectName()));
-		String experimentId = experiment.getExperimentId();
-		if (isExperimentExists(experimentId)){
-        	throw new ExperimentDoesNotExistsException(experimentId);
+    	if (projectsRegistry != null){
+            projectsRegistry.addExperiment(projectName, experiment);
+        }else {
+            WorkspaceProject workspaceProject = getWorkspaceProject(projectName);
+            ProjectResource project = jpa.getWorker().getProject(createProjName(workspaceProject.getProjectName()));
+            String experimentId = experiment.getExperimentId();
+            if (isExperimentExists(experimentId)){
+                throw new ExperimentDoesNotExistsException(experimentId);
+            }
+            ExperimentResource experimentResource = project.createExperiment(experimentId);
+            if (experiment.getSubmittedDate()!=null) {
+                experimentResource.setSubmittedDate(new Timestamp(experiment.getSubmittedDate().getTime()));
+            }
+            experimentResource.save();
         }
-		ExperimentResource experimentResource = project.createExperiment(experimentId);
-		if (experiment.getSubmittedDate()!=null) {
-			experimentResource.setSubmittedDate(new Timestamp(experiment.getSubmittedDate().getTime()));
-		}
-		experimentResource.save();
     }
 
     public void removeExperiment(String experimentId) throws ExperimentDoesNotExistsException {
-    	WorkerResource worker = jpa.getWorker();
-    	if (!worker.isExperimentExists(experimentId)){
-        	throw new ExperimentDoesNotExistsException(experimentId);
-    	}
-    	worker.removeExperiment(experimentId);
+        if (projectsRegistry != null){
+            projectsRegistry.removeExperiment(experimentId);
+        }else {
+            WorkerResource worker = jpa.getWorker();
+            if (!worker.isExperimentExists(experimentId)){
+                throw new ExperimentDoesNotExistsException(experimentId);
+            }
+            worker.removeExperiment(experimentId);
+        }
     }
 
     public List<AiravataExperiment> getExperiments() throws RegistryException{
-    	WorkerResource worker = jpa.getWorker();
+        if (projectsRegistry != null){
+            return projectsRegistry.getExperiments();
+        }
+        WorkerResource worker = jpa.getWorker();
     	List<AiravataExperiment> result=new ArrayList<AiravataExperiment>();
     	List<ExperimentResource> experiments = worker.getExperiments();
     	for (ExperimentResource resource : experiments) {
@@ -630,7 +888,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
     public List<AiravataExperiment> getExperiments(String projectName)throws RegistryException {
-    	ProjectResource project = jpa.getWorker().getProject(createProjName(projectName));
+        if (projectsRegistry != null){
+            return projectsRegistry.getExperiments(projectName);
+        }
+        ProjectResource project = jpa.getWorker().getProject(createProjName(projectName));
     	List<ExperimentResource> experiments = project.getExperiments();
     	List<AiravataExperiment> result=new ArrayList<AiravataExperiment>();
     	for (ExperimentResource resource : experiments) {
@@ -641,7 +902,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public List<AiravataExperiment> getExperiments(Date from, Date to)throws RegistryException {
-    	List<AiravataExperiment> experiments = getExperiments();
+        if (projectsRegistry != null){
+            return projectsRegistry.getExperiments(from, to);
+        }
+        List<AiravataExperiment> experiments = getExperiments();
         List<AiravataExperiment> newExperiments = new ArrayList<AiravataExperiment>();
         for(AiravataExperiment exp:experiments){
             Date submittedDate = exp.getSubmittedDate();
@@ -653,6 +917,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public List<AiravataExperiment> getExperiments(String projectName, Date from, Date to)throws RegistryException {
+        if (projectsRegistry != null){
+            return projectsRegistry.getExperiments(projectName, from, to);
+        }
         List<AiravataExperiment> experiments = getExperiments(projectName);
         List<AiravataExperiment> newExperiments = new ArrayList<AiravataExperiment>();
         for (AiravataExperiment exp : experiments) {
@@ -669,27 +936,41 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public boolean isPublishedWorkflowExists(String workflowName)
 			throws RegistryException {
+        if (publishedWorkflowRegistry != null){
+            return publishedWorkflowRegistry.isPublishedWorkflowExists(workflowName);
+        }
 		return jpa.getGateway().isPublishedWorkflowExists(workflowName);
 	}
 
     public void publishWorkflow(String workflowName, String publishWorkflowName) throws RegistryException {
-    	GatewayResource gateway = jpa.getGateway();
-    	String workflowGraphXML = getWorkflowGraphXML(workflowName);
-    	if (gateway.isPublishedWorkflowExists(publishWorkflowName)){
-    		throw new PublishedWorkflowAlreadyExistsException(publishWorkflowName);
-    	}
-    	PublishWorkflowResource publishedWorkflow = gateway.createPublishedWorkflow(publishWorkflowName);
-    	publishedWorkflow.setCreatedUser(getUser().getUserName());
-    	publishedWorkflow.setContent(workflowGraphXML);
-    	publishedWorkflow.setPublishedDate(new Timestamp(Calendar.getInstance().getTime().getTime()));
-    	publishedWorkflow.save();
+        if (publishedWorkflowRegistry != null){
+            publishedWorkflowRegistry.publishWorkflow(workflowName, publishWorkflowName);
+        } else {
+            GatewayResource gateway = jpa.getGateway();
+            String workflowGraphXML = getWorkflowGraphXML(workflowName);
+            if (gateway.isPublishedWorkflowExists(publishWorkflowName)){
+                throw new PublishedWorkflowAlreadyExistsException(publishWorkflowName);
+            }
+            PublishWorkflowResource publishedWorkflow = gateway.createPublishedWorkflow(publishWorkflowName);
+            publishedWorkflow.setCreatedUser(getUser().getUserName());
+            publishedWorkflow.setContent(workflowGraphXML);
+            publishedWorkflow.setPublishedDate(new Timestamp(Calendar.getInstance().getTime().getTime()));
+            publishedWorkflow.save();
+        }
     }
 
     public void publishWorkflow(String workflowName) throws RegistryException {
-    	publishWorkflow(workflowName, workflowName);
+        if (publishedWorkflowRegistry != null){
+            publishedWorkflowRegistry.publishWorkflow(workflowName);
+        } else {
+            publishWorkflow(workflowName, workflowName);
+        }
     }
 
     public String getPublishedWorkflowGraphXML(String workflowName) throws RegistryException {
+        if (publishedWorkflowRegistry != null){
+            return publishedWorkflowRegistry.getPublishedWorkflowGraphXML(workflowName);
+        }
         GatewayResource gateway = jpa.getGateway();
         if (!isPublishedWorkflowExists(workflowName)){
         	throw new PublishedWorkflowDoesNotExistsException(workflowName);
@@ -698,6 +979,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
 	public List<String> getPublishedWorkflowNames() throws RegistryException{
+        if (publishedWorkflowRegistry != null){
+            return publishedWorkflowRegistry.getPublishedWorkflowNames();
+        }
 		GatewayResource gateway = jpa.getGateway();
 		List<String> result=new ArrayList<String>();
     	List<PublishWorkflowResource> publishedWorkflows = gateway.getPublishedWorkflows();
@@ -708,6 +992,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
     public Map<String,String> getPublishedWorkflows() throws RegistryException{
+        if (publishedWorkflowRegistry != null){
+            return publishedWorkflowRegistry.getPublishedWorkflows();
+        }
     	GatewayResource gateway = jpa.getGateway();
     	Map<String,String> result=new HashMap<String, String>();
     	List<PublishWorkflowResource> publishedWorkflows = gateway.getPublishedWorkflows();
@@ -718,15 +1005,22 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public void removePublishedWorkflow(String workflowName) throws RegistryException {
-        GatewayResource gateway = jpa.getGateway();
-        if (!isPublishedWorkflowExists(workflowName)){
-        	throw new PublishedWorkflowDoesNotExistsException(workflowName);
+        if (publishedWorkflowRegistry != null){
+            publishedWorkflowRegistry.removePublishedWorkflow(workflowName);
+        } else {
+            GatewayResource gateway = jpa.getGateway();
+            if (!isPublishedWorkflowExists(workflowName)){
+                throw new PublishedWorkflowDoesNotExistsException(workflowName);
+            }
+            gateway.removePublishedWorkflow(workflowName);
         }
-        gateway.removePublishedWorkflow(workflowName);
     }
 
     public ResourceMetadata getPublishedWorkflowMetadata(String workflowName) throws RegistryException {
-    	//TODO
+        if (publishedWorkflowRegistry != null){
+            return publishedWorkflowRegistry.getPublishedWorkflowMetadata(workflowName);
+        }
+        //TODO
         throw new UnimplementedRegistryOperationException();
     }
 
@@ -735,31 +1029,45 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public boolean isWorkflowExists(String workflowName)
 			throws RegistryException {
+        if (userWorkflowRegistry != null){
+           return userWorkflowRegistry.isWorkflowExists(workflowName);
+        }
 		return jpa.getWorker().isWorkflowTemplateExists(workflowName);
 	}
 
     public void addWorkflow(String workflowName, String workflowGraphXml) throws RegistryException {
-    	WorkerResource worker = jpa.getWorker();
-		if (isWorkflowExists(workflowName)){
-        	throw new UserWorkflowAlreadyExistsException(workflowName);
+        if (userWorkflowRegistry != null){
+            userWorkflowRegistry.addWorkflow(workflowName, workflowGraphXml);
+        }else {
+            WorkerResource worker = jpa.getWorker();
+            if (isWorkflowExists(workflowName)){
+                throw new UserWorkflowAlreadyExistsException(workflowName);
+            }
+            UserWorkflowResource workflowResource = worker.createWorkflowTemplate(workflowName);
+            workflowResource.setContent(workflowGraphXml);
+            workflowResource.save();
         }
-		UserWorkflowResource workflowResource = worker.createWorkflowTemplate(workflowName);
-		workflowResource.setContent(workflowGraphXml);
-		workflowResource.save();
     }
 
     public void updateWorkflow(String workflowName, String workflowGraphXml) throws RegistryException {
-    	WorkerResource worker = jpa.getWorker();
-		if (!isWorkflowExists(workflowName)){
-        	throw new UserWorkflowDoesNotExistsException(workflowName);
+        if (userWorkflowRegistry != null){
+            userWorkflowRegistry.updateWorkflow(workflowName, workflowGraphXml);
+        }else {
+            WorkerResource worker = jpa.getWorker();
+            if (!isWorkflowExists(workflowName)){
+                throw new UserWorkflowDoesNotExistsException(workflowName);
+            }
+            UserWorkflowResource workflowResource = worker.getWorkflowTemplate(workflowName);
+            workflowResource.setContent(workflowGraphXml);
+            workflowResource.save();
         }
-		UserWorkflowResource workflowResource = worker.getWorkflowTemplate(workflowName);
-		workflowResource.setContent(workflowGraphXml);
-		workflowResource.save();
     }
 
     public String getWorkflowGraphXML(String workflowName) throws RegistryException {
-    	WorkerResource worker = jpa.getWorker();
+        if (userWorkflowRegistry != null){
+            return userWorkflowRegistry.getWorkflowGraphXML(workflowName);
+        }
+        WorkerResource worker = jpa.getWorker();
 		if (!isWorkflowExists(workflowName)){
         	throw new UserWorkflowDoesNotExistsException(workflowName);
         }
@@ -768,7 +1076,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
 	@Override
 	public Map<String, String> getWorkflows() throws RegistryException {
-    	WorkerResource worker = jpa.getWorker();
+        if (userWorkflowRegistry != null){
+            return userWorkflowRegistry.getWorkflows();
+        }
+        WorkerResource worker = jpa.getWorker();
     	Map<String, String> workflows=new HashMap<String, String>();
     	List<UserWorkflowResource> workflowTemplates = worker.getWorkflowTemplates();
     	for (UserWorkflowResource resource : workflowTemplates) {
@@ -778,14 +1089,21 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
     public void removeWorkflow(String workflowName) throws RegistryException {
-    	WorkerResource worker = jpa.getWorker();
-		if (!isWorkflowExists(workflowName)){
-        	throw new UserWorkflowDoesNotExistsException(workflowName);
+        if (userWorkflowRegistry != null){
+            userWorkflowRegistry.removeWorkflow(workflowName);
+        }else {
+            WorkerResource worker = jpa.getWorker();
+            if (!isWorkflowExists(workflowName)){
+                throw new UserWorkflowDoesNotExistsException(workflowName);
+            }
+            worker.removeWorkflowTemplate(workflowName);
         }
-		worker.removeWorkflowTemplate(workflowName);
     }
 
-    public ResourceMetadata getWorkflowMetadata(String workflowName) throws UnimplementedRegistryOperationException {
+    public ResourceMetadata getWorkflowMetadata(String workflowName) throws RegistryException {
+        if (userWorkflowRegistry != null){
+            return userWorkflowRegistry.getWorkflowMetadata(workflowName);
+        }
     	//TODO
         throw new UnimplementedRegistryOperationException();
     }
@@ -806,7 +1124,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
 	@Override
 	public boolean isExperimentExists(String experimentId, boolean createIfNotPresent)throws RegistryException {
-		if (jpa.getWorker().isExperimentExists(experimentId)){
+		if (provenanceRegistry != null){
+             return provenanceRegistry.isExperimentExists(experimentId, createIfNotPresent);
+        }
+        if (jpa.getWorker().isExperimentExists(experimentId)){
 			return true;
 		}else if (createIfNotPresent){
 			if (!isWorkspaceProjectExists(DEFAULT_PROJECT_NAME, true)){
@@ -827,25 +1148,35 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public boolean isExperimentExists(String experimentId)
 			throws RegistryException {
+        if (provenanceRegistry != null){
+            return provenanceRegistry.isExperimentExists(experimentId);
+        }
 		return isExperimentExists(experimentId, false);
 	}
 
 	@Override
 	public void updateExperimentExecutionUser(String experimentId,
 			String user) throws RegistryException {
-		if (!isExperimentExists(experimentId, true)){
-			throw new ExperimentDoesNotExistsException(experimentId);
-		}
-		ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
-		ExperimentDataResource data = experiment.getData();
-		data.setUserName(user);
-		data.save();
+        if (provenanceRegistry != null){
+            provenanceRegistry.updateExperimentExecutionUser(experimentId, user);
+        }else {
+            if (!isExperimentExists(experimentId, true)){
+                throw new ExperimentDoesNotExistsException(experimentId);
+            }
+            ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
+            ExperimentDataResource data = experiment.getData();
+            data.setUserName(user);
+            data.save();
+        }
 	}
 
 
 	@Override
 	public String getExperimentExecutionUser(String experimentId)
 			throws RegistryException {
+        if (provenanceRegistry != null){
+            return provenanceRegistry.getExperimentExecutionUser(experimentId);
+        }
 		if (!isExperimentExists(experimentId)){
 			throw new ExperimentDoesNotExistsException(experimentId);
 		}
@@ -855,6 +1186,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
     @Override
     public boolean isExperimentNameExist(String experimentName) throws RegistryException {
+        if (provenanceRegistry != null){
+            return provenanceRegistry.isExperimentNameExist(experimentName);
+        }
         return (new ExperimentDataRetriever()).isExperimentNameExist(experimentName);
     }
 
@@ -862,6 +1196,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     @Override
 	public String getExperimentName(String experimentId)
 			throws RegistryException {
+        if (provenanceRegistry != null){
+            return provenanceRegistry.getExperimentName(experimentId);
+        }
 		if (!isExperimentExists(experimentId)){
 			throw new ExperimentDoesNotExistsException(experimentId);
 		}
@@ -872,19 +1209,26 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public void updateExperimentName(String experimentId,
 			String experimentName) throws RegistryException {
-		if (!isExperimentExists(experimentId, true)){
-			throw new ExperimentDoesNotExistsException(experimentId);
-		}
-		ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
-		ExperimentDataResource data = experiment.getData();
-		data.setExpName(experimentName);
-		data.save();
+        if (provenanceRegistry != null){
+            provenanceRegistry.updateExperimentName(experimentId, experimentName);
+        }else {
+            if (!isExperimentExists(experimentId, true)){
+                throw new ExperimentDoesNotExistsException(experimentId);
+            }
+            ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
+            ExperimentDataResource data = experiment.getData();
+            data.setExpName(experimentName);
+            data.save();
+        }
 	}
 
 
 	@Override
 	public String getExperimentMetadata(String experimentId)
 			throws RegistryException {
+        if (provenanceRegistry != null){
+            return provenanceRegistry.getExperimentMetadata(experimentId);
+        }
 		if (!isExperimentExists(experimentId, true)){
 			throw new ExperimentDoesNotExistsException(experimentId);
 		}
@@ -900,25 +1244,32 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public void updateExperimentMetadata(String experimentId, String metadata)
 			throws RegistryException {
-		if (!isExperimentExists(experimentId, true)){
-			throw new ExperimentDoesNotExistsException(experimentId);
-		}
-		ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
-		ExperimentDataResource data = experiment.getData();
-		ExperimentMetadataResource experimentMetadata;
-		if (data.isExperimentMetadataPresent()){
-			experimentMetadata = data.getExperimentMetadata();
-			experimentMetadata.setMetadata(metadata);
-		}else{
-			experimentMetadata = data.createExperimentMetadata();
-			experimentMetadata.setMetadata(metadata);
-		}
-		experimentMetadata.save();
+        if (provenanceRegistry != null){
+            provenanceRegistry.updateExperimentMetadata(experimentId, metadata);
+        }else {
+            if (!isExperimentExists(experimentId, true)){
+                throw new ExperimentDoesNotExistsException(experimentId);
+            }
+            ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
+            ExperimentDataResource data = experiment.getData();
+            ExperimentMetadataResource experimentMetadata;
+            if (data.isExperimentMetadataPresent()){
+                experimentMetadata = data.getExperimentMetadata();
+                experimentMetadata.setMetadata(metadata);
+            }else{
+                experimentMetadata = data.createExperimentMetadata();
+                experimentMetadata.setMetadata(metadata);
+            }
+            experimentMetadata.save();
+        }
 	}
 
 
 	@Override
 	public String getWorkflowExecutionTemplateName(String workflowInstanceId) throws RegistryException {
+        if (provenanceRegistry != null){
+            return provenanceRegistry.getWorkflowExecutionTemplateName(workflowInstanceId);
+        }
 		if (!isWorkflowInstanceExists(workflowInstanceId, true)){
 			throw new WorkflowInstanceDoesNotExistsException(workflowInstanceId);
 		}
@@ -930,18 +1281,25 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public void setWorkflowInstanceTemplateName(String workflowInstanceId,
 			String templateName) throws RegistryException {
-		if (!isWorkflowInstanceExists(workflowInstanceId, true)){
-			throw new WorkflowInstanceDoesNotExistsException(workflowInstanceId);
-		}
-		WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(workflowInstanceId);
-		wi.setTemplateName(templateName);
-		wi.save();
+        if (provenanceRegistry != null){
+            provenanceRegistry.setWorkflowInstanceTemplateName(workflowInstanceId, templateName);
+        }else {
+            if (!isWorkflowInstanceExists(workflowInstanceId, true)){
+                throw new WorkflowInstanceDoesNotExistsException(workflowInstanceId);
+            }
+            WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(workflowInstanceId);
+            wi.setTemplateName(templateName);
+            wi.save();
+        }
 	}
 
 
 	@Override
 	public List<WorkflowExecution> getExperimentWorkflowInstances(
 			String experimentId) throws RegistryException {
+        if (provenanceRegistry != null){
+            return provenanceRegistry.getExperimentWorkflowInstances(experimentId);
+        }
 		if (!isExperimentExists(experimentId)){
 			throw new ExperimentDoesNotExistsException(experimentId);
 		}
@@ -960,7 +1318,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
 	@Override
 	public boolean isWorkflowInstanceExists(String instanceId, boolean createIfNotPresent) throws RegistryException {
-		if (jpa.getWorker().isWorkflowInstancePresent(instanceId)){
+        if (provenanceRegistry != null){
+            return provenanceRegistry.isWorkflowInstanceExists(instanceId, createIfNotPresent);
+        }
+        if (jpa.getWorker().isWorkflowInstancePresent(instanceId)){
 			return true;
 		}else if (createIfNotPresent){
 			//we are using the same id for the experiment id for backward compatibility
@@ -978,51 +1339,65 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public boolean isWorkflowInstanceExists(String instanceId)
 			throws RegistryException {
-		return isWorkflowInstanceExists(instanceId, false);
+        if (provenanceRegistry != null){
+            return provenanceRegistry.isWorkflowInstanceExists(instanceId);
+        }
+        return isWorkflowInstanceExists(instanceId, false);
 	}
 
 
 	@Override
 	public void updateWorkflowInstanceStatus(String instanceId,
 			State status) throws RegistryException {
-		if (!isWorkflowInstanceExists(instanceId, true)){
-			throw new WorkflowInstanceDoesNotExistsException(instanceId);
-		}
-		WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(instanceId);
-		Timestamp currentTime = new Timestamp(Calendar.getInstance().getTime().getTime());
-		wi.setStatus(status.toString());
-		if (status==State.STARTED){
-			wi.setStartTime(currentTime);
-		}
-		wi.setLastUpdatedTime(currentTime);
-		wi.save();
+        if (provenanceRegistry != null){
+            provenanceRegistry.updateWorkflowInstanceStatus(instanceId, status);
+        }else {
+            if (!isWorkflowInstanceExists(instanceId, true)){
+                throw new WorkflowInstanceDoesNotExistsException(instanceId);
+            }
+            WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(instanceId);
+            Timestamp currentTime = new Timestamp(Calendar.getInstance().getTime().getTime());
+            wi.setStatus(status.toString());
+            if (status==State.STARTED){
+                wi.setStartTime(currentTime);
+            }
+            wi.setLastUpdatedTime(currentTime);
+            wi.save();
+        }
 	}
 
 
 	@Override
 	public void updateWorkflowInstanceStatus(WorkflowExecutionStatus status)
 			throws RegistryException {
-		if (!isWorkflowInstanceExists(status.getWorkflowInstance().getWorkflowExecutionId(), true)){
-			throw new WorkflowInstanceDoesNotExistsException(status.getWorkflowInstance().getWorkflowExecutionId());
-		}
-		WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(status.getWorkflowInstance().getWorkflowExecutionId());
-		Timestamp currentTime = new Timestamp(status.getStatusUpdateTime().getTime());
-        if(status.getExecutionStatus() != null){
-            wi.setStatus(status.getExecutionStatus().toString());
-        }
+        if (provenanceRegistry != null){
+            provenanceRegistry.updateWorkflowInstanceStatus(status);
+        }else {
+            if (!isWorkflowInstanceExists(status.getWorkflowInstance().getWorkflowExecutionId(), true)){
+                throw new WorkflowInstanceDoesNotExistsException(status.getWorkflowInstance().getWorkflowExecutionId());
+            }
+            WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(status.getWorkflowInstance().getWorkflowExecutionId());
+            Timestamp currentTime = new Timestamp(status.getStatusUpdateTime().getTime());
+            if(status.getExecutionStatus() != null){
+                wi.setStatus(status.getExecutionStatus().toString());
+            }
 
-		if (status.getExecutionStatus()==State.STARTED){
-			wi.setStartTime(currentTime);
-		}
-		wi.setLastUpdatedTime(currentTime);
-		wi.save();
+            if (status.getExecutionStatus()==State.STARTED){
+                wi.setStartTime(currentTime);
+            }
+            wi.setLastUpdatedTime(currentTime);
+            wi.save();
+        }
 	}
 
 
 	@Override
 	public WorkflowExecutionStatus getWorkflowInstanceStatus(String instanceId)
 			throws RegistryException {
-		if (!isWorkflowInstanceExists(instanceId, true)){
+        if (provenanceRegistry != null){
+            return provenanceRegistry.getWorkflowInstanceStatus(instanceId);
+        }
+        if (!isWorkflowInstanceExists(instanceId, true)){
 			throw new WorkflowInstanceDoesNotExistsException(instanceId);
 		}
 		WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(instanceId);
@@ -1033,30 +1408,38 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public void updateWorkflowNodeInput(WorkflowInstanceNode node, String data)
 			throws RegistryException {
-		if (!isWorkflowInstanceNodePresent(node.getWorkflowInstance().getWorkflowExecutionId(),node.getNodeId(),true)){
-			throw new WorkflowInstanceNodeDoesNotExistsException(node.getWorkflowInstance().getWorkflowExecutionId(), node.getNodeId());
-		}
-		WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(node.getWorkflowInstance().getWorkflowExecutionId());
-		NodeDataResource nodeData = wi.getNodeData(node.getNodeId());
-		nodeData.setInputs(data);
-		nodeData.save();
+        if (provenanceRegistry != null){
+            provenanceRegistry.updateWorkflowNodeInput(node, data);
+        }else {
+            if (!isWorkflowInstanceNodePresent(node.getWorkflowInstance().getWorkflowExecutionId(),node.getNodeId(),true)){
+                throw new WorkflowInstanceNodeDoesNotExistsException(node.getWorkflowInstance().getWorkflowExecutionId(), node.getNodeId());
+            }
+            WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(node.getWorkflowInstance().getWorkflowExecutionId());
+            NodeDataResource nodeData = wi.getNodeData(node.getNodeId());
+            nodeData.setInputs(data);
+            nodeData.save();
+        }
 	}
 
 
 	@Override
 	public void updateWorkflowNodeOutput(WorkflowInstanceNode node, String data) throws RegistryException {
-		try {
-			if (!isWorkflowInstanceNodePresent(node.getWorkflowInstance().getWorkflowExecutionId(),node.getNodeId(),true)){
-				throw new WorkflowInstanceNodeDoesNotExistsException(node.getWorkflowInstance().getWorkflowExecutionId(), node.getNodeId());
-			}
-			WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(node.getWorkflowInstance().getWorkflowExecutionId());
-			NodeDataResource nodeData = wi.getNodeData(node.getNodeId());
-			nodeData.setOutputs(data);
-			nodeData.save();
-		} catch (RegistryException e) {
-			e.printStackTrace();
-			throw e;
-		}
+        if (provenanceRegistry != null){
+            provenanceRegistry.updateWorkflowNodeOutput(node, data);
+        }else {
+            try {
+                if (!isWorkflowInstanceNodePresent(node.getWorkflowInstance().getWorkflowExecutionId(),node.getNodeId(),true)){
+                    throw new WorkflowInstanceNodeDoesNotExistsException(node.getWorkflowInstance().getWorkflowExecutionId(), node.getNodeId());
+                }
+                WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(node.getWorkflowInstance().getWorkflowExecutionId());
+                NodeDataResource nodeData = wi.getNodeData(node.getNodeId());
+                nodeData.setOutputs(data);
+                nodeData.save();
+            } catch (RegistryException e) {
+                e.printStackTrace();
+                throw e;
+            }
+        }
 	}
 
 
@@ -1064,7 +1447,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	public List<WorkflowNodeIOData> searchWorkflowInstanceNodeInput(
 			String experimentIdRegEx, String workflowNameRegEx,
 			String nodeNameRegEx) throws RegistryException {
-		return null;
+        if (provenanceRegistry != null){
+            return provenanceRegistry.searchWorkflowInstanceNodeInput(experimentIdRegEx, workflowNameRegEx, nodeNameRegEx);
+        }
+        return null;
 	}
 
 
@@ -1072,7 +1458,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	public List<WorkflowNodeIOData> searchWorkflowInstanceNodeOutput(
 			String experimentIdRegEx, String workflowNameRegEx,
 			String nodeNameRegEx) throws RegistryException {
-		return null;
+        if (provenanceRegistry != null){
+            return provenanceRegistry.searchWorkflowInstanceNodeOutput(experimentIdRegEx, workflowNameRegEx, nodeNameRegEx);
+        }
+        return null;
 	}
 
 
@@ -1080,7 +1469,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	public List<WorkflowNodeIOData> getWorkflowInstanceNodeInput(
 			String workflowInstanceId, String nodeType)
 			throws RegistryException {
-		return null;
+        if (provenanceRegistry != null){
+            return provenanceRegistry.getWorkflowInstanceNodeInput(workflowInstanceId, nodeType);
+        }
+        return null;
 	}
 
 
@@ -1088,7 +1480,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	public List<WorkflowNodeIOData> getWorkflowInstanceNodeOutput(
 			String workflowInstanceId, String nodeType)
 			throws RegistryException {
-		return null;
+        if (provenanceRegistry != null){
+            return provenanceRegistry.getWorkflowInstanceNodeOutput(workflowInstanceId, nodeType);
+        }
+        return null;
 	}
 
 
@@ -1096,19 +1491,27 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public void saveWorkflowExecutionOutput(String experimentId,
 			String outputNodeName, String output) throws RegistryException {
+        if (provenanceRegistry != null){
+            provenanceRegistry.saveWorkflowExecutionOutput(experimentId, outputNodeName, output);
+        }
 	}
 
 	@Deprecated
 	@Override
 	public void saveWorkflowExecutionOutput(String experimentId,
 			WorkflowIOData data) throws RegistryException {
+        if (provenanceRegistry != null){
+            provenanceRegistry.saveWorkflowExecutionOutput(experimentId, data);
+        }
 	}
-
 
 	@Deprecated
 	@Override
 	public WorkflowIOData getWorkflowExecutionOutput(String experimentId,
 			String outputNodeName) throws RegistryException {
+        if (provenanceRegistry != null){
+            return provenanceRegistry.getWorkflowExecutionOutput(experimentId, outputNodeName);
+        }
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -1118,6 +1521,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public List<WorkflowIOData> getWorkflowExecutionOutput(String experimentId)
 			throws RegistryException {
+        if (provenanceRegistry != null){
+            return provenanceRegistry.getWorkflowExecutionOutput(experimentId);
+        }
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -1127,6 +1533,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public String[] getWorkflowExecutionOutputNames(String exeperimentId)
 			throws RegistryException {
+        if (provenanceRegistry != null){
+            return provenanceRegistry.getWorkflowExecutionOutputNames(exeperimentId);
+        }
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -1135,6 +1544,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public ExperimentData getExperiment(String experimentId)
 			throws RegistryException {
+        if (provenanceRegistry != null){
+            return provenanceRegistry.getExperiment(experimentId);
+        }
 		if (!isExperimentExists(experimentId)){
 			throw new ExperimentDoesNotExistsException(experimentId);
 		}
@@ -1145,6 +1557,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public List<String> getExperimentIdByUser(String user)
 			throws RegistryException {
+        if (provenanceRegistry != null){
+            return provenanceRegistry.getExperimentIdByUser(user);
+        }
         if(user == null){
             user = jpa.getWorker().getUser();
         }
@@ -1155,6 +1570,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public List<ExperimentData> getExperimentByUser(String user)
 			throws RegistryException {
+        if (provenanceRegistry != null){
+            return provenanceRegistry.getExperimentByUser(user);
+        }
         if(user == null){
             user = jpa.getWorker().getUser();
         }
@@ -1165,52 +1583,69 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public List<ExperimentData> getExperimentByUser(String user,
 			int pageSize, int pageNo) throws RegistryException {
+        if (provenanceRegistry != null){
+            return provenanceRegistry.getExperimentByUser(user, pageSize, pageNo);
+        }
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 
 	@Override
-	public void updateWorkflowNodeStatus(
-			NodeExecutionStatus workflowStatusNode)
-			throws RegistryException {
-		WorkflowExecution workflowInstance = workflowStatusNode.getWorkflowInstanceNode().getWorkflowInstance();
-		String nodeId = workflowStatusNode.getWorkflowInstanceNode().getNodeId();
-		if (!isWorkflowInstanceNodePresent(workflowInstance.getWorkflowExecutionId(), nodeId, true)){
-			throw new WorkflowInstanceNodeDoesNotExistsException(workflowInstance.getWorkflowExecutionId(), nodeId);
-		}
-		NodeDataResource nodeData = jpa.getWorker().getWorkflowInstance(workflowInstance.getWorkflowExecutionId()).getNodeData(nodeId);
-		nodeData.setStatus(workflowStatusNode.getExecutionStatus().toString());
-		Timestamp t = new Timestamp(workflowStatusNode.getStatusUpdateTime().getTime());
-		if (workflowStatusNode.getExecutionStatus()==State.STARTED){
-			nodeData.setStartTime(t);
-		}
-		nodeData.setLastUpdateTime(t);
-		nodeData.save();
-		//Each time node status is updated the the time of update for the workflow status is going to be the same
-		WorkflowExecutionStatus currentWorkflowInstanceStatus = getWorkflowInstanceStatus(workflowInstance.getWorkflowExecutionId());
-		updateWorkflowInstanceStatus(new WorkflowExecutionStatus(workflowInstance, currentWorkflowInstanceStatus.getExecutionStatus(), t));
+	public void updateWorkflowNodeStatus(NodeExecutionStatus workflowStatusNode) throws RegistryException {
+        if (provenanceRegistry != null){
+            provenanceRegistry.updateWorkflowNodeStatus(workflowStatusNode);
+        }else {
+            WorkflowExecution workflowInstance = workflowStatusNode.getWorkflowInstanceNode().getWorkflowInstance();
+            String nodeId = workflowStatusNode.getWorkflowInstanceNode().getNodeId();
+            if (!isWorkflowInstanceNodePresent(workflowInstance.getWorkflowExecutionId(), nodeId, true)){
+                throw new WorkflowInstanceNodeDoesNotExistsException(workflowInstance.getWorkflowExecutionId(), nodeId);
+            }
+            NodeDataResource nodeData = jpa.getWorker().getWorkflowInstance(workflowInstance.getWorkflowExecutionId()).getNodeData(nodeId);
+            nodeData.setStatus(workflowStatusNode.getExecutionStatus().toString());
+            Timestamp t = new Timestamp(workflowStatusNode.getStatusUpdateTime().getTime());
+            if (workflowStatusNode.getExecutionStatus()==State.STARTED){
+                nodeData.setStartTime(t);
+            }
+            nodeData.setLastUpdateTime(t);
+            nodeData.save();
+            //Each time node status is updated the the time of update for the workflow status is going to be the same
+            WorkflowExecutionStatus currentWorkflowInstanceStatus = getWorkflowInstanceStatus(workflowInstance.getWorkflowExecutionId());
+            updateWorkflowInstanceStatus(new WorkflowExecutionStatus(workflowInstance, currentWorkflowInstanceStatus.getExecutionStatus(), t));
+        }
 	}
 
 
 	@Override
 	public void updateWorkflowNodeStatus(String workflowInstanceId,
 			String nodeId, State status) throws RegistryException {
-		updateWorkflowNodeStatus(new WorkflowInstanceNode(new WorkflowExecution(workflowInstanceId, workflowInstanceId), nodeId), status);
+        if (provenanceRegistry != null){
+            provenanceRegistry.updateWorkflowNodeStatus(workflowInstanceId, nodeId, status);
+        }else {
+            updateWorkflowNodeStatus(new WorkflowInstanceNode(new WorkflowExecution(workflowInstanceId, workflowInstanceId), nodeId), status);
+        }
+
 	}
 
 
 	@Override
 	public void updateWorkflowNodeStatus(WorkflowInstanceNode workflowNode,
 			State status) throws RegistryException {
-		updateWorkflowNodeStatus(new NodeExecutionStatus(workflowNode, status, Calendar.getInstance().getTime()));
+        if (provenanceRegistry != null){
+            provenanceRegistry.updateWorkflowNodeStatus(workflowNode, status);
+        }else {
+            updateWorkflowNodeStatus(new NodeExecutionStatus(workflowNode, status, Calendar.getInstance().getTime()));
+        }
 	}
 
 
 	@Override
 	public NodeExecutionStatus getWorkflowNodeStatus(
 			WorkflowInstanceNode workflowNode) throws RegistryException {
-		String id = workflowNode.getWorkflowInstance().getWorkflowExecutionId();
+        if (provenanceRegistry != null){
+            return provenanceRegistry.getWorkflowNodeStatus(workflowNode);
+        }
+        String id = workflowNode.getWorkflowInstance().getWorkflowExecutionId();
 		String nodeId = workflowNode.getNodeId();
 		if (!isWorkflowInstanceNodePresent(id, nodeId)){
 			throw new WorkflowInstanceNodeDoesNotExistsException(id, nodeId);
@@ -1224,7 +1659,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public Date getWorkflowNodeStartTime(WorkflowInstanceNode workflowNode)
 			throws RegistryException {
-		String id = workflowNode.getWorkflowInstance().getWorkflowExecutionId();
+        if (provenanceRegistry != null){
+            return provenanceRegistry.getWorkflowNodeStartTime(workflowNode);
+        }
+        String id = workflowNode.getWorkflowInstance().getWorkflowExecutionId();
 		String nodeId = workflowNode.getNodeId();
 		if (!isWorkflowInstanceNodePresent(id, nodeId)){
 			throw new WorkflowInstanceNodeDoesNotExistsException(id, nodeId);
@@ -1238,7 +1676,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public Date getWorkflowStartTime(WorkflowExecution workflowInstance)
 			throws RegistryException {
-		if (!isWorkflowInstanceExists(workflowInstance.getWorkflowExecutionId(),true)){
+        if (provenanceRegistry != null){
+            return provenanceRegistry.getWorkflowStartTime(workflowInstance);
+        }
+        if (!isWorkflowInstanceExists(workflowInstance.getWorkflowExecutionId(),true)){
 			throw new WorkflowInstanceDoesNotExistsException(workflowInstance.getWorkflowExecutionId());
 		}
 		WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(workflowInstance.getWorkflowExecutionId());
@@ -1249,27 +1690,34 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public void updateWorkflowNodeGramData(
 			WorkflowNodeGramData workflowNodeGramData) throws RegistryException {
-		if (!isWorkflowInstanceNodePresent(workflowNodeGramData.getWorkflowInstanceId(),workflowNodeGramData.getNodeID(), true)){
-			throw new WorkflowInstanceNodeDoesNotExistsException(workflowNodeGramData.getWorkflowInstanceId(),workflowNodeGramData.getNodeID());
-		}
-		WorkflowDataResource workflowInstance = jpa.getWorker().getWorkflowInstance(workflowNodeGramData.getWorkflowInstanceId());
-		GramDataResource gramData;
-		if (workflowInstance.isGramDataExists(workflowNodeGramData.getNodeID())){
-			gramData = workflowInstance.getGramData(workflowNodeGramData.getNodeID());
-		}else{
-			gramData = workflowInstance.createGramData(workflowNodeGramData.getNodeID());
-		}
-		gramData.setInvokedHost(workflowNodeGramData.getInvokedHost());
-		gramData.setLocalJobID(workflowNodeGramData.getGramJobID());
-		gramData.setRsl(workflowNodeGramData.getRsl());
-		gramData.save();
+        if (provenanceRegistry != null){
+            provenanceRegistry.updateWorkflowNodeGramData(workflowNodeGramData);
+        }else {
+            if (!isWorkflowInstanceNodePresent(workflowNodeGramData.getWorkflowInstanceId(),workflowNodeGramData.getNodeID(), true)){
+                throw new WorkflowInstanceNodeDoesNotExistsException(workflowNodeGramData.getWorkflowInstanceId(),workflowNodeGramData.getNodeID());
+            }
+            WorkflowDataResource workflowInstance = jpa.getWorker().getWorkflowInstance(workflowNodeGramData.getWorkflowInstanceId());
+            GramDataResource gramData;
+            if (workflowInstance.isGramDataExists(workflowNodeGramData.getNodeID())){
+                gramData = workflowInstance.getGramData(workflowNodeGramData.getNodeID());
+            }else{
+                gramData = workflowInstance.createGramData(workflowNodeGramData.getNodeID());
+            }
+            gramData.setInvokedHost(workflowNodeGramData.getInvokedHost());
+            gramData.setLocalJobID(workflowNodeGramData.getGramJobID());
+            gramData.setRsl(workflowNodeGramData.getRsl());
+            gramData.save();
+        }
 	}
 
 
 	@Override
 	public WorkflowExecutionData getWorkflowInstanceData(
 			String workflowInstanceId) throws RegistryException {
-		if (!isWorkflowInstanceExists(workflowInstanceId,true)){
+        if (provenanceRegistry != null){
+            return provenanceRegistry.getWorkflowInstanceData(workflowInstanceId);
+        }
+        if (!isWorkflowInstanceExists(workflowInstanceId,true)){
 			throw new WorkflowInstanceDoesNotExistsException(workflowInstanceId);
 		}
 		try{
@@ -1294,7 +1742,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public NodeExecutionData getWorkflowInstanceNodeData(
 			String workflowInstanceId, String nodeId) throws RegistryException {
-		if (!isWorkflowInstanceNodePresent(workflowInstanceId, nodeId)){
+        if (provenanceRegistry != null){
+            return provenanceRegistry.getWorkflowInstanceNodeData(workflowInstanceId, nodeId);
+        }
+        if (!isWorkflowInstanceNodePresent(workflowInstanceId, nodeId)){
 			throw new WorkflowInstanceNodeDoesNotExistsException(workflowInstanceId,nodeId);
 		}
 		NodeDataResource nodeData = jpa.getWorker().getWorkflowInstance(workflowInstanceId).getNodeData(nodeId);
@@ -1311,12 +1762,18 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public boolean isWorkflowInstanceNodePresent(String workflowInstanceId,
 			String nodeId) throws RegistryException {
-		return isWorkflowInstanceNodePresent(workflowInstanceId, nodeId, false);
+        if (provenanceRegistry != null){
+            return provenanceRegistry.isWorkflowInstanceNodePresent(workflowInstanceId, nodeId);
+        }
+        return isWorkflowInstanceNodePresent(workflowInstanceId, nodeId, false);
 	}
 
 	@Override
 	public boolean isWorkflowInstanceNodePresent(String workflowInstanceId,
 			String nodeId, boolean createIfNotPresent) throws RegistryException {
+        if (provenanceRegistry != null){
+            return provenanceRegistry.isWorkflowInstanceNodePresent(workflowInstanceId, nodeId, createIfNotPresent);
+        }
 		if (!isWorkflowInstanceExists(workflowInstanceId, true)){
 			throw new WorkflowInstanceDoesNotExistsException(workflowInstanceId);
 		}
@@ -1334,54 +1791,66 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public void addWorkflowInstance(String experimentId,
 			String workflowInstanceId, String templateName) throws RegistryException {
-		if (!isExperimentExists(experimentId, true)){
-			throw new ExperimentDoesNotExistsException(experimentId);
-		}
-		if (isWorkflowInstanceExists(workflowInstanceId)){
-			throw new WorkflowInstanceAlreadyExistsException(workflowInstanceId);
-		}
-		ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
-		ExperimentDataResource data = experiment.getData();
-		WorkflowDataResource workflowInstanceResource = data.createWorkflowInstanceResource(workflowInstanceId);
-		workflowInstanceResource.setTemplateName(templateName);
-		workflowInstanceResource.save();
+        if (provenanceRegistry != null){
+            provenanceRegistry.addWorkflowInstance(experimentId,workflowInstanceId, templateName);
+        }else {
+            if (!isExperimentExists(experimentId, true)){
+                throw new ExperimentDoesNotExistsException(experimentId);
+            }
+            if (isWorkflowInstanceExists(workflowInstanceId)){
+                throw new WorkflowInstanceAlreadyExistsException(workflowInstanceId);
+            }
+            ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
+            ExperimentDataResource data = experiment.getData();
+            WorkflowDataResource workflowInstanceResource = data.createWorkflowInstanceResource(workflowInstanceId);
+            workflowInstanceResource.setTemplateName(templateName);
+            workflowInstanceResource.save();
+        }
 	}
 
 
 	@Override
 	public void updateWorkflowNodeType(WorkflowInstanceNode node, WorkflowNodeType type)
 			throws RegistryException {
-		try {
-			if (!isWorkflowInstanceNodePresent(node.getWorkflowInstance().getWorkflowExecutionId(),node.getNodeId(), true)){
-				throw new WorkflowInstanceNodeDoesNotExistsException(node.getWorkflowInstance().getWorkflowExecutionId(),node.getNodeId());
-			}
-			NodeDataResource nodeData = jpa.getWorker().getWorkflowInstance(node.getWorkflowInstance().getWorkflowExecutionId()).getNodeData(node.getNodeId());
-			nodeData.setNodeType(type.getNodeType().toString());
-			nodeData.save();
-		} catch (RegistryException e) {
-			e.printStackTrace();
-			throw e;
-		}
+        if (provenanceRegistry != null){
+            provenanceRegistry.updateWorkflowNodeType(node, type);
+        }else {
+            try {
+                if (!isWorkflowInstanceNodePresent(node.getWorkflowInstance().getWorkflowExecutionId(),node.getNodeId(), true)){
+                    throw new WorkflowInstanceNodeDoesNotExistsException(node.getWorkflowInstance().getWorkflowExecutionId(),node.getNodeId());
+                }
+                NodeDataResource nodeData = jpa.getWorker().getWorkflowInstance(node.getWorkflowInstance().getWorkflowExecutionId()).getNodeData(node.getNodeId());
+                nodeData.setNodeType(type.getNodeType().toString());
+                nodeData.save();
+            } catch (RegistryException e) {
+                e.printStackTrace();
+                throw e;
+            }
+        }
 	}
 
 
 	@Override
 	public void addWorkflowInstanceNode(String workflowInstanceId,
 			String nodeId) throws RegistryException {
-		if (isWorkflowInstanceNodePresent(workflowInstanceId, nodeId)){
-			throw new WorkflowInstanceNodeAlreadyExistsException(workflowInstanceId, nodeId);
-		}
-		NodeDataResource nodeData = jpa.getWorker().getWorkflowInstance(workflowInstanceId).createNodeData(nodeId);
-		nodeData.save();
+        if (provenanceRegistry != null){
+            provenanceRegistry.addWorkflowInstanceNode(workflowInstanceId, nodeId);
+        }else {
+            if (isWorkflowInstanceNodePresent(workflowInstanceId, nodeId)){
+                throw new WorkflowInstanceNodeAlreadyExistsException(workflowInstanceId, nodeId);
+            }
+            NodeDataResource nodeData = jpa.getWorker().getWorkflowInstance(workflowInstanceId).createNodeData(nodeId);
+            nodeData.save();
+        }
+
 	}
-
-
-
-
 
     @Override
 	public ExperimentData getExperimentMetaInformation(String experimentId)
 			throws RegistryException {
+        if (provenanceRegistry != null){
+            return provenanceRegistry.getExperimentMetaInformation(experimentId);
+        }
         if (!isExperimentExists(experimentId)){
             throw new ExperimentDoesNotExistsException(experimentId);
         }
@@ -1393,6 +1862,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public List<ExperimentData> getAllExperimentMetaInformation(String user)
 			throws RegistryException {
+        if (provenanceRegistry != null){
+            return provenanceRegistry.getAllExperimentMetaInformation(user);
+        }
         ExperimentDataRetriever experimentDataRetriever = new ExperimentDataRetriever();
         return experimentDataRetriever.getAllExperimentMetaInformation(user);
 	}
@@ -1401,7 +1873,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public List<ExperimentData> searchExperiments(String user, String experimentNameRegex)
 			throws RegistryException {
-		Pattern pattern = Pattern.compile(experimentNameRegex);
+        if (provenanceRegistry != null){
+            return provenanceRegistry.searchExperiments(user, experimentNameRegex);
+        }
+        Pattern pattern = Pattern.compile(experimentNameRegex);
 		List<ExperimentData> filteredExperiments=new ArrayList<ExperimentData>();
 		List<ExperimentData> allExperimentMetaInformation = getAllExperimentMetaInformation(user);
 		for (ExperimentData experimentData : allExperimentMetaInformation) {

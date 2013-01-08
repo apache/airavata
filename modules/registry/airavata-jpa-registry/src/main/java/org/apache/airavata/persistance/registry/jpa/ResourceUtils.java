@@ -51,6 +51,7 @@ public class ResourceUtils {
             properties.put("openjpa.DynamicEnhancementAgent","true");
             properties.put("openjpa.RuntimeUnenhancedClasses","unsupported");
             properties.put("openjpa.Log","SQL=ERROR");
+//            properties.put("openjpa.Log","DefaultLevel=WARN, Runtime=INFO, Tool=INFO, SQL=TRACE");
             properties.put("openjpa.ReadLockLevel", "none");
             properties.put("openjpa.WriteLockLevel", "none");
             properties.put("openjpa.LockTimeout", "30000");
