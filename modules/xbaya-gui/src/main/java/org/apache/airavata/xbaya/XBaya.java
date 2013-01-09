@@ -103,7 +103,7 @@ public class XBaya {
                 if ((index + 1) < args.length) {
                     possibleValue = args[index + 1];
                 }
-                logger.info("arg: " + arg + " " + possibleValue);
+                logger.debug("arg: " + arg + " " + possibleValue);
                 if ("-help".equalsIgnoreCase(arg)) {
                     printUsage();
                     System.exit(0);

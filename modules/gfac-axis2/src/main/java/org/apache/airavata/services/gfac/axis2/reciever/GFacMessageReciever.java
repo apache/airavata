@@ -109,8 +109,8 @@ public class GFacMessageReciever implements MessageReceiver {
                 log = LoggerFactory.getLogger(GFacMessageReciever.class + "." + document.getContextHeader().getWorkflowMonitoringContext().getExperimentId());
                 log.debug("invoking Invoke operation");
                 processInvokeOperation(axisRequestMsgCtx);
-                log.info(axisRequestMsgCtx.getEnvelope().getBody().getFirstElement().toString());
-                log.info("Invoke operation invoked !!");
+                log.debug(axisRequestMsgCtx.getEnvelope().getBody().getFirstElement().toString());
+                log.debug("Invoke operation invoked !!");
             } catch (Exception e) {
                 throw new AxisFault("Error Invoking the service", e);
             }
@@ -119,7 +119,7 @@ public class GFacMessageReciever implements MessageReceiver {
             try {
                 log.debug("invoking getWSDL operation");
                 processgetWSDLOperation(axisRequestMsgCtx);
-                log.info("getWSDL operation invoked !!");
+                log.debug("getWSDL operation invoked !!");
             } catch (Exception e) {
                 throw new AxisFault("Error retrieving the WSDL", e);
             }

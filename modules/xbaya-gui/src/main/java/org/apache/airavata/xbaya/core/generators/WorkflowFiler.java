@@ -96,7 +96,7 @@ public class WorkflowFiler {
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = this.graphFileChooser.getSelectedFile();
-            logger.info(file.getPath());
+            logger.debug(file.getPath());
 
             try {
                 String path = file.getPath();
@@ -165,7 +165,7 @@ public class WorkflowFiler {
 		int returnVal = this.graphFileChooser.showSaveDialog(this.engine.getGUI().getFrame());
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = this.graphFileChooser.getSelectedFile();
-            logger.info(file.getPath());
+            logger.debug(file.getPath());
 
             // Put ".xwf" at the end of the file name
             String path = file.getPath();
@@ -236,7 +236,7 @@ public class WorkflowFiler {
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = this.graphFileChooser.getSelectedFile();
-            logger.info(file.getPath());
+            logger.debug(file.getPath());
 
             try {
                 String path = file.getPath();

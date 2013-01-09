@@ -124,7 +124,7 @@ public class BasicAccessAuthenticator extends AbstractAuthenticator {
                 servletRequestHelper.addUserToSession(array[0], httpServletRequest);
 
                 stringBuilder.append(array[0]).append(" successfully logged into system at ").append(getCurrentTime());
-                log.info(stringBuilder.toString());
+                log.debug(stringBuilder.toString());
 
             } else {
                 log.error("System error occurred while extracting user name after authentication. " +

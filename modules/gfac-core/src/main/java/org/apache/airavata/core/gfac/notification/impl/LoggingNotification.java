@@ -88,13 +88,13 @@ public class LoggingNotification implements GFacNotifiable {
     }
 
     private void printOut(InvocationContext context, String... data) {
-        log.info("Notifier: " + this.getClass().toString());
+        log.debug("Notifier: " + this.getClass().toString());
         if (data != null) {
-            log.info("-----DATA-----");
+            log.debug("\t-----DATA-----");
             for (int i = 0; i < data.length; i++) {
-                log.info(data[i]);
+                log.debug("\t\t"+data[i]);
             }
-            log.info("-----END DATA-----");
+            log.debug("\t-----END DATA-----");
         }
     }
 }

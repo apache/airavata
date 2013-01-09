@@ -198,9 +198,9 @@ public class SSHProvider extends AbstractProvider {
             /*
              * Set environment
              */
-            log.info("Command = " + command);
+            log.debug("Command = " + command);
             for (Entry<String, String> entry : nv.entrySet()) {
-                log.info("Env[" + entry.getKey() + "] = " + entry.getValue());
+                log.debug("Env[" + entry.getKey() + "] = " + entry.getValue());
                 session.setEnvVar(entry.getKey(), entry.getValue());
             }
 
@@ -208,7 +208,7 @@ public class SSHProvider extends AbstractProvider {
              * Execute
              */
             Command cmd = session.exec(command);
-            log.info("stdout=" + GfacUtils.readFromStream(session.getInputStream()));
+            log.debug("stdout=" + GfacUtils.readFromStream(session.getInputStream()));
             cmd.join(COMMAND_EXECUTION_TIMEOUT, TimeUnit.SECONDS);
 
             /*
@@ -218,7 +218,7 @@ public class SSHProvider extends AbstractProvider {
             if (cmd.getExitStatus() != 0) {
                 log.error("Process finished with non zero return value. Process may have failed");
             } else {
-                log.info("Process finished with return value of zero.");
+                log.debug("Process finished with return value of zero.");
             }
 
         } catch (ConnectionException e) {

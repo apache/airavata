@@ -81,7 +81,7 @@ public class ImageFiler {
         int returnVal = this.pngFileChooser.showSaveDialog(this.engine.getGUI().getFrame());
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = this.pngFileChooser.getSelectedFile();
-            logger.info(file.getPath());
+            logger.debug(file.getPath());
 
             // Put ".png" at the end of the file name
             String path = file.getPath();

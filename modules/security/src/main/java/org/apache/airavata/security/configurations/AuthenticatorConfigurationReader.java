@@ -114,7 +114,7 @@ public class AuthenticatorConfigurationReader extends AbstractConfigurationReade
                 stringBuilder.append(name).append(" with class ").append(className).append(" enabled? ").append(enabled)
                         .append(" priority = ").append(priority);
 
-                log.info(stringBuilder.toString());
+                log.debug(stringBuilder.toString());
             }
         }
     }
@@ -127,7 +127,7 @@ public class AuthenticatorConfigurationReader extends AbstractConfigurationReade
     protected Authenticator createAuthenticator(String name, String className, String enabled,
                                                 String priority, String userStoreClassName) {
 
-        log.info("Loading authenticator class " + className + " and name " + name);
+        log.debug("Loading authenticator class " + className + " and name " + name);
 
         // Load a class and instantiate an object
         Class authenticatorClass;

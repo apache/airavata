@@ -139,11 +139,11 @@ public class SchedulerImpl implements Scheduler {
             if (GfacUtils.isLocalHost(hostName)) {
                 return new LocalProvider();
             } else if (amazonWebservices != null && hostName != null) {
-                log.info("host name: " + hostName);
+                log.debug("host name: " + hostName);
 
                 // Amazon Provider
                 if (hostName.equalsIgnoreCase("AMAZON")){
-                    log.info("EC2 Provider Selected");
+                    log.debug("EC2 Provider Selected");
                     try {
                         return new EC2Provider(context);
                     } catch (ProviderException e) {
@@ -170,7 +170,7 @@ public class SchedulerImpl implements Scheduler {
                 hostName = applicationSchedulingContextArray[0].getHostName();
             }
         }
-        log.info("Searching registry for some deployed application hosts");
+        log.debug("Searching registry for some deployed application hosts");
         HostDescription result = null;
         Map<HostDescription, List<ApplicationDescription>> deploymentDescription = null;
         result = getRegisteredHost(regService, serviceName);
@@ -213,7 +213,7 @@ public class SchedulerImpl implements Scheduler {
             for (String hostDescName : applicationDescriptors.keySet()) {
                 HostDescription hostDescriptor = regService.getApplicationManager().getHostDescription(hostDescName);
                 result = hostDescriptor;
-                log.info("Found service on: " + result.getType().getHostAddress());
+                log.debug("Found service on: " + result.getType().getHostAddress());
             }
         } catch (AiravataAPIInvocationException e) {
             e.printStackTrace();

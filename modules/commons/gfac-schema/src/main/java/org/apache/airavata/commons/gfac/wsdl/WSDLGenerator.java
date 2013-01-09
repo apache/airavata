@@ -118,10 +118,10 @@ public class WSDLGenerator implements WSDLConstants {
 
             if (abstractWSDL) {
                 def.setQName(serviceQName);
-                log.info("Service QName set to = " + serviceQName);
+                log.debug("Service QName set to = " + serviceQName);
             } else {
                 def.setQName(wsdlQName);
-                log.info("WSDL QName set to = " + wsdlQName);
+                log.debug("WSDL QName set to = " + wsdlQName);
             }
 
             // namespaces ===========
@@ -449,7 +449,7 @@ public class WSDLGenerator implements WSDLConstants {
         BindingInputImpl bindingInput = (BindingInputImpl) def.createBindingInput();
         bindingInput.setName(methodName + GFacSchemaConstants.SERVICE_REQ_MSG_SUFFIX);
         if (wsPolicyRef != null) {
-            log.info("policy info is not null");
+            log.debug("policy info is not null");
             bindingInput.addExtensibilityElement(wsPolicyRef);
         }
         SOAPBodyImpl inputExtension = new SOAPBodyImpl();
@@ -466,7 +466,7 @@ public class WSDLGenerator implements WSDLConstants {
             bindingOutput = (BindingOutputImpl) def.createBindingOutput();
             bindingOutput.setName(methodName + GFacSchemaConstants.SERVICE_RESP_MSG_SUFFIX);
             if (wsPolicyRef != null) {
-                log.info("policy info is not null");
+                log.debug("policy info is not null");
                 bindingOutput.addExtensibilityElement(wsPolicyRef);
             }
             SOAPBodyImpl outputExtension = new SOAPBodyImpl();
@@ -508,7 +508,7 @@ public class WSDLGenerator implements WSDLConstants {
         soapBindingImpl.setTransportURI(SOAP_HTTP_NAMESPACE);
         binding.addExtensibilityElement(soapBindingImpl);
         if (wsPolicyRef != null) {
-            log.info("policy info is not null");
+            log.debug("policy info is not null");
             binding.addExtensibilityElement(wsPolicyRef);
         }
 

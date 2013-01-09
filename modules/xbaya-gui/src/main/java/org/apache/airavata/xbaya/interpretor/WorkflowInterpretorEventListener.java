@@ -181,7 +181,9 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
             }
         } else if (type == EventType.INVOKING_SERVICE || type == EventType.SERVICE_INVOKED) {
             if (node == null) {
-                logger.warn("There is no node that has ID, " + nodeID);
+                if (nodeID!=null && !nodeID.equals("")) {
+					logger.warn("There is no node that has ID, " + nodeID);
+				}
             } else {
                 nodeStarted(node, forward);
                 workflowNodeStatusUpdater.workflowStarted(event.getExperimentID(), event.getNodeID()
@@ -192,8 +194,10 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
         // correctly.
                 || type == EventType.SENDING_RESULT) {
             if (node == null) {
-                logger.warn("There is no node that has ID, " + nodeID);
-            } else {
+            	if (nodeID!=null && !nodeID.equals("")) {
+					logger.warn("There is no node that has ID, " + nodeID);
+				}
+        	} else {
                 nodeFinished(node, forward);
                 workflowNodeStatusUpdater.workflowFinished(event.getExperimentID(), event.getNodeID(), event.getMessage(),
                         event.getWorkflowID().toASCIIString());
@@ -202,7 +206,9 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
         // TODO
                 || type == EventType.SENDING_FAULT || type == EventType.SENDING_RESPONSE_FAILED) {
             if (node == null) {
-                logger.warn("There is no node that has ID, " + nodeID);
+            	if (nodeID!=null && !nodeID.equals("")) {
+					logger.warn("There is no node that has ID, " + nodeID);
+				}
             } else {
                 nodeFailed(node, forward);
                 workflowNodeStatusUpdater.workflowFailed(event.getExperimentID(), event.getNodeID());
@@ -214,7 +220,9 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
             }
         } else if (type == MonitorUtil.EventType.RESOURCE_MAPPING) {
             if (node == null) {
-                logger.warn("There is no node that has ID, " + nodeID);
+            	if (nodeID!=null && !nodeID.equals("")) {
+					logger.warn("There is no node that has ID, " + nodeID);
+				}
             } else {
                 // nodeResourceMapped(node, event.getEvent(), forward);
                 workflowNodeStatusUpdater.workflowRunning(event.getExperimentID(), event.getNodeID());

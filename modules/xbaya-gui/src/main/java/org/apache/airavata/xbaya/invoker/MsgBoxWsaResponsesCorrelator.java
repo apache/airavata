@@ -73,13 +73,13 @@ public class MsgBoxWsaResponsesCorrelator extends WSIFAsyncWsaResponsesCorrelato
             try {
                 setReplyTo(new WsaEndpointReference(new URI(msgBoxAddr.getAddress())));
             } catch (URISyntaxException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            	logger.error(e.getLocalizedMessage(),e);  //To change body of catch statement use File | Settings | File Templates.
             }
             messageBoxDonwloader = new Thread(this, Thread.currentThread().getName()+"-async-msgbox-correlator");
             messageBoxDonwloader.setDaemon(true);
             messageBoxDonwloader.start();
         } catch (RemoteException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        	logger.error(e.getLocalizedMessage(),e);  //To change body of catch statement use File | Settings | File Templates.
         }
     }
 
@@ -103,7 +103,7 @@ public class MsgBoxWsaResponsesCorrelator extends WSIFAsyncWsaResponsesCorrelato
                 for (int i = 0; i < xmlArrayList.size(); i++) {
                     XmlElement m = xmlArrayList.get(i);
                     try {
-                        System.out.println(Thread.currentThread().getName());
+                        logger.debug(Thread.currentThread().getName());
                         WSIFMessageElement e = new WSIFMessageElement(m);
                         this.invoker.setOutputMessage(e);
                         //ideally there are no multiple messages, so we can return from this thread at this point
@@ -111,7 +111,7 @@ public class MsgBoxWsaResponsesCorrelator extends WSIFAsyncWsaResponsesCorrelato
                         // number of waiting threads in an airavata deployment
                         return;
                     } catch (Throwable e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    	logger.error(e.getLocalizedMessage(),e);  //To change body of catch statement use File | Settings | File Templates.
                     }
                 }
                 try {

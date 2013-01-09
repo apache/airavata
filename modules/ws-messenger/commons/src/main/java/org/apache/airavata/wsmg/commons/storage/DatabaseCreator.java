@@ -153,7 +153,7 @@ public class DatabaseCreator {
 
             SQLWarning warning = conn.getWarnings();
             while (warning != null) {
-                log.info(warning + " sql warning");
+                log.warn(warning + " sql warning");
                 warning = warning.getNextWarning();
             }
             conn.clearWarnings();

@@ -89,7 +89,7 @@ public class SimpleWSClient {
 
         boolean success = operation.executeRequestResponseOperation(inputMessage, outputMessage, faultMessage);
         if (success) {
-            logger.info("" + outputMessage);
+            logger.debug("" + outputMessage);
             return outputMessage;
         } else {
             throw new ComponentRegistryException("Excpetion at server " + faultMessage);

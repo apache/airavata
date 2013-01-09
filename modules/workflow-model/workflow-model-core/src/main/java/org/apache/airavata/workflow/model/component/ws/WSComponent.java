@@ -450,7 +450,7 @@ public class WSComponent extends Component {
 
         if (sequenceElement == null) {
             // Assume that there is no input/output.
-            logger.info("There is no sequence defined.");
+            logger.debug("There is no sequence defined.");
         } else {
             // Only supports elements in the sequence now.
             for (XmlElement element : sequenceElement.elements(null, WSConstants.ELEMENT_TAG)) {

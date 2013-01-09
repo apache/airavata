@@ -180,7 +180,7 @@ public class LEADWorkflowInvoker {
                     String[] result = pattern.split((String) value);
                     XmlElement arrayEl = XmlConstants.BUILDER.newFragment(name);
                     for (int i = 0; i < result.length; i++) {
-                        logger.info("split=" + result[i]);
+                        logger.debug("split=" + result[i]);
                         arrayEl.addElement("value").addChild(result[i]);
                     }
                     this.inputMessage.setObjectPart(name, arrayEl);
@@ -200,16 +200,16 @@ public class LEADWorkflowInvoker {
      */
     public boolean invoke() throws WorkflowException {
         try {
-            logger.info("leadContext: " + XMLUtil.xmlElementToString(this.leadContext));
-            logger.info("inputMessage: " + XMLUtil.xmlElementToString((XmlElement) this.inputMessage));
+            logger.debug("leadContext: " + XMLUtil.xmlElementToString(this.leadContext));
+            logger.debug("inputMessage: " + XMLUtil.xmlElementToString((XmlElement) this.inputMessage));
             // Soap11Util.getInstance().wrapBodyContent(
             // (XmlElement) this.inputMessage);
             this.success = this.operation.executeRequestResponseOperation(this.inputMessage, this.outputMessage,
                     this.faultMessage);
             if (this.success) {
-                logger.info("outputMessage: " + XMLUtil.xmlElementToString((XmlElement) this.outputMessage));
+                logger.debug("outputMessage: " + XMLUtil.xmlElementToString((XmlElement) this.outputMessage));
             } else {
-                logger.info("faultMessage: " + XMLUtil.xmlElementToString((XmlElement) this.faultMessage));
+                logger.debug("faultMessage: " + XMLUtil.xmlElementToString((XmlElement) this.faultMessage));
             }
             return this.success;
         } catch (RuntimeException e) {
@@ -272,7 +272,7 @@ public class LEADWorkflowInvoker {
      * @throws ComponentException
      */
     private void init() throws ComponentException {
-        logger.info("wsdl: " + this.definitions.xmlStringPretty());
+        logger.debug("wsdl: " + this.definitions.xmlStringPretty());
         this.component = WSComponentFactory.createComponent(this.definitions);
 
         WSIFServiceFactory factory = WSIFServiceFactory.newInstance();
@@ -290,13 +290,13 @@ public class LEADWorkflowInvoker {
         int clientPort = 0;
         WSIFAsyncResponsesCorrelator correlator;
         if (this.messageBoxURL == null) {
-            logger.info("starting response correlator using local port " + clientPort);
+            logger.debug("starting response correlator using local port " + clientPort);
             XsulSoapHttpWsaResponsesCorrelator wasCorrelator = new XsulSoapHttpWsaResponsesCorrelator(clientPort);
             String serverLoc = (wasCorrelator).getServerLocation();
-            logger.info("client is waiting at " + serverLoc);
+            logger.debug("client is waiting at " + serverLoc);
             correlator = wasCorrelator;
         } else {
-            logger.info("starting reponse correlator using message box " + this.messageBoxURL);
+            logger.debug("starting reponse correlator using message box " + this.messageBoxURL);
             correlator = new XsulMsgBoxWsaResponsesCorrelator(this.messageBoxURL.toString());
         }
 
@@ -313,7 +313,7 @@ public class LEADWorkflowInvoker {
         if (this.operationName == null) {
             this.operationName = this.component.getOperationName();
         }
-        logger.info("operationName: " + operationName);
+        logger.debug("operationName: " + operationName);
         this.operation = port.createOperation(operationName);
         this.inputMessage = this.operation.createInputMessage();
         this.outputMessage = this.operation.createOutputMessage();

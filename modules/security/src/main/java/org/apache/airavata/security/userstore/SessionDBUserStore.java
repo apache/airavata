@@ -121,7 +121,7 @@ public class SessionDBUserStore extends AbstractJDBCUserStore {
         stringBuilder.append(sessionTable).append(" Session column - ").append(sessionColumn).append(" Comparing column - ").
                 append(comparingColumn);
 
-        log.info(stringBuilder.toString());
+        log.debug(stringBuilder.toString());
     }
 
     private void initializeDatabaseLookup() throws RuntimeException {

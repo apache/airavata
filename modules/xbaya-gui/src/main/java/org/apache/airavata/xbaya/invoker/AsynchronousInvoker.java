@@ -69,10 +69,10 @@ public class AsynchronousInvoker extends SimpleInvoker {
         if (this.messageBoxURL == null || this.messageBoxURL.length() == 0) {
             correlator = new XsulSoapHttpWsaResponsesCorrelator();
             String serverLoc = ((XsulSoapHttpWsaResponsesCorrelator) correlator).getServerLocation();
-            logger.info("using async correlator at " + serverLoc);
+            logger.debug("using async correlator at " + serverLoc);
         } else {
             correlator = new MsgBoxWsaResponsesCorrelator(this.messageBoxURL,this);
-            logger.info("using message box at " + this.messageBoxURL);
+            logger.debug("using message box at " + this.messageBoxURL);
         }
         this.client.useAsyncMessaging(correlator);
     }

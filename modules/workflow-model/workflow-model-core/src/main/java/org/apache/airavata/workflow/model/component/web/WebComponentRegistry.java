@@ -123,7 +123,7 @@ public class WebComponentRegistry extends ComponentRegistry {
             // TODO checking 3 is not enough
             while (String.valueOf(connection.getResponseCode()).startsWith("3")) {
                 String location = connection.getHeaderField("Location");
-                logger.info("Redirecting to " + location);
+                logger.debug("Redirecting to " + location);
                 connection.disconnect();
                 this.url = new URL(location);
                 connection = (HttpURLConnection) this.url.openConnection();
@@ -149,9 +149,9 @@ public class WebComponentRegistry extends ComponentRegistry {
     private void addComponents(String name) {
         try {
             URL wsdlUrl = new URL(this.url, name);
-            logger.info("WSDL URL: " + wsdlUrl);
+            logger.debug("WSDL URL: " + wsdlUrl);
             String wsdlString = IOUtil.readToString(wsdlUrl.openStream());
-            logger.info("WSDL: " + wsdlString);
+            logger.debug("WSDL: " + wsdlString);
             List<WSComponent> components = WSComponentFactory.createComponents(wsdlString);
             addComponents(name, components);
         } catch (MalformedURLException e) {

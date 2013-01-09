@@ -118,7 +118,7 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
         Boolean inited = (Boolean) configContext.getProperty(WsmgCommonConstants.BROKER_INITED);
 
         if (inited == null || inited == false) {
-            log.info("starting broker");
+            log.info("Starting Message Broker...");
             Axis2Utils.overrideAddressingPhaseHander(configContext, new PublishedMessageHandler());
             WsmgConfigurationContext brokerConext = initConfigurations(configContext, axisService);
             initQueue(brokerConext);
@@ -127,7 +127,7 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
             inited = true;
             configContext.setProperty(WsmgCommonConstants.BROKER_INITED, inited);
         } else {
-            log.info("init was already done by another webservice");
+            log.debug("init was already done by another webservice");
         }
 
         final ConfigurationContext context = configContext;
@@ -217,7 +217,7 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
 
     private void initQueue(WsmgConfigurationContext context) {
 
-        log.info("setting up queue");
+        log.debug("setting up queue");
 
         WSMGParameter.OUT_GOING_QUEUE = context.getQueue();
 
@@ -301,7 +301,7 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
 
         proc = new DeliveryProcessor(senderUtils, method);
         proc.start();
-        log.info(initedmethod + " sending method inited");
+        log.debug(initedmethod + " sending method inited");
     }
 
     class MsgBrokerURLRegisterThread extends PeriodicExecutorThread {
@@ -321,7 +321,7 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
             } catch (AiravataAPIInvocationException e) {
                 e.printStackTrace();
             }
-            log.info("Updated Eventing service URL in to Repository");
+            log.debug("Updated Eventing service URL in to Repository");
         }
 
     }

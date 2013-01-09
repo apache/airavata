@@ -68,7 +68,7 @@ public class WorkflowInvokerWrapperForGFacInvoker extends GFacInvoker {
 
         try {
             WSIFMessage inputMessage = super.getInputs();
-            logger.info("inputMessage: " + XMLUtil.xmlElementToString((XmlElement) inputMessage));
+            logger.debug("inputMessage: " + XMLUtil.xmlElementToString((XmlElement) inputMessage));
             this.notifier.invokingService(inputMessage);
 
             ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -83,14 +83,14 @@ public class WorkflowInvokerWrapperForGFacInvoker extends GFacInvoker {
                             // An implementation of WSIFMessage,
                             // WSIFMessageElement, implements toString(), which
                             // serialize the message XML.
-                            logger.info("outputMessage: " + outputMessage);
+                            logger.debug("outputMessage: " + outputMessage);
                             WorkflowInvokerWrapperForGFacInvoker.this.notifier.serviceFinished(outputMessage);
                         } else {
                             WSIFMessage faultMessage = WorkflowInvokerWrapperForGFacInvoker.super.getFault();
                             // An implementation of WSIFMessage,
                             // WSIFMessageElement, implements toString(), which
                             // serialize the message XML.
-                            logger.info("received fault: " + faultMessage);
+                            logger.debug("received fault: " + faultMessage);
                             WorkflowInvokerWrapperForGFacInvoker.this.notifier.receivedFault(faultMessage);
                             WorkflowInvokerWrapperForGFacInvoker.this.failerSent = true;
                         }
@@ -207,7 +207,7 @@ public class WorkflowInvokerWrapperForGFacInvoker extends GFacInvoker {
             waitToFinish();
             Object output = super.getOutput(name);
             if (output instanceof XmlElement) {
-                logger.info("output: " + XMLUtil.xmlElementToString((XmlElement) output));
+                logger.debug("output: " + XMLUtil.xmlElementToString((XmlElement) output));
             }
             return output;
         } catch (WorkflowException e) {

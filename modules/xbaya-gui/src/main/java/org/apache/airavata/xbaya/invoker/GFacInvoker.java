@@ -107,7 +107,7 @@ public class GFacInvoker implements Invoker {
             URI getWsdlURI = new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), gfacPath
                     + "/getWSDL", uri.getQuery(), uri.getFragment());
 
-            logger.info("getWSDL service:" + getWsdlURI.toString());
+            logger.debug("getWSDL service:" + getWsdlURI.toString());
 
             WsdlDefinitions concreteWSDL = WsdlResolver.getInstance().loadWsdl(getWsdlURI);
 

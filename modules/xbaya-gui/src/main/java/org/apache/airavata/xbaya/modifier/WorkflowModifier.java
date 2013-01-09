@@ -158,7 +158,7 @@ public class WorkflowModifier {
             if (fromPort == null) {
                 // This input port is not connected.
                 String inputPortID = inputPort.getID();
-                logger.info("id: " + inputPortID);
+                logger.debug("id: " + inputPortID);
                 Port originalInputPort = originalGraph.getPort(inputPortID);
                 // No duplicate in set.
                 Port originalFromPort = originalInputPort.getFromPort();

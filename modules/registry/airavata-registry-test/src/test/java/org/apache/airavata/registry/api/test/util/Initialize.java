@@ -92,9 +92,9 @@ public class Initialize {
             conn = DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcPassword);
             if (!isDatabaseStructureCreated(PERSISTANT_DATA, conn)) {
                 executeSQLScript(conn);
-                System.out.println("New Database created for Registry");
+                logger.info("New Database created for Registry");
             } else {
-                System.out.println("Database already created for Registry!");
+                logger.debug("Database already created for Registry!");
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -242,7 +242,7 @@ public class Initialize {
 
             SQLWarning warning = conn.getWarnings();
             while (warning != null) {
-                logger.info(warning + " sql warning");
+                logger.warn(warning + " sql warning");
                 warning = warning.getNextWarning();
             }
             conn.clearWarnings();

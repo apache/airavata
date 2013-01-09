@@ -85,7 +85,7 @@ public class LeadNotificationHandler implements ConsumerNotificationHandler {
         ConsumerServer xs = new ConsumerServer(consumerServerPort, this);
         xs.start();
         String subscriptionId = wseClient.subscribe(xs.getConsumerServiceEPRs()[0], topic, null);
-        logger.info("The consumer server started on EPR" + xs.getConsumerServiceEPRs()[0]);
+        logger.debug("The consumer server started on EPR" + xs.getConsumerServiceEPRs()[0]);
         Subscription subscription = new Subscription(xs, subscriptionId, topic, callback, brokerLoc);
         return subscription;
     }
@@ -143,7 +143,7 @@ public class LeadNotificationHandler implements ConsumerNotificationHandler {
             this.callback.deliverMessage(topic, type, messageObj);
 
         } else {
-            logger.info("Notification came without a Notification Topic:" + envelope);
+            logger.warn("Notification came without a Notification Topic:" + envelope);
         }
     }
 

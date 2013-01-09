@@ -51,18 +51,18 @@ public class JythonOneTimeRunnerImpl implements JythonOneTimeRunner {
                     PySystemState.initialize(System.getProperties(), null, arguments, loader);
 
                     if (loader instanceof JythonClassLoader) {
-                        logger.info("jythonClassLoader");
+                        logger.debug("jythonClassLoader");
                         JythonClassLoader jythonLoader = (JythonClassLoader) loader;
 
                         JarFile xbayaJarFile = jythonLoader.getXBayaJarFile();
                         if (xbayaJarFile != null) {
                             String jarPath = xbayaJarFile.getName();
-                            logger.info("jarPath: " + jarPath);
+                            logger.debug("jarPath: " + jarPath);
                             // String jarDir = jarPath.substring(0,
                             // jarPath.lastIndexOf());
                             File jarFile = new File(jarPath);
                             String jarDir = jarFile.getParent();
-                            logger.info("jarDir: " + jarDir);
+                            logger.debug("jarDir: " + jarDir);
 
                             // This is for the Jython interpreter to
                             // solve import statements.

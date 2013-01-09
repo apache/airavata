@@ -85,7 +85,7 @@ public class SessionAuthenticator extends AbstractAuthenticator {
             httpSession.setAttribute(SESSION_TICKET, sessionTicket);
         }
 
-        log.info("A request with a session ticket is successfully logged in.");
+        log.debug("A request with a session ticket is successfully logged in.");
 
     }
 

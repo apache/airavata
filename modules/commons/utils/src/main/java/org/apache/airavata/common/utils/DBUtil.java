@@ -222,7 +222,7 @@ public class DBUtil {
         stringBuilder.append(jdbcUrl).append(" DB user - ").append(userName).
                 append(" driver name - ").append(driverName);
 
-        log.info(stringBuilder.toString());
+        log.debug(stringBuilder.toString());
 
         DBUtil dbUtil = new DBUtil(jdbcUrl, userName, password, driverName);
         try {

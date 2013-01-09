@@ -63,7 +63,7 @@ public class DatabaseStorageImpl implements MsgBoxStorage {
                 DatabaseCreator.createMsgBoxDatabase(conn);
                 logger.info("New Database created for Message Box");
             } else {
-                logger.info("Database already created for Message Box!");
+                logger.debug("Database already created for Message Box!");
             }
 
             MessageBoxDB.initialize(db, timeOfOldMessage);

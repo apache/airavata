@@ -82,7 +82,7 @@ public class GridFtp {
         try {
 
             String destPath = destURI.getPath();
-            log.info(("Creating Directory = " + destHost + "=" + destPath));
+            log.debug(("Creating Directory = " + destHost + "=" + destPath));
 
             destClient = new GridFTPClient(destHost.hostName, destHost.port);
 
@@ -144,7 +144,7 @@ public class GridFtp {
         try {
 
             String remoteFile = destURI.getPath();
-            log.info("The remote file is " + remoteFile);
+            log.debug("The remote file is " + remoteFile);
 
             log.debug("Setup GridFTP Client");
 
@@ -156,7 +156,7 @@ public class GridFtp {
 
             log.debug("Uploading file");
             if (checkBinaryExtensions(remoteFile)) {
-                log.info("Transfer mode is set to Binary for a file upload");
+                log.debug("Transfer mode is set to Binary for a file upload");
                 ftpClient.setType(Session.TYPE_IMAGE);
             }
 
@@ -166,7 +166,7 @@ public class GridFtp {
                 }
             });
 
-            log.info("Upload file to:" + remoteFile + " is done");
+            log.debug("Upload file to:" + remoteFile + " is done");
 
         } catch (ServerException e) {
             throw new ToolsException("Cannot upload file to GridFTP:" + contactInfo.toString(), e);
@@ -191,7 +191,7 @@ public class GridFtp {
         GridFTPContactInfo srcContactInfo = new GridFTPContactInfo(srcURI.getHost(),srcURI.getPort());
         try {
             String remoteFile = destURI.getPath();
-            log.info("The remote file is " + remoteFile);
+            log.debug("The remote file is " + remoteFile);
             log.debug("Setup GridFTP Client");
             srcClient = new GridFTPClient(srcContactInfo.hostName, srcContactInfo.port);
             srcClient.setAuthorization(new HostAuthorization(GridFtp.HOST));
@@ -206,13 +206,13 @@ public class GridFtp {
             makeExternalConfigurations(destClient, false);
 		log.debug("Uploading file");
             if (checkBinaryExtensions(remoteFile)) {
-                log.info("Transfer mode is set to Binary for a file upload");
+                log.debug("Transfer mode is set to Binary for a file upload");
                 srcClient.setType(Session.TYPE_IMAGE);
             }
 
             srcClient.transfer(srcURI.getPath(),destClient, remoteFile, false, null);
 
-            log.info("Upload file to:" + remoteFile + " is done");
+            log.debug("Upload file to:" + remoteFile + " is done");
 
         } catch (ServerException e) {
             throw new ToolsException("Cannot upload file to GridFTP:" + destContactInfo.toString(), e);
@@ -246,8 +246,8 @@ public class GridFtp {
 
             String remoteFile = destURI.getPath();
 
-            log.info("The local temp file is " + localFile);
-            log.info("the remote file is " + remoteFile);
+            log.debug("The local temp file is " + localFile);
+            log.debug("the remote file is " + remoteFile);
 
             log.debug("Setup GridFTP Client");
 
@@ -259,14 +259,14 @@ public class GridFtp {
 
             log.debug("Uploading file");
             if (checkBinaryExtensions(remoteFile)) {
-                log.info("Transfer mode is set to Binary for a file upload");
+                log.debug("Transfer mode is set to Binary for a file upload");
                 ftpClient.setType(Session.TYPE_IMAGE);
             }
 
 
             ftpClient.put(localFile, remoteFile, false);
 
-            log.info("Upload file to:" + remoteFile + " is done");
+            log.debug("Upload file to:" + remoteFile + " is done");
 
         } catch (ServerException e) {
             throw new ToolsException("Cannot upload file to GridFTP:" + contactInfo.toString(), e);
@@ -299,8 +299,8 @@ public class GridFtp {
         try {
             String remoteFile = destURI.getPath();
 
-            log.info("The local temp file is " + localFile);
-            log.info("the remote file is " + remoteFile);
+            log.debug("The local temp file is " + localFile);
+            log.debug("the remote file is " + remoteFile);
 
             log.debug("Setup GridFTP Client");
 
@@ -312,13 +312,13 @@ public class GridFtp {
 
             log.debug("Downloading file");
             if (checkBinaryExtensions(remoteFile)) {
-                log.info("Transfer mode is set to Binary to download a file");
+                log.debug("Transfer mode is set to Binary to download a file");
                 ftpClient.setType(Session.TYPE_IMAGE);
             }
 
             ftpClient.get(remoteFile, localFile);
 
-            log.info("Download file to:" + remoteFile + " is done");
+            log.debug("Download file to:" + remoteFile + " is done");
 
         } catch (ServerException e) {
             throw new ToolsException("Cannot download file from GridFTP:" + contactInfo.toString(), e);
@@ -409,7 +409,7 @@ public class GridFtp {
             makeExternalConfigurations(destClient, false);
 
             if (checkBinaryExtensions(desthost.getPath())) {
-                log.info("Transfer mode is set to Binary");
+                log.debug("Transfer mode is set to Binary");
                 destClient.setType(Session.TYPE_IMAGE);
             }
 
@@ -419,7 +419,7 @@ public class GridFtp {
             makeExternalConfigurations(srcClient, true);
 
             if (checkBinaryExtensions(srchost.getPath())) {
-                log.info("Transfer mode is set to Binary");
+                log.debug("Transfer mode is set to Binary");
                 srcClient.setType(Session.TYPE_IMAGE);
             }
 

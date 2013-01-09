@@ -99,7 +99,7 @@ public class RunWorkflow {
         String result
                 = airavataAPI.getExecutionManager().runExperiment(workflowName, workflowInputs);
 
-        System.out.println("Workflow Experiment ID Returned : " + result);
+        System.out.println("Experiment ID Returned : " + result);
 		airavataAPI.getExecutionManager().waitForExperimentTermination(result);
         ExperimentData experimentData = airavataAPI.getProvenanceManager().getExperimentData(result);
         List<WorkflowExecutionDataImpl> workflowInstanceData

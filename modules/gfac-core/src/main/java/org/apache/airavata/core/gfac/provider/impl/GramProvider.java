@@ -101,11 +101,11 @@ public class GramProvider extends AbstractProvider {
                     URI inputURI = GfacUtils.createGsiftpURI(endpoint, app.getInputDataDirectory());
                     URI outputURI = GfacUtils.createGsiftpURI(endpoint, app.getOutputDataDirectory());
 
-                    log.info("Host FTP = " + hostgridFTP);
-                    log.info("temp directory = " + tmpdirURI);
-                    log.info("Working directory = " + workingDirURI);
-                    log.info("Input directory = " + inputURI);
-                    log.info("Output directory = " + outputURI);
+                    log.debug("Host FTP = " + hostgridFTP);
+                    log.debug("temp directory = " + tmpdirURI);
+                    log.debug("Working directory = " + workingDirURI);
+                    log.debug("Input directory = " + inputURI);
+                    log.debug("Output directory = " + outputURI);
 
                     ftp.makeDir(tmpdirURI, gssCred);
                     ftp.makeDir(workingDirURI, gssCred);
@@ -132,7 +132,7 @@ public class GramProvider extends AbstractProvider {
     public void setupEnvironment(InvocationContext invocationContext) throws ProviderException {
         GlobusHostType host = (GlobusHostType) invocationContext.getExecutionDescription().getHost().getType();
 
-        log.info("Searching for Gate Keeper");
+        log.debug("Searching for Gate Keeper");
 
 
         String tmp[] = host.getGlobusGateKeeperEndPointArray();
@@ -144,13 +144,13 @@ public class GramProvider extends AbstractProvider {
              */
             gateKeeper = tmp[0];
         }
-        log.info("Using Globus GateKeeper " + gateKeeper);
+        log.debug("Using Globus GateKeeper " + gateKeeper);
 
         try {
             GramAttributes jobAttr = GramRSLGenerator.configureRemoteJob(invocationContext);
             String rsl = jobAttr.toRSL();
 
-            log.info("RSL = " + rsl);
+            log.debug("RSL = " + rsl);
 
             job = new GramJob(rsl);
             listener = new JobSubmissionListener(job, invocationContext);
@@ -175,7 +175,7 @@ public class GramProvider extends AbstractProvider {
             GSSCredential gssCred = gssContext.getGssCredentails();
             job.setCredentials(gssCred);
 
-            log.info("Request to contact:" + gateKeeper);
+            log.debug("Request to contact:" + gateKeeper);
 
             buf.append("Finished launching job, Host = ").append(host.getHostAddress()).append(" RSL = ")
                     .append(job.getRSL()).append(" working directory = ").append(app.getStaticWorkingDirectory())
@@ -189,10 +189,10 @@ public class GramProvider extends AbstractProvider {
              */
             job.request(gateKeeper, false, false);
             String gramJobid = job.getIDAsString();
-            log.info("JobID = " + gramJobid);
+            log.debug("JobID = " + gramJobid);
             invocationContext.getExecutionContext().getNotifier().info(invocationContext, "JobID=" + gramJobid);
 
-            log.info(buf.toString());
+            log.debug(buf.toString());
 
             invocationContext
                     .getExecutionContext()
@@ -277,8 +277,8 @@ public class GramProvider extends AbstractProvider {
                     URI stdoutURI = GfacUtils.createGsiftpURI(endpoint, app.getStandardOutput());
                     URI stderrURI = GfacUtils.createGsiftpURI(endpoint, app.getStandardError());
 
-                    log.info("STDOUT:" + stdoutURI.toString());
-                    log.info("STDERR:" + stderrURI.toString());
+                    log.debug("STDOUT:" + stdoutURI.toString());
+                    log.debug("STDERR:" + stderrURI.toString());
 
                     File logDir = new File("./service_logs");
                     if (!logDir.exists()) {

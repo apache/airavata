@@ -98,7 +98,7 @@ public class MessageBoxNotificationHandler implements NotificationHandler {
             messagePuller.stopPulling();
 
             if (logger.isDebugEnabled())
-                logger.info("\n\nStopping the Messagebox for topic" + this.topic);
+                logger.debug("\n\nStopping the Messagebox for topic" + this.topic);
         }
 
         try {
@@ -108,7 +108,7 @@ public class MessageBoxNotificationHandler implements NotificationHandler {
 
             MsgboxHandler msgboxHandler = new MsgboxHandler();
 
-            logger.info("Unsubscribing the messagebox that was destroyed," + " SubscriptionID:" + this.subscriptionId);
+            logger.debug("Unsubscribing the messagebox that was destroyed," + " SubscriptionID:" + this.subscriptionId);
 
             msgboxHandler.deleteMsgBox(msgBoxEpr, 2000L);
 
@@ -144,7 +144,7 @@ public class MessageBoxNotificationHandler implements NotificationHandler {
         this.subscriptionId = subscriptionId;
         this.topic = topic;
         WseMsgBrokerClient wseClient = new WseMsgBrokerClient();
-        logger.info("\n\nCreate Subscription for topic" + topic + " [Messagebox]\n\n");
+        logger.debug("\n\nCreate Subscription for topic" + topic + " [Messagebox]\n\n");
 
         subscriptionId = subscribeToBroker(endpointReference.getAddress(), topic, xpath, wseClient, subscribePermanatly);
         Subscription subscription = new Subscription(this, subscriptionId, topic, callback, this.brokerURL);
@@ -162,7 +162,7 @@ public class MessageBoxNotificationHandler implements NotificationHandler {
 
         messagePuller = msgboxHandler.startPullingFromExistingMsgBox(msgBoxAddr, this, 500L, 1000L);
         if (logger.isDebugEnabled())
-            logger.info("\n\nCreate Subscription for topic" + topic + " [Messagebox]\n\n");
+            logger.debug("\n\nCreate Subscription for topic" + topic + " [Messagebox]\n\n");
         String msgBoxEventSink = msgBoxAddr.getAddress();
 
         String formattedEventSink = null;
@@ -252,12 +252,12 @@ public class MessageBoxNotificationHandler implements NotificationHandler {
         MsgboxHandler msgboxHandler = new MsgboxHandler();
         EndpointReference msgBoxAddr = msgboxHandler.createPullMsgBox(this.messageBoxUrl, 12000l);
         if (logger.isDebugEnabled())
-            logger.info("\n\nCreated Messagebox at address :" + msgBoxAddr.getAddress());
+            logger.debug("\n\nCreated Messagebox at address :" + msgBoxAddr.getAddress());
 
         subscriptionId = subToBrokerWithMsgBoxSink(msgBoxAddr, topic, xpath, wseClient, subscribePermanatly);
         messagePuller = msgboxHandler.startPullingEventsFromMsgBox(msgBoxAddr, this, 500L, 30000l);
         if (logger.isDebugEnabled())
-            logger.info("\n\nCreate Subscription for topic" + topic + " [Messagebox]\n\n");
+            logger.debug("\n\nCreate Subscription for topic" + topic + " [Messagebox]\n\n");
         Subscription subscription = new Subscription(this, subscriptionId, topic, callback, this.brokerURL);
         subscription.setMessageBoxEpr(msgBoxAddr);
         subscription.setBrokerURL(this.brokerURL);

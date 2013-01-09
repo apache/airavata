@@ -62,8 +62,8 @@ public class LocalProvider extends AbstractProvider {
     public void makeDirectory(InvocationContext invocationContext) throws ProviderException {
         ApplicationDeploymentDescriptionType app = invocationContext.getExecutionDescription().getApp().getType();
 
-        log.info("working diectroy = " + app.getStaticWorkingDirectory());
-        log.info("temp directory = " + app.getScratchWorkingDirectory());
+        log.debug("working diectroy = " + app.getStaticWorkingDirectory());
+        log.debug("temp directory = " + app.getScratchWorkingDirectory());
 
         makeFileSystemDir(app.getStaticWorkingDirectory(),invocationContext);
         makeFileSystemDir(app.getScratchWorkingDirectory(),invocationContext);
@@ -117,10 +117,10 @@ public class LocalProvider extends AbstractProvider {
         builder.directory(new File(app.getStaticWorkingDirectory()));
 
         // log info
-        log.info("Command = " + InputUtils.buildCommand(cmdList));
-        log.info("Working dir = " + builder.directory());
+        log.debug("Command = " + InputUtils.buildCommand(cmdList));
+        log.debug("Working dir = " + builder.directory());
         for (String key : builder.environment().keySet()) {
-            log.info("Env[" + key + "] = " + builder.environment().get(key));
+            log.debug("Env[" + key + "] = " + builder.environment().get(key));
         }
     }
 
@@ -154,7 +154,7 @@ public class LocalProvider extends AbstractProvider {
             if (returnValue != 0) {
                 log.error("Process finished with non zero return value. Process may have failed");
             } else {
-                log.info("Process finished with return value of zero.");
+                log.debug("Process finished with return value of zero.");
             }
 
             StringBuffer buf = new StringBuffer();
@@ -163,7 +163,7 @@ public class LocalProvider extends AbstractProvider {
                     .append(" tempDirectory = ").append(app.getScratchWorkingDirectory()).append(" With the status ")
                     .append(String.valueOf(returnValue));
 
-            log.info(buf.toString());
+            log.debug(buf.toString());
 
         } catch (IOException io) {
             throw new ProviderException(io.getMessage(), io,context);

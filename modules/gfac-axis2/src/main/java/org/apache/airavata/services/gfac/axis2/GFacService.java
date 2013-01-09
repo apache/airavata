@@ -169,7 +169,7 @@ public class GFacService implements ServiceLifeCycle {
             try {
                 thread.join();
             } catch (InterruptedException e) {
-                log.info("GFacURL update thread is interrupted");
+                log.warn("GFacURL update thread is interrupted");
             }
         }
     }
@@ -186,7 +186,7 @@ public class GFacService implements ServiceLifeCycle {
         protected void updateRegistry(AiravataAPI airavataAPI) throws Exception {
             URI localAddress = new URI((String) this.context.getProperty(GFAC_URL));
             airavataAPI.getAiravataManager().addGFacURI(localAddress);
-            log.info("Updated GFac service URL in to Repository");
+            log.debug("Updated GFac service URL in to Repository");
         }
     }
 }
