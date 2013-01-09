@@ -191,6 +191,10 @@ public class XBayaConstants {
     public static final String REGISTRY_TYPE_WORKFLOW = "workflow";
     public static final String HTTP_SCHEMAS_AIRAVATA_APACHE_ORG_GFAC_TYPE = "http://airavata.apache.org/schemas/gfac/2012/12";
 
+    public static final String XBAYA_REGISTRY_USER = "xbaya.registry.user";
+    public static final String XBAYA_REGISTRY_URL = "xbaya.registry.url";
+    public static final String XBAYA_DEFAULT_GATEWAY = "xbaya.default.gateway";
+
     /**
      * XRegistry Resource Types for OGCE Resource
      */

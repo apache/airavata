@@ -32,7 +32,6 @@ import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.core.ide.XBayaExecutionModeListener;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.ui.dialogs.registry.JCRRegistryWindow;
 import org.apache.airavata.xbaya.ui.widgets.ToolbarButton;
 import org.apache.airavata.xbaya.ui.widgets.XBayaToolBar;
 import org.apache.airavata.xbaya.util.XBayaUtil;

@@ -58,7 +58,7 @@ import org.apache.airavata.xbaya.invoker.GenericInvoker;
 import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.invoker.WorkflowInvokerWrapperForGFacInvoker;
 import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
-import org.apache.airavata.xbaya.ui.dialogs.registry.JCRRegistryWindow;
+import org.apache.airavata.xbaya.ui.dialogs.registry.RegistryWindow;
 import org.apache.axis2.util.XMLUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -156,7 +156,7 @@ public class XBayaUtil {
     }
     
     public static void updateJCRRegistryInfo(XBayaEngine xbayaEngine) {
-    	JCRRegistryWindow window = new JCRRegistryWindow(xbayaEngine);
+    	RegistryWindow window = new RegistryWindow(xbayaEngine);
         window.show();
 	}
     
