@@ -22,6 +22,7 @@ package org.apache.airavata.server;
 
 import java.io.File;
 
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.StandardContext;
@@ -43,7 +44,7 @@ public class ServerMain {
      * This method Starts the Tomcat server.
      */
     public void startTomcat() throws Exception {
-
+        AiravataUtils.setExecutionAsServer();
         BetterTomcat tomcat = new BetterTomcat(Integer.parseInt(ServerSettings.getTomcatPort()));
         tomcat.addContext("/axis2", System.getenv("AIRAVATA_HOME"));
         Wrapper axis2Servlet = tomcat.addServlet("/axis2", "AxisServlet", "org.apache.axis2.transport.http.AxisServlet");
