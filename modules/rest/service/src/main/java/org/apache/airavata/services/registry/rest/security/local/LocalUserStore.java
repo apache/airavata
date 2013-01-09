@@ -64,7 +64,7 @@ public class LocalUserStore {
 
             connection.commit();
 
-            log.info("User " + userName + " successfully added.");
+            log.debug("User " + userName + " successfully added.");
 
         } catch (SQLException e) {
             StringBuilder stringBuilder = new StringBuilder("Error persisting user information.");
@@ -162,7 +162,7 @@ public class LocalUserStore {
 
             connection.commit();
 
-            log.info("Password changed for user " + userName);
+            log.debug("Password changed for user " + userName);
 
         } catch (SQLException e) {
             StringBuilder stringBuilder = new StringBuilder("Error updating credentials.");
@@ -202,7 +202,7 @@ public class LocalUserStore {
 
             connection.commit();
 
-            log.info("Admin changed password of user " + userName);
+            log.debug("Admin changed password of user " + userName);
 
         } catch (SQLException e) {
             StringBuilder stringBuilder = new StringBuilder("Error updating credentials.");
@@ -241,7 +241,7 @@ public class LocalUserStore {
 
             connection.commit();
 
-            log.info("User " + userName + " deleted.");
+            log.debug("User " + userName + " deleted.");
 
         } catch (SQLException e) {
             StringBuilder stringBuilder = new StringBuilder("Error deleting user.");

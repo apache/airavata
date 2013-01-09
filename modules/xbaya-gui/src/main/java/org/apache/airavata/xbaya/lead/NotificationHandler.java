@@ -130,7 +130,7 @@ public class NotificationHandler extends BaseHandler {
     @Override
     public boolean processOutgoingXml(XmlElement soapEnvelope, MessageContext context)
             throws DynamicInfosetInvokerException {
-        logger.info("soapEnvelope: " + XMLUtil.xmlElementToString(soapEnvelope));
+        logger.debug("soapEnvelope: " + XMLUtil.xmlElementToString(soapEnvelope));
 
         URI serviceWorkflowID = null;
         URI serviceServiceID = URI.create(this.builder.getWorkflowMonitoringContext().getServiceInstanceId());

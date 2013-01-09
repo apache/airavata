@@ -163,7 +163,7 @@ public class XMLUtil {
         Element domElement = document.createElement(xppElement.getName());
 
         for (org.xmlpull.infoset.XmlNamespace namespace : xppElement.namespaces()) {
-            logger.info("namespace: " + namespace);
+            logger.debug("namespace: " + namespace);
         }
 
         for (org.xmlpull.infoset.XmlAttribute attribute : xppElement.attributes()) {
@@ -177,7 +177,7 @@ public class XMLUtil {
                 Text text = document.createTextNode((String) object);
                 domElement.appendChild(text);
             } else {
-                logger.info("object.getClass(): " + object.getClass());
+                logger.debug("object.getClass(): " + object.getClass());
             }
         }
         return domElement;
@@ -214,7 +214,7 @@ public class XMLUtil {
         Iterator nsIt = xppElement.namespaces();
         while (nsIt.hasNext()) {
             org.xmlpull.v1.builder.XmlNamespace namespace = (org.xmlpull.v1.builder.XmlNamespace) nsIt.next();
-            logger.info("namespace: " + namespace);
+            logger.debug("namespace: " + namespace);
             // TODO
         }
 
@@ -234,7 +234,7 @@ public class XMLUtil {
                 Text text = document.createTextNode((String) object);
                 domElement.appendChild(text);
             } else {
-                logger.info("object.getClass(): " + object.getClass());
+                logger.debug("object.getClass(): " + object.getClass());
             }
         }
         return domElement;

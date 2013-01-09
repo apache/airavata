@@ -451,7 +451,6 @@ public class WorkflowInterpreter {
 					}
 					node.setState(NodeExecutionState.FINISHED);
 				}
-				System.out.println("Looping");
 			}
 			this.config.getNotifier().sendingPartialResults(outputValues.toArray(), outputKeywords.toArray(new String[outputKeywords.size()]));
 

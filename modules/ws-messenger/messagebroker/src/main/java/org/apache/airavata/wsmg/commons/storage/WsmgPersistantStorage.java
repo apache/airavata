@@ -79,7 +79,7 @@ public class WsmgPersistantStorage implements WsmgStorage, WsmgQueue {
                 DatabaseCreator.createMsgBrokerDatabase(conn);
                 logger.info("New Database created for Message Broker");
             } else {
-                logger.info("Database already created for Message Broker!");
+                logger.debug("Database already created for Message Broker!");
             }
 
             if (WSMGParameter.measureMessageRate) {

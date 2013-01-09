@@ -57,7 +57,7 @@ public class MsgBoxServiceSkeleton implements Lifecycle {
     public void init(ServiceContext context) throws AxisFault {
         this.storage = (MsgBoxStorage) context.getConfigurationContext().getProperty(
                 MsgBoxCommonConstants.MSGBOX_STORAGE);
-        logger.info("Start clean up thread for messagebox");
+        logger.info("Starting cleanup thread for Message Box...");
         deletingThread = new Thread(new DeleteOldMessageRunnable(context.getConfigurationContext().getProperty(ConfigKeys.MSG_PRESV_INTERVAL)));
         deletingThread.start();
     }

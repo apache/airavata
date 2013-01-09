@@ -60,7 +60,7 @@ public class GSISecurityContext implements SecurityContext {
                 } else if (myproxyUserName != null && myproxyPasswd != null && myproxyServer != null) {
                     this.proxyRenewer = new MyProxyManager(myproxyUserName, myproxyPasswd, MyProxy.MYPROXY_SERVER_PORT,
                             myproxyLifetime, myproxyServer,trustedCertLoc);
-                    log.info("loaded credentails from Proxy server");
+                    log.debug("loaded credentails from Proxy server");
                     gssCredentails = this.proxyRenewer.renewProxy();
                 }
             }

@@ -231,7 +231,7 @@ public class EmbeddedGFacInvoker implements Invoker {
     public void setInput(String name, Object value) throws WorkflowException {
         try {
             if (value instanceof XmlElement) {
-                logger.info("value: " + XMLUtil.xmlElementToString((XmlElement) value));
+                logger.debug("value: " + XMLUtil.xmlElementToString((XmlElement) value));
             }
             this.inputNames.add(name);
             this.inputValues.add(value);
@@ -302,7 +302,7 @@ public class EmbeddedGFacInvoker implements Invoker {
                     outputElement.addChild(builder.getDocumentElement());
                 }
                 // Send notification
-                logger.info("outputMessage: " + outputElement.toString());
+                logger.debug("outputMessage: " + outputElement.toString());
                 outPut = new WSIFMessageElement(XMLUtil.stringToXmlElement3(outputElement.toStringWithConsume()));
                 EmbeddedGFacInvoker.this.notifier.serviceFinished(new WSIFMessageElement((XmlElement) outPut));
             } else {

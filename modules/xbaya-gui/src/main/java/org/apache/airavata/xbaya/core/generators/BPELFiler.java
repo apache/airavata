@@ -106,7 +106,7 @@ public class BPELFiler {
         int returnVal = this.bpelFileChooser.showSaveDialog(this.engine.getGUI().getFrame());
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = this.bpelFileChooser.getSelectedFile();
-            logger.info(file.getPath());
+            logger.debug(file.getPath());
 
             String path = file.getPath();
 

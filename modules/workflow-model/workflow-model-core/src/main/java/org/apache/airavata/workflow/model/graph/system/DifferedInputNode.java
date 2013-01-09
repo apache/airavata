@@ -151,7 +151,7 @@ public class DifferedInputNode extends ParameterNode {
      *         otherwise
      */
     public boolean isInputValid(String input) {
-        logger.info(input);
+        logger.debug(input);
         // TODO type checks
         return true;
     }

@@ -120,7 +120,7 @@ public class GFacServiceCreator {
             inputMessage.setObjectPart(SERVICE_QNAME_PART, serviceQName);
             inputMessage.setObjectPart(SECURITY_PART, SECURITY_NONE);
 
-            logger.info("inputMessage: " + inputMessage);
+            logger.debug("inputMessage: " + inputMessage);
             boolean success = this.gFacOperation.executeRequestResponseOperation(inputMessage, outputMessage,
                     faultMessage);
             if (!success) {
@@ -131,7 +131,7 @@ public class GFacServiceCreator {
             }
 
             String wsdl = (String) outputMessage.getObjectPart(WSDL_PART);
-            logger.info("WSDL: " + wsdl);
+            logger.debug("WSDL: " + wsdl);
 
             XmlElement definitionsElement = XMLUtil.stringToXmlElement3(wsdl);
 

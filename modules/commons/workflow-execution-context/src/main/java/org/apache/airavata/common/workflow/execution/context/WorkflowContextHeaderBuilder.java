@@ -76,7 +76,7 @@ public class WorkflowContextHeaderBuilder {
 
     public static ContextHeaderDocument.ContextHeader getCurrentContextHeader(){
           if(currentContextHeader.get() == null){
-            log.info("Null WorkflowContext Header, if you are directly using GFacAPI you will be fine !");
+            log.warn("Null WorkflowContext Header, if you are directly using GFacAPI you will be fine !");
             // This is a fix done to fix test failures
             ContextHeaderDocument.ContextHeader contextHeader1 = ContextHeaderDocument.ContextHeader.Factory.newInstance();
             WorkflowMonitoringContextDocument.WorkflowMonitoringContext workflowMonitoringContext1 = contextHeader1.addNewWorkflowMonitoringContext();

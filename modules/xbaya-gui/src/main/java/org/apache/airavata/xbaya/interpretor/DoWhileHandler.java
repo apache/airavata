@@ -159,7 +159,7 @@ public class DoWhileHandler implements Callable<Boolean> {
 	 */
 	@Override
 	public Boolean call() throws Exception {
-		log.info("Invoked Dowhile node");
+		log.debug("Invoked Dowhile node");
 		SystemComponentInvoker dowhileinvoker = new SystemComponentInvoker();
 		// TODO check for multiple input case
 		Object inputVal1 = InterpreterUtil.findInputFromPort(this.dowhilenode.getInputPort(0), this.invokerMap);
@@ -176,7 +176,7 @@ public class DoWhileHandler implements Callable<Boolean> {
 		}
 		Node donode = readyNodes.get(0);
 		this.interpreter.handleWSComponent(donode);
-		log.info("Invoked service " + donode.getName());
+		log.debug("Invoked service " + donode.getName());
 
 		List<DataPort> inputPorts = this.dowhilenode.getInputPorts();
 		boolean runflag = true;
@@ -184,9 +184,9 @@ public class DoWhileHandler implements Callable<Boolean> {
 			while (true) {
 				if (NodeController.isRunning(donode) || NodeController.isWaiting(donode)) {
 					Thread.sleep(500);
-					log.info("Service " + donode.getName() + " waiting");
+					log.debug("Service " + donode.getName() + " waiting");
 				} else if (NodeController.isFinished(donode)) {
-					log.info("Service " + donode.getName() + " Finished");
+					log.debug("Service " + donode.getName() + " Finished");
 					List<DataPort> ports = this.dowhilenode.getOutputPorts();
 					for (int outputPortIndex = 0, inputPortIndex = 1; outputPortIndex < ports.size(); outputPortIndex++) {
 						Object inputValue = InterpreterUtil.findInputFromPort(this.dowhilenode.getInputPort(inputPortIndex), this.invokerMap);
@@ -194,13 +194,13 @@ public class DoWhileHandler implements Callable<Boolean> {
 					}
 					break;
 				} else if (NodeController.isFailed(donode)) {
-					log.info("Service " + donode.getName() + " Failed");
+					log.debug("Service " + donode.getName() + " Failed");
 					runflag = false;
 					dowhilenode.setState(NodeExecutionState.FAILED);
 					this.threadExecutor.shutdown();
 					return false;
 				} else if (donode.isBreak()) {
-					log.info("Service " + donode.getName() + " set to break");
+					log.debug("Service " + donode.getName() + " set to break");
 					runflag = false;
 					break;
 				} else {
@@ -210,9 +210,9 @@ public class DoWhileHandler implements Callable<Boolean> {
 			}
 
 			this.invokerMap.put(this.dowhilenode, dowhileinvoker);
-			log.info("Going to evaluate do while expression for " + donode.getName());
+			log.debug("Going to evaluate do while expression for " + donode.getName());
 			if (!evaluate(this.dowhilenode, inputPorts, this.invokerMap)) {
-				log.info("Expression evaluation is false so calling EndDoWhile");
+				log.debug("Expression evaluation is false so calling EndDoWhile");
 				runflag = false;
 			} else {
 				if (readyNodes.size() != 1) {
@@ -220,7 +220,7 @@ public class DoWhileHandler implements Callable<Boolean> {
 				}
 
 				Node whileNode = readyNodes.get(0);
-				log.info("Expression evaluation is true so invoking service again " + whileNode.getName());
+				log.debug("Expression evaluation is true so invoking service again " + whileNode.getName());
 
 				this.interpreter.handleWSComponent(whileNode);
 			}

@@ -54,7 +54,7 @@ public class DynamicNodeGUI extends NodeGUI {
      */
     @Override
     public void mouseClicked(MouseEvent event, XBayaEngine engine) {
-        logger.info(event.toString());
+        logger.debug(event.toString());
         if (event.getClickCount() >= 2) {
             showWindow(engine);
         }

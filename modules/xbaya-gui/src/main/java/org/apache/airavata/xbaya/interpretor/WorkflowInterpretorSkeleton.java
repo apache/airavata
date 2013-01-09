@@ -165,7 +165,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
                                 // This will avoid the changes user is doing to one of the predefined Hosts during a restart of the system
                                 AiravataAPI registry = getAiravataAPI();
 								if(!registry.getApplicationManager().isHostDescriptorExists(host.getType().getHostName())){
-                                    log.info("Saving the predefined Host: " + host.getType().getHostName());
+                                    log.debug("Saving the predefined Host: " + host.getType().getHostName());
                                     registry.getApplicationManager().saveHostDescription(host);
                                 }
                             }
@@ -189,7 +189,6 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
                      
                      //save the interpreter service url in context
                     String localAddress = ServiceUtils.generateServiceURLFromConfigurationContext(configctx,SERVICE_NAME);
- 					log.info("INTERPRETER_SERVICE_ADDRESS:" + localAddress);
  					configctx.setProperty(SERVICE_URL,new URI(localAddress));
  					configctx.setProperty(JCR_REG,getAiravataAPI());
  					/*
@@ -385,7 +384,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     private void executeWorkflow(WorkflowInterpreter interpreter, WorkflowInterpretorEventListener listener,String experimentId) {
         try {
             interpreter.scheduleDynamically();
-            System.err.println("Called the interpreter");
+            log.debug("Interpreter invoked...");
         } catch (Exception e) {
             throw new WorkflowRuntimeException(e);
         } finally {
@@ -438,7 +437,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
             try {
                 thread.join();
             } catch (InterruptedException e) {
-                log.info("GFacURL update thread is interrupted");
+                log.warn("GFacURL update thread is interrupted");
             }
         }
         if (runner != null) {
@@ -497,7 +496,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         protected void updateRegistry(AiravataAPI registry) throws Exception {
             URI localAddress = (URI) this.context.getProperty(SERVICE_URL);
             registry.getAiravataManager().addWorkflowInterpreterURI(localAddress);
-            log.info("Updated Workflow Interpreter service URL in to Repository");
+            log.debug("Updated Workflow Interpreter service URL in to Repository");
 
         }
     }

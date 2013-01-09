@@ -84,7 +84,7 @@ public abstract class AbstractDatabaseAuthenticator extends AbstractAuthenticato
         stringBuilder.append(databaseURL).append(" DB driver - ").append(" DB user - ").
                 append(databaseUserName).append(" DB password - xxxxxx");
 
-        log.info(stringBuilder.toString());
+        log.debug(stringBuilder.toString());
 
         try {
             getUserStore().configure(node);

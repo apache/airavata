@@ -66,11 +66,11 @@ public class JobSubmissionListener implements GramJobListener {
         while (!isFinished()) {
             int proxyExpTime = job.getCredentials().getRemainingLifetime();
             if (proxyExpTime < JOB_PROXY_REMAINING_TIME_LIMIT) {
-                log.info("Job proxy expired. Trying to renew proxy");
+                log.debug("Job proxy expired. Trying to renew proxy");
                 GSSCredential gssCred = ((GSISecurityContext) context.getSecurityContext(MYPROXY_SECURITY_CONTEXT))
                         .getGssCredentails();
                 job.renew(gssCred);
-                log.info("Myproxy renewed");
+                log.debug("Myproxy renewed");
             }
 
             synchronized (this) {
@@ -80,16 +80,16 @@ public class JobSubmissionListener implements GramJobListener {
                  */
                 if (status != 0) {
                     if (job.getStatus() != status) {
-                        log.info("Change job status manually");
+                        log.debug("Change job status manually");
                         if (setStatus(job.getStatus(), job.getError())) {
                             break;
                         }
                     } else {
-                        log.info("job " + job.getIDAsString() + " have same status: "
+                        log.debug("job " + job.getIDAsString() + " have same status: "
                                 + GramJob.getStatusAsString(status));
                     }
                 } else {
-                    log.info("Status is zero");
+                    log.debug("Status is zero");
                 }
 
                 wait(JOB_FINISH_WAIT_TIME);
@@ -107,7 +107,7 @@ public class JobSubmissionListener implements GramJobListener {
 
         switch (this.status) {
         case GramJob.STATUS_FAILED:
-            log.info("Job Error Code: " + error);
+            log.debug("Job Error Code: " + error);
         case GramJob.STATUS_DONE:
             this.finished = true;
         }
@@ -117,7 +117,7 @@ public class JobSubmissionListener implements GramJobListener {
 
     public void statusChanged(GramJob job) {
         String jobStatusMessage = "Status of job " + job.getIDAsString() + "is " + job.getStatusAsString();
-        log.info(jobStatusMessage);
+        log.debug(jobStatusMessage);
 
         /*
          * Notify status change

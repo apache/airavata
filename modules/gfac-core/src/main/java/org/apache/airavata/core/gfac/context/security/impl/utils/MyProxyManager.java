@@ -81,25 +81,25 @@ public class MyProxyManager {
         GlobusCredential globusCred = null;
         if (proxy instanceof GlobusGSSCredentialImpl) {
             globusCred = ((GlobusGSSCredentialImpl) proxy).getGlobusCredential();
-            log.info("got proxy from myproxy for " + username + " with " + lifetime + " lifetime.");
+            log.debug("got proxy from myproxy for " + username + " with " + lifetime + " lifetime.");
             String uid = username;
             // uid = XpolaUtil.getSysUserid();
-            log.info("uid: " + uid);
+            log.debug("uid: " + uid);
             proxyloc = "/tmp/x509up_u" + uid + UUID.randomUUID().toString();
-            log.info("proxy location: " + proxyloc);
+            log.debug("proxy location: " + proxyloc);
             File proxyfile = new File(proxyloc);
             if (!proxyfile.exists()) {
                 String dirpath = proxyloc.substring(0, proxyloc.lastIndexOf('/'));
                 File dir = new File(dirpath);
                 if (!dir.exists()) {
                     if (dir.mkdirs()) {
-                        log.info("new directory " + dirpath + " is created.");
+                        log.debug("new directory " + dirpath + " is created.");
                     } else {
                         log.error("error in creating directory " + dirpath);
                     }
                 }
                 proxyfile.createNewFile();
-                log.info("new proxy file " + proxyloc + " is created.");
+                log.debug("new proxy file " + proxyloc + " is created.");
             }
             FileOutputStream fout = null;
             try {

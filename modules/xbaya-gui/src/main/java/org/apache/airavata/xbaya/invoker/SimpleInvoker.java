@@ -200,7 +200,7 @@ public class SimpleInvoker implements Invoker {
                     return value;
                 }
                 if (child instanceof XmlElement) {
-                	log.info("output: " + XMLUtil.xmlElementToString((XmlElement) child));
+                	log.debug("output: " + XMLUtil.xmlElementToString((XmlElement) child));
                 	Object child1 = ((XmlElement) child).children().next();
                 	if (child1 instanceof String) {
                         // Value is a simple type. Return the string.
@@ -246,7 +246,7 @@ public class SimpleInvoker implements Invoker {
     }
 
     public synchronized void setOutputMessage(WSIFMessage outputMessage) {
-        System.out.println("Setting output message");
+        log.debug("Setting output message");
         this.outputMessage = outputMessage;
     }
 

@@ -485,7 +485,7 @@ public abstract class GraphImpl implements Graph {
      */
     protected void parse(XmlElement graphElement) throws GraphException {
         String version = graphElement.attributeValue(GraphSchema.NS, GraphSchema.XBAYA_VERSION_ATTRIBUTE);
-        logger.info("parsing a workflow created by version " + version);
+        logger.debug("parsing a workflow created by version " + version);
 
         XmlElement idElement = graphElement.element(GraphSchema.GRAPH_ID_TAG);
         if (idElement != null) {

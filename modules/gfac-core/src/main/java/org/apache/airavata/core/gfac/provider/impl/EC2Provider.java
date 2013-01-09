@@ -89,12 +89,12 @@ public class EC2Provider extends SSHProvider{
         String ins_type = amazonWebservices.getInstanceType();
         this.username = amazonWebservices.getUsername();
 
-        log.info("ACCESS_KEY:" + access_key);
-        log.info("SECRET_KEY:" + secret_key);
-        log.info("AMI_ID:" + ami_id);
-        log.info("INS_ID:" + ins_id);
-        log.info("INS_TYPE:" + ins_type);
-        log.info("USERNAME:" + username);
+        log.debug("ACCESS_KEY:" + access_key);
+        log.debug("SECRET_KEY:" + secret_key);
+        log.debug("AMI_ID:" + ami_id);
+        log.debug("INS_ID:" + ins_id);
+        log.debug("INS_TYPE:" + ins_type);
+        log.debug("USERNAME:" + username);
 
         /*
          * Validation
@@ -229,7 +229,7 @@ public class EC2Provider extends SSHProvider{
             instances = describeInstancesResult.getReservations().get(0).getInstances();
         }
 
-        log.info("All instances is running");
+        log.info("All amazon instances are running");
         return instances;
     }
 

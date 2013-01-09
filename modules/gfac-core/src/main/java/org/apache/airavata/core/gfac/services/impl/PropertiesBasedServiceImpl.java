@@ -210,7 +210,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
         if (context.getExecutionContext() == null || context.getExecutionContext().getRegistryService() == null) {
 
             if (this.airavataAPI == null) {
-                log.info("try to create default registry service (JCR Implementation)");
+                log.debug("try to create default registry service (JCR Implementation)");
 
                 // JCR
                 String jcrClass = loadFromProperty(JCR_CLASS, true);
@@ -256,7 +256,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
                 }
 
 
-                log.info("Default registry service is created");
+                log.debug("Default registry service is created");
             }
 
             /*
@@ -279,7 +279,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     public Scheduler getScheduler(InvocationContext context) throws ServiceException {
         String className = null;
         if (this.scheduler == null) {
-            log.info("try to create scheduler");
+            log.debug("try to create scheduler");
 
             /*
              * get class names
@@ -295,7 +295,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
                 this.scheduler = (Scheduler) spiClass.newInstance();
 
-                log.info("Scheduler:" + className + " is loaded");
+                log.debug("Scheduler:" + className + " is loaded");
 
             } catch (ClassNotFoundException ex) {
                 throw new ServiceException("Scheduler " + className + " not found", ex);
@@ -314,7 +314,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
      */
     public PreExecuteChain[] getPreExecutionSteps(InvocationContext context) throws ServiceException {
         if (this.preChain == null) {
-            log.info("try to load pre-execution chain");
+            log.debug("try to load pre-execution chain");
             this.preChain = loadClassFromProperties(PRE_CHAIN_CLASS, PreExecuteChain.class);
         }
         return preChain;
@@ -328,7 +328,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
      */
     public PostExecuteChain[] getPostExecuteSteps(InvocationContext context) throws ServiceException {
         if (this.postChain == null) {
-            log.info("try to load post-execution chain");
+            log.debug("try to load post-execution chain");
             this.postChain = loadClassFromProperties(POST_CHAIN_CLASS, PostExecuteChain.class);
         }
         return postChain;
@@ -342,7 +342,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
      */
     public DataServiceChain[] getDataChains(InvocationContext context) throws ServiceException {
         if (this.dataChain == null) {
-            log.info("try to load data chain");
+            log.debug("try to load data chain");
             this.dataChain = loadClassFromProperties(DATA_CHAIN_CLASS, DataServiceChain.class);
         }
         return dataChain;
@@ -409,7 +409,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
                 spiClass = Class.forName(className).asSubclass(ExitableChain.class);
                 chain[i] = (T) spiClass.newInstance();
 
-                log.info(type.getName() + " : " + className + " is loaded");
+                log.debug(type.getName() + " : " + className + " is loaded");
 
             } catch (ClassNotFoundException ex) {
                 throw new ServiceException("Cannot find the class: " + className, ex);

@@ -310,7 +310,7 @@ public class GenericInvoker implements Invoker {
     public void setInput(String name, Object value) throws WorkflowException {
         try {
             if (value instanceof XmlElement) {
-                logger.info("value: " + XMLUtil.xmlElementToString((XmlElement) value));
+                logger.debug("value: " + XMLUtil.xmlElementToString((XmlElement) value));
             }
             this.inputNames.add(name);
             this.inputValues.add(value);
@@ -341,7 +341,7 @@ public class GenericInvoker implements Invoker {
     public synchronized boolean invoke() throws WorkflowException {
         try {
             WSIFMessage inputMessage = this.invoker.getInputs();
-            logger.info("inputMessage: " + XMLUtil.xmlElementToString((XmlElement) inputMessage));
+            logger.debug("inputMessage: " + XMLUtil.xmlElementToString((XmlElement) inputMessage));
             this.notifier.invokingService(inputMessage);
 
             ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -356,14 +356,14 @@ public class GenericInvoker implements Invoker {
                             // An implementation of WSIFMessage,
                             // WSIFMessageElement, implements toString(), which
                             // serialize the message XML.
-                            logger.info("outputMessage: " + outputMessage);
+                            logger.debug("outputMessage: " + outputMessage);
                             GenericInvoker.this.notifier.serviceFinished(outputMessage);
                         } else {
                             WSIFMessage faultMessage = GenericInvoker.this.invoker.getFault();
                             // An implementation of WSIFMessage,
                             // WSIFMessageElement, implements toString(), which
                             // serialize the message XML.
-                            logger.info("received fault: " + faultMessage);
+                            logger.debug("received fault: " + faultMessage);
                             GenericInvoker.this.notifier.receivedFault(faultMessage);
                             GenericInvoker.this.failerSent = true;
                         }
@@ -479,7 +479,7 @@ public class GenericInvoker implements Invoker {
             waitToFinish();
             Object output = this.invoker.getOutput(name);
             if (output instanceof XmlElement) {
-                logger.info("output: " + XMLUtil.xmlElementToString((XmlElement) output));
+                logger.debug("output: " + XMLUtil.xmlElementToString((XmlElement) output));
             }
             return output;
         } catch (WorkflowException e) {

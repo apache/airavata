@@ -87,11 +87,11 @@ public class JSDLProvider {
                     URI inputURI = GfacUtils.createGsiftpURI(endpoint, app.getInputDataDirectory());
                     URI outputURI = GfacUtils.createGsiftpURI(endpoint, app.getOutputDataDirectory());
 
-                    log.info("Host FTP = " + hostgridFTP);
-                    log.info("temp directory = " + tmpdirURI);
-                    log.info("Working directory = " + workingDirURI);
-                    log.info("Input directory = " + inputURI);
-                    log.info("Output directory = " + outputURI);
+                    log.debug("Host FTP = " + hostgridFTP);
+                    log.debug("temp directory = " + tmpdirURI);
+                    log.debug("Working directory = " + workingDirURI);
+                    log.debug("Input directory = " + inputURI);
+                    log.debug("Output directory = " + outputURI);
 
                     ftp.makeDir(tmpdirURI, gssCred);
                     ftp.makeDir(workingDirURI, gssCred);
@@ -118,7 +118,7 @@ public class JSDLProvider {
     public void setupEnvironment(InvocationContext invocationContext) throws ProviderException {
         UnicoreHostType host = (UnicoreHostType) invocationContext.getExecutionDescription().getHost().getType();
 
-        log.info("Searching for Gate Keeper");
+        log.debug("Searching for Gate Keeper");
 
 
         String tmp[] = host.getUnicoreHostAddressArray();
@@ -130,11 +130,11 @@ public class JSDLProvider {
              */
             unicoreHost = tmp[0];
         }
-        log.info("Using Globus GateKeeper " + unicoreHost);
+        log.debug("Using Globus GateKeeper " + unicoreHost);
 
         try {
             JobDefinitionDocument jsdl = JSDLGenerator.configureRemoteJob(invocationContext);
-            log.info("JSDL = " + jsdl.toString());
+            log.debug("JSDL = " + jsdl.toString());
 
             job = new BESJob();
             job.setJobDoc(jsdl);
@@ -216,7 +216,7 @@ public class JSDLProvider {
                     .getStringValue(), factory.getActivityStatus(activityEpr)
                     .toString()).toString();
 
-            log.info("Request to contact:" + unicoreHost);
+            log.debug("Request to contact:" + unicoreHost);
 
             buf.append("Finished launching job, Host = ").append(host.getHostAddress()).append(" JSDL = ")
                     .append(job.getJobDoc().toString()).append(" working directory = ").append(app.getStaticWorkingDirectory())
@@ -224,7 +224,7 @@ public class JSDLProvider {
                     .append(" Unicore Endpoint = ").append(unicoreHost);
             invocationContext.getExecutionContext().getNotifier().info(invocationContext, buf.toString());
             invocationContext.getExecutionContext().getNotifier().info(invocationContext, "JobID=" + jobId);
-            log.info(buf.toString());
+            log.debug(buf.toString());
     }
 
     protected ClientProperties initSecurityProperties() {

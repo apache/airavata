@@ -136,7 +136,7 @@ public class JythonClassLoader extends SecureClassLoader {
                 klass = super.loadClass(name, false);
             } catch (ClassNotFoundException e2) {
                 klass = this.parent.loadClass(name);
-                logger.info("found from parent, klass: " + klass);
+                logger.debug("found from parent, klass: " + klass);
             }
         }
 
@@ -207,7 +207,7 @@ public class JythonClassLoader extends SecureClassLoader {
             String file = classURL.getFile();
             // file = file:/a/b/c.jar!d/e/f.class
             // or http://example.org/a/b/c.jar!d/e/f.class
-            logger.info("file: " + file);
+            logger.debug("file: " + file);
             jarURLString = file.substring(0, file.lastIndexOf('!'));
             // jarURLString = file:/a/b/c.jar
             // or http://example.org/a/b/c.jar
@@ -232,7 +232,7 @@ public class JythonClassLoader extends SecureClassLoader {
         } catch (UnsupportedEncodingException e) {
             throw new WorkflowRuntimeException(e);
         }
-        logger.info("path: " + path);
+        logger.debug("path: " + path);
         if (path.endsWith("/")) {
             // url = file:/a/b/c/
             // It's a local directory
@@ -262,7 +262,7 @@ public class JythonClassLoader extends SecureClassLoader {
 
                 int i = path.lastIndexOf('/');
                 File file = new File(this.tmpJarDirectory, path.substring(i + 1));
-                logger.info("file: " + file);
+                logger.debug("file: " + file);
                 InputStream stream = url.openStream();
                 IOUtil.writeToFile(stream, file);
                 JarFile jarFile = new JarFile(file);
@@ -296,7 +296,7 @@ public class JythonClassLoader extends SecureClassLoader {
                 if (codeSigners != null) {
                     // Somehow it's null.
                     for (CodeSigner signer : codeSigners) {
-                        logger.info("signer: " + signer);
+                        logger.debug("signer: " + signer);
                     }
                 }
                 codeSource = new CodeSource(this.xbayaURL, codeSigners);

@@ -418,7 +418,7 @@ public class BaseCaseIT {
     protected void verifyOutput(String experimentId, String outputVerifyingString) throws Exception {
     	AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(new URI(getRegistryURL()), getGatewayName(),
                 getUserName(), new PasswordCallbackImpl());
-        log.info("Workflow Experiment ID Returned : " + experimentId);
+        log.info("Experiment ID Returned : " + experimentId);
 
         ExperimentData experimentData = airavataAPI.getProvenanceManager().getExperimentData(experimentId);
 
@@ -461,7 +461,7 @@ public class BaseCaseIT {
 
     protected String getWorkflowComposeContent(String fileName) throws IOException {
         File f = new File(".");
-        log.info(f.getAbsolutePath());
+        log.debug(f.getAbsolutePath());
 
         File echoWorkflow = new File(fileName);
         if (!echoWorkflow.exists()) {
@@ -498,7 +498,7 @@ public class BaseCaseIT {
 		            	getMonitor().stopMonitoring();
 		            }
 		        }
-		        log.info(eventDataRepo.getEvents().toString());				
+		        log.info("No of events: "+eventDataRepo.getEvents().size());				
 			}
 		});
         experimentMonitor.startMonitoring();

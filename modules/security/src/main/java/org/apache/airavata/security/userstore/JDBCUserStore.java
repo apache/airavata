@@ -67,7 +67,6 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
             return authenticationInfo != null;
 
         } catch (AuthenticationException e) {
-            log.warn(e.getLocalizedMessage());
             log.debug(e.getLocalizedMessage(), e);
             return false;
         }
@@ -150,7 +149,7 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
         stringBuilder.append(userTable).append(" User name column - ").append(userNameColumn).append(" Password column - ").
                 append(passwordColumn);
 
-        log.info(stringBuilder.toString());
+        log.debug(stringBuilder.toString());
     }
 
 

@@ -429,7 +429,7 @@ public class Workflow implements Cloneable {
      * @param wsdl
      */
     public void addWSDL(String id, WsdlDefinitions wsdl) {
-        logger.info("id: " + id);
+        logger.debug("id: " + id);
         this.wsdlMap.put(id, wsdl);
     }
 
@@ -611,7 +611,7 @@ public class Workflow implements Cloneable {
         Map<WSComponentKey, WSComponent> components = new HashMap<WSComponentKey, WSComponent>();
         for (WSNode node : GraphUtil.getWSNodes(this.graph)) {
             String id = node.getWSDLID();
-            logger.info("id: " + id);
+            logger.debug("id: " + id);
             WsdlDefinitions wsdl = this.wsdlMap.get(id);
 
             if (wsdl == null) {

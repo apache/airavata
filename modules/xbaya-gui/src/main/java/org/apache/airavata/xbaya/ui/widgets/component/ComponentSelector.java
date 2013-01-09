@@ -248,7 +248,7 @@ public class ComponentSelector implements XBayaComponent {
             public void run() {
                 ComponentTreeNode root = ComponentSelector.this.treeModel.getRoot();
                 ComponentSelector.this.treeModel.removeChildren(root);
-                logger.info("Removed all");
+                logger.debug("Removed all");
                 for (ComponentTreeNode subTree : newSubTrees) {
                     ComponentSelector.this.treeModel.addNodeInto(subTree, root);
                 }

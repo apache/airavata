@@ -100,7 +100,7 @@ public class JythonFiler {
         int returnVal = this.jythonFileChooser.showSaveDialog(this.engine.getGUI().getFrame());
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = this.jythonFileChooser.getSelectedFile();
-            logger.info(file.getPath());
+            logger.debug(file.getPath());
 
             // Put ".py" at the end of the file name
             String path = file.getPath();
