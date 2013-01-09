@@ -46,9 +46,7 @@ public class GfacAPI {
             "." + WorkflowContextHeaderBuilder.getCurrentContextHeader().getWorkflowMonitoringContext().getExperimentId());
     public static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
 
-    public DefaultInvocationContext gridJobSubmit(JobContext jobContext,GFacConfiguration gfacConfig) throws Exception {
-        String workflowNodeId = WorkflowContextHeaderBuilder.getCurrentContextHeader().getWorkflowMonitoringContext().getWorkflowNodeId();
-        String workflowInstanceId = WorkflowContextHeaderBuilder.getCurrentContextHeader().getWorkflowMonitoringContext().getWorkflowInstanceId();
+    public DefaultInvocationContext gridJobSubmit(JobContext jobContext,GFacConfiguration gfacConfig,String workflowNodeId,String workflowInstanceId) throws Exception {
         WorkflowTrackingNotification workflowNotification = new WorkflowTrackingNotification(jobContext.getBrokerURL(),
                 jobContext.getTopic(),workflowNodeId,workflowInstanceId);
         LoggingNotification loggingNotification = new LoggingNotification();
