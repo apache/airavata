@@ -27,14 +27,30 @@
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
+
                     <execution>
                         <id>delete-tomcat-example</id>
                         <phase>compile</phase>
                         <configuration>
                             <target>
-                                <get dest=".">
-                                    <url url="http://archive.apache.org/dist/tomcat/tomcat-${major.tomcat.version}/v${tomcat.version}/bin/apache-tomcat-${tomcat.version}.zip"/>
-                                </get>
+                                <taskdef resource="net/sf/antcontrib/antlib.xml"
+                                         classpathref="maven.dependency.classpath" />
+                                <if>
+                                    <available file="${local.tomcat.distribution}"/>
+                                    <then>
+                                        <echo message="Using Tomcat distribution in local repository ..." />
+                                        <copy file="${local.tomcat.distribution}" todir="." overwrite="true"/>
+                                    </then>
+                                    <else>
+                                        <echo message="Downloading Tomcat distribution ..." />
+                                        <get dest=".">
+                                            <url url="http://archive.apache.org/dist/tomcat/tomcat-${major.tomcat.version}/v${tomcat.version}/bin/apache-tomcat-${tomcat.version}.zip"/>
+                                        </get>
+
+                                    </else>
+                                </if>
+
+
                                 <unzip src="../distribution/airavata-server/target/apache-airavata-server-${project.version}-bin.zip" dest="target/tests"/>
                                 <unzip src="../distribution/xbaya-gui/target/apache-airavata-xbaya-gui-${project.version}-bin.zip" dest="target/tests"/>
                                 <unzip src="apache-tomcat-${tomcat.version}.zip" dest="target/tests"/>
@@ -44,6 +60,26 @@
                         <goals>
                             <goal>run</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.3.1</version>
+                <executions>
+                    <execution>
+                        <id>install-tomcat-distribution</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <groupId>org.apache.airavata.integration.tomcat</groupId>
+                            <artifactId>apache-tomcat</artifactId>
+                            <version>${tomcat.version}</version>
+                            <packaging>zip</packaging>
+                            <file>apache-tomcat-${tomcat.version}.zip</file>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -256,6 +292,22 @@
 
     <dependencies>
         <dependency>
+            <groupId>ant-contrib</groupId>
+            <artifactId>ant-contrib</artifactId>
+            <version>1.0b3</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>ant</groupId>
+                    <artifactId>ant</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant-nodeps</artifactId>
+            <version>1.8.1</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>distribution</artifactId>
             <type>pom</type>
@@ -415,5 +467,6 @@
         <xbaya.work.dir>${project.build.directory}/tests/apache-airavata-xbaya-gui-${project.version}</xbaya.work.dir>
         <airavata.tomcat.distribution>${project.build.directory}/apache-airavata-tomcat.zip</airavata.tomcat.distribution>
         <rest.service.context>airavata-registry</rest.service.context>
+        <local.tomcat.distribution>${settings.localRepository}/org/apache/airavata/integration/tomcat/apache-tomcat/${tomcat.version}/apache-tomcat-${tomcat.version}.zip</local.tomcat.distribution>
     </properties>
 </project>
