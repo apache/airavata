@@ -35,55 +35,6 @@
 	</formats>
 
 	<fileSets>
-		<!-- ********************** copy axis2 distribution dependencies ********************** -->
-		<fileSet>
-			<directory>target/axis2-${used.axis2.release}/WEB-INF/lib</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-			<excludes>
-				<exclude>commons-logging*.jar</exclude>
-				<exclude>xom*.jar</exclude>
-				<exclude>xercesImpl*.jar</exclude>
-                <exclude>axis2-corba*.jar</exclude>
-                <exclude>axis2-fastinfoset*.jar</exclude>
-                <exclude>axis2-java2wsdl*.jar</exclude>
-                <exclude>axis2-jaxbri*.jar</exclude>
-                <exclude>axis2-jaxws*.jar</exclude>
-                <exclude>axis2-jibx*.jar</exclude>
-                <exclude>axis2-json*.jar</exclude>
-                <exclude>axis2-metadata*.jar</exclude>
-                <exclude>axis2-mtompolicy*.jar</exclude>
-                <exclude>axis2-saaj*.jar</exclude>
-                <exclude>axis2-spring*.jar</exclude>
-                <exclude>axis2-xmlbeans*.jar</exclude>
-                <exclude>bcel*.jar</exclude>
-                <exclude>dom4j*.jar</exclude>
-                <exclude>geronimo-annotation_1.0_spec*.jar</exclude>
-                <exclude>geronimo-jaxws_2.1_spec-1.0*.jar</exclude>
-                <exclude>geronimo-saaj_1.3_spec-1.0.1*.jar</exclude>
-                <exclude>icu4j*.jar</exclude>
-                <exclude>jibx-bind*.jar</exclude>
-                <exclude>jibx-run*.jar</exclude>
-                <exclude>mex*.jar</exclude>
-                <exclude>soapmonitor*.jar</exclude>
-                <exclude>xml-resolver*.jar</exclude>
-                <exclude>jaxb-xjc*.jar</exclude>
-			</excludes>
-		</fileSet>
-
-
-		<!-- ********************** copy readme files ********************** -->
-		<fileSet>
-			<directory>../../</directory>
-			<outputDirectory>.</outputDirectory>
-			<includes>
-				<include>INSTALL</include>
-				<include>README</include>
-				<include>RELEASE_NOTES</include>
-			</includes>
-		</fileSet>
 		<!-- ********************** copy binary licenses ********************** -->
 		<fileSet>
 			<directory>src/main/resources/</directory>
@@ -166,6 +117,23 @@
                 <include>com.sun.jersey:jersey-core:jar</include>
                 <include>com.sun.jersey:jersey-client:jar</include>
                 <include>org.apache.airavata:airavata-rest-mappings:jar</include>
+
+                <include>commons-codec:commons-codec:jar</include>
+                <include>wsdl4j:wsdl4j:jar</include>
+                <include>org.apache.axis2:axis2-kernel:jar</include>
+                <include>commons-httpclient:commons-httpclient:jar</include>
+                <include>org.apache.ws.commons.axiom:axiom-api:jar</include>
+                <include>org.apache.axis2:axis2:jar</include>
+                <include>org.apache.ws.commons.schema:XmlSchema:jar</include>
+                <include>org.apache.ws.commons.axiom:axiom-impl:jar</include>
+                <include>org.apache.neethi:neethi:jar</include>
+                <include>org.apache.axis2:axis2-transport-local:jar</include>
+                <include>org.apache.axis2:axis2-transport-http:jar</include>
+                <include>javax.mail:mail:jar</include>
+                <include>org.apache.woden:woden-api:jar</include>
+                <include>org.apache.httpcomponents:httpcore:jar</include>
+                <include>org.apache.axis2:axis2-adb:jar</include>
+                <include>log4j:log4j:jar</include>
 			</includes>
 		</dependencySet>
 	</dependencySets>
