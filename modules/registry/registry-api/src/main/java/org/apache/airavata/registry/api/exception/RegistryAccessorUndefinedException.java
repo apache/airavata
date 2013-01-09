@@ -26,7 +26,7 @@ public class RegistryAccessorUndefinedException extends RegistryException {
 	private static final long serialVersionUID = -2679914107485739140L;
 
 	public RegistryAccessorUndefinedException() {
-		this("A registry accessor was not defined in the airavata-server.properties");
+		this("A registry accessor was not defined in the registry settings");
 	}
 	
 	public RegistryAccessorUndefinedException(String message) {
