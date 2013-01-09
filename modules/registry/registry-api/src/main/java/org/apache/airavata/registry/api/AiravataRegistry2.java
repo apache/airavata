@@ -40,6 +40,10 @@ public abstract class AiravataRegistry2 extends Observable implements Descriptor
 		setCallback(callback);
 	}
 	
+	/**
+	 * Initialize the Airavata Registry
+	 * @throws RegistryException
+	 */
 	protected abstract void initialize() throws RegistryException;
 	
 	public Gateway getGateway() {

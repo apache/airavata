@@ -66,7 +66,6 @@ import org.apache.airavata.registry.api.exception.worker.*;
 import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
 import org.apache.airavata.registry.api.util.RegistryConstants;
 import org.apache.airavata.registry.api.workflow.*;
-import org.apache.airavata.registry.api.workflow.WorkflowExecutionData;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
@@ -96,37 +95,46 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     	//present
     	active=true;
 
-        // retrieving user defined registry classes from registry settings
+        initializeCustomRegistries();
+    }
+
+    /**
+     * Initialize the custom registries defined in the registry settings
+     * @throws RegistryException
+     */
+	private void initializeCustomRegistries() throws RegistryException {
+		// retrieving user defined registry classes from registry settings
         try {
-            configurationRegistry = (ConfigurationRegistry)AiravataRegistryFactory.getRegistryClass(RegistryConstants.CONFIGURATION_REGISTRY_ACCESSOR_CLASS);
-            configurationRegistry.setAiravataRegistry(this);
-            descriptorRegistry = (DescriptorRegistry)AiravataRegistryFactory.getRegistryClass(RegistryConstants.DESCRIPTOR_REGISTRY_ACCESSOR_CLASS);
-            descriptorRegistry.setAiravataRegistry(this);
-            projectsRegistry = (ProjectsRegistry)AiravataRegistryFactory.getRegistryClass(RegistryConstants.PROJECT_REGISTRY_ACCESSOR_CLASS);
-            projectsRegistry.setAiravataRegistry(this);
-            provenanceRegistry = (ProvenanceRegistry)AiravataRegistryFactory.getRegistryClass(RegistryConstants.PROVENANCE_REGISTRY_ACCESSOR_CLASS);
-            provenanceRegistry.setAiravataRegistry(this);
-            userWorkflowRegistry = (UserWorkflowRegistry)AiravataRegistryFactory.getRegistryClass(RegistryConstants.USER_WF_REGISTRY_ACCESSOR_CLASS);
-            userWorkflowRegistry.setAiravataRegistry(this);
-            publishedWorkflowRegistry = (PublishedWorkflowRegistry)AiravataRegistryFactory.getRegistryClass(RegistryConstants.PUBLISHED_WF_REGISTRY_ACCESSOR_CLASS);
-            publishedWorkflowRegistry.setAiravataRegistry(this);
-        } catch (RegistryAccessorNotFoundException e) {
-            throw new RegistryException("Airavata Registry custom implementation class not defined in registry settings", e);
-        } catch (RegistryAccessorUndefinedException e) {
-            configurationRegistry = null;
-            descriptorRegistry = null;
-            projectsRegistry = null;
-            provenanceRegistry = null;
-            userWorkflowRegistry = null;
-            publishedWorkflowRegistry = null;
-            logger.debug("Airavata Registry custom implementation class not defined in registry settings");
-        } catch (RegistryAccessorInstantiateException e) {
-            throw new RegistryException("Airavata Registry custom implementation class not defined in registry settings", e);
+            configurationRegistry = (ConfigurationRegistry)getClassInstance(ConfigurationRegistry.class,RegistryConstants.CONFIGURATION_REGISTRY_ACCESSOR_CLASS);
+            descriptorRegistry = (DescriptorRegistry)getClassInstance(ConfigurationRegistry.class,RegistryConstants.DESCRIPTOR_REGISTRY_ACCESSOR_CLASS);
+            projectsRegistry = (ProjectsRegistry)getClassInstance(ConfigurationRegistry.class,RegistryConstants.PROJECT_REGISTRY_ACCESSOR_CLASS);
+            provenanceRegistry = (ProvenanceRegistry)getClassInstance(ConfigurationRegistry.class,RegistryConstants.PROVENANCE_REGISTRY_ACCESSOR_CLASS);
+            userWorkflowRegistry = (UserWorkflowRegistry)getClassInstance(ConfigurationRegistry.class,RegistryConstants.USER_WF_REGISTRY_ACCESSOR_CLASS);
+            publishedWorkflowRegistry = (PublishedWorkflowRegistry)getClassInstance(ConfigurationRegistry.class,RegistryConstants.PUBLISHED_WF_REGISTRY_ACCESSOR_CLASS);
         } catch (AiravataConfigurationException e) {
             throw new RegistryException("Airavata Registry custom implementation class not defined in registry settings", e);
         }
-    }
+	}
 
+    private <T extends AiravataSubRegistry> Object getClassInstance(Class<T> c, String registryAccessorKey) throws AiravataConfigurationException{
+		try {
+			T registryClass = c.cast(AiravataRegistryFactory.getRegistryClass(registryAccessorKey));
+			registryClass.setAiravataRegistry(this);
+			return registryClass;
+		} catch (ClassCastException e){
+			logger.error("The class defined for accessor type "+registryAccessorKey+" MUST be an extention of the interface "+c.getName(),e);
+		} catch (RegistryAccessorNotFoundException e) {
+			logger.error("Error in loading class for registry accessor "+registryAccessorKey,e);
+		} catch (RegistryAccessorUndefinedException e) {
+			// happens when user has not defined an accessor for the registry accessor key
+			// thus ignore error
+		} catch (RegistryAccessorInstantiateException e) {
+			logger.error("Error in instantiating instance from class for registry accessor "+registryAccessorKey,e);
+		} catch (AiravataConfigurationException e) {
+			throw e;
+		}
+		return null;
+    }
 
 	@Override
 	public boolean isActive() {
