@@ -95,12 +95,6 @@
                                         <exclude name="axis2.xml"/>
                                     </fileset>
                                 </copy>
-                                <copy todir="${tomcat.work.dir}/webapps/axis2/WEB-INF/lib">
-                                    <fileset dir="${airavata.work.dir}/bin/">
-                                        <include name="*.properties"/>
-                                        <include name="authenticators.xml"/>
-                                    </fileset>
-                                </copy>
                                 <copy todir="src/test/resources" overwrite="true">
                                     <fileset dir="${xbaya.work.dir}/bin/">
                                         <include name="registry.properties"/>
