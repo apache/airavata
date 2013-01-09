@@ -42,7 +42,7 @@ public class TestMonitorListener implements EventDataListener {
                 verifyOutput("echo_output=Airavata_Test");
             } catch (Exception e) {
                 log.error("Error verifying output", e);
-                throw new RuntimeException(e);
+                Assert.fail("Error occurred while verifying output.");
             }finally{
                 getExperimentMonitor().stopMonitoring();
             }
@@ -56,14 +56,20 @@ public class TestMonitorListener implements EventDataListener {
 
         ExperimentData experimentData = airavataAPI.getProvenanceManager().getExperimentData(this.experimentId);
 
+        Assert.assertNotNull(experimentData);
+
         log.info("Verifying output ...");
 
         List<WorkflowExecutionDataImpl> workflowInstanceData = experimentData.getWorkflowExecutionDataList();
 
-//        List<WorkflowInstanceData> workflowInstanceData = experimentData.getWorkflowInstanceData();
+        Assert.assertNotNull(workflowInstanceData);
+        Assert.assertFalse("Workflow instance data cannot be empty !", workflowInstanceData.isEmpty());
 
         for(WorkflowExecutionDataImpl data:workflowInstanceData){
             List<NodeExecutionData> nodeDataList = data.getNodeDataList();
+
+            Assert.assertFalse("Node execution data list cannot be empty !", nodeDataList.isEmpty());
+
             for(NodeExecutionData nodeData:nodeDataList){
                 Assert.assertEquals("Airavata_Test", nodeData.getOutputData().get(0).getValue());
                 Assert.assertEquals(outputVerifyingString, nodeData.getInputData().get(0).getValue());

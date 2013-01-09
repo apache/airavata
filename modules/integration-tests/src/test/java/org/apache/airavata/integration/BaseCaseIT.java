@@ -287,7 +287,7 @@ public class BaseCaseIT {
     }
 
     @Test(groups = { "echoGroup" }/*, dependsOnMethods = { "testEchoService" }*/)
-    public void testUpdateEchoService() throws AiravataAPIInvocationException, IOException, ComponentException, GraphException {
+    public void testUpdateEchoService() throws Exception {
 
         DescriptorBuilder descriptorBuilder = airavataAPI.getDescriptorBuilder();
 
@@ -370,6 +370,7 @@ public class BaseCaseIT {
         	runWorkFlowWithoutMonitor(workflow, Arrays.asList("echo_output=Airavata_Test"));
         } catch (Exception e) {
             log.error("An error occurred while invoking workflow", e);
+            throw e;
         }
     }
 
@@ -424,9 +425,14 @@ public class BaseCaseIT {
 
         List<WorkflowExecutionDataImpl> workflowInstanceData = experimentData.getWorkflowExecutionDataList();
 
+        Assert.assertFalse("Workflow instance data cannot be empty !", workflowInstanceData.isEmpty());
+
         for(WorkflowExecutionDataImpl data:workflowInstanceData){
             List<NodeExecutionData> nodeDataList = data.getNodeDataList();
             for(NodeExecutionData nodeData:nodeDataList){
+
+                Assert.assertFalse("Node execution data list cannot be empty !", nodeDataList.isEmpty());
+
             	System.out.print("******************************");
             	System.out.println(nodeData.getOutputData().get(0).getValue());
                 Assert.assertEquals("Airavata_Test", nodeData.getOutputData().get(0).getValue());
