@@ -21,25 +21,32 @@
 
 package org.apache.airavata.xbaya.ui.dialogs.descriptors;
 
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.common.utils.SwingUtil;
-import org.apache.airavata.commons.gfac.type.ApplicationDescription;
-import org.apache.airavata.schemas.gfac.*;
-//import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.schemas.gfac.JobTypeType.Enum;
-import org.apache.airavata.schemas.gfac.impl.HpcApplicationDeploymentTypeImpl;
-import org.apache.airavata.xbaya.ui.widgets.GridPanel;
-import org.apache.airavata.xbaya.ui.widgets.XBayaComboBox;
-import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
-import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
-
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.common.utils.SwingUtil;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
+import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.JobTypeType;
+import org.apache.airavata.schemas.gfac.JobTypeType.Enum;
+import org.apache.airavata.schemas.gfac.ProjectAccountType;
+import org.apache.airavata.schemas.gfac.QueueType;
+import org.apache.airavata.xbaya.ui.widgets.GridPanel;
+import org.apache.airavata.xbaya.ui.widgets.XBayaComboBox;
+import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
+import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
     private static final long serialVersionUID = 3920479739097405014L;
@@ -98,8 +105,9 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
         okButton.setActionCommand("OK");
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                saveApplicationDescriptionAdvancedOptions();
-                close();
+                if (saveApplicationDescriptionAdvancedOptions()){
+                	close();
+                }
             }
         });
         getRootPane().setDefaultButton(okButton);
@@ -232,35 +240,68 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
     	return !s.trim().isEmpty();
     }
     
-    private void saveApplicationDescriptionAdvancedOptions() {
+    private void showError(String message, String title){
+    	JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
+    }
+    private boolean saveApplicationDescriptionAdvancedOptions() {
 		if (isValueNotEmpty(cmbJobType.getText())) {
 		    getHPCApplicationDescriptionType().setJobType(
 					getJobTypeEnum(cmbJobType.getText()));
 		}
-		if (isValueNotEmpty(txtMaxWallTime.getText())) {
-		    getHPCApplicationDescriptionType().setMaxWallTime(
-					Integer.parseInt(txtMaxWallTime.getText()));
+		try {
+			if (isValueNotEmpty(txtMaxWallTime.getText())) {
+			    getHPCApplicationDescriptionType().setMaxWallTime(
+						Integer.parseInt(txtMaxWallTime.getText()));
+			}
+		} catch (NumberFormatException e) {
+			showError("Max wall time must be a number", "Invalid value");
+			return false;
 		}
-		if (isValueNotEmpty(txtCpuCount.getText())) {
-		    getHPCApplicationDescriptionType().setCpuCount(
-					Integer.parseInt(txtCpuCount.getText()));
+		try {
+			if (isValueNotEmpty(txtCpuCount.getText())) {
+			    getHPCApplicationDescriptionType().setCpuCount(
+						Integer.parseInt(txtCpuCount.getText()));
+			}
+		} catch (NumberFormatException e) {
+			showError("CPU count must be a number", "Invalid value");
+			return false;
 		}
-		if (isValueNotEmpty(txtProcessorsPerNode.getText())) {
-		    getHPCApplicationDescriptionType().setProcessorsPerNode(
-					Integer.parseInt(txtProcessorsPerNode.getText()));
+		try {
+			if (isValueNotEmpty(txtProcessorsPerNode.getText())) {
+			    getHPCApplicationDescriptionType().setProcessorsPerNode(
+						Integer.parseInt(txtProcessorsPerNode.getText()));
+			}
+		} catch (NumberFormatException e) {
+			showError("Processors per node must be a number", "Invalid value");
+			return false;
 		}
-        if (isValueNotEmpty(txtNodeCount.getText())) {
-            getHPCApplicationDescriptionType().setNodeCount(
-					Integer.parseInt(txtNodeCount.getText()));
+        try {
+			if (isValueNotEmpty(txtNodeCount.getText())) {
+			    getHPCApplicationDescriptionType().setNodeCount(
+						Integer.parseInt(txtNodeCount.getText()));
+			}
+		} catch (NumberFormatException e) {
+			showError("Node count must be a number", "Invalid value");
+			return false;
 		}
-		if (isValueNotEmpty(txtMinMemory.getText())) {
-		    getHPCApplicationDescriptionType().setMinMemory(
-					Integer.parseInt(txtMinMemory.getText()));
+		try {
+			if (isValueNotEmpty(txtMinMemory.getText())) {
+			    getHPCApplicationDescriptionType().setMinMemory(
+						Integer.parseInt(txtMinMemory.getText()));
+			}
+		} catch (NumberFormatException e) {
+			showError("Minimum memory must be a number", "Invalid value");
+			return false;
 		}
-	    if (isValueNotEmpty(txtMaxMemory.getText())) {
-	        getHPCApplicationDescriptionType().setMaxMemory(
-	                    Integer.parseInt(txtMaxMemory.getText()));
-	        }
+	    try {
+			if (isValueNotEmpty(txtMaxMemory.getText())) {
+			    getHPCApplicationDescriptionType().setMaxMemory(
+		                Integer.parseInt(txtMaxMemory.getText()));
+		    }
+		} catch (NumberFormatException e) {
+			showError("Maximum memory must be a number", "Invalid value");
+			return false;
+		}
 		ProjectAccountType projectAccount = getProjectAccountType();
 		if (isValueNotEmpty(txtProjectAccountNumber.getText())) {
 			projectAccount.setProjectAccountNumber(txtProjectAccountNumber
@@ -275,6 +316,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 			QueueType queueName = getQueueName();
 			queueName.setQueueName(txtQueueType.getText());
 		}
+		return true;
     }
 
 	private QueueType getQueueName() {
