@@ -21,21 +21,19 @@
 
 package org.apache.airavata.rest.mappings.utils;
 
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.registry.api.Gateway;
-import org.apache.airavata.rest.mappings.utils.RestServicesConstants;
-
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Properties;
+
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.registry.api.Gateway;
 
 public class RegistryListener implements ServletContextListener {
 
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         try {
+        	AiravataUtils.setExecutionAsServer();
             ServletContext servletContext = servletContextEvent.getServletContext();
             String gatewayID = ServerSettings.getDefaultGatewayId();
             String user = ServerSettings.getSystemUser();
