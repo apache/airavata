@@ -41,8 +41,14 @@ public class RegistrySettings {
 		if (url == null) {
     		if (AiravataUtils.isServer()){
     			 url=RegistrySettings.class.getClassLoader().getResource(ApplicationSettings.SERVER_PROPERTIES);
-        	}else{
+    		}else if (AiravataUtils.isClient()){
         		url=RegistrySettings.class.getClassLoader().getResource(ApplicationSettings.CLIENT_PROPERTIES);
+        	}else{
+        		//unknown execution mode... If so, first assume its client, if not server...
+        		url=RegistrySettings.class.getClassLoader().getResource(ApplicationSettings.CLIENT_PROPERTIES);
+        		if (url==null){
+        			url=RegistrySettings.class.getClassLoader().getResource(ApplicationSettings.SERVER_PROPERTIES);
+        		}
         	}
 		}
         try {

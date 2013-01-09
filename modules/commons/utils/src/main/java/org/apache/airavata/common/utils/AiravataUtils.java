@@ -40,7 +40,7 @@ public class AiravataUtils {
 	}
 	
 	public static boolean isClient(){
-		return getExecutionMode()!=ExecutionMode.SERVER;
+		return getExecutionMode()==ExecutionMode.CLIENT;
 	}
 	
 	public static void setExecutionAsServer(){
