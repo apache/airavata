@@ -36,7 +36,10 @@ import javax.swing.JPasswordField;
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ClientSettings;
 import org.apache.airavata.xbaya.XBayaConfiguration;
+import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.registry.ComponentRegistryLoader;
 import org.apache.airavata.xbaya.registry.PasswordCallbackImpl;
@@ -48,7 +51,7 @@ import org.apache.airavata.xbaya.ui.widgets.XBayaLinkButton;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
 import org.apache.airavata.xbaya.util.RegistryConstants;
 
-public class JCRRegistryWindow {
+public class RegistryWindow {
 
     private XBayaEngine engine;
 
@@ -64,7 +67,7 @@ public class JCRRegistryWindow {
 
     private XBayaLinkButton newUserButton;
 
-    private NewJCRRegistryUserDialog newUserWindow;
+    private NewRegistryUserDialog newUserWindow;
 
     private String userName;
 
@@ -77,7 +80,7 @@ public class JCRRegistryWindow {
     /**
      * @param engine
      */
-    public JCRRegistryWindow(XBayaEngine engine) {
+    public RegistryWindow(XBayaEngine engine) {
         this.engine = engine;
         ComponentRegistryLoader.getLoader(this.engine, RegistryConstants.REGISTRY_TYPE_JCR);
         initGUI();
@@ -143,7 +146,7 @@ public class JCRRegistryWindow {
             // the text box contains invalid url, we'll just ignore it
         }
         if (newUserWindow == null) {
-            newUserWindow = new NewJCRRegistryUserDialog(engine);
+            newUserWindow = new NewRegistryUserDialog(engine);
         }
 //        newUserWindow.setUrl(specifiedURL);
         newUserWindow.setUsername(usernameTextField.getText());
@@ -164,9 +167,26 @@ public class JCRRegistryWindow {
         this.gatewayTextField = new XBayaTextField();
         this.usernameTextField = new XBayaTextField();
         this.passwordTextField = new JPasswordField();
-        this.urlTextField.setText(engine.getConfiguration().getRegistryURL().toASCIIString());
-        this.gatewayTextField.setText(engine.getConfiguration().getDefaultGateway());
-        this.usernameTextField.setText(engine.getConfiguration().getRegistryUserName());
+        try {
+            if (ClientSettings.isSettingDefined(XBayaConstants.XBAYA_REGISTRY_URL)){
+                this.urlTextField.setText(ClientSettings.getSetting(XBayaConstants.XBAYA_REGISTRY_URL));
+            }  else {
+                this.urlTextField.setText(engine.getConfiguration().getRegistryURL().toASCIIString());
+            }
+            if (ClientSettings.isSettingDefined(XBayaConstants.XBAYA_REGISTRY_USER)){
+                this.usernameTextField.setText(ClientSettings.getSetting(XBayaConstants.XBAYA_REGISTRY_USER));
+            } else {
+                this.usernameTextField.setText(engine.getConfiguration().getRegistryUserName());
+            }
+            if (ClientSettings.isSettingDefined(XBayaConstants.XBAYA_DEFAULT_GATEWAY)){
+                this.gatewayTextField.setText(ClientSettings.getSetting(XBayaConstants.XBAYA_DEFAULT_GATEWAY));
+            } else {
+                this.gatewayTextField.setText(engine.getConfiguration().getDefaultGateway());
+            }
+        } catch (ApplicationSettingsException e) {
+            e.printStackTrace();
+        }
+
         this.passwordTextField.setText(engine.getConfiguration().getRegistryPassphrase());
         XBayaLabel urlLabel = new XBayaLabel("URL", this.urlTextField);
         XBayaLabel gatewayLabel = new XBayaLabel("Gateway", this.gatewayTextField);

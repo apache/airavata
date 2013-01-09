@@ -23,9 +23,7 @@ package org.apache.airavata.xbaya.ui.dialogs.registry;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Properties;
 
 import javax.swing.*;
 
@@ -33,17 +31,14 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
-import org.apache.airavata.persistance.registry.jpa.resources.Utils;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
-import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
 
-public class NewJCRRegistryUserDialog {
+public class NewRegistryUserDialog {
 
     private XBayaEngine engine;
 
@@ -70,22 +65,22 @@ public class NewJCRRegistryUserDialog {
     private boolean userCreated = false;
 //    public static final String GATEWAY_ID = "gateway.id";
 
-    public NewJCRRegistryUserDialog(XBayaEngine engine) {
+    public NewRegistryUserDialog(XBayaEngine engine) {
         this(engine, null, null);
     }
 
-    public NewJCRRegistryUserDialog(XBayaEngine engine, URL url) {
+    public NewRegistryUserDialog(XBayaEngine engine, URL url) {
         this(engine, url, null);
     }
 
-    public NewJCRRegistryUserDialog(XBayaEngine engine, String username) {
+    public NewRegistryUserDialog(XBayaEngine engine, String username) {
         this(engine, null, username);
     }
 
     /**
      * @param engine
      */
-    public NewJCRRegistryUserDialog(XBayaEngine engine, URL url, String username) {
+    public NewRegistryUserDialog(XBayaEngine engine, URL url, String username) {
         this.engine = engine;
         setUrl(url);
         setUsername(username);
