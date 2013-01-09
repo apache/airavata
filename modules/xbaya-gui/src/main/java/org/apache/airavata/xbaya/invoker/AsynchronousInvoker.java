@@ -21,6 +21,7 @@
 
 package org.apache.airavata.xbaya.invoker;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,6 +101,11 @@ public class AsynchronousInvoker extends SimpleInvoker {
                     logger.error("Error Waiting for the response from backend");
                 }
             }
+            // Gfac operation failed, so xbaya side throws this exception
+            if("ErrorResponse".equals(XMLUtil.stringToXmlElement3(this.getOutputMessage().toString()).getName())){
+                throw new WorkflowException((String) XMLUtil.stringToXmlElement3(this.getOutputMessage().toString()).children().next());
+            }
+
             return true;
         } catch (RuntimeException e) {
             String message = "Error in invoking a service.";
