@@ -277,7 +277,7 @@ public class BaseCaseIT {
 
         log("Workflow setting up completed ...");
 
-        runWorkFlow(workflow, Arrays.asList("echo_output=Airavata Test"));
+        runWorkFlow(workflow, Arrays.asList("echo_output=Airavata_Test"));
     }
 
     @Test(groups = { "performanceTesting" } )
