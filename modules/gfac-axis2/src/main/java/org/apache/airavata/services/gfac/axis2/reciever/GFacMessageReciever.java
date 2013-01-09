@@ -200,10 +200,10 @@ public class GFacMessageReciever implements MessageReceiver {
 ////            invocationContext.getExecutionContext().setSecurityContextHeader(header);
 //            //todo if there's amazoneWebServices context we need to set that value, this will refer in EC2Provider
 //        }else {
+        try {
+
             gfacAPI = new GfacAPI();
             invocationContext = gfacAPI.gridJobSubmit(jobContext, (GFacConfiguration) context.getProperty(GFacService.GFAC_CONFIGURATION));
-//        }
-        try {
             /*
              * Add notifiable object
              */
@@ -226,9 +226,21 @@ public class GFacMessageReciever implements MessageReceiver {
             }
 
         } catch (Exception e) {
+            OMFactory fac = OMAbstractFactory.getOMFactory();
+            OMNamespace omNs = fac.createOMNamespace("http://ws.apache.org/axis2/xsd", "ns1");
+            outputElement = fac.createOMElement("ErrorResponse", omNs);
+            outputElement.setText("Invocation failed" + e.getMessage());
             log.error("Error in invoking service", e);
+            SOAPFactory sf = OMAbstractFactory.getSOAP11Factory();
+            SOAPEnvelope responseEnv = sf.createSOAPEnvelope();
+            sf.createSOAPBody(responseEnv);
+            responseEnv.getBody().addChild(outputElement);
+            MessageContext outMessageContext = MessageContextBuilder.createOutMessageContext(messageContext);
+            outMessageContext.setEnvelope(responseEnv);
+            AxisEngine.send(outMessageContext);
             throw e;
         }
+//        }
 
         SOAPFactory sf = OMAbstractFactory.getSOAP11Factory();
         SOAPEnvelope responseEnv = sf.createSOAPEnvelope();
