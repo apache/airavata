@@ -39,7 +39,7 @@ public class TestMonitorListener implements EventDataListener {
         Assert.assertNotNull(event);
         if (MonitorUtil.EventType.WORKFLOW_TERMINATED.equals(event.getType())) {
             try {
-                verifyOutput("echo_output=Airavata Test");
+                verifyOutput("echo_output=Airavata_Test");
             } catch (Exception e) {
                 log.error("Error verifying output", e);
                 throw new RuntimeException(e);
@@ -65,7 +65,7 @@ public class TestMonitorListener implements EventDataListener {
         for(WorkflowExecutionDataImpl data:workflowInstanceData){
             List<NodeExecutionData> nodeDataList = data.getNodeDataList();
             for(NodeExecutionData nodeData:nodeDataList){
-                Assert.assertEquals("Airavata Test", nodeData.getOutputData().get(0).getValue());
+                Assert.assertEquals("Airavata_Test", nodeData.getOutputData().get(0).getValue());
                 Assert.assertEquals(outputVerifyingString, nodeData.getInputData().get(0).getValue());
             }
         }

@@ -26,6 +26,8 @@ import java.util.UUID;
 import org.apache.airavata.client.impl.WorkflowOutputDataSettingsImpl;
 import org.apache.airavata.client.impl.WorkflowSchedulingSettingsImpl;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 
 public class ExperimentAdvanceOptions {
 	private String executionUser;
@@ -142,5 +144,14 @@ public class ExperimentAdvanceOptions {
 			outputDataSettings=new WorkflowOutputDataSettingsImpl();
 		}
 		return outputDataSettings;
+	}
+	
+	/**
+	 * Get the custom security settings for running the experiment
+	 * @return
+	 * @throws AiravataAPIInvocationException
+	 */
+	public SecuritySettings getCustomSecuritySettings() throws AiravataAPIInvocationException{
+		throw new AiravataAPIInvocationException(new NotImplementedException());
 	}
 }
