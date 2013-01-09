@@ -49,6 +49,6 @@ public class ProviderException extends GfacException {
 		if (additionalExceptiondata==null || additionalExceptiondata.length==0){
         	additionalExceptiondata=new String[]{message,e.getLocalizedMessage()};
         }
-		invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,additionalExceptiondata);
+//		invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,additionalExceptiondata);
 	}
 }
