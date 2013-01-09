@@ -89,6 +89,7 @@
 			<directory>src/main/resources/</directory>
 			<outputDirectory>.</outputDirectory>
 			<includes>
+                <include>conf/*</include>
 				<include>LICENSE</include>
 				<include>NOTICE</include>
 			</includes>
