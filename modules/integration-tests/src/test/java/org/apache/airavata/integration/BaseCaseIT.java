@@ -22,15 +22,23 @@ import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.PasswordCallback;
-import org.apache.airavata.schemas.gfac.*;
+import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
+import org.apache.airavata.registry.api.workflow.ExperimentData;
+import org.apache.airavata.registry.api.workflow.NodeExecutionData;
+import org.apache.airavata.schemas.gfac.DataType;
+import org.apache.airavata.schemas.gfac.HostDescriptionType;
+import org.apache.airavata.schemas.gfac.InputParameterType;
+import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
+import org.apache.airavata.ws.monitor.EventData;
+import org.apache.airavata.ws.monitor.EventDataListenerAdapter;
+import org.apache.airavata.ws.monitor.EventDataRepository;
 import org.apache.airavata.ws.monitor.Monitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -359,7 +367,7 @@ public class BaseCaseIT {
         log("Workflow setting up completed ...");
 
         try {
-            runWorkFlow(workflow, Arrays.asList("echo_output=Airavata Test"));
+        	runWorkFlowWithoutMonitor(workflow, Arrays.asList("echo_output=Airavata_Test"));
         } catch (Exception e) {
             log.error("An error occurred while invoking workflow", e);
         }
@@ -369,16 +377,8 @@ public class BaseCaseIT {
 
         AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(new URI(getRegistryURL()), getGatewayName(),
                 getUserName(), new PasswordCallbackImpl());
+        List<WorkflowInput> workflowInputs = setupInputs(workflow, inputValues);
         String workflowName = workflow.getName();
-        List<WorkflowInput> workflowInputs = airavataAPI.getWorkflowManager().getWorkflowInputs(workflowName);
-
-        Assert.assertEquals(workflowInputs.size(), inputValues.size());
-
-        int i = 0;
-        for (String valueString : inputValues) {
-            workflowInputs.get(i).setValue(valueString);
-            ++i;
-        }
         ExperimentAdvanceOptions options = airavataAPI.getExecutionManager().createExperimentAdvanceOptions(workflowName,getUserName(),null);
         String experimentId = airavataAPI.getExecutionManager().runExperiment(workflowName, workflowInputs, options);
         
@@ -388,11 +388,69 @@ public class BaseCaseIT {
         log.info("Starting monitoring ....");
 
         monitor(experimentId);
+    }
+    
+    protected void runWorkFlowWithoutMonitor(Workflow workflow, List<String> inputValues) throws Exception {
 
+        AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(new URI(getRegistryURL()), getGatewayName(),
+                getUserName(), new PasswordCallbackImpl());
+        List<WorkflowInput> workflowInputs = setupInputs(workflow, inputValues);
+        String workflowName = workflow.getName();
+        ExperimentAdvanceOptions options = airavataAPI.getExecutionManager().createExperimentAdvanceOptions(workflowName,getUserName(),null);
+        String experimentId = airavataAPI.getExecutionManager().runExperiment(workflowName, workflowInputs, options, new EventDataListenerAdapter() {
+			@Override
+			public void notify(EventDataRepository eventDataRepo, EventData eventData) {
+				//do nothing
+			}
+		});
+        
+        Assert.assertNotNull(experimentId);
+        airavataAPI.getExecutionManager().waitForExperimentTermination(experimentId);
+        
+        log.info("Run workflow completed ....");
+        log.info("Starting monitoring ....");
+
+        verifyOutput(experimentId, "echo_output=Airavata_Test");
     }
 
-    protected String getWorkflowComposeContent(String fileName) throws IOException {
+    protected void verifyOutput(String experimentId, String outputVerifyingString) throws Exception {
+    	AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(new URI(getRegistryURL()), getGatewayName(),
+                getUserName(), new PasswordCallbackImpl());
+        log.info("Workflow Experiment ID Returned : " + experimentId);
 
+        ExperimentData experimentData = airavataAPI.getProvenanceManager().getExperimentData(experimentId);
+
+        log.info("Verifying output ...");
+
+        List<WorkflowExecutionDataImpl> workflowInstanceData = experimentData.getWorkflowExecutionDataList();
+
+        for(WorkflowExecutionDataImpl data:workflowInstanceData){
+            List<NodeExecutionData> nodeDataList = data.getNodeDataList();
+            for(NodeExecutionData nodeData:nodeDataList){
+            	System.out.print("******************************");
+            	System.out.println(nodeData.getOutputData().get(0).getValue());
+                Assert.assertEquals("Airavata_Test", nodeData.getOutputData().get(0).getValue());
+                Assert.assertEquals(outputVerifyingString, nodeData.getInputData().get(0).getValue());
+            }
+        }
+    }
+    
+	private List<WorkflowInput> setupInputs(Workflow workflow,List<String> inputValues)	throws Exception {
+		AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(new URI(getRegistryURL()), getGatewayName(),
+                getUserName(), new PasswordCallbackImpl());
+		List<WorkflowInput> workflowInputs = airavataAPI.getWorkflowManager().getWorkflowInputs(workflow.getName());
+
+        Assert.assertEquals(workflowInputs.size(), inputValues.size());
+
+        int i = 0;
+        for (String valueString : inputValues) {
+            workflowInputs.get(i).setValue(valueString);
+            ++i;
+        }
+		return workflowInputs;
+	}
+
+    protected String getWorkflowComposeContent(String fileName) throws IOException {
         File f = new File(".");
         log.info(f.getAbsolutePath());
 

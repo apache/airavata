@@ -21,7 +21,6 @@
 
 package org.apache.airavata.registry.api.util;
 
-import java.io.File;
 import java.net.URL;
 import java.util.Properties;
 
@@ -40,17 +39,15 @@ public class RegistrySettings {
     private static final String REGISTRY_ACCESSOR_CLASS = "class.registry.accessor";
     
     static{
-    	String propertyFileName = REPOSITORY_PROPERTIES;
-    	if (RegistrySettings.class.getClassLoader()
-				.getResource(propertyFileName) == null) {
+    	URL url = RegistrySettings.class.getClassLoader()
+				.getResource(REPOSITORY_PROPERTIES);
+		if (url == null) {
     		if (AiravataUtils.isServer()){
-        		propertyFileName=SERVER_REPOSITORY_PROPERTIES;
+    			 url=RegistrySettings.class.getClassLoader().getResource(SERVER_REPOSITORY_PROPERTIES);
         	}else{
-        		propertyFileName=CLIENT_REPOSITORY_PROPERTIES;
+        		url=RegistrySettings.class.getClassLoader().getResource(CLIENT_REPOSITORY_PROPERTIES);
         	}
 		}
-		URL url = RegistrySettings.class.getClassLoader()
-				.getResource(propertyFileName);
         try {
             properties.load(url.openStream());
         } catch (Exception e) {

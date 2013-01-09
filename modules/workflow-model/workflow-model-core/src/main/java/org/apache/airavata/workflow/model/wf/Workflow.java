@@ -24,7 +24,6 @@ package org.apache.airavata.workflow.model.wf;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -145,8 +144,6 @@ public class Workflow implements Cloneable {
 
     private XmlElement odeDeploymentDiscriptor;
 
-    private QName qname;
-
     private volatile WorkflowExecutionState executionState = WorkflowExecutionState.NONE;
 
     private WsdlDefinitions tridentWSDL;
@@ -190,8 +187,7 @@ public class Workflow implements Cloneable {
     public Workflow(URI workflowFilePath) throws GraphException, ComponentException {
         this();
         try {
-            File filePath = new File(workflowFilePath);
-            XmlElement workflowElement = XMLUtil.loadXML(filePath);
+            XmlElement workflowElement = XMLUtil.loadXML(workflowFilePath.toURL().openStream());
             parse(workflowElement);
         } catch (RuntimeException e) {
             throw new GraphException(e);
@@ -853,11 +849,6 @@ public class Workflow implements Cloneable {
     private void generateODEScripts(URI dscUrl, String odeEprEndingWithPort) throws GraphException, ComponentException {
         this.getGraph().setID(this.getName());
 
-        // find whether its Streaming
-        List<NodeImpl> nodes = this.graph.getNodes();
-        Node activeNode = null;
-        String operationName = null;
-
         BPELScript script = null;
 
         script = new BPELScript(this);
@@ -910,7 +901,7 @@ public class Workflow implements Cloneable {
      */
     public QName getQname() {
 
-        return this.qname = new QName(WorkflowConstants.LEAD_NS, this.getName());
+        return new QName(WorkflowConstants.LEAD_NS, this.getName());
 
     }
 

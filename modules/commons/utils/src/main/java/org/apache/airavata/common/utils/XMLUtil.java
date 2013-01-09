@@ -22,6 +22,7 @@
 package org.apache.airavata.common.utils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -43,7 +44,9 @@ import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 import org.xmlpull.infoset.XmlDocument;
 import org.xmlpull.infoset.XmlElement;
@@ -283,10 +286,19 @@ public class XMLUtil {
      * @return The XmlElement in the document.
      * @throws IOException
      */
-    public static org.xmlpull.infoset.XmlElement loadXML(File file) throws IOException {
-        String xmlText = IOUtil.readFileToString(file);
+    public static org.xmlpull.infoset.XmlElement loadXML(InputStream stream) throws IOException {
+        String xmlText = IOUtil.readToString(stream);
         XmlDocument document = BUILDER.parseString(xmlText);
         return document.getDocumentElement();
+    }
+    
+    /**
+     * @param file
+     * @return The XmlElement in the document.
+     * @throws IOException
+     */
+    public static org.xmlpull.infoset.XmlElement loadXML(File file) throws IOException {
+        return loadXML(new FileInputStream(file));
     }
 
     /**
