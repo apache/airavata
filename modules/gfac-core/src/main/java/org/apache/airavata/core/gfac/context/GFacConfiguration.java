@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.common.exception.ServerSettingsException;
-import org.apache.airavata.common.exception.UnspecifiedServerSettingsException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.exception.UnspecifiedApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.core.gfac.external.GridConfigurationHandler;
 import org.slf4j.Logger;
@@ -65,9 +65,9 @@ public class GFacConfiguration {
 					log.error("Error while loading Grid Configuration Handler class "+handlerClass, e);
 				}
 			}
-		} catch (UnspecifiedServerSettingsException e) {
+		} catch (UnspecifiedApplicationSettingsException e) {
 			//no handlers defined
-		} catch (ServerSettingsException e1) {
+		} catch (ApplicationSettingsException e1) {
 			log.error("Error in reading Configuration handler data!!!",e1);
 		}
     }

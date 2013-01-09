@@ -21,18 +21,14 @@
 
 package org.apache.airavata.common.exception;
 
-public class ServerSettingsLoadException extends ServerSettingsException {
+public class ApplicationSettingsStoreException extends ApplicationSettingsException {
 
 	private static final long serialVersionUID = -5102090895499711299L;
-	public ServerSettingsLoadException(String message) {
-		super(message);
+	public ApplicationSettingsStoreException(String filePath) {
+		super("Error while attempting to store settings in "+filePath);
 	}
-	
-	public ServerSettingsLoadException(Throwable e) {
-		this(e.getMessage(),e);
-	}
-	
-	public ServerSettingsLoadException(String message, Throwable e) {
-		super(message,e);
+
+	public ApplicationSettingsStoreException(String filePath, Throwable e) {
+		super(filePath,e);
 	}
 }

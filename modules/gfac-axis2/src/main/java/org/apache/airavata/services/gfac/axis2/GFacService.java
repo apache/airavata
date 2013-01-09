@@ -34,7 +34,7 @@ import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.tools.PeriodicExecutorThread;
-import org.apache.airavata.common.exception.ServerSettingsException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ServiceUtils;
@@ -130,7 +130,7 @@ public class GFacService implements ServiceLifeCycle {
                             password = ServerSettings.getSystemUserPassword();
                         }
                         gatewayName = ServerSettings.getDefaultGatewayId();
-                    } catch (ServerSettingsException e) {
+                    } catch (ApplicationSettingsException e) {
                         log.error("Unable to read properties", e);
                     }
                     airavataAPI = AiravataAPIFactory.getAPI(ServerSettings.getDefaultGatewayId(), ServerSettings.getSystemUser());

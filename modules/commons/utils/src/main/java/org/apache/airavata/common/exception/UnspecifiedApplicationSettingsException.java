@@ -19,8 +19,12 @@
  *
  */
 
-package org.apache.airavata.common.utils;
+package org.apache.airavata.common.exception;
 
+public class UnspecifiedApplicationSettingsException extends ApplicationSettingsException {
 
-public class ServerSettings extends ApplicationSettings{
+	private static final long serialVersionUID = -1159027432434546003L;
+	public UnspecifiedApplicationSettingsException(String key) {
+		super("The '"+key+"' is not configured in settings!!!");
+	}
 }

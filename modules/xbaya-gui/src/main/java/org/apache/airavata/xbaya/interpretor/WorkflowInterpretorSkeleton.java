@@ -46,7 +46,7 @@ import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.stub.interpretor.NameValue;
 import org.apache.airavata.client.tools.PeriodicExecutorThread;
-import org.apache.airavata.common.exception.ServerSettingsException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ServiceUtils;
@@ -128,7 +128,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 				systemUserPW = ServerSettings.getSystemUserPassword();
 				gateway = ServerSettings.getSystemUserGateway();
 				airavataAPI = AiravataAPIFactory.getAPI(gateway, systemUserName);
-			} catch (ServerSettingsException e) {
+			} catch (ApplicationSettingsException e) {
 				log.error("Unable to read the properties file", e);
 			} catch (AiravataAPIInvocationException e) {
 				log.error("Unable to create Airavata API", e);
@@ -202,7 +202,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 		        } catch (URISyntaxException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} catch (ServerSettingsException e) {
+				} catch (ApplicationSettingsException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
                 WorkflowInterpretorSkeleton.configurationContext = configctx;
@@ -256,7 +256,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
             log.error(e.getMessage());
         } catch (AiravataAPIInvocationException e) {
             log.error(e.getMessage());
-        } catch (ServerSettingsException e) {
+        } catch (ApplicationSettingsException e) {
             log.error(e.getMessage());
         }
         return s;

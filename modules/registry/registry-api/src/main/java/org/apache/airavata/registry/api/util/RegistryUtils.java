@@ -26,7 +26,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import org.apache.airavata.common.exception.AiravataConfigurationException;
-import org.apache.airavata.common.exception.ServerSettingsException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataRegistryFactory;
@@ -121,7 +121,7 @@ public class RegistryUtils {
             log.error("Error initializing AiravataRegistry2");
         } catch (RegistryAccessorUndefinedException e) {
             log.error("Error initializing AiravataRegistry2");
-        } catch (ServerSettingsException e) {
+        } catch (ApplicationSettingsException e) {
         	log.error("Error initializing AiravataRegistry2",e);
 		} catch (RegistryException e) {
             log.error("Error initializing AiravataRegistry2",e);

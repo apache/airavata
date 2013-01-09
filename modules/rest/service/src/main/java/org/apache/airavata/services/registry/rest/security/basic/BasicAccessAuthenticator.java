@@ -20,7 +20,7 @@
 
 package org.apache.airavata.services.registry.rest.security.basic;
 
-import org.apache.airavata.common.exception.ServerSettingsException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.security.AbstractAuthenticator;

@@ -20,10 +20,10 @@
 */
 package org.apache.airavata.server;
 
+import java.io.File;
+
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.catalina.Wrapper;
-import java.io.File;
-import org.apache.catalina.Host;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.deploy.FilterDef;
 import org.apache.catalina.deploy.FilterMap;
@@ -31,10 +31,7 @@ import org.apache.catalina.startup.Tomcat;
 
 public class ServerMain {
 
-    private String path = null;
     private Tomcat embedded = null;
-    private Host host = null;
-
     /**
      * Default Constructor
      */

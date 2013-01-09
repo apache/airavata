@@ -24,19 +24,20 @@ import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
+import org.apache.airavata.registry.api.workflow.InputData;
 import org.apache.airavata.registry.api.workflow.NodeExecutionData;
+import org.apache.airavata.registry.api.workflow.OutputData;
 import org.apache.airavata.schemas.gfac.DataType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
-import org.apache.airavata.workflow.model.component.ComponentException;
-import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.apache.airavata.ws.monitor.EventData;
 import org.apache.airavata.ws.monitor.EventDataListenerAdapter;
 import org.apache.airavata.ws.monitor.EventDataRepository;
 import org.apache.airavata.ws.monitor.Monitor;
+import org.apache.airavata.ws.monitor.MonitorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeTest;
@@ -433,10 +434,12 @@ public class BaseCaseIT {
 
                 Assert.assertFalse("Node execution data list cannot be empty !", nodeDataList.isEmpty());
 
-            	System.out.print("******************************");
-            	System.out.println(nodeData.getOutputData().get(0).getValue());
-                Assert.assertEquals("Airavata_Test", nodeData.getOutputData().get(0).getValue());
-                Assert.assertEquals(outputVerifyingString, nodeData.getInputData().get(0).getValue());
+            	for (OutputData outputData : nodeData.getOutputData()) {
+                    Assert.assertEquals("Airavata_Test", outputData.getValue());
+				}
+            	for (InputData inputData : nodeData.getInputData()) {
+                    Assert.assertEquals(outputVerifyingString, inputData.getValue());
+				}
             }
         }
     }
@@ -476,12 +479,28 @@ public class BaseCaseIT {
         return buffer.toString();
     }
 
-    public void monitor(String experimentId) throws Exception {
+    public void monitor(final String experimentId) throws Exception {
         AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(new URI(getRegistryURL()), getGatewayName(),
                 getUserName(), new PasswordCallbackImpl() );
-        TestMonitorListener monitorListener = new TestMonitorListener(this.airavataAPI, experimentId);
-		Monitor experimentMonitor = airavataAPI.getExecutionManager().getExperimentMonitor(experimentId,     // TODO what is experiment name ?
-                monitorListener);
+		final Monitor experimentMonitor = airavataAPI.getExecutionManager().getExperimentMonitor(experimentId,new EventDataListenerAdapter() {
+			
+			@Override
+			public void notify(EventDataRepository eventDataRepo, EventData eventData) {
+				Assert.assertNotNull(eventDataRepo);
+		        Assert.assertNotNull(eventData);
+		        if (MonitorUtil.EventType.WORKFLOW_TERMINATED.equals(eventData.getType())) {
+		            try {
+		                BaseCaseIT.this.verifyOutput(experimentId,"echo_output=Airavata_Test");
+		            } catch (Exception e) {
+		                log.error("Error verifying output", e);
+		                Assert.fail("Error occurred while verifying output.");
+		            }finally{
+		            	getMonitor().stopMonitoring();
+		            }
+		        }
+		        log.info(eventDataRepo.getEvents().toString());				
+			}
+		});
         experimentMonitor.startMonitoring();
         experimentMonitor.waitForCompletion();
     }

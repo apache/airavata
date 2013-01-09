@@ -21,7 +21,7 @@
 
 package org.apache.airavata.core.gfac.utils;
 
-import org.apache.airavata.common.exception.UnspecifiedServerSettingsException;
+import org.apache.airavata.common.exception.UnspecifiedApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 
 public class PhoebusUtils {
@@ -31,7 +31,7 @@ public class PhoebusUtils {
 	public static boolean isPhoebusDriverConfigurationsDefined(String hostAddress) throws Exception{
 		try {
 			return getPhoebusDataChannelXIODriverParameters(hostAddress)!=null;
-		} catch (UnspecifiedServerSettingsException e) {
+		} catch (UnspecifiedApplicationSettingsException e) {
 			return false;
 		}
 	}

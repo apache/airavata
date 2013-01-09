@@ -21,10 +21,15 @@
 
 package org.apache.airavata.common.exception;
 
-public class UnspecifiedServerSettingsException extends ServerSettingsException {
+public class ApplicationSettingsException extends AiravataException {
 
-	private static final long serialVersionUID = -1159027432434546003L;
-	public UnspecifiedServerSettingsException(String key) {
-		super("The '"+key+"' is not configured in Server settings!!!");
+	private static final long serialVersionUID = -4901850535475160411L;
+
+	public ApplicationSettingsException(String message) {
+		super(message);
+	}
+	
+	public ApplicationSettingsException(String message, Throwable e) {
+		super(message, e);
 	}
 }

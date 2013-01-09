@@ -21,15 +21,18 @@
 
 package org.apache.airavata.common.exception;
 
-public class ServerSettingsException extends AiravataException {
+public class ApplicationSettingsLoadException extends ApplicationSettingsException {
 
-	private static final long serialVersionUID = -4901850535475160411L;
-
-	public ServerSettingsException(String message) {
+	private static final long serialVersionUID = -5102090895499711299L;
+	public ApplicationSettingsLoadException(String message) {
 		super(message);
 	}
 	
-	public ServerSettingsException(String message, Throwable e) {
-		super(message, e);
+	public ApplicationSettingsLoadException(Throwable e) {
+		this(e.getMessage(),e);
+	}
+	
+	public ApplicationSettingsLoadException(String message, Throwable e) {
+		super(message,e);
 	}
 }
