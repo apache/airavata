@@ -2,7 +2,7 @@ package org.apache.airavata.services.registry.rest.security;
 
 import org.apache.airavata.common.context.RequestContext;
 import org.apache.airavata.common.context.WorkflowContext;
-import org.apache.airavata.common.exception.ServerSettingsException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.security.AuthenticationException;
@@ -77,7 +77,7 @@ public class ServletRequestHelper {
         if (gatewayId == null) {
             try {
                 gatewayId = ServerSettings.getDefaultGatewayId();
-            } catch (ServerSettingsException e) {
+            } catch (ApplicationSettingsException e) {
                 throw new AuthenticationException("Unable to retrieve default gateway", e);
             }
         }

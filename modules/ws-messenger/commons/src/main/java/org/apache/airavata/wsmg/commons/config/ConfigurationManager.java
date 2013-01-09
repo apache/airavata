@@ -22,7 +22,7 @@
 package org.apache.airavata.wsmg.commons.config;
 
 
-import org.apache.airavata.common.exception.ServerSettingsException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 
 public class ConfigurationManager {
@@ -40,7 +40,7 @@ public class ConfigurationManager {
     public String getConfig(String configName) {
         try {
 			return ServerSettings.getSetting(configName);
-		} catch (ServerSettingsException e) {
+		} catch (ApplicationSettingsException e) {
 			e.printStackTrace();
 			return null;
 		}

@@ -21,6 +21,6 @@
 
 package org.apache.airavata.common.utils;
 
+public class ClientSettings extends ApplicationSettings {
 
-public class ServerSettings extends ApplicationSettings{
 }

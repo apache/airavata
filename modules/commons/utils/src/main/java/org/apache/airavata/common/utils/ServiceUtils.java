@@ -24,7 +24,7 @@ package org.apache.airavata.common.utils;
 import java.io.IOException;
 import java.net.SocketException;
 
-import org.apache.airavata.common.exception.ServerSettingsException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.TransportInDescription;
 import org.apache.axis2.util.Utils;
@@ -46,7 +46,7 @@ public class ServiceUtils {
 //        Properties properties = new Properties();
         try {
             localAddress = ServerSettings.getSetting(IP);
-        } catch (ServerSettingsException e) {
+        } catch (ApplicationSettingsException e) {
 			//we will ignore this exception since the properties file will not contain the values
 			//when it is ok to retrieve them from the axis2 context
 		}
@@ -61,7 +61,7 @@ public class ServiceUtils {
         
         try {
             port = (String) ServerSettings.getSetting(PORT);
-        } catch (ServerSettingsException e) {
+        } catch (ApplicationSettingsException e) {
 			//we will ignore this exception since the properties file will not contain the values
 			//when it is ok to retrieve them from the axis2 context
 		}

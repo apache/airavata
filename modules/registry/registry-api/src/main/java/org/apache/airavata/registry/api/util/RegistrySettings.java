@@ -25,15 +25,12 @@ import java.net.URL;
 import java.util.Properties;
 
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.registry.api.exception.RegistrySettingsException;
 import org.apache.airavata.registry.api.exception.RegistrySettingsLoadException;
-import org.apache.airavata.registry.api.exception.UnspecifiedRegistrySettingsException;
 
 public class RegistrySettings {
     private static final String REPOSITORY_PROPERTIES = "registry.properties";
-    private static final String SERVER_REPOSITORY_PROPERTIES = ServerSettings.REPOSITORY_PROPERTIES;
-    private static final String CLIENT_REPOSITORY_PROPERTIES = "airavata-client.properties";
     private static Properties properties = new Properties();
     private static Exception propertyLoadException;
     private static final String REGISTRY_ACCESSOR_CLASS = "class.registry.accessor";
@@ -43,9 +40,9 @@ public class RegistrySettings {
 				.getResource(REPOSITORY_PROPERTIES);
 		if (url == null) {
     		if (AiravataUtils.isServer()){
-    			 url=RegistrySettings.class.getClassLoader().getResource(SERVER_REPOSITORY_PROPERTIES);
+    			 url=RegistrySettings.class.getClassLoader().getResource(ApplicationSettings.SERVER_PROPERTIES);
         	}else{
-        		url=RegistrySettings.class.getClassLoader().getResource(CLIENT_REPOSITORY_PROPERTIES);
+        		url=RegistrySettings.class.getClassLoader().getResource(ApplicationSettings.CLIENT_PROPERTIES);
         	}
 		}
         try {

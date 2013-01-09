@@ -39,11 +39,11 @@
                                     <available file="${local.tomcat.distribution}"/>
                                     <then>
                                         <echo message="Using Tomcat distribution in local repository ..." />
-                                        <copy file="${local.tomcat.distribution}" todir="." overwrite="true"/>
+                                        <copy file="${local.tomcat.distribution}" todir="${project.build.directory}" overwrite="true"/>
                                     </then>
                                     <else>
                                         <echo message="Downloading Tomcat distribution ..." />
-                                        <get dest=".">
+                                        <get dest="${project.build.directory}">
                                             <url url="http://archive.apache.org/dist/tomcat/tomcat-${major.tomcat.version}/v${tomcat.version}/bin/apache-tomcat-${tomcat.version}.zip"/>
                                         </get>
 
@@ -51,9 +51,9 @@
                                 </if>
 
 
-                                <unzip src="../distribution/airavata-server/target/apache-airavata-server-${project.version}-bin.zip" dest="target/tests"/>
-                                <unzip src="../distribution/xbaya-gui/target/apache-airavata-xbaya-gui-${project.version}-bin.zip" dest="target/tests"/>
-                                <unzip src="apache-tomcat-${tomcat.version}.zip" dest="target/tests"/>
+                                <unzip src="../distribution/airavata-server/target/apache-airavata-server-${project.version}-bin.zip" dest="${project.build.directory}/tests"/>
+                                <unzip src="../distribution/xbaya-gui/target/apache-airavata-xbaya-gui-${project.version}-bin.zip" dest="${project.build.directory}/tests"/>
+                                <unzip src="${project.build.directory}/apache-tomcat-${tomcat.version}.zip" dest="${project.build.directory}/tests"/>
                                 <delete dir="${tomcat.work.dir}/webapps/examples"/>
                             </target>
                         </configuration>
@@ -78,7 +78,7 @@
                             <artifactId>apache-tomcat</artifactId>
                             <version>${tomcat.version}</version>
                             <packaging>zip</packaging>
-                            <file>apache-tomcat-${tomcat.version}.zip</file>
+                            <file>${project.build.directory}/apache-tomcat-${tomcat.version}.zip</file>
                         </configuration>
                     </execution>
                 </executions>
