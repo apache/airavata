@@ -23,5 +23,6 @@ package org.apache.airavata.common.utils;
 
 public enum ExecutionMode {
 	CLIENT,
-	SERVER
+	SERVER,
+	UNKNOWN
 }
