@@ -103,7 +103,10 @@ public class AsynchronousInvoker extends SimpleInvoker {
             }
             // Gfac operation failed, so xbaya side throws this exception
             if("ErrorResponse".equals(XMLUtil.stringToXmlElement3(this.getOutputMessage().toString()).getName())){
-                throw new WorkflowException((String) XMLUtil.stringToXmlElement3(this.getOutputMessage().toString()).children().next());
+                // Here we do not throw an exception, because if we throw an exception Interpreter will catch it and do the unsubscription,
+                // which is not needed because if there's an gfac side error gfac will send a failure and unsubscription will be done in monitoring
+                // so if we send an exception we are attempting to do two unsubscriptions which will cause a one unsubscription to fail.
+                return false;
             }
 
             return true;
