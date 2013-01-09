@@ -26,9 +26,6 @@ import java.util.UUID;
 import org.apache.airavata.client.impl.WorkflowOutputDataSettingsImpl;
 import org.apache.airavata.client.impl.WorkflowSchedulingSettingsImpl;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-
 public class ExperimentAdvanceOptions {
 	private String executionUser;
 	private String metadata;
@@ -152,6 +149,6 @@ public class ExperimentAdvanceOptions {
 	 * @throws AiravataAPIInvocationException
 	 */
 	public SecuritySettings getCustomSecuritySettings() throws AiravataAPIInvocationException{
-		throw new AiravataAPIInvocationException(new NotImplementedException());
+		throw new AiravataAPIUnimplementedException("Customizing security is not supported by the client in this binary!!!");
 	}
 }
