@@ -94,16 +94,6 @@
 			</includes>
 		</fileSet>
 
-
-		<fileSet>
-			<directory>src/main/resources/conf</directory>
-			<outputDirectory>bin</outputDirectory>
-			<includes>
-				<include>airavata-client.properties</include>
-				<include>registry.properties</include>
-				<include>log4j.properties</include>
-			</includes>
-		</fileSet>
 		<fileSet>
 			<directory>../../../samples/airavata-client</directory>
 			<outputDirectory>samples</outputDirectory>
