@@ -301,18 +301,18 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 
     private String setupAndLaunch(String workflowAsString, String topic, String gatewayId, String username,
                                   NameValue[] inputs,Map<String,String>configurations,boolean inNewThread,WorkflowContextHeaderBuilder builder) throws XMLStreamException, MalformedURLException, RepositoryException, RegistryException, AiravataAPIInvocationException {
-        System.err.println("Launch is called for topi:");
+        log.debug("Launch is called for topic:"+topic);
 
         Workflow workflow = null;
         try {
             workflow = new Workflow(workflowAsString);
-            System.err.println("Workflow Object created");
+            log.debug("Workflow Object created");
         } catch (GraphException e1) {
             e1.printStackTrace();
         } catch (ComponentException e1) {
             e1.printStackTrace();
         }
-        System.err.println("Setting Input values");
+        log.debug("Setting Input values");
         List<InputNode> inputNodes = new ODEClient().getInputNodes(workflow);
         for (InputNode inputNode : inputNodes) {
             for (NameValue input : inputs) {
@@ -326,7 +326,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
             }
 
         }
-        System.err.println("Input all set");
+        log.debug("Input all set");
 
         XBayaConfiguration conf = null;
         try {
@@ -346,7 +346,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         interpreter = new WorkflowInterpreter(workflowInterpreterConfiguration, new SSWorkflowInterpreterInteractorImpl());
         listener = new WorkflowInterpretorEventListener(workflow, conf);
         try {
-             System.err.println("start listener set");
+        	log.debug("start listener set");
             listener.start();
         } catch (MonitorException e1) {
             e1.printStackTrace();
@@ -361,13 +361,13 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 //        interpreter.setActOnProvenance(provenance);
         interpreter.setProvenanceWriter(runner);
         final String experimentId = topic;
-        System.err.println("Created the interpreter");
+        log.debug("Created the interpreter");
         if(inNewThread){
             runInThread(finalInterpreter,finalListener,experimentId,builder);
         }else{
             executeWorkflow(finalInterpreter, finalListener, experimentId);
         }
-        System.err.println("topic return:" + topic);
+        log.info("Experiment launched :" + topic);
         return topic;
     }
 
