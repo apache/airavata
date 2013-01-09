@@ -20,7 +20,7 @@
 */
 package org.apache.airavata.registry.services;
 
-import org.apache.airavata.common.exception.ServerSettingsException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;

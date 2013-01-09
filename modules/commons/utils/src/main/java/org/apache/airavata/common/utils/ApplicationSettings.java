@@ -131,4 +131,9 @@ public abstract class ApplicationSettings {
     	properties.setProperty(key, value);
     	saveProperties();
     }
+    
+    public static boolean isSettingDefined(String key) throws ApplicationSettingsException{
+    	validateSuccessfulPropertyFileLoad();
+    	return properties.containsKey(key);
+    }
 }
