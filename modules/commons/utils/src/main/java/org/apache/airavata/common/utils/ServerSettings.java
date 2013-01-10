@@ -21,6 +21,33 @@
 
 package org.apache.airavata.common.utils;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+
 
 public class ServerSettings extends ApplicationSettings{
+    private static final String DEFAULT_GATEWAY_ID="gateway.id";
+    private static final String SYSTEM_USER="system.user";
+    private static final String SYSTEM_USER_PASSWORD="system.password";
+    private static final String SYSTEM_USER_GATEWAY="system.gateway";
+    private static final String TOMCAT_PORT = "port";
+    
+	public static String getDefaultGatewayId()throws ApplicationSettingsException{
+    	return getSetting(DEFAULT_GATEWAY_ID);
+    }
+    
+    public static String getSystemUser() throws ApplicationSettingsException{
+    	return getSetting(SYSTEM_USER);
+    }
+    
+    public static String getSystemUserPassword() throws ApplicationSettingsException{
+    	return getSetting(SYSTEM_USER_PASSWORD);
+    }
+    
+    public static String getSystemUserGateway() throws ApplicationSettingsException{
+    	return getSetting(SYSTEM_USER_GATEWAY);
+    }
+
+    public static String getTomcatPort() throws ApplicationSettingsException {
+        return getSetting(TOMCAT_PORT);
+    }
 }
