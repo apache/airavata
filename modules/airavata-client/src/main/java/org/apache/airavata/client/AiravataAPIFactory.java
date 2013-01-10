@@ -26,6 +26,7 @@ import java.net.URI;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.impl.PasswordCallBackImpl;
+import org.apache.airavata.common.utils.SecurityUtil;
 import org.apache.airavata.registry.api.PasswordCallback;
 
 public class AiravataAPIFactory {
@@ -39,6 +40,14 @@ public class AiravataAPIFactory {
     }
 	
 	public static AiravataAPI getAPI(URI registryURL, String gateway, String username, PasswordCallback callback) throws AiravataAPIInvocationException{
+        return getAPI(registryURL, gateway, username, username, callback);
+    }
+
+    public static AiravataAPI getAPI(URI registryURL, String gateway, String username, PasswordCallback callback,
+                                     String trustStoreFilePath, String trustStorePassword)
+            throws AiravataAPIInvocationException{
+
+        SecurityUtil.setTrustStoreParameters(trustStoreFilePath, trustStorePassword);
         return getAPI(registryURL, gateway, username, username, callback);
     }
     

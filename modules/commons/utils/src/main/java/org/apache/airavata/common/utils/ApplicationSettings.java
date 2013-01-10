@@ -39,6 +39,10 @@ public abstract class ApplicationSettings {
 	private static Properties properties = new Properties();
     private static Exception propertyLoadException;
 
+
+    protected static final String TRUST_STORE_PATH="trust.store";
+    protected static final String TRUST_STORE_PASSWORD="trust.store.password";
+
     private final static Logger logger = LoggerFactory.getLogger(ApplicationSettings.class);
 
     static{
@@ -111,5 +115,17 @@ public abstract class ApplicationSettings {
     public static boolean isSettingDefined(String key) throws ApplicationSettingsException{
     	validateSuccessfulPropertyFileLoad();
     	return properties.containsKey(key);
+    }
+
+    public static String getTrustStorePath() throws ApplicationSettingsException {
+        return getSetting(TRUST_STORE_PATH);
+    }
+
+    public static String getTrustStorePassword() throws ApplicationSettingsException {
+        return getSetting(TRUST_STORE_PASSWORD);
+    }
+
+    public static void initializeTrustStore() throws ApplicationSettingsException {
+        SecurityUtil.setTrustStoreParameters(getTrustStorePath(), getTrustStorePassword());
     }
 }

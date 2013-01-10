@@ -21,6 +21,8 @@
 
 package org.apache.airavata.common.utils;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+
 public class ClientSettings extends ApplicationSettings {
 
 }
