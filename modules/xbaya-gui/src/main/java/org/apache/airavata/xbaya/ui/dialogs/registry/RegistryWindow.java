@@ -187,6 +187,12 @@ public class RegistryWindow {
             e.printStackTrace();
         }
 
+        try {
+            ClientSettings.initializeTrustStore();
+        } catch (ApplicationSettingsException e) {
+            throw new RuntimeException("An error occurred while initializing client configurations");
+        }
+
         this.passwordTextField.setText(engine.getConfiguration().getRegistryPassphrase());
         XBayaLabel urlLabel = new XBayaLabel("URL", this.urlTextField);
         XBayaLabel gatewayLabel = new XBayaLabel("Gateway", this.gatewayTextField);
