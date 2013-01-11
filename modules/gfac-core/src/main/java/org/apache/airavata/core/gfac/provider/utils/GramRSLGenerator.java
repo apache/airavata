@@ -177,7 +177,6 @@ public class GramRSLGenerator {
         }
         if (app.getQueue() != null) {
             if (app.getQueue().getQueueName() != null) {
-                System.out.println("Testing");
                 log.debug("Setting job queue to " + app.getQueue().getQueueName());
                 jobAttr.setQueue(app.getQueue().getQueueName());
             }
