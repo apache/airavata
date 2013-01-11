@@ -82,7 +82,7 @@ public class GridFtp {
         try {
 
             String destPath = destURI.getPath();
-            log.debug(("Creating Directory = " + destHost + "=" + destPath));
+            log.info(("Creating Directory = " + destHost + "=" + destPath));
 
             destClient = new GridFTPClient(destHost.hostName, destHost.port);
 
@@ -144,9 +144,9 @@ public class GridFtp {
         try {
 
             String remoteFile = destURI.getPath();
-            log.debug("The remote file is " + remoteFile);
+            log.info("The remote file is " + remoteFile);
 
-            log.debug("Setup GridFTP Client");
+            log.info("Setup GridFTP Client");
 
             ftpClient = new GridFTPClient(contactInfo.hostName, contactInfo.port);
             ftpClient.setAuthorization(new HostAuthorization(GridFtp.HOST));
@@ -154,7 +154,7 @@ public class GridFtp {
             ftpClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
             makeExternalConfigurations(ftpClient, false);
 
-            log.debug("Uploading file");
+            log.info("Uploading file");
             if (checkBinaryExtensions(remoteFile)) {
                 log.debug("Transfer mode is set to Binary for a file upload");
                 ftpClient.setType(Session.TYPE_IMAGE);
