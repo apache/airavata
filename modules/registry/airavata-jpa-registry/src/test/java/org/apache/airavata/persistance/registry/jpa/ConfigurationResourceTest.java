@@ -44,6 +44,7 @@ public class ConfigurationResourceTest extends AbstractResourceTest {
         java.util.Date d = calender.getTime();
         Timestamp currentTime = new Timestamp(d.getTime());
         configuration.setExpireDate(currentTime);
+        configuration.setCategoryID("SYSTEM");
         configuration.save();
 
         assertTrue("Configuration Save succuessful", ResourceUtils.isConfigurationExist("testConfigKey"));

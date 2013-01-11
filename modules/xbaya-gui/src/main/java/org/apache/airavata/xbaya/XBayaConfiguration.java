@@ -143,6 +143,8 @@ public class XBayaConfiguration extends Observable implements Observer {
     private XBayaExecutionMode xbayaExecutionMode=XBayaExecutionMode.IDE;
     
     private List<XBayaExecutionModeListener> xbayaExecutionModeChangeListners=new ArrayList<XBayaExecutionModeListener>();
+
+    private boolean regURLSetByCMD = false;
     
     public enum XBayaExecutionMode{
     	IDE,
@@ -914,6 +916,14 @@ public class XBayaConfiguration extends Observable implements Observer {
 	public void setJcrComponentRegistry(JCRComponentRegistry jcrComponentRegistry) {
 		this.jcrComponentRegistry = jcrComponentRegistry;
 	}
+
+    public boolean isRegURLSetByCMD() {
+        return regURLSetByCMD;
+    }
+
+    public void setRegURLSetByCMD(boolean regURLSetByCMD) {
+        this.regURLSetByCMD = regURLSetByCMD;
+    }
 
     //    public AiravataAPI setAiravataAPI() {
 //        try{

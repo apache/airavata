@@ -30,7 +30,8 @@ create table Configuration
         config_key varchar(255),
         config_val varchar(255),
         expire_date TIMESTAMP DEFAULT '0000-00-00 00:00:00',
-        PRIMARY KEY(config_key, config_val)
+        category_id varchar (255),
+        PRIMARY KEY(config_key, config_val, category_id)
 );
 
 create table Users

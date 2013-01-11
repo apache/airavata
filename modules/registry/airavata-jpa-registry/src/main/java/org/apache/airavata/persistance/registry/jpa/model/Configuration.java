@@ -31,6 +31,8 @@ public class Configuration implements Serializable {
     private String config_key;
     @Id
     private String config_val;
+    @Id
+    private String category_id;
     private Timestamp expire_date;
 
     public String getConfig_key() {
@@ -55,5 +57,13 @@ public class Configuration implements Serializable {
 
     public void setExpire_date(Timestamp expire_date) {
         this.expire_date = expire_date;
+    }
+
+    public String getCategory_id() {
+        return category_id;
+    }
+
+    public void setCategory_id(String category_id) {
+        this.category_id = category_id;
     }
 }

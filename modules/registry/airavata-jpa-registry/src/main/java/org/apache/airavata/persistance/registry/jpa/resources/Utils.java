@@ -338,6 +338,7 @@ public class Utils {
         configurationResource.setConfigKey(o.getConfig_key());
         configurationResource.setConfigVal(o.getConfig_val());
         configurationResource.setExpireDate(o.getExpire_date());
+        configurationResource.setCategoryID(o.getCategory_id());
         return configurationResource;
     }
 

@@ -24,10 +24,12 @@ package org.apache.airavata.persistance.registry.jpa.model;
 public class Configuration_PK {
     private String config_key;
     private String config_val;
+    private String category_id;
 
-    public Configuration_PK(String config_key, String config_val) {
+    public Configuration_PK(String config_key, String config_val, String category_id) {
         this.config_key = config_key;
         this.config_val = config_val;
+        this.category_id = category_id;
     }
 
     public Configuration_PK() {
@@ -58,5 +60,13 @@ public class Configuration_PK {
 
     public String getConfig_val() {
         return config_val;
+    }
+
+    public String getCategory_id() {
+        return category_id;
+    }
+
+    public void setCategory_id(String category_id) {
+        this.category_id = category_id;
     }
 }

@@ -202,6 +202,9 @@ public class XBaya {
                     String registryURL = args[index];
                     try {
                         this.config.setRegistryURL(parseURL(registryURL));
+                        // we need to give preference when a user set registry url from the
+                        // command line
+                        this.config.setRegURLSetByCMD(true);
                     } catch (URISyntaxException e) {
                         String message = "The message box URL is in wrong format: " + registryURL;
                         logger.warn(message, e);
