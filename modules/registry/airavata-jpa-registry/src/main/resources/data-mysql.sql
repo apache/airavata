@@ -174,7 +174,8 @@ create table Node_Data
        status varchar(100),
        start_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
        last_update_time TIMESTAMP DEFAULT now() on update now(),
-       PRIMARY KEY(workflow_instanceID, node_id),
+       execution_index int NOT NULL,
+       PRIMARY KEY(workflow_instanceID, node_id, execution_index),
        FOREIGN KEY (workflow_instanceID) REFERENCES Workflow_Data(workflow_instanceID) ON DELETE CASCADE
 );
 

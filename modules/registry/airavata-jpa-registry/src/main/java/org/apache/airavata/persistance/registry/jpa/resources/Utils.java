@@ -536,6 +536,7 @@ public class Utils {
 		nodeDataResource.setStatus(o.getStatus());
         nodeDataResource.setStartTime(o.getStart_time());
         nodeDataResource.setLastUpdateTime(o.getLast_update_time());
+        nodeDataResource.setExecutionIndex(o.getExecution_index());
         return nodeDataResource;
     }
 

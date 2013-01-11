@@ -66,6 +66,7 @@ public class NodeDataResourceTest extends AbstractResourceTest {
         nodeDataResource.setInputs("testInput");
 
         nodeDataResource.setStatus("testStatus");
+        nodeDataResource.setExecutionIndex(0);
         nodeDataResource.save();
 
         assertTrue("node data resource saved successfully", workflowDataResource.isNodeExists("testNodeID"));
