@@ -24,14 +24,16 @@ package org.apache.airavata.persistance.registry.jpa.model;
 public class Node_DataPK {
     private String workflow_instanceID;
     private String node_id;
+    private int execution_index;
 
     public Node_DataPK() {
         ;
     }
 
-    public Node_DataPK(String workflow_instanceID, String node_id) {
+    public Node_DataPK(String workflow_instanceID, String node_id, int execution_index) {
         this.workflow_instanceID = workflow_instanceID;
         this.node_id = node_id;
+        this.execution_index = execution_index;
     }
 
     @Override
@@ -58,5 +60,13 @@ public class Node_DataPK {
 
     public void setNode_id(String node_id) {
         this.node_id = node_id;
+    }
+
+    public int getExecution_index() {
+        return execution_index;
+    }
+
+    public void setExecution_index(int execution_index) {
+        this.execution_index = execution_index;
     }
 }

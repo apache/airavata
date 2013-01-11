@@ -38,6 +38,9 @@ public class Node_Data {
 	@Id
 	private String node_id;
 
+    @Id
+    private int execution_index;
+
 	private String node_type;
 	@Lob
     private byte[] inputs;
@@ -117,6 +120,14 @@ public class Node_Data {
 
     public void setWorkflow_instanceID(String workflow_instanceID) {
         this.workflow_instanceID = workflow_instanceID;
+    }
+
+    public int getExecution_index() {
+        return execution_index;
+    }
+
+    public void setExecution_index(int execution_index) {
+        this.execution_index = execution_index;
     }
 }
 

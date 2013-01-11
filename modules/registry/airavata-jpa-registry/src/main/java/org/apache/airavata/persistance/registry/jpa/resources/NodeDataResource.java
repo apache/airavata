@@ -45,6 +45,7 @@ public class NodeDataResource extends AbstractResource{
     private String status;
     private Timestamp startTime;
     private Timestamp lastUpdateTime;
+    private int executionIndex;
 
     public WorkflowDataResource getWorkflowDataResource() {
         return workflowDataResource;
@@ -136,7 +137,7 @@ public class NodeDataResource extends AbstractResource{
             lastUpdateTime = new Timestamp(date.getTime());
         }
         EntityManager em = ResourceUtils.getEntityManager();
-        Node_Data existingNodeData = em.find(Node_Data.class, new Node_DataPK(workflowDataResource.getWorkflowInstanceID(), nodeID));
+        Node_Data existingNodeData = em.find(Node_Data.class, new Node_DataPK(workflowDataResource.getWorkflowInstanceID(), nodeID, executionIndex));
         em.close();
 
         em = ResourceUtils.getEntityManager();
@@ -159,6 +160,7 @@ public class NodeDataResource extends AbstractResource{
         nodeData.setLast_update_time(lastUpdateTime);
         nodeData.setStart_time(startTime);
         nodeData.setStatus(status);
+        nodeData.setExecution_index(executionIndex);
         if(existingNodeData != null){
             existingNodeData.setInputs(inputsByte);
             existingNodeData.setOutputs(outputsByte);
@@ -166,11 +168,20 @@ public class NodeDataResource extends AbstractResource{
             existingNodeData.setNode_type(nodeType);
             existingNodeData.setStart_time(startTime);
             existingNodeData.setStatus(status);
+            existingNodeData.setExecution_index(executionIndex);
             nodeData = em.merge(existingNodeData);
         }  else {
             em.persist(nodeData);
         }
         em.getTransaction().commit();
         em.close();
+    }
+
+    public int getExecutionIndex() {
+        return executionIndex;
+    }
+
+    public void setExecutionIndex(int executionIndex) {
+        this.executionIndex = executionIndex;
     }
 }
