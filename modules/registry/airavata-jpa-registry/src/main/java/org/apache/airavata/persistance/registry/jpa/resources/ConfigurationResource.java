@@ -42,6 +42,7 @@ public class ConfigurationResource extends AbstractResource {
     private String configKey;
     private String configVal;
     private Timestamp expireDate;
+    private String categoryID = "SYSTEM";
 
     public ConfigurationResource() {
     }
@@ -156,7 +157,7 @@ public class ConfigurationResource extends AbstractResource {
         try {
             EntityManager em = ResourceUtils.getEntityManager();
             //whether existing
-            Configuration existing = em.find(Configuration.class, new Configuration_PK(configKey, configVal));
+            Configuration existing = em.find(Configuration.class, new Configuration_PK(configKey, configVal, categoryID));
             em.close();
 
             em = ResourceUtils.getEntityManager();
@@ -165,8 +166,10 @@ public class ConfigurationResource extends AbstractResource {
             configuration.setConfig_key(configKey);
             configuration.setConfig_val(configVal);
             configuration.setExpire_date(expireDate);
+            configuration.setCategory_id(categoryID);
             if (existing != null) {
                 existing.setExpire_date(expireDate);
+                existing.setCategory_id(categoryID);
                 configuration = em.merge(existing);
             } else {
                 em.merge(configuration);
@@ -216,5 +219,13 @@ public class ConfigurationResource extends AbstractResource {
      */
     public void setConfigVal(String configVal) {
         this.configVal = configVal;
+    }
+
+    public String getCategoryID() {
+        return categoryID;
+    }
+
+    public void setCategoryID(String categoryID) {
+        this.categoryID = categoryID;
     }
 }

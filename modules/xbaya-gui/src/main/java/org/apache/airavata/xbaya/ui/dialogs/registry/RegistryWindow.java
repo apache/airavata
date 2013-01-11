@@ -168,7 +168,9 @@ public class RegistryWindow {
         this.usernameTextField = new XBayaTextField();
         this.passwordTextField = new JPasswordField();
         try {
-            if (ClientSettings.isSettingDefined(XBayaConstants.XBAYA_REGISTRY_URL)){
+            if (engine.getConfiguration().isRegURLSetByCMD()){
+                this.urlTextField.setText(engine.getConfiguration().getRegistryURL().toASCIIString());
+            } else if (ClientSettings.isSettingDefined(XBayaConstants.XBAYA_REGISTRY_URL)){
                 this.urlTextField.setText(ClientSettings.getSetting(XBayaConstants.XBAYA_REGISTRY_URL));
             }  else {
                 this.urlTextField.setText(engine.getConfiguration().getRegistryURL().toASCIIString());
