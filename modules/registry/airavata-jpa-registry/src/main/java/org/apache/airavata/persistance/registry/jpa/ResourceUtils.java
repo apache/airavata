@@ -287,9 +287,8 @@ public class ResourceUtils {
     public static boolean isConfigurationExists(String configKey, String configVal){
         try{
             //Currently categoryID is hardcoded value
-            String categoryID = "SYSTEM";
             EntityManager em = ResourceUtils.getEntityManager();
-            Configuration existing = em.find(Configuration.class, new Configuration_PK(configKey, configVal, categoryID));
+            Configuration existing = em.find(Configuration.class, new Configuration_PK(configKey, configVal, AbstractResource.ConfigurationConstants.CATEGORY_ID_DEFAULT_VALUE));
             em.close();
             return existing!= null;
         } catch (Exception e){

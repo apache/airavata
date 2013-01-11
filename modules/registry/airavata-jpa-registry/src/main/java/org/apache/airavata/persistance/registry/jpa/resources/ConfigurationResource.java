@@ -42,7 +42,7 @@ public class ConfigurationResource extends AbstractResource {
     private String configKey;
     private String configVal;
     private Timestamp expireDate;
-    private String categoryID = "SYSTEM";
+    private String categoryID = ConfigurationConstants.CATEGORY_ID_DEFAULT_VALUE;
 
     public ConfigurationResource() {
     }

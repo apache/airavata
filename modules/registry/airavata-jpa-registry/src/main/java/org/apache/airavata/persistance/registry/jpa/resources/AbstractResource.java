@@ -55,6 +55,8 @@ public abstract class AbstractResource implements Resource {
         public static final String CONFIG_KEY = "config_key";
         public static final String CONFIG_VAL = "config_val";
         public static final String EXPIRE_DATE = "expire_date";
+        public static final String CATEGORY_ID = "category_id";
+        public static final String CATEGORY_ID_DEFAULT_VALUE = "SYSTEM";
     }
 
 
