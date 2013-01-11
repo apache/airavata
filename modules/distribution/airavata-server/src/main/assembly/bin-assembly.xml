@@ -46,6 +46,7 @@
 				<exclude>commons-logging*.jar</exclude>
 				<exclude>xom*.jar</exclude>
                 <exclude>xercesImpl*.jar</exclude>
+                <exclude>icu4j*.jar</exclude>
 			</excludes>
 		</fileSet>
 		<fileSet>
@@ -281,6 +282,7 @@
                 <include>org.codehaus.jackson:jackson-mapper-asl</include>
                 <include>org.codehaus.jackson:jackson-xc</include>
                 <include>xerces:xercesImpl:jar:2.9.1</include>
+                <include>com.ibm.icu:icu4j</include>
 			</includes>
 		</dependencySet>
 		<dependencySet>
