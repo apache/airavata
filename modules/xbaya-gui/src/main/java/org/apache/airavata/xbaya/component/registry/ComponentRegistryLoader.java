@@ -107,7 +107,11 @@ public class ComponentRegistryLoader implements Cancelable, Observer {
     /**
      * @param registry
      */
-    private void runInThread(ComponentRegistry registry) {
+    /**
+     * TODO : this method triggered twice when connecting to the registy. We need to find
+     *  why it is happening
+     */
+    private synchronized void runInThread(ComponentRegistry registry) {
         try {
         	if (getComponentTreeNodesMap().containsKey(registry.getName())){
         		this.getEngine().getGUI().getComponentSelector().removeComponentTree(getComponentTreeNodesMap().get(registry.getName()));
