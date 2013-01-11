@@ -48,6 +48,7 @@
                                     <outputDirectory>target/axis2-${axis2.version}</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
+                            <excludes>**/icu4j-2.6.1.jar</excludes>
                         </configuration>
                     </execution>
                 </executions>
@@ -490,6 +491,11 @@
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
             <version>2.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.icu</groupId>
+            <artifactId>icu4j</artifactId>
+            <version>3.4.4</version>
         </dependency>
     </dependencies>
     <properties>
