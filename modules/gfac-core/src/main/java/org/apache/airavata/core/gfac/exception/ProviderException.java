@@ -31,15 +31,18 @@ import org.apache.airavata.core.gfac.provider.Provider;
 public class ProviderException extends GfacException {
 
 	private static final long serialVersionUID = 7994167766799131223L;
+    private String aditionalInfo[] = null;
 
 	public ProviderException(String message, InvocationContext invocationContext, String...additionalExceptiondata) {
         super(message);
+        aditionalInfo = additionalExceptiondata;
         sendFaultNotification(message, invocationContext, new Exception(message),additionalExceptiondata);
     }
 
     public ProviderException(String message, Throwable cause, InvocationContext invocationContext, String...additionalExceptiondata) {
         super(message, cause);
         Exception e = new Exception(cause);
+        aditionalInfo = additionalExceptiondata;
         sendFaultNotification(message, invocationContext, e, additionalExceptiondata);
     }
 
@@ -51,4 +54,8 @@ public class ProviderException extends GfacException {
         }
 //		invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,additionalExceptiondata);
 	}
+
+    public String[] getAditionalInfo() {
+        return aditionalInfo;
+    }
 }
