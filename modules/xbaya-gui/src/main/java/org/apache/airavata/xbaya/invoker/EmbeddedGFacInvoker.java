@@ -41,6 +41,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
+import org.apache.airavata.core.gfac.exception.ProviderException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
@@ -340,8 +341,10 @@ public class EmbeddedGFacInvoker implements Invoker {
             String message = "Unexpected error: " + this.serviceInformation;
             this.notifier.invocationFailed(message, e);
             throw new WorkflowException(message, e);
+        } catch(ProviderException e){
+            this.notifier.invocationFailed(e.getMessage() + "\n" + e.getAditionalInfo()[0],e);
         } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            this.notifier.invocationFailed(e.getMessage(),e);
         }
         return true;
     }
