@@ -189,10 +189,10 @@ public class GramProvider extends AbstractProvider {
              */
             job.request(gateKeeper, false, false);
             String gramJobid = job.getIDAsString();
-            log.debug("JobID = " + gramJobid);
+            log.info("JobID = " + gramJobid);
             invocationContext.getExecutionContext().getNotifier().info(invocationContext, "JobID=" + gramJobid);
 
-            log.debug(buf.toString());
+            log.info(buf.toString());
 
             invocationContext
                     .getExecutionContext()
@@ -277,8 +277,8 @@ public class GramProvider extends AbstractProvider {
                     URI stdoutURI = GfacUtils.createGsiftpURI(endpoint, app.getStandardOutput());
                     URI stderrURI = GfacUtils.createGsiftpURI(endpoint, app.getStandardError());
 
-                    log.debug("STDOUT:" + stdoutURI.toString());
-                    log.debug("STDERR:" + stderrURI.toString());
+                    log.info("STDOUT:" + stdoutURI.toString());
+                    log.info("STDERR:" + stderrURI.toString());
 
                     File logDir = new File("./service_logs");
                     if (!logDir.exists()) {
