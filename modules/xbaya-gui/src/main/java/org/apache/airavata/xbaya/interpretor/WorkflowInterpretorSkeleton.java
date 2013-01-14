@@ -44,6 +44,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.client.api.DescriptorRecordAlreadyExistsException;
 import org.apache.airavata.client.stub.interpretor.NameValue;
 import org.apache.airavata.client.tools.PeriodicExecutorThread;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -166,12 +167,14 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
                                 AiravataAPI registry = getAiravataAPI();
 								if(!registry.getApplicationManager().isHostDescriptorExists(host.getType().getHostName())){
                                     log.debug("Saving the predefined Host: " + host.getType().getHostName());
-                                    registry.getApplicationManager().saveHostDescription(host);
+                                    registry.getApplicationManager().addHostDescription(host);
                                 }
                             }
 		                } catch (AiravataAPIInvocationException e) {
 		                    e.printStackTrace();
-		                }
+		                } catch (DescriptorRecordAlreadyExistsException e) {
+                            e.printStackTrace();
+                        }
                     }else{
 		                provenance = false;
 		            }
