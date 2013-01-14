@@ -54,11 +54,16 @@
                                 <unzip src="../distribution/airavata-server/target/apache-airavata-server-${project.version}-bin.zip" dest="${project.build.directory}/tests"/>
                                 <unzip src="../distribution/xbaya-gui/target/apache-airavata-xbaya-gui-${project.version}-bin.zip" dest="${project.build.directory}/tests"/>
                                 <unzip src="${project.build.directory}/apache-tomcat-${tomcat.version}.zip" dest="${project.build.directory}/tests"/>
-                                <copy todir="${tomcat.work.dir}/webapps/axis2">
+                                <copy todir="${tomcat.work.dir}/webapps/axis2/META-INF">
                                     <fileset dir="../distribution/airavata-server/target/axis2-${axis2.version}/META-INF"/>
-                                    <fileset dir="../distribution/airavata-server/target/axis2-${axis2.version}/WEB-INF"/>
+                                </copy>
+				<copy todir="${tomcat.work.dir}/webapps/axis2/axis2-web">
                                     <fileset dir="../distribution/airavata-server/target/axis2-${axis2.version}/axis2-web"/>
                                 </copy>
+				<copy todir="${tomcat.work.dir}/webapps/axis2/WEB-INF">
+                                    <fileset dir="../distribution/airavata-server/target/axis2-${axis2.version}/WEB-INF"/>
+                                </copy>
+
                                 <delete dir="${tomcat.work.dir}/webapps/examples"/>
                             </target>
                         </configuration>
