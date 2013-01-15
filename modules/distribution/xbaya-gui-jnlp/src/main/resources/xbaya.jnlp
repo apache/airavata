@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0+"
+   codebase="http://localhost/airavata-xbaya/"
+   href="xbaya.jnlp">
+<information>
+	<title>XBaya</title>
+	<vendor>Apache Airavata</vendor>
+	<icon href="airavata-logo.png"/>
+	<offline-allowed/>
+</information>
+<security>
+	<all-permissions/>
+</security>
+<resources>
+	<j2se version="1.5+" java-vm-args="-Xmx1024m" />
+	<property name="log" value="org.apache.airavata.xbaya:ALL"/>
+	    DEPENDENT_JARS
+
+</resources>
+<application-desc main-class="org.apache.airavata.xbaya.XBaya">
+
+</application-desc>
+</jnlp>
