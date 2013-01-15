@@ -58,11 +58,9 @@ import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.jython.lib.ServiceNotifiable;
 import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
-import org.apache.axiom.om.OMAbstractFactory;
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.OMFactory;
-import org.apache.axiom.om.OMNamespace;
+import org.apache.axiom.om.*;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
+import org.apache.axiom.om.impl.dom.factory.OMDOMFactory;
 import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -256,7 +254,9 @@ public class EmbeddedGFacInvoker implements Invoker {
      */
     public synchronized boolean invoke() throws WorkflowException {
         try {
-            createActualParameters();
+            OMElement inputMessage = createActualParameters();
+            Object wsifMessageElement = new WSIFMessageElement(XMLUtil.stringToXmlElement3(inputMessage.toStringWithConsume()));
+            this.notifier.invokingService(new WSIFMessageElement((XmlElement)wsifMessageElement));
             JobContext jobContext = new JobContext(actualParameters, EmbeddedGFacInvoker.this.topic,
                     EmbeddedGFacInvoker.this.serviceName, EmbeddedGFacInvoker.this.gfacURL);
             GFacConfiguration gFacConfiguration = new GFacConfiguration(EmbeddedGFacInvoker.this.configuration.getMyProxyServer(),
@@ -428,25 +428,31 @@ public class EmbeddedGFacInvoker implements Invoker {
         return null;
     }
 
-    private void createActualParameters() throws AiravataAPIInvocationException, RegistryException, XMLStreamException {
+    private OMElement createActualParameters() throws AiravataAPIInvocationException, RegistryException, XMLStreamException {
+        OMFactory omFactory = OMAbstractFactory.getOMFactory();
+        OMElement invoke_inputParams = omFactory.createOMElement(new QName("invoke_InputParams"));
         ServiceDescription serviceDescription = airavataAPI.getApplicationManager().getServiceDescription(this.serviceName);
         if (serviceDescription == null) {
             throw new RegistryException(new Exception("Service Description not found in registry."));
         }
         ServiceDescriptionType serviceDescriptionType = serviceDescription.getType();
-        for(String inputName:this.inputNames) {
+        for (String inputName : this.inputNames) {
+            OMElement omElement = omFactory.createOMElement(new QName(inputName));
             int index = this.inputNames.indexOf(inputName);
             Object value = this.inputValues.get(index);
             InputParameterType parameter = serviceDescriptionType.getInputParametersArray(index);
             if (value instanceof XmlElement) {
-                 XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(XMLUtil.xmlElementToString((XmlElement) value)));
-                 StAXOMBuilder builder = new StAXOMBuilder(reader);
-                 OMElement input = builder.getDocumentElement();
-                 actualParameters.put(parameter, GfacUtils.getInputActualParameter(parameter, input));
-             } else if (value instanceof String) {
-
-                 actualParameters.put(parameter, GfacUtils.getInputActualParameter(parameter, AXIOMUtil.stringToOM("<value>" + value + "</value>")));
-             }
+                omElement.setText((String)((XmlElement) value).children().next());
+                XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(XMLUtil.xmlElementToString((XmlElement) value)));
+                StAXOMBuilder builder = new StAXOMBuilder(reader);
+                OMElement input = builder.getDocumentElement();
+                actualParameters.put(parameter, GfacUtils.getInputActualParameter(parameter, input));
+            } else if (value instanceof String) {
+                omElement.setText((String)value);
+                actualParameters.put(parameter, GfacUtils.getInputActualParameter(parameter, AXIOMUtil.stringToOM("<value>" + value + "</value>")));
+            }
+            invoke_inputParams.addChild(omElement);
         }
+        return invoke_inputParams;
     }
 }

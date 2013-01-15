@@ -72,7 +72,7 @@ public class ServiceNotificationSender implements ServiceNotifiable {
      * @param nodeID
      */
     protected ServiceNotificationSender(WorkflowNotifier notifier, EndpointReference eventSink,
-            InvocationEntity initiator, URI workflowID, String nodeID, WorkflowTrackingContext context) {
+            InvocationEntity initiator, URI workflowID, String nodeID, WorkflowTrackingContext context, InvocationContext invocationContext) {
         this.notifier = notifier;
         this.eventSink = eventSink;
         this.initiator = initiator;
@@ -82,7 +82,7 @@ public class ServiceNotificationSender implements ServiceNotifiable {
         // In case of creating a service on the fly, there is no serviceID at
         // the beginning.
         this.serviceID = "";
-
+        this.invocationContext = invocationContext;
         URI receiverWorkflowID = this.workflowID;
         URI receiverServiceID = URI.create(this.serviceID);
         String receiverWorkflowNodeID = this.nodeID;
