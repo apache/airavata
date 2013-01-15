@@ -101,8 +101,10 @@
                         <configuration>
                             <target>
                                 <zip destfile="${project.build.directory}/xbaya-jnlp-${project.version}.zip"
-                                     basedir="${jnlp.direcotry}"
-                                        />
+                                     basedir="${jnlp.direcotry}"/>
+                                <tar destfile="${project.build.directory}/xbaya-jnlp-${project.version}.tar" basedir="${jnlp.direcotry}"/>
+                                <gzip destfile="${project.build.directory}/xbaya-jnlp-${project.version}.tar.gz" src="${project.build.directory}/xbaya-jnlp-${project.version}.tar"/>
+                                <delete file="${project.build.directory}/xbaya-jnlp-${project.version}.tar"/>
                             </target>
                         </configuration>
                         <goals>
