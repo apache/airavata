@@ -359,7 +359,8 @@ public class GenericInvoker implements Invoker {
                             logger.debug("outputMessage: " + outputMessage);
                             GenericInvoker.this.notifier.serviceFinished(outputMessage);
                         } else {
-                            WSIFMessage faultMessage = GenericInvoker.this.invoker.getFault();
+                            //if error occurse gfac-axis2 write the error in to output not to the fault
+                            WSIFMessage faultMessage = GenericInvoker.this.invoker.getOutputs();
                             // An implementation of WSIFMessage,
                             // WSIFMessageElement, implements toString(), which
                             // serialize the message XML.
