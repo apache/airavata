@@ -21,11 +21,7 @@
 package org.apache.airavata.xbaya.invoker;
 
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -40,6 +36,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.core.gfac.exception.ProviderException;
 import org.apache.airavata.registry.api.exception.RegistryException;
@@ -53,6 +50,7 @@ import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
@@ -123,7 +121,7 @@ public class EmbeddedGFacInvoker implements Invoker {
 
     private Object outPut;
 
-    Map<Parameter, ActualParameter> actualParameters = new HashMap<Parameter, ActualParameter>();
+    Map<Parameter, ActualParameter> actualParameters = new LinkedHashMap<Parameter, ActualParameter>();
 
     /**
      * Creates an InvokerWithNotification.
@@ -236,22 +234,7 @@ public class EmbeddedGFacInvoker implements Invoker {
             }
             this.inputNames.add(name);
             this.inputValues.add(value);
-            ServiceDescription serviceDescription = airavataAPI.getApplicationManager().getServiceDescription(this.serviceName);
-            if (serviceDescription == null) {
-                throw new RegistryException(new Exception("Service Description not found in registry."));
-            }
-            ServiceDescriptionType serviceDescriptionType = serviceDescription.getType();
-            for (Parameter parameter : serviceDescriptionType.getInputParametersArray()) {
-                //todo this implementation doesn't work when there are n number of nodes connecting .. need to fix
-                if (value instanceof XmlElement) {
-                    XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(XMLUtil.xmlElementToString((XmlElement) value)));
-                    StAXOMBuilder builder = new StAXOMBuilder(reader);
-                    OMElement input = builder.getDocumentElement();
-                    actualParameters.put(parameter, GfacUtils.getInputActualParameter(parameter, input));
-                } else if (value instanceof String) {
-                    actualParameters.put(parameter, GfacUtils.getInputActualParameter(parameter, AXIOMUtil.stringToOM("<value>" + value + "</value>")));
-                }
-            }
+
         } catch (RuntimeException e) {
             logger.error(e.getMessage(), e);
             String message = "Error in setting an input. name: " + name + " value: " + value;
@@ -262,8 +245,6 @@ public class EmbeddedGFacInvoker implements Invoker {
             String message = "Unexpected error: " + this.serviceInformation;
             this.notifier.invocationFailed(message, e);
             throw new WorkflowException(message, e);
-        } catch (RegistryException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
@@ -275,6 +256,7 @@ public class EmbeddedGFacInvoker implements Invoker {
      */
     public synchronized boolean invoke() throws WorkflowException {
         try {
+            createActualParameters();
             JobContext jobContext = new JobContext(actualParameters, EmbeddedGFacInvoker.this.topic,
                     EmbeddedGFacInvoker.this.serviceName, EmbeddedGFacInvoker.this.gfacURL);
             GFacConfiguration gFacConfiguration = new GFacConfiguration(EmbeddedGFacInvoker.this.configuration.getMyProxyServer(),
@@ -284,7 +266,7 @@ public class EmbeddedGFacInvoker implements Invoker {
 
             GfacAPI gfacAPI1 = new GfacAPI();
             InvocationContext defaultInvocationContext = gfacAPI1.gridJobSubmit(jobContext,
-                    gFacConfiguration,this.nodeID,this.notifier.getWorkflowID().toASCIIString());
+                    gFacConfiguration, this.nodeID, this.notifier.getWorkflowID().toASCIIString());
             ParameterContextImpl outputParamContext = (ParameterContextImpl) defaultInvocationContext
                     .<ActualParameter>getMessageContext("output");
             if (outputParamContext.getNames().hasNext()) {
@@ -444,5 +426,27 @@ public class EmbeddedGFacInvoker implements Invoker {
     @Override
     public WSIFMessage getFault() throws WorkflowException {
         return null;
+    }
+
+    private void createActualParameters() throws AiravataAPIInvocationException, RegistryException, XMLStreamException {
+        ServiceDescription serviceDescription = airavataAPI.getApplicationManager().getServiceDescription(this.serviceName);
+        if (serviceDescription == null) {
+            throw new RegistryException(new Exception("Service Description not found in registry."));
+        }
+        ServiceDescriptionType serviceDescriptionType = serviceDescription.getType();
+        for(String inputName:this.inputNames) {
+            int index = this.inputNames.indexOf(inputName);
+            Object value = this.inputValues.get(index);
+            InputParameterType parameter = serviceDescriptionType.getInputParametersArray(index);
+            if (value instanceof XmlElement) {
+                 XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(XMLUtil.xmlElementToString((XmlElement) value)));
+                 StAXOMBuilder builder = new StAXOMBuilder(reader);
+                 OMElement input = builder.getDocumentElement();
+                 actualParameters.put(parameter, GfacUtils.getInputActualParameter(parameter, input));
+             } else if (value instanceof String) {
+
+                 actualParameters.put(parameter, GfacUtils.getInputActualParameter(parameter, AXIOMUtil.stringToOM("<value>" + value + "</value>")));
+             }
+        }
     }
 }
