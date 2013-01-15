@@ -43,6 +43,7 @@
                                     <fileset dir="${xbaya.directory}/lib"/>
                                 </copy>
                                 <copy file="${project.basedir}/src/main/resources/xbaya.jnlp" todir="${jnlp.direcotry}"/>
+                                <copy file="${project.basedir}/src/main/resources/airavata-logo.gif" todir="${jnlp.direcotry}"/>
                             </target>
                         </configuration>
                         <goals>

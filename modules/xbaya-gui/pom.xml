@@ -23,47 +23,6 @@
     <name>Airavata XBaya</name>
     <url>http://airavata.apache.org/</url>
 
-    <!-- Edit the following properties. -->
-    <profiles>
-        <profile>
-            <id>standalone</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <trustedCertsLocation>${project.home}/certificates/
-                </trustedCertsLocation>
-                <ssl.trustedCertsFile>${trustedCertsLocation}</ssl.trustedCertsFile>
-                <build.scope>provided</build.scope>
-                <build.jsf>compile</build.jsf>
-
-                <!-- JNLP Properties -->
-                <!-- Deployment Information -->
-                <jnlpURLPrefix>http://localhost/airavata-xbaya</jnlpURLPrefix>
-                <jnlpFileName>xbaya.jnlp</jnlpFileName>
-		<!--
-                <registryEPR>
-                    http://localhost:8090/jackrabbit-webapp-2.4.0/rmi
-                </registryEPR>
-		-->
-            </properties>
-        </profile>
-
-        <profile>
-            <id>collective</id>
-            <activation>
-                <file>
-                    <exists>betacollective</exists>
-                </file>
-            </activation>
-            <properties>
-                <!-- Inherited from the parent in this collective build. -->
-                <ssl.trustedCertsFile>${trustedCertsLocation}</ssl.trustedCertsFile>
-                <build.scope>provided</build.scope>
-                <build.jsf>compile</build.jsf>
-            </properties>
-        </profile>
-    </profiles>
     <build>
         <plugins>
             <plugin>
@@ -118,44 +77,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>webstart-maven-plugin</artifactId>
-                <version>1.0-beta-3</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>jnlp</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <jnlp>
-                        <inputTemplate>src/main/resources/xbaya-jnlp-template.vm</inputTemplate>
-                        <outputFile>${jnlpFileName}</outputFile>
-                        <mainClass>org.apache.airavata.xbaya.XBaya</mainClass>
-                    </jnlp>
-                    <libPath>lib</libPath>
-                    <sign>
-                        <keystore>${basedir}/target/keystore</keystore>
-                        <keypass>xbaya-secret</keypass>
-                        <storepass>xbaya-secret</storepass>
-                        <alias>xbaya</alias>
-                        <validity>365</validity>
-
-                        <dnameCn>Airavata</dnameCn>
-                        <dnameOu>Apache</dnameOu>
-                        <dnameO>Apache Software Foundation</dnameO>
-
-                        <keystoreConfig>
-                            <delete>true</delete>
-                            <gen>true</gen>
-                        </keystoreConfig>
-                    </sign>
-                    <verifyjar>true</verifyjar>
-                </configuration>
-            </plugin>
-
         </plugins>
     </build>
 
