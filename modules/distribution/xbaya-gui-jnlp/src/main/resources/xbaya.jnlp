@@ -5,7 +5,7 @@
 <information>
 	<title>XBaya</title>
 	<vendor>Apache Airavata</vendor>
-	<icon href="airavata-logo.png"/>
+	<icon href="airavata-logo.gif"/>
 	<offline-allowed/>
 </information>
 <security>
@@ -13,9 +13,10 @@
 </security>
 <resources>
 	<j2se version="1.5+" java-vm-args="-Xmx1024m" />
-	<property name="log" value="org.apache.airavata.xbaya:ALL"/>
+
 	    DEPENDENT_JARS
 
+    <property name="log" value="org.apache.airavata.xbaya:ALL"/>
 </resources>
 <application-desc main-class="org.apache.airavata.xbaya.XBaya">
 
