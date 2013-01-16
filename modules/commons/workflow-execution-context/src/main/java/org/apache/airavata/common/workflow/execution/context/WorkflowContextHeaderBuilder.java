@@ -45,8 +45,6 @@ public class WorkflowContextHeaderBuilder {
 
     private WorkflowSchedulingContextDocument.WorkflowSchedulingContext workflowSchedulingContext = null;
 
-    private  ThreadLocal threadLocal = null;
-
     public static ThreadLocal<ContextHeaderDocument.ContextHeader> currentContextHeader = new ThreadLocal<ContextHeaderDocument.ContextHeader>();
 
 
@@ -281,7 +279,7 @@ public class WorkflowContextHeaderBuilder {
         return this;
     }
 
-    public WorkflowContextHeaderBuilder addApplicationOutputDataHandling(String outputDir, String outputDataRegistry,
+    public WorkflowContextHeaderBuilder addApplicationOutputDataHandling(String nodeId, String outputDir, String outputDataRegistry,
             boolean dataPersistence) {
         if (this.workflowOutputDataHandling == null) {
             this.workflowOutputDataHandling = WorkflowOutputDataHandlingDocument.WorkflowOutputDataHandling.Factory
@@ -289,10 +287,23 @@ public class WorkflowContextHeaderBuilder {
         }
         ApplicationOutputDataHandlingDocument.ApplicationOutputDataHandling applicationOutputDataHandling = this.workflowOutputDataHandling
                 .addNewApplicationOutputDataHandling();
+        applicationOutputDataHandling.setNodeId(nodeId);
         applicationOutputDataHandling.setOutputDataDirectory(outputDir);
         applicationOutputDataHandling.setDataRegistryUrl(outputDataRegistry);
         applicationOutputDataHandling.setDataPersistance(dataPersistence);
         return this;
+    }
+    
+    /**
+     * @deprecated - Use <code>addApplicationOutputDataHandling(String,String,String,boolean)</code> instead
+     * @param outputDir
+     * @param outputDataRegistry
+     * @param dataPersistence
+     * @return
+     */
+    public WorkflowContextHeaderBuilder addApplicationOutputDataHandling(String outputDir, String outputDataRegistry,
+            boolean dataPersistence) {
+        return addApplicationOutputDataHandling(null, outputDir, outputDataRegistry, dataPersistence);
     }
 
     public WorkflowContextHeaderBuilder addApplicationSchedulingContext(String workflowNodeId, String serviceId,
