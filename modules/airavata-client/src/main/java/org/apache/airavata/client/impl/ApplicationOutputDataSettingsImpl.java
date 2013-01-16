@@ -30,10 +30,10 @@ public class ApplicationOutputDataSettingsImpl implements OutputDataSettings {
 	private Boolean dataPersistent;
 
 	public ApplicationOutputDataSettingsImpl(String nodeId) {
-		setNodeId(nodeId);
+		this(nodeId, null,null,null);
 	}
 	
-	public ApplicationOutputDataSettingsImpl(String outputDataDirectory, String dataRegistryUrl, Boolean dataPersistent) {
+	public ApplicationOutputDataSettingsImpl(String nodeId, String outputDataDirectory, String dataRegistryUrl, Boolean dataPersistent) {
 		setOutputDataDirectory(outputDataDirectory);
 		setDataRegistryUrl(dataRegistryUrl);
 		setDataPersistent(dataPersistent);

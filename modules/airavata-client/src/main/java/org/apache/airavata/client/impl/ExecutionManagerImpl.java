@@ -348,7 +348,7 @@ public class ExecutionManagerImpl implements ExecutionManager {
 		}
 		ApplicationOutputDataHandling[] dataHandlingSettings = builder.getWorkflowOutputDataHandling().getApplicationOutputDataHandlingArray();
 		for (ApplicationOutputDataHandling handling : dataHandlingSettings) {
-			options.getCustomWorkflowOutputDataSettings().addNewOutputDataSettings(handling.getOutputDataDirectory(),handling.getDataRegistryUrl(),handling.getDataPersistance());
+			options.getCustomWorkflowOutputDataSettings().addNewOutputDataSettings(handling.getNodeId(), handling.getOutputDataDirectory(),handling.getDataRegistryUrl(),handling.getDataPersistance());
 		}
 		//TODO rest of the builder configurations as they are added to the experiment options
 		return runExperiment(workflowTemplateId, inputs, options);
