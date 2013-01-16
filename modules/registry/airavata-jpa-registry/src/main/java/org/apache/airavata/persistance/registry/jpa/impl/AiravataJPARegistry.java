@@ -112,7 +112,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             userWorkflowRegistry = (UserWorkflowRegistry)getClassInstance(ConfigurationRegistry.class,RegistryConstants.USER_WF_REGISTRY_ACCESSOR_CLASS);
             publishedWorkflowRegistry = (PublishedWorkflowRegistry)getClassInstance(ConfigurationRegistry.class,RegistryConstants.PUBLISHED_WF_REGISTRY_ACCESSOR_CLASS);
         } catch (AiravataConfigurationException e) {
-            throw new RegistryException("Airavata Registry custom implementation class not defined in registry settings", e);
+            throw new RegistryException("An error occured when attempting to determine any custom implementations of the registries!!!", e);
         }
 	}
 
@@ -130,8 +130,6 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 			// thus ignore error
 		} catch (RegistryAccessorInstantiateException e) {
 			logger.error("Error in instantiating instance from class for registry accessor "+registryAccessorKey,e);
-		} catch (AiravataConfigurationException e) {
-			throw e;
 		}
 		return null;
     }
@@ -1732,8 +1730,6 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             WorkflowDataResource resource = jpa.getWorker().getWorkflowInstance(workflowInstanceId);
             WorkflowExecution workflowInstance = new WorkflowExecution(resource.getExperimentID(), resource.getWorkflowInstanceID());
             workflowInstance.setTemplateName(resource.getTemplateName());
-            ExperimentData experimentData = getExperiment(workflowInstanceId);
-//            WorkflowInstanceData workflowInstanceData = experimentData.getWorkflowInstance(workflowInstanceId);
             WorkflowExecutionData workflowInstanceData = new WorkflowExecutionDataImpl(null, workflowInstance, new WorkflowExecutionStatus(workflowInstance, resource.getStatus()==null? null:State.valueOf(resource.getStatus()),resource.getLastUpdatedTime()), null);
             List<NodeDataResource> nodeData = resource.getNodeData();
             for (NodeDataResource nodeDataResource : nodeData) {

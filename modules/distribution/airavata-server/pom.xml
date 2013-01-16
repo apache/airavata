@@ -18,7 +18,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>airavata-server-distribution</artifactId>
+    <artifactId>apache-airavata-server</artifactId>
     <name>Airavata server distribution</name>
     <packaging>pom</packaging>
     <url>http://airavata.apache.org/</url>
@@ -45,7 +45,7 @@
                                     <version>${axis2.version}</version>
                                     <type>war</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>target/axis2-${axis2.version}</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/axis2-${axis2.version}</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
                             <excludes>**/icu4j-2.6.1.jar</excludes>
@@ -97,6 +97,94 @@
                     </execution>
                 </executions>
             </plugin>
+			<plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-war</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+								<echo message="Building Airavata Server WAR" />
+								<echo message="============================" />
+                                <unzip src="${airavata.bin.zip}" dest="${project.build.directory}/tests"/>
+								<copy todir="${airavata.webapp.dir}/META-INF">
+								                    <fileset dir="${project.build.directory}/axis2-${axis2.version}/META-INF"/>
+								                </copy>
+								<copy todir="${airavata.webapp.dir}/axis2-web">
+								                    <fileset dir="${project.build.directory}/axis2-${axis2.version}/axis2-web"/>
+								                </copy>
+								<copy todir="${airavata.webapp.dir}/WEB-INF">
+								                    <fileset dir="${project.build.directory}/axis2-${axis2.version}/WEB-INF"/>
+								                </copy>
+								<copy todir="${airavata.webapp.dir}/WEB-INF">
+                                    <fileset dir="${airavata.work.dir}/repository/"/>
+                                </copy>
+                                <copy todir="${airavata.webapp.dir}/WEB-INF/lib">
+                                    <fileset dir="${airavata.work.dir}/lib/">
+                                            <exclude name="tomcat-*.jar"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${airavata.webapp.dir}/WEB-INF/classes">
+                                    <fileset dir="${airavata.work.dir}/bin/">
+                                        <exclude name="axis2.xml"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${airavata.webapp.dir}/WEB-INF/classes/database_scripts">
+                                    <fileset dir="${airavata.work.dir}/bin/database_scripts"/>
+                                </copy>
+								<copy todir="${airavata.webapp.dir}">
+                                    <fileset dir="src/main/resources">
+										<include name="LICENSE" />
+										<include name="NOTICE" />
+									</fileset>
+                                </copy>
+								<replace file="${airavata.webapp.dir}/WEB-INF/classes/airavata-server.properties">
+                                    <replacetoken>#server.context-root=axis2</replacetoken>
+                                    <replacevalue>server.context-root=${airavata.dist.name}</replacevalue>
+                                </replace>
+								<zip destfile="${airavata.webapp.war}" basedir="${airavata.webapp.dir}" />
+                                
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+				  <execution>
+				    <id>attach-artifacts</id>
+				    <phase>package</phase>
+				    <goals>
+				      <goal>attach-artifact</goal>
+				    </goals>
+				    <configuration>
+				      <artifacts>
+				        <artifact>
+				          <file>${airavata.webapp.war}</file>
+				          <type>war</type>
+				        </artifact>
+						<artifact>
+				          <file>${airavata.bin.zip}</file>
+				          <type>zip</type>
+						  <classifier>bin</classifier>
+				        </artifact>
+						<artifact>
+				          <file>${airavata.bin.tar.gz}</file>
+				          <type>tar.gz</type>
+						  <classifier>bin</classifier>
+				        </artifact>
+				      </artifacts>
+				    </configuration>
+				  </execution>
+				</executions>
+			  </plugin>
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
                 <configuration>
@@ -504,5 +592,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <archieve.name>apache-airavata-server</archieve.name>
         <used.axis2.release>${axis2.version}</used.axis2.release>
+		<airavata.dist.name>apache-airavata-server-${project.version}</airavata.dist.name>
+        <airavata.work.dir>${project.build.directory}/tests/${airavata.dist.name}</airavata.work.dir>
+		<airavata.bin.zip>${project.build.directory}/${airavata.dist.name}-bin.zip</airavata.bin.zip>
+		<airavata.bin.tar.gz>${project.build.directory}/${airavata.dist.name}-bin.tar.gz</airavata.bin.tar.gz>
+		<airavata.webapp.dir>${project.build.directory}/airavata-axis2</airavata.webapp.dir>
+		<airavata.webapp.war>${project.build.directory}/${airavata.dist.name}.war</airavata.webapp.war>
     </properties>
 </project>

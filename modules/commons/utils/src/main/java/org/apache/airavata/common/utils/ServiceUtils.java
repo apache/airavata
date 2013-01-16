@@ -60,7 +60,7 @@ public class ServiceUtils {
         }
         
         try {
-            port = (String) ServerSettings.getSetting(PORT);
+            port = (String) ServerSettings.getTomcatPort();
         } catch (ApplicationSettingsException e) {
 			//we will ignore this exception since the properties file will not contain the values
 			//when it is ok to retrieve them from the axis2 context
@@ -71,14 +71,17 @@ public class ServiceUtils {
                     .getAxisConfiguration().getTransportsIn()
                     .get("http");
             if (transportInDescription != null
-                    && transportInDescription.getParameter("port") != null) {
+                    && transportInDescription.getParameter(PORT) != null) {
                 port = (String) transportInDescription
-                        .getParameter("port").getValue();
+                        .getParameter(PORT).getValue();
             }
         }
         localAddress = "http://" + localAddress + ":" + port;
         localAddress = localAddress + "/"
-                + context.getContextRoot() + "/"
+        		//We are not using axis2 config context to get the context root because it is invalid
+                //+ context.getContextRoot() + "/"
+        		//FIXME: the context root will be correct after updating the web.xml 
+                + ServerSettings.getServerContextRoot() + "/"
                 + context.getServicePath() + "/"
                 + serviceName;
         log.debug("Service Address Configured:" + localAddress);
