@@ -77,6 +77,8 @@ public class RegistryWindow {
 
     private String gateway;
 
+    private static String previousRegURL;
+
     /**
      * @param engine
      */
@@ -99,6 +101,7 @@ public class RegistryWindow {
 
     private void ok() {
         setRegURL(this.urlTextField.getText());
+        setPreviousRegURL(this.urlTextField.getText());
         setUserName(this.usernameTextField.getText());
         setPassword(new String(this.passwordTextField.getPassword()));
         setGateway(this.gatewayTextField.getText());
@@ -168,7 +171,9 @@ public class RegistryWindow {
         this.usernameTextField = new XBayaTextField();
         this.passwordTextField = new JPasswordField();
         try {
-            if (engine.getConfiguration().isRegURLSetByCMD()){
+            if (getPreviousRegURL() != null){
+                this.urlTextField.setText(engine.getConfiguration().getRegistryURL().toASCIIString());
+            } else if (engine.getConfiguration().isRegURLSetByCMD()){
                 this.urlTextField.setText(engine.getConfiguration().getRegistryURL().toASCIIString());
             } else if (ClientSettings.isSettingDefined(XBayaConstants.XBAYA_REGISTRY_URL)){
                 this.urlTextField.setText(ClientSettings.getSetting(XBayaConstants.XBAYA_REGISTRY_URL));
@@ -294,5 +299,13 @@ public class RegistryWindow {
 
     public void setGateway(String gateway) {
         this.gateway = gateway;
+    }
+
+    public static String getPreviousRegURL() {
+        return previousRegURL;
+    }
+
+    public static void setPreviousRegURL(String previousRegURL) {
+        RegistryWindow.previousRegURL = previousRegURL;
     }
 }
