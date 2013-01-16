@@ -335,6 +335,21 @@ public class WorkflowContextHeaderBuilder {
                     }
                 }
             }
+
+            ApplicationOutputDataHandlingDocument.ApplicationOutputDataHandling[] pdh =
+                    header.getWorkflowOutputDataHandling().getApplicationOutputDataHandlingArray();
+            index = 0;
+            if(applicationSchedulingContextArray != null){
+                for(ApplicationOutputDataHandlingDocument.ApplicationOutputDataHandling aODH:pdh){
+                       if(nodeID.equals(aODH.getNodeId())){
+                           index++;
+                           header.getWorkflowOutputDataHandling().setApplicationOutputDataHandlingArray(new ApplicationOutputDataHandlingDocument.ApplicationOutputDataHandling[]{aODH});
+                           break;
+                       }else {
+                           header.getWorkflowOutputDataHandling().removeApplicationOutputDataHandling(index);
+                       }
+                }
+            }
         } catch (NullPointerException e) {
             return header;
         }

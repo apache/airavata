@@ -353,6 +353,15 @@
 	<element name="application-output-data-handling">
 		<complexType>
 			<sequence>
+                <element name="node-id" type="string">
+					<annotation>
+						<documentation xml:lang="en">(Optional) If the workflow
+							outputs are to be staged to a pre-specified
+							location, then the
+							output data staging directory should be provided.
+						</documentation>
+					</annotation>
+				</element>
 				<element name="data-registry-url" type="anyURI">
 					<annotation>
 						<documentation xml:lang="en"> (Optional) If a seperate
