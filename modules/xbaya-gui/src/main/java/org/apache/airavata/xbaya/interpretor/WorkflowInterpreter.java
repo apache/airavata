@@ -191,14 +191,18 @@ public class WorkflowInterpreter {
                 this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager().setWorkflowInstanceNodeInput(workflowInstanceNode, keywords[i] + "=" + (String) values[i]);
                 this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager().setWorkflowNodeType(workflowInstanceNode, workflowNodeType);
 			}
+            System.out.println("********************- 1");
 			this.config.getNotifier().workflowStarted(values, keywords);
 			while (this.getWorkflow().getExecutionState() != WorkflowExecutionState.STOPPED) {
+                System.out.println("********************- 2");
 				if (getRemainNodesDynamically() == 0) {
+                    System.out.println("********************- 3");
 					notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_STATE_CHANGED, WorkflowExecutionState.PAUSED);
 				}
 				// ok we have paused sleep
 				while (this.getWorkflow().getExecutionState() == WorkflowExecutionState.PAUSED) {
 					try {
+                        System.out.println("********************- 4");
 						Thread.sleep(400);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
@@ -207,6 +211,7 @@ public class WorkflowInterpreter {
 				// get task list and execute them
 				ArrayList<Node> readyNodes = this.getReadyNodesDynamically();
 				for (Node node : readyNodes) {
+                    System.out.println("********************- 5");
 					if (node.isBreak()) {
 						this.notifyPause();
 						break;
@@ -214,9 +219,6 @@ public class WorkflowInterpreter {
 					if (this.getWorkflow().getExecutionState() == WorkflowExecutionState.PAUSED
 							|| this.getWorkflow().getExecutionState() == WorkflowExecutionState.STOPPED) {
 						break;
-//						// stop executing and sleep in the outer loop cause we
-//						// want
-//						// recalculate the execution stack
 					}
 					executeDynamically(node);
 					if (this.getWorkflow().getExecutionState() == WorkflowExecutionState.STEP) {
@@ -1131,7 +1133,6 @@ public class WorkflowInterpreter {
 			for (Iterator<String> iterator = listOfValues.iterator(); iterator.hasNext();) {
 				String input = iterator.next();
 				final String gfacURLString = this.getConfig().getConfiguration().getGFacURL().toString();
-
 				WSComponent wsComponent = (WSComponent) middleNode.getComponent();
 				invoker = createInvokerForEachSingleWSNode(middleNode, gfacURLString, wsComponent);
 				invokerList.add(invoker);
@@ -1347,6 +1348,8 @@ public class WorkflowInterpreter {
 		ArrayList<Node> list = new ArrayList<Node>();
 		ArrayList<Node> waiting = InterpreterUtil.getWaitingNodesDynamically(this.getGraph());
 		ArrayList<Node> finishedNodes = InterpreterUtil.getFinishedNodesDynamically(this.getGraph());
+        System.out.println("waiting:" + waiting.size());
+        System.out.println("finishedNodes:" + finishedNodes.size());
 		for (Node node : waiting) {
 			Component component = node.getComponent();
 			if (component instanceof WSComponent
@@ -1382,6 +1385,7 @@ public class WorkflowInterpreter {
 					inputsDone = inputsDone && finishedNodes.contains(dataPort.getFromNode());
 				}
 				if (inputsDone && controlDone) {
+                    System.out.println("***************** Added ************");
 					list.add(node);
 				}
 			} else if (component instanceof EndifComponent) {

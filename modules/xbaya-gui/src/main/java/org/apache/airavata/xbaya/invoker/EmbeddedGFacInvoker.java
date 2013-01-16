@@ -22,13 +22,6 @@ package org.apache.airavata.xbaya.invoker;
 
 import java.io.StringReader;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
@@ -37,7 +30,6 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
-import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.core.gfac.exception.ProviderException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.XMLUtil;
@@ -49,18 +41,15 @@ import org.apache.airavata.core.gfac.context.JobContext;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
-//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
-import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.jython.lib.ServiceNotifiable;
 import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
 import org.apache.axiom.om.*;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
-import org.apache.axiom.om.impl.dom.factory.OMDOMFactory;
 import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,7 +81,7 @@ public class EmbeddedGFacInvoker implements Invoker {
     private XBayaConfiguration configuration;
 
 
-    private Future<Boolean> result;
+    private Boolean result;
 
     private ServiceNotifiable notifier;
 
@@ -232,7 +221,6 @@ public class EmbeddedGFacInvoker implements Invoker {
             }
             this.inputNames.add(name);
             this.inputValues.add(value);
-
         } catch (RuntimeException e) {
             logger.error(e.getMessage(), e);
             String message = "Error in setting an input. name: " + name + " value: " + value;
@@ -287,6 +275,7 @@ public class EmbeddedGFacInvoker implements Invoker {
                 // Send notification
                 logger.debug("outputMessage: " + outputElement.toString());
                 outPut = new WSIFMessageElement(XMLUtil.stringToXmlElement3(outputElement.toStringWithConsume()));
+                this.result = true;
                 EmbeddedGFacInvoker.this.notifier.serviceFinished(new WSIFMessageElement((XmlElement) outPut));
             } else {
                 // An implementation of WSIFMessage,
@@ -346,7 +335,7 @@ public class EmbeddedGFacInvoker implements Invoker {
                 }
             }
             // Wait for the job to finish.
-            Boolean success = this.result.get();
+            Boolean success = this.result;
             if (success == false) {
                 WSIFMessage faultMessage = this.invoker.getFault();
                 String message = "Error in a service: ";
@@ -356,13 +345,6 @@ public class EmbeddedGFacInvoker implements Invoker {
                 message += faultMessage.toString();
                 throw new WorkflowException(message);
             }
-        } catch (InterruptedException e) {
-            logger.error(e.getMessage(), e);
-        } catch (ExecutionException e) {
-            // The service-failed notification should have been sent already.
-            logger.error(e.getMessage(), e);
-            String message = "Error in invoking a service: " + this.serviceInformation;
-            throw new WorkflowException(message, e);
         } catch (RuntimeException e) {
             logger.error(e.getMessage(), e);
             String message = "Error while waiting for a service to finish: " + this.serviceInformation;
@@ -384,7 +366,11 @@ public class EmbeddedGFacInvoker implements Invoker {
     public Object getOutput(String name) throws WorkflowException {
         try {
             waitToFinish();
-            return outPut;
+            if (outPut instanceof XmlElement) {
+                    return ((XmlElement)((XmlElement)((XmlElement) outPut).children().next()).children().next()).children().next();
+            } else  {
+                return outPut;
+            }
         } catch (WorkflowException e) {
             logger.error(e.getMessage(), e);
             // An appropriate message has been set in the exception.
@@ -442,7 +428,7 @@ public class EmbeddedGFacInvoker implements Invoker {
             Object value = this.inputValues.get(index);
             InputParameterType parameter = serviceDescriptionType.getInputParametersArray(index);
             if (value instanceof XmlElement) {
-                omElement.setText((String)((XmlElement) value).children().next());
+                    omElement.setText((String)((XmlElement)((XmlElement)((XmlElement) value).children().next()).children().next()).children().next());
                 XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(XMLUtil.xmlElementToString((XmlElement) value)));
                 StAXOMBuilder builder = new StAXOMBuilder(reader);
                 OMElement input = builder.getDocumentElement();
