@@ -592,7 +592,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <archieve.name>apache-airavata-server</archieve.name>
         <used.axis2.release>${axis2.version}</used.axis2.release>
-		<airavata.dist.name>apache-airavata-server-${project.version}</airavata.dist.name>
+		<airavata.dist.name>${archieve.name}-${project.version}</airavata.dist.name>
         <airavata.work.dir>${project.build.directory}/tests/${airavata.dist.name}</airavata.work.dir>
 		<airavata.bin.zip>${project.build.directory}/${airavata.dist.name}-bin.zip</airavata.bin.zip>
 		<airavata.bin.tar.gz>${project.build.directory}/${airavata.dist.name}-bin.tar.gz</airavata.bin.tar.gz>

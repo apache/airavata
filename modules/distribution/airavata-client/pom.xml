@@ -18,7 +18,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>airavata-client-distribution</artifactId>
+    <artifactId>apache-airavata-client</artifactId>
     <name>Airavata client distribution</name>
     <packaging>pom</packaging>
     <url>http://airavata.apache.org/</url>
@@ -73,6 +73,34 @@
                     </execution>
                 </executions>
             </plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+				  <execution>
+				    <id>attach-artifacts</id>
+				    <phase>package</phase>
+				    <goals>
+				      <goal>attach-artifact</goal>
+				    </goals>
+				    <configuration>
+				      <artifacts>
+						<artifact>
+				          <file>${airavata.client-bin.zip}</file>
+				          <type>zip</type>
+						  <classifier>bin</classifier>
+				        </artifact>
+						<artifact>
+				          <file>${airavata.client-bin.tar.gz}</file>
+				          <type>tar.gz</type>
+						  <classifier>bin</classifier>
+				        </artifact>
+				      </artifacts>
+				    </configuration>
+				  </execution>
+				</executions>
+			  </plugin>
         </plugins>
     </build>
 
@@ -356,5 +384,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <archieve.name>apache-airavata-client</archieve.name>
         <used.axis2.release>${axis2.version}</used.axis2.release>
+		<airavata.client-dist.name>${archieve.name}-${project.version}</airavata.client-dist.name>
+		<airavata.client-bin.zip>${project.build.directory}/${airavata.client-dist.name}-bin.zip</airavata.client-bin.zip>
+		<airavata.client-bin.tar.gz>${project.build.directory}/${airavata.client-dist.name}-bin.tar.gz</airavata.client-bin.tar.gz>
     </properties>
 </project>
