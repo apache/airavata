@@ -153,6 +153,10 @@ public class GramRSLGenerator {
                 }
             }
         }
+        if(currentContextHeader.getWorkflowOutputDataHandling() != null){
+            if(currentContextHeader.getWorkflowOutputDataHandling().getApplicationOutputDataHandlingArray().length != 0)
+            app.setOutputDataDirectory(currentContextHeader.getWorkflowOutputDataHandling().getApplicationOutputDataHandlingArray()[0].getOutputDataDirectory());
+        }
         if (app.getNodeCount() > 0) {
             jobAttr.set("hostCount", String.valueOf(app.getNodeCount()));
             log.debug("Setting number of Nodes to " + app.getCpuCount());
