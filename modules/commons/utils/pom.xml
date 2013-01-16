@@ -91,6 +91,11 @@
             <artifactId>derbytools</artifactId>
             <version>${derby.version}</version>
         </dependency>
+		<dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+            <version>7.0.22</version>
+        </dependency>
 
 		<!-- Testing -->
 		<dependency>
