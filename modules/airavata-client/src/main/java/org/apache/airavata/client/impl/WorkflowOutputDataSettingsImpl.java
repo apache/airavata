@@ -72,8 +72,8 @@ public class WorkflowOutputDataSettingsImpl implements
 	}
 
 	@Override
-	public OutputDataSettings addNewOutputDataSettings() {
-		return new ApplicationOutputDataSettingsImpl();
+	public OutputDataSettings addNewOutputDataSettings(String nodeId) {
+		return new ApplicationOutputDataSettingsImpl(nodeId);
 	}
 
 }

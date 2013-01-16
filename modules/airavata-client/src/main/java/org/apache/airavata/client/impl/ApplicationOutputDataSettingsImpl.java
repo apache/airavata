@@ -24,11 +24,13 @@ package org.apache.airavata.client.impl;
 import org.apache.airavata.client.api.OutputDataSettings;
 
 public class ApplicationOutputDataSettingsImpl implements OutputDataSettings {
+	private String nodeId;
 	private String outputDataDirectory;
 	private String dataRegistry;
 	private Boolean dataPersistent;
 
-	public ApplicationOutputDataSettingsImpl() {
+	public ApplicationOutputDataSettingsImpl(String nodeId) {
+		setNodeId(nodeId);
 	}
 	
 	public ApplicationOutputDataSettingsImpl(String outputDataDirectory, String dataRegistryUrl, Boolean dataPersistent) {
@@ -80,6 +82,16 @@ public class ApplicationOutputDataSettingsImpl implements OutputDataSettings {
 	@Override
 	public void resetDataPersistent() {
 		this.dataPersistent=null;
+	}
+
+	@Override
+	public String getNodeId() {
+		return nodeId;
+	}
+
+	@Override
+	public void setNodeId(String nodeId) {
+		this.nodeId=nodeId;
 	}
 
 }

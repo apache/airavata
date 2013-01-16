@@ -31,9 +31,10 @@ public interface WorkflowOutputDataSettings {
 	
 	/**
 	 * Add a new appliation output data settings
+	 * @param nodeId - id of the node which the output data settings will be specified
 	 * @return
 	 */
-	public OutputDataSettings addNewOutputDataSettings();
+	public OutputDataSettings addNewOutputDataSettings(String nodeId);
 	
 	/**
 	 * Add a new appliation output data settings

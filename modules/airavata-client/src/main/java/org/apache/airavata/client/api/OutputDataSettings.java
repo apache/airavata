@@ -24,6 +24,12 @@ package org.apache.airavata.client.api;
 public interface OutputDataSettings {
 	
 	/**
+	 * Retrieve the id of the node which these output data settings are relevant 
+	 * @return
+	 */
+	public String getNodeId();
+	
+	/**
 	 * Retrieve the pre-specified staging location for output data
 	 * @return
 	 */
@@ -40,6 +46,11 @@ public interface OutputDataSettings {
 	 * @return
 	 */
 	public Boolean isDataPersistent();
+	
+	/**
+	 * Setup the id of the node which these output data settings are relevant
+	 */
+	public void setNodeId(String nodeId);
 	
 	/**
 	 * Setup a custom pre-specified staging location for output data 

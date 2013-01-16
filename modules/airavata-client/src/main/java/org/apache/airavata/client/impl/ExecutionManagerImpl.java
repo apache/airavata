@@ -223,7 +223,7 @@ public class ExecutionManagerImpl implements ExecutionManager {
 			}
 			OutputDataSettings[] outputDataSettingsList = options.getCustomWorkflowOutputDataSettings().getOutputDataSettingsList();
 			for (OutputDataSettings outputDataSettings : outputDataSettingsList) {
-				builder.addApplicationOutputDataHandling(outputDataSettings.getOutputDataDirectory(), outputDataSettings.getDataRegistryUrl(), outputDataSettings.isDataPersistent());
+				builder.addApplicationOutputDataHandling(outputDataSettings.getNodeId(),outputDataSettings.getOutputDataDirectory(), outputDataSettings.getDataRegistryUrl(), outputDataSettings.isDataPersistent());
 			}
 			runPreWorkflowExecutionTasks(experimentID, executionUser, options.getExperimentMetadata(), options.getExperimentName());
 			NameValue[] inputVals = inputValues.toArray(new NameValue[] {});
