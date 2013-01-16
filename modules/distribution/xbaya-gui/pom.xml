@@ -18,7 +18,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>airavata-xbaya-gui-distribution</artifactId>
+    <artifactId>apache-airavata-xbaya-gui</artifactId>
     <name>Airavata xbaya-gui distribution</name>
     <packaging>pom</packaging>
     <url>http://airavata.apache.org/</url>
@@ -73,6 +73,34 @@
                     </execution>
                 </executions>
             </plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+				  <execution>
+				    <id>attach-artifacts</id>
+				    <phase>package</phase>
+				    <goals>
+				      <goal>attach-artifact</goal>
+				    </goals>
+				    <configuration>
+				      <artifacts>
+						<artifact>
+				          <file>${airavata.xbaya-bin.zip}</file>
+				          <type>zip</type>
+						  <classifier>bin</classifier>
+				        </artifact>
+						<artifact>
+				          <file>${airavata.xbaya-bin.tar.gz}</file>
+				          <type>tar.gz</type>
+						  <classifier>bin</classifier>
+				        </artifact>
+				      </artifacts>
+				    </configuration>
+				  </execution>
+				</executions>
+			  </plugin>
         </plugins>
     </build>
 
@@ -381,5 +409,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <archieve.name>apache-airavata-xbaya-gui</archieve.name>
         <used.axis2.release>${axis2.version}</used.axis2.release>
+		<airavata.xbaya-dist.name>${archieve.name}-${project.version}</airavata.xbaya-dist.name>
+		<airavata.xbaya-bin.zip>${project.build.directory}/${airavata.xbaya-dist.name}-bin.zip</airavata.xbaya-bin.zip>
+		<airavata.xbaya-bin.tar.gz>${project.build.directory}/${airavata.xbaya-dist.name}-bin.tar.gz</airavata.xbaya-bin.tar.gz>
     </properties>
 </project>
