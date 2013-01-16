@@ -24,7 +24,26 @@
     <url>http://airavata.apache.org/</url>
 
     <build>
+
         <plugins>
+			<plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+		            <encoding>UTF-8</encoding>
+		            <source>1.6</source>
+		            <target>1.6</target>
+		        </configuration>
+				<executions>
+              <execution>
+                        <id>default</id>
+                        <phase>compile</phase>
+                        <goals>
+			                <goal>compile</goal>
+                        </goals>
+                </execution>                  
+             </executions>
+		    </plugin>
             <!--plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -58,7 +77,7 @@
                 <executions>
                     <execution>
                         <id>distribution-package</id>
-                        <phase>package</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
@@ -73,13 +92,107 @@
                     </execution>
                 </executions>
             </plugin>
+
+			<!-- JNLP -->
+			<plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>0-copy-xbaya</id>
+                        <phase>compile</phase>
+                        <configuration>
+                            <target>
+                                <taskdef resource="net/sf/antcontrib/antcontrib.properties"
+                                         classpathref="maven.dependency.classpath" />
+                                <unzip src="target/apache-airavata-xbaya-gui-${project.version}-bin.zip"
+                                       dest="${project.build.directory}/temp"/>
+                                <mkdir dir="${jnlp.direcotry}"/>
+                                <mkdir dir="${jnlp.direcotry}/lib"/>
+                                <copy todir="${jnlp.direcotry}/lib">
+                                    <fileset dir="${xbaya.directory}/lib"/>
+                                </copy>
+                                <copy file="${project.basedir}/src/main/resources/xbaya.jnlp" todir="${jnlp.direcotry}"/>
+                                <copy file="${project.basedir}/src/main/resources/airavata-logo.gif" todir="${jnlp.direcotry}"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jarsigner-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <execution>
+                        <id>1-sign</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <archiveDirectory>${jnlp.direcotry}/lib</archiveDirectory>
+                    <keystore>${project.basedir}/src/main/resources/xbaya.jks</keystore>
+                    <alias>xbaya</alias>
+                    <storepass>xbaya-secret</storepass>
+                    <keypass>xbaya-secret</keypass>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.1.1</version>
+                <executions>
+                    <execution>
+						<id>2-execute-jnlp-modifier</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>org.apache.airavata.distribution.xbaya.jnlp.Main</mainClass>
+                            <arguments>
+                                <argument>${jnlp.direcotry}/lib</argument>
+                                <argument>${jnlp.direcotry}/xbaya.jnlp</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>3-zip-xbaya-jnlp</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <zip destfile="${airavata.xbaya-jnlp.zip}"
+                                     basedir="${jnlp.direcotry}"/>
+                                <tar destfile="${project.build.directory}/xbaya-jnlp-${project.version}.tar" basedir="${jnlp.direcotry}"/>
+                                <gzip destfile="${airavata.xbaya-jnlp.tar.gz}" src="${project.build.directory}/xbaya-jnlp-${project.version}.tar"/>
+                                <delete file="${project.build.directory}/xbaya-jnlp-${project.version}.tar"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+			<!-- END JNLP -->
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
 				<version>1.7</version>
 				<executions>
 				  <execution>
-				    <id>attach-artifacts</id>
+				    <id>4-attach-artifacts</id>
 				    <phase>package</phase>
 				    <goals>
 				      <goal>attach-artifact</goal>
@@ -95,6 +208,16 @@
 				          <file>${airavata.xbaya-bin.tar.gz}</file>
 				          <type>tar.gz</type>
 						  <classifier>bin</classifier>
+				        </artifact>
+						<artifact>
+				          <file>${airavata.xbaya-jnlp.zip}</file>
+				          <type>zip</type>
+						  <classifier>jnlp</classifier>
+				        </artifact>
+						<artifact>
+				          <file>${airavata.xbaya-jnlp.zip}</file>
+				          <type>tar.gz</type>
+						  <classifier>jnlp</classifier>
 				        </artifact>
 				      </artifacts>
 				    </configuration>
@@ -401,7 +524,22 @@
             <artifactId>jersey-core</artifactId>
             <version>${jersey.version}</version>
         </dependency>
-
+		<dependency>
+            <groupId>ant-contrib</groupId>
+            <artifactId>ant-contrib</artifactId>
+            <version>1.0b3</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>ant</groupId>
+                    <artifactId>ant</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant-nodeps</artifactId>
+            <version>1.8.1</version>
+        </dependency>
     </dependencies>
     <properties>
         <jersey.version>1.13</jersey.version>
@@ -412,5 +550,10 @@
 		<airavata.xbaya-dist.name>${archieve.name}-${project.version}</airavata.xbaya-dist.name>
 		<airavata.xbaya-bin.zip>${project.build.directory}/${airavata.xbaya-dist.name}-bin.zip</airavata.xbaya-bin.zip>
 		<airavata.xbaya-bin.tar.gz>${project.build.directory}/${airavata.xbaya-dist.name}-bin.tar.gz</airavata.xbaya-bin.tar.gz>
+		<airavata.xbaya-jnlp.name>xbaya-jnlp-${project.version}</airavata.xbaya-jnlp.name>
+		<airavata.xbaya-jnlp.zip>${project.build.directory}/${airavata.xbaya-jnlp.name}.zip</airavata.xbaya-jnlp.zip>
+		<airavata.xbaya-jnlp.tar.gz>${project.build.directory}/${airavata.xbaya-jnlp.name}.tar.gz</airavata.xbaya-jnlp.tar.gz>
+		<xbaya.directory>${project.build.directory}/temp/apache-airavata-xbaya-gui-${project.version}</xbaya.directory>
+        <jnlp.direcotry>${project.build.directory}/jnlp</jnlp.direcotry>
     </properties>
 </project>
