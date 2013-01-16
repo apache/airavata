@@ -244,7 +244,8 @@ public class NotificationSender implements WorkflowNotifiable {
      */
     @Override
     public void workflowFailed(String message, Throwable e) {
-        logger.error(e.getMessage(), e);
+        if(e != null)
+            logger.error(e.getMessage(), e);
         if (message == null || "".equals(message)) {
             message = "Error";
         }
