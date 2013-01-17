@@ -30,7 +30,7 @@ public class ApplicationOutputDataSettingsImpl implements OutputDataSettings {
 	private Boolean dataPersistent;
 
 	public ApplicationOutputDataSettingsImpl(String nodeId) {
-		this(nodeId, null,null,false);
+		this(nodeId, null,null,null);
 	}
 
 	public ApplicationOutputDataSettingsImpl(String nodeId, String outputDataDirectory, String dataRegistryUrl, Boolean dataPersistent) {
@@ -66,7 +66,7 @@ public class ApplicationOutputDataSettingsImpl implements OutputDataSettings {
 	}
 
 	@Override
-	public void setDataPersistent(boolean isDataPersistance) {
+	public void setDataPersistent(Boolean isDataPersistance) {
 		this.dataPersistent=isDataPersistance;
 	}
 

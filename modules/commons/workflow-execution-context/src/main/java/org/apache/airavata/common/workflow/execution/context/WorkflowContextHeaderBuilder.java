@@ -280,18 +280,28 @@ public class WorkflowContextHeaderBuilder {
     }
 
     public WorkflowContextHeaderBuilder addApplicationOutputDataHandling(String nodeId, String outputDir, String outputDataRegistry,
-            boolean dataPersistence) {
+            Boolean dataPersistence) {
         if (this.workflowOutputDataHandling == null) {
             this.workflowOutputDataHandling = WorkflowOutputDataHandlingDocument.WorkflowOutputDataHandling.Factory
                     .newInstance();
         }
-        ApplicationOutputDataHandlingDocument.ApplicationOutputDataHandling applicationOutputDataHandling = this.workflowOutputDataHandling
-                .addNewApplicationOutputDataHandling();
-        applicationOutputDataHandling.setNodeId(nodeId);
-        applicationOutputDataHandling.setOutputDataDirectory(outputDir);
-        applicationOutputDataHandling.setDataRegistryUrl(outputDataRegistry);
-        applicationOutputDataHandling.setDataPersistance(dataPersistence);
-        return this;
+        if (nodeId!=null) {
+			ApplicationOutputDataHandlingDocument.ApplicationOutputDataHandling applicationOutputDataHandling = this.workflowOutputDataHandling
+					.addNewApplicationOutputDataHandling();
+			applicationOutputDataHandling.setNodeId(nodeId);
+			if (outputDir!=null) {
+				applicationOutputDataHandling.setOutputDataDirectory(outputDir);
+			}
+			if (outputDataRegistry!=null) {
+				applicationOutputDataHandling
+						.setDataRegistryUrl(outputDataRegistry);
+			}
+			if (dataPersistence!=null) {
+				applicationOutputDataHandling
+						.setDataPersistance(dataPersistence);
+			}
+		}
+		return this;
     }
     
     /**
@@ -302,30 +312,51 @@ public class WorkflowContextHeaderBuilder {
      * @return
      */
     public WorkflowContextHeaderBuilder addApplicationOutputDataHandling(String outputDir, String outputDataRegistry,
-            boolean dataPersistence) {
+            Boolean dataPersistence) {
         return addApplicationOutputDataHandling(null, outputDir, outputDataRegistry, dataPersistence);
     }
 
     public WorkflowContextHeaderBuilder addApplicationSchedulingContext(String workflowNodeId, String serviceId,
-            String hostName, boolean wsGramPreffered, String gateKeepersEpr, String jobManager, int cpuCount,
-            int nodeCount, String qName, int maxWalTime) {
+            String hostName, Boolean wsGramPreffered, String gateKeepersEpr, String jobManager, Integer cpuCount,
+            Integer nodeCount, String qName, Integer maxWalTime) {
         if (this.workflowSchedulingContext == null) {
             this.workflowSchedulingContext = WorkflowSchedulingContextDocument.WorkflowSchedulingContext.Factory
                     .newInstance();
         }
-        ApplicationSchedulingContextDocument.ApplicationSchedulingContext applicationSchedulingContext = this.workflowSchedulingContext
-                .addNewApplicationSchedulingContext();
-        applicationSchedulingContext.setWorkflowNodeId(workflowNodeId);
-        applicationSchedulingContext.setCpuCount(cpuCount);
-        applicationSchedulingContext.setGatekeeperEpr(gateKeepersEpr);
-        applicationSchedulingContext.setHostName(hostName);
-        applicationSchedulingContext.setJobManager(jobManager);
-        applicationSchedulingContext.setMaxWallTime(maxWalTime);
-        applicationSchedulingContext.setServiceId(serviceId);
-        applicationSchedulingContext.setNodeCount(nodeCount);
-        applicationSchedulingContext.setQueueName(qName);
-        applicationSchedulingContext.setWsgramPreferred(wsGramPreffered);
-        return this;
+        if (workflowNodeId!=null) {
+			ApplicationSchedulingContextDocument.ApplicationSchedulingContext applicationSchedulingContext = this.workflowSchedulingContext
+					.addNewApplicationSchedulingContext();
+			applicationSchedulingContext.setWorkflowNodeId(workflowNodeId);
+			if (cpuCount!=null) {
+				applicationSchedulingContext.setCpuCount(cpuCount);
+			}
+			if (gateKeepersEpr!=null) {
+				applicationSchedulingContext.setGatekeeperEpr(gateKeepersEpr);
+			}
+			if (hostName!=null) {
+				applicationSchedulingContext.setHostName(hostName);
+			}
+			if (jobManager!=null) {
+				applicationSchedulingContext.setJobManager(jobManager);
+			}
+			if (maxWalTime!=null) {
+				applicationSchedulingContext.setMaxWallTime(maxWalTime);
+			}
+			if (serviceId!=null) {
+				applicationSchedulingContext.setServiceId(serviceId);
+			}
+			if (nodeCount!=null) {
+				applicationSchedulingContext.setNodeCount(nodeCount);
+			}
+			if (qName!=null) {
+				applicationSchedulingContext.setQueueName(qName);
+			}
+			if (wsGramPreffered!=null) {
+				applicationSchedulingContext
+						.setWsgramPreferred(wsGramPreffered);
+			}
+		}
+		return this;
     }
 
     public static ContextHeaderDocument.ContextHeader removeOtherSchedulingConfig(String nodeID, ContextHeaderDocument.ContextHeader header) {

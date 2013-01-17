@@ -47,8 +47,8 @@ public class WorkflowOutputDataSettingsImpl implements
 	@Override
 	public OutputDataSettings addNewOutputDataSettings(String nodeId,
 			String outputDataDirectory, String dataRegistryURL,
-			boolean isDataPersistent) {
-		getOutputDataSettingsListArray().add(new ApplicationOutputDataSettingsImpl(nodeId, outputDataDirectory, dataRegistryURL, isDataPersistent));
+			Boolean isDataPersistent) {
+		addNewOutputDataSettings(new ApplicationOutputDataSettingsImpl(nodeId, outputDataDirectory, dataRegistryURL, isDataPersistent));
 		return getOutputDataSettingsListArray().get(getOutputDataSettingsListArray().size()-1);
 	}
 
@@ -56,7 +56,6 @@ public class WorkflowOutputDataSettingsImpl implements
 	public void addNewOutputDataSettings(
 			OutputDataSettings... outputDataSettings) {
 		getOutputDataSettingsListArray().addAll(Arrays.asList(outputDataSettings));
-
 	}
 
 	@Override
@@ -73,7 +72,7 @@ public class WorkflowOutputDataSettingsImpl implements
 
 	@Override
 	public OutputDataSettings addNewOutputDataSettings(String nodeId) {
-		return new ApplicationOutputDataSettingsImpl(nodeId);
+		return addNewOutputDataSettings(nodeId,null,null,null);
 	}
 
 }

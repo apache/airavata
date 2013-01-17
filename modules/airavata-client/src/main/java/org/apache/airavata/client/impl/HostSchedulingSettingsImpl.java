@@ -49,7 +49,7 @@ public class HostSchedulingSettingsImpl implements HostSchedulingSettings {
 	}
 
 	@Override
-	public void setWSGramPreffered(boolean wsgramPreffered) {
+	public void setWSGramPreffered(Boolean wsgramPreffered) {
 		this.wsgramPreffered=wsgramPreffered;
 	}
 

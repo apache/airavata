@@ -70,7 +70,7 @@ public interface OutputDataSettings {
 	 * @param isDataPersistance - if true (default value) the intermediate output data is 
 	 * kept, else discarded.
 	 */
-	public void setDataPersistent(boolean isDataPersistance);
+	public void setDataPersistent(Boolean isDataPersistance);
 	
 	/**
 	 * Default output data directory will be used.
@@ -86,4 +86,5 @@ public interface OutputDataSettings {
 	 * Default data persistent settings will be used.
 	 */
 	public void resetDataPersistent();
+
 }
