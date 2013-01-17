@@ -780,12 +780,16 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
     public void addWorkspaceProject(WorkspaceProject project) throws RegistryException {
-    	WorkerResource worker = jpa.getWorker();
-		if (isWorkspaceProjectExists(project.getProjectName())){
-        	throw new WorkspaceProjectAlreadyExistsException(createProjName(project.getProjectName()));
+        if (projectsRegistry != null){
+            projectsRegistry.addWorkspaceProject(project);
+        } else {
+            WorkerResource worker = jpa.getWorker();
+            if (isWorkspaceProjectExists(project.getProjectName())){
+                throw new WorkspaceProjectAlreadyExistsException(createProjName(project.getProjectName()));
+            }
+            ProjectResource projectResource = worker.createProject(createProjName(project.getProjectName()));
+            projectResource.save();
         }
-		ProjectResource projectResource = worker.createProject(createProjName(project.getProjectName()));
-		projectResource.save();
     }
 
     public void updateWorkspaceProject(WorkspaceProject project) throws RegistryException {
