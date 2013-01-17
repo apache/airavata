@@ -564,7 +564,12 @@ public class ProvenanceResourceClient {
                 cookie = response.getCookies().get(0).toCookie();
                 CookieManager.setCookie(cookie);
             }
-            return true;
+            String exists = response.getEntity(String.class);
+            if (exists.equals("True")) {
+                return true;
+            } else {
+                return false;
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
@@ -607,7 +612,12 @@ public class ProvenanceResourceClient {
                 cookie = response.getCookies().get(0).toCookie();
                 CookieManager.setCookie(cookie);
             }
-            return true;
+            String exists = response.getEntity(String.class);
+            if (exists.equals("True")) {
+                return true;
+            } else {
+                return false;
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, null, userName, callback.getPassword(userName), null, gateway);
@@ -1546,7 +1556,12 @@ public class ProvenanceResourceClient {
                 cookie = response.getCookies().get(0).toCookie();
                 CookieManager.setCookie(cookie);
             }
-            return true;
+            String exists = response.getEntity(String.class);
+            if (exists.equals("True")) {
+                return true;
+            } else {
+                return false;
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
@@ -1592,7 +1607,12 @@ public class ProvenanceResourceClient {
                 cookie = response.getCookies().get(0).toCookie();
                 CookieManager.setCookie(cookie);
             }
-            return true;
+            String exists = response.getEntity(String.class);
+            if (exists.equals("True")) {
+                return true;
+            } else {
+                return false;
+            }
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, null, userName, callback.getPassword(userName), null, gateway);
