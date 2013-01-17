@@ -146,7 +146,7 @@ public class GridFtp {
             String remoteFile = destURI.getPath();
             log.info("The remote file is " + remoteFile);
 
-            log.info("Setup GridFTP Client");
+            log.debug("Setup GridFTP Client");
 
             ftpClient = new GridFTPClient(contactInfo.hostName, contactInfo.port);
             ftpClient.setAuthorization(new HostAuthorization(GridFtp.HOST));
@@ -166,7 +166,7 @@ public class GridFtp {
                 }
             });
 
-            log.debug("Upload file to:" + remoteFile + " is done");
+            log.info("Upload file to:" + remoteFile + " is done");
 
         } catch (ServerException e) {
             throw new ToolsException("Cannot upload file to GridFTP:" + contactInfo.toString(), e);
@@ -191,14 +191,14 @@ public class GridFtp {
         GridFTPContactInfo srcContactInfo = new GridFTPContactInfo(srcURI.getHost(),srcURI.getPort());
         try {
             String remoteFile = destURI.getPath();
-            log.debug("The remote file is " + remoteFile);
+            log.info("The remote file is " + remoteFile);
             log.debug("Setup GridFTP Client");
             srcClient = new GridFTPClient(srcContactInfo.hostName, srcContactInfo.port);
             srcClient.setAuthorization(new HostAuthorization(GridFtp.HOST));
             srcClient.authenticate(gsCredential);
             srcClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
             makeExternalConfigurations(srcClient, true);
-            
+
             GridFTPClient destClient = new GridFTPClient(destContactInfo.hostName, destContactInfo.port);
             destClient.setAuthorization(new HostAuthorization(GridFtp.HOST));
             destClient.authenticate(gsCredential);
@@ -212,7 +212,7 @@ public class GridFtp {
 
             srcClient.transfer(srcURI.getPath(),destClient, remoteFile, false, null);
 
-            log.debug("Upload file to:" + remoteFile + " is done");
+            log.info("Upload file to:" + remoteFile + " is done");
 
         } catch (ServerException e) {
             throw new ToolsException("Cannot upload file to GridFTP:" + destContactInfo.toString(), e);
@@ -246,8 +246,8 @@ public class GridFtp {
 
             String remoteFile = destURI.getPath();
 
-            log.debug("The local temp file is " + localFile);
-            log.debug("the remote file is " + remoteFile);
+            log.info("The local temp file is " + localFile);
+            log.info("the remote file is " + remoteFile);
 
             log.debug("Setup GridFTP Client");
 
@@ -266,7 +266,7 @@ public class GridFtp {
 
             ftpClient.put(localFile, remoteFile, false);
 
-            log.debug("Upload file to:" + remoteFile + " is done");
+            log.info("Upload file to:" + remoteFile + " is done");
 
         } catch (ServerException e) {
             throw new ToolsException("Cannot upload file to GridFTP:" + contactInfo.toString(), e);
@@ -299,8 +299,8 @@ public class GridFtp {
         try {
             String remoteFile = destURI.getPath();
 
-            log.debug("The local temp file is " + localFile);
-            log.debug("the remote file is " + remoteFile);
+            log.info("The local temp file is " + localFile);
+            log.info("the remote file is " + remoteFile);
 
             log.debug("Setup GridFTP Client");
 
@@ -318,7 +318,7 @@ public class GridFtp {
 
             ftpClient.get(remoteFile, localFile);
 
-            log.debug("Download file to:" + remoteFile + " is done");
+            log.info("Download file to:" + remoteFile + " is done");
 
         } catch (ServerException e) {
             throw new ToolsException("Cannot download file from GridFTP:" + contactInfo.toString(), e);
@@ -357,7 +357,7 @@ public class GridFtp {
                 localTempfile = localFile;
             }
 
-            log.debug("Loca temporary file:" + localTempfile);
+            log.info("Loca temporary file:" + localTempfile);
 
             downloadFile(destURI, gsCredential, localTempfile);
 
@@ -369,7 +369,7 @@ public class GridFtp {
                 buff.append(GFacConstants.NEWLINE);
             }
 
-            log.debug("finish read file:" + localTempfile);
+            log.info("finish read file:" + localTempfile);
 
             return buff.toString();
         } catch (FileNotFoundException e) {
@@ -552,7 +552,7 @@ public class GridFtp {
         }
 
     }
-    
+
     /**
      * This function will call the external configuration handlers to configure the GridFTPClient
      * object.
@@ -569,13 +569,13 @@ public class GridFtp {
 					handler.handleDestinationFTPClient(client);
 				}
 			} catch (Exception e) {
-				//TODO Right now we are just catching & ignoring the exception. But later on we need 
-				//to throw this exception to notify the user of configuration errors of their 
+				//TODO Right now we are just catching & ignoring the exception. But later on we need
+				//to throw this exception to notify the user of configuration errors of their
 				//custom configuration handlers.
 				log.error("Error while configuring GridFTPClient for "
 								+ client.getHost(), e);
 			}
 		}
-		
+
 	}
 }
