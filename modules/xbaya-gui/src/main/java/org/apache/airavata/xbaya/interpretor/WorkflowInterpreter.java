@@ -231,7 +231,9 @@ public class WorkflowInterpreter {
 					// so we should pause the execution
 					if (InterpreterUtil.getRunningNodeCountDynamically(this.getGraph()) == 0
 							&& InterpreterUtil.getFailedNodeCountDynamically(this.getGraph()) != 0) {
-						this.getWorkflow().setExecutionState(WorkflowExecutionState.PAUSED);
+                        //Since airavata only support workflow interpreter server mode we do not want to keep thread in sleep mode
+                        // continuously, so we make the workflow stop when there's nothing to do.
+						this.getWorkflow().setExecutionState(WorkflowExecutionState.STOPPED);
 					}
 
 					try {
