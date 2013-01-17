@@ -191,18 +191,14 @@ public class WorkflowInterpreter {
                 this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager().setWorkflowInstanceNodeInput(workflowInstanceNode, keywords[i] + "=" + (String) values[i]);
                 this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager().setWorkflowNodeType(workflowInstanceNode, workflowNodeType);
 			}
-            System.out.println("********************- 1");
 			this.config.getNotifier().workflowStarted(values, keywords);
 			while (this.getWorkflow().getExecutionState() != WorkflowExecutionState.STOPPED) {
-                System.out.println("********************- 2");
 				if (getRemainNodesDynamically() == 0) {
-                    System.out.println("********************- 3");
 					notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_STATE_CHANGED, WorkflowExecutionState.PAUSED);
 				}
 				// ok we have paused sleep
 				while (this.getWorkflow().getExecutionState() == WorkflowExecutionState.PAUSED) {
 					try {
-                        System.out.println("********************- 4");
 						Thread.sleep(400);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
@@ -211,7 +207,6 @@ public class WorkflowInterpreter {
 				// get task list and execute them
 				ArrayList<Node> readyNodes = this.getReadyNodesDynamically();
 				for (Node node : readyNodes) {
-                    System.out.println("********************- 5");
 					if (node.isBreak()) {
 						this.notifyPause();
 						break;
@@ -1348,8 +1343,6 @@ public class WorkflowInterpreter {
 		ArrayList<Node> list = new ArrayList<Node>();
 		ArrayList<Node> waiting = InterpreterUtil.getWaitingNodesDynamically(this.getGraph());
 		ArrayList<Node> finishedNodes = InterpreterUtil.getFinishedNodesDynamically(this.getGraph());
-        System.out.println("waiting:" + waiting.size());
-        System.out.println("finishedNodes:" + finishedNodes.size());
 		for (Node node : waiting) {
 			Component component = node.getComponent();
 			if (component instanceof WSComponent
@@ -1385,7 +1378,6 @@ public class WorkflowInterpreter {
 					inputsDone = inputsDone && finishedNodes.contains(dataPort.getFromNode());
 				}
 				if (inputsDone && controlDone) {
-                    System.out.println("***************** Added ************");
 					list.add(node);
 				}
 			} else if (component instanceof EndifComponent) {
