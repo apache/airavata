@@ -314,8 +314,10 @@ public class EmbeddedGFacInvoker implements Invoker {
             throw new WorkflowException(message, e);
         } catch(ProviderException e){
             this.notifier.invocationFailed(e.getMessage() + "\n" + e.getAditionalInfo()[0],e);
+            throw new WorkflowException(e.getMessage(), e);
         } catch (Exception e) {
             this.notifier.invocationFailed(e.getMessage(),e);
+            throw new WorkflowException(e.getMessage(), e);
         }
         return true;
     }
