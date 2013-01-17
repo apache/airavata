@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <jnlp spec="1.0+"
-   codebase="http://localhost/airavata-xbaya/"
+   codebase="http://localhost:8080/airavata-xbaya/"
    href="xbaya.jnlp">
 <information>
 	<title>XBaya</title>
@@ -17,6 +17,11 @@
 	    DEPENDENT_JARS
 
     <property name="log" value="org.apache.airavata.xbaya:ALL"/>
+    <!--property name="javax.net.ssl.trustStore" value="client.jks"/>
+    <property name="javax.net.ssl.trustStorePassword" value="airavata"/>
+    <property name="javax.net.ssl.trustStoreType" value="JKS"/>
+    <property name="javax.net.ssl.keyStore" value="client.jks"/>
+    <property name="javax.net.ssl.keyStorePassword" value="airavata"/-->
 </resources>
 <application-desc main-class="org.apache.airavata.xbaya.XBaya">
 

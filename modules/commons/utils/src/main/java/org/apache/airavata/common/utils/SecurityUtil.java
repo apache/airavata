@@ -40,10 +40,14 @@ public class SecurityUtil {
      */
     public static void setTrustStoreParameters(String trustStoreFilePath, String trustStorePassword) {
 
-        logger.info("Setting Java trust store to " + trustStoreFilePath);
+        if (System.getProperty("javax.net.ssl.trustStrore") == null) {
+            logger.info("Setting Java trust store to " + trustStoreFilePath);
+            System.setProperty("javax.net.ssl.trustStrore", trustStoreFilePath);
+        }
 
-        System.setProperty("javax.net.ssl.trustStrore", trustStoreFilePath);
-        System.setProperty("javax.net.ssl.trustStorePassword", trustStorePassword);
+        if (System.getProperty("javax.net.ssl.trustStorePassword") == null) {
+            System.setProperty("javax.net.ssl.trustStorePassword", trustStoreFilePath);
+        }
 
     }
 }
