@@ -51,7 +51,7 @@ public interface HostSchedulingSettings {
 	 * Set whether to use WS-GRAM or Pre WS-GRAM
 	 * @param wsgramPreffered
 	 */
-	public void setWSGramPreffered(boolean wsgramPreffered);
+	public void setWSGramPreffered(Boolean wsgramPreffered);
 	
 	/**
 	 * Set the gatekeeper endpoint reference

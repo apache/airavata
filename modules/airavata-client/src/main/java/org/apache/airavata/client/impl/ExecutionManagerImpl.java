@@ -207,24 +207,14 @@ public class ExecutionManagerImpl implements ExecutionManager {
 				experimentID = workflowTemplateName + "_" + UUID.randomUUID();
 			}
 	        getClient().getProvenanceManager().setWorkflowInstanceTemplateName(experimentID,workflowTemplateName);
-	        
-			WorkflowContextHeaderBuilder builder=createWorkflowContextHeader();
-			
-			//TODO - fix user passing
+
+	        //TODO - fix user passing
 	        String submissionUser = getClient().getUserManager().getAiravataUser();
-			builder.setUserIdentifier(submissionUser);
 			String executionUser=options.getExperimentExecutionUser();
 			if (executionUser==null){
 				executionUser=submissionUser;
 			}
-			NodeSettings[] nodeSettingsList = options.getCustomWorkflowSchedulingSettings().getNodeSettingsList();
-			for (NodeSettings nodeSettings : nodeSettingsList) {
-				builder.addApplicationSchedulingContext(nodeSettings.getNodeId(), nodeSettings.getServiceId(), nodeSettings.getHostSettings().getHostId(), nodeSettings.getHostSettings().isWSGRAMPreffered(), nodeSettings.getHostSettings().getGatekeeperEPR(), nodeSettings.getHPCSettings().getJobManager(), nodeSettings.getHPCSettings().getCPUCount(), nodeSettings.getHPCSettings().getNodeCount(), nodeSettings.getHPCSettings().getQueueName(), nodeSettings.getHPCSettings().getMaxWallTime());
-			}
-			OutputDataSettings[] outputDataSettingsList = options.getCustomWorkflowOutputDataSettings().getOutputDataSettingsList();
-			for (OutputDataSettings outputDataSettings : outputDataSettingsList) {
-				builder.addApplicationOutputDataHandling(outputDataSettings.getNodeId(),outputDataSettings.getOutputDataDirectory(), outputDataSettings.getDataRegistryUrl(), outputDataSettings.isDataPersistent());
-			}
+			WorkflowContextHeaderBuilder builder = createWorkflowContextHeaderBuilder(options, submissionUser);
 			runPreWorkflowExecutionTasks(experimentID, executionUser, options.getExperimentMetadata(), options.getExperimentName());
 			NameValue[] inputVals = inputValues.toArray(new NameValue[] {});
 			if (listener!=null){
@@ -241,10 +231,22 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	    }
 	}
 
-//	private String runWorkflow(String workflowName, List<WorkflowInput> inputs, ExperimentAdvanceOptions options) throws AiravataAPIInvocationException {
-//		return runExperimentGeneral(extractWorkflow(workflowName), inputs, options, null);
-//	}
-	
+	private WorkflowContextHeaderBuilder createWorkflowContextHeaderBuilder(
+			ExperimentAdvanceOptions options, String submissionUser)
+			throws AiravataAPIInvocationException {
+		WorkflowContextHeaderBuilder builder=createWorkflowContextHeader();
+		builder.setUserIdentifier(submissionUser);
+		NodeSettings[] nodeSettingsList = options.getCustomWorkflowSchedulingSettings().getNodeSettingsList();
+		for (NodeSettings nodeSettings : nodeSettingsList) {
+			builder.addApplicationSchedulingContext(nodeSettings.getNodeId(), nodeSettings.getServiceId(), nodeSettings.getHostSettings().getHostId(), nodeSettings.getHostSettings().isWSGRAMPreffered(), nodeSettings.getHostSettings().getGatekeeperEPR(), nodeSettings.getHPCSettings().getJobManager(), nodeSettings.getHPCSettings().getCPUCount(), nodeSettings.getHPCSettings().getNodeCount(), nodeSettings.getHPCSettings().getQueueName(), nodeSettings.getHPCSettings().getMaxWallTime());
+		}
+		OutputDataSettings[] outputDataSettingsList = options.getCustomWorkflowOutputDataSettings().getOutputDataSettingsList();
+		for (OutputDataSettings outputDataSettings : outputDataSettingsList) {
+			builder.addApplicationOutputDataHandling(outputDataSettings.getNodeId(),outputDataSettings.getOutputDataDirectory(), outputDataSettings.getDataRegistryUrl(), outputDataSettings.isDataPersistent());
+		}
+		return builder;
+	}
+
     private Workflow extractWorkflow(String workflowName) throws AiravataAPIInvocationException {
         Workflow workflowObj = null;
         //FIXME - There should be a better way to figure-out if the passed string is a name or an xml
@@ -379,4 +381,15 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	
 	//------------------End of Deprecated Functions---------------------//
 
+	public static void main(String[] args) {
+		ExecutionManagerImpl a = new ExecutionManagerImpl(null);
+		try {
+			ExperimentAdvanceOptions b = a.createExperimentAdvanceOptions();
+			b.getCustomWorkflowOutputDataSettings().addNewOutputDataSettings("la", "di", "da", false);
+			WorkflowContextHeaderBuilder c = a.createWorkflowContextHeaderBuilder(b, "meeee");
+			System.out.println(XMLUtil.xmlElementToString(c.getXml()));
+		} catch (AiravataAPIInvocationException e) {
+			e.printStackTrace();
+		}
+	}
 }

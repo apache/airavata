@@ -43,7 +43,7 @@ public interface WorkflowOutputDataSettings {
 	 * @param isDataPersistent
 	 * @return
 	 */
-	public OutputDataSettings addNewOutputDataSettings(String nodeId, String outputDataDirectory, String dataRegistryURL, boolean isDataPersistent);
+	public OutputDataSettings addNewOutputDataSettings(String nodeId, String outputDataDirectory, String dataRegistryURL, Boolean isDataPersistent);
 	
 	/**
 	 * Add new application putput data settings
