@@ -318,7 +318,7 @@ public class GridFtp {
 
             ftpClient.get(remoteFile, localFile);
 
-            log.info("Download file to:" + remoteFile + " is done");
+            log.info("Download file to:" + localFile + " is done");
 
         } catch (ServerException e) {
             throw new ToolsException("Cannot download file from GridFTP:" + contactInfo.toString(), e);
