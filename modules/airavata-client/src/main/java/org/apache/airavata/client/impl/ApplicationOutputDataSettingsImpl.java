@@ -34,6 +34,7 @@ public class ApplicationOutputDataSettingsImpl implements OutputDataSettings {
 	}
 
 	public ApplicationOutputDataSettingsImpl(String nodeId, String outputDataDirectory, String dataRegistryUrl, Boolean dataPersistent) {
+		setNodeId(nodeId);
 		setOutputDataDirectory(outputDataDirectory);
 		setDataRegistryUrl(dataRegistryUrl);
 		setDataPersistent(dataPersistent);
