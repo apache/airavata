@@ -32,6 +32,7 @@
                 <module>airavata-server</module>
                 <module>airavata-client</module>
                 <module>xbaya-gui</module>
+				<module>release</module>
             </modules>
         </profile>
     </profiles>

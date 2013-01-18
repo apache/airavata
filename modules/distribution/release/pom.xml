@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE file 
+    distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to you under 
+    the Apache License, Version 2.0 (theÏ "License"); you may not use this file except in compliance with the License. You may 
+    obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to 
+    in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF 
+    ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
+    the License. -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.apache.airavata</groupId>
+        <artifactId>distribution</artifactId>
+        <version>0.6-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>apache-airavata-release-artifacts</artifactId>
+    <name>Airavata release artifacts</name>
+    <packaging>pom</packaging>
+    <url>http://airavata.apache.org/</url>
+
+    <build>
+        <plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+					<execution>
+						<id>copy-artifacts</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.apache.airavata</groupId>
+									<artifactId>apache-airavata-client</artifactId>
+						            <version>${project.version}</version>
+									<type>zip</type>
+									<classifier>bin</classifier>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.apache.airavata</groupId>
+									<artifactId>apache-airavata-client</artifactId>
+						            <version>${project.version}</version>
+									<type>tar.gz</type>
+									<classifier>bin</classifier>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.apache.airavata</groupId>
+									<artifactId>apache-airavata-server</artifactId>
+						            <version>${project.version}</version>
+									<type>zip</type>
+									<classifier>bin</classifier>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.apache.airavata</groupId>
+									<artifactId>apache-airavata-server</artifactId>
+						            <version>${project.version}</version>
+									<type>tar.gz</type>
+									<classifier>bin</classifier>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.apache.airavata</groupId>
+									<artifactId>apache-airavata-server</artifactId>
+						            <version>${project.version}</version>
+									<type>war</type>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.apache.airavata</groupId>
+									<artifactId>airavata-rest-service-webapp</artifactId>
+						            <version>${project.version}</version>
+									<type>war</type>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.apache.airavata</groupId>
+									<artifactId>apache-airavata-xbaya-gui</artifactId>
+						            <version>${project.version}</version>
+									<type>zip</type>
+									<classifier>bin</classifier>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.apache.airavata</groupId>
+									<artifactId>apache-airavata-xbaya-gui</artifactId>
+						            <version>${project.version}</version>
+									<type>tar.gz</type>
+									<classifier>bin</classifier>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.apache.airavata</groupId>
+									<artifactId>apache-airavata-xbaya-gui</artifactId>
+						            <version>${project.version}</version>
+									<type>zip</type>
+									<classifier>jnlp</classifier>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.apache.airavata</groupId>
+									<artifactId>apache-airavata-xbaya-gui</artifactId>
+						            <version>${project.version}</version>
+									<type>tar.gz</type>
+									<classifier>jnlp</classifier>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>${project.build.directory}/release-artifacts</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+        </plugins>
+    </build>
+
+    <properties>
+        <jersey.version>1.13</jersey.version>
+        <grizzly.version>2.0.0-M3</grizzly.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <archieve.name>apache-airavata-client</archieve.name>
+        <used.axis2.release>${axis2.version}</used.axis2.release>
+		<airavata.client-dist.name>${archieve.name}-${project.version}</airavata.client-dist.name>
+		<airavata.client-bin.zip>${project.build.directory}/${airavata.client-dist.name}-bin.zip</airavata.client-bin.zip>
+		<airavata.client-bin.tar.gz>${project.build.directory}/${airavata.client-dist.name}-bin.tar.gz</airavata.client-bin.tar.gz>
+    </properties>
+</project>
