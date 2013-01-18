@@ -22,6 +22,7 @@
 package org.apache.airavata.rest.mappings.resourcemappings;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.HashMap;
 
 @XmlRootElement(name = "application")
 public class ApplicationDescriptor {
@@ -42,6 +43,13 @@ public class ApplicationDescriptor {
     private int maxMemory;
     private String applicationDescType;
     private ServiceDescriptor serviceDescriptor;
+    private String inputDir;
+    private String outputDir;
+    private String stdIn;
+    private String stdOut;
+    private String stdError;
+    private String staticWorkigDir;
+    private HashMap<String, String> environmentVariables;
 
 
     public String getName() {
@@ -178,5 +186,61 @@ public class ApplicationDescriptor {
 
     public void setProjectDescription(String projectDescription) {
         this.projectDescription = projectDescription;
+    }
+
+    public String getInputDir() {
+        return inputDir;
+    }
+
+    public String getOutputDir() {
+        return outputDir;
+    }
+
+    public String getStdIn() {
+        return stdIn;
+    }
+
+    public String getStdOut() {
+        return stdOut;
+    }
+
+    public String getStdError() {
+        return stdError;
+    }
+
+    public HashMap<String, String> getEnvironmentVariables() {
+        return environmentVariables;
+    }
+
+    public void setInputDir(String inputDir) {
+        this.inputDir = inputDir;
+    }
+
+    public void setOutputDir(String outputDir) {
+        this.outputDir = outputDir;
+    }
+
+    public void setStdIn(String stdIn) {
+        this.stdIn = stdIn;
+    }
+
+    public void setStdOut(String stdOut) {
+        this.stdOut = stdOut;
+    }
+
+    public void setStdError(String stdError) {
+        this.stdError = stdError;
+    }
+
+    public void setEnvironmentVariables(HashMap<String, String> environmentVariables) {
+        this.environmentVariables = environmentVariables;
+    }
+
+    public String getStaticWorkigDir() {
+        return staticWorkigDir;
+    }
+
+    public void setStaticWorkigDir(String staticWorkigDir) {
+        this.staticWorkigDir = staticWorkigDir;
     }
 }

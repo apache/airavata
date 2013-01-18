@@ -31,6 +31,7 @@ import org.apache.airavata.rest.mappings.resourcemappings.ServiceParameters;
 import org.apache.airavata.schemas.gfac.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class DescriptorUtil {
@@ -271,6 +272,38 @@ public class DescriptorUtil {
         applicationDescription.getType().setExecutableLocation(applicationDescriptor.getExecutablePath());
         applicationDescription.getType().setScratchWorkingDirectory(applicationDescriptor.getWorkingDir());
 
+        if (applicationDescriptor.getInputDir() != null){
+            applicationDescription.getType().setInputDataDirectory(applicationDescriptor.getInputDir());
+        }
+        if (applicationDescriptor.getOutputDir() != null){
+            applicationDescription.getType().setOutputDataDirectory(applicationDescriptor.getOutputDir());
+        }
+        if (applicationDescriptor.getStdIn() != null){
+            applicationDescription.getType().setStandardInput(applicationDescriptor.getStdIn());
+        }
+        if (applicationDescriptor.getStdOut() != null){
+            applicationDescription.getType().setStandardOutput(applicationDescriptor.getStdOut());
+        }
+        if (applicationDescriptor.getStdError() != null){
+            applicationDescription.getType().setStandardError(applicationDescriptor.getStdError());
+        }
+        if (applicationDescriptor.getStaticWorkigDir() != null){
+            applicationDescription.getType().setStaticWorkingDirectory(applicationDescriptor.getStaticWorkigDir());
+        }
+        HashMap<String,String> environmentVariables = applicationDescriptor.getEnvironmentVariables();
+        if (environmentVariables != null && !environmentVariables.isEmpty()){
+            NameValuePairType[] appEnviVariablesArray = new NameValuePairType[environmentVariables.size()];
+            for(String key : environmentVariables.keySet()) {
+                int i = 0;
+                NameValuePairType nameValuePairType = applicationDescription.getType().addNewApplicationEnvironment();
+                nameValuePairType.setName(key);
+                nameValuePairType.setValue(environmentVariables.get(key));
+                appEnviVariablesArray[i] = nameValuePairType;
+                i++;
+            }
+            applicationDescription.getType().setApplicationEnvironmentArray(appEnviVariablesArray);
+        }
+
         //set advanced options according app desc type
         if(applicationDescriptor.getApplicationDescType() != null && !applicationDescriptor.getApplicationDescType().isEmpty()){
             if (applicationDescriptor.getApplicationDescType().equals(ApplicationDescriptorTypes.HPC_APP_DEP_DESC_TYPE)){
@@ -278,6 +311,39 @@ public class DescriptorUtil {
                 appDesc.getType().setApplicationName(name);
                 appDesc.getType().setExecutableLocation(applicationDescriptor.getExecutablePath());
                 appDesc.getType().setScratchWorkingDirectory(applicationDescriptor.getWorkingDir());
+
+                if (applicationDescriptor.getInputDir() != null){
+                    appDesc.getType().setInputDataDirectory(applicationDescriptor.getInputDir());
+                }
+                if (applicationDescriptor.getOutputDir() != null){
+                    appDesc.getType().setOutputDataDirectory(applicationDescriptor.getOutputDir());
+                }
+                if (applicationDescriptor.getStdIn() != null){
+                    appDesc.getType().setStandardInput(applicationDescriptor.getStdIn());
+                }
+                if (applicationDescriptor.getStdOut() != null){
+                    appDesc.getType().setStandardOutput(applicationDescriptor.getStdOut());
+                }
+                if (applicationDescriptor.getStdError() != null){
+                    appDesc.getType().setStandardError(applicationDescriptor.getStdError());
+                }
+                if (applicationDescriptor.getStaticWorkigDir() != null){
+                    appDesc.getType().setStaticWorkingDirectory(applicationDescriptor.getStaticWorkigDir());
+                }
+                HashMap<String,String> envVariables = applicationDescriptor.getEnvironmentVariables();
+                if (envVariables != null && !envVariables.isEmpty()){
+                    NameValuePairType[] appEnviVariablesArray = new NameValuePairType[envVariables.size()];
+                    for(String key : envVariables.keySet()) {
+                        int i = 0;
+                        NameValuePairType nameValuePairType = applicationDescription.getType().addNewApplicationEnvironment();
+                        nameValuePairType.setName(key);
+                        nameValuePairType.setValue(envVariables.get(key));
+                        appEnviVariablesArray[i] = nameValuePairType;
+                        i++;
+                    }
+                    appDesc.getType().setApplicationEnvironmentArray(appEnviVariablesArray);
+                }
+
                 HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) appDesc.getType();
 
                 ProjectAccountType projectAccountType = app.addNewProjectAccount();
@@ -317,6 +383,34 @@ public class DescriptorUtil {
         applicationDescriptor.setName(applicationDescription.getType().getApplicationName().getStringValue());
         applicationDescriptor.setExecutablePath(applicationDescription.getType().getExecutableLocation());
         applicationDescriptor.setWorkingDir(applicationDescription.getType().getScratchWorkingDirectory());
+
+        if (applicationDescription.getType().getInputDataDirectory() != null && !applicationDescription.getType().getInputDataDirectory().equals("") ){
+            applicationDescriptor.setInputDir(applicationDescription.getType().getInputDataDirectory());
+        }
+        if (applicationDescription.getType().getOutputDataDirectory() != null && !applicationDescription.getType().getOutputDataDirectory().equals("")){
+            applicationDescriptor.setOutputDir(applicationDescription.getType().getOutputDataDirectory());
+        }
+        if (applicationDescription.getType().getStaticWorkingDirectory() != null && !applicationDescription.getType().getStaticWorkingDirectory().equals("")){
+            applicationDescriptor.setStaticWorkigDir(applicationDescription.getType().getStaticWorkingDirectory());
+        }
+        if (applicationDescription.getType().getStandardInput() != null && !applicationDescription.getType().getStandardInput().equals("")){
+            applicationDescriptor.setStdIn(applicationDescription.getType().getStandardInput());
+        }
+        if (applicationDescription.getType().getStandardOutput() != null && !applicationDescription.getType().getStandardOutput().equals("")){
+            applicationDescriptor.setStdOut(applicationDescription.getType().getStandardOutput());
+        }
+        if (applicationDescription.getType().getStandardError() != null && !applicationDescription.getType().getStandardError().equals("")){
+            applicationDescriptor.setStdError(applicationDescription.getType().getStandardError());
+        }
+        NameValuePairType[] environmentArray = applicationDescription.getType().getApplicationEnvironmentArray();
+        HashMap<String, String> environmentVariableMap = new HashMap<String, String>();
+        if (environmentArray != null && environmentArray.length != 0){
+            for (NameValuePairType nameValuePairType : environmentArray){
+                environmentVariableMap.put(nameValuePairType.getName(), nameValuePairType.getValue());
+            }
+            applicationDescriptor.setEnvironmentVariables(environmentVariableMap);
+        }
+
         if(applicationDescription.getType() != null){
             if(applicationDescription.getType() instanceof HpcApplicationDeploymentType){
                 applicationDescriptor.setApplicationDescType(ApplicationDescriptorTypes.HPC_APP_DEP_DESC_TYPE);
