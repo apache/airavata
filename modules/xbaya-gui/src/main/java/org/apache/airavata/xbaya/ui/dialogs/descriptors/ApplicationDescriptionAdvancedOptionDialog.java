@@ -338,7 +338,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     	}
         NameValuePairType[] envParams = getShellApplicationDescriptionType().getApplicationEnvironmentArray();
     	for (NameValuePairType envParam : envParams) {
-    		defaultTableModel.addRow(new Object[] { envParam.getName(),envParam.getName()});	
+    		defaultTableModel.addRow(new Object[] { envParam.getName(),envParam.getValue()});
 		}
     	addNewRowIfLastIsNotEmpty();
         tableModelChanging = false;
