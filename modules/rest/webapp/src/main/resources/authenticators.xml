@@ -16,7 +16,7 @@ The "enabled parameter at root level will say whether authenticators are enabled
             <database>
                 <!--jdbcUrl>jdbc:h2:modules/commons/airavata-registry-rest/src/test/resources/testdb/test</jdbcUrl-->
                 <!-- Points to /Users/thejaka/development/apache/airavata/trunk/modules/commons/airavata-registry-rest/target/tomcat6x/. -->
-                <jdbcUrl>jdbc:derby://localhost:1527/persistent_data;create=true;user=airavata;password=airavata</jdbcUrl>
+                <jdbcUrl>jdbc:derby://localhost:1527/persistent_data;create=false</jdbcUrl>
                 <userName>airavata</userName>
                 <password>airavata</password>
                 <databaseDriver>org.apache.derby.jdbc.ClientDriver</databaseDriver>
@@ -32,7 +32,7 @@ The "enabled parameter at root level will say whether authenticators are enabled
         <specificConfigurations>
             <database>
                 <!--jdbcUrl>jdbc:h2:modules/commons/airavata-registry-rest/src/test/resources/testdb/test</jdbcUrl-->
-                <jdbcUrl>jdbc:derby://localhost:1527/persistent_data;create=true;user=airavata;password=airavata</jdbcUrl>
+                <jdbcUrl>jdbc:derby://localhost:1527/persistent_data;create=false</jdbcUrl>
                 <userName>airavata</userName>
                 <password>airavata</password>
                 <databaseDriver>org.apache.derby.jdbc.ClientDriver</databaseDriver>
