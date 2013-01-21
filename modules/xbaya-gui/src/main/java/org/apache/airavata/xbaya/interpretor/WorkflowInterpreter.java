@@ -290,8 +290,8 @@ public class WorkflowInterpreter {
 		} catch (RuntimeException e) {
 			// we reset all the state
 			cleanup();
-			this.config.getNotifier().cleanup();
             this.config.getNotifier().workflowFailed(e.getMessage());
+            this.config.getNotifier().cleanup();
 			this.getWorkflow().setExecutionState(WorkflowExecutionState.NONE);
 			raiseException(e);
 		} catch (AiravataAPIInvocationException e) {
