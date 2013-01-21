@@ -106,7 +106,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     public static final String REGISTRY_PASSWORD = "registry.password";
     public static final String REGISTRY_USER = "registry.user";
     public static final String REGISTRY_URL = "registry.jdbc.url";
-    public static final String GATEWAY_ID = "gateway.id";
+    public static final String GATEWAY_ID = "default.registry.gateway";
 
     private Scheduler scheduler;
     private PreExecuteChain[] preChain;

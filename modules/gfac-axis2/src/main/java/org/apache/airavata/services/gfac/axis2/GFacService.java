@@ -73,9 +73,6 @@ public class GFacService implements ServiceLifeCycle {
     public static final String MYPROXY_PASS = "myproxy.pass";
     public static final String MYPROXY_LIFE = "myproxy.life";
     public static final String GFAC_CONFIGURATION = "gfacConfiguration";
-    public static final String SYSTEM_GATEWAY = "system.gateway";
-    public static final String SYSTEM_PASSWORD = "system.password";
-//    public static final String REGISTRY_URL = "registry.jdbc.url";
 
     /*
      * Heart beat thread

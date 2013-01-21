@@ -63,7 +63,7 @@ public class NewRegistryUserDialog {
     private JButton okButton;
 
     private boolean userCreated = false;
-//    public static final String GATEWAY_ID = "gateway.id";
+//    public static final String GATEWAY_ID = "default.registry.gateway";
 
     public NewRegistryUserDialog(XBayaEngine engine) {
         this(engine, null, null);
