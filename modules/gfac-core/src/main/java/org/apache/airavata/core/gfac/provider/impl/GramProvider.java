@@ -397,7 +397,7 @@ public class GramProvider extends AbstractProvider {
 		}
         }catch (Exception e){
 //           invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,"Error during Input File staging");
-            throw new ProviderException("Error while input File Staging", e.getCause(),invocationContext, "Error during Input File staging: " + e.getLocalizedMessage());
+            throw new ProviderException("Error while input File Staging", e.getCause(),invocationContext,  e.getLocalizedMessage());
         }
         invocationContext.setInput(inputNew);
 		return null;
