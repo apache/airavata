@@ -202,15 +202,9 @@ public class UserWorkflowRegistryResource {
                 workflowsModels.add(workflow);
             }
             workflowList.setWorkflowList(workflowsModels);
-            if (workflows.size() != 0) {
-                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
-                builder.entity(workflowList);
-                return builder.build();
-            } else {
-                Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                return builder.build();
-            }
-
+            Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+            builder.entity(workflowList);
+            return builder.build();
         } catch (Throwable e) {
             return WebAppUtil.reportInternalServerError(ResourcePathConstants.UserWFConstants.GET_WORKFLOWS, e);
         } finally {
