@@ -75,11 +75,6 @@ public class WorkflowTrackingNotification implements GFacNotifiable {
         Integer receiverWorkflowTimeStep = null;
         setReceiver(this.notifier.createEntity(receiverWorkflowID, receiverServiceID, receiverWorkflowNodeID,
                 receiverWorkflowTimeStep));
-
-        // send start workflow
-        //since workflow interpreter is sending owrkflow invoke message gfac doesn't have to send a workflow invoke message
-        //everytime it invoke a service node.
-        this.invocationContext = this.notifier.workflowInvoked(this.context, this.initiator);
     }
 
     public void startSchedule(InvocationContext context) {
