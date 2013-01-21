@@ -43,10 +43,6 @@ import org.slf4j.LoggerFactory;
 public class RegistryUtils {
     private static final Logger log = LoggerFactory.getLogger(RegistryUtils.class);
 
-    public static final String GATEWAY_ID = "gateway.id";
-
-    public static final String REGISTRY_USER = "registry.user";
-
 
     public static String validateAxisService(String urlString)throws RegistryException {
         if(!urlString.endsWith("?wsdl")){

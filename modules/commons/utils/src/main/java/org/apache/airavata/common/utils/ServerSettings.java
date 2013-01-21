@@ -38,7 +38,7 @@ import org.apache.coyote.http11.Http11NioProtocol;
 import org.apache.coyote.http11.Http11Protocol;
 
 public class ServerSettings extends ApplicationSettings{
-    private static final String DEFAULT_GATEWAY_ID="gateway.id";
+    private static final String DEFAULT_GATEWAY_ID="default.registry.gateway";
     private static final String SYSTEM_USER="system.user";
     private static final String SYSTEM_USER_PASSWORD="system.password";
     private static final String SYSTEM_USER_GATEWAY="system.gateway";

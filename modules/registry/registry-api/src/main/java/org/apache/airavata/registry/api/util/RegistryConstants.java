@@ -22,7 +22,7 @@
 package org.apache.airavata.registry.api.util;
 
 public class RegistryConstants {
-    public static final String KEY_DEFAULT_GATEWAY_ID = "gateway.id";
+    public static final String KEY_DEFAULT_GATEWAY_ID = "default.registry.gateway";
     public static final String KEY_DEFAULT_REGISTRY_USER = "registry.user";
     public static final String KEY_DEFAULT_REGISTRY_URL = "registry.jdbc.url";
     public static final String CONFIGURATION_REGISTRY_ACCESSOR_CLASS = "class.configuration.registry.accessor";
