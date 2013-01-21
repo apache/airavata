@@ -43,7 +43,7 @@ public class ProviderException extends GfacException {
         super(message, cause);
         Exception e = new Exception(cause);
         aditionalInfo = additionalExceptiondata;
-        sendFaultNotification(message, invocationContext, e, additionalExceptiondata);
+//        sendFaultNotification(message, invocationContext, e, additionalExceptiondata);
     }
 
 	private void sendFaultNotification(String message,
