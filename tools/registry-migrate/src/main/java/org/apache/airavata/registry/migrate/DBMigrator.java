@@ -52,12 +52,12 @@ public class DBMigrator {
 
     //we assume given database is up and running
     public static void updateDB (String jdbcUrl, String jdbcUser, String jdbcPwd){
+        InputStream sqlStream = null;
         Scanner in = new Scanner(System.in);
         if (jdbcPwd == null || jdbcPwd.equals("")){
             System.out.println("Enter JDBC password : ");
             jdbcPwd = in.next();
         }
-        File sqlFile = null;
         String dbType = getDBType(jdbcUrl);
         String jdbcDriver = null;
 
@@ -65,19 +65,13 @@ public class DBMigrator {
         try {
             if (dbType.contains("derby")){
                 jdbcDriver = "org.apache.derby.jdbc.ClientDriver";
-                URL url = DBMigrator.class.getClassLoader()
-                        .getResource(MIGRATE_SQL_DERBY);
-                sqlFile = new File(url.toURI());
-
+                sqlStream = DBMigrator.class.getClassLoader().getResourceAsStream(MIGRATE_SQL_DERBY);
             } else if (dbType.contains("mysql")){
                 jdbcDriver = "com.mysql.jdbc.Driver";
-                URL url = DBMigrator.class.getClassLoader()
-                        .getResource(MIGRATE_SQL_MYSQL);
-                sqlFile = new File(url.toURI());
+                sqlStream = DBMigrator.class.getClassLoader().getResourceAsStream(MIGRATE_SQL_MYSQL);
             }
             Class.forName(jdbcDriver).newInstance();
             connection = DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcPwd);
-            InputStream sqlStream = new FileInputStream(sqlFile);
             if (canUpdated(connection)){
                 executeSQLScript(connection, sqlStream);
                 //update configuration table with airavata version
