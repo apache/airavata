@@ -21,14 +21,6 @@
 
 package org.apache.airavata.registry.migrate;
 
-import org.apache.airavata.common.exception.AiravataConfigurationException;
-import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.AiravataRegistryFactory;
-import org.apache.airavata.registry.api.AiravataUser;
-import org.apache.airavata.registry.api.Gateway;
-import org.apache.airavata.registry.api.exception.RegistryAccessorInstantiateException;
-import org.apache.airavata.registry.api.exception.RegistryAccessorInvalidException;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,15 +36,16 @@ public class DBMigrator {
     private static final String delimiter = ";";
     private static final String MIGRATE_SQL_DERBY = "migrate_derby.sql";
     private static final String MIGRATE_SQL_MYSQL = "migrate_mysql.sql";
-    private static final String AIRAVATA_PROPERTIES = "airavata-server.properties";
     private static final String MIGRATED_AIRAVATA_VERSION = "migrated.airavata.version";
-    private static final String DEFAULT_SYSTEM_GATEWAY = "system.gateway";
-    private static final String DEFAULT_SYSTEM_USER = "system.user";
-
+    private static String currentAiravataVersion = "0.5";
+    private static final String SELECT_QUERY = "SELECT config_val FROM CONFIGURATION WHERE config_key=' " + MIGRATED_AIRAVATA_VERSION + "'";
+    private static final String INSERT_QUERY = "INSERT INTO CONFIGURATION (config_key, config_val, expire_date, category_id) VALUES('" +
+            MIGRATED_AIRAVATA_VERSION + "', '" + getIncrementedVersion(currentAiravataVersion) + "', '" + getCurrentDate() +
+            "','SYSTEM')";
 
 
     public static void main(String[] args) {
-         updateDB("jdbc:derby://localhost:1527/persistent_data;create=true;user=airavata;password=airavata",
+         updateDB("jdbc:mysql://localhost:3306/persistent_data",
                  "airavata",
                  "airavata");
     }
@@ -85,10 +78,10 @@ public class DBMigrator {
             Class.forName(jdbcDriver).newInstance();
             connection = DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcPwd);
             InputStream sqlStream = new FileInputStream(sqlFile);
-            if (canUpdated()){
+            if (canUpdated(connection)){
                 executeSQLScript(connection, sqlStream);
                 //update configuration table with airavata version
-                updateConfigTable();
+                updateConfigTable(connection);
             }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -103,58 +96,55 @@ public class DBMigrator {
         }
     }
 
-    private static boolean canUpdated (){
-        try {
-            AiravataRegistry2 registry = getRegistry();
-            Object configuration = registry.getConfiguration(MIGRATED_AIRAVATA_VERSION);
-            if (configuration != null){
-                return false;
-            } else {
-                return true;
-            }
-        } catch (RegistryAccessorInvalidException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    private static void updateConfigTable (){
-        try {
-            AiravataRegistry2 registry = getRegistry();
-            registry.addConfiguration(MIGRATED_AIRAVATA_VERSION, registry.getVersion().getVersion(), getCurrentDate());
-        } catch (RegistryAccessorInvalidException e) {
-            e.printStackTrace();
+    private static boolean canUpdated (Connection conn){
+        String config = executeSelectQuery(conn);
+        if (config != null) {
+            return false;
+        } else {
+            return true;
         }
     }
 
-    private static Date getCurrentDate (){
+    private static void updateConfigTable (Connection connection){
+        executeInsertQuery(connection);
+    }
+
+    private static Timestamp getCurrentDate (){
         Calendar cal = Calendar.getInstance();
         Date date = cal.getTime();
-        return date;
+        Timestamp d = new Timestamp(date.getTime());
+        return d;
     }
 
-    private static AiravataRegistry2 getRegistry() throws RegistryAccessorInvalidException {
+    private static String getIncrementedVersion (String currentVersion){
+        Double currentVer = Double.valueOf(currentVersion);
+        return String.valueOf(currentVer + 0.1);
+    }
+
+    private static String executeSelectQuery (Connection conn){
         try {
-            URL url = DBMigrator.class.getClassLoader()
-                    .getResource(AIRAVATA_PROPERTIES);
-            Properties properties = new Properties();
-            properties.load(url.openStream());
-            String gatewayName = properties.getProperty(DEFAULT_SYSTEM_GATEWAY);
-            String airavataUserName = properties.getProperty(DEFAULT_SYSTEM_USER);
-            Gateway gateway = new Gateway(gatewayName);
-            AiravataUser airavataUser = new AiravataUser(airavataUserName);
-            AiravataRegistry2 registry = AiravataRegistryFactory.getRegistry(gateway, airavataUser);
-            return registry;
-        } catch (RegistryAccessorInstantiateException e) {
-            e.printStackTrace();
-        } catch (RegistryException e) {
-            e.printStackTrace();
-        } catch (AiravataConfigurationException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+            Statement statement = conn.createStatement();
+            ResultSet rs = statement.executeQuery(SELECT_QUERY);
+            if (rs != null){
+                while (rs.next()) {
+                    currentAiravataVersion = rs.getString(1);
+                    return currentAiravataVersion;
+                }
+            }
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private static void executeInsertQuery (Connection conn){
+        try {
+            Statement statement = conn.createStatement();
+            System.out.println(INSERT_QUERY);
+            statement.execute(INSERT_QUERY) ;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void executeSQLScript(Connection conn, InputStream inputStream) throws Exception {
@@ -207,7 +197,6 @@ public class DBMigrator {
             }
 
         }
-
     }
 
     private static String getDBType(String jdbcURL){

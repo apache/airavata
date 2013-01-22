@@ -25,7 +25,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-jpa-registry</artifactId>
+            <artifactId>airavata-registry-api</artifactId>
             <version>0.6-SNAPSHOT</version>
         </dependency>
         <dependency>
@@ -57,17 +57,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
             <version>1.6.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-all</artifactId>
-            <version>2.2.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>jcl104-over-slf4j</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
 
