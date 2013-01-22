@@ -47,13 +47,13 @@ public class DBMigrator {
     public static void main(String[] args) {
          updateDB("jdbc:mysql://localhost:3306/persistent_data",
                  "airavata",
-                 "airavata");
+                 null);
     }
 
     //we assume given database is up and running
     public static void updateDB (String jdbcUrl, String jdbcUser, String jdbcPwd){
         Scanner in = new Scanner(System.in);
-        if (jdbcPwd == null){
+        if (jdbcPwd == null || jdbcPwd.equals("")){
             System.out.println("Enter JDBC password : ");
             jdbcPwd = in.next();
         }
