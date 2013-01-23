@@ -21,12 +21,15 @@
 
 package org.apache.airavata.xbaya;
 
+import org.apache.airavata.common.utils.Version;
+
 public class XBayaVersion {
 
     /**
      * Version number
      */
-    public final static String VERSION = "Airavata XBaya 0.5";
+    public final static Version VERSION = new Version("Airavata XBaya", 0, 6,
+			null, null, null);;
 
     /**
      * Prints the version
