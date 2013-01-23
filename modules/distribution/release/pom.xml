@@ -38,20 +38,7 @@
 						</goals>
 						<configuration>
 							<artifactItems>
-								<artifactItem>
-									<groupId>org.apache.airavata</groupId>
-									<artifactId>apache-airavata-client</artifactId>
-						            <version>${project.version}</version>
-									<type>zip</type>
-									<classifier>bin</classifier>
-								</artifactItem>
-								<artifactItem>
-									<groupId>org.apache.airavata</groupId>
-									<artifactId>apache-airavata-client</artifactId>
-						            <version>${project.version}</version>
-									<type>tar.gz</type>
-									<classifier>bin</classifier>
-								</artifactItem>
+								<!--Airavata Server Distributions-->
 								<artifactItem>
 									<groupId>org.apache.airavata</groupId>
 									<artifactId>apache-airavata-server</artifactId>
@@ -70,14 +57,32 @@
 									<groupId>org.apache.airavata</groupId>
 									<artifactId>apache-airavata-server</artifactId>
 						            <version>${project.version}</version>
-									<type>war</type>
+									<type>zip</type>
+									<classifier>war</classifier>
 								</artifactItem>
 								<artifactItem>
 									<groupId>org.apache.airavata</groupId>
-									<artifactId>airavata-rest-service-webapp</artifactId>
+									<artifactId>apache-airavata-server</artifactId>
 						            <version>${project.version}</version>
-									<type>war</type>
+									<type>tar.gz</type>
+									<classifier>war</classifier>
 								</artifactItem>
+								<!--Airavata Client Distributions-->
+								<artifactItem>
+									<groupId>org.apache.airavata</groupId>
+									<artifactId>apache-airavata-client</artifactId>
+						            <version>${project.version}</version>
+									<type>zip</type>
+									<classifier>bin</classifier>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.apache.airavata</groupId>
+									<artifactId>apache-airavata-client</artifactId>
+						            <version>${project.version}</version>
+									<type>tar.gz</type>
+									<classifier>bin</classifier>
+								</artifactItem>
+								<!--Airavata XBaya-GUI Distributions-->
 								<artifactItem>
 									<groupId>org.apache.airavata</groupId>
 									<artifactId>apache-airavata-xbaya-gui</artifactId>
