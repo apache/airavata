@@ -51,6 +51,27 @@
                             <excludes>**/icu4j-2.6.1.jar</excludes>
                         </configuration>
                     </execution>
+					<execution>
+						<id>copy</id>
+						<phase>package</phase>
+						<goals>
+						  <goal>copy</goal>
+						</goals>
+						<configuration>
+						  <artifactItems>
+							<artifactItem>
+                                <groupId>org.apache.airavata</groupId>
+                                <artifactId>airavata-rest-service-webapp</artifactId>
+                                <version>${project.version}</version>
+                                <type>war</type>
+                                <overWrite>true</overWrite>
+                                <outputDirectory>${airavata.war.dir}</outputDirectory>
+								<destFileName>airavata-registry.war</destFileName>
+                            </artifactItem>
+						  </artifactItems>
+						  <outputDirectory>${airavata.war.dir}</outputDirectory>
+						</configuration>
+					  </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -141,10 +162,11 @@
                                 </copy>
 								<replace file="${airavata.webapp.dir}/WEB-INF/classes/airavata-server.properties">
                                     <replacetoken>#server.context-root=axis2</replacetoken>
-                                    <replacevalue>server.context-root=${airavata.dist.name}</replacevalue>
+                                    <replacevalue>server.context-root=airavata-server</replacevalue>
                                 </replace>
-								<zip destfile="${airavata.webapp.war}" basedir="${airavata.webapp.dir}" />
-                                
+								<zip destfile="${airavata.war.dir}/airavata-server.war" basedir="${airavata.webapp.dir}" />
+								<zip destfile="${airavata.webapp.war.zip}" basedir="${airavata.war.dir}" />
+                    			<tar tarfile="${airavata.webapp.war.tar.gz}" basedir="${airavata.war.dir}" compression="gzip" />            
                             </target>
                         </configuration>
                         <goals>
@@ -167,8 +189,14 @@
 				    <configuration>
 				      <artifacts>
 				        <artifact>
-				          <file>${airavata.webapp.war}</file>
-				          <type>war</type>
+				          <file>${airavata.webapp.war.zip}</file>
+				          <type>zip</type>
+						  <classifier>war</classifier>
+				        </artifact>
+				        <artifact>
+				          <file>${airavata.webapp.war.tar.gz}</file>
+				          <type>tar.gz</type>
+						  <classifier>war</classifier>
 				        </artifact>
 						<artifact>
 				          <file>${airavata.bin.zip}</file>
@@ -597,6 +625,8 @@
 		<airavata.bin.zip>${project.build.directory}/${airavata.dist.name}-bin.zip</airavata.bin.zip>
 		<airavata.bin.tar.gz>${project.build.directory}/${airavata.dist.name}-bin.tar.gz</airavata.bin.tar.gz>
 		<airavata.webapp.dir>${project.build.directory}/airavata-axis2</airavata.webapp.dir>
-		<airavata.webapp.war>${project.build.directory}/${airavata.dist.name}.war</airavata.webapp.war>
+		<airavata.war.dir>${project.build.directory}/test</airavata.war.dir>
+		<airavata.webapp.war.zip>${project.build.directory}/${airavata.dist.name}.war.zip</airavata.webapp.war.zip>
+		<airavata.webapp.war.tar.gz>${project.build.directory}/${airavata.dist.name}.war.tar.gz</airavata.webapp.war.tar.gz>
     </properties>
 </project>
