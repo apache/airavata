@@ -35,7 +35,7 @@ create table Configuration
         PRIMARY KEY(config_key, config_val, category_id)
 );
 
-CONFIGURATION (config_key, config_val, expire_date, category_id) VALUES('registry.version', '0.6', CURRENT_TIMESTAMP ,'SYSTEM');
+INSERT INTO CONFIGURATION (config_key, config_val, expire_date, category_id) VALUES('registry.version', '0.6', CURRENT_TIMESTAMP ,'SYSTEM');
 
 create table Users
 (
