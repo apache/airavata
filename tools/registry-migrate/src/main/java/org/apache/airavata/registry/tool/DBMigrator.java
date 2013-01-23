@@ -19,14 +19,13 @@
  *
  */
 
-package org.apache.airavata.registry.migrate;
+package org.apache.airavata.registry.tool;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URI;
-import java.net.URL;
 import java.sql.*;
 import java.util.*;
 import java.util.Date;
@@ -36,11 +35,12 @@ public class DBMigrator {
     private static final String delimiter = ";";
     private static final String MIGRATE_SQL_DERBY = "migrate_derby.sql";
     private static final String MIGRATE_SQL_MYSQL = "migrate_mysql.sql";
-    private static final String MIGRATED_AIRAVATA_VERSION = "migrated.airavata.version";
+    private static final String REGISTRY_VERSION = "registry.version";
     private static String currentAiravataVersion = "0.5";
-    private static final String SELECT_QUERY = "SELECT config_val FROM CONFIGURATION WHERE config_key=' " + MIGRATED_AIRAVATA_VERSION + "'";
+    private static final String RELATIVE_PATH = "db-scripts/0.6/";
+    private static final String SELECT_QUERY = "SELECT config_val FROM CONFIGURATION WHERE config_key=' " + REGISTRY_VERSION + "'";
     private static final String INSERT_QUERY = "INSERT INTO CONFIGURATION (config_key, config_val, expire_date, category_id) VALUES('" +
-            MIGRATED_AIRAVATA_VERSION + "', '" + getIncrementedVersion(currentAiravataVersion) + "', '" + getCurrentDate() +
+            REGISTRY_VERSION + "', '" + getIncrementedVersion(currentAiravataVersion) + "', '" + getCurrentDate() +
             "','SYSTEM')";
 
 
@@ -65,10 +65,10 @@ public class DBMigrator {
         try {
             if (dbType.contains("derby")){
                 jdbcDriver = "org.apache.derby.jdbc.ClientDriver";
-                sqlStream = DBMigrator.class.getClassLoader().getResourceAsStream(MIGRATE_SQL_DERBY);
+                sqlStream = DBMigrator.class.getClassLoader().getResourceAsStream(RELATIVE_PATH + MIGRATE_SQL_DERBY);
             } else if (dbType.contains("mysql")){
                 jdbcDriver = "com.mysql.jdbc.Driver";
-                sqlStream = DBMigrator.class.getClassLoader().getResourceAsStream(MIGRATE_SQL_MYSQL);
+                sqlStream = DBMigrator.class.getClassLoader().getResourceAsStream(RELATIVE_PATH + MIGRATE_SQL_MYSQL);
             }
             Class.forName(jdbcDriver).newInstance();
             connection = DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcPwd);
@@ -134,7 +134,6 @@ public class DBMigrator {
     private static void executeInsertQuery (Connection conn){
         try {
             Statement statement = conn.createStatement();
-            System.out.println(INSERT_QUERY);
             statement.execute(INSERT_QUERY) ;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -172,14 +171,12 @@ public class DBMigrator {
                 }
                 if ((checkStringBufferEndsWith(sql, delimiter))) {
                     String sqlString = sql.substring(0, sql.length() - delimiter.length());
-                    System.out.println("##########sql string = " + sqlString);
                     executeSQL(sqlString, conn);
                     sql.replace(0, sql.length(), "");
                 }
             }
             // Catch any statements not followed by ;
             if (sql.length() > 0) {
-                System.out.println("sql string = " + sql.toString());
                 executeSQL(sql.toString(), conn);
             }
         }catch (IOException e){

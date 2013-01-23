@@ -32,5 +32,5 @@ $JAVA_HOME/bin/java -server -Xms128M -Xmx128M \
    $TEMP_PROPS \
    -Djava.endorsed.dirs=$AIRAVATA_HOME/lib/endorsed \
    -classpath $REG_MIGRATE_CLASSPATH \
-   -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=5000,suspend=y \
-   org.apache.airavata.registry.migrate.DBMigrator $*
+   -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=5000,suspend=n \
+   org.apache.airavata.registry.tool.DBMigrator $*

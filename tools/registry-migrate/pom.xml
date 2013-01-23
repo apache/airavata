@@ -18,9 +18,9 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.airavata</groupId>
-    <artifactId>registry-migrate</artifactId>
+    <artifactId>registry-tool</artifactId>
     <packaging>jar</packaging>
-    <name>registry-migrate</name>
+    <name>registry-tool</name>
 
     <dependencies>
         <dependency>
