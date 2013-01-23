@@ -20,23 +20,6 @@
 */
 package org.apache.airavata.client.samples;
 
-import org.apache.airavata.client.AiravataAPIFactory;
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.AiravataAPIInvocationException;
-import org.apache.airavata.client.api.ExperimentAdvanceOptions;
-import org.apache.airavata.registry.api.PasswordCallback;
-import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
-import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
-import org.apache.airavata.registry.api.workflow.ExperimentData;
-import org.apache.airavata.registry.api.workflow.WorkflowExecutionData;
-import org.apache.airavata.registry.api.workflow.NodeExecutionData;
-import org.apache.airavata.rest.client.PasswordCallbackImpl;
-import org.apache.airavata.workflow.model.wf.WorkflowInput;
-import org.apache.airavata.registry.api.workflow.InputData;
-import org.apache.airavata.registry.api.workflow.OutputData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -45,6 +28,21 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.airavata.client.AiravataAPIFactory;
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.registry.api.PasswordCallback;
+import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
+import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
+import org.apache.airavata.registry.api.workflow.ExperimentData;
+import org.apache.airavata.registry.api.workflow.InputData;
+import org.apache.airavata.registry.api.workflow.NodeExecutionData;
+import org.apache.airavata.registry.api.workflow.OutputData;
+import org.apache.airavata.rest.client.PasswordCallbackImpl;
+import org.apache.airavata.workflow.model.wf.WorkflowInput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RunWorkflow {
     private static final Logger log = LoggerFactory.getLogger(RunWorkflow.class);
@@ -100,7 +98,8 @@ public class RunWorkflow {
                 = airavataAPI.getExecutionManager().runExperiment(workflowName, workflowInputs);
 
         System.out.println("Experiment ID Returned : " + result);
-		airavataAPI.getExecutionManager().waitForExperimentTermination(result);
+        MonitorWorkflow.monitor(result);
+        airavataAPI.getExecutionManager().waitForExperimentTermination(result);
         ExperimentData experimentData = airavataAPI.getProvenanceManager().getExperimentData(result);
         List<WorkflowExecutionDataImpl> workflowInstanceData
                 = experimentData.getWorkflowExecutionDataList();
