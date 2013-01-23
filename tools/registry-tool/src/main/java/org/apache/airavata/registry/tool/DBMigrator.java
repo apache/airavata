@@ -21,6 +21,7 @@
 
 package org.apache.airavata.registry.tool;
 
+import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,22 +43,32 @@ public class DBMigrator {
     private static final String INSERT_QUERY = "INSERT INTO CONFIGURATION (config_key, config_val, expire_date, category_id) VALUES('" +
             REGISTRY_VERSION + "', '" + getIncrementedVersion(currentAiravataVersion) + "', '" + getCurrentDate() +
             "','SYSTEM')";
-
+    private static String jdbcURL;
+    private static String jdbcUser;
+    private static String jdbcPwd;
 
     public static void main(String[] args) {
-         updateDB("jdbc:mysql://localhost:3306/persistent_data",
-                 "airavata",
-                 null);
+        parseArguments(args);
+        updateDB(jdbcURL, jdbcUser, jdbcPwd);
     }
 
     //we assume given database is up and running
     public static void updateDB (String jdbcUrl, String jdbcUser, String jdbcPwd){
         InputStream sqlStream = null;
         Scanner in = new Scanner(System.in);
+        if (jdbcUrl == null || jdbcUrl.equals("")){
+            System.out.println("Enter JDBC URL : ");
+            jdbcUrl = in.next();
+        }
+        if (jdbcUser == null || jdbcUser.equals("")){
+            System.out.println("Enter JDBC Username : ");
+            jdbcUser = in.next();
+        }
         if (jdbcPwd == null || jdbcPwd.equals("")){
             System.out.println("Enter JDBC password : ");
             jdbcPwd = in.next();
         }
+
         String dbType = getDBType(jdbcUrl);
         String jdbcDriver = null;
 
@@ -78,15 +89,15 @@ public class DBMigrator {
                 updateConfigTable(connection);
             }
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+           logger.error("Unable to find SQL scripts..." , e);
         } catch (InstantiationException e) {
-            e.printStackTrace();
+            logger.error("Error while updating the database..." , e);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            logger.error("Error while updating the database..." , e);
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error while updating the database..." , e);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error while updating the database..." , e);
         }
     }
 
@@ -271,6 +282,28 @@ public class DBMigrator {
                     logger.error("Error occurred while closing result set.", e);
                 }
             }
+        }
+    }
+
+    public static void parseArguments(String[] args){
+        try{
+            Options options = new Options();
+            options.addOption("url", true , "JDBC URL");
+            options.addOption("user", true, "JDBC Username");
+            options.addOption("pwd", true, "JDBC Password");
+            CommandLineParser parser = new PosixParser();
+            CommandLine cmd = parser.parse( options, args);
+            jdbcURL = cmd.getOptionValue("url");
+            if (jdbcURL == null){
+                logger.info("You should enter JDBC URL and JDBC Credentials as parameters...");
+            }
+            jdbcUser = cmd.getOptionValue("user");
+            if (jdbcUser ==  null){
+                logger.info("You should enter JDBC URL and JDBC Credentials as parameters...");
+            }
+            jdbcPwd = cmd.getOptionValue("pwd");
+        } catch (ParseException e) {
+            logger.error("Error while reading command line parameters" , e);
         }
     }
 }
