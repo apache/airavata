@@ -1,3 +1,6 @@
+For detailed installation and further instructions please refer http://airavata.apache.org/:
+Documentation section in left hand panel. The website lists step by step instructions
+
 Installing  Apache Airavata 0.6
 ------------------------------------------------
 
@@ -13,7 +16,7 @@ Build Apache Airavata from Source
 	$ mvn clean install
 	Note: in order to skip tests use the command
 			$ mvn clean install -Dmaven.test.skip=true
-* All the compressed binary distributions can be found at <PROJECT DIR>/modules/distribution/release/target/release-artifacts
+* Alternatively, all  compressed binary distributions can be found at <PROJECT DIR>/modules/distribution/release/target/release-artifacts
 
 Running Tests
 -------------
