@@ -1,3 +1,24 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
 package org.apache.airavata.services.registry.rest.security.local;
 
 import java.security.NoSuchAlgorithmException;
@@ -29,14 +50,14 @@ public class LocalUserStore {
     private String hashMethod;
 
     public LocalUserStore(ServletContext servletContext) throws Exception {
-//        Properties properties = WebAppUtil.getAiravataProperties(servletContext);
+        // Properties properties = WebAppUtil.getAiravataProperties(servletContext);
 
         hashMethod = RegistrySettings.getSetting("default.registry.password.hash.method");
 
         dbUtil = new DBUtil(RegistrySettings.getSetting("registry.jdbc.url"),
-        		RegistrySettings.getSetting("registry.jdbc.user"),
-        		RegistrySettings.getSetting("registry.jdbc.password"),
-        		RegistrySettings.getSetting("registry.jdbc.driver"));
+                RegistrySettings.getSetting("registry.jdbc.user"),
+                RegistrySettings.getSetting("registry.jdbc.password"),
+                RegistrySettings.getSetting("registry.jdbc.driver"));
 
         dbUtil.init();
     }
@@ -57,8 +78,7 @@ public class LocalUserStore {
             preparedStatement = connection.prepareStatement(sql);
 
             preparedStatement.setString(1, userName);
-            preparedStatement.setString(2, SecurityUtil.digestString(password,
-                    hashMethod));
+            preparedStatement.setString(2, SecurityUtil.digestString(password, hashMethod));
 
             preparedStatement.executeUpdate();
 
@@ -146,8 +166,8 @@ public class LocalUserStore {
 
             if (storedPassword != null) {
                 if (!storedPassword.equals(oldDigestedPassword)) {
-                    throw new RuntimeException("Previous password did not match correctly. Please specify old password" +
-                            " correctly.");
+                    throw new RuntimeException("Previous password did not match correctly. Please specify old password"
+                            + " correctly.");
                 }
             }
 
@@ -222,7 +242,6 @@ public class LocalUserStore {
         }
 
     }
-
 
     public void deleteUser(String userName) {
 

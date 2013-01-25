@@ -1,3 +1,24 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
 package org.apache.airavata.common.utils;
 
 import java.io.IOException;
@@ -23,11 +44,17 @@ public class DerbyUtil {
 
     /**
      * Starts new derby server instance with given configurations.
-     * @param hostAddress The host address start the server.
-     * @param port The port number which server is starting.
-     * @param user JDBC user name.
-     * @param password JDBC password.
-     * @throws Exception If an error occurred while starting the server.
+     * 
+     * @param hostAddress
+     *            The host address start the server.
+     * @param port
+     *            The port number which server is starting.
+     * @param user
+     *            JDBC user name.
+     * @param password
+     *            JDBC password.
+     * @throws Exception
+     *             If an error occurred while starting the server.
      */
     public static void startDerbyInServerMode(String hostAddress, int port, String user, String password)
             throws Exception {
@@ -35,19 +62,17 @@ public class DerbyUtil {
 
         try {
             System.setProperty(DERBY_SERVER_MODE_SYS_PROPERTY, "true");
-            server = new NetworkServerControl(InetAddress.getByName(hostAddress),
-                    port,
-                    user, password);
+            server = new NetworkServerControl(InetAddress.getByName(hostAddress), port, user, password);
             consoleWriter = new PrintWriter(System.out, true);
             server.start(consoleWriter);
 
         } catch (IOException e) {
-            logger.error("Unable to start Apache derby in the server mode! Check whether " +
-                    "specified port is available", e);
+            logger.error("Unable to start Apache derby in the server mode! Check whether "
+                    + "specified port is available", e);
             throw e;
         } catch (Exception e) {
-            logger.error("Unable to start Apache derby in the server mode! Check whether " +
-                    "specified port is available", e);
+            logger.error("Unable to start Apache derby in the server mode! Check whether "
+                    + "specified port is available", e);
             throw e;
         } finally {
 
@@ -61,8 +86,11 @@ public class DerbyUtil {
 
     /**
      * Starts derby server in embedded mode.
-     * @throws ClassNotFoundException If specified driver not found in the class path.
-     * @throws SQLException  If an error occurred while creat
+     * 
+     * @throws ClassNotFoundException
+     *             If specified driver not found in the class path.
+     * @throws SQLException
+     *             If an error occurred while creat
      */
     public static void startDerbyInEmbeddedMode() throws ClassNotFoundException, SQLException {
         Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
@@ -71,7 +99,9 @@ public class DerbyUtil {
 
     /**
      * Shuts down the server.
-     * @throws Exception If an error occurred while shutting down.
+     * 
+     * @throws Exception
+     *             If an error occurred while shutting down.
      */
     public static void stopDerbyServer() throws Exception {
         try {
