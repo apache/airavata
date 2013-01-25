@@ -165,6 +165,9 @@
                                     <replacevalue>server.context-root=airavata-server</replacevalue>
                                 </replace>
 								<zip destfile="${airavata.war.dir}/airavata-server.war" basedir="${airavata.webapp.dir}" />
+								<copy todir="${airavata.war.dir}">
+                                    <fileset dir="src/main/resources/war" />
+                                </copy>
 								<zip destfile="${airavata.webapp.war.zip}" basedir="${airavata.war.dir}" />
                     			<tar tarfile="${airavata.webapp.war.tar.gz}" basedir="${airavata.war.dir}" compression="gzip" />            
                             </target>

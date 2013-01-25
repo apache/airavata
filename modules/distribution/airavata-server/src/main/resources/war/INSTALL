@@ -13,7 +13,23 @@ Build Apache Airavata from Source
 	$ mvn clean install
 	Note: in order to skip tests use the command
 			$ mvn clean install -Dmaven.test.skip=true
-* The compressed binary distribution is created at <PROJECT DIR>/modules/distribution/airavata-server/target/apache-airavata-server-<airavata-version>-bin.zip
+* The compressed binary distribution is created at <PROJECT DIR>/modules/distribution/airavata-server/target/apache-airavata-server-<airavata-version>-war.zip
+
+Installing the Airavata Server
+------------------------------
+Extract the distribution & copy the web application archives (*.war files) to
+<TOMCAT_HOME>/webapps
+Note: For customizing the default configurations of the Airavata Server please 
+      refer to Airavata web-site (http://airavata.apache.org/) and/or Airavata 
+      mailing lists (http://airavata.apache.org/community/mailing-lists.html)
+
+Starting Apache Airavata Server Web Application
+-----------------------------------------------
+* If the tomcat server has already beeing started check to see if the tomcat had automatically deployed the
+  web applications (You can find this out by the tomcat manager from the browser or from the tomcat log).
+* If the tomcat has not deployed the web application, stop & restart the tomcat server. Please refer tomcat
+  documentation for further details on how to start/stop a tomcat server.
+  (http://tomcat.apache.org/tomcat-7.0-doc/architecture/startup.html)
 
 Running Tests
 -------------

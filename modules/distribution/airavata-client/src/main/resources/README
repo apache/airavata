@@ -1,4 +1,4 @@
-Apache Airavata - README.txt
+Apache Airavata Client - README.txt
 Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
 --------------------------------------------------------------------------------
 
@@ -69,4 +69,4 @@ Description of Directory Structure
       This document.
 
     - INSTALL
-          This document will contain information on how to use Airavata Client API libraries.
+      This document will contain information on how to use Airavata Client API libraries.

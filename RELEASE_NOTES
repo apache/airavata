@@ -14,7 +14,6 @@ Apache Airavata Version 0.6 Released on 2013-01-25
     * [AIRAVATA-633] - Change XBaya to use Airavata Client for Workflow Launches
 
 ** Improvement
-    * [AIRAVATA-61] - Revisit workflow tracking schema and library
     * [AIRAVATA-539] - Provide WorklfowNodeID in wokflowInvoked Notification
     * [AIRAVATA-644] - Change default authenticating database to Derby
     * [AIRAVATA-645] - Provide a utility method to set basic access headers in client side
@@ -27,7 +26,6 @@ Apache Airavata Version 0.6 Released on 2013-01-25
     * [AIRAVATA-719] - Enable rest client to communicate over HTTPS
 
 ** Task
-    * [AIRAVATA-532] - Add Documentation to GFAC schemas 
     * [AIRAVATA-556] - Adding REST interface to Airavata Registry API
     * [AIRAVATA-670] - Update LICENSE & NOTICE files in distribution
     * [AIRAVATA-677] - Simplify runExperiment function overloading in Execution Manager
@@ -36,7 +34,6 @@ Apache Airavata Version 0.6 Released on 2013-01-25
     * [AIRAVATA-726] - Generate a WAR distribution for Airavata Server at build time
 
 ** Sub-task
-    * [AIRAVATA-62] - Documentation on use of workflow tracking schema
     * [AIRAVATA-65] - Update Audit Notifier
     * [AIRAVATA-66] - Update Performance Notifier
 
@@ -77,7 +74,7 @@ Apache Airavata Version 0.6 Released on 2013-01-25
     * [AIRAVATA-728] - OutputDataSettings does not have method to set node information.
     * [AIRAVATA-729] - Advanced options are not saved when creating an application
     * [AIRAVATA-734] - Multiple Workflow is invoked messages in the workflow
-
+    * [AIRAVATA-741] - Airavata startup fails when Airavata is pointed to a new database
 
 Apache Airavata Version 0.5 Released on 2012-10-28
 =============================================================

@@ -1,4 +1,4 @@
-Apache Airavata - README.txt
+Apache Airavata Server Web Applications - README.txt
 Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
 --------------------------------------------------------------------------------
 
@@ -27,35 +27,13 @@ Known Issues in This Release
 This is the base release and is focused on a good foundation and less on features. This 
 version is not recommended for production usage.
 
-Airavata Binary Distribution Directory Structure
-================================================
+Airavata Web Application Distribution Directory Structure
+=========================================================
 
-    AIRAVATA_HOME
-		├── bin
-		│   ├── database_scripts <dir>
-		│   ├── airavata-server.bat
-		│   ├── airavata-server.properties
-		│   ├── airavata-server.sh
-		│   ├── authenticators.xml
-		│   ├── axis2.xml
-		│   ├── derby.sh
-		│   ├── host.xml
-		│   ├── log4j.properties
-		│   ├── logo.txt
-		│   ├── setenv.bat
-		│   ├── setenv.sh
-		│   └── startNetworkServer
-		├── lib <dir>
-		├── repository
-		│   ├── modules 
-		│   └── services
-		├── samples
-		│   ├── workflows <dir>
-		│   ├── echo_out.sh
-		│   └── echo.sh
+    AIRAVATA_WEBAPP_DISTRIBUTION
+		├── airavata-registry.war
+		├── airavata-server.war
 		├── INSTALL
-		├── LICENSE
-		├── NOTICE
 		└── README
 
 
@@ -69,24 +47,15 @@ How to test and run samples
 
 Description of Directory Structure
 ==================================
-    - bin
-      This contains all the configuration files & the executable scripts to run the Airavata Server (Axis2 server 
-      with Airavata services which include messageBroker and messageBox with GFac Axis2 services), & a standalone Apache Derby server.
 
-    - bin - database_scripts
-      Contains the database scripts which are used to create tables for messagebox and messagebroker services
+	- airavata-registry.war
+      This deploys the airavata rest registry service capable of performing Airavata registry operations
 
-    - samples
-      This contains sample workflow to try out & sample application scripts.
-
-    - lib
-      This contains all the libraries required to run the airavata server and/or derby server.
-
-    - repository - services
-      Contains deployed services in Axis2 runtime.
+	- airavata-server.war
+      This deploys the airavata server web services capable launching & monitoring experiments, applications etc.
 
     - README
       This document.
 
     - INSTALL
-          This document will contain information on installing Apache-Airavata.
+      This document will contain information on installing Apache-Airavata.
