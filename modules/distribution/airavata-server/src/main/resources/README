@@ -1,0 +1,92 @@
+Apache Airavata - README.txt
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+--------------------------------------------------------------------------------
+
+About
+=====
+Apache Airavata, a software framework to executing and managing computational jobs on 
+distributed computing resources including local clusters, supercomputers, national grids, 
+academic and commercial clouds. Airavata can be used as individual components or 
+as an integrated solution to build science gateways or general-purpose distributed 
+application and workflow management systems. Users can use Airavata back end services 
+and build gadgets to deploy in open social containers such as Apache Rave and modify them 
+to suit their needs. Airavata builds on general concepts of service oriented computing, 
+distributed messaging, and workflow composition and orchestration.
+
+Release Notes
+=============
+0.6 is the fifth release of Airavata (skipped 0.1-INCUBATNG). This release focuses on providing a REST service interface for Airavata Registry. For detailed tasks list, please see RELEASE_NOTES.
+
+Building from source
+====================
+For brief installation instructions, see INSTALL
+For detailed installation and further instructions refer http://airavata.apache.org/ - Documentation section in left hand panel. Step by step with proper documentation are provided.
+
+Known Issues in This Release
+============================
+This is the base release and is focused on a good foundation and less on features. This 
+version is not recommended for production usage.
+
+Airavata Binary Distribution Directory Structure
+================================================
+
+    AIRAVATA_HOME
+		├── bin
+		│   ├── database_scripts <dir>
+		│   ├── airavata-server.bat
+		│   ├── airavata-server.properties
+		│   ├── airavata-server.sh
+		│   ├── authenticators.xml
+		│   ├── axis2.xml
+		│   ├── derby.sh
+		│   ├── host.xml
+		│   ├── log4j.properties
+		│   ├── logo.txt
+		│   ├── setenv.bat
+		│   ├── setenv.sh
+		│   └── startNetworkServer
+		├── lib <dir>
+		├── repository
+		│   ├── modules 
+		│   └── services
+		├── samples
+		│   ├── workflows <dir>
+		│   ├── echo_out.sh
+		│   └── echo.sh
+		├── INSTALL
+		├── LICENSE
+		├── NOTICE
+		└── README
+
+
+How to test and run samples
+===========================
+* If you built Airavata from source, and if you see "BUILD SUCCESS", then the test cases should have passes.
+* The test cases are beyond unit level, they startup embedded services and run through basic workflow use cases.
+* To walk through Airavata features, follow "Airavata in Five Minutes" tutorial at http://airavata.apache.org/documentation/system/airavata-in-5-minutes.html
+* For intermediate level Airavata features, follow "Airavata in Ten Minutes" tutorial at http://airavata.apache.org/documentation/system/airavata-in-10-minutes.html 
+* For advanced use cases, please contact mailing lists - http://airavata.apache.org/community/mailing-lists.html
+
+Description of Directory Structure
+==================================
+    - bin
+      This contains all the configuration files & the executable scripts to run the Airavata Server (Axis2 server 
+      with Airavata services which include messageBroker and messageBox with GFac Axis2 services), & a standalone Apache Derby server.
+
+    - bin - database_scripts
+      Contains the database scripts which are used to create tables for messagebox and messagebroker services
+
+    - samples
+      This contains sample workflow to try out & sample application scripts.
+
+    - lib
+      This contains all the libraries required to run the airavata server and/or derby server.
+
+    - repository - services
+      Contains deployed services in Axis2 runtime.
+
+    - README
+      This document.
+
+    - INSTALL
+          This document will contain information on installing Apache-Airavata.

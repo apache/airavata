@@ -33,9 +33,16 @@
 		<format>tar.gz</format>
 		<format>zip</format>
 	</formats>
-
 	<fileSets>
-		<!-- ********************** copy binary licenses ********************** -->
+		<!-- ********************** copy release notes files ********************** -->
+		<fileSet>
+			<directory>../../../</directory>
+			<outputDirectory>.</outputDirectory>
+			<includes>
+				<include>RELEASE_NOTES</include>
+			</includes>
+		</fileSet>
+		<!-- ********************** copy licenses, readme etc. ********************** -->
 		<fileSet>
 			<directory>src/main/resources/</directory>
 			<outputDirectory>.</outputDirectory>
@@ -43,6 +50,8 @@
                 <include>conf/*</include>
 				<include>LICENSE</include>
 				<include>NOTICE</include>
+				<include>README</include>
+				<include>INSTALL</include>
 			</includes>
 		</fileSet>
 
