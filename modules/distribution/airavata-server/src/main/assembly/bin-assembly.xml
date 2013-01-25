@@ -58,23 +58,23 @@
 			</includes>
 		</fileSet>
 
-		<!-- ********************** copy readme files ********************** -->
+		<!-- ********************** copy release notes files ********************** -->
 		<fileSet>
-			<directory>../../</directory>
+			<directory>../../../</directory>
 			<outputDirectory>.</outputDirectory>
 			<includes>
-				<include>INSTALL</include>
-				<include>README</include>
 				<include>RELEASE_NOTES</include>
 			</includes>
 		</fileSet>
-		<!-- ********************** copy binary licenses ********************** -->
+		<!-- ********************** copy licenses, readme etc. ********************** -->
 		<fileSet>
 			<directory>src/main/resources/</directory>
 			<outputDirectory>.</outputDirectory>
 			<includes>
 				<include>LICENSE</include>
 				<include>NOTICE</include>
+				<include>README</include>
+				<include>INSTALL</include>
 			</includes>
 		</fileSet>
 
