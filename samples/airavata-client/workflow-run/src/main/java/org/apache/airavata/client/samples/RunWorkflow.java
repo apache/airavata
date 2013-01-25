@@ -17,7 +17,8 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
+
 package org.apache.airavata.client.samples;
 
 import java.io.BufferedReader;
@@ -59,9 +60,10 @@ public class RunWorkflow {
 
     private static AiravataAPI airavataAPI;
 
-    public static void main(String[] args) throws AiravataAPIInvocationException, IOException, URISyntaxException, ExperimentLazyLoadedException {
+    public static void main(String[] args) throws AiravataAPIInvocationException, IOException, URISyntaxException,
+            ExperimentLazyLoadedException {
 
-        //creating airavata client object //
+        // creating airavata client object //
         port = Integer.parseInt("8080");
         serverUrl = "localhost";
         serverContextName = "airavata-registry";
@@ -75,49 +77,49 @@ public class RunWorkflow {
         log.info("Configurations - Registry URL : " + registryURL);
 
         PasswordCallback passwordCallback = new PasswordCallbackImpl(getUserName(), getPassword());
-        airavataAPI = AiravataAPIFactory.getAPI(new URI(getRegistryURL()),
-                getGatewayName(), getUserName(), passwordCallback);
+        airavataAPI = AiravataAPIFactory.getAPI(new URI(getRegistryURL()), getGatewayName(), getUserName(),
+                passwordCallback);
 
         String workflowName = "EchoSample";
-        //Saving workflow method, workflow file has the workflow Name set to EchoSample, so when we use saveWorkflow method it will
-        //save the workflow with that name.
+        // Saving workflow method, workflow file has the workflow Name set to EchoSample, so when we use saveWorkflow
+        // method it will
+        // save the workflow with that name.
         airavataAPI.getWorkflowManager().saveWorkflow(getWorkflowComposeContent());
 
-        //Now workflow has saved, Now we have to set inputs
+        // Now workflow has saved, Now we have to set inputs
         List<WorkflowInput> workflowInputs = new ArrayList<WorkflowInput>();
         String name = "echo_input";
         String type = "String";
         String value = "echo_output=ODI Test";
-        WorkflowInput workflowInput = new WorkflowInput(name, (type == null ||
-                type.isEmpty()) ? "String" : type, null, value, false);
+        WorkflowInput workflowInput = new WorkflowInput(name, (type == null || type.isEmpty()) ? "String" : type, null,
+                value, false);
         workflowInputs.add(workflowInput);
 
-        //Now inputs are set properly to the workflow, now we are about to run the workflow(submit the workflow run to intepreterService)
+        // Now inputs are set properly to the workflow, now we are about to run the workflow(submit the workflow run to
+        // intepreterService)
 
-        String result
-                = airavataAPI.getExecutionManager().runExperiment(workflowName, workflowInputs);
+        String result = airavataAPI.getExecutionManager().runExperiment(workflowName, workflowInputs);
 
         System.out.println("Experiment ID Returned : " + result);
         MonitorWorkflow.monitor(result);
         airavataAPI.getExecutionManager().waitForExperimentTermination(result);
         ExperimentData experimentData = airavataAPI.getProvenanceManager().getExperimentData(result);
-        List<WorkflowExecutionDataImpl> workflowInstanceData
-                = experimentData.getWorkflowExecutionDataList();
+        List<WorkflowExecutionDataImpl> workflowInstanceData = experimentData.getWorkflowExecutionDataList();
         System.out.println("Experiment Results");
         System.out.println("==================");
-        for(WorkflowExecutionDataImpl data:workflowInstanceData){
+        for (WorkflowExecutionDataImpl data : workflowInstanceData) {
             List<NodeExecutionData> nodeDataList = data.getNodeDataList();
-            for(NodeExecutionData nodeData:nodeDataList){
-            	System.out.println();
-            	System.out.println(nodeData.getType()+" : "+nodeData.getId());
-            	List<InputData> inputs=nodeData.getInputData();
-            	for(InputData input:inputs){
-            		System.out.println("\t\t[Input] \t" + input.getName()+"\t: "+input.getValue());
-            	}
-                List<OutputData> outputs=nodeData.getOutputData();
-            	for(OutputData output:outputs){
-            		System.out.println("\t\t[Output] \t" + output.getName()+"\t: "+output.getValue());
-            	}
+            for (NodeExecutionData nodeData : nodeDataList) {
+                System.out.println();
+                System.out.println(nodeData.getType() + " : " + nodeData.getId());
+                List<InputData> inputs = nodeData.getInputData();
+                for (InputData input : inputs) {
+                    System.out.println("\t\t[Input] \t" + input.getName() + "\t: " + input.getValue());
+                }
+                List<OutputData> outputs = nodeData.getOutputData();
+                for (OutputData output : outputs) {
+                    System.out.println("\t\t[Output] \t" + output.getName() + "\t: " + output.getValue());
+                }
             }
         }
     }
@@ -149,5 +151,3 @@ public class RunWorkflow {
         return buffer.toString();
     }
 }
-
-
