@@ -4,6 +4,11 @@ See http://issues.apache.org/jira/browse/AIRAVATA-* (where * is the number of th
 
 Apache Airavata Version 0.6 Released on 2013-01-25
 ==================================================
+0.6 is the fifth release of Apache Airavata. This release focuses on providing a REST service interface for Airavata Registry.
+
+Known Issues in This Release
+============================
+This release is an important step towards a stable Airavata Server components and a good Airavata API client library. This version is not yet recommended for production usage.
 
 ** New Feature
     * [AIRAVATA-387] - Support for individual users in a community
@@ -78,6 +83,7 @@ Apache Airavata Version 0.6 Released on 2013-01-25
 
 Apache Airavata Version 0.5 Released on 2012-10-28
 =============================================================
+0.5 is the fourth release of Airavata (skipped 0.1-INCUBATNG). This release focuses on improving test cases and stability of code, documentation.
 
 ** New Feature
     * [AIRAVATA-277] - Add do-while support to Xbaya and workflow engine
@@ -130,6 +136,9 @@ Apache Airavata Version 0.5 Released on 2012-10-28
 
 Apache Airavata Version 0.4-INCUBATING Released on 2012-07-28
 =============================================================
+0.4-INCUBATNG is the third release of Airavata (skipped 0.1-INCUBATNG). This release focuses on improving test cases
+ and stability of code, documentation. 
+ 
 ** New Feature
     * [AIRAVATA-236] - Develop Gdirftp and and file transfer utils to GFac
     * [AIRAVATA-237] - Support http url sameway gridftp url is supported in the GFac URI type
@@ -216,6 +225,8 @@ Apache Airavata Version 0.4-INCUBATING Released on 2012-07-28
 
 Apache Airavata Version 0.3-INCUBATING Released on 2012-05-14
 =============================================================
+0.3-INCUBATNG is the second release of Airavata (skipped 0.1-INCUBATNG). This release focuses on improving test cases
++and stability of code, documentation.
 
 ** New Feature
     * [AIRAVATA-100] - Workflow Execution Context Header schema
@@ -269,8 +280,11 @@ Apache Airavata Version 0.3-INCUBATING Released on 2012-05-14
 Airavata Version 0.2-INCUBATING Released on 2012-04-22
 ======================================================
 
-Changes since Version 0.1-INCUBATING
-====================================
+0.2-INCUBATNG is the first release of Airavata, 0.1-INCUBATNG was attempted but the vote was cancelled. 
+This notes covers both the releases. This release focuses on improving test cases and stability of code, 
+cleaning up of donated code, packaging all components into modular architecture, documentation, and 
+removal of non-compatible license dependencies.
+ 
 
 ** New Feature
     * [AIRAVATA-104] - Allow creating new account using XBaya GUI for Jackrabbit registry
