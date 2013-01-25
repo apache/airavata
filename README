@@ -15,8 +15,7 @@ distributed messaging, and workflow composition and orchestration.
 
 Release Notes
 =============
-0.5 is the fourth release of Airavata (skipped 0.1-INCUBATNG). This release focuses on improving test cases
-and stability of code, documentation. For detailed tasks list, please see RELEASE_NOTES.
+0.6 is the fifth release of Airavata (skipped 0.1-INCUBATNG). This release focuses on providing a REST service interface for Airavata Registry. For detailed tasks list, please see RELEASE_NOTES.
 
 Building from source
 ====================
