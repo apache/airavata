@@ -1,3 +1,24 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
 package org.apache.airavata.common.utils;
 
 import org.apache.commons.dbcp.BasicDataSource;
@@ -33,9 +54,13 @@ public class DBUtil {
 
     /**
      * Initializes and load driver. Must be called this before calling anyother method.
-     * @throws ClassNotFoundException If DB driver is not found.
-     * @throws InstantiationException If unable to create driver class.
-     * @throws IllegalAccessException If security does not allow users to instantiate driver object.
+     * 
+     * @throws ClassNotFoundException
+     *             If DB driver is not found.
+     * @throws InstantiationException
+     *             If unable to create driver class.
+     * @throws IllegalAccessException
+     *             If security does not allow users to instantiate driver object.
      */
     public void init() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         properties = new Properties();
@@ -50,33 +75,43 @@ public class DBUtil {
 
     /**
      * Generic method to query values in the database.
-     * @param tableName Table name to query
-     * @param selectColumn The column selecting
-     * @param whereValue The condition query
+     * 
+     * @param tableName
+     *            Table name to query
+     * @param selectColumn
+     *            The column selecting
+     * @param whereValue
+     *            The condition query
      * @return The value appropriate to the query.
-     * @throws SQLException If an error occurred while querying
+     * @throws SQLException
+     *             If an error occurred while querying
      */
-    public String getMatchingColumnValue(String tableName, String selectColumn, String whereValue)
-            throws SQLException {
+    public String getMatchingColumnValue(String tableName, String selectColumn, String whereValue) throws SQLException {
         return getMatchingColumnValue(tableName, selectColumn, selectColumn, whereValue);
     }
 
     /**
      * Generic method to query values in the database.
-     * @param tableName Table name to query
-     * @param selectColumn The column selecting
-     * @param whereColumn The column which condition should apply
-     * @param whereValue The condition query
+     * 
+     * @param tableName
+     *            Table name to query
+     * @param selectColumn
+     *            The column selecting
+     * @param whereColumn
+     *            The column which condition should apply
+     * @param whereValue
+     *            The condition query
      * @return The value appropriate to the query.
-     * @throws SQLException If an error occurred while querying
+     * @throws SQLException
+     *             If an error occurred while querying
      */
     public String getMatchingColumnValue(String tableName, String selectColumn, String whereColumn, String whereValue)
             throws SQLException {
 
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("SELECT ").append(selectColumn).append(" FROM ").append(tableName)
-                .append(" WHERE ").append(whereColumn).append(" = ?");
+        stringBuilder.append("SELECT ").append(selectColumn).append(" FROM ").append(tableName).append(" WHERE ")
+                .append(whereColumn).append(" = ?");
 
         String sql = stringBuilder.toString();
 
@@ -112,8 +147,11 @@ public class DBUtil {
 
     /**
      * Create table utility method.
-     * @param sql SQL to be executed.
-     * @throws SQLException If an error occurred while creating the table.
+     * 
+     * @param sql
+     *            SQL to be executed.
+     * @throws SQLException
+     *             If an error occurred while creating the table.
      */
     public void executeSQL(String sql) throws SQLException {
 
@@ -145,6 +183,7 @@ public class DBUtil {
 
     /**
      * Gets a new DBCP data source.
+     * 
      * @return A new data source.
      */
     public DataSource getDataSource() {
@@ -159,8 +198,10 @@ public class DBUtil {
 
     /**
      * Creates a new JDBC connections based on provided DBCP properties.
+     * 
      * @return A new DB connection.
-     * @throws SQLException If an error occurred while creating the connection.
+     * @throws SQLException
+     *             If an error occurred while creating the connection.
      */
     public Connection getConnection() throws SQLException {
         return DriverManager.getConnection(jdbcUrl, properties);
@@ -168,8 +209,11 @@ public class DBUtil {
 
     /**
      * Utility method to close statements and connections.
-     * @param preparedStatement The prepared statement to close.
-     * @param connection The connection to close.
+     * 
+     * @param preparedStatement
+     *            The prepared statement to close.
+     * @param connection
+     *            The connection to close.
      */
     public void cleanup(PreparedStatement preparedStatement, Connection connection) {
         if (preparedStatement != null) {
@@ -190,8 +234,11 @@ public class DBUtil {
 
     /**
      * Mainly useful for tests.
-     * @param tableName The table name.
-     * @param connection The connection to be used.
+     * 
+     * @param tableName
+     *            The table name.
+     * @param connection
+     *            The connection to be used.
      */
     public static void truncate(String tableName, Connection connection) throws SQLException {
 
@@ -206,12 +253,14 @@ public class DBUtil {
 
     /**
      * Creates a DBUtil object based on servlet context configurations.
-     * @param servletContext The servlet context.
+     * 
+     * @param servletContext
+     *            The servlet context.
      * @return DBUtil object.
-     * @throws Exception If an error occurred while reading configurations or while creating
-     * database object.
+     * @throws Exception
+     *             If an error occurred while reading configurations or while creating database object.
      */
-    public static DBUtil getDBUtil(ServletContext servletContext) throws Exception{
+    public static DBUtil getDBUtil(ServletContext servletContext) throws Exception {
 
         String jdbcUrl = servletContext.getInitParameter("credential-store-jdbc-url");
         String userName = servletContext.getInitParameter("credential-store-db-user");
@@ -219,8 +268,8 @@ public class DBUtil {
         String driverName = servletContext.getInitParameter("credential-store-db-driver");
 
         StringBuilder stringBuilder = new StringBuilder("Starting credential store, connecting to database - ");
-        stringBuilder.append(jdbcUrl).append(" DB user - ").append(userName).
-                append(" driver name - ").append(driverName);
+        stringBuilder.append(jdbcUrl).append(" DB user - ").append(userName).append(" driver name - ")
+                .append(driverName);
 
         log.debug(stringBuilder.toString());
 
@@ -234,7 +283,5 @@ public class DBUtil {
 
         return dbUtil;
     }
-
-
 
 }

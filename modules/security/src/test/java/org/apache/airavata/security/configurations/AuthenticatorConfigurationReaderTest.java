@@ -1,3 +1,24 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
 package org.apache.airavata.security.configurations;
 
 import junit.framework.TestCase;
@@ -10,13 +31,12 @@ import java.net.URLDecoder;
 import java.util.List;
 
 /**
- * A test class for authenticator configuration reader.
- * Reads the authenticators.xml in resources directory.
+ * A test class for authenticator configuration reader. Reads the authenticators.xml in resources directory.
  */
 public class AuthenticatorConfigurationReaderTest extends TestCase {
 
-    private String configurationFile = URLDecoder.decode(
-            this.getClass().getClassLoader().getResource("authenticators.xml").getFile());
+    private String configurationFile = URLDecoder.decode(this.getClass().getClassLoader()
+            .getResource("authenticators.xml").getFile());
 
     public void setUp() throws Exception {
 
@@ -33,8 +53,7 @@ public class AuthenticatorConfigurationReaderTest extends TestCase {
 
     public void testInit() throws Exception {
 
-        AuthenticatorConfigurationReader authenticatorConfigurationReader
-                = new AuthenticatorConfigurationReader();
+        AuthenticatorConfigurationReader authenticatorConfigurationReader = new AuthenticatorConfigurationReader();
         authenticatorConfigurationReader.init(configurationFile);
 
         assertTrue(AuthenticatorConfigurationReader.isAuthenticationEnabled());
@@ -48,14 +67,15 @@ public class AuthenticatorConfigurationReaderTest extends TestCase {
                 assertEquals("dbAuthenticator1", authenticator.getAuthenticatorName());
                 assertEquals(6, authenticator.getPriority());
                 assertEquals(true, authenticator.isEnabled());
-                assertEquals("jdbc:sql:thin:@//myhost:1521/mysql1", ((TestDBAuthenticator1) authenticator).getDatabaseURL());
+                assertEquals("jdbc:sql:thin:@//myhost:1521/mysql1",
+                        ((TestDBAuthenticator1) authenticator).getDatabaseURL());
                 assertEquals("org.myqsql.Driver1", ((TestDBAuthenticator1) authenticator).getDatabaseDriver());
                 assertEquals("mysql1", ((TestDBAuthenticator1) authenticator).getDatabaseUserName());
                 assertEquals("secret1", ((TestDBAuthenticator1) authenticator).getDatabasePassword());
                 assertNotNull(authenticator.getUserStore());
                 assertTrue(authenticator.getUserStore() instanceof JDBCUserStore);
 
-                JDBCUserStore jdbcUserStore = (JDBCUserStore)authenticator.getUserStore();
+                JDBCUserStore jdbcUserStore = (JDBCUserStore) authenticator.getUserStore();
                 assertEquals("MD5", jdbcUserStore.getPasswordDigester().getHashMethod());
             } else if (authenticator instanceof TestDBAuthenticator2) {
                 assertEquals("dbAuthenticator2", authenticator.getAuthenticatorName());
@@ -63,11 +83,12 @@ public class AuthenticatorConfigurationReaderTest extends TestCase {
                 assertEquals(true, authenticator.isEnabled());
                 assertTrue(authenticator.getUserStore() instanceof LDAPUserStore);
 
-            }  else if (authenticator instanceof TestDBAuthenticator3) {
+            } else if (authenticator instanceof TestDBAuthenticator3) {
                 assertEquals("dbAuthenticator3", authenticator.getAuthenticatorName());
                 assertEquals(8, authenticator.getPriority());
                 assertEquals(true, authenticator.isEnabled());
-                assertEquals("jdbc:sql:thin:@//myhost:1521/mysql3", ((TestDBAuthenticator3) authenticator).getDatabaseURL());
+                assertEquals("jdbc:sql:thin:@//myhost:1521/mysql3",
+                        ((TestDBAuthenticator3) authenticator).getDatabaseURL());
                 assertEquals("org.myqsql.Driver3", ((TestDBAuthenticator3) authenticator).getDatabaseDriver());
                 assertEquals("mysql3", ((TestDBAuthenticator3) authenticator).getDatabaseUserName());
                 assertEquals("secret3", ((TestDBAuthenticator3) authenticator).getDatabasePassword());
@@ -85,18 +106,14 @@ public class AuthenticatorConfigurationReaderTest extends TestCase {
 
     public void testDisabledAuthenticator() throws Exception {
 
-        String disabledConfiguration
-                = URLDecoder.decode(
-                this.getClass().getClassLoader().getResource("disabled-authenticator.xml").getFile());
+        String disabledConfiguration = URLDecoder.decode(this.getClass().getClassLoader()
+                .getResource("disabled-authenticator.xml").getFile());
 
-
-        AuthenticatorConfigurationReader authenticatorConfigurationReader
-                = new AuthenticatorConfigurationReader();
+        AuthenticatorConfigurationReader authenticatorConfigurationReader = new AuthenticatorConfigurationReader();
         authenticatorConfigurationReader.init(disabledConfiguration);
 
         assertFalse(AuthenticatorConfigurationReader.isAuthenticationEnabled());
 
     }
-
 
 }
