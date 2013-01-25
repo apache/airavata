@@ -168,6 +168,7 @@
 								<copy todir="${airavata.war.dir}">
                                     <fileset dir="src/main/resources/war" />
                                 </copy>
+                                <copy file="${airavata.work.dir}/RELEASE_NOTES" todir="${airavata.war.dir}"/>
 								<zip destfile="${airavata.webapp.war.zip}" basedir="${airavata.war.dir}" />
                     			<tar tarfile="${airavata.webapp.war.tar.gz}" basedir="${airavata.war.dir}" compression="gzip" />            
                             </target>
