@@ -13,6 +13,10 @@ and build gadgets to deploy in open social containers such as Apache Rave and mo
 to suit their needs. Airavata builds on general concepts of service oriented computing, 
 distributed messaging, and workflow composition and orchestration.
 
+This distribution allows you to run Airavata Server in a tomcat hosted environment. It 
+includes all the airavata services shipped with a default derby database as the backend 
+registry.
+
 Release Notes
 =============
 0.6 is the fifth release of Airavata (skipped 0.1-INCUBATNG). This release focuses on providing a REST service interface for Airavata Registry. For detailed tasks list, please see RELEASE_NOTES.
@@ -59,3 +63,27 @@ Description of Directory Structure
 
     - INSTALL
       This document will contain information on installing Apache-Airavata.
+
+Other Available Distributions
+=============================
+
+Server Distributions
+--------------------
+* Airavata Server
+  The Airavata Server binary distribution allows you to run a standalone Airavata Server which includes all the airavata services 
+  shipped with a default derby database as the backend registry.
+
+Client Distributions
+--------------------
+* Airavata XBaya
+  The Airavata XBaya distribution is a client gui application capable of composing workflows, application descriptors & communicating 
+  with the airavata server to persist user data, run & monitor experiments and analyze the results.
+
+* Airavata XBaya JNLP
+  The Airavata XBaya JNLP distribution is a client gui application designed to be hosted on a web server as a web start application
+  that can compose workflows, application descriptors & communicate with the airavata server to persist user data, run & monitor experiments
+  and analyze the results.
+
+* Airavata Client
+  The Airavata Client distribution is a set of libraries and configurations files that allow a 3rd party application to programatically 
+  access Airavata functionality through Airavata API. 
