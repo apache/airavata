@@ -1,3 +1,24 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
 package org.apache.airavata.api.samples;
 
 import org.apache.airavata.client.AiravataAPIFactory;
@@ -34,9 +55,10 @@ public class CreateApplication {
 
     private static AiravataAPI airavataAPI;
 
-    public static void main(String[] args) throws AiravataAPIInvocationException, IOException, URISyntaxException, DescriptorRecordAlreadyExistsException {
+    public static void main(String[] args) throws AiravataAPIInvocationException, IOException, URISyntaxException,
+            DescriptorRecordAlreadyExistsException {
 
-        //creating airavata client object //
+        // creating airavata client object //
         port = Integer.parseInt("8080");
         serverUrl = "localhost";
         serverContextName = "airavata-registry";
@@ -50,10 +72,10 @@ public class CreateApplication {
         log.info("Configurations - Registry URL : " + registryURL);
 
         PasswordCallback passwordCallback = new PasswordCallbackImpl(getUserName(), getPassword());
-        airavataAPI = AiravataAPIFactory.getAPI(new URI(getRegistryURL()),
-                getGatewayName(), getUserName(), passwordCallback);
+        airavataAPI = AiravataAPIFactory.getAPI(new URI(getRegistryURL()), getGatewayName(), getUserName(),
+                passwordCallback);
 
-        //Now creating documents to be saved in to registry using above created airavata client object//
+        // Now creating documents to be saved in to registry using above created airavata client object//
 
         HostDescription descriptor = new HostDescription(GlobusHostType.type);
         descriptor.getType().setHostName("localhost");
@@ -67,7 +89,7 @@ public class CreateApplication {
         List<OutputParameterType> outputParameters = new ArrayList<OutputParameterType>();
         serviceDescription.getType().setName("Echo");
         serviceDescription.getType().setDescription("Echo service");
-        //Creating input parameters
+        // Creating input parameters
         InputParameterType parameter = InputParameterType.Factory.newInstance();
         parameter.setParameterName("echo_input");
         parameter.setParameterDescription("echo input");
@@ -76,7 +98,7 @@ public class CreateApplication {
         parameterType.setName("String");
         inputParameters.add(parameter);
 
-        //Creating output parameters
+        // Creating output parameters
         OutputParameterType outputParameter = OutputParameterType.Factory.newInstance();
         outputParameter.setParameterName("echo_output");
         outputParameter.setParameterDescription("Echo output");
@@ -85,27 +107,27 @@ public class CreateApplication {
         outputParaType.setName("String");
         outputParameters.add(outputParameter);
 
-        //Setting input and output parameters to serviceDescriptor
-        serviceDescription.getType().setInputParametersArray(inputParameters.toArray(new InputParameterType[]{}));
-        serviceDescription.getType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[]{}));
+        // Setting input and output parameters to serviceDescriptor
+        serviceDescription.getType().setInputParametersArray(inputParameters.toArray(new InputParameterType[] {}));
+        serviceDescription.getType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[] {}));
 
         log.info("Saving service description ...");
-        //Saving service descriptor
+        // Saving service descriptor
         airavataAPI.getApplicationManager().saveServiceDescription(serviceDescription);
 
         // Deployment descriptor creation
         ApplicationDescription applicationDeploymentDescription = new ApplicationDescription();
-        ApplicationDeploymentDescriptionType applicationDeploymentDescriptionType
-                = applicationDeploymentDescription.getType();
+        ApplicationDeploymentDescriptionType applicationDeploymentDescriptionType = applicationDeploymentDescription
+                .getType();
         applicationDeploymentDescriptionType.addNewApplicationName().setStringValue("EchoApplication");
         applicationDeploymentDescriptionType.setExecutableLocation("/bin/echo");
         applicationDeploymentDescriptionType.setScratchWorkingDirectory("/tmp");
 
         log.info("Saving deployment description ...");
 
-        //Saving deployment Descriptor with an association with given serviceName, Host name
-        airavataAPI.getApplicationManager().addApplicationDescription(serviceDescription,
-                descriptor, applicationDeploymentDescription);
+        // Saving deployment Descriptor with an association with given serviceName, Host name
+        airavataAPI.getApplicationManager().addApplicationDescription(serviceDescription, descriptor,
+                applicationDeploymentDescription);
     }
 
     public static int getPort() {
