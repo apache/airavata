@@ -15,6 +15,34 @@ Build Apache Airavata from Source
 			$ mvn clean install -Dmaven.test.skip=true
 * The compressed binary distribution is created at <PROJECT DIR>/modules/distribution/airavata-server/target/apache-airavata-server-<airavata-version>-bin.zip
 
+Installing the Airavata Server
+------------------------------
+No installation is necessary. Just extract the compressed distribution.
+Note: For customizing the default configurations of the Airavata Server please 
+      refer to Airavata web-site (http://airavata.apache.org/) and/or Airavata 
+      mailing lists (http://airavata.apache.org/community/mailing-lists.html)
+
+Starting Apache Airavata Server
+-------------------------------
+* Navigate to <AIRAVATA_HOME>/bin
+* type for following command to start the Airavata Server
+	MAC/Unix systems
+		$ sh airavata-server.sh
+	Windows
+		> airavata-server.bat
+	Note: Pass "-h" as parameters to see more options when starting the server
+
+Starting Apache Derby Server
+-------------------------------
+Users have the option to star the derby server separately
+* Navigate to <AIRAVATA_HOME>/bin
+* type for following command to start the Airavata Server
+	MAC/Unix systems
+		$ sh derby.sh
+	Windows
+		<Not supported in this version>
+	Note: Pass "-h" as parameters to see more options when starting the server
+
 Running Tests
 -------------
 Once the binary is unzipped, instructions to run the tests should be followed from README

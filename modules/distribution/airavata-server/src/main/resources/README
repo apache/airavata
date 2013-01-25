@@ -1,4 +1,4 @@
-Apache Airavata - README.txt
+Apache Airavata Server - README.txt
 Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
 --------------------------------------------------------------------------------
 
@@ -89,4 +89,4 @@ Description of Directory Structure
       This document.
 
     - INSTALL
-          This document will contain information on installing Apache-Airavata.
+      This document will contain information on installing Apache-Airavata.

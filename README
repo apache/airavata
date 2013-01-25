@@ -1,4 +1,4 @@
-Apache Airavata - README.txt
+Apache Airavata Source - README.txt
 Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
 --------------------------------------------------------------------------------
 
@@ -27,30 +27,59 @@ Known Issues in This Release
 This is the base release and is focused on a good foundation and less on features. This 
 version is not recommended for production usage.
 
-Airavata Binary Distribution Directory Structure
+Airavata Source Distribution Directory Structure
 ================================================
 
-    AIRAVATA_HOME
-        |-- bin <folder>
-            |--airavata-server.sh
-            |--jackrabbit-server.sh
-            |--setenv.sh
-            |--xbaya-gui.sh
-        |-- samples <folder>
-        |-- gui <folder>
-        |-- lib <folder>
-        |-- standalone-server <folder>
-        |   |-- lib <folder>
-        |   |-- conf <folder>
-        |   |-- repository <folder>
-        |       -- services <folder>
-        |   |-- bin <folder>
-                |-- database_scripts
-        |-- NOTICE <file>
-        |-- LICENSE <file>
-        |-- README <file>
-        |-- INSTALL <file>
-
+    AIRAVATA_TRUNK
+		├── modules
+		│   ├── airavata-client
+		│   ├── commons
+		│   │   ├── gfac-schema
+		│   │   ├── utils
+		│   │   ├── workflow-execution-context
+		│   │   └── workflow-tracking
+		│   ├── distribution
+		│   │   ├── airavata-client
+		│   │   ├── airavata-server
+		│   │   ├── xbaya-gui
+		│   │   └── release
+		│   ├── gfac-axis2
+		│   ├── gfac-core
+		│   ├── integration-tests
+		│   ├── registry
+		│   │   ├── airavata-jpa-registry
+		│   │   ├── airavata-registry-service
+		│   │   ├── airavata-registry-test
+		│   │   ├── registry-api
+		│   ├── rest
+		│   │   ├── client
+		│   │   ├── mappings
+		│   │   ├── service
+		│   │   └── webapp
+		│   ├── security
+		│   ├── server
+		│   ├── test-suite
+		│   ├── workflow-interpreter
+		│   ├── workflow-model
+		│   │   ├── workflow-model-component-node
+		│   │   └── workflow-model-core
+		│   ├── ws-messenger
+		│   │   ├── commons
+		│   │   ├── distribution
+		│   │   ├── messagebox
+		│   │   ├── messagebroker
+		│   │   ├── message-monitor
+		│   │   └── samples
+		│   └── xbaya-gui
+		├── samples
+		├── tools
+		│   ├── phoebus-integration
+		│   └── registry-migrate
+		├── INSTALL
+		├── LICENSE
+		├── NOTICE
+		├── README
+		└── RELEASE_NOTES
 
 How to test and run samples
 ===========================
@@ -62,41 +91,18 @@ How to test and run samples
 
 Description of Directory Structure
 ==================================
-    - bin
-      This contains all the executable scripts to run required applications in Airavata distribution.
-        Ex: This contains scripts to run XBaya GUI Application, Airavata Server (Axis2 server with Airavata services which
-            include messageBroker and messageBox with GFac Axis2 services), Jackrabbit executables to run.
+    - modules
+      This contains the source code of all the airavata maven projects that constitutes to building the airavata libraries, services and distributions
+
     - samples
       This contains all the system wide samples provided in Airavata distribution. All the sample are having its README file
       So users have to refer each readme file before running each sample.
 
-    - lib
-      This contains all the libraries required to run the client side code with the jars required to run XBaya GUI. So you can
-      easily separate the server side and client side by separating the standalone-server folder and lib directory during the deployment.
-
-    - gui
-      Contains the scripts to run WS Notification Listener GUI tool
-
-    - standalone-server
-      This contains all the artifacts required during axis2Server runtime with required axis2 service archives
-
-    - standalone-server - lib
-      Contains all the libraries required for Axis2 runtime
-
-    - standalone-server - conf
-      Contains all the configuration files for Axis2 Runtime and messenger services (messagebroker and messagebox)
-
-    - standalone-server - repository - services
-      Contains deployed services in Axis2 runtime.
-
-    - standalone-server - bin
-      Commandline scripts to use to start the SimpleAxis2Server and other Axis2 related scripts.
-
-    - standalone-server - bin - database_scripts
-      Contains the database scripts which are used to create tables for messagebox and messagebroker services
+    - tools
+      This contains source code libraries that can enhance Airavata features.
 
     - README
       This document.
 
     - INSTALL
-          This document will contain information on installing Apache-Airavata.
+      This document will contain information on installing Apache-Airavata.

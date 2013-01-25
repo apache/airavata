@@ -24,6 +24,18 @@ Installing the JNLP Distribution
            ...
           </jnlp> 
 
+Starting Apache Airavata XBaya JNLP
+-----------------------------------
+Using the web browser
+	* Using a browser navigate to the url <JNLP-web-access-url>/xbaya.jnlp
+		eg: http://example-server.com/airavata/xbaya/xbaya.jnlp
+	* Following the web start download instructions to run XBaya
+
+Using the commandline
+	* type for following command in the commandline to start the Airavata XBaya
+			$ javaws <JNLP-web-access-url>/xbaya.jnlp
+				eg: $ javaws http://example-server.com/airavata/xbaya/xbaya.jnlp
+
 Running Tests
 -------------
 Once the binary is unzipped, instructions to run the tests should be followed from README
