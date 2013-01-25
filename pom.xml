@@ -20,7 +20,7 @@
 	<parent>
 		<groupId>org.apache</groupId>
 		<artifactId>apache</artifactId>
-		<version>10</version>
+		<version>13</version>
 		<relativePath />
 	</parent>
 
@@ -320,7 +320,6 @@
 	</dependencyManagement>
 
 	<repositories>
-
 		<repository>
 			<id>central</id>
 			<name>Maven Central</name>
@@ -356,6 +355,7 @@
 			<url>http://unicore-dev.zam.kfa-juelich.de/maven</url>
 		</repository>
 	</repositories>
+	
 	<profiles>
 		<profile>
 			<id>default</id>
@@ -440,6 +440,43 @@
 				<module>modules/distribution</module>
 				<module>modules/integration-tests</module>
 			</modules>
+		</profile>
+		<profile>
+			<id>pedantic</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<version>2.3.2</version>
+						<configuration>
+							<source>1.6</source>
+							<target>1.6</target>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.rat</groupId>
+						<artifactId>apache-rat-plugin</artifactId>
+						<configuration>
+							<excludes>
+								<exclude>**/target/**/*</exclude>
+								<exclude>**/.settings/**/*</exclude>
+								<exclude>**/.project</exclude>
+								<exclude>**/.classpath</exclude>
+								<exclude>**/logo.txt</exclude>
+							</excludes>
+						</configuration>
+						<executions>
+							<execution>
+								<phase>verify</phase>
+								<goals>
+									<goal>check</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 	</profiles>
 
