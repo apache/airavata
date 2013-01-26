@@ -8,12 +8,11 @@
     ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
     the License. -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>distribution</artifactId>
-        <version>0.6-SNAPSHOT</version>
+        <version>0.6</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -128,31 +127,31 @@
                             <target>
 								<echo message="Building Airavata Server WAR" />
 								<echo message="============================" />
-                                <unzip src="${airavata.bin.zip}" dest="${project.build.directory}/tests"/>
+                                <unzip src="${airavata.bin.zip}" dest="${project.build.directory}/tests" />
 								<copy todir="${airavata.webapp.dir}/META-INF">
-								                    <fileset dir="${project.build.directory}/axis2-${axis2.version}/META-INF"/>
+								                    <fileset dir="${project.build.directory}/axis2-${axis2.version}/META-INF" />
 								                </copy>
 								<copy todir="${airavata.webapp.dir}/axis2-web">
-								                    <fileset dir="${project.build.directory}/axis2-${axis2.version}/axis2-web"/>
+								                    <fileset dir="${project.build.directory}/axis2-${axis2.version}/axis2-web" />
 								                </copy>
 								<copy todir="${airavata.webapp.dir}/WEB-INF">
-								                    <fileset dir="${project.build.directory}/axis2-${axis2.version}/WEB-INF"/>
+								                    <fileset dir="${project.build.directory}/axis2-${axis2.version}/WEB-INF" />
 								                </copy>
 								<copy todir="${airavata.webapp.dir}/WEB-INF">
-                                    <fileset dir="${airavata.work.dir}/repository/"/>
+                                    <fileset dir="${airavata.work.dir}/repository/" />
                                 </copy>
                                 <copy todir="${airavata.webapp.dir}/WEB-INF/lib">
                                     <fileset dir="${airavata.work.dir}/lib/">
-                                            <exclude name="tomcat-*.jar"/>
+                                            <exclude name="tomcat-*.jar" />
                                     </fileset>
                                 </copy>
                                 <copy todir="${airavata.webapp.dir}/WEB-INF/classes">
                                     <fileset dir="${airavata.work.dir}/bin/">
-                                        <exclude name="axis2.xml"/>
+                                        <exclude name="axis2.xml" />
                                     </fileset>
                                 </copy>
                                 <copy todir="${airavata.webapp.dir}/WEB-INF/classes/database_scripts">
-                                    <fileset dir="${airavata.work.dir}/bin/database_scripts"/>
+                                    <fileset dir="${airavata.work.dir}/bin/database_scripts" />
                                 </copy>
 								<copy todir="${airavata.webapp.dir}">
                                     <fileset dir="src/main/resources">
@@ -168,7 +167,7 @@
 								<copy todir="${airavata.war.dir}">
                                     <fileset dir="src/main/resources/war" />
                                 </copy>
-                                <copy file="${airavata.work.dir}/RELEASE_NOTES" todir="${airavata.war.dir}"/>
+                                <copy file="${airavata.work.dir}/RELEASE_NOTES" todir="${airavata.war.dir}" />
 								<zip destfile="${airavata.webapp.war.zip}" basedir="${airavata.war.dir}" />
                     			<tar tarfile="${airavata.webapp.war.tar.gz}" basedir="${airavata.war.dir}" compression="gzip" />            
                             </target>
