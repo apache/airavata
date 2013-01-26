@@ -13,7 +13,7 @@
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>registry</artifactId>
-        <version>0.6-SNAPSHOT</version>
+        <version>0.6</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -106,9 +106,9 @@
                         <phase>process-classes</phase>
                         <configuration>
                             <tasks>
-                                <taskdef name="openjpac" classname="org.apache.openjpa.ant.PCEnhancerTask" classpathref="maven.compile.classpath"/>
+                                <taskdef name="openjpac" classname="org.apache.openjpa.ant.PCEnhancerTask" classpathref="maven.compile.classpath" />
                                 <openjpac>
-                                    <classpath refid="maven.compile.classpath"/>
+                                    <classpath refid="maven.compile.classpath" />
                                 </openjpac>
                             </tasks>
                         </configuration>
