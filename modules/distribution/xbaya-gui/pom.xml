@@ -8,11 +8,12 @@
     ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
     the License. -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>distribution</artifactId>
-        <version>0.7-SNAPSHOT</version>
+        <version>0.6-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -101,17 +102,19 @@
                         <phase>compile</phase>
                         <configuration>
                             <target>
-                                <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="maven.dependency.classpath" />
-                                <unzip src="target/apache-airavata-xbaya-gui-${project.version}-bin.zip" dest="${project.build.directory}/temp" />
-                                <mkdir dir="${jnlp.direcotry}" />
-                                <mkdir dir="${jnlp.direcotry}/lib" />
+                                <taskdef resource="net/sf/antcontrib/antcontrib.properties"
+                                         classpathref="maven.dependency.classpath" />
+                                <unzip src="target/apache-airavata-xbaya-gui-${project.version}-bin.zip"
+                                       dest="${project.build.directory}/temp"/>
+                                <mkdir dir="${jnlp.direcotry}"/>
+                                <mkdir dir="${jnlp.direcotry}/lib"/>
                                 <copy todir="${jnlp.direcotry}/lib">
-                                    <fileset dir="${xbaya.directory}/lib" />
+                                    <fileset dir="${xbaya.directory}/lib"/>
                                 </copy>
 								<copy todir="${jnlp.direcotry}">
-                                    <fileset dir="${project.basedir}/src/main/resources/jnlp" />
+                                    <fileset dir="${project.basedir}/src/main/resources/jnlp"/>
                                 </copy>
-                                <copy file="${project.basedir}/src/main/resources/airavata-logo.gif" todir="${jnlp.direcotry}" />
+                                <copy file="${project.basedir}/src/main/resources/airavata-logo.gif" todir="${jnlp.direcotry}"/>
                             </target>
                         </configuration>
                         <goals>
@@ -170,10 +173,11 @@
                         <phase>package</phase>
                         <configuration>
                             <target>
-                                <zip destfile="${airavata.xbaya-jnlp.zip}" basedir="${jnlp.direcotry}" />
-                                <tar destfile="${project.build.directory}/xbaya-jnlp-${project.version}.tar" basedir="${jnlp.direcotry}" />
-                                <gzip destfile="${airavata.xbaya-jnlp.tar.gz}" src="${project.build.directory}/xbaya-jnlp-${project.version}.tar" />
-                                <delete file="${project.build.directory}/xbaya-jnlp-${project.version}.tar" />
+                                <zip destfile="${airavata.xbaya-jnlp.zip}"
+                                     basedir="${jnlp.direcotry}"/>
+                                <tar destfile="${project.build.directory}/xbaya-jnlp-${project.version}.tar" basedir="${jnlp.direcotry}"/>
+                                <gzip destfile="${airavata.xbaya-jnlp.tar.gz}" src="${project.build.directory}/xbaya-jnlp-${project.version}.tar"/>
+                                <delete file="${project.build.directory}/xbaya-jnlp-${project.version}.tar"/>
                             </target>
                         </configuration>
                         <goals>

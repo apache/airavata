@@ -8,11 +8,12 @@
     ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
     the License. -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>airavata</artifactId>
-        <version>0.7-SNAPSHOT</version>
+        <version>0.6-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -32,37 +33,38 @@
                         <phase>compile</phase>
                         <configuration>
                             <target>
-                                <taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="maven.dependency.classpath" />
+                                <taskdef resource="net/sf/antcontrib/antlib.xml"
+                                         classpathref="maven.dependency.classpath" />
                                 <if>
-                                    <available file="${local.tomcat.distribution}" />
+                                    <available file="${local.tomcat.distribution}"/>
                                     <then>
                                         <echo message="Using Tomcat distribution in local repository ..." />
-                                        <copy file="${local.tomcat.distribution}" todir="${project.build.directory}" overwrite="true" />
+                                        <copy file="${local.tomcat.distribution}" todir="${project.build.directory}" overwrite="true"/>
                                     </then>
                                     <else>
                                         <echo message="Downloading Tomcat distribution ..." />
                                         <get dest="${project.build.directory}">
-                                            <url url="http://archive.apache.org/dist/tomcat/tomcat-${major.tomcat.version}/v${tomcat.version}/bin/apache-tomcat-${tomcat.version}.zip" />
+                                            <url url="http://archive.apache.org/dist/tomcat/tomcat-${major.tomcat.version}/v${tomcat.version}/bin/apache-tomcat-${tomcat.version}.zip"/>
                                         </get>
 
                                     </else>
                                 </if>
 
 
-                                <unzip src="../distribution/airavata-server/target/apache-airavata-server-${project.version}-bin.zip" dest="${project.build.directory}/tests" />
-                                <unzip src="../distribution/xbaya-gui/target/apache-airavata-xbaya-gui-${project.version}-bin.zip" dest="${project.build.directory}/tests" />
-                                <unzip src="${project.build.directory}/apache-tomcat-${tomcat.version}.zip" dest="${project.build.directory}/tests" />
+                                <unzip src="../distribution/airavata-server/target/apache-airavata-server-${project.version}-bin.zip" dest="${project.build.directory}/tests"/>
+                                <unzip src="../distribution/xbaya-gui/target/apache-airavata-xbaya-gui-${project.version}-bin.zip" dest="${project.build.directory}/tests"/>
+                                <unzip src="${project.build.directory}/apache-tomcat-${tomcat.version}.zip" dest="${project.build.directory}/tests"/>
                                 <copy todir="${tomcat.work.dir}/webapps/axis2/META-INF">
-                                    <fileset dir="../distribution/airavata-server/target/axis2-${axis2.version}/META-INF" />
+                                    <fileset dir="../distribution/airavata-server/target/axis2-${axis2.version}/META-INF"/>
                                 </copy>
 				<copy todir="${tomcat.work.dir}/webapps/axis2/axis2-web">
-                                    <fileset dir="../distribution/airavata-server/target/axis2-${axis2.version}/axis2-web" />
+                                    <fileset dir="../distribution/airavata-server/target/axis2-${axis2.version}/axis2-web"/>
                                 </copy>
 				<copy todir="${tomcat.work.dir}/webapps/axis2/WEB-INF">
-                                    <fileset dir="../distribution/airavata-server/target/axis2-${axis2.version}/WEB-INF" />
+                                    <fileset dir="../distribution/airavata-server/target/axis2-${axis2.version}/WEB-INF"/>
                                 </copy>
 
-                                <delete dir="${tomcat.work.dir}/webapps/examples" />
+                                <delete dir="${tomcat.work.dir}/webapps/examples"/>
                             </target>
                         </configuration>
                         <goals>
@@ -128,28 +130,30 @@
                         <configuration>
                             <target>
                                 <copy todir="${tomcat.work.dir}/webapps/axis2/WEB-INF">
-                                    <fileset dir="${airavata.work.dir}/repository/" />
+                                    <fileset dir="${airavata.work.dir}/repository/"/>
                                 </copy>
                                 <copy todir="${tomcat.work.dir}/webapps/axis2/WEB-INF/lib">
                                     <fileset dir="${airavata.work.dir}/lib/">
-                                            <exclude name="tomcat-*.jar" />
+                                            <exclude name="tomcat-*.jar"/>
                                     </fileset>
                                 </copy>
                                 <copy todir="${tomcat.work.dir}/webapps/axis2/WEB-INF/classes">
                                     <fileset dir="${airavata.work.dir}/bin/">
-                                        <exclude name="axis2.xml" />
+                                        <exclude name="axis2.xml"/>
                                     </fileset>
                                 </copy>
                                 <copy todir="src/test/resources" overwrite="true">
                                     <fileset dir="${xbaya.work.dir}/bin/">
-                                        <include name="registry.properties" />
+                                        <include name="registry.properties"/>
                                     </fileset>
                                 </copy>
                                 <copy todir="${tomcat.work.dir}/webapps/axis2/WEB-INF/classes/database_scripts">
-                                    <fileset dir="${airavata.work.dir}/bin/database_scripts" />
+                                    <fileset dir="${airavata.work.dir}/bin/database_scripts"/>
                                 </copy>
-                                <chmod dir="${tomcat.work.dir}/bin" perm="700" includes="*.sh" />
-                                <chmod dir="${tomcat.work.dir}/webapps/axis2" perm="700" includes="**/*" />
+                                <chmod dir="${tomcat.work.dir}/bin" perm="700"
+                                       includes="*.sh"/>
+                                <chmod dir="${tomcat.work.dir}/webapps/axis2" perm="700"
+                                       includes="**/*"/>
                                 <replace file="${tomcat.work.dir}/conf/server.xml">
                                     <replacetoken>8080</replacetoken>
                                     <replacevalue>${test.running.port}</replacevalue>
@@ -282,9 +286,10 @@
                         <phase>install</phase>
                         <configuration>
                             <target>
-                                <echo message="Creating airavata tomcat distribution. This may take a while ..." />
-                                <sleep seconds="20" />
-                                <zip destfile="${airavata.tomcat.distribution}" basedir="${tomcat.work.dir}" />
+                                <echo message="Creating airavata tomcat distribution. This may take a while ..."/>
+                                <sleep seconds="20"/>
+                                <zip destfile="${airavata.tomcat.distribution}"
+                                     basedir="${tomcat.work.dir}"/>
                             </target>
                         </configuration>
                         <goals>
