@@ -201,7 +201,7 @@ public class RegistryWindow {
         }
 
         this.passwordTextField.setText(engine.getConfiguration().getRegistryPassphrase());
-        XBayaLabel urlLabel = new XBayaLabel("URL", this.urlTextField);
+        XBayaLabel urlLabel = new XBayaLabel("Registry URL", this.urlTextField);
         XBayaLabel gatewayLabel = new XBayaLabel("Gateway", this.gatewayTextField);
         XBayaLabel nameLabel = new XBayaLabel("Username", this.usernameTextField);
         XBayaLabel passLabel = new XBayaLabel("Password", this.usernameTextField);
@@ -250,7 +250,7 @@ public class RegistryWindow {
         buttonPanel.add(cancelButton);
         buttonPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
 
-        this.dialog = new XBayaDialog(this.engine.getGUI(), "Airavata Registry", infoPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Configure Airavata Registry", infoPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 
