@@ -59,10 +59,9 @@ public class WorkflowTrackingListener {
         URI initiatorServiceID = URI.create(topic);
         String initiatorWorkflowNodeID = workflowNodeID;
         Integer initiatorWorkflowTimeStep = null;
-        this.context.setTopic(topic);
-
         this.context = this.notifier.createTrackingContext(new Properties(), brokerURL, initiatorWorkflowID, initiatorServiceID,
                 initiatorWorkflowNodeID, initiatorWorkflowTimeStep);
+        this.context.setTopic(topic);
         this.initiator = this.notifier.createEntity(initiatorWorkflowID, initiatorServiceID, initiatorWorkflowNodeID,
                 initiatorWorkflowTimeStep);
 

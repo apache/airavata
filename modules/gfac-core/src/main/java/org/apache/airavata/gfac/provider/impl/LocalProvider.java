@@ -21,6 +21,7 @@
 package org.apache.airavata.gfac.provider.impl;
 
 import org.apache.airavata.commons.gfac.type.ActualParameter;
+import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
@@ -141,7 +142,6 @@ public class LocalProvider implements GFacProvider {
     private List<String> getInputParameters(JobExecutionContext jobExecutionContext) throws GFacProviderException {
         List<String> parameters = new ArrayList<String>();
         MessageContext inMessageContext = jobExecutionContext.getInMessageContext();
-
         InputParameterType[] inputParamDefinitionArray = jobExecutionContext.getApplicationContext().
                 getServiceDescription().getType().getInputParametersArray();
         for (InputParameterType inputParam : inputParamDefinitionArray) {
@@ -151,7 +151,7 @@ public class LocalProvider implements GFacProvider {
                 throw new GFacProviderException("Cannot find required input parameter " + parameterName + ".");
             }
 
-            parameters.add(parameter.toString());
+            parameters.add(MappingFactory.toString(parameter));
         }
 
         return parameters;
