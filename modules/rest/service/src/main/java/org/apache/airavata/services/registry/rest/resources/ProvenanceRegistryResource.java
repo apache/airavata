@@ -22,6 +22,7 @@
 package org.apache.airavata.services.registry.rest.resources;
 
 import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
 import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
 import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.rest.mappings.resourcemappings.ExperimentDataList;
@@ -790,9 +791,9 @@ public class ProvenanceRegistryResource {
         try {
             List<ExperimentData> experimentDataList = airavataRegistry.getExperimentByUser(username);
             ExperimentDataList experimentData = new ExperimentDataList();
-            List<ExperimentData> experimentDatas = new ArrayList<ExperimentData>();
+            List<ExperimentDataImpl> experimentDatas = new ArrayList<ExperimentDataImpl>();
             for (ExperimentData anExperimentDataList : experimentDataList) {
-                experimentDatas.add(anExperimentDataList);
+                experimentDatas.add((ExperimentDataImpl)anExperimentDataList);
             }
             experimentData.setExperimentDataList(experimentDatas);
             if (experimentDataList.size() != 0) {
@@ -1277,9 +1278,9 @@ public class ProvenanceRegistryResource {
             List<ExperimentData> allExperimentMetaInformation =
                     airavataRegistry.getAllExperimentMetaInformation(user);
             ExperimentDataList experimentDataList = new ExperimentDataList();
-            List<ExperimentData> experimentDatas = new ArrayList<ExperimentData>();
+            List<ExperimentDataImpl> experimentDatas = new ArrayList<ExperimentDataImpl>();
             for (ExperimentData experimentData : allExperimentMetaInformation) {
-                experimentDatas.add(experimentData);
+                experimentDatas.add((ExperimentDataImpl)experimentData);
             }
             experimentDataList.setExperimentDataList(experimentDatas);
             if (allExperimentMetaInformation.size() != 0) {
@@ -1317,9 +1318,9 @@ public class ProvenanceRegistryResource {
             List<ExperimentData> experimentDataList =
                     airavataRegistry.searchExperiments(user, experimentNameRegex);
             ExperimentDataList experimentData = new ExperimentDataList();
-            List<ExperimentData> experimentDatas = new ArrayList<ExperimentData>();
+            List<ExperimentDataImpl> experimentDatas = new ArrayList<ExperimentDataImpl>();
             for (ExperimentData experimentData1 : experimentDataList) {
-                experimentDatas.add(experimentData1);
+                experimentDatas.add((ExperimentDataImpl)experimentData1);
             }
             experimentData.setExperimentDataList(experimentDatas);
             if (experimentDataList.size() != 0) {
