@@ -36,4 +36,8 @@ public class Constants {
     public static final int DEFAULT_GSI_FTP_PORT = 2811;
     public static final String _127_0_0_1 = "127.0.0.1";
     public static final String LOCALHOST = "localhost";
-}
+
+    public static final String PROP_WORKFLOW_INSTANCE_ID = "workflow.instance.id";
+    public static final String PROP_WORKFLOW_NODE_ID = "workflow.node.id";
+    public static final String PROP_BROKER_URL = "broker.url";
+    public static final String PROP_TOPIC = "topic";}

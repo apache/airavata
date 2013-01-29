@@ -38,16 +38,13 @@ import java.util.List;
 public class GFacAPI {
     private static final Logger log = LoggerFactory.getLogger(GFacAPI.class);
 
-    public static final String PROP_WORKFLOW_INSTANCE_ID = "workflow.instance.id";
-    public static final String PROP_WORKFLOW_NODE_ID = "workflow.node.id";
-    public static final String PROP_BROKER_URL = "broker.url";
-    public static final String PROP_TOPIC = "topic";
+
 
     public void submitJob(JobExecutionContext jobExecutionContext) throws GFacException {
         // We need to check whether this job is submitted as a part of a large workflow. If yes,
         // we need to setup workflow tracking listerner.
         String workflowInstanceID = null;
-        if ((workflowInstanceID = (String) jobExecutionContext.getProperty(PROP_WORKFLOW_INSTANCE_ID)) != null) {
+        if ((workflowInstanceID = (String) jobExecutionContext.getProperty(Constants.PROP_WORKFLOW_INSTANCE_ID)) != null) {
             // This mean we need to register workflow tracking listener.
             registerWorkflowTrackingListener(workflowInstanceID, jobExecutionContext);
         }
@@ -102,9 +99,9 @@ public class GFacAPI {
     }
 
     private void registerWorkflowTrackingListener(String workflowInstanceID, JobExecutionContext jobExecutionContext) {
-        String workflowNodeID = (String) jobExecutionContext.getProperty(PROP_WORKFLOW_NODE_ID);
-        String topic = (String) jobExecutionContext.getProperty(PROP_TOPIC);
-        String brokerUrl = (String) jobExecutionContext.getProperty(PROP_BROKER_URL);
+        String workflowNodeID = (String) jobExecutionContext.getProperty(Constants.PROP_WORKFLOW_NODE_ID);
+        String topic = (String) jobExecutionContext.getProperty(Constants.PROP_TOPIC);
+        String brokerUrl = (String) jobExecutionContext.getProperty(Constants.PROP_BROKER_URL);
         jobExecutionContext.getNotificationService().registerListener(
                 new WorkflowTrackingListener(workflowInstanceID, workflowNodeID, brokerUrl, topic));
 

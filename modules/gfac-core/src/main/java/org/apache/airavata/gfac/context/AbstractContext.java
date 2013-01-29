@@ -43,4 +43,8 @@ public abstract class AbstractContext {
     public AbstractContext getParent() {
         return parent;
     }
+
+    public void setProperty(String name, Object value) {
+        properties.put(name, value);
+    }
 }
