@@ -122,12 +122,24 @@ public class ComponentSelector implements XBayaComponent {
     }
 
     public void removeComponentTree(final ComponentTreeNode componentTree) {
-    	SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                ComponentSelector.this.treeModel.removeNodeFromParent(componentTree);
-            }
+        ComponentSelector.this.treeModel.removeNodeFromParent(componentTree);
+//    	SwingUtilities.invokeLater(new Runnable() {
+//            public void run() {
+//                ComponentSelector.this.treeModel.removeNodeFromParent(componentTree);
+//            }
+//
+//        });
+    }
 
-        });
+    public synchronized void removeComponentRegistry(final String componentRegistryName) {
+        ComponentTreeNode root = ComponentSelector.this.treeModel.getRoot();
+        ComponentTreeNode[] treeNodes = root.getChildren().toArray(new ComponentTreeNode[]{});
+        for(ComponentTreeNode treeNode:treeNodes){
+            if (treeNode.getComponentRegistry().getName().equals(componentRegistryName)){
+                root.remove(treeNode);
+            }
+        }
+        treeModel.reload();
     }
     
     /**

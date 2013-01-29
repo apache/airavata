@@ -113,16 +113,17 @@ public class ComponentRegistryLoader implements Cancelable, Observer {
      */
     private synchronized void runInThread(ComponentRegistry registry) {
         try {
-        	if (getComponentTreeNodesMap().containsKey(registry.getName())){
-        		this.getEngine().getGUI().getComponentSelector().removeComponentTree(getComponentTreeNodesMap().get(registry.getName()));
-        		getComponentTreeNodesMap().remove(registry.getName());
-        	}
+            this.getEngine().getGUI().getComponentSelector().removeComponentRegistry(registry.getName());
+//            if (getComponentTreeNodesMap().containsKey(registry.getName())){
+//        		this.getEngine().getGUI().getComponentSelector().removeComponentTree(getComponentTreeNodesMap().get(registry.getName()));
+//        		getComponentTreeNodesMap().remove(registry.getName());
+//        	}
             componentTree = ComponentController.getComponentTree(registry);
             if (this.canceled) {
                 return;
             }
             this.getEngine().getGUI().getComponentSelector().addComponentTree(componentTree);
-            getComponentTreeNodesMap().put(registry.getName(),componentTree);
+//            getComponentTreeNodesMap().put(registry.getName(),componentTree);
             this.loadingDialog.hide();
         } catch (ComponentRegistryException e) {
             if (this.canceled) {

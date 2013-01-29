@@ -133,7 +133,6 @@ public class RegistryWindow {
         configuration.setRegigstryUserName(userName);
         configuration.setRegistryPassphrase(password);
         configuration.setRegistryURL(url);
-        configuration.setAiravataAPI(airavataAPI);
         configuration.setDefaultGateway(gateway);
         engine.updateXBayaConfigurationServiceURLs();
         hide();

@@ -998,9 +998,9 @@ public class ProvenanceResourceClient {
         }
 
         ExperimentDataList experimentDataList = response.getEntity(ExperimentDataList.class);
-        List<ExperimentData> dataList = experimentDataList.getExperimentDataList();
+        List<ExperimentDataImpl> dataList = experimentDataList.getExperimentDataList();
 
-        for (ExperimentData experimentData : dataList) {
+        for (ExperimentDataImpl experimentData : dataList) {
             experimentDatas.add(experimentData);
         }
         return experimentDatas;
@@ -1052,9 +1052,9 @@ public class ProvenanceResourceClient {
         }
 
         ExperimentDataList experimentDataList = response.getEntity(ExperimentDataList.class);
-        List<ExperimentData> dataList = experimentDataList.getExperimentDataList();
+        List<ExperimentDataImpl> dataList = experimentDataList.getExperimentDataList();
 
-        for (ExperimentData experimentData : dataList) {
+        for (ExperimentDataImpl experimentData : dataList) {
             experimentDatas.add(experimentData);
         }
         return experimentDatas;
@@ -1153,9 +1153,9 @@ public class ProvenanceResourceClient {
         }
 
         ExperimentDataList experimentDataList = response.getEntity(ExperimentDataList.class);
-        List<ExperimentData> dataList = experimentDataList.getExperimentDataList();
+        List<ExperimentDataImpl> dataList = experimentDataList.getExperimentDataList();
 
-        for (ExperimentData experimentData : dataList) {
+        for (ExperimentDataImpl experimentData : dataList) {
             experimentDatas.add(experimentData);
         }
         return experimentDatas;

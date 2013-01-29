@@ -22,7 +22,6 @@
 package org.apache.airavata.rest.mappings.resourcemappings;
 
 import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
-import org.apache.airavata.registry.api.workflow.ExperimentData;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
@@ -30,16 +29,16 @@ import java.util.List;
 
 @XmlRootElement
 public class ExperimentDataList {
-    private List<ExperimentData> experimentDataList = new ArrayList<ExperimentData>();
+    private List<ExperimentDataImpl> experimentDataList = new ArrayList<ExperimentDataImpl>();
 
     public ExperimentDataList() {
     }
 
-    public List<ExperimentData> getExperimentDataList() {
+    public List<ExperimentDataImpl> getExperimentDataList() {
         return experimentDataList;
     }
 
-    public void setExperimentDataList(List<ExperimentData> experimentDataList) {
+    public void setExperimentDataList(List<ExperimentDataImpl> experimentDataList) {
         this.experimentDataList = experimentDataList;
     }
 }
