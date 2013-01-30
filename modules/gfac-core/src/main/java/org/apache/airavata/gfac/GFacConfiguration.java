@@ -1,6 +1,12 @@
 package org.apache.airavata.gfac;
 
 import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.exception.UnspecifiedApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.gfac.utils.GridConfigurationHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -17,7 +23,7 @@ import java.util.List;
 import java.util.Properties;
 
 public class GFacConfiguration {
-
+    public static final Logger log = LoggerFactory.getLogger(GFacConfiguration.class);
     public static final String TRUSTED_CERT_LOCATION = "trusted.cert.location";
     public static final String MYPROXY_SERVER = "myproxy.server";
     public static final String MYPROXY_USER = "myproxy.user";
@@ -44,6 +50,35 @@ public class GFacConfiguration {
     // the provider
     private List<String> outHandlers = new ArrayList<String>();
 
+    private static List<GridConfigurationHandler> gridConfigurationHandlers;
+
+    private static String GRID_HANDLERS="airavata.grid.handlers";
+
+    static{
+    	gridConfigurationHandlers=new ArrayList<GridConfigurationHandler>();
+    	try {
+			String handlerString = ServerSettings.getSetting(GRID_HANDLERS);
+			String[] handlers = handlerString.split(",");
+			for (String handlerClass : handlers) {
+				try {
+					@SuppressWarnings("unchecked")
+					Class<GridConfigurationHandler> classInstance = (Class<GridConfigurationHandler>) GFacConfiguration.class
+							.getClassLoader().loadClass(handlerClass);
+					gridConfigurationHandlers.add(classInstance.newInstance());
+				} catch (Exception e) {
+					log.error("Error while loading Grid Configuration Handler class "+handlerClass, e);
+				}
+			}
+		} catch (UnspecifiedApplicationSettingsException e) {
+			//no handlers defined
+		} catch (ApplicationSettingsException e1) {
+			log.error("Error in reading Configuration handler data!!!",e1);
+		}
+    }
+
+    public static GridConfigurationHandler[] getGridConfigurationHandlers(){
+    	return gridConfigurationHandlers.toArray(new GridConfigurationHandler[]{});
+    }
     public GFacConfiguration(AiravataAPI airavataAPI, Properties configurationProperties) {
         this.airavataAPI = airavataAPI;
         if (configurationProperties != null) {

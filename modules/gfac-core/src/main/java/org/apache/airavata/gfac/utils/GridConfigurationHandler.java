@@ -18,31 +18,23 @@
  * under the License.
  *
 */
+package org.apache.airavata.gfac.utils;
+import org.globus.ftp.GridFTPClient;
 
-package org.apache.airavata.gfac.context;
+public interface GridConfigurationHandler {
 
-import java.util.HashMap;
-import java.util.Map;
+	/**
+	 * Do the configurations required for the source GridFTPClient object
+	 * @param client
+	 * @throws Exception
+	 */
+	public void handleSourceFTPClient(GridFTPClient client) throws Exception;
 
-public class MessageContext extends AbstractContext {
-
-    private Map<String, Object> parameters;
-
-    public MessageContext(Map<String, Object> parameters){
-        this.parameters = parameters;
-    }
-
-    public MessageContext(){
-        this.parameters = new HashMap<String, Object>();
-    }
-
-    public Object getParameter(String parameterName) {
-        return parameters.get(parameterName);
-    }
-
-    public void addParameter(String name, Object value){
-        parameters.put(name, value);
-    }
-
-
+	/**
+	 * Do the configurations required for the destination GridFTPClient object
+	 * @param client
+	 * @throws Exception
+	 */
+	public void handleDestinationFTPClient(GridFTPClient client) throws Exception;
 }
+

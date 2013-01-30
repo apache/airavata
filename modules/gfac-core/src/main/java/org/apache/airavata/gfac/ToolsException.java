@@ -18,31 +18,18 @@
  * under the License.
  *
 */
+package org.apache.airavata.gfac;
 
-package org.apache.airavata.gfac.context;
 
-import java.util.HashMap;
-import java.util.Map;
+/**
+ * Exception for all utilities
+ */
+public class ToolsException extends GFacException {
 
-public class MessageContext extends AbstractContext {
-
-    private Map<String, Object> parameters;
-
-    public MessageContext(Map<String, Object> parameters){
-        this.parameters = parameters;
+    public ToolsException(String message){
+        super(message,new Throwable(message));
     }
-
-    public MessageContext(){
-        this.parameters = new HashMap<String, Object>();
+    public ToolsException(String message, Throwable cause) {
+        super(message, cause);
     }
-
-    public Object getParameter(String parameterName) {
-        return parameters.get(parameterName);
-    }
-
-    public void addParameter(String name, Object value){
-        parameters.put(name, value);
-    }
-
-
 }
