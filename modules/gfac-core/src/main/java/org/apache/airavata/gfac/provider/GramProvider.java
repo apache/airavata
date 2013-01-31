@@ -50,7 +50,6 @@ public class GramProvider implements GFacProvider {
     }
 
     public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
-        System.out.println("Executing the job");
         GlobusHostType host = (GlobusHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType();
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
 
@@ -65,8 +64,9 @@ public class GramProvider implements GFacProvider {
             job.setCredentials(gssCred);
             // We do not support multiple gatekeepers in XBaya GUI, so we simply pick the 0th element in the array
             String gateKeeper = host.getGlobusGateKeeperEndPointArray(0);
-            log.debug("Request to contact:" + gateKeeper);
+            log.info("Request to contact:" + gateKeeper);
 
+            log.info(job.getRSL());
             buf.append("Finished launching job, Host = ").append(host.getHostAddress()).append(" RSL = ")
                     .append(job.getRSL()).append(" working directory = ").append(app.getStaticWorkingDirectory())
                     .append(" temp directory = ").append(app.getScratchWorkingDirectory())
@@ -106,14 +106,18 @@ public class GramProvider implements GFacProvider {
                 throw error;
             }
         } catch (GramException e) {
+            log.error(e.getMessage());
             JobSubmissionFault error = new JobSubmissionFault(this, e, host.getHostAddress(),
                     host.getGlobusGateKeeperEndPointArray(0), job.getRSL(), jobExecutionContext);
             jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(error.getCause()));
         } catch (GSSException e) {
+            log.error(e.getMessage());
             throw new GFacProviderException(e.getMessage(), e, jobExecutionContext);
         } catch (InterruptedException e) {
+            log.error(e.getMessage());
             throw new GFacProviderException("Thread", e, jobExecutionContext);
         } catch (SecurityException e) {
+            log.error(e.getMessage());
             throw new GFacProviderException(e.getMessage(), e, jobExecutionContext);
         } finally {
             if (job != null) {
@@ -127,5 +131,6 @@ public class GramProvider implements GFacProvider {
     }
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+        GramProviderUtils.processOutput(jobExecutionContext);
     }
 }
