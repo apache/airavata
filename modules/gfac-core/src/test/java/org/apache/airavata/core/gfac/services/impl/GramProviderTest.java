@@ -53,7 +53,7 @@ public class GramProviderTest {
         gFacConfiguration.setMyProxyLifeCycle(3600);
         gFacConfiguration.setMyProxyServer("myproxy.teragrid.org");
         gFacConfiguration.setMyProxyUser("ogce");
-        gFacConfiguration.setMyProxyPassphrase("Jdas7wph");
+        gFacConfiguration.setMyProxyPassphrase("");
         gFacConfiguration.setTrustedCertLocation("/Users/lahirugunathilake/Downloads/certificates");
         //have to set InFlwo Handlers and outFlowHandlers
         jobExecutionContext = new JobExecutionContext(gFacConfiguration);
