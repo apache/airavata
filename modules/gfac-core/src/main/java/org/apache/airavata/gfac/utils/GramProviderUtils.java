@@ -146,7 +146,7 @@ public class GramProviderUtils {
 
                     String stdout = ftp.readRemoteFile(stdoutURI, gssCred, localStdOutFile);
                     String stderr = ftp.readRemoteFile(stderrURI, gssCred, localStdErrFile);
-                    OutputUtils.fillOutputFromStdout(jobExecutionContext, stdout, stderr);
+                    return OutputUtils.fillOutputFromStdout(jobExecutionContext, stdout, stderr);
 //                    Map<String,ActualParameter> stringMap = null;
 //                    MessageContext<Object> output = jobExecutionContext.getOutput();
 //                    for (Iterator<String> iterator = output.getNames(); iterator.hasNext(); ) {
@@ -213,11 +213,8 @@ public class GramProviderUtils {
                     throw new GFacProviderException("Output is not produced in stdout:" + e.getMessage(), jobExecutionContext, e, readLastLinesofStdOut(localStdErrFile.getPath(), 20));
                 }
             }
-
-            /*
-             * If the execution reach here, all GridFTP Endpoint is failed.
-             */
-            throw pe;
+                          //todo this return has to be removed
+              return null;
 
         } catch (Exception e) {
 //            jobExecutionContext.getExecutionContext().getNotifier().executionFail(jobExecutionContext,e,readLastLinesofStdOut(localStdErrFile.getPath(), 20));
