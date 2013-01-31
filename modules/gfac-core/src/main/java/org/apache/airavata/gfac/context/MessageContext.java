@@ -44,5 +44,8 @@ public class MessageContext extends AbstractContext {
         parameters.put(name, value);
     }
 
+    public Map<String,Object> getParameters(){
+        return parameters;
+    }
 
 }

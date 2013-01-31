@@ -41,26 +41,26 @@
         </dependency>
         -->
         <dependency>
-            <groupId>cog-4_1_6_rc2</groupId>
+            <groupId>lead-security</groupId>
             <artifactId>puretls</artifactId>
             <type>jar</type>
-            <version>cog-4_1_6</version>
-        </dependency>
-        <!--dependency>
-            <groupId>cog-4_1_6_rc2</groupId>
-            <artifactId>cryptix32</artifactId>
-            <version>cog-4_1_6</version>
+            <version>0.9b4-1</version>
         </dependency>
         <dependency>
-            <groupId>cog-4_1_6_rc2</groupId>
+            <groupId>lead-security</groupId>
+            <artifactId>cryptix32</artifactId>
+            <version>versionless</version>
+        </dependency>
+        <dependency>
+            <groupId>lead-security</groupId>
             <artifactId>cryptix-asn1</artifactId>
-            <version>cog-4_1_6</version>
-        </dependency-->
-        <!--dependency>
-            <groupId>bouncycastle</groupId>
+            <version>versionless</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15</artifactId>
-            <version>143</version>
-        </dependency-->
+            <version>1.45</version>
+        </dependency>
         <dependency>
             <groupId>commons-configuration</groupId>
             <artifactId>commons-configuration</artifactId>
