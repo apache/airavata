@@ -44,6 +44,11 @@ public class GFacProviderException extends Exception {
         sendFaultNotification(message,context,new Exception(message));
     }
 
+    public GFacProviderException(String message, JobExecutionContext context,Exception e,String... additionExceptiondata) {
+        super(message);
+        sendFaultNotification(message,context,e, additionExceptiondata);
+    }
+
     private void sendFaultNotification(String message,
 			JobExecutionContext executionContext, Exception e,
 			String... additionalExceptiondata) {
