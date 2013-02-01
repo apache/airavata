@@ -22,6 +22,7 @@
 package org.apache.airavata.gfac.context;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class MessageContext extends AbstractContext {
@@ -33,7 +34,7 @@ public class MessageContext extends AbstractContext {
     }
 
     public MessageContext(){
-        this.parameters = new HashMap<String, Object>();
+        this.parameters = new LinkedHashMap<String, Object>();
     }
 
     public Object getParameter(String parameterName) {

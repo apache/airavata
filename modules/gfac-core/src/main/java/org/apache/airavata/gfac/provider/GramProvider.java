@@ -44,6 +44,9 @@ public class GramProvider implements GFacProvider {
     // This method precpare the environment before the application invocation.
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException {
         GramProviderUtils.makeDirectory(jobExecutionContext);
+        //Note this step has to be done before setupEnvironment,otherwise input file path adjusting based on the
+        //application hosted machien will not reflect in the RSL
+        GramProviderUtils.processInput(jobExecutionContext);
         job = GramProviderUtils.setupEnvironment(jobExecutionContext);
         listener = new GramJobSubmissionListener(job, jobExecutionContext);
         job.addListener(listener);
