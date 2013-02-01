@@ -29,14 +29,12 @@ import org.apache.airavata.schemas.gfac.StdErrParameterType;
 import org.apache.airavata.schemas.gfac.StdOutParameterType;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class OutputUtils {
-    private OutputUtils() {
-    }
+    private static String regexPattern = "\\s*=\\s*([^\\[\\s'\"][^\\s]*|\"[^\"]*\"|'[^']*'|\\[[^\\[]*\\])";
 
     public static Map<String, ActualParameter> fillOutputFromStdout(JobExecutionContext context, String stdout, String stderr) throws Exception {
 
@@ -65,11 +63,12 @@ public class OutputUtils {
                 }
             }
         }
+
         return result;
     }
 
     private static String parseStdout(String stdout, String outParam) throws Exception {
-        String regex = Pattern.quote(outParam) + "\\s*=\\s*([^\\[\\s'\"][^\\s]*|\"[^\"]*\"|'[^']*'|\\[[^\\[]*\\])";
+        String regex = Pattern.quote(outParam) + regexPattern;
         String match = null;
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(stdout);
@@ -79,6 +78,21 @@ public class OutputUtils {
         if (match != null) {
             match = match.trim();
             return match;
+        } else {
+            throw new Exception("Data for the output parameter '" + outParam + "' was not found");
+        }
+    }
+
+    public static String[] parseStdoutArray(String stdout, String outParam) throws Exception {
+        String regex = Pattern.quote(outParam) + regexPattern;
+        StringBuffer match = new StringBuffer();
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(stdout);
+        while (matcher.find()) {
+            match.append(matcher.group(1) + ",");
+        }
+        if (match != null) {
+            return match.toString().split(",");
         } else {
             throw new Exception("Data for the output parameter '" + outParam + "' was not found");
         }
