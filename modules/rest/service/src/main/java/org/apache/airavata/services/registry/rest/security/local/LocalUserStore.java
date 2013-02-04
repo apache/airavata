@@ -59,7 +59,6 @@ public class LocalUserStore {
                 RegistrySettings.getSetting("registry.jdbc.password"),
                 RegistrySettings.getSetting("registry.jdbc.driver"));
 
-        dbUtil.init();
     }
 
     public LocalUserStore(DBUtil db) {

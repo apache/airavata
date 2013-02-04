@@ -21,6 +21,40 @@
     <listener>
       <listener-class>org.apache.airavata.rest.mappings.utils.RegistryListener</listener-class>
     </listener>
+    <listener>
+        <listener-class>org.apache.airavata.credential.store.servlet.CredentialBootstrapper</listener-class>
+    </listener>
+
+    <context-param>
+        <param-name>oa4mp:client.config.file</param-name>
+        <param-value>${catalina.home}/webapps/airavata-registry/WEB-INF/classes/credential-store/client.xml</param-value>
+        <!--param-value>
+            /home/amila/development/tools/apache-tomcat-7.0.29/webapps/airavata-registry-rest-services/WEB-INF/classes/credential-store/client.xml
+        </param-value-->
+
+    </context-param>
+
+    <!-- Credential store parameters -->
+    <context-param>
+        <param-name>credential-store-jdbc-url</param-name>
+        <param-value>jdbc:mysql://localhost/airavata</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>credential-store-db-user</param-name>
+        <param-value>root</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>credential-store-db-password</param-name>
+        <param-value>root123</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>credential-store-db-driver</param-name>
+        <param-value>com.mysql.jdbc.Driver</param-value>
+    </context-param>
+
 
     <servlet>
         <servlet-name>Airavata Web Application</servlet-name>
@@ -53,5 +87,37 @@
     <servlet-mapping>
         <servlet-name>Airavata Web Application</servlet-name>
         <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- Credential Store Configurations -->
+    <servlet>
+        <servlet-name>credential-store</servlet-name>
+        <!--internal name of the servlet-->
+        <servlet-class>org.apache.airavata.credential.store.servlet.CredentialStoreStartServlet</servlet-class>
+
+        <load-on-startup>1</load-on-startup>
+        <!--load as soon as tomcat starts?-->
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>credential-store</servlet-name>
+        <!--the servlet-name above-->
+        <url-pattern>/credential-store</url-pattern>
+        <!--what needs to be in the url, so http://foo.org/client/simple-->
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>callback</servlet-name>
+        <!--internal name of the servlet-->
+        <servlet-class>org.apache.airavata.credential.store.servlet.CredentialStoreCallbackServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+        <!--load as soon as tomcat starts?-->
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>callback</servlet-name>
+        <!--the servlet-name above-->
+        <url-pattern>/callback</url-pattern>
+        <!--what needs to be in the url, so http://foo.org/client/simple-->
     </servlet-mapping>
 </web-app>

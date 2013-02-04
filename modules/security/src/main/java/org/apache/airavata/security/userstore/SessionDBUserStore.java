@@ -119,10 +119,8 @@ public class SessionDBUserStore extends AbstractJDBCUserStore {
 
     private void initializeDatabaseLookup() throws RuntimeException {
 
-        this.dbUtil = new DBUtil(getDatabaseURL(), getDatabaseUserName(), getDatabasePassword(), getDatabaseDriver());
-
         try {
-            this.dbUtil.init();
+            this.dbUtil = new DBUtil(getDatabaseURL(), getDatabaseUserName(), getDatabasePassword(), getDatabaseDriver());
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Error loading database driver. Driver class not found.", e);
         } catch (InstantiationException e) {

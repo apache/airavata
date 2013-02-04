@@ -58,7 +58,6 @@ public class LocalUserStoreTest extends DatabaseTestCases {
     public void setUp() throws Exception {
 
         DBUtil dbUtil = new DBUtil(getJDBCUrl(), getUserName(), getPassword(), getDriver());
-        dbUtil.init();
 
         localUserStore = new LocalUserStore(dbUtil);
     }

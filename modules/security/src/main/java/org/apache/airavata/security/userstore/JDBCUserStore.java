@@ -131,7 +131,12 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
 
         passwordDigester = new PasswordDigester(passwordHashMethod);
 
-        initializeDatabaseLookup(passwordColumn, userTable, userNameColumn);
+        try {
+            initializeDatabaseLookup(passwordColumn, userTable, userNameColumn);
+        } catch (Exception e) {
+            log.error("Error while initializing database configurations.", e);
+            throw new UserStoreException("Error while initializing database configurations.", e);
+        }
 
         StringBuilder stringBuilder = new StringBuilder(
                 "Configuring DB parameters for authenticator with User name Table - ");
@@ -141,7 +146,7 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
         log.debug(stringBuilder.toString());
     }
 
-    protected void initializeDatabaseLookup(String passwordColumn, String userTable, String userNameColumn) {
+    protected void initializeDatabaseLookup(String passwordColumn, String userTable, String userNameColumn) throws IllegalAccessException, ClassNotFoundException, InstantiationException {
 
         DBUtil dbUtil = new DBUtil(getDatabaseURL(), getDatabaseUserName(), getDatabasePassword(), getDatabaseDriver());
         DataSource dataSource = dbUtil.getDataSource();

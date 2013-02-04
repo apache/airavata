@@ -18,120 +18,120 @@
  * under the License.
  *
  */
-create table Gateway
+CREATE TABLE Gateway
 (
-        gateway_name varchar(255),
-	    owner varchar(255),
+        gateway_name VARCHAR(255),
+	    owner VARCHAR(255),
         PRIMARY KEY (gateway_name)
 );
 
-create table Configuration
+CREATE TABLE Configuration
 (
-        config_ID int(11) NOT NULL AUTO_INCREMENT,
-        config_key varchar(255),
-        config_val varchar(255),
+        config_ID INT(11) NOT NULL AUTO_INCREMENT,
+        config_key VARCHAR(255),
+        config_val VARCHAR(255),
         expire_date TIMESTAMP DEFAULT '0000-00-00 00:00:00',
         PRIMARY KEY(config_ID)
 );
 
-create table Users
+CREATE TABLE Users
 (
-        user_name varchar(255),
-        password varchar(255),
+        user_name VARCHAR(255),
+        password VARCHAR(255),
         PRIMARY KEY(user_name)
 );
 
-create table Gateway_Worker
+CREATE TABLE Gateway_Worker
 (
-      gateway_name varchar(255),
-      user_name varchar(255),
+      gateway_name VARCHAR(255),
+      user_name VARCHAR(255),
       PRIMARY KEY (gateway_name, user_name),
       FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
       FOREIGN KEY (user_name) REFERENCES Users(user_name) ON DELETE CASCADE
 
 );
 
-create table Project
+CREATE TABLE Project
 (
-       project_ID int(11) NOT NULL AUTO_INCREMENT,
-       gateway_name varchar(255),
-       user_name varchar(255),
-       project_name varchar(255),
+       project_ID INT(11) NOT NULL AUTO_INCREMENT,
+       gateway_name VARCHAR(255),
+       user_name VARCHAR(255),
+       project_name VARCHAR(255),
        PRIMARY KEY(project_ID),
        FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
        FOREIGN KEY (user_name) REFERENCES Users(user_name) ON DELETE CASCADE
 );
 
-create table Published_Workflow
+CREATE TABLE Published_Workflow
 (
-       gateway_name varchar(255),
-       created_user varchar(255),
-       publish_workflow_name varchar(255),
-       version varchar(255),
+       gateway_name VARCHAR(255),
+       created_user VARCHAR(255),
+       publish_workflow_name VARCHAR(255),
+       version VARCHAR(255),
        published_date TIMESTAMP DEFAULT '0000-00-00 00:00:00',
-       path varchar (255),
-       workflow_content varchar(2000),
+       path VARCHAR (255),
+       workflow_content VARCHAR(2000),
        PRIMARY KEY(gateway_name, publish_workflow_name),
        FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
        FOREIGN KEY (created_user) REFERENCES Users(user_name) ON DELETE CASCADE
 );
 
-create table User_Workflow
+CREATE TABLE User_Workflow
 
 (
-       gateway_name varchar(255),
-       owner varchar(255),
-       template_name varchar(255),
-       last_updated_date TIMESTAMP DEFAULT now() on update now(),
-       path varchar (255),
-       workflow_graph varchar(2000),
+       gateway_name VARCHAR(255),
+       owner VARCHAR(255),
+       template_name VARCHAR(255),
+       last_updated_date TIMESTAMP DEFAULT now() ON UPDATE now(),
+       path VARCHAR (255),
+       workflow_graph VARCHAR(2000),
        PRIMARY KEY(gateway_name, owner, template_name),
        FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
        FOREIGN KEY (owner) REFERENCES Users(user_name) ON DELETE CASCADE
 );
 
 
-create table Host_Descriptor
+CREATE TABLE Host_Descriptor
 (
-       gateway_name varchar(255),
-       updated_user varchar(255),
-       host_descriptor_ID varchar(255),
-       host_descriptor_xml varchar(2000),
+       gateway_name VARCHAR(255),
+       updated_user VARCHAR(255),
+       host_descriptor_ID VARCHAR(255),
+       host_descriptor_xml VARCHAR(2000),
        PRIMARY KEY(gateway_name, host_descriptor_ID),
        FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
        FOREIGN KEY (updated_user) REFERENCES Users(user_name) ON DELETE CASCADE
 );
 
-create table Service_Descriptor
+CREATE TABLE Service_Descriptor
 (
-         gateway_name varchar(255),
-         updated_user varchar(255),
-         service_descriptor_ID varchar(255),
-         service_descriptor_xml varchar(2000),
+         gateway_name VARCHAR(255),
+         updated_user VARCHAR(255),
+         service_descriptor_ID VARCHAR(255),
+         service_descriptor_xml VARCHAR(2000),
          PRIMARY KEY(gateway_name,service_descriptor_ID),
          FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
          FOREIGN KEY (updated_user) REFERENCES Users(user_name) ON DELETE CASCADE
 );
 
-create table Application_Descriptor
+CREATE TABLE Application_Descriptor
 (
-         gateway_name varchar(255),
-         updated_user varchar(255),
-         application_descriptor_ID varchar(255),
-         host_descriptor_ID varchar(255),
-         service_descriptor_ID varchar(255),
-         application_descriptor_xml varchar(2000),
+         gateway_name VARCHAR(255),
+         updated_user VARCHAR(255),
+         application_descriptor_ID VARCHAR(255),
+         host_descriptor_ID VARCHAR(255),
+         service_descriptor_ID VARCHAR(255),
+         application_descriptor_xml VARCHAR(2000),
          PRIMARY KEY(gateway_name,host_descriptor_ID, service_descriptor_ID,application_descriptor_ID),
          FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
          FOREIGN KEY (updated_user) REFERENCES Users(user_name) ON DELETE CASCADE
 );
 
-create table Experiment
+CREATE TABLE Experiment
 (
-          project_ID int(11),
-	      gateway_name varchar(255),
-          user_name varchar(255),
-          experiment_ID varchar(255),
+          project_ID INT(11),
+	        gateway_name VARCHAR(255),
+          user_name VARCHAR(255),
+          experiment_ID VARCHAR(255),
           submitted_date TIMESTAMP DEFAULT '0000-00-00 00:00:00',
           PRIMARY KEY(experiment_ID),
           FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
