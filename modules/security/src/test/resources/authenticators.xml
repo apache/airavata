@@ -28,7 +28,7 @@ Those configurations are reside inside &lt;specificConfigurations&gt; tags.
                 <userName>mysql1</userName>
                 <password>secret1</password>
                 <passwordHashMethod>MD5</passwordHashMethod>
-                <databaseDriver>org.myqsql.Driver1</databaseDriver>
+                <databaseDriver>org.apache.derby.jdbc.ClientDriver</databaseDriver>
                 <sessionTable>Session1</sessionTable>
                 <sessionColumn>sessioncolumn</sessionColumn>
                 <comparingColumn>comparecolumn</comparingColumn>
@@ -62,7 +62,7 @@ Those configurations are reside inside &lt;specificConfigurations&gt; tags.
                 <jdbcUrl>jdbc:sql:thin:@//myhost:1521/mysql2</jdbcUrl>
                 <userName>mysql2</userName>
                 <password>secret2</password>
-                <databaseDriver>org.myqsql.Driver2</databaseDriver>
+                <databaseDriver>org.apache.derby.jdbc.ClientDriver</databaseDriver>
                 <sessionTable>Session2</sessionTable>
                 <sessionColumn>sessioncolumn2</sessionColumn>
                 <comparingColumn>comparecolumn2</comparingColumn>
@@ -77,7 +77,7 @@ Those configurations are reside inside &lt;specificConfigurations&gt; tags.
                 <jdbcUrl>jdbc:sql:thin:@//myhost:1521/mysql3</jdbcUrl>
                 <userName>mysql3</userName>
                 <password>secret3</password>
-                <databaseDriver>org.myqsql.Driver3</databaseDriver>
+                <databaseDriver>org.apache.derby.jdbc.ClientDriver</databaseDriver>
                 <sessionTable>Session3</sessionTable>
                 <sessionColumn>sessioncolumn3</sessionColumn>
                 <comparingColumn>comparecolumn3</comparingColumn>

@@ -68,6 +68,7 @@
 		<axis2.version>1.5.1</axis2.version>
 		<derby.version>10.9.1.0</derby.version>
 		<org.slf4j.version>1.7.2</org.slf4j.version>
+        <log4j.version>1.2.16</log4j.version>
 		<axiom.version>1.2.8</axiom.version>
 		<surefire.version>2.12</surefire.version>
 		<junit.version>4.7</junit.version>
@@ -311,6 +312,11 @@
 				<version>${org.slf4j.version}</version>
 			</dependency>
 			<dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>${junit.version}</version>
@@ -339,6 +345,16 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
+		<repository>
+			<name>oa4mp.repo</name>
+			<id>oa4mp.repo</id>
+			<url>http://cilogon.svn.sourceforge.net/viewvc/cilogon/m2-repo/snapshots</url>
+			<snapshots>
+				<!--updatePolicy>daily</updatePolicy -->
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+
 		<repository>
 			<id>m2-snapshot-repository</id>
 			<url>http://people.apache.org/repo/m2-snapshot-repository</url>
@@ -428,6 +444,7 @@
 				<module>modules/registry</module>
 				<module>modules/airavata-client</module>
 				<module>modules/security</module>
+				<module>modules/credential-store</module>
 				<module>modules/rest</module>
 				<module>tools</module>
 				<module>samples/simple-math-service</module>

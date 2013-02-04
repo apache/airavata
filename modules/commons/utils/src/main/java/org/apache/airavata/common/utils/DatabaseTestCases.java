@@ -67,12 +67,20 @@ public class DatabaseTestCases {
     }
 
     public static void waitTillServerStarts() {
-        DBUtil dbUtil = new DBUtil(getJDBCUrl(), getUserName(), getPassword(), getDriver());
+        DBUtil dbUtil = null;
+
+        try {
+            dbUtil = new DBUtil(getJDBCUrl(), getUserName(), getPassword(), getDriver());
+        } catch (Exception e) {
+           // ignore
+        }
 
         Connection connection = null;
         try {
-            connection = dbUtil.getConnection();
-        } catch (SQLException e) {
+            if (dbUtil != null) {
+                connection = dbUtil.getConnection();
+            }
+        } catch (Throwable e) {
             // ignore
         }
 
@@ -80,7 +88,9 @@ public class DatabaseTestCases {
             try {
                 Thread.sleep(1000);
                 try {
-                    connection = dbUtil.getConnection();
+                    if (dbUtil != null) {
+                        connection = dbUtil.getConnection();
+                    }
                 } catch (SQLException e) {
                     // ignore
                 }
@@ -94,6 +104,11 @@ public class DatabaseTestCases {
     public static void executeSQL(String sql) throws Exception {
         DBUtil dbUtil = new DBUtil(getJDBCUrl(), getUserName(), getPassword(), getDriver());
         dbUtil.executeSQL(sql);
+    }
+
+    protected DBUtil getDbUtil () throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        return new DBUtil(getJDBCUrl(), getUserName(), getPassword(), getDriver());
+
     }
 
 }

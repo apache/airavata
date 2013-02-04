@@ -25,7 +25,6 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.Properties;
@@ -44,12 +43,15 @@ public class DBUtil {
 
     private Properties properties;
 
-    public DBUtil(String jdbcUrl, String userName, String password, String driver) {
+    public DBUtil(String jdbcUrl, String userName, String password, String driver) throws InstantiationException,
+            IllegalAccessException, ClassNotFoundException {
 
         this.jdbcUrl = jdbcUrl;
         this.databaseUserName = userName;
         this.databasePassword = password;
         this.driverName = driver;
+
+        init();
     }
 
     /**
@@ -62,7 +64,7 @@ public class DBUtil {
      * @throws IllegalAccessException
      *             If security does not allow users to instantiate driver object.
      */
-    public void init() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+    private void init() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         properties = new Properties();
 
         properties.put("user", databaseUserName);
@@ -253,19 +255,17 @@ public class DBUtil {
 
     /**
      * Creates a DBUtil object based on servlet context configurations.
-     * 
-     * @param servletContext
-     *            The servlet context.
+     *
      * @return DBUtil object.
      * @throws Exception
      *             If an error occurred while reading configurations or while creating database object.
      */
-    public static DBUtil getDBUtil(ServletContext servletContext) throws Exception {
+    public static DBUtil getDBUtil() throws Exception{
 
-        String jdbcUrl = servletContext.getInitParameter("credential-store-jdbc-url");
-        String userName = servletContext.getInitParameter("credential-store-db-user");
-        String password = servletContext.getInitParameter("credential-store-db-password");
-        String driverName = servletContext.getInitParameter("credential-store-db-driver");
+        String jdbcUrl = ServerSettings.getCredentialStoreDBURL();
+        String userName = ServerSettings.getCredentialStoreDBUser();
+        String password = ServerSettings.getCredentialStoreDBPassword();
+        String driverName = ServerSettings.getCredentialStoreDBDriver();
 
         StringBuilder stringBuilder = new StringBuilder("Starting credential store, connecting to database - ");
         stringBuilder.append(jdbcUrl).append(" DB user - ").append(userName).append(" driver name - ")

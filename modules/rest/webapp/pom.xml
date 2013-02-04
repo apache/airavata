@@ -172,6 +172,16 @@
 			<artifactId>airavata-jpa-registry</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-credential-store</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.uiuc.ncsa.myproxy</groupId>
+            <artifactId>oa4mp-client-oauth1</artifactId>
+            <version>1.0.6-SNAPSHOT</version>
+        </dependency>
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-rest-mappings</artifactId>

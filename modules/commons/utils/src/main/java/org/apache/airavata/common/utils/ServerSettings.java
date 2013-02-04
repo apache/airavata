@@ -45,8 +45,18 @@ public class ServerSettings extends ApplicationSettings{
     private static final String TOMCAT_PORT = "port";
     private static final String SERVER_CONTEXT_ROOT="server.context-root";
     private static String tomcatPort=null;
-    
-	public static String getDefaultGatewayId()throws ApplicationSettingsException{
+
+    private static final String CREDENTIAL_STORE_DB_URL ="credential.store.jdbc.url";
+    private static final String CREDENTIAL_STORE_DB_USER ="credential.store.jdbc.user";
+    private static final String CREDENTIAL_STORE_DB_PASSWORD ="credential.store.jdbc.password";
+    private static final String CREDENTIAL_STORE_DB_DRIVER ="credential.store.jdbc.driver";
+
+    private static final String REGISTRY_DB_URL ="registry.jdbc.url";
+    private static final String REGISTRY_DB_USER ="registry.jdbc.user";
+    private static final String REGISTRY_DB_PASSWORD ="registry.jdbc.password";
+    private static final String REGISTRY_DB_DRIVER ="registry.jdbc.driver";
+
+    public static String getDefaultGatewayId()throws ApplicationSettingsException{
     	return getSetting(DEFAULT_GATEWAY_ID);
     }
     
@@ -64,6 +74,39 @@ public class ServerSettings extends ApplicationSettings{
 
     public static String getServerContextRoot(){
     	return getSetting(SERVER_CONTEXT_ROOT,"axis2");
+    }
+
+    public static String getCredentialStoreDBUser() throws ApplicationSettingsException {
+        try {
+            return getSetting(CREDENTIAL_STORE_DB_USER);
+        } catch (ApplicationSettingsException e) {
+            return getSetting(REGISTRY_DB_USER);
+        }
+    }
+
+    public static String getCredentialStoreDBPassword() throws ApplicationSettingsException {
+        try {
+            return getSetting(CREDENTIAL_STORE_DB_PASSWORD);
+        } catch (ApplicationSettingsException e) {
+            return getSetting(REGISTRY_DB_PASSWORD);
+        }
+    }
+
+    public static String getCredentialStoreDBDriver() throws ApplicationSettingsException {
+        try {
+            return getSetting(CREDENTIAL_STORE_DB_DRIVER);
+        } catch (ApplicationSettingsException e) {
+            return getSetting(REGISTRY_DB_DRIVER);
+        }
+    }
+
+    public static String getCredentialStoreDBURL() throws ApplicationSettingsException {
+        try {
+            return getSetting(CREDENTIAL_STORE_DB_URL);
+        } catch (ApplicationSettingsException e) {
+            return getSetting(REGISTRY_DB_URL);
+        }
+
     }
     
     public static String getTomcatPort() throws ApplicationSettingsException {
