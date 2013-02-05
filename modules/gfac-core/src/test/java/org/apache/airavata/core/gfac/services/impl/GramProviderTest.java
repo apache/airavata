@@ -39,26 +39,27 @@ import org.junit.Test;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class GramProviderTest {
     private JobExecutionContext jobExecutionContext;
     @Before
     public void setUp() throws Exception {
-
-        GFacConfiguration gFacConfiguration = new GFacConfiguration(null);
+        URL resource = GramProviderTest.class.getClassLoader().getResource("gfac-config.xml");
+        System.out.println(resource.getFile());
+        GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()),null);
         gFacConfiguration.setMyProxyLifeCycle(3600);
         gFacConfiguration.setMyProxyServer("myproxy.teragrid.org");
         gFacConfiguration.setMyProxyUser("ogce");
         gFacConfiguration.setMyProxyPassphrase("");
         gFacConfiguration.setTrustedCertLocation("/Users/lahirugunathilake/Downloads/certificates");
         //have to set InFlwo Handlers and outFlowHandlers
+//        gFacConfiguration.setInHandlers(Arrays.asList(new String[] {"org.apache.airavata.gfac.handler.GramDirectorySetupHandler","org.apache.airavata.gfac.handler.GridFTPInputHandler"}));
+//        gFacConfiguration.setOutHandlers(Arrays.asList(new String[] {"org.apache.airavata.gfac.handler.GridFTPOutputHandler"}));
         jobExecutionContext = new JobExecutionContext(gFacConfiguration);
         ApplicationContext applicationContext = new ApplicationContext();
         jobExecutionContext.setApplicationContext(applicationContext);
+
         /*
            * Host
            */
