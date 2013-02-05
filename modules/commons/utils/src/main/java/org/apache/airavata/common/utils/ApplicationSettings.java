@@ -128,4 +128,8 @@ public abstract class ApplicationSettings {
     public static void initializeTrustStore() throws ApplicationSettingsException {
         SecurityUtil.setTrustStoreParameters(getTrustStorePath(), getTrustStorePassword());
     }
+
+    public static Properties getProperties() {
+        return properties;
+    }
 }
