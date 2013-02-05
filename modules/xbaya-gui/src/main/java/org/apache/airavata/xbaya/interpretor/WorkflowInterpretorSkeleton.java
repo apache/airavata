@@ -416,6 +416,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
             configuration.setMyProxyPassphrase(findValue(vals, MYPROXY_PASS, (String) WorkflowInterpretorSkeleton.configurationContext.getProperty(MYPROXY_PASS)));
             configuration.setMyProxyUsername(findValue(vals, MYPROXY_USER, (String) WorkflowInterpretorSkeleton.configurationContext.getProperty(MYPROXY_USER)));
             configuration.setTrustedCertLocation(findValue(vals, TRUSTED_CERT_LOCATION, (String) WorkflowInterpretorSkeleton.configurationContext.getProperty(TRUSTED_CERT_LOCATION)));
+            configuration.setTrustedCertLocation(findValue(vals, MYPROXY_LIFETIME, (String) WorkflowInterpretorSkeleton.configurationContext.getProperty(MYPROXY_LIFETIME)));
         }
 		return configuration;
 	}
