@@ -21,6 +21,9 @@
 
 package org.apache.airavata.gfac.handler;
 
+import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.gfac.notification.events.ExecutionFailEvent;
+
 public class GFacHandlerException extends Exception{
     public GFacHandlerException(String s) {
         super(s);
@@ -29,4 +32,27 @@ public class GFacHandlerException extends Exception{
     public GFacHandlerException(String s, Throwable throwable) {
         super(s, throwable);
     }
+        public GFacHandlerException(String message, Throwable cause,JobExecutionContext context) {
+        super(message, cause);
+        sendFaultNotification(message,context,new Exception(cause));
+    }
+
+    public GFacHandlerException(String message, JobExecutionContext context) {
+        super(message);
+        sendFaultNotification(message,context,new Exception(message));
+    }
+
+    public GFacHandlerException(String message, JobExecutionContext context,Exception e,String... additionExceptiondata) {
+        super(message);
+        sendFaultNotification(message,context,e, additionExceptiondata);
+    }
+
+    private void sendFaultNotification(String message,
+			JobExecutionContext executionContext, Exception e,
+			String... additionalExceptiondata) {
+		if (additionalExceptiondata==null || additionalExceptiondata.length==0){
+        	additionalExceptiondata=new String[]{message,e.getLocalizedMessage()};
+        }
+		executionContext.getNotifier().publish(new ExecutionFailEvent(e));
+	}
 }
