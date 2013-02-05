@@ -46,9 +46,6 @@ public class Scheduler {
      */
     public static void schedule(JobExecutionContext jobExecutionContext) {
         // Current implementation only support static handler sequence.
-        GFacConfiguration gFacConfiguration = jobExecutionContext.getGFacConfiguration();
-        jobExecutionContext.setInHandlers(gFacConfiguration.getInHandlers());
-        jobExecutionContext.setOutHandlers(gFacConfiguration.getOutHandlers());
         jobExecutionContext.setProvider(getProvider(jobExecutionContext));
         // TODO: Selecting the provider based on application description.
     }

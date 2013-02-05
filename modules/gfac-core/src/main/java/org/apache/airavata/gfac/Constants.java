@@ -22,14 +22,21 @@
 package org.apache.airavata.gfac;
 
 public class Constants {
-    public static final String XPATH_EXPR_MYPROXY_SERVER = "/GFac/MyProxy/Server/text()";
-    public static final String XPATH_EXPR_MYPROXY_USER = "/GFac/MyProxy/User/text()";
-    public static final String XPATH_EXPR_MYPROXY_PASSPHRASE = "/GFac/MyProxy/Passphrase/text()";
-    public static final String XPATH_EXPR_MYPROXY_LIFECYCLE = "/GFac/MyProxy/LifeCycle/text()";
-    public static final String XPATH_EXPR_INFLOW_HANDLERS = "/GFac/Handlers/InFlow/Handler";
-    public static final String XPATH_EXPR_OUTFLOW_HANDLERS = "/GFac/Handlers/OutFlow/Handler";
+    public static final String XPATH_EXPR_GLOBAL_INFLOW_HANDLERS = "/GFac/GlobalHandlers/InHandlers/Handler";
+    public static final String XPATH_EXPR_GLOBAL_OUTFLOW_HANDLERS = "/GFac/GlobalHandlers/OutHandlers/Handler";
+
+    public static final String XPATH_EXPR_APPLICATION_HANDLERS_START = "/GFac/Application[@name='";
+    public static final String XPATH_EXPR_APPLICATION_INFLOW_HANDLERS_END = "']/InHandlers/Handler";
+    public static final String XPATH_EXPR_APPLICATION_OUTFLOW_HANDLERS_END = "']/OutHandlers/Handler";
+
+
+    public static final String XPATH_EXPR_PROVIDER_HANDLERS_START = "/GFac/Provider[@class='";
+    public static final String XPATH_EXPR_PROVIDER_INFLOW_HANDLERS_END = "']/InHandlers/Handler";
+    public static final String XPATH_EXPR_PROVIDER_OUTFLOW_HANDLERS_END = "']/OutHandlers/Handler";
+
 
     public static final String GFAC_CONFIG_HANDLER_CLASS_ATTRIBUTE = "class";
+    public static final String GFAC_CONFIG_APPLICATION_NAME_ATTRIBUTE = "class";
     public static final String NEWLINE = System.getProperty("line.separator");
     public static final String INPUT_DATA_DIR_VAR_NAME = "inputData";
     public static final String OUTPUT_DATA_DIR_VAR_NAME = "outputData";
