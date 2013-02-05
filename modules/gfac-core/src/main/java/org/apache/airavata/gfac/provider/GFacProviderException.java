@@ -25,6 +25,7 @@ import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.notification.events.ExecutionFailEvent;
 
 public class GFacProviderException extends Exception {
+    private String aditionalInfo[] = null;
 
     public GFacProviderException(String message) {
         super(message);
@@ -46,6 +47,7 @@ public class GFacProviderException extends Exception {
 
     public GFacProviderException(String message, JobExecutionContext context,Exception e,String... additionExceptiondata) {
         super(message);
+        this.aditionalInfo = additionExceptiondata;
         sendFaultNotification(message,context,e, additionExceptiondata);
     }
 
@@ -57,4 +59,8 @@ public class GFacProviderException extends Exception {
         }
 		executionContext.getNotifier().publish(new ExecutionFailEvent(e));
 	}
+
+    public String[] getAditionalInfo() {
+        return aditionalInfo;
+    }
 }
