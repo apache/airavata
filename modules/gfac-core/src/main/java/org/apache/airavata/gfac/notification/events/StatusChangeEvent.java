@@ -21,8 +21,13 @@
 package org.apache.airavata.gfac.notification.events;
 
 public class StatusChangeEvent extends GFacEvent {
-
-    public StatusChangeEvent(){
+    String statusMessage;
+    public StatusChangeEvent(String message){
+        statusMessage = message;
         this.eventType = StatusChangeEvent.class.getSimpleName();
+    }
+
+    public String getStatusMessage() {
+        return statusMessage;
     }
 }

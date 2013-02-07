@@ -1,5 +1,9 @@
 <GFac>
     <GlobalHandlers>
+        <InHandlers>
+            <Handler class="org.apache.airavata.gfac.handler.AppDescriptorCheckHandler"/>
+        </InHandlers>
+        <OutHandlers></OutHandlers>
     </GlobalHandlers>
     <Provider class="org.apache.airavata.gfac.provider.GramProvider">
         <InHandlers>
@@ -7,7 +11,7 @@
             <Handler class="org.apache.airavata.gfac.handler.GridFTPInputHandler"/>
         </InHandlers>
         <OutHandlers>
-            <Handler class="org.apache.airavata.gfac.handler.GridFTPInputHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.GridFTPOutputHandler"/>
         </OutHandlers>
     </Provider>
     <Application name="UltraScan">
@@ -16,7 +20,7 @@
             <Handler class="org.apache.airavata.handlers.GridFTPInputHandler"/>
         </InHandlers>
         <OutHandlers>
-            <Handler class="org.apache.airavata.handlers.GridFTPInputHandler"/>
+            <Handler class="org.apache.airavata.handlers.GridFTPOutputHandler"/>
         </OutHandlers>
     </Application>
 </GFac>

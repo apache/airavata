@@ -110,12 +110,10 @@ public class GramJobSubmissionListener implements GramJobListener{
 
     public void statusChanged(GramJob job) {
         String jobStatusMessage = "Status of job " + job.getIDAsString() + "is " + job.getStatusAsString();
-        log.info(jobStatusMessage);
-
         /*
          * Notify status change
          */
-        this.context.getNotifier().publish(new StatusChangeEvent());
+        this.context.getNotifier().publish(new StatusChangeEvent(jobStatusMessage));
 
         /*
          * Set new status if it is finished, notify all wait object

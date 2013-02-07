@@ -25,6 +25,7 @@ import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
+import org.apache.airavata.gfac.notification.events.StartExecutionEvent;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.utils.GFacUtils;
@@ -74,6 +75,7 @@ public class LocalProvider implements GFacProvider {
     }
 
     public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+        jobExecutionContext.getNotifier().publish(new StartExecutionEvent());
          ApplicationDeploymentDescriptionType app = jobExecutionContext.
                  getApplicationContext().getApplicationDeploymentDescription().getType();
 

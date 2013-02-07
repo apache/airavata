@@ -23,7 +23,7 @@ package org.apache.airavata.gfac.provider;
 import org.apache.airavata.gfac.JobSubmissionFault;
 import org.apache.airavata.gfac.context.GSISecurityContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.notification.events.ExecutionFailEvent;
+import org.apache.airavata.gfac.notification.events.StartExecutionEvent;
 import org.apache.airavata.gfac.utils.GramJobSubmissionListener;
 import org.apache.airavata.gfac.utils.GramProviderUtils;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
@@ -49,6 +49,7 @@ public class GramProvider implements GFacProvider {
     }
 
     public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+        jobExecutionContext.getNotifier().publish(new StartExecutionEvent());
         GlobusHostType host = (GlobusHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType();
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
 
@@ -101,14 +102,13 @@ public class GramProvider implements GFacProvider {
                         + listener.getError();
                 JobSubmissionFault error = new JobSubmissionFault(this, new Exception(errorMsg), "GFAC HOST",
                         gateKeeper, job.getRSL(), jobExecutionContext);
-                jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(error.getCause()));
                 throw error;
             }
         } catch (GramException e) {
             log.error(e.getMessage());
             JobSubmissionFault error = new JobSubmissionFault(this, e, host.getHostAddress(),
                     host.getGlobusGateKeeperEndPointArray(0), job.getRSL(), jobExecutionContext);
-            jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(error.getCause()));
+            throw error;
         } catch (GSSException e) {
             log.error(e.getMessage());
             throw new GFacProviderException(e.getMessage(), e, jobExecutionContext);

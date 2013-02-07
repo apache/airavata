@@ -47,7 +47,7 @@ public class GramProviderTest {
     public void setUp() throws Exception {
         URL resource = GramProviderTest.class.getClassLoader().getResource("gfac-config.xml");
         System.out.println(resource.getFile());
-        GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()),null);
+        GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()),null,null);
         gFacConfiguration.setMyProxyLifeCycle(3600);
         gFacConfiguration.setMyProxyServer("myproxy.teragrid.org");
         gFacConfiguration.setMyProxyUser("ogce");
@@ -56,9 +56,6 @@ public class GramProviderTest {
         //have to set InFlwo Handlers and outFlowHandlers
 //        gFacConfiguration.setInHandlers(Arrays.asList(new String[] {"org.apache.airavata.gfac.handler.GramDirectorySetupHandler","org.apache.airavata.gfac.handler.GridFTPInputHandler"}));
 //        gFacConfiguration.setOutHandlers(Arrays.asList(new String[] {"org.apache.airavata.gfac.handler.GridFTPOutputHandler"}));
-        jobExecutionContext = new JobExecutionContext(gFacConfiguration);
-        ApplicationContext applicationContext = new ApplicationContext();
-        jobExecutionContext.setApplicationContext(applicationContext);
 
         /*
            * Host
@@ -68,7 +65,6 @@ public class GramProviderTest {
         host.getType().setHostName("ranger");
         ((GlobusHostType)host.getType()).setGlobusGateKeeperEndPointArray(new String[]{"gatekeeper.ranger.tacc.teragrid.org:2119/jobmanager-sge"});
         ((GlobusHostType)host.getType()).setGridFTPEndPointArray(new String[]{"gsiftp://gridftp.ranger.tacc.teragrid.org:2811/"});
-        applicationContext.setHostDescription(host);
         /*
            * App
            */
@@ -112,7 +108,6 @@ public class GramProviderTest {
         app.setStandardOutput(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stdout");
         app.setStandardError(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stderr");
 
-        applicationContext.setApplicationDeploymentDescription(appDesc);
 
         /*
            * Service
@@ -139,11 +134,16 @@ public class GramProviderTest {
         serv.getType().setInputParametersArray(inputParamList);
         serv.getType().setOutputParametersArray(outputParamList);
 
+        jobExecutionContext = new JobExecutionContext(gFacConfiguration,serv.getType().getName());
+        ApplicationContext applicationContext = new ApplicationContext();
+        jobExecutionContext.setApplicationContext(applicationContext);
         applicationContext.setServiceDescription(serv);
+        applicationContext.setApplicationDeploymentDescription(appDesc);
+        applicationContext.setHostDescription(host);
 
         MessageContext inMessage = new MessageContext();
         ActualParameter echo_input = new ActualParameter();
-		((StringParameterType)echo_input.getType()).setValue("echo_output=hello");
+        ((StringParameterType)echo_input.getType()).setValue("echo_output=hello");
         inMessage.addParameter("echo_input", echo_input);
 
         jobExecutionContext.setInMessageContext(inMessage);

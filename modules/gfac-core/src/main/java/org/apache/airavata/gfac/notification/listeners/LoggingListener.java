@@ -22,8 +22,7 @@
 package org.apache.airavata.gfac.notification.listeners;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.airavata.gfac.notification.events.ExecutionFailEvent;
-import org.apache.airavata.gfac.notification.events.GFacEvent;
+import org.apache.airavata.gfac.notification.events.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,5 +37,21 @@ public class LoggingListener {
     @Subscribe
     public void logExecutionFail(ExecutionFailEvent e){
         log.error("Execution failed." + e.getEventType());
+    }
+
+    @Subscribe
+    public void logFinishExecutionEvent(FinishExecutionEvent event){
+        log.info("Execution has Finished ...");
+    }
+
+    @Subscribe
+    public void logStartExecutionEvent(StartExecutionEvent event){
+        log.info("Execution has started ...");
+    }
+
+    @Subscribe
+    public void logStatusChangeEvent(StatusChangeEvent event){
+        log.info("Job status has changed ...");
+        log.info(event.getStatusMessage());
     }
 }

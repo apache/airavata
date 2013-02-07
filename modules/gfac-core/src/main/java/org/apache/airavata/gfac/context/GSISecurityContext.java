@@ -55,8 +55,6 @@ public class GSISecurityContext extends SecurityContext {
 
     public GSSCredential getGssCredentails() throws SecurityException {
         try {
-
-            System.out.println(gssCredentails);
             if (gssCredentails == null || gssCredentails.getRemainingLifetime() < 10 * 90) {
                 if (proxyRenewer != null) {
                     gssCredentails = proxyRenewer.renewProxy();

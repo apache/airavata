@@ -26,7 +26,6 @@ import org.apache.airavata.gfac.notification.events.*;
 import org.apache.airavata.workflow.tracking.Notifier;
 import org.apache.airavata.workflow.tracking.NotifierFactory;
 import org.apache.airavata.workflow.tracking.common.DurationObj;
-import org.apache.airavata.workflow.tracking.common.InvocationContext;
 import org.apache.airavata.workflow.tracking.common.InvocationEntity;
 import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
 
@@ -89,8 +88,8 @@ public class WorkflowTrackingListener {
     }
 
     @Subscribe
-    public void statusChanged(InvocationContext context, String... data) {
-        this.notifier.info(this.context, data);
+    public void statusChanged(StatusChangeEvent event) {
+        this.notifier.info(this.context, event.getStatusMessage());
     }
 
     @Subscribe
@@ -105,16 +104,16 @@ public class WorkflowTrackingListener {
 
 
     @Subscribe
-    public void info(InvocationContext context, String... data) {
+    public void info(String... data) {
         this.notifier.info(this.context, data);
     }
 
     @Subscribe
-    public void warning(InvocationContext context, String... data) {
+    public void warning(String... data) {
     }
 
     @Subscribe
-    public void exception(InvocationContext context, String... data) {
+    public void exception(String... data) {
     }
 
     @Subscribe

@@ -51,12 +51,7 @@ public class LocalProviderTest {
 
         GFacConfiguration gFacConfiguration = new GFacConfiguration(null);
         //have to set InFlwo Handlers and outFlowHandlers
-        jobExecutionContext = new JobExecutionContext(gFacConfiguration);
         ApplicationContext applicationContext = new ApplicationContext();
-        jobExecutionContext.setApplicationContext(applicationContext);
-        /*
-           * Host
-           */
         HostDescription host = new HostDescription();
         host.getType().setHostName("localhost");
         host.getType().setHostAddress("localhost");
@@ -123,6 +118,11 @@ public class LocalProviderTest {
         serv.getType().setInputParametersArray(inputParamList);
         serv.getType().setOutputParametersArray(outputParamList);
 
+        jobExecutionContext = new JobExecutionContext(gFacConfiguration,serv.getType().getName());
+        jobExecutionContext.setApplicationContext(applicationContext);
+        /*
+        * Host
+        */
         applicationContext.setServiceDescription(serv);
 
         MessageContext inMessage = new MessageContext();

@@ -34,6 +34,8 @@ import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.ietf.jgss.GSSCredential;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,7 +48,9 @@ import java.util.List;
 import java.util.Set;
 
 public class GridFTPInputHandler implements GFacHandler{
+    private static final Logger log = LoggerFactory.getLogger(AppDescriptorCheckHandler.class);
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+        log.info("Invoking GridFTPInputHandler ...");
          MessageContext inputNew = new MessageContext();
         try {
             MessageContext input = jobExecutionContext.getInMessageContext();
@@ -68,7 +72,7 @@ public class GridFTPInputHandler implements GFacHandler{
                 inputNew.getParameters().put(paramName, actualParameter);
             }
         } catch (Exception e) {
-//           jobExecutionContext.getExecutionContext().getNotifier().executionFail(jobExecutionContext,e,"Error during Input File staging");
+            log.error(e.getMessage());
             throw new GFacHandlerException("Error while input File Staging", jobExecutionContext, e, e.getLocalizedMessage());
         }
         jobExecutionContext.setInMessageContext(inputNew);
@@ -107,7 +111,6 @@ public class GridFTPInputHandler implements GFacHandler{
                 return paramValue;
             }
         }
-        System.out.println(destURI.getPath());
         return destURI.getPath();
     }
 }

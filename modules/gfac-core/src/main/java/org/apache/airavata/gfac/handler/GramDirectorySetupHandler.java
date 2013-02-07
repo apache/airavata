@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.gfac.handler;
 
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.gfac.ToolsException;
 import org.apache.airavata.gfac.context.GSISecurityContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
@@ -33,15 +34,20 @@ import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
+import java.util.UUID;
 
 public class GramDirectorySetupHandler implements GFacHandler {
     private static final Logger log = LoggerFactory.getLogger(GramJobSubmissionListener.class);
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+        log.info("Invoking GramDirectorySetupHandler ...");
         GlobusHostType host = (GlobusHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType();
-        ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
+        ApplicationDescription applicationDeploymentDescription = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
+        ApplicationDeploymentDescriptionType app = applicationDeploymentDescription.getType();
         GridFtp ftp = new GridFtp();
 
         try {
