@@ -34,27 +34,27 @@ import java.util.List;
  */
 public interface AiravataManager {
 	
-    /**
-     * Return a list of GFaC service urls registered in the system
-     * @return 0 or more urls
-     * @throws AiravataAPIInvocationException
-     */
-	public List<URI> getGFaCURLs() throws AiravataAPIInvocationException;
-
-    /**
-     * Return a the first GFaC service url registered in the system
-     * @return url or null if a url is not registered
-     * @throws AiravataAPIInvocationException
-     */
-	public URI getGFaCURL() throws AiravataAPIInvocationException;
-
-    /**
-     * Return a the first GFaC service url registered in the system orelse return the <code>defaultURL</code>
-     * @param defaultURL
-     * @return url
-     * @throws AiravataAPIInvocationException
-     */
-	public URI getGFaCURL(URI defaultURL) throws AiravataAPIInvocationException;
+//    /**
+//     * Return a list of GFaC service urls registered in the system
+//     * @return 0 or more urls
+//     * @throws AiravataAPIInvocationException
+//     */
+//	public List<URI> getGFaCURLs() throws AiravataAPIInvocationException;
+//
+//    /**
+//     * Return a the first GFaC service url registered in the system
+//     * @return url or null if a url is not registered
+//     * @throws AiravataAPIInvocationException
+//     */
+//	public URI getGFaCURL() throws AiravataAPIInvocationException;
+//
+//    /**
+//     * Return a the first GFaC service url registered in the system orelse return the <code>defaultURL</code>
+//     * @param defaultURL
+//     * @return url
+//     * @throws AiravataAPIInvocationException
+//     */
+//	public URI getGFaCURL(URI defaultURL) throws AiravataAPIInvocationException;
 
     /**
      * Return a list of Workflow Interpreter service urls registered in the system
