@@ -45,12 +45,12 @@ public class GFacURLs {
         this.airavataAPI = airavataAPI;
     }
 
-    public List<GFacURL> getURLS() throws AiravataAPIInvocationException {
-        List<GFacURL> urls = new ArrayList<GFacURL>();
-        List<URI> gfacDescriptorList = getAiravataAPI().getAiravataManager().getGFaCURLs();
-		for (URI url : gfacDescriptorList) {
-		    urls.add(new GFacURL(getAiravataAPI(), url));
-		}
-        return urls;
-    }
+//    public List<GFacURL> getURLS() throws AiravataAPIInvocationException {
+//        List<GFacURL> urls = new ArrayList<GFacURL>();
+//        List<URI> gfacDescriptorList = getAiravataAPI().getAiravataManager().getGFaCURLs();
+//		for (URI url : gfacDescriptorList) {
+//		    urls.add(new GFacURL(getAiravataAPI(), url));
+//		}
+//        return urls;
+//    }
 }

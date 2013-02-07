@@ -1074,8 +1074,14 @@ public class WorkflowInterpreter {
 				invoker = new WorkflowInvokerWrapperForGFacInvoker(portTypeQName, gfacURLString, this.getConfig().getConfiguration().getMessageBoxURL()
 						.toString(), leadCtxHeader, this.config.getNotifier().createServiceNotificationSender(foreachWSNode.getID()));
 			} else {
-				invoker = new GenericInvoker(portTypeQName, wsdlLocation, foreachWSNode.getID(), this.getConfig().getConfiguration().getMessageBoxURL()
-						.toString(), gfacURLString, this.config.getNotifier());
+                if (this.config.isGfacEmbeddedMode()) {
+					invoker = new EmbeddedGFacInvoker(portTypeQName, WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(((WSNode)foreachWSNode).getComponent().getWSDL()), foreachWSNode.getID(),
+							this.config.getMessageBoxURL().toASCIIString(), this.config.getMessageBrokerURL().toASCIIString(), this.config.getNotifier(),
+							this.config.getTopic(), this.config.getAiravataAPI(), portTypeQName.getLocalPart(), this.config.getConfiguration());
+				} else {
+					invoker = new GenericInvoker(portTypeQName, WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(((WSNode)foreachWSNode).getComponent().getWSDL()), foreachWSNode.getID(),
+							this.config.getMessageBoxURL().toASCIIString(), gfacURLString, this.config.getNotifier());
+				}
 			}
 
 		} else {

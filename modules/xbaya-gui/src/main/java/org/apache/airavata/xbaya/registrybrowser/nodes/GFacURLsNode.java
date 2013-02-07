@@ -32,59 +32,60 @@ import org.apache.airavata.xbaya.model.registrybrowser.GFacURLs;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.RefreshAction;
 
-public class GFacURLsNode extends AbstractAiravataTreeNode {
-    private GFacURLs gfacURLs;
-
-    public GFacURLsNode(GFacURLs gfacURLs, TreeNode parent) {
-        super(parent);
-        setGfacURLs(gfacURLs);
-    }
-
-    @Override
-    protected List<TreeNode> getChildren() {
-        try {
-            return getTreeNodeList(getGfacURLs().getURLS().toArray(), this);
-        } catch (AiravataAPIInvocationException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
-    public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return "GFac Locations";
-    }
-
-    @Override
-    public Icon getIcon(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return JCRBrowserIcons.GFAC_URLS_ICON;
-    }
-
-    public GFacURLs getGfacURLs() {
-        return gfacURLs;
-    }
-
-    public void setGfacURLs(GFacURLs gfacURLs) {
-        this.gfacURLs = gfacURLs;
-    }
-
-    @Override
-    public List<String> getSupportedActions() {
-        return Arrays.asList(RefreshAction.ID);
-    }
-
-    @Override
-    public String getActionCaption(AbstractBrowserActionItem action) {
-        return action.getDefaultCaption();
-    }
-
-    @Override
-    public Icon getActionIcon(AbstractBrowserActionItem action) {
-        return null;
-    }
-
-    @Override
-    public String getActionDescription(AbstractBrowserActionItem action) {
-        return null;
-    }
+public class GFacURLsNode{
+//        extends AbstractAiravataTreeNode {
+//    private GFacURLs gfacURLs;
+//
+//    public GFacURLsNode(GFacURLs gfacURLs, TreeNode parent) {
+//        super(parent);
+//        setGfacURLs(gfacURLs);
+//    }
+//
+//    @Override
+//    protected List<TreeNode> getChildren() {
+//        try {
+//            return getTreeNodeList(getGfacURLs().getURLS().toArray(), this);
+//        } catch (AiravataAPIInvocationException e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
+//
+//    @Override
+//    public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
+//        return "GFac Locations";
+//    }
+//
+//    @Override
+//    public Icon getIcon(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
+//        return JCRBrowserIcons.GFAC_URLS_ICON;
+//    }
+//
+//    public GFacURLs getGfacURLs() {
+//        return gfacURLs;
+//    }
+//
+//    public void setGfacURLs(GFacURLs gfacURLs) {
+//        this.gfacURLs = gfacURLs;
+//    }
+//
+//    @Override
+//    public List<String> getSupportedActions() {
+//        return Arrays.asList(RefreshAction.ID);
+//    }
+//
+//    @Override
+//    public String getActionCaption(AbstractBrowserActionItem action) {
+//        return action.getDefaultCaption();
+//    }
+//
+//    @Override
+//    public Icon getActionIcon(AbstractBrowserActionItem action) {
+//        return null;
+//    }
+//
+//    @Override
+//    public String getActionDescription(AbstractBrowserActionItem action) {
+//        return null;
+//    }
 }

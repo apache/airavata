@@ -262,10 +262,10 @@ public class XBayaEngine {
 					this.getConfiguration()
 							.setWorkflowInterpreterURL(interpreterServiceURLList.get(0));
 				}
-				List<URI> gfacURLList = airavataManager.getGFaCURLs();
-				if (gfacURLList.size()>0) {
-					this.getConfiguration().setGFacURL(gfacURLList.get(0));
-				}
+//				List<URI> gfacURLList = airavataManager.getGFaCURLs();
+//				if (gfacURLList.size()>0) {
+//					this.getConfiguration().setGFacURL(gfacURLList.get(0));
+//				}
 			}
         } catch (Exception e) {
 			e.printStackTrace();

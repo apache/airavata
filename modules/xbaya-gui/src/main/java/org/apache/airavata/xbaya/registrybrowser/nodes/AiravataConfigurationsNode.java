@@ -47,7 +47,7 @@ public class AiravataConfigurationsNode extends AbstractAiravataTreeNode {
     @Override
     protected List<TreeNode> getChildren() {
     	List<Object> children=new ArrayList<Object>();
-    	children.add(new GFacURLs(getRegistry()));
+//    	children.add(new GFacURLs(getRegistry()));
     	children.add(new InterpreterServiceURLs(getRegistry()));
     	children.add(new MessageBoxURLs(getRegistry()));
     	children.add(new EventingServiceURLs(getRegistry()));
