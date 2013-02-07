@@ -812,7 +812,6 @@ public class XBayaConfiguration extends Observable implements Observer {
         notifyObservers(o);
     }
 
-    @Override
     public void update(Observable observable, Object o) {
         triggerObservers(observable);
     }

@@ -20,7 +20,9 @@
 */
 package org.apache.airavata.xbaya.invoker;
 
+import java.io.File;
 import java.io.StringReader;
+import java.net.URL;
 import java.util.*;
 
 import javax.xml.namespace.QName;
@@ -30,20 +32,20 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.commons.gfac.type.*;
 import org.apache.airavata.core.gfac.exception.ProviderException;
+import org.apache.airavata.gfac.Constants;
+import org.apache.airavata.gfac.GFacAPI;
+import org.apache.airavata.gfac.GFacConfiguration;
+import org.apache.airavata.gfac.context.ApplicationContext;
+import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.gfac.context.MessageContext;
+import org.apache.airavata.gfac.provider.GFacProviderException;
+import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.core.gfac.GfacAPI;
-import org.apache.airavata.core.gfac.context.GFacConfiguration;
-import org.apache.airavata.core.gfac.context.JobContext;
-import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
-import org.apache.airavata.core.gfac.utils.GfacUtils;
-import org.apache.airavata.schemas.gfac.InputParameterType;
-import org.apache.airavata.schemas.gfac.Parameter;
-import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
+import org.apache.airavata.schemas.gfac.*;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.jython.lib.ServiceNotifiable;
@@ -108,7 +110,7 @@ public class EmbeddedGFacInvoker implements Invoker {
 
     private Object outPut;
 
-    Map<Parameter, ActualParameter> actualParameters = new LinkedHashMap<Parameter, ActualParameter>();
+    Map<String, Object> actualParameters = new LinkedHashMap<String, Object>();
 
     /**
      * Creates an InvokerWithNotification.
@@ -242,66 +244,66 @@ public class EmbeddedGFacInvoker implements Invoker {
      */
     public synchronized boolean invoke() throws WorkflowException {
         try {
-            OMElement inputMessage = createActualParameters();
-            Object wsifMessageElement = new WSIFMessageElement(XMLUtil.stringToXmlElement3(inputMessage.toStringWithConsume()));
-            this.notifier.invokingService(new WSIFMessageElement((XmlElement)wsifMessageElement));
-            JobContext jobContext = new JobContext(actualParameters, EmbeddedGFacInvoker.this.topic,
-                    EmbeddedGFacInvoker.this.serviceName, EmbeddedGFacInvoker.this.gfacURL);
-            GFacConfiguration gFacConfiguration = new GFacConfiguration(EmbeddedGFacInvoker.this.configuration.getMyProxyServer(),
-                    EmbeddedGFacInvoker.this.configuration.getMyProxyUsername(),
-                    EmbeddedGFacInvoker.this.configuration.getMyProxyPassphrase(), EmbeddedGFacInvoker.this.configuration.getMyProxyLifetime(),
-                    EmbeddedGFacInvoker.this.airavataAPI, EmbeddedGFacInvoker.this.configuration.getTrustedCertLocation());
 
-            GfacAPI gfacAPI1 = new GfacAPI();
-            InvocationContext defaultInvocationContext = gfacAPI1.gridJobSubmit(jobContext,
-                    gFacConfiguration, this.nodeID, this.notifier.getWorkflowID().toASCIIString());
-            ParameterContextImpl outputParamContext = (ParameterContextImpl) defaultInvocationContext
-                    .<ActualParameter>getMessageContext("output");
-            if (outputParamContext.getNames().hasNext()) {
+            //todo This is the basic scheduling, have to do proper scheduling implementation
+            ServiceDescription serviceDescription = airavataAPI.getApplicationManager().getServiceDescription(serviceName);
+            HostDescription registeredHost = getRegisteredHost(airavataAPI, this.serviceName);
+            ApplicationDescription applicationDescription = airavataAPI.getApplicationManager().getApplicationDescription(serviceName, registeredHost.getType().getHostName());
+
+            // When we run getInParameters we set the actualParameter object, this has to be fixed
+            URL resource = EmbeddedGFacInvoker.class.getClassLoader().getResource("gfac-config.xml");
+            OMElement inputMessage = getInParameters();
+            Object wsifMessageElement = new WSIFMessageElement(XMLUtil.stringToXmlElement3(inputMessage.toStringWithConsume()));
+            this.notifier.invokingService(new WSIFMessageElement((XmlElement) wsifMessageElement));
+            GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, ServerSettings.getProperties());
+            JobExecutionContext jobExecutionContext = new JobExecutionContext(gFacConfiguration, serviceName);
+
+            jobExecutionContext.setProperty(Constants.PROP_WORKFLOW_NODE_ID,this.nodeID);
+            jobExecutionContext.setProperty(Constants.PROP_TOPIC,this.configuration.getTopic());
+            jobExecutionContext.setProperty(Constants.PROP_BROKER_URL,this.configuration.getBrokerURL().toASCIIString());
+            jobExecutionContext.setProperty(Constants.PROP_WORKFLOW_INSTANCE_ID,this.configuration.getTopic());
+
+            ApplicationContext applicationContext = new ApplicationContext();
+            applicationContext.setApplicationDeploymentDescription(applicationDescription);
+            applicationContext.setHostDescription(registeredHost);
+            applicationContext.setServiceDescription(serviceDescription);
+
+            jobExecutionContext.setApplicationContext(applicationContext);
+
+            jobExecutionContext.setOutMessageContext(getOutParameters(serviceDescription));
+            jobExecutionContext.setInMessageContext(new MessageContext(actualParameters));
+
+            GFacAPI gfacAPI1 = new GFacAPI();
+            gfacAPI1.submitJob(jobExecutionContext);
+
+            OMFactory fac = OMAbstractFactory.getOMFactory();
+            OMNamespace omNs = fac.createOMNamespace("http://ws.apache.org/axis2/xsd", "ns1");
+            OMElement outputElement = fac.createOMElement("invokeResponse", omNs);
+            MessageContext outMessageContext = jobExecutionContext.getOutMessageContext();
+            Set<String> paramNames = outMessageContext.getParameters().keySet();
+            for (String paramName : paramNames) {
                 /*
                 * Process Output
                 */
-                OMFactory fac = OMAbstractFactory.getOMFactory();
-                OMNamespace omNs = fac.createOMNamespace("http://ws.apache.org/axis2/xsd", "ns1");
-                OMElement outputElement = fac.createOMElement("invokeResponse", omNs);
-
-                for (Iterator<String> iterator = outputParamContext.getNames(); iterator.hasNext(); ) {
-                    String name = iterator.next();
-                    String outputString = outputParamContext.getValue(name).toXML().replaceAll("GFacParameter", name);
-                    XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(outputString));
-                    StAXOMBuilder builder = new StAXOMBuilder(reader);
-                    outputElement.addChild(builder.getDocumentElement());
-                }
-                // Send notification
-                logger.debug("outputMessage: " + outputElement.toString());
-                outPut = new WSIFMessageElement(XMLUtil.stringToXmlElement3(outputElement.toStringWithConsume()));
-                this.result = true;
-                EmbeddedGFacInvoker.this.notifier.serviceFinished(new WSIFMessageElement((XmlElement) outPut));
-            } else {
-                // An implementation of WSIFMessage,
-                // WSIFMessageElement, implements toString(), which
-                // serialize the message XML.
-                EmbeddedGFacInvoker.this.notifier.receivedFault(new WSIFMessageElement(XMLUtil.stringToXmlElement3("<Message>Invocation Failed</Message>")));
-                EmbeddedGFacInvoker.this.failerSent = true;
+                String outputString = ((ActualParameter) outMessageContext.getParameter(paramName)).toXML().replaceAll("GFacParameter", paramName);
+                XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(outputString));
+                StAXOMBuilder builder = new StAXOMBuilder(reader);
+                outputElement.addChild(builder.getDocumentElement());
             }
-
-
-            // Check if the invocation itself fails. This happens immediately.
-//            try {
-//                this.result.get(100, TimeUnit.MILLISECONDS);
-//            } catch (InterruptedException e) {
-//                logger.error(e.getMessage(), e);
-//            } catch (TimeoutException e) {
-//                // The job is probably running fine.
-//                // The normal case.
-//                return true;
-//            } catch (ExecutionException e) {
-//                // The service-failed notification should have been sent
-//                // already.
-//                logger.error(e.getMessage(), e);
-//                String message = "Error in invoking a service: " + this.serviceInformation;
-//                throw new WorkflowException(message, e);
+            // Send notification
+            logger.debug("outputMessage: " + outputElement.toString());
+            outPut = new WSIFMessageElement(XMLUtil.stringToXmlElement3(outputElement.toStringWithConsume()));
+            this.result = true;
+            EmbeddedGFacInvoker.this.notifier.serviceFinished(new WSIFMessageElement((XmlElement) outPut));
+            //todo check whether ActualParameter values are set or not, if they are null have to through an error or handle this in gfac level.
+//             {
+//                // An implementation of WSIFMessage,
+//                // WSIFMessageElement, implements toString(), which
+//                // serialize the message XML.
+//                EmbeddedGFacInvoker.this.notifier.receivedFault(new WSIFMessageElement(XMLUtil.stringToXmlElement3("<Message>Invocation Failed</Message>")));
+//                EmbeddedGFacInvoker.this.failerSent = true;
 //            }
+
         } catch (RuntimeException e) {
             logger.error(e.getMessage(), e);
             String message = "Error in invoking a service: " + this.serviceInformation;
@@ -312,13 +314,6 @@ public class EmbeddedGFacInvoker implements Invoker {
             String message = "Unexpected error: " + this.serviceInformation;
             this.notifier.invocationFailed(message, e);
             throw new WorkflowException(message, e);
-        } catch(ProviderException e){
-            if (e.getAditionalInfo().length > 0) {
-                this.notifier.invocationFailed(e.getMessage() + "\n" + e.getAditionalInfo()[0], e);
-            } else {
-                this.notifier.invocationFailed(e.getMessage(), e);
-            }
-            throw new WorkflowException(e.getMessage(), e);
         } catch (Exception e) {
             this.notifier.invocationFailed(e.getMessage(), e);
             throw new WorkflowException(e.getMessage(), e);
@@ -373,8 +368,8 @@ public class EmbeddedGFacInvoker implements Invoker {
         try {
             waitToFinish();
             if (outPut instanceof XmlElement) {
-                    return ((XmlElement)((XmlElement)((XmlElement) outPut).children().next()).children().next()).children().next();
-            } else  {
+                return ((XmlElement) ((XmlElement) ((XmlElement) outPut).children().next()).children().next()).children().next();
+            } else {
                 return outPut;
             }
         } catch (WorkflowException e) {
@@ -405,22 +400,19 @@ public class EmbeddedGFacInvoker implements Invoker {
         return this.invoker.getOutputs();
     }
 
-    @Override
     public WSIFClient getClient() {
         return null;
     }
 
-    @Override
     public WSIFMessage getInputs() throws WorkflowException {
         return null;
     }
 
-    @Override
     public WSIFMessage getFault() throws WorkflowException {
         return null;
     }
 
-    private OMElement createActualParameters() throws AiravataAPIInvocationException, RegistryException, XMLStreamException {
+    private OMElement getInParameters() throws AiravataAPIInvocationException, RegistryException, XMLStreamException {
         OMFactory omFactory = OMAbstractFactory.getOMFactory();
         OMElement invoke_inputParams = omFactory.createOMElement(new QName("invoke_InputParams"));
         ServiceDescription serviceDescription = airavataAPI.getApplicationManager().getServiceDescription(this.serviceName);
@@ -434,17 +426,74 @@ public class EmbeddedGFacInvoker implements Invoker {
             Object value = this.inputValues.get(index);
             InputParameterType parameter = serviceDescriptionType.getInputParametersArray(index);
             if (value instanceof XmlElement) {
-                    omElement.setText((String)((XmlElement)((XmlElement)((XmlElement) value).children().next()).children().next()).children().next());
+                omElement.setText((String) ((XmlElement) ((XmlElement) ((XmlElement) value).children().next()).children().next()).children().next());
                 XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(XMLUtil.xmlElementToString((XmlElement) value)));
                 StAXOMBuilder builder = new StAXOMBuilder(reader);
                 OMElement input = builder.getDocumentElement();
-                actualParameters.put(parameter, GfacUtils.getInputActualParameter(parameter, input));
+                actualParameters.put(parameter.getParameterName(), GFacUtils.getInputActualParameter(parameter, input));
             } else if (value instanceof String) {
-                omElement.setText((String)value);
-                actualParameters.put(parameter, GfacUtils.getInputActualParameter(parameter, AXIOMUtil.stringToOM("<value>" + value + "</value>")));
+                omElement.setText((String) value);
+                actualParameters.put(parameter.getParameterName(), GFacUtils.getInputActualParameter(parameter, AXIOMUtil.stringToOM("<value>" + value + "</value>")));
             }
             invoke_inputParams.addChild(omElement);
         }
         return invoke_inputParams;
+    }
+
+    private HostDescription getRegisteredHost(AiravataAPI regService, String serviceName) {
+        HostDescription result = null;
+        try {
+            Map<String, ApplicationDescription> applicationDescriptors = regService.getApplicationManager().getApplicationDescriptors(serviceName);
+            for (String hostDescName : applicationDescriptors.keySet()) {
+                HostDescription hostDescriptor = regService.getApplicationManager().getHostDescription(hostDescName);
+                result = hostDescriptor;
+                logger.info("Found service on: " + result.getType().getHostAddress());
+            }
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    private MessageContext getOutParameters(ServiceDescription serviceDescription) {
+        MessageContext outContext = new MessageContext();
+        for (OutputParameterType parameter : serviceDescription.getType().getOutputParametersArray()) {
+            ActualParameter actualParameter = new ActualParameter();
+            if ("String".equals(parameter.getParameterType().getName())) {
+                actualParameter.getType().changeType(StringParameterType.type);
+            } else if ("Double".equals(parameter.getParameterType().getName())) {
+                actualParameter.getType().changeType(DoubleParameterType.type);
+            } else if ("Integer".equals(parameter.getParameterType().getName())) {
+                actualParameter.getType().changeType(IntegerParameterType.type);
+            } else if ("Float".equals(parameter.getParameterType().getName())) {
+                actualParameter.getType().changeType(FloatParameterType.type);
+            } else if ("Boolean".equals(parameter.getParameterType().getName())) {
+                actualParameter.getType().changeType(BooleanParameterType.type);
+            } else if ("File".equals(parameter.getParameterType().getName())) {
+                actualParameter.getType().changeType(FileParameterType.type);
+            } else if ("URI".equals(parameter.getParameterType().getName())) {
+                actualParameter.getType().changeType(URIParameterType.type);
+            } else if ("StringArray".equals(parameter.getParameterType().getName())) {
+                actualParameter.getType().changeType(StringArrayType.type);
+            } else if ("DoubleArray".equals(parameter.getParameterType().getName())) {
+                actualParameter.getType().changeType(DoubleArrayType.type);
+            } else if ("IntegerArray".equals(parameter.getParameterType().getName())) {
+                actualParameter.getType().changeType(IntegerArrayType.type);
+            } else if ("FloatArray".equals(parameter.getParameterType().getName())) {
+                actualParameter.getType().changeType(FloatArrayType.type);
+            } else if ("BooleanArray".equals(parameter.getParameterType().getName())) {
+                actualParameter.getType().changeType(BooleanArrayType.type);
+            } else if ("FileArray".equals(parameter.getParameterType().getName())) {
+                actualParameter.getType().changeType(FileArrayType.type);
+            } else if ("URIArray".equals(parameter.getParameterType().getName())) {
+                actualParameter.getType().changeType(URIArrayType.type);
+            } else if ("StdOut".equals(parameter.getParameterType().getName())) {
+                actualParameter.getType().changeType(StdOutParameterType.type);
+            } else if ("StdErr".equals(parameter.getParameterType().getName())) {
+                actualParameter.getType().changeType(StdErrParameterType.type);
+            }
+            outContext.addParameter(parameter.getParameterName(), actualParameter);
+        }
+        return outContext;
     }
 }

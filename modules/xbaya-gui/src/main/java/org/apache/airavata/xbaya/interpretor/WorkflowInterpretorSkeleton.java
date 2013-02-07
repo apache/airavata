@@ -288,9 +288,9 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
                 msgBroker = getAiravataAPI().getAiravataManager().getEventingServiceURL().toASCIIString();
             }
             String gfac =  parse.getContextHeader().getSoaServiceEprs().getGfacUrl();
-            if(gfac == null || "".equals(gfac)){
-                gfac = getAiravataAPI().getAiravataManager().getGFaCURLs().get(0).toString();
-            }
+//            if(gfac == null || "".equals(gfac)){
+//                gfac = getAiravataAPI().getAiravataManager().getGFaCURLs().get(0).toString();
+//            }
             configuration.put(BROKER, msgBroker);
             configuration.put(GFAC, gfac);
             configuration.put(MSGBOX, msgBox);

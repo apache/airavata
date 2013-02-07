@@ -93,7 +93,7 @@ public class DynamicWorkflowRunnerWindow {
 
     // private XBayaComboBox resourceSelectionComboBox;
 
-    private JComboBox gfacUrlListField;
+//    private JComboBox gfacUrlListField;
 
     private JCheckBox interactChkBox;
 
@@ -121,20 +121,20 @@ public class DynamicWorkflowRunnerWindow {
      */
     public void show() {
         this.workflow = this.engine.getGUI().getWorkflow();
-        List<URI> urlList=null;
-        try {
-            urlList = this.engine.getConfiguration().getAiravataAPI().getAiravataManager().getGFaCURLs();
-        } catch (AiravataAPIInvocationException e) {
-            e.printStackTrace();
-        }
+//        List<URI> urlList=null;
+//        try {
+//            urlList = this.engine.getConfiguration().getAiravataAPI().getAiravataManager().getGFaCURLs();
+//        } catch (AiravataAPIInvocationException e) {
+//            e.printStackTrace();
+//        }
         // When run xbaya continously urls can be repeating, so first remove everything and then add
-        this.gfacUrlListField.removeAllItems();
-        for (URI gfacUrl : urlList) {
-            if (XBayaUtil.isURLExists(gfacUrl + "?wsdl")) {
-                this.gfacUrlListField.addItem(gfacUrl);
-            }
-        }
-        this.gfacUrlListField.setEditable(true);
+//        this.gfacUrlListField.removeAllItems();
+//        for (URI gfacUrl : urlList) {
+//            if (XBayaUtil.isURLExists(gfacUrl + "?wsdl")) {
+//                this.gfacUrlListField.addItem(gfacUrl);
+//            }
+//        }
+//        this.gfacUrlListField.setEditable(true);
         MonitorConfiguration notifConfig = this.engine.getMonitor().getConfiguration();
         if (notifConfig.getBrokerURL() == null) {
             this.engine.getGUI().getErrorWindow().error(ErrorMessages.BROKER_URL_NOT_SET_ERROR);
@@ -222,8 +222,8 @@ public class DynamicWorkflowRunnerWindow {
 
         this.topicTextField = new XBayaTextField();
         XBayaLabel topicLabel = new XBayaLabel("Notification topic", this.topicTextField);
-        this.gfacUrlListField = new JComboBox();
-        XBayaLabel gfacURLLabel = new XBayaLabel("GFac URL", this.gfacUrlListField);
+//        this.gfacUrlListField = new JComboBox();
+//        XBayaLabel gfacURLLabel = new XBayaLabel("GFac URL", this.gfacUrlListField);
         this.interactChkBox = new JCheckBox();
         this.interactChkBox.setSelected(false);
         XBayaLabel interactLabel = new XBayaLabel("Enable Service Interactions", this.interactChkBox);
@@ -238,8 +238,8 @@ public class DynamicWorkflowRunnerWindow {
         infoPanel.add(this.instanceNameTextField);
         infoPanel.add(topicLabel);
         infoPanel.add(this.topicTextField);
-        infoPanel.add(gfacURLLabel);
-        infoPanel.add(this.gfacUrlListField);
+//        infoPanel.add(gfacURLLabel);
+//        infoPanel.add(this.gfacUrlListField);
         infoPanel.add(interactLabel);
         infoPanel.add(this.interactChkBox);
         infoPanel.add(crossProductLabel);
@@ -332,14 +332,14 @@ public class DynamicWorkflowRunnerWindow {
             inputNode.setDefaultValue(value);
         }
 
-        final String gFacUrl = ((URI) this.gfacUrlListField.getSelectedItem()).toASCIIString();
-        if (null != gFacUrl && !"".equals(gFacUrl)) {
-            try {
-                this.engine.getConfiguration().setGFacURL(new URI(gFacUrl));
-            } catch (URISyntaxException e) {
-                this.engine.getGUI().getErrorWindow().error(e);
-            }
-        }
+//        final String gFacUrl = ((URI) this.gfacUrlListField.getSelectedItem()).toASCIIString();
+//        if (null != gFacUrl && !"".equals(gFacUrl)) {
+//            try {
+//                this.engine.getConfiguration().setGFacURL(new URI(gFacUrl));
+//            } catch (URISyntaxException e) {
+//                this.engine.getGUI().getErrorWindow().error(e);
+//            }
+//        }
         this.engine.getConfiguration().setTopic(topic);
 
         /*

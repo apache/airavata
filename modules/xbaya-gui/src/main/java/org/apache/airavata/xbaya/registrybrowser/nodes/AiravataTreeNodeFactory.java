@@ -57,8 +57,8 @@ public class AiravataTreeNodeFactory {
             return new RegistryNode((XBayaEngine)o,parent);
         }else if (o instanceof AiravataConfigurations){
 			return new AiravataConfigurationsNode((AiravataConfigurations)o,parent);
-		}else if (o instanceof GFacURLs){
-			return new GFacURLsNode((GFacURLs)o,parent);
+//		}else if (o instanceof GFacURLs){
+//			return new GFacURLsNode((GFacURLs)o,parent);
 		}else if (o instanceof GFacURL){
 			return new GFacURLNode((GFacURL)o,parent);
 		}else if (o instanceof InterpreterServiceURLs){
