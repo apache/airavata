@@ -52,9 +52,13 @@ public class GridFTPOutputHandler implements GFacHandler {
         File localStdErrFile = null;
         Map<String, ActualParameter> stringMap = null;
         try {
-            GSISecurityContext gssContext = new GSISecurityContext(jobExecutionContext.getGFacConfiguration());
-            GSSCredential gssCred = gssContext.getGssCredentails();
-
+            if (jobExecutionContext.getSecurityContext() == null ||
+                    !(jobExecutionContext.getSecurityContext() instanceof GSISecurityContext))
+            {
+                GSISecurityContext gssContext = new GSISecurityContext(jobExecutionContext.getGFacConfiguration());
+                jobExecutionContext.setSecurityContext(gssContext);
+            }
+            GSSCredential gssCred = ((GSISecurityContext)jobExecutionContext.getSecurityContext()).getGssCredentails();
             String[] hostgridFTP = host.getGridFTPEndPointArray();
             if (hostgridFTP == null || hostgridFTP.length == 0) {
                 hostgridFTP = new String[]{host.getHostAddress()};
@@ -177,13 +181,13 @@ public class GridFTPOutputHandler implements GFacHandler {
             GlobusHostType host = (GlobusHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType();
             GridFtp ftp = new GridFtp();
 
-            GSISecurityContext gssContext = new GSISecurityContext(jobExecutionContext.getGFacConfiguration());
-            GSSCredential gssCred = null;
-            try {
-                gssCred = gssContext.getGssCredentails();
-            } catch (SecurityException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            if (jobExecutionContext.getSecurityContext() == null ||
+                    !(jobExecutionContext.getSecurityContext() instanceof GSISecurityContext))
+            {
+                GSISecurityContext gssContext = new GSISecurityContext(jobExecutionContext.getGFacConfiguration());
+                jobExecutionContext.setSecurityContext(gssContext);
             }
+            GSSCredential gssCred = ((GSISecurityContext)jobExecutionContext.getSecurityContext()).getGssCredentails();
             try {
                 if ("URI".equals(actualParameter.getType().getType().toString())) {
                     for (String endpoint : host.getGridFTPEndPointArray()) {

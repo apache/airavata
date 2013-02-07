@@ -51,8 +51,13 @@ public class GramDirectorySetupHandler implements GFacHandler {
         GridFtp ftp = new GridFtp();
 
         try {
-            GSISecurityContext gssContext = new GSISecurityContext(jobExecutionContext.getGFacConfiguration());
-            GSSCredential gssCred = gssContext.getGssCredentails();
+            if (jobExecutionContext.getSecurityContext() == null ||
+                    !(jobExecutionContext.getSecurityContext() instanceof GSISecurityContext))
+            {
+                GSISecurityContext gssContext = new GSISecurityContext(jobExecutionContext.getGFacConfiguration());
+                jobExecutionContext.setSecurityContext(gssContext);
+            }
+            GSSCredential gssCred = ((GSISecurityContext)jobExecutionContext.getSecurityContext()).getGssCredentails();
             String[] hostgridFTP = host.getGridFTPEndPointArray();
             if (hostgridFTP == null || hostgridFTP.length == 0) {
                 hostgridFTP = new String[]{host.getHostAddress()};

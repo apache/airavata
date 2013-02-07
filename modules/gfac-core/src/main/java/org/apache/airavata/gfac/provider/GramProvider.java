@@ -59,8 +59,13 @@ public class GramProvider implements GFacProvider {
             /*
             * Set Security
             */
-            GSISecurityContext gssContext = new GSISecurityContext(jobExecutionContext.getGFacConfiguration());
-            GSSCredential gssCred = gssContext.getGssCredentails();
+            if (jobExecutionContext.getSecurityContext() == null ||
+                    !(jobExecutionContext.getSecurityContext() instanceof GSISecurityContext))
+            {
+                GSISecurityContext gssContext = new GSISecurityContext(jobExecutionContext.getGFacConfiguration());
+                jobExecutionContext.setSecurityContext(gssContext);
+            }
+            GSSCredential gssCred = ((GSISecurityContext)jobExecutionContext.getSecurityContext()).getGssCredentails();
             job.setCredentials(gssCred);
             // We do not support multiple gatekeepers in XBaya GUI, so we simply pick the 0th element in the array
             String gateKeeper = host.getGlobusGateKeeperEndPointArray(0);
