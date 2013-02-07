@@ -40,6 +40,7 @@ public class JobExecutionContext extends AbstractContext{
 
     private GFacNotifier notifier;
 
+    private SecurityContext securityContext;
     // Keep track of the current path of the message. Before hitting provider its in-path.
     // After provider its out-path.
     private boolean inPath = true;
@@ -155,5 +156,13 @@ public class JobExecutionContext extends AbstractContext{
 
     public void setOutPath(){
         this.inPath = false;
+    }
+
+    public SecurityContext getSecurityContext() {
+        return securityContext;
+    }
+
+    public void setSecurityContext(SecurityContext securityContext) {
+        this.securityContext = securityContext;
     }
 }

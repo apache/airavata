@@ -47,15 +47,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-public class GridFTPInputHandler implements GFacHandler{
+public class GridFTPInputHandler implements GFacHandler {
     private static final Logger log = LoggerFactory.getLogger(AppDescriptorCheckHandler.class);
+
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         log.info("Invoking GridFTPInputHandler ...");
-         MessageContext inputNew = new MessageContext();
+        MessageContext inputNew = new MessageContext();
         try {
             MessageContext input = jobExecutionContext.getInMessageContext();
             Set<String> parameters = input.getParameters().keySet();
-            for (String paramName:parameters) {
+            for (String paramName : parameters) {
                 ActualParameter actualParameter = (ActualParameter) input.getParameters().get(paramName);
                 String paramValue = MappingFactory.toString(actualParameter);
                 //TODO: Review this with type
@@ -77,15 +78,20 @@ public class GridFTPInputHandler implements GFacHandler{
         }
         jobExecutionContext.setInMessageContext(inputNew);
     }
-     private static String stageInputFiles(JobExecutionContext jobExecutionContext, String paramValue) throws URISyntaxException, SecurityException, ToolsException, IOException {
+
+    private static String stageInputFiles(JobExecutionContext jobExecutionContext, String paramValue) throws URISyntaxException, SecurityException, ToolsException, IOException {
         URI gridftpURL;
         gridftpURL = new URI(paramValue);
         GlobusHostType host = (GlobusHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType();
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
         GridFtp ftp = new GridFtp();
         URI destURI = null;
-        GSISecurityContext gssContext = new GSISecurityContext(jobExecutionContext.getGFacConfiguration());
-        GSSCredential gssCred = gssContext.getGssCredentails();
+        if (jobExecutionContext.getSecurityContext() == null ||
+                !(jobExecutionContext.getSecurityContext() instanceof GSISecurityContext)) {
+            GSISecurityContext gssContext = new GSISecurityContext(jobExecutionContext.getGFacConfiguration());
+            jobExecutionContext.setSecurityContext(gssContext);
+        }
+        GSSCredential gssCred = ((GSISecurityContext) jobExecutionContext.getSecurityContext()).getGssCredentails();
 
         for (String endpoint : host.getGridFTPEndPointArray()) {
             URI inputURI = GFacUtils.createGsiftpURI(endpoint, app.getInputDataDirectory());
