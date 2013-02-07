@@ -21,12 +21,12 @@
 
 package org.apache.airavata.gfac.handler;
 
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.notification.events.ExecutionFailEvent;
 
-public class GFacHandlerException extends Exception{
+public class GFacHandlerException extends GFacException{
     public GFacHandlerException(String s) {
-        super(s);
+        super(s,new Throwable(s));
     }
 
     public GFacHandlerException(String s, Throwable throwable) {
@@ -38,12 +38,12 @@ public class GFacHandlerException extends Exception{
     }
 
     public GFacHandlerException(String message, JobExecutionContext context) {
-        super(message);
+        super(message,new Throwable(message));
         sendFaultNotification(message,context,new Exception(message));
     }
 
     public GFacHandlerException(String message, JobExecutionContext context,Exception e,String... additionExceptiondata) {
-        super(message);
+        super(message,e);
         sendFaultNotification(message,context,e, additionExceptiondata);
     }
 
@@ -53,6 +53,5 @@ public class GFacHandlerException extends Exception{
 		if (additionalExceptiondata==null || additionalExceptiondata.length==0){
         	additionalExceptiondata=new String[]{message,e.getLocalizedMessage()};
         }
-		executionContext.getNotifier().publish(new ExecutionFailEvent(e));
 	}
 }

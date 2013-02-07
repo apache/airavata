@@ -50,9 +50,6 @@ public class ParamChemTest {
         //have to set InFlwo Handlers and outFlowHandlers
         gFacConfiguration.setInHandlers(Arrays.asList(new String[]{"org.apache.airavata.gfac.handler.GramDirectorySetupHandler", "org.apache.airavata.gfac.handler.GridFTPInputHandler"}));
         gFacConfiguration.setOutHandlers(Arrays.asList(new String[] {"org.apache.airavata.gfac.handler.GridFTPOutputHandler"}));
-        jobExecutionContext = new JobExecutionContext(gFacConfiguration);
-        ApplicationContext applicationContext = new ApplicationContext();
-        jobExecutionContext.setApplicationContext(applicationContext);
         /*
         * Host
         */
@@ -63,7 +60,6 @@ public class ParamChemTest {
         ((GlobusHostType) host.getType()).addGridFTPEndPoint("gsiftp://trestles-login2.sdsc.edu:2811");
         ((GlobusHostType) host.getType()).addGlobusGateKeeperEndPoint("trestles-login2.sdsc.edu:2119/jobmanager-pbstest2");
 
-        applicationContext.setHostDescription(host);
         /*
         * App
         */
@@ -100,7 +96,6 @@ public class ParamChemTest {
         ((HpcApplicationDeploymentType) applicationDeploymentDescriptionType).setNodeCount(1);
         ((HpcApplicationDeploymentType) applicationDeploymentDescriptionType).setProcessorsPerNode(1);
 
-        applicationContext.setApplicationDeploymentDescription(appDesc);
 
         /*
         * Service
@@ -216,6 +211,11 @@ public class ParamChemTest {
         serv.getType().setInputParametersArray(inputParameters.toArray(new InputParameterType[]{}));
         serv.getType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[]{}));
 
+        jobExecutionContext = new JobExecutionContext(gFacConfiguration,serv.getType().getName());
+        ApplicationContext applicationContext = new ApplicationContext();
+        applicationContext.setHostDescription(host);
+        applicationContext.setApplicationDeploymentDescription(appDesc);
+        jobExecutionContext.setApplicationContext(applicationContext);
         applicationContext.setServiceDescription(serv);
 
         MessageContext inMessage = new MessageContext();

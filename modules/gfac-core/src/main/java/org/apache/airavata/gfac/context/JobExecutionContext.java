@@ -63,9 +63,10 @@ public class JobExecutionContext extends AbstractContext{
     // by this context instance.
     private String serviceName;
 
-    public JobExecutionContext(GFacConfiguration gFacConfiguration){
+    public JobExecutionContext(GFacConfiguration gFacConfiguration,String serviceName){
         this.gfacConfiguration = gFacConfiguration;
         notifier = new GFacNotifier();
+        setServiceName(serviceName);
     }
 
     public ApplicationContext getApplicationContext() {

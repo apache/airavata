@@ -39,13 +39,13 @@ public class GFacAPI {
     private static final Logger log = LoggerFactory.getLogger(GFacAPI.class);
 
 
-
     public void submitJob(JobExecutionContext jobExecutionContext) throws GFacException {
         // We need to check whether this job is submitted as a part of a large workflow. If yes,
         // we need to setup workflow tracking listerner.
         String workflowInstanceID = null;
         if ((workflowInstanceID = (String) jobExecutionContext.getProperty(Constants.PROP_WORKFLOW_INSTANCE_ID)) != null) {
             // This mean we need to register workflow tracking listener.
+            //todo implement WorkflowTrackingListener properly
             registerWorkflowTrackingListener(workflowInstanceID, jobExecutionContext);
         }
         // Register log event listener. This is required in all scenarios.
@@ -56,22 +56,27 @@ public class GFacAPI {
     private void schedule(JobExecutionContext jobExecutionContext) throws GFacException {
         // Scheduler will decide the execution flow of handlers and provider which handles
         // the job.
-        Scheduler.schedule(jobExecutionContext);
+        try {
+            Scheduler.schedule(jobExecutionContext);
 
-        // Executing in handlers in the order as they have configured in GFac configuration
-        invokeInFlowHandlers(jobExecutionContext);
+            // Executing in handlers in the order as they have configured in GFac configuration
+            invokeInFlowHandlers(jobExecutionContext);
 
 
-        // After executing the in handlers provider instance should be set to job execution context.
-        // We get the provider instance and execute it.
-        GFacProvider provider = jobExecutionContext.getProvider();
-        if (provider != null) {
-            initProvider(provider, jobExecutionContext);
-            executeProvider(provider, jobExecutionContext);
-            disposeProvider(provider, jobExecutionContext);
+            // After executing the in handlers provider instance should be set to job execution context.
+            // We get the provider instance and execute it.
+            GFacProvider provider = jobExecutionContext.getProvider();
+            if (provider != null) {
+                initProvider(provider, jobExecutionContext);
+                executeProvider(provider, jobExecutionContext);
+                disposeProvider(provider, jobExecutionContext);
+            }
+
+            invokeOutFlowHandlers(jobExecutionContext);
+        } catch (GFacException e) {
+            jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
+            throw e;
         }
-
-        invokeOutFlowHandlers(jobExecutionContext);
     }
 
     private void initProvider(GFacProvider provider, JobExecutionContext jobExecutionContext) throws GFacException {
@@ -109,7 +114,6 @@ public class GFacAPI {
 
     private void invokeInFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
         List<String> handlers = jobExecutionContext.getGFacConfiguration().getInHandlers();
-
         for (String handlerClassName : handlers) {
             Class<? extends GFacHandler> handlerClass;
             GFacHandler handler;
@@ -123,16 +127,10 @@ public class GFacAPI {
             } catch (IllegalAccessException e) {
                 throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
             }
-
-
             try {
                 handler.invoke(jobExecutionContext);
-                jobExecutionContext.getNotificationService().publish(new FinishExecutionEvent());
             } catch (GFacHandlerException e) {
-                // TODO: Better error reporting.
-                jobExecutionContext.getNotificationService().publish(new ExecutionFailEvent(e));
-                log.error("Error occurred during in handler " + handlerClassName + " execution.");
-                break;
+                throw new GFacException("Error Executing a InFlow Handler", e.getCause());
             }
         }
     }
@@ -144,25 +142,23 @@ public class GFacAPI {
             Class<? extends GFacHandler> handlerClass;
             GFacHandler handler;
             try {
-                handlerClass = Class.forName(handlerClassName.trim()).asSubclass(GFacHandler.class);
+                 handlerClass = Class.forName(handlerClassName.trim()).asSubclass(GFacHandler.class);
                 handler = handlerClass.newInstance();
             } catch (ClassNotFoundException e) {
+                log.error(e.getMessage());
                 throw new GFacException("Cannot load handler class " + handlerClassName, e);
             } catch (InstantiationException e) {
+                log.error(e.getMessage());
                 throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
             } catch (IllegalAccessException e) {
+                log.error(e.getMessage());
                 throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
             }
-
-
             try {
                 handler.invoke(jobExecutionContext);
-                jobExecutionContext.getNotificationService().publish(new FinishExecutionEvent());
             } catch (GFacHandlerException e) {
                 // TODO: Better error reporting.
-                jobExecutionContext.getNotificationService().publish(new ExecutionFailEvent(e));
-                log.error("Error occurred during out handler " + handlerClassName + " execution.");
-                break;
+                throw new GFacException("Error Executing a OutFlow Handler" , e.getCause());
             }
         }
     }

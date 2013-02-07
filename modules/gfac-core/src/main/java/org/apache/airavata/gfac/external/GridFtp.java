@@ -357,7 +357,7 @@ public class GridFtp {
                 localTempfile = localFile;
             }
 
-            log.info("Loca temporary file:" + localTempfile);
+            log.info("Local temporary file:" + localTempfile);
 
             downloadFile(destURI, gsCredential, localTempfile);
 

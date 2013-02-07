@@ -27,7 +27,6 @@ import org.apache.airavata.gfac.context.GSISecurityContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.external.GridFtp;
-import org.apache.airavata.gfac.notification.events.ExecutionFailEvent;
 import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.GramJobSubmissionListener;
@@ -42,11 +41,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
-public class GridFTPOutputHandler implements GFacHandler{
+public class GridFTPOutputHandler implements GFacHandler {
     private static final Logger log = LoggerFactory.getLogger(GramJobSubmissionListener.class);
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
-           GlobusHostType host = (GlobusHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType();
+        log.info("Invoking GridFTPOutputHandler ...");
+        GlobusHostType host = (GlobusHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType();
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
         GridFtp ftp = new GridFtp();
         File localStdErrFile = null;
@@ -105,24 +105,24 @@ public class GridFTPOutputHandler implements GFacHandler{
                         }
                     }
                     if (stringMap == null || stringMap.isEmpty()) {
-                        jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(new Throwable("Empty Output returned from the Application, Double check the application" +
-                                "and ApplicationDescriptor output Parameter Names")));
-//                    	GFacProviderException exception = new GFacProviderException("Gram provider: Error creating job output", jobExecutionContext);
-//                    	 jobExecutionContext.getExecutionContext().getNotifier().executionFail(jobExecutionContext,exception,exception.getLocalizedMessage());
-//                         throw exception;
+                        throw new GFacHandlerException("Empty Output returned from the Application, Double check the application" +
+                                "and ApplicationDescriptor output Parameter Names");
                     }
                     //todo check the workflow context header and run the stateOutputFiles method to stage the output files in to a user defined location
-                    stageOutputFiles(jobExecutionContext,app.getOutputDataDirectory());
+//                    stageOutputFiles(jobExecutionContext, app.getOutputDataDirectory());
                 } catch (ToolsException e) {
+                    log.error(e.getMessage());
                     throw new GFacHandlerException(e.getMessage(), jobExecutionContext, e, readLastLinesofStdOut(localStdErrFile.getPath(), 20));
                 } catch (URISyntaxException e) {
+                    log.error(e.getMessage());
                     throw new GFacHandlerException("URI is malformatted:" + e.getMessage(), jobExecutionContext, e, readLastLinesofStdOut(localStdErrFile.getPath(), 20));
                 } catch (NullPointerException e) {
+                    log.error(e.getMessage());
                     throw new GFacHandlerException("Output is not produced in stdout:" + e.getMessage(), jobExecutionContext, e, readLastLinesofStdOut(localStdErrFile.getPath(), 20));
                 }
             }
         } catch (Exception e) {
-//            jobExecutionContext.getExecutionContext().getNotifier().executionFail(jobExecutionContext,e,readLastLinesofStdOut(localStdErrFile.getPath(), 20));
+            log.error(e.getMessage());
             throw new GFacHandlerException(e.getMessage(), jobExecutionContext, e, readLastLinesofStdOut(localStdErrFile.getPath(), 20));
         }
     }
@@ -202,8 +202,10 @@ public class GridFTPOutputHandler implements GFacHandler{
 
                 }
             } catch (URISyntaxException e) {
+                log.error(e.getMessage());
                 throw new GFacProviderException(e.getMessage(), e, jobExecutionContext);
             } catch (ToolsException e) {
+                log.error(e.getMessage());
                 throw new GFacProviderException(e.getMessage(), e, jobExecutionContext);
             }
             outputNew.getParameters().put(paramName, actualParameter);
