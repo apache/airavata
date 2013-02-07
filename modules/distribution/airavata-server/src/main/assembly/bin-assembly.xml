@@ -8,7 +8,7 @@
 	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
 	OF ANY ~ KIND, either express or implied. See the License for the specific 
 	language governing permissions and limitations under the License. -->
-	
+
 <!DOCTYPE assembly [
         <!ELEMENT assembly (id|includeBaseDirectory|baseDirectory|formats|fileSets|dependencySets)*>
         <!ELEMENT id (#PCDATA)>
@@ -26,244 +26,245 @@
         <!ELEMENT dependencySet (outputDirectory|includes)*>
         ]>
 <assembly>
-	<id>bin</id>
-	<includeBaseDirectory>true</includeBaseDirectory>
-	<baseDirectory>${archieve.name}-${version}</baseDirectory>
-	<formats>
-		<format>tar.gz</format>
-		<format>zip</format>
-	</formats>
+    <id>bin</id>
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <baseDirectory>${archieve.name}-${version}</baseDirectory>
+    <formats>
+        <format>tar.gz</format>
+        <format>zip</format>
+    </formats>
 
-	<fileSets>
-		<!-- ********************** copy axis2 distribution dependencies ********************** -->
-		<fileSet>
-			<directory>target/axis2-${used.axis2.release}/WEB-INF/lib</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-			<excludes>
-				<exclude>commons-logging*.jar</exclude>
-				<exclude>xom*.jar</exclude>
+    <fileSets>
+        <!-- ********************** copy axis2 distribution dependencies ********************** -->
+        <fileSet>
+            <directory>target/axis2-${used.axis2.release}/WEB-INF/lib</directory>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+            <excludes>
+                <exclude>commons-logging*.jar</exclude>
+                <exclude>xom*.jar</exclude>
                 <exclude>xercesImpl*.jar</exclude>
                 <exclude>icu4j*.jar</exclude>
-			</excludes>
-		</fileSet>
-		<fileSet>
-			<directory>target/axis2-${used.axis2.release}/WEB-INF/</directory>
-			<outputDirectory>repository</outputDirectory>
-			<includes>
-				<include>services/*</include>
-				<include>modules/*</include>
-			</includes>
-		</fileSet>
-
-		<!-- ********************** copy release notes files ********************** -->
-		<fileSet>
-			<directory>../../../</directory>
-			<outputDirectory>.</outputDirectory>
-			<includes>
-				<include>RELEASE_NOTES</include>
-			</includes>
-		</fileSet>
-		<!-- ********************** copy licenses, readme etc. ********************** -->
-		<fileSet>
-			<directory>src/main/resources/</directory>
-			<outputDirectory>.</outputDirectory>
-			<includes>
-				<include>LICENSE</include>
-				<include>NOTICE</include>
-				<include>README</include>
-				<include>INSTALL</include>
-			</includes>
-		</fileSet>
-
-		<!-- ********************** copy database scripts ********************** -->
-		<fileSet>
-			<directory>../../ws-messenger/messagebroker/src/main/resources/database_scripts
-			</directory>
-			<outputDirectory>bin/database_scripts
-			</outputDirectory>
-			<includes>
-				<include>*sql*</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../../ws-messenger/messagebox/src/main/resources/database_scripts
-			</directory>
-			<outputDirectory>bin/database_scripts
-			</outputDirectory>
-			<includes>
-				<include>*sql*</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../../registry/airavata-jpa-registry/src/main/resources
-			</directory>
-			<outputDirectory>bin/database_scripts
-			</outputDirectory>
-			<includes>
-				<include>*sql*</include>
-			</includes>
-		</fileSet>
+            </excludes>
+        </fileSet>
         <fileSet>
-			<directory>../../rest/webapp/src/main/resources
-			</directory>
-			<outputDirectory>bin
-			</outputDirectory>
-			<includes>
-				<include>authenticators.xml</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>src/main/resources/bin</directory>
-			<outputDirectory>bin</outputDirectory>
-			<fileMode>777</fileMode>
-			<includes>
-				<include>*.sh</include>
-				<include>*.bat</include>
-				<include>logo.txt</include>
+            <directory>target/axis2-${used.axis2.release}/WEB-INF/</directory>
+            <outputDirectory>repository</outputDirectory>
+            <includes>
+                <include>services/*</include>
+                <include>modules/*</include>
+            </includes>
+        </fileSet>
+
+        <!-- ********************** copy release notes files ********************** -->
+        <fileSet>
+            <directory>../../../</directory>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>RELEASE_NOTES</include>
+            </includes>
+        </fileSet>
+        <!-- ********************** copy licenses, readme etc. ********************** -->
+        <fileSet>
+            <directory>src/main/resources/</directory>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>LICENSE</include>
+                <include>NOTICE</include>
+                <include>README</include>
+                <include>INSTALL</include>
+            </includes>
+        </fileSet>
+
+        <!-- ********************** copy database scripts ********************** -->
+        <fileSet>
+            <directory>../../ws-messenger/messagebroker/src/main/resources/database_scripts
+            </directory>
+            <outputDirectory>bin/database_scripts
+            </outputDirectory>
+            <includes>
+                <include>*sql*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../../ws-messenger/messagebox/src/main/resources/database_scripts
+            </directory>
+            <outputDirectory>bin/database_scripts
+            </outputDirectory>
+            <includes>
+                <include>*sql*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../../registry/airavata-jpa-registry/src/main/resources
+            </directory>
+            <outputDirectory>bin/database_scripts
+            </outputDirectory>
+            <includes>
+                <include>*sql*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../../rest/webapp/src/main/resources
+            </directory>
+            <outputDirectory>bin
+            </outputDirectory>
+            <includes>
+                <include>authenticators.xml</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources/bin</directory>
+            <outputDirectory>bin</outputDirectory>
+            <fileMode>777</fileMode>
+            <includes>
+                <include>*.sh</include>
+                <include>*.bat</include>
+                <include>logo.txt</include>
                 <include>startNetworkServer</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>src/main/resources/conf</directory>
-			<outputDirectory>bin</outputDirectory>
-			<includes>
-				<include>airavata-server.properties</include>
-				<include>registry.properties</include>
-				<include>log4j.properties</include>
-				<include>host.xml</include>
-				<include>persistence.xml</include>
-				<include>provenance.sql</include>
-			</includes>
-		</fileSet>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources/conf</directory>
+            <outputDirectory>bin</outputDirectory>
+            <includes>
+                <include>airavata-server.properties</include>
+                <include>registry.properties</include>
+                <include>log4j.properties</include>
+                <include>host.xml</include>
+                <include>persistence.xml</include>
+                <include>provenance.sql</include>
+                <include>gfac-config.xml</include>
+            </includes>
+        </fileSet>
 
-		<!-- ********************** Copy Axis2 startup scripts to stand alone server 
-			********************** -->
-		<fileSet>
-			<directory>src/main/resources/axis2-standalone-bin
-			</directory>
-			<outputDirectory>bin</outputDirectory>
-			<fileMode>777</fileMode>
-			<includes>
-				<include>*.sh</include>
-				<include>*.bat</include>
-			</includes>
-		</fileSet>
+        <!-- ********************** Copy Axis2 startup scripts to stand alone server
+              ********************** -->
+        <fileSet>
+            <directory>src/main/resources/axis2-standalone-bin
+            </directory>
+            <outputDirectory>bin</outputDirectory>
+            <fileMode>777</fileMode>
+            <includes>
+                <include>*.sh</include>
+                <include>*.bat</include>
+            </includes>
+        </fileSet>
 
-		<!--fileSet> <directory>../../samples/simple-math-service/target</directory> 
-			<outputDirectory>standalone-server/repository/services</outputDirectory> 
-			<includes> <include>*.aar</include> </includes> </fileSet -->
-		<fileSet>
-			<directory>../../../samples/complex-math-service/target</directory>
-			<outputDirectory>repository/services
-			</outputDirectory>
-			<includes>
-				<include>*.aar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../../../samples/levenshtein-distance-service/target
-			</directory>
-			<outputDirectory>repository/services</outputDirectory>
-			<includes>
-				<include>*.aar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../../xbaya-gui/src/test/resources/</directory>
-			<outputDirectory>samples/workflows</outputDirectory>
-			<includes>
-				<include>*.xwf</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../../../samples</directory>
-			<outputDirectory>samples</outputDirectory>
-			<includes>
-				<include>*.sh</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>src/main/resources/conf</directory>
-			<outputDirectory>bin</outputDirectory>
-			<includes>
-				<include>**/*</include>
-			</includes>
-		</fileSet>
-	</fileSets>
+        <!--fileSet> <directory>../../samples/simple-math-service/target</directory>
+              <outputDirectory>standalone-server/repository/services</outputDirectory>
+              <includes> <include>*.aar</include> </includes> </fileSet -->
+        <fileSet>
+            <directory>../../../samples/complex-math-service/target</directory>
+            <outputDirectory>repository/services
+            </outputDirectory>
+            <includes>
+                <include>*.aar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../../../samples/levenshtein-distance-service/target
+            </directory>
+            <outputDirectory>repository/services</outputDirectory>
+            <includes>
+                <include>*.aar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../../xbaya-gui/src/test/resources/</directory>
+            <outputDirectory>samples/workflows</outputDirectory>
+            <includes>
+                <include>*.xwf</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../../../samples</directory>
+            <outputDirectory>samples</outputDirectory>
+            <includes>
+                <include>*.sh</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources/conf</directory>
+            <outputDirectory>bin</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+    </fileSets>
 
-	<dependencySets>
-		<dependencySet>
-			<outputDirectory>lib</outputDirectory>
-			<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
-			<includes>
-				<include>org.apache.derby:derby:jar</include>
-				<include>org.apache.derby:derbytools:jar</include>
-				<include>org.apache.derby:derbynet:jar</include>
-				<include>org.apache.derby:derbyclient:jar</include>
-			</includes>
-		</dependencySet>
-		<dependencySet>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<!--<include>org.apache.derby:derby:jar</include> -->
-				<!--<include>org.apache.derby:derbytools:jar</include> -->
-				<!--<include>org.apache.derby:derbyclient:jar</include> -->
-				<!--<include>org.apache.derby:derbynet:jar</include> -->
-				<include>org.slf4j:slf4j-api:jar</include>
-				<include>org.slf4j:slf4j-jcl:jar</include>
-				<include>org.slf4j:slf4j-log4j12:jar</include>
-				<include>javax.jcr:jcr:jar</include>
-				<include>commons-collections:commons-collections</include>
-				<include>commons-configuration:commons-configuration</include>
-				<include>commons-lang:commons-lang</include>
-				<include>xpp3:xpp3</include>
-				<include>gpel:gpel_client</include>
-				<include>xpp5:xpp5</include>
-				<include>xpp3:xpp3_xpath</include>
-				<include>xsul:xsul:jar</include>
-				<include>xsul5-ogce:xsul5-2007-02-27:jar</include>
-				<include>xutil:xutil</include>
-				<include>jython:jython</include>
-				<include>cog-jglobus:cog-jglobus</include>
-				<!--include>edu.iub.soic.damsl:jXSP</include> -->
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+            <includes>
+                <include>org.apache.derby:derby:jar</include>
+                <include>org.apache.derby:derbytools:jar</include>
+                <include>org.apache.derby:derbynet:jar</include>
+                <include>org.apache.derby:derbyclient:jar</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <!--<include>org.apache.derby:derby:jar</include> -->
+                <!--<include>org.apache.derby:derbytools:jar</include> -->
+                <!--<include>org.apache.derby:derbyclient:jar</include> -->
+                <!--<include>org.apache.derby:derbynet:jar</include> -->
+                <include>org.slf4j:slf4j-api:jar</include>
+                <include>org.slf4j:slf4j-jcl:jar</include>
+                <include>org.slf4j:slf4j-log4j12:jar</include>
+                <include>javax.jcr:jcr:jar</include>
+                <include>commons-collections:commons-collections</include>
+                <include>commons-configuration:commons-configuration</include>
+                <include>commons-lang:commons-lang</include>
+                <include>xpp3:xpp3</include>
+                <include>gpel:gpel_client</include>
+                <include>xpp5:xpp5</include>
+                <include>xpp3:xpp3_xpath</include>
+                <include>xsul:xsul:jar</include>
+                <include>xsul5-ogce:xsul5-2007-02-27:jar</include>
+                <include>xutil:xutil</include>
+                <include>jython:jython</include>
+                <include>cog-jglobus:cog-jglobus</include>
+                <!--include>edu.iub.soic.damsl:jXSP</include> -->
                 <include>lead-security:puretls</include>
                 <include>lead-security:cryptix32</include>
                 <include>lead-security:cryptix-asn1</include>
-				<include>xmlbeans:xbean</include>
-				<include>com.amazonaws:aws-java-sdk</include>
-				<include>amazon:MapReduce.Service.Client</include>
-				<include>net.java.dev.jets3t:jets3t</include>
-				<include>atomixmiser:atomixmiser</include>
-				<include>globus:transfer-api-client</include>
-				<include>org.apache.airavata:airavata-registry-api</include>
-				<include>org.apache.airavata:airavata-workflow-execution-context</include>
-				<include>org.apache.airavata:airavata-workflow-tracking</include>
-				<include>org.apache.airavata:airavata-gfac-core</include>
-				<include>org.apache.airavata:airavata-messenger-client</include>
-				<include>org.apache.airavata:airavata-messenger-commons</include>
-				<include>org.apache.airavata:airavata-gfac-schema-utils</include>
-				<include>org.apache.airavata:airavata-common-utils</include>
-				<include>org.apache.airavata:airavata-workflow-model-core:jar</include>
-				<include>org.apache.airavata:airavata-workflow-model-component:jar</include>
-				<include>org.apache.airavata:airavata-message-monitor:jar</include>
-				<include>org.apache.airavata:airavata-client-api:jar</include>
-				<include>org.apache.airavata:airavata-jpa-registry:jar</include>
+                <include>xmlbeans:xbean</include>
+                <include>com.amazonaws:aws-java-sdk</include>
+                <include>amazon:MapReduce.Service.Client</include>
+                <include>net.java.dev.jets3t:jets3t</include>
+                <include>atomixmiser:atomixmiser</include>
+                <include>globus:transfer-api-client</include>
+                <include>org.apache.airavata:airavata-registry-api</include>
+                <include>org.apache.airavata:airavata-workflow-execution-context</include>
+                <include>org.apache.airavata:airavata-workflow-tracking</include>
+                <include>org.apache.airavata:airavata-gfac-core</include>
+                <include>org.apache.airavata:airavata-messenger-client</include>
+                <include>org.apache.airavata:airavata-messenger-commons</include>
+                <include>org.apache.airavata:airavata-gfac-schema-utils</include>
+                <include>org.apache.airavata:airavata-common-utils</include>
+                <include>org.apache.airavata:airavata-workflow-model-core:jar</include>
+                <include>org.apache.airavata:airavata-workflow-model-component:jar</include>
+                <include>org.apache.airavata:airavata-message-monitor:jar</include>
+                <include>org.apache.airavata:airavata-client-api:jar</include>
+                <include>org.apache.airavata:airavata-jpa-registry:jar</include>
                 <include>org.apache.airavata:airavata-rest-mappings:jar</include>
                 <include>org.apache.airavata:airavata-rest-client:jar</include>
                 <include>org.apache.airavata:airavata-embedded-tomcat:jar</include>
                 <include>org.apache.airavata:airavata-rest-mappings</include>
                 <include>org.apache.airavata:airavata-rest-services</include>
                 <include>org.apache.airavata:airavata-security</include>
-				<include>org.apache.openjpa:openjpa-all:jar</include>
+                <include>org.apache.openjpa:openjpa-all:jar</include>
                 <include>com.sun.jersey:jersey-client:jar</include>
                 <include>com.sun.jersey:jersey-core:jar</include>
-				<include>edu.berkeley:yfilter</include>
-				<include>edu.berkeley:yfilter</include>
-				<include>org.bouncycastle:bcprov-jdk15</include>
-				<include>org.bouncycastle:bcmail-jdk15</include>
+                <include>edu.berkeley:yfilter</include>
+                <include>edu.berkeley:yfilter</include>
+                <include>org.bouncycastle:bcprov-jdk15</include>
+                <include>org.bouncycastle:bcmail-jdk15</include>
                 <include>org.apache.tomcat:tomcat-jasper</include>
                 <include>org.apache.tomcat:tomcat-jasper-el</include>
                 <include>org.apache.tomcat:tomcat-jsp-api</include>
@@ -283,18 +284,19 @@
                 <include>org.codehaus.jackson:jackson-xc</include>
                 <include>xerces:xercesImpl:jar:2.9.1</include>
                 <include>com.ibm.icu:icu4j</include>
-			</includes>
-		</dependencySet>
-		<dependencySet>
-			<outputDirectory>repository/services</outputDirectory>
-			<includes>
-				<include>org.apache.airavata:airavata-message-box:jar</include>
-				<include>org.apache.airavata:airavata-message-broker:jar</include>
-				<include>org.apache.airavata:airavata-xbaya-gui:jar</include>
-				<include>org.apache.airavata:airavata-gfac-axis2-interface:jar</include>
-				<include>org.apache.airavata:airavata-registry-service:jar</include>
-			</includes>
-		</dependencySet>
-	</dependencySets>
+                <include>com.google.guava:guava</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>repository/services</outputDirectory>
+            <includes>
+                <include>org.apache.airavata:airavata-message-box:jar</include>
+                <include>org.apache.airavata:airavata-message-broker:jar</include>
+                <include>org.apache.airavata:airavata-xbaya-gui:jar</include>
+                <include>org.apache.airavata:airavata-gfac-axis2-interface:jar</include>
+                <include>org.apache.airavata:airavata-registry-service:jar</include>
+            </includes>
+        </dependencySet>
+    </dependencySets>
 
 </assembly>
