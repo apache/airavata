@@ -41,6 +41,36 @@ public class AiravataManagerImpl implements AiravataManager {
 	}
 
 	@Override
+	public List<URI> getGFaCURLs()  throws AiravataAPIInvocationException{
+	        List<URI> list=new ArrayList<URI>();
+	        try {
+	                List<URI> gFacDescriptorList = getClient().getRegistryClient().getGFacURIs();
+	                for (URI url : gFacDescriptorList) {
+	                        list.add(url);
+	                }
+	        } catch (Exception e) {
+	                throw new AiravataAPIInvocationException(e);
+	        }
+	        return list;
+	}
+
+	@Override
+	public URI getGFaCURL()  throws AiravataAPIInvocationException{
+	        try {
+	                return getClient().getClientConfiguration().getGfacURL().toURI();
+	        } catch (URISyntaxException e) {
+	                throw new AiravataAPIInvocationException(e);
+	        }
+	}
+
+	@Override
+	public URI getGFaCURL(URI defaultURL)  throws AiravataAPIInvocationException{
+	        if (getGFaCURL()==null){
+	                return defaultURL;
+	        }
+	        return getGFaCURL();
+	}
+	@Override
 	public List<URI> getWorkflowInterpreterServiceURLs()  throws AiravataAPIInvocationException{
 		try {
 			return getClient().getRegistryClient().getWorkflowInterpreterURIs();

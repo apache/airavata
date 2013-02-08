@@ -193,13 +193,11 @@ public class BaseCaseIT {
 
             URI eventingServiceURL = airavataAPI.getAiravataManager().getEventingServiceURL();
 
-            URI gFaCURL = airavataAPI.getAiravataManager().getGFaCURL();
-
             URI messageBoxServiceURL = airavataAPI.getAiravataManager().getMessageBoxServiceURL();
 
             URI workflowInterpreterServiceURL = airavataAPI.getAiravataManager().getWorkflowInterpreterServiceURL();
 
-            if (eventingServiceURL == null || gFaCURL == null || messageBoxServiceURL == null
+            if (eventingServiceURL == null || messageBoxServiceURL == null
                     || workflowInterpreterServiceURL == null) {
 
                 log.info("Waiting till server initializes ........");
@@ -236,9 +234,6 @@ public class BaseCaseIT {
     public void testURLs() throws AiravataAPIInvocationException {
         URI eventingServiceURL = this.airavataAPI.getAiravataManager().getEventingServiceURL();
         Assert.assertNotNull(eventingServiceURL);
-
-        URI gFaCURL = this.airavataAPI.getAiravataManager().getGFaCURL();
-        Assert.assertNotNull(gFaCURL);
 
         URI messageBoxServiceURL = this.airavataAPI.getAiravataManager().getMessageBoxServiceURL();
         Assert.assertNotNull(messageBoxServiceURL);

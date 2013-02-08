@@ -293,7 +293,6 @@
                 <include>org.apache.airavata:airavata-message-box:jar</include>
                 <include>org.apache.airavata:airavata-message-broker:jar</include>
                 <include>org.apache.airavata:airavata-xbaya-gui:jar</include>
-                <include>org.apache.airavata:airavata-gfac-axis2-interface:jar</include>
                 <include>org.apache.airavata:airavata-registry-service:jar</include>
             </includes>
         </dependencySet>
