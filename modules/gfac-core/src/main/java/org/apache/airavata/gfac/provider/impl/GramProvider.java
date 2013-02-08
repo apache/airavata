@@ -18,12 +18,14 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac.provider;
+package org.apache.airavata.gfac.provider.impl;
 
 import org.apache.airavata.gfac.JobSubmissionFault;
 import org.apache.airavata.gfac.context.GSISecurityContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.notification.events.StartExecutionEvent;
+import org.apache.airavata.gfac.provider.GFacProvider;
+import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.utils.GramJobSubmissionListener;
 import org.apache.airavata.gfac.utils.GramProviderUtils;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
