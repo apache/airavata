@@ -3,9 +3,14 @@
         <InHandlers>
             <Handler class="org.apache.airavata.gfac.handler.AppDescriptorCheckHandler"/>
         </InHandlers>
-        <OutHandler></OutHandler>
+        <OutHandlers></OutHandlers>
     </GlobalHandlers>
-    <Provider class="org.apache.airavata.gfac.provider.GramProvider">
+    <Provider class="org.apache.airavata.gfac.provider.impl.LocalProvider">
+        <InHandlers>
+            <Handler class="org.apache.airavata.gfac.handler.LocalDirectorySetupHandler"/>
+        </InHandlers>
+    </Provider>
+    <Provider class="org.apache.airavata.gfac.provider.impl.GramProvider">
         <InHandlers>
             <Handler class="org.apache.airavata.gfac.handler.GramDirectorySetupHandler"/>
             <Handler class="org.apache.airavata.gfac.handler.GridFTPInputHandler"/>
@@ -20,7 +25,7 @@
             <Handler class="org.apache.airavata.handlers.GridFTPInputHandler"/>
         </InHandlers>
         <OutHandlers>
-            <Handler class="org.apache.airavata.handlers.GridFTPnputHandler"/>
+            <Handler class="org.apache.airavata.handlers.GridFTPOutputHandler"/>
         </OutHandlers>
     </Application>
 </GFac>
