@@ -436,7 +436,6 @@
 			</activation>
 			<modules>
 				<module>modules/gfac-core</module>
-				<module>modules/gfac-axis2</module>
 				<module>modules/ws-messenger</module>
 				<module>modules/workflow-model</module>
 				<module>modules/xbaya-gui</module>
