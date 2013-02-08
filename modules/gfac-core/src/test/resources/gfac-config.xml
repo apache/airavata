@@ -5,7 +5,12 @@
         </InHandlers>
         <OutHandlers></OutHandlers>
     </GlobalHandlers>
-    <Provider class="org.apache.airavata.gfac.provider.GramProvider">
+    <Provider class="org.apache.airavata.gfac.provider.impl.LocalProvider">
+        <InHandlers>
+            <Handler class="org.apache.airavata.gfac.handler.LocalDirectorySetupHandler"/>
+        </InHandlers>
+    </Provider>
+    <Provider class="org.apache.airavata.gfac.provider.impl.GramProvider">
         <InHandlers>
             <Handler class="org.apache.airavata.gfac.handler.GramDirectorySetupHandler"/>
             <Handler class="org.apache.airavata.gfac.handler.GridFTPInputHandler"/>
