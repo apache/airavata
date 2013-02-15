@@ -93,10 +93,6 @@ public class GramProvider implements GFacProvider {
             */
             listener.waitFor();
 
-            /*
-            * Remove listener
-            */
-            job.removeListener(listener);
 
             /*
             * Fail job
@@ -128,8 +124,12 @@ public class GramProvider implements GFacProvider {
         } finally {
             if (job != null) {
                 try {
-                    job.cancel();
+                	 /*
+                     * Remove listener
+                     */
+                     job.removeListener(listener);
                 } catch (Exception e) {
+                	 log.error(e.getMessage());
                 }
             }
         }
