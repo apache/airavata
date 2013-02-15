@@ -97,13 +97,20 @@ public class GridFTPOutputHandler implements GFacHandler {
                             ((URIArrayType) actualParameter.getType()).setValueArray(valueList);
                             stringMap = new HashMap<String, ActualParameter>();
                             stringMap.put(paramName, actualParameter);
-                        }
-                        if ("StringArray".equals(actualParameter.getType().getType().toString())) {
+                        }else if ("StringArray".equals(actualParameter.getType().getType().toString())) {
                             String[] valueList = OutputUtils.parseStdoutArray(stdout, paramName);
                             ((StringArrayType) actualParameter.getType()).setValueArray(valueList);
                             stringMap = new HashMap<String, ActualParameter>();
                             stringMap.put(paramName, actualParameter);
-                        } else {
+                        } else if ("URI".equals(actualParameter.getType().getType().toString())) {
+                            URI outputURI = GFacUtils.createGsiftpURI(endpoint, app.getOutputDataDirectory());
+                            List<String> outputList = ftp.listDir(outputURI, gssCred);
+                            String valueList = outputList.get(0);
+                            ((URIParameterType) actualParameter.getType()).setValue(valueList);
+                            stringMap = new HashMap<String, ActualParameter>();
+                            stringMap.put(paramName, actualParameter);
+                        }
+                        else {
                             // This is to handle exception during the output parsing.
                             stringMap = OutputUtils.fillOutputFromStdout(jobExecutionContext, stdout, stderr);
                         }
