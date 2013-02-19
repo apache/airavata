@@ -29,6 +29,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.core.ide.XBayaExecutionModeListener;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
@@ -36,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import xsul.lead.LeadDeploymentConfig;
+import xsul.lead.types.context.ContextDocument;
 
 public class XBayaConfiguration extends Observable implements Observer {
 
@@ -145,7 +147,8 @@ public class XBayaConfiguration extends Observable implements Observer {
     private List<XBayaExecutionModeListener> xbayaExecutionModeChangeListners=new ArrayList<XBayaExecutionModeListener>();
 
     private boolean regURLSetByCMD = false;
-    
+
+    private ContextHeaderDocument.ContextHeader contextHeader;
     public enum XBayaExecutionMode{
     	IDE,
     	MONITOR
@@ -941,4 +944,12 @@ public class XBayaConfiguration extends Observable implements Observer {
 //        }
 //        return airavataAPI;
 //    }
+
+    public ContextHeaderDocument.ContextHeader getContextHeader() {
+        return contextHeader;
+    }
+
+    public void setContextHeader(ContextHeaderDocument.ContextHeader contextHeader) {
+        this.contextHeader = contextHeader;
+    }
 }

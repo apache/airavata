@@ -33,15 +33,14 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.commons.gfac.type.*;
-import org.apache.airavata.core.gfac.exception.ProviderException;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacAPI;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
-import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.XMLUtil;
@@ -257,6 +256,8 @@ public class EmbeddedGFacInvoker implements Invoker {
             this.notifier.invokingService(new WSIFMessageElement((XmlElement) wsifMessageElement));
             GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, ServerSettings.getProperties());
             JobExecutionContext jobExecutionContext = new JobExecutionContext(gFacConfiguration, serviceName);
+            //Here we get only the contextheader information sent specific for this node
+            jobExecutionContext.setContextHeader(WorkflowContextHeaderBuilder.removeOtherSchedulingConfig(nodeID,configuration.getContextHeader()));
 
             jobExecutionContext.setProperty(Constants.PROP_WORKFLOW_NODE_ID,this.nodeID);
             jobExecutionContext.setProperty(Constants.PROP_TOPIC,this.configuration.getTopic());
