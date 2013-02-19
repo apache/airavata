@@ -26,9 +26,12 @@ import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.ToolsException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
+import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.NameValuePairType;
+import org.apache.airavata.schemas.gfac.QueueType;
 import org.apache.airavata.schemas.gfac.URIArrayType;
+import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.globus.gram.GramAttributes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,49 +111,51 @@ public class GramRSLGenerator {
         }
         // Using the workflowContext Header values if user provided them in the request and overwrite the default values in DD
         //todo finish the scheduling based on workflow execution context
-//        ContextHeaderDocument.ContextHeader currentContextHeader = WorkflowContextHeaderBuilder.getCurrentContextHeader();
-//        if (currentContextHeader.getWorkflowSchedulingContext() != null) {
-//            if (currentContextHeader != null &&
-//                    currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray() != null &&
-//                    currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray().length > 0) {
-//                try {
-//                    int cpuCount = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getCpuCount();
-//                    if(cpuCount>0){
-//                        app.setCpuCount(cpuCount);
-//                    }
-//                } catch (NullPointerException e) {
-//                    log.debug("No Value sent in WorkflowContextHeader for CPU Count, value in the Deployment Descriptor will be used");
-//                    context.getNotifier().publish(new ExecutionFailEvent(context, e, "No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used");
-//                }
-//                try {
-//                    int nodeCount = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getNodeCount();
-//                    if(nodeCount>0){
-//                        app.setNodeCount(nodeCount);
-//                    }
-//                } catch (NullPointerException e) {
-//                    log.debug("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used");
-//                    context.getExecutionContext().getNotifier().executionFail(context, e, "No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used");
-//                }
-//                try {
-//                    String queueName = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getQueueName();
-//                    if (queueName != null) {
-//                        if(app.getQueue() == null){
-//                            QueueType queueType = app.addNewQueue();
-//                            queueType.setQueueName(queueName);
-//                        }else{
-//                            app.getQueue().setQueueName(queueName);
-//                        }
-//                    }
-//                } catch (NullPointerException e) {
-//                    log.debug("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used");
-//                    context.getExecutionContext().getNotifier().executionFail(context, e, "No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used");
-//                }
-//            }
-//        }
-//        if(currentContextHeader.getWorkflowOutputDataHandling() != null){
-//            if(currentContextHeader.getWorkflowOutputDataHandling().getApplicationOutputDataHandlingArray().length != 0)
-//            app.setOutputDataDirectory(currentContextHeader.getWorkflowOutputDataHandling().getApplicationOutputDataHandlingArray()[0].getOutputDataDirectory());
-//        }
+        ContextHeaderDocument.ContextHeader currentContextHeader = context.getContextHeader();
+        if(currentContextHeader != null){
+        if (currentContextHeader.getWorkflowSchedulingContext() != null) {
+            if (currentContextHeader != null &&
+                    currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray() != null &&
+                    currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray().length > 0) {
+                try {
+                    int cpuCount = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getCpuCount();
+                    if(cpuCount>0){
+                        app.setCpuCount(cpuCount);
+                    }
+                } catch (NullPointerException e) {
+                    log.debug("No Value sent in WorkflowContextHeader for CPU Count, value in the Deployment Descriptor will be used");
+                    new GFacProviderException("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used",e);
+                }
+                try {
+                    int nodeCount = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getNodeCount();
+                    if(nodeCount>0){
+                        app.setNodeCount(nodeCount);
+                    }
+                } catch (NullPointerException e) {
+                    log.debug("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used");
+                     new GFacProviderException("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used",e);
+                }
+                try {
+                    String queueName = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getQueueName();
+                    if (queueName != null) {
+                        if(app.getQueue() == null){
+                            QueueType queueType = app.addNewQueue();
+                            queueType.setQueueName(queueName);
+                        }else{
+                            app.getQueue().setQueueName(queueName);
+                        }
+                    }
+                } catch (NullPointerException e) {
+                    log.debug("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used");
+                     new GFacProviderException("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used",e);
+                }
+            }
+        }
+        if(currentContextHeader.getWorkflowOutputDataHandling() != null){
+            if(currentContextHeader.getWorkflowOutputDataHandling().getApplicationOutputDataHandlingArray().length != 0)
+            app.setOutputDataDirectory(currentContextHeader.getWorkflowOutputDataHandling().getApplicationOutputDataHandlingArray()[0].getOutputDataDirectory());
+        }
+        }
         if (app.getNodeCount() > 0) {
             jobAttr.set("hostCount", String.valueOf(app.getNodeCount()));
             log.debug("Setting number of Nodes to " + app.getCpuCount());

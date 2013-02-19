@@ -24,6 +24,7 @@ package org.apache.airavata.gfac.context;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.notification.GFacNotifier;
 import org.apache.airavata.gfac.provider.GFacProvider;
+import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +42,9 @@ public class JobExecutionContext extends AbstractContext{
     private GFacNotifier notifier;
 
     private SecurityContext securityContext;
+
+    private ContextHeaderDocument.ContextHeader contextHeader;
+
     // Keep track of the current path of the message. Before hitting provider its in-path.
     // After provider its out-path.
     private boolean inPath = true;
@@ -164,5 +168,13 @@ public class JobExecutionContext extends AbstractContext{
 
     public void setSecurityContext(SecurityContext securityContext) {
         this.securityContext = securityContext;
+    }
+
+    public ContextHeaderDocument.ContextHeader getContextHeader() {
+        return contextHeader;
+    }
+
+    public void setContextHeader(ContextHeaderDocument.ContextHeader contextHeader) {
+        this.contextHeader = contextHeader;
     }
 }
