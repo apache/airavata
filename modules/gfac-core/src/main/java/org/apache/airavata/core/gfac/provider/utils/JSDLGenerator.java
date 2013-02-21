@@ -32,6 +32,7 @@ import org.ggf.schemas.jsdl.x2005.x11.jsdlPosix.POSIXApplicationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Deprecated
 public class JSDLGenerator {
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 

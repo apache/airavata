@@ -99,7 +99,8 @@ public class GramProvider implements GFacProvider {
             */
             int jobStatus = listener.getStatus();
 
-            if (job.getExitCode() != 0 || jobStatus == GramJob.STATUS_FAILED) {
+//            if (job.getExitCode() != 0 || jobStatus == GramJob.STATUS_FAILED) {
+              if (jobStatus == GramJob.STATUS_FAILED) {
                 int errCode = listener.getError();
                 String errorMsg = "Job " + job.getID() + " on host " + host.getHostAddress() + " Job Exit Code = "
                         + listener.getError();

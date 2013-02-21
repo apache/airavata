@@ -62,7 +62,7 @@ public class GramJobSubmissionListener implements GramJobListener{
             if (proxyExpTime < JOB_PROXY_REMAINING_TIME_LIMIT) {
                 log.info("Job proxy expired. Trying to renew proxy");
                 GSSCredential gssCred = (new GSISecurityContext(context.getGFacConfiguration())).getGssCredentails();
-                job.renew(gssCred);
+//                job.renew(gssCred);
                 log.info("Myproxy renewed");
             }
 

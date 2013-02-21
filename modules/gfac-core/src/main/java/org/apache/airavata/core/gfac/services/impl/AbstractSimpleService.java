@@ -83,7 +83,7 @@ public abstract class AbstractSimpleService implements GenericService {
         /*
          * Determine provider
          */
-        Scheduler scheduler = getScheduler(context);
+        Scheduler scheduler = getScheduler(context); //SM: why passing context when not used
         context.getExecutionContext().getNotifier().startSchedule(context);
         Provider provider = scheduler.schedule(context);
         context.getExecutionContext().getNotifier().finishSchedule(context);

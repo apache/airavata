@@ -22,7 +22,7 @@
 package org.apache.airavata.core.gfac.provider.utils;
 
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
+//import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
 import org.apache.airavata.core.gfac.exception.SecurityException;
 import org.globus.gram.GramException;
 import org.globus.gram.GramJob;
@@ -67,9 +67,9 @@ public class JobSubmissionListener implements GramJobListener {
             int proxyExpTime = job.getCredentials().getRemainingLifetime();
             if (proxyExpTime < JOB_PROXY_REMAINING_TIME_LIMIT) {
                 log.info("Job proxy expired. Trying to renew proxy");
-                GSSCredential gssCred = ((GSISecurityContext) context.getSecurityContext(MYPROXY_SECURITY_CONTEXT))
-                        .getGssCredentails();
-                job.renew(gssCred);
+//                GSSCredential gssCred = ((GSISecurityContext) context.getSecurityContext(MYPROXY_SECURITY_CONTEXT))
+//                        .getGssCredentails();
+//                job.renew(gssCred);
                 log.info("Myproxy renewed");
             }
 

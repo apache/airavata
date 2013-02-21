@@ -36,22 +36,55 @@ import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 
 public class GridFTPOutputHandler implements GFacHandler {
     private static final Logger log = LoggerFactory.getLogger(GramJobSubmissionListener.class);
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         log.info("Invoking GridFTPOutputHandler ...");
-        GlobusHostType host = (GlobusHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType();
-        ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
-        GridFtp ftp = new GridFtp();
-        File localStdErrFile = null;
-        Map<String, ActualParameter> stringMap = null;
-        try {
+        
+       ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
+        
+ 	   HostDescriptionType hostType = jobExecutionContext.getApplicationContext().getHostDescription().getType();
+ 	   String[] gridFTPEndpointArray = null;
+ 	   String hostName = null;
+ 	   String hostAddress = null;
+ 	   
+       if(jobExecutionContext.getApplicationContext().getHostDescription().getType() instanceof GlobusHostType){
+        	gridFTPEndpointArray = ((GlobusHostType) hostType).getGridFTPEndPointArray();
+        	hostName = ((GlobusHostType) hostType).getHostName();
+        	hostAddress = ((GlobusHostType) hostType).getHostAddress();
+        	
+       }
+       else if (jobExecutionContext.getApplicationContext().getHostDescription().getType() instanceof UnicoreHostType){
+        	gridFTPEndpointArray = ((UnicoreHostType) hostType).getGridFTPEndPointArray();
+        	hostName = ((UnicoreHostType) hostType).getHostName();
+        	hostAddress = ((UnicoreHostType) hostType).getHostAddress();
+       }
+       else {
+        	//TODO
+       }
+
+       GridFtp ftp = new GridFtp();
+       File localStdErrFile = null;
+       Map<String, ActualParameter> stringMap = new HashMap<String, ActualParameter>();
+       try {
             if (jobExecutionContext.getSecurityContext() == null ||
                     !(jobExecutionContext.getSecurityContext() instanceof GSISecurityContext))
             {
@@ -59,11 +92,11 @@ public class GridFTPOutputHandler implements GFacHandler {
                 jobExecutionContext.setSecurityContext(gssContext);
             }
             GSSCredential gssCred = ((GSISecurityContext)jobExecutionContext.getSecurityContext()).getGssCredentails();
-            String[] hostgridFTP = host.getGridFTPEndPointArray();
+            String[] hostgridFTP = gridFTPEndpointArray;
             if (hostgridFTP == null || hostgridFTP.length == 0) {
-                hostgridFTP = new String[]{host.getHostAddress()};
+                hostgridFTP = new String[]{hostName};
             }
-            for (String endpoint : host.getGridFTPEndPointArray()) {
+            for (String endpoint : gridFTPEndpointArray) {
                 try {
                     /*
                      *  Read Stdout and Stderror
@@ -84,8 +117,28 @@ public class GridFTPOutputHandler implements GFacHandler {
                     File localStdOutFile = File.createTempFile(timeStampedServiceName, "stdout");
                     localStdErrFile = File.createTempFile(timeStampedServiceName, "stderr");
 
-                    String stdout = ftp.readRemoteFile(stdoutURI, gssCred, localStdOutFile);
-                    String stderr = ftp.readRemoteFile(stderrURI, gssCred, localStdErrFile);
+                    
+                    
+                    
+                    // Shahbaz Comment: in principle when job is failed the execution chain must be stopped
+                    // there
+                    
+                    
+                    String stdout = null;
+                    String stderr = null;
+
+                    // TODO: what if job is failed 
+                    // and this handler is not able to find std* files?
+                    try {
+                     stdout = ftp.readRemoteFile(stdoutURI, gssCred, localStdOutFile);
+                     stderr = ftp.readRemoteFile(stderrURI, gssCred, localStdErrFile);
+                     //TODO: do we also need to set them as output parameters for another job  
+                    }
+                    catch(ToolsException e) {
+                        log.error("Cannot download stdout/err files. One reason could be the job is not successfully finished:  "+e.getMessage());
+                    }
+                    
+                    
                     Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
                     Set<String> keys = output.keySet();
                     for (String paramName : keys) {
@@ -95,19 +148,22 @@ public class GridFTPOutputHandler implements GFacHandler {
                             List<String> outputList = ftp.listDir(outputURI, gssCred);
                             String[] valueList = outputList.toArray(new String[outputList.size()]);
                             ((URIArrayType) actualParameter.getType()).setValueArray(valueList);
-                            stringMap = new HashMap<String, ActualParameter>();
+                            // why to instantiate new instance?
+//                            stringMap = new HashMap<String, ActualParameter>();
                             stringMap.put(paramName, actualParameter);
                         }else if ("StringArray".equals(actualParameter.getType().getType().toString())) {
                             String[] valueList = OutputUtils.parseStdoutArray(stdout, paramName);
                             ((StringArrayType) actualParameter.getType()).setValueArray(valueList);
-                            stringMap = new HashMap<String, ActualParameter>();
+//                            stringMap = new HashMap<String, ActualParameter>();
                             stringMap.put(paramName, actualParameter);
                         } else if ("URI".equals(actualParameter.getType().getType().toString())) {
-                            URI outputURI = GFacUtils.createGsiftpURI(endpoint, app.getOutputDataDirectory());
-                            List<String> outputList = ftp.listDir(outputURI, gssCred);
-                            String valueList = outputList.get(0);
-                            ((URIParameterType) actualParameter.getType()).setValue(valueList);
-                            stringMap = new HashMap<String, ActualParameter>();
+                            stringMap.put(paramName, actualParameter);
+                        }
+                        else if ("String".equals(actualParameter.getType().getType().toString())) {
+                        	String path = app.getOutputDataDirectory()+"/"+((StringParameterType) actualParameter.getType()).getValue();
+                            URI outputURI = GFacUtils.createGsiftpURI(endpoint, path);
+                            ((StringParameterType) actualParameter.getType()).setValue(outputURI.toString());
+//                            stringMap = new HashMap<String, ActualParameter>();
                             stringMap.put(paramName, actualParameter);
                         }
                         else {
@@ -136,6 +192,7 @@ public class GridFTPOutputHandler implements GFacHandler {
             log.error(e.getMessage());
             throw new GFacHandlerException(e.getMessage(), jobExecutionContext, e, readLastLinesofStdOut(localStdErrFile.getPath(), 20));
         }
+        
     }
 
     private static String readLastLinesofStdOut(String path, int count) {
@@ -178,14 +235,29 @@ public class GridFTPOutputHandler implements GFacHandler {
     }
 
     private static void stageOutputFiles(JobExecutionContext jobExecutionContext, String outputFileStagingPath) throws GFacProviderException {
+    	
+    	
+    	   HostDescriptionType hostType = jobExecutionContext.getApplicationContext().getHostDescription().getType();
+    	   String[] gridFTPEndpointArray = null;
+    	   
+           if(jobExecutionContext.getApplicationContext().getHostDescription().getType() instanceof GlobusHostType){
+           	gridFTPEndpointArray = ((GlobusHostType) hostType).getGridFTPEndPointArray(); 
+           }
+           else if (jobExecutionContext.getApplicationContext().getHostDescription().getType() instanceof UnicoreHostType){
+           	gridFTPEndpointArray = ((UnicoreHostType) hostType).getGridFTPEndPointArray();
+           }
+           else {
+           	//TODO
+           }
+       
+    	
         MessageContext outputNew = new MessageContext();
         MessageContext output = jobExecutionContext.getOutMessageContext();
         Map<String, Object> parameters = output.getParameters();
         for (String paramName : parameters.keySet()) {
             ActualParameter actualParameter = (ActualParameter) parameters
                     .get(paramName);
-            //TODO: Review this with type
-            GlobusHostType host = (GlobusHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType();
+
             GridFtp ftp = new GridFtp();
 
             if (jobExecutionContext.getSecurityContext() == null ||
@@ -197,14 +269,14 @@ public class GridFTPOutputHandler implements GFacHandler {
             GSSCredential gssCred = ((GSISecurityContext)jobExecutionContext.getSecurityContext()).getGssCredentails();
             try {
                 if ("URI".equals(actualParameter.getType().getType().toString())) {
-                    for (String endpoint : host.getGridFTPEndPointArray()) {
+                    for (String endpoint : gridFTPEndpointArray) {
                         ((URIParameterType) actualParameter.getType()).setValue(doStaging(outputFileStagingPath,
                                 MappingFactory.toString(actualParameter), ftp, gssCred, endpoint));
                     }
                 } else if ("URIArray".equals(actualParameter.getType().getType().toString())) {
                     List<String> split = Arrays.asList(MappingFactory.toString(actualParameter).split(","));
                     List<String> newFiles = new ArrayList<String>();
-                    for (String endpoint : host.getGridFTPEndPointArray()) {
+                    for (String endpoint : gridFTPEndpointArray) {
                         for (String paramValueEach : split) {
                             newFiles.add(doStaging(outputFileStagingPath, paramValueEach, ftp, gssCred, endpoint));
                         }
@@ -232,4 +304,5 @@ public class GridFTPOutputHandler implements GFacHandler {
                 gssCred, outputFile);
         return outputFileStagingPath + File.separator + fileName;
     }
+    
 }

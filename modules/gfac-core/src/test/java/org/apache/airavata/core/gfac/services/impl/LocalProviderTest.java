@@ -20,10 +20,7 @@
 */
 package org.apache.airavata.core.gfac.services.impl;
 
-import org.apache.airavata.client.AiravataAPIFactory;
-import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.commons.gfac.type.*;
-import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacAPI;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;

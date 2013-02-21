@@ -45,8 +45,8 @@ public class ParamChemTest {
         gFacConfiguration.setMyProxyLifeCycle(3600);
         gFacConfiguration.setMyProxyServer("myproxy.teragrid.org");
         gFacConfiguration.setMyProxyUser("ccguser");
-        gFacConfiguration.setMyProxyPassphrase("");
-        gFacConfiguration.setTrustedCertLocation("/Users/lahirugunathilake/Downloads/certificates");
+        gFacConfiguration.setMyProxyPassphrase("s3@g(id12");
+        gFacConfiguration.setTrustedCertLocation("");
         //have to set InFlwo Handlers and outFlowHandlers
         gFacConfiguration.setInHandlers(Arrays.asList(new String[]{"org.apache.airavata.gfac.handler.GramDirectorySetupHandler", "org.apache.airavata.gfac.handler.GridFTPInputHandler"}));
         gFacConfiguration.setOutHandlers(Arrays.asList(new String[] {"org.apache.airavata.gfac.handler.GridFTPOutputHandler"}));
@@ -57,7 +57,7 @@ public class ParamChemTest {
         HostDescription host = new HostDescription(GlobusHostType.type);
         host.getType().setHostName("trestles");
         host.getType().setHostAddress("trestles.sdsc.edu");
-        ((GlobusHostType) host.getType()).addGridFTPEndPoint("gsiftp://trestles-login2.sdsc.edu:2811");
+        ((GlobusHostType) host.getType()).addGridFTPEndPoint("gsiftp://trestles-dm.sdsc.edu:2811");
         ((GlobusHostType) host.getType()).addGlobusGateKeeperEndPoint("trestles-login2.sdsc.edu:2119/jobmanager-pbstest2");
 
         /*
@@ -281,10 +281,10 @@ public class ParamChemTest {
 
     @Test
     public void testGramProvider() throws GFacException {
-//        GFacAPI gFacAPI = new GFacAPI();
-//        gFacAPI.submitJob(jobExecutionContext);
-//        MessageContext outMessageContext = jobExecutionContext.getOutMessageContext();
-//        Assert.assertFalse(outMessageContext.getParameters().isEmpty());
+        GFacAPI gFacAPI = new GFacAPI();
+        gFacAPI.submitJob(jobExecutionContext);
+        MessageContext outMessageContext = jobExecutionContext.getOutMessageContext();
+        Assert.assertFalse(outMessageContext.getParameters().isEmpty());
 //        Assert.assertEquals(MappingFactory.toString((ActualParameter) outMessageContext.getParameter("echo_output")), "hello");
     }
 }

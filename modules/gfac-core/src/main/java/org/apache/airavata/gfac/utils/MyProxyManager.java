@@ -30,6 +30,7 @@ import org.globus.gsi.TrustedCertificates;
 import org.globus.gsi.gssapi.GlobusGSSCredentialImpl;
 import org.globus.myproxy.MyProxy;
 import org.globus.myproxy.MyProxyException;
+import org.gridforum.jgss.ExtendedGSSCredential;
 import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,10 +70,11 @@ public class MyProxyManager {
             TrustedCertificates.setDefaultTrustedCertificates(certificates);
         }
     }
-
+    
+    // not thread safe
     public GSSCredential renewProxy() throws MyProxyException, IOException {
-
         init();
+        
         String proxyloc = null;
         MyProxy myproxy = new MyProxy(hostname, port);
         GSSCredential proxy = myproxy.get(username, password, lifetime);
@@ -111,8 +113,30 @@ public class MyProxyManager {
             Runtime.getRuntime().exec("/bin/chmod 600 " + proxyloc);
             log.info("Proxy file renewed to " + proxyloc + " for the user " + username + " with " + lifetime
                     + " lifetime.");
-
         }
+        
         return proxy;
     }
+    
+    // this should be reused by the above method
+    public GlobusCredential getGlobusCredential() throws Exception{
+		init();
+		String proxyloc = null;
+		MyProxy myproxy = new MyProxy(hostname, port);
+		GSSCredential proxy = myproxy.get(username, password, lifetime);
+		GlobusCredential globusCred = null;
+		if (proxy instanceof GlobusGSSCredentialImpl) {
+			globusCred = ((GlobusGSSCredentialImpl) proxy)
+					.getGlobusCredential();
+			log.debug("got proxy from myproxy for " + username + " with "
+					+ lifetime + " lifetime.");
+		}
+
+		return globusCred;
+    }
+    
+    
+    
+    
+    
 }

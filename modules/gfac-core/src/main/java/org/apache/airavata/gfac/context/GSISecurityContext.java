@@ -22,6 +22,7 @@ package org.apache.airavata.gfac.context;
 
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.utils.MyProxyManager;
+import org.globus.gsi.GlobusCredential;
 import org.globus.tools.MyProxy;
 import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
@@ -43,7 +44,8 @@ public class GSISecurityContext extends SecurityContext {
     private String trustedCertLoc;
 
     private GSSCredential gssCredentails;
-
+    
+    private GlobusCredential globusCredential;
 
     public GSISecurityContext(GFacConfiguration configuration) {
         this.setMyproxyLifetime(configuration.getMyProxyLifeCycle());
@@ -71,6 +73,31 @@ public class GSISecurityContext extends SecurityContext {
         }
     }
 
+    
+    public GlobusCredential getGlobusCredential() {
+    	try{
+        System.out.println(gssCredentails);
+        if (gssCredentails == null || gssCredentails.getRemainingLifetime() < 10 * 90) {
+            if (proxyRenewer != null) {
+//                gssCredentails = proxyRenewer.renewProxy();
+                globusCredential = proxyRenewer.getGlobusCredential();
+            } else if (myproxyUserName != null && myproxyPasswd != null && myproxyServer != null) {
+                this.proxyRenewer = new MyProxyManager(myproxyUserName, myproxyPasswd, MyProxy.MYPROXY_SERVER_PORT,
+                        myproxyLifetime, myproxyServer, trustedCertLoc);
+                log.debug("loaded credentails from Proxy server");
+//                gssCredentails = this.proxyRenewer.renewProxy();
+                globusCredential = proxyRenewer.getGlobusCredential();
+            }
+        }
+        return globusCredential;
+    } catch (Exception e) {
+        throw new SecurityException(e.getMessage(), e);
+    }
+    }
+        
+    
+
+    
     public String getTrustedCertLoc() {
         return trustedCertLoc;
     }
@@ -110,4 +137,7 @@ public class GSISecurityContext extends SecurityContext {
     public void setMyproxyLifetime(int myproxyLifetime) {
         this.myproxyLifetime = myproxyLifetime;
     }
+    
+    
+    
 }

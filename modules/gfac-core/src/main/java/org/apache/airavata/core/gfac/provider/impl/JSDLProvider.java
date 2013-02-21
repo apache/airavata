@@ -24,7 +24,6 @@ import de.fzj.unicore.bes.client.FactoryClient;
 import de.fzj.unicore.bes.faults.InvalidRequestMessageFault;
 import de.fzj.unicore.bes.faults.NotAcceptingNewActivitiesFault;
 import de.fzj.unicore.bes.faults.UnsupportedFeatureFault;
-import de.fzj.unicore.uas.security.ClientProperties;
 import de.fzj.unicore.wsrflite.xmlbeans.WSUtilities;
 import eu.unicore.security.util.client.IClientProperties;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
@@ -155,7 +154,7 @@ public class JSDLProvider {
             /*
              * Set Security
              */
-            securityProperties = initSecurityProperties();
+//            securityProperties = initSecurityProperties();
             String factoryUrl = job.getFactoryUrl();
             EndpointReferenceType eprt = EndpointReferenceType.Factory
                     .newInstance();
@@ -227,16 +226,5 @@ public class JSDLProvider {
             log.debug(buf.toString());
     }
 
-    protected ClientProperties initSecurityProperties() {
-        //todo provide a proper way of specified credentials
-		ClientProperties sp = new ClientProperties();
-		sp.setSslEnabled(true);
-		sp.setSignMessage(true);
-		sp.setKeystore("src/test/resources/demo-keystore.jks");
-		sp.setKeystorePassword("654321");
-		sp.setKeystoreAlias("demouser-new");
-		sp.setKeystoreType("JKS");
-		return sp;
-	}
 
 }
