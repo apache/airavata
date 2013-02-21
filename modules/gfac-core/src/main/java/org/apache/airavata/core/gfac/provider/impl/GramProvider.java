@@ -215,16 +215,16 @@ public class GramProvider extends AbstractProvider {
              */
             int jobStatus = listener.getStatus();
 
-            if(job.getExitCode() != 0 || jobStatus == GramJob.STATUS_FAILED){
-                int errCode = listener.getError();
-                String errorMsg = "Job " + job.getID() + " on host " + host.getHostAddress() + " Job Exit Code = "
-                        + listener.getError();
-                JobSubmissionFault error = new JobSubmissionFault(this, new Exception(errorMsg), "GFAC HOST",
-                        gateKeeper, job.getRSL(),invocationContext);
-                errorReason(errCode, error);
-                invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,error,errorMsg);
-                throw error;
-            }
+//            if(job.getExitCode() != 0 || jobStatus == GramJob.STATUS_FAILED){
+//                int errCode = listener.getError();
+//                String errorMsg = "Job " + job.getID() + " on host " + host.getHostAddress() + " Job Exit Code = "
+//                        + listener.getError();
+//                JobSubmissionFault error = new JobSubmissionFault(this, new Exception(errorMsg), "GFAC HOST",
+//                        gateKeeper, job.getRSL(),invocationContext);
+//                errorReason(errCode, error);
+//                invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,error,errorMsg);
+//                throw error;
+//            }
          } catch (GramException e) {
             JobSubmissionFault error = new JobSubmissionFault(this, e, host.getHostAddress(), gateKeeper, job.getRSL(), invocationContext);
             int errCode = listener.getError();
@@ -251,7 +251,7 @@ public class GramProvider extends AbstractProvider {
 		if (errCode == 8) {
 		    error.setReason(JobSubmissionFault.JOB_CANCEL);
 		} else {
-		    error.setReason(JobSubmissionFault.JOB_FAILED + " With Exit Code:" + job.getExitCode());
+//		    error.setReason(JobSubmissionFault.JOB_FAILED + " With Exit Code:" + job.getExitCode());
 		}
 		return error;
 	}

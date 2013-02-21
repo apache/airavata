@@ -20,26 +20,10 @@
 */
 package org.apache.airavata.gfac.handler;
 
-import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.MappingFactory;
-import org.apache.airavata.gfac.ToolsException;
-import org.apache.airavata.gfac.context.GSISecurityContext;
-import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.context.MessageContext;
-import org.apache.airavata.gfac.external.GridFtp;
-import org.apache.airavata.gfac.provider.GFacProviderException;
-import org.apache.airavata.gfac.utils.GFacUtils;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.GlobusHostType;
-import org.apache.airavata.schemas.gfac.URIArrayType;
-import org.apache.airavata.schemas.gfac.URIParameterType;
-import org.ietf.jgss.GSSCredential;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -47,11 +31,31 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.airavata.commons.gfac.type.ActualParameter;
+import org.apache.airavata.commons.gfac.type.MappingFactory;
+import org.apache.airavata.gfac.ToolsException;
+import org.apache.airavata.gfac.context.GSISecurityContext;
+import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.gfac.context.MessageContext;
+import org.apache.airavata.gfac.external.GridFtp;
+import org.apache.airavata.gfac.utils.GFacUtils;
+import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.HostDescriptionType;
+import org.apache.airavata.schemas.gfac.URIArrayType;
+import org.apache.airavata.schemas.gfac.URIParameterType;
+import org.apache.airavata.schemas.gfac.UnicoreHostType;
+import org.ietf.jgss.GSSCredential;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class GridFTPInputHandler implements GFacHandler {
     private static final Logger log = LoggerFactory.getLogger(AppDescriptorCheckHandler.class);
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         log.info("Invoking GridFTPInputHandler ...");
+        
+        
         MessageContext inputNew = new MessageContext();
         try {
             MessageContext input = jobExecutionContext.getInMessageContext();
@@ -80,9 +84,32 @@ public class GridFTPInputHandler implements GFacHandler {
     }
 
     private static String stageInputFiles(JobExecutionContext jobExecutionContext, String paramValue) throws URISyntaxException, SecurityException, ToolsException, IOException {
-        URI gridftpURL;
-        gridftpURL = new URI(paramValue);
-        GlobusHostType host = (GlobusHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType();
+        URI gridftpURL = new URI(paramValue);
+        
+        String[] gridFTPEndpointArray = null;
+        
+        // not to download input files to the input dir if its http / gsiftp
+        // but if local then yes
+        boolean isInputNonLocal = true;
+        
+        //TODO: why it is tightly coupled with gridftp
+//        GlobusHostType host = (GlobusHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType();
+        
+        //TODO: make it more reusable
+        HostDescriptionType hostType = jobExecutionContext.getApplicationContext().getHostDescription().getType();
+        
+        if(jobExecutionContext.getApplicationContext().getHostDescription().getType() instanceof GlobusHostType){
+        	gridFTPEndpointArray = ((GlobusHostType) hostType).getGridFTPEndPointArray(); 
+        }
+        else if (jobExecutionContext.getApplicationContext().getHostDescription().getType() instanceof UnicoreHostType){
+        	gridFTPEndpointArray = ((UnicoreHostType) hostType).getGridFTPEndPointArray();
+        	isInputNonLocal = false;
+        }
+        else {
+        	//TODO
+        }
+        
+        
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
         GridFtp ftp = new GridFtp();
         URI destURI = null;
@@ -92,8 +119,10 @@ public class GridFTPInputHandler implements GFacHandler {
             jobExecutionContext.setSecurityContext(gssContext);
         }
         GSSCredential gssCred = ((GSISecurityContext) jobExecutionContext.getSecurityContext()).getGssCredentails();
+        
+        
 
-        for (String endpoint : host.getGridFTPEndPointArray()) {
+        for (String endpoint : gridFTPEndpointArray) {
             URI inputURI = GFacUtils.createGsiftpURI(endpoint, app.getInputDataDirectory());
             String fileName = new File(gridftpURL.getPath()).getName();
             String s = inputURI.getPath() + File.separator + fileName;
@@ -101,13 +130,33 @@ public class GridFTPInputHandler implements GFacHandler {
             if (fileName != null && !"".equals(fileName)) {
                 destURI = GFacUtils.createGsiftpURI(endpoint, s);
                 if (paramValue.startsWith("gsiftp")) {
-                    ftp.uploadFile(gridftpURL, destURI, gssCred);
+                	// no need to do if it is unicore, as unicore will download this on user's behalf to the job space dir 
+                	if(isInputNonLocal) ftp.uploadFile(gridftpURL, destURI, gssCred);
+                	else return paramValue;
                 } else if (paramValue.startsWith("file")) {
                     String localFile = paramValue.substring(paramValue.indexOf(":") + 1, paramValue.length());
-                    ftp.uploadFile(destURI, gssCred, new FileInputStream(localFile));
+                    FileInputStream fis = null;
+                    try {
+                    	fis = new FileInputStream(localFile);
+                    	ftp.uploadFile(destURI, gssCred, fis);
+                    }finally {
+                    	fis.close();
+                    }
                 } else if (paramValue.startsWith("http")) {
-                    ftp.uploadFile(destURI,
-                            gssCred, (gridftpURL.toURL().openStream()));
+                	// no need to do if it is unicore
+                	if(isInputNonLocal) {
+                		InputStream is = null;
+                		try {
+                			is = gridftpURL.toURL().openStream();
+                			ftp.uploadFile(destURI, gssCred, (is));
+                		}finally {
+                			is.close();
+                		}
+                	} else {
+                		// don't return destUri
+                		return paramValue;
+                	}
+                		
                 } else {
                     //todo throw exception telling unsupported protocol
                     return paramValue;
@@ -117,6 +166,10 @@ public class GridFTPInputHandler implements GFacHandler {
                 return paramValue;
             }
         }
-        return destURI.getPath();
+        return destURI.toString();
     }
+    
+    
+    
+
 }

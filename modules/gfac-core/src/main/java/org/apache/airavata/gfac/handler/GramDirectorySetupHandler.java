@@ -30,6 +30,8 @@ import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.GramJobSubmissionListener;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.HostDescriptionType;
+import org.apache.airavata.schemas.gfac.UnicoreHostType;
 import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +47,31 @@ public class GramDirectorySetupHandler implements GFacHandler {
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         log.info("Invoking GramDirectorySetupHandler ...");
-        GlobusHostType host = (GlobusHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType();
+        
+        
+        String[] gridFTPEndpointArray = null;
+        
+        String hostName = null;
+        
+        //TODO: why it is tightly coupled with gridftp
+//        GlobusHostType host = (GlobusHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType();
+        
+        //TODO: make it more reusable
+        HostDescriptionType hostType = jobExecutionContext.getApplicationContext().getHostDescription().getType();
+        
+        
+        
+        if(hostType instanceof GlobusHostType){
+        	gridFTPEndpointArray = ((GlobusHostType) hostType).getGridFTPEndPointArray(); 
+        }
+        else if (hostType instanceof UnicoreHostType){
+        	gridFTPEndpointArray = ((UnicoreHostType) hostType).getGridFTPEndPointArray();
+        }
+        else {
+        	//TODO
+        }
+
+        
         ApplicationDescription applicationDeploymentDescription = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
         ApplicationDeploymentDescriptionType app = applicationDeploymentDescription.getType();
         GridFtp ftp = new GridFtp();
@@ -58,13 +84,13 @@ public class GramDirectorySetupHandler implements GFacHandler {
                 jobExecutionContext.setSecurityContext(gssContext);
             }
             GSSCredential gssCred = ((GSISecurityContext)jobExecutionContext.getSecurityContext()).getGssCredentails();
-            String[] hostgridFTP = host.getGridFTPEndPointArray();
-            if (hostgridFTP == null || hostgridFTP.length == 0) {
-                hostgridFTP = new String[]{host.getHostAddress()};
+            
+            if (gridFTPEndpointArray == null || gridFTPEndpointArray.length == 0) {
+            	gridFTPEndpointArray = new String[]{hostType.getHostAddress()};
             }
             boolean success = false;
             GFacHandlerException pe = null;// = new ProviderException("");
-            for (String endpoint : host.getGridFTPEndPointArray()) {
+            for (String endpoint : gridFTPEndpointArray) {
                 try {
 
                     URI tmpdirURI = GFacUtils.createGsiftpURI(endpoint, app.getScratchWorkingDirectory());
@@ -72,7 +98,7 @@ public class GramDirectorySetupHandler implements GFacHandler {
                     URI inputURI = GFacUtils.createGsiftpURI(endpoint, app.getInputDataDirectory());
                     URI outputURI = GFacUtils.createGsiftpURI(endpoint, app.getOutputDataDirectory());
 
-                    log.info("Host FTP = " + hostgridFTP[0]);
+                    log.info("Host FTP = " + gridFTPEndpointArray[0]);
                     log.info("temp directory = " + tmpdirURI);
                     log.info("Working directory = " + workingDirURI);
                     log.info("Input directory = " + inputURI);

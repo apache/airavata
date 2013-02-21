@@ -33,8 +33,9 @@ import org.apache.airavata.core.gfac.extension.DataServiceChain;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 
 /**
- * This plugin fills out all information that is missing in {@link org.apache.airavata.commons.gfac.type.ApplicationDescription} based on Unix
- * system. For instance, it will use "/tmp" as default temporary directory.
+ * This plugin fills out all information that is missing in
+ * {@link org.apache.airavata.commons.gfac.type.ApplicationDescription} based on
+ * Unix system. For instance, it will use "/tmp" as default temporary directory.
  * 
  */
 public class RegistryDataService extends DataServiceChain {

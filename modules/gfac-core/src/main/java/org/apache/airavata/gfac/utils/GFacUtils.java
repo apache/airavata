@@ -130,6 +130,17 @@ public class GFacUtils {
         buf.append(localPath);
         return new URI(buf.toString());
     }
+    
+    public static String createGsiftpURIAsString(String host, String localPath) throws URISyntaxException {
+        StringBuffer buf = new StringBuffer();
+        if (!host.startsWith("gsiftp://"))
+            buf.append("gsiftp://");
+        buf.append(host);
+        if (!host.endsWith("/"))
+            buf.append("/");
+        buf.append(localPath);
+        return buf.toString();
+    }
 
     public static ActualParameter getInputActualParameter(Parameter parameter, OMElement element) {
         OMElement innerelement = null;

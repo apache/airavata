@@ -19,6 +19,15 @@
             <Handler class="org.apache.airavata.gfac.handler.GridFTPOutputHandler"/>
         </OutHandlers>
     </Provider>
+      <Provider class="org.apache.airavata.gfac.provider.BESProvider">
+        <InHandlers>
+        	<Handler class="org.apache.airavata.gfac.handler.GramDirectorySetupHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.GridFTPInputHandler"/>
+        </InHandlers>
+        <OutHandlers>
+            <Handler class="org.apache.airavata.gfac.handler.GridFTPOutputHandler"/>
+        </OutHandlers>
+    </Provider>
     <Application name="UltraScan">
         <InHandlers>
             <Handler class="org.apache.airavata.handlers.GramDirectorySetupHandler"/>

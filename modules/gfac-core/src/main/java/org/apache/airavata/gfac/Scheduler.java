@@ -24,9 +24,11 @@ package org.apache.airavata.gfac;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.provider.GFacProvider;
+import org.apache.airavata.gfac.provider.impl.BESProvider;
 import org.apache.airavata.gfac.provider.impl.GramProvider;
 import org.apache.airavata.gfac.provider.impl.LocalProvider;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.UnicoreHostType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +61,11 @@ public class Scheduler {
         HostDescription hostDescription = jobExecutionContext.getApplicationContext().getHostDescription();
         if(hostDescription.getType() instanceof GlobusHostType){
             return new GramProvider();
-        }else{
+        }
+        else if (hostDescription.getType() instanceof UnicoreHostType) {
+        	return new BESProvider();
+        }
+        else{
             return new LocalProvider();
         }
     }
