@@ -8,7 +8,8 @@
     ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
     the License. -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>airavata</artifactId>
@@ -24,27 +25,14 @@
 
     <dependencies>
         <dependency>
-            <groupId>cog-globus</groupId>
-            <artifactId>cog-jglobus</artifactId>
-            <version>1.8.0-bc146</version>
-        </dependency>
-        <!-- Experimental dependencies for XSP integration
-        <dependency>
             <groupId>cog-jglobus</groupId>
             <artifactId>cog-jglobus</artifactId>
-            <version>1.8.0-mod</version>
+            <version>1.8.0_1</version>
         </dependency>
-        <dependency>
-            <groupId>edu.iub.soic.damsl</groupId>
-            <artifactId>jXSP</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-        -->
         <dependency>
             <groupId>cog-globus</groupId>
             <artifactId>puretls</artifactId>
             <type>jar</type>
-            <!--  <version>0.9b4-1</version> -->
             <version>1.0</version>
         </dependency>
         <dependency>
@@ -57,7 +45,7 @@
             <artifactId>cryptix-asn1</artifactId>
             <version>1.0</version>
         </dependency>
-          <dependency>
+        <dependency>
             <groupId>commons-configuration</groupId>
             <artifactId>commons-configuration</artifactId>
             <version>1.6</version>
@@ -70,11 +58,6 @@
         </dependency>
 
         <!-- GFAC schemas -->
-        <!--dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-schema-utils</artifactId>
-            <version>${project.version}</version>
-        </dependency-->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-client-api</artifactId>
@@ -101,11 +84,11 @@
         </dependency>
 
         <!-- Amazon -->
-		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk</artifactId>
-			<version>1.3.20</version>
-		</dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk</artifactId>
+            <version>1.3.20</version>
+        </dependency>
 
         <!-- Test -->
         <dependency>
@@ -113,16 +96,16 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>j2ssh</groupId>
             <artifactId>j2ssh-core</artifactId>
@@ -140,59 +123,13 @@
             <groupId>eu.unicore</groupId>
             <artifactId>ogsabes-client</artifactId>
             <version>1.6.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-	<!-- <dependency>
-            <groupId>eu.unicore</groupId>
-            <artifactId>ogsabes-types</artifactId>
-            <version>1.5.1-rc3</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.unicore</groupId>
-            <artifactId>uas-client</artifactId>
-            <version>1.5.1-rc3</version>
-        </dependency>
-        <dependency>
-            <groupId>de.fzj.unicore</groupId>
-            <artifactId>jsdl-xmlbeans</artifactId>
-            <version>2.1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.unicore</groupId>
-            <artifactId>cis-u6-infoprovider-types</artifactId>
-            <version>1.5.1-rc3</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.unicore</groupId>
-            <artifactId>uas-types</artifactId>
-            <version>1.5.1-rc3</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.unicore</groupId>
-            <artifactId>uas-types</artifactId>
-            <version>1.5.1-rc3</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.unicore</groupId>
-            <artifactId>cis-u6-infoprovider-types</artifactId>
-            <version>1.5.1-rc3</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.unicore.services</groupId>
-            <artifactId>use-wsrfclient</artifactId>
-            <version>2.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.unicore</groupId>
-            <artifactId>uftp</artifactId>
-            <version>1.2.1</version>
-	</dependency> -->
-        <!-- unicore dependencies finished -->
-
         <!-- Guava -->
         <dependency>
             <groupId>com.google.guava</groupId>
