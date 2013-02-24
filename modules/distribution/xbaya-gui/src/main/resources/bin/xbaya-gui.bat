@@ -19,4 +19,5 @@ rem under the License.
 setlocal EnableDelayedExpansion
 call "%~dp0"setenv.bat
 
+cd "%XBAYA_HOME%\bin"
 "%JAVA_HOME%\bin\java.exe" %JAVA_OPTS% -classpath "%XBAYA_CLASSPATH%" org.apache.airavata.xbaya.XBaya %*

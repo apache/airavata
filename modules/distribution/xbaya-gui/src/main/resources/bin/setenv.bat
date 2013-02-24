@@ -23,34 +23,20 @@ if not exist "%JAVA_HOME%\bin\java.exe" goto noJavaHome
 goto initialize
 
 :noJavaHome
-echo "You must set the JAVA_HOME variable before running Airavata."
+echo You must set the JAVA_HOME environment variable before running Airavata.
 goto end
 
 :initialize
-if "%AIRAVATA_HOME%"=="" set AIRAVATA_HOME=%~sdp0..
+if "%XBAYA_HOME%"=="" set XBAYA_HOME=%~sdp0..
 SET curDrive=%cd:~0,1%
-SET airavataDrive=%AIRAVATA_HOME:~0,1%
-if not "%curDrive%" == "%airavataDrive%" %airavataDrive%:
+SET xBayaDrive=%XBAYA_HOME:~0,1%
+if not "%curDrive%" == "%xBayaDrive%" %xBayaDrive%:
 goto updateClasspath
 
 rem ----- update classpath -----------------------------------------------------
 :updateClasspath
-cd %AIRAVATA_HOME%
+cd %XBAYA_HOME%
 set XBAYA_CLASSPATH=
-FOR %%C in ("%AIRAVATA_HOME%\standalone-server\lib\*.jar") DO set XBAYA_CLASSPATH=!XBAYA_CLASSPATH!;".\standalone-server\lib\%%~nC%%~xC"
+FOR %%C in ("%XBAYA_HOME%\lib\*.jar") DO set XBAYA_CLASSPATH=!XBAYA_CLASSPATH!;..\lib\%%~nC%%~xC
 
-set XBAYA_CLASSPATH=!XBAYA_CLASSPATH!;
-FOR %%C in ("%AIRAVATA_HOME%\standalone-server\repository\services\*.jar") DO set XBAYA_CLASSPATH=!XBAYA_CLASSPATH!;".\standalone-server\repository\services\%%~nC%%~xC"
-
-
-
-
-
-
-
-
-
-
-
-
-
+:end
