@@ -89,4 +89,37 @@
 		</complexContent>
 	</complexType>
 
+    <!-- Hadoop Host Description -->
+    <complexType name="hadoopHostType">
+        <complexContent>
+            <extension base="gfac:hostDescriptionType">
+                <sequence>
+                    <element name="hadoopConfigurationDirectory" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+                    <element name="whirrConfiguration" maxOccurs="1" minOccurs="0">
+                        <complexType>
+                            <sequence>
+                                <element name="configurationFile" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+                                <element name="byonClusterConfigurationFile" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+                                <element name="configuration" minOccurs="0" maxOccurs="1">
+                                    <complexType>
+                                        <sequence>
+                                            <element name="property" maxOccurs="unbounded">
+                                                <complexType>
+                                                    <sequence>
+                                                        <element name="name" type="xsd:string" maxOccurs="1" minOccurs="1"/>
+                                                        <element name="value" type="xsd:string" maxOccurs="1" minOccurs="1"/>
+                                                    </sequence>
+                                                </complexType>
+                                            </element>
+                                        </sequence>
+                                    </complexType>
+                                </element>
+                            </sequence>
+                        </complexType>
+                    </element>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+
 </schema>
