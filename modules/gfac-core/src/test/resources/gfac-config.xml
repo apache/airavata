@@ -28,6 +28,15 @@
             <Handler class="org.apache.airavata.gfac.handler.GridFTPOutputHandler"/>
         </OutHandlers>
     </Provider>
+
+    <Provider class="org.apache.airavata.gfac.provider.impl.HadoopProvider">
+        <InHandlers>
+        	<Handler class="org.apache.airavata.gfac.handler.HadoopDeploymentHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.HDFSDataMovementHandler"/>
+        </InHandlers>
+        <OutHandlers/>
+    </Provider>
+
     <Application name="UltraScan">
         <InHandlers>
             <Handler class="org.apache.airavata.handlers.GramDirectorySetupHandler"/>
