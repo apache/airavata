@@ -616,7 +616,56 @@
             <artifactId>guava</artifactId>
             <version>12.0</version>
         </dependency>
+
+        <!-- Hadoop provider related dependencies -->
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-core</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-client</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.whirr</groupId>
+            <artifactId>whirr-core</artifactId>
+            <version>0.7.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.whirr</groupId>
+            <artifactId>whirr-hadoop</artifactId>
+            <version>0.7.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.8.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>0.1.44-1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-configuration</groupId>
+            <artifactId>commons-configuration</artifactId>
+            <version>1.7</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.jopt-simple</groupId>
+            <artifactId>jopt-simple</artifactId>
+            <version>3.2</version>
+        </dependency>
     </dependencies>
+
+
     <properties>
         <jersey.version>1.13</jersey.version>
         <grizzly.version>2.0.0-M3</grizzly.version>

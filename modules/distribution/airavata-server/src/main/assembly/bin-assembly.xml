@@ -285,6 +285,13 @@
                 <include>xerces:xercesImpl:jar:2.9.1</include>
                 <include>com.ibm.icu:icu4j</include>
                 <include>com.google.guava:guava</include>
+                <include>org.apache.hadoop:hadoop-core</include>
+                <include>org.apache.hadoop:hadoop-client</include>
+                <include>org.apache.whirr:whirr-hadoop</include>
+                <include>org.hamcrest:hamcrest-all</include>
+                <include>org.mockito:mockito-all</include>
+                <include>com.jcraft:jsch</include>
+                <include>net.sf.jopt-simple:jopt-simple</include>
             </includes>
         </dependencySet>
         <dependencySet>
