@@ -54,18 +54,18 @@ import org.junit.Test;
 
 public class GramProviderTest {
     private JobExecutionContext jobExecutionContext;
-    
-    
+
+
 //    private static final String hostAddress = "blacklight.psc.teragrid.org";
 //    private static final String hostName = "Blacklight";
 //    private static final String gridftpAddress = "gsiftp://gridftp.blacklight.psc.teragrid.org:2812";
 //    private static final String gramAddress = "";
-    
 
-    private static final String hostAddress = "tg-condor.purdue.teragrid.org";
-    private static final String hostName = "Condor Pool (Purdue)";
-    private static final String gridftpAddress = "gsiftp://tg-condor.purdue.teragrid.org:2811";
-    private static final String gramAddress = "tg-condor.rcac.purdue.edu:2119/jobmanager-fork";
+    //FIXME: move job properties to configuration file
+    private static final String hostAddress = "lonestar.tacc.teragrid.org";
+    private static final String hostName = "lonestar";
+    private static final String gridftpAddress = "gsiftp://gridftp1.ls4.tacc.utexas.edu:2811";
+    private static final String gramAddress = "gridftp1.ls4.tacc.utexas.edu:2119/jobmanager-sge";
 
     @Before
     public void setUp() throws Exception {
@@ -74,9 +74,9 @@ public class GramProviderTest {
         GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()),null,null);
         gFacConfiguration.setMyProxyLifeCycle(3600);
         gFacConfiguration.setMyProxyServer("myproxy.teragrid.org");
-        gFacConfiguration.setMyProxyUser("*********");
-        gFacConfiguration.setMyProxyPassphrase("******");
-        gFacConfiguration.setTrustedCertLocation("/home/m.memon/.globus/certificates");
+        gFacConfiguration.setMyProxyUser("*****");
+        gFacConfiguration.setMyProxyPassphrase("*****");
+        gFacConfiguration.setTrustedCertLocation("./certificates");
         //have to set InFlwo Handlers and outFlowHandlers
 //        gFacConfiguration.setInHandlers(Arrays.asList(new String[] {"org.apache.airavata.gfac.handler.GramDirectorySetupHandler","org.apache.airavata.gfac.handler.GridFTPInputHandler"}));
 //        gFacConfiguration.setOutHandlers(Arrays.asList(new String[] {"org.apache.airavata.gfac.handler.GridFTPOutputHandler"}));
@@ -116,7 +116,7 @@ public class GramProviderTest {
         /*
            * Default tmp location
            */
-        String tempDir = "/scratch/02055/msmemon/airavata";
+        String tempDir = "/scratch/01437/ogce/test/";
         String date = (new Date()).toString();
         date = date.replaceAll(" ", "_");
         date = date.replaceAll(":", "_");
@@ -140,20 +140,20 @@ public class GramProviderTest {
         serv.getType().setName("SimpleEcho");
 
         List<InputParameterType> inputList = new ArrayList<InputParameterType>();
-    
+
         InputParameterType input = InputParameterType.Factory.newInstance();
         input.setParameterName("echo_input");
         input.setParameterType(StringParameterType.Factory.newInstance());
         inputList.add(input);
-        
+
         InputParameterType input1 = InputParameterType.Factory.newInstance();
         input.setParameterName("myinput");
         URIParameterType uriType = URIParameterType.Factory.newInstance();
-        uriType.setValue("gsiftp://gridftp.ranger.tacc.teragrid.org:2811/tmp/t1/date.txt");
+        uriType.setValue("gsiftp://gridftp1.ls4.tacc.utexas.edu:2811//home1/01437/ogce/gram_20130215.log");
         input.setParameterType(uriType);
         inputList.add(input1);
-                        
-        
+
+
         InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList
 
                                                                                        .size()]);
@@ -165,7 +165,7 @@ public class GramProviderTest {
 
         OutputParameterType[] outputParamList = outputList
                 .toArray(new OutputParameterType[outputList.size()]);
-        
+
         serv.getType().setInputParametersArray(inputParamList);
         serv.getType().setOutputParametersArray(outputParamList);
 
@@ -180,20 +180,20 @@ public class GramProviderTest {
         ActualParameter echo_input = new ActualParameter();
         ((StringParameterType)echo_input.getType()).setValue("echo_output=hello");
         inMessage.addParameter("echo_input", echo_input);
-        
+
         // added extra
         ActualParameter copy_input = new ActualParameter();
         copy_input.getType().changeType(URIParameterType.type);
         ((URIParameterType)copy_input.getType()).setValue("file:///tmp/tmpstrace");
-        
+
         ActualParameter outlocation = new ActualParameter();
         ((StringParameterType)outlocation.getType()).setValue("./outputData/.");
         inMessage.addParameter("copy_input", copy_input);
         inMessage.addParameter("outputlocation", outlocation);
-        
+
         // added extra
-        
-        
+
+
 
         jobExecutionContext.setInMessageContext(inMessage);
 
@@ -208,9 +208,9 @@ public class GramProviderTest {
 
     @Test
     public void testGramProvider() throws GFacException {
-//        GFacAPI gFacAPI = new GFacAPI();
-//        gFacAPI.submitJob(jobExecutionContext);
-//        MessageContext outMessageContext = jobExecutionContext.getOutMessageContext();
-//        Assert.assertEquals(MappingFactory.toString((ActualParameter)outMessageContext.getParameter("echo_output")), "hello");
+        GFacAPI gFacAPI = new GFacAPI();
+        gFacAPI.submitJob(jobExecutionContext);
+        MessageContext outMessageContext = jobExecutionContext.getOutMessageContext();
+        Assert.assertEquals(MappingFactory.toString((ActualParameter)outMessageContext.getParameter("echo_output")), "hello");
     }
 }
