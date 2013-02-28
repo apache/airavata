@@ -27,6 +27,8 @@ import org.ggf.schemas.jsdl.x2005.x11.jsdlPosix.POSIXApplicationDocument;
 import org.ggf.schemas.jsdl.x2005.x11.jsdlPosix.POSIXApplicationType;
 import org.ggf.schemas.jsdl.x2006.x07.jsdlHpcpa.HPCProfileApplicationDocument;
 import org.ggf.schemas.jsdl.x2006.x07.jsdlHpcpa.HPCProfileApplicationType;
+import org.ogf.schemas.jsdl.x2007.x02.jsdlSpmd.SPMDApplicationDocument;
+import org.ogf.schemas.jsdl.x2007.x02.jsdlSpmd.SPMDApplicationType;
 
 
 /**
@@ -44,6 +46,14 @@ public class JSDLUtils
 	public static final QName POSIX_APPLICATION=POSIXApplicationDocument.type.getDocumentElementName();
 	
 	public static final QName HPC_PROFILE_APPLICATION=HPCProfileApplicationDocument.type.getDocumentElementName();
+	
+	public static final QName SPMD_APPLICATION=SPMDApplicationDocument.type.getDocumentElementName();
+	
+	public static final String PROCESSESPERHOST = "ProcessesPerHost"; 
+	public static final String NUMBEROFPROCESSES = "NumberOfProcesses";
+	public static final String THREADSPERHOST = "ThreadsPerHost";
+
+	
 	
 	public static EnvironmentType addEnvVariable(JobDefinitionType def,String name, String value) {
 		POSIXApplicationType posixApp = getOrCreatePOSIXApplication(def);
@@ -269,6 +279,46 @@ public class JSDLUtils
 		return getPOSIXApplication(value);
 	}
 
+	
+	public static SPMDApplicationType getOrCreateSPMDApplication(JobDefinitionType value) {
+		
+		ApplicationType application = getOrCreateApplication(value);
+		
+		if (getSPMDApplication(value) == null) {
+			XmlCursor acursor = application.newCursor();
+			acursor.toEndToken();
+			acursor.insertElement(SPMD_APPLICATION);
+			acursor.dispose();
+		}
+		return getSPMDApplication(value);
+	}
+
+	public static SPMDApplicationType getSPMDApplication(JobDefinitionType value) {
+		if (value != null &&
+				value.getJobDescription() != null && 
+				value.getJobDescription().isSetApplication() ) {
+			XmlCursor acursor = value.getJobDescription().getApplication().newCursor();
+			if (acursor.toFirstChild()) {
+				do {
+					if(acursor.getName().equals(SPMD_APPLICATION)) {
+						XmlObject result = acursor.getObject();
+						acursor.dispose();
+						return (SPMDApplicationType) result;
+					}
+				} while (acursor.toNextSibling());
+				acursor.dispose();
+				return null;
+			} else {
+				acursor.dispose();                               
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	
+	
 	public static POSIXApplicationType getPOSIXApplication(JobDefinitionType value) {
 		if (value != null &&
 				value.getJobDescription() != null && 
@@ -292,6 +342,8 @@ public class JSDLUtils
 			return null;
 		}
 	}
+	
+	
 	
 	public static HPCProfileApplicationType getOrCreateHPCProfileApplication(JobDefinitionType value) {
 

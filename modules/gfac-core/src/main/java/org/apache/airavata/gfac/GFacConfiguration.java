@@ -200,34 +200,34 @@ public class GFacConfiguration {
     /**
      * Parse GFac configuration file and populate GFacConfiguration object. XML configuration
      * file for GFac will look like below.
-     * <p/>
-     * <GFac>
-     * <GlobalHandlers>
-     * <InHandlers>
-     * <Handler class="org.apache.airavata.gfac.GlobalHandler1">
-     * </InHandler>
-     * <OutHandlers>
-     * <Handler class="org.apache.airavata.gfac.GlabalHandler2">
-     * </OutHandlers>
-     * </GlobalHandlers>
-     * <Provider class="org.apache.airavata.gfac.providers.LocalProvider" host="LocalHost">
-     * <InHandlers>
-     * <Handler class="org.apache.airavata.gfac.handlers.LocalEvenSetupHandler">
-     * </InHandlers>
-     * <OutHandlers>
-     * <Handler>org.apache.airavata.LocalOutHandler1</Handler>
-     * </OutHandlers>
-     * </Provider>
-     * <Application name="UltraScan">
-     * <InHandlers>
-     * <Handler class="org.apache.airavata.gfac.handlers.LocalEvenSetupHandler">
-     * </InHandlers>
-     * <OutHandlers>
-     * <Handler class="org.apache.airavata.gfac.LocalOutHandler1">
-     * </OutHandlers>
-     * </Application>
-     * </GFac>
-     *
+     * <p>
+     * &lt;GFac&gt; <br/>
+     * &lt;GlobalHandlers&gt; <br/>
+     * &lt;InHandlers&gt; <br/>
+     * &lt;Handler class="org.apache.airavata.gfac.GlobalHandler1"&gt; <br/>
+     * &lt;/InHandler&gt; <br/>
+     * &lt;OutHandlers&gt; <br/>
+     * &lt;Handler class="org.apache.airavata.gfac.GlabalHandler2"&gt; <br/>
+     * &lt;/OutHandlers&gt; <br/>
+     * &lt;/GlobalHandlers&gt; <br/>
+     * &lt;Provider class="org.apache.airavata.gfac.providers.LocalProvider" host="LocalHost"&gt; <br/>
+     * &lt;InHandlers&gt; <br/>
+     * &lt;Handler class="org.apache.airavata.gfac.handlers.LocalEvenSetupHandler"&gt; <br/>
+     * &lt;/InHandlers&gt; <br/>
+     * &lt;OutHandlers&gt; <br/>
+     * &lt;Handler&gt;org.apache.airavata.LocalOutHandler1&lt;/Handler&gt; <br/>
+     * &lt;/OutHandlers&gt; <br/>
+     * &lt;/Provider&gt; <br/>
+     * &lt;Application name="UltraScan"&gt; <br/>
+     * &lt;InHandlers&gt; <br/>
+     * &lt;Handler class="org.apache.airavata.gfac.handlers.LocalEvenSetupHandler"&gt; <br/>
+     * &lt;/InHandlers&gt; <br/>
+     * &lt;OutHandlers&gt; <br/>
+     * &lt;Handler class="org.apache.airavata.gfac.LocalOutHandler1"&gt; <br/>
+     * &lt;/OutHandlers&gt; <br/>
+     * &lt;/Application&gt; <br/>
+     * &lt;/GFac&gt; <br/>
+     * </p>
      * @param configFile configuration file
      * @return GFacConfiguration object.
      */
