@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.core.gfac.context.security.impl;
+package org.apache.airavata.gfac.provider.utils;
 
 import org.apache.airavata.core.gfac.context.security.SecurityContext;
 
