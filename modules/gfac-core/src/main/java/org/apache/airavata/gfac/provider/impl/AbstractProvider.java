@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.core.gfac.provider;
+package org.apache.airavata.gfac.provider.impl;
 
 import java.util.Map;
 
@@ -27,6 +27,7 @@ import org.apache.airavata.common.workflow.execution.context.WorkflowContextHead
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.*;
 import org.apache.airavata.core.gfac.notification.GFacNotifier;
+import org.apache.airavata.core.gfac.provider.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

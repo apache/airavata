@@ -1,4 +1,4 @@
-package org.apache.airavata.core.gfac.external;
+package org.apache.airavata.gfac.provider.utils;
 
 import com.sshtools.j2ssh.SshClient;
 import com.sshtools.j2ssh.authentication.AuthenticationProtocolState;
@@ -16,7 +16,6 @@ import com.sshtools.j2ssh.util.InvalidStateException;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xsul.MLogger;
 
 import java.io.File;
 import java.io.IOException;

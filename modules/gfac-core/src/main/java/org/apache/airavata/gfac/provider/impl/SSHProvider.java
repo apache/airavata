@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.core.gfac.provider.impl;
+package org.apache.airavata.gfac.provider.impl;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +44,6 @@ import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.security.impl.SSHSecurityContextImpl;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.ProviderException;
-import org.apache.airavata.core.gfac.provider.AbstractProvider;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.InputUtils;

@@ -47,7 +47,7 @@ import org.apache.airavata.core.gfac.exception.ProviderException;
 import org.apache.airavata.core.gfac.exception.SecurityException;
 import org.apache.airavata.core.gfac.exception.ToolsException;
 import org.apache.airavata.core.gfac.external.GridFtp;
-import org.apache.airavata.core.gfac.provider.AbstractProvider;
+import org.apache.airavata.gfac.provider.impl.AbstractProvider;
 import org.apache.airavata.core.gfac.provider.utils.GramRSLGenerator;
 import org.apache.airavata.core.gfac.provider.utils.JobSubmissionListener;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
