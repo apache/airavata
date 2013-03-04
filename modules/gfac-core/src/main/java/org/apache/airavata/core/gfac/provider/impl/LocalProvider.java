@@ -32,7 +32,7 @@ import java.util.Map;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.ProviderException;
-import org.apache.airavata.core.gfac.provider.AbstractProvider;
+import org.apache.airavata.gfac.provider.impl.AbstractProvider;
 import org.apache.airavata.core.gfac.provider.utils.InputStreamToFileWriter;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.core.gfac.utils.GfacUtils;

@@ -38,7 +38,7 @@ import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionDes
 import org.apache.airavata.core.gfac.exception.ProviderException;
 import org.apache.airavata.core.gfac.exception.SchedulerException;
 import org.apache.airavata.core.gfac.provider.Provider;
-import org.apache.airavata.core.gfac.provider.impl.EC2Provider;
+import org.apache.airavata.gfac.provider.impl.EC2Provider;
 import org.apache.airavata.core.gfac.provider.impl.GramProvider;
 import org.apache.airavata.core.gfac.provider.impl.LocalProvider;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;

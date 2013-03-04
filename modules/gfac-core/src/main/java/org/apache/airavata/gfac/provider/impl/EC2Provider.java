@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.core.gfac.provider.impl;
+package org.apache.airavata.gfac.provider.impl;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -49,7 +49,7 @@ import java.util.List;
 // TODO
 // import com.sshtools.j2ssh.util.Base64;
 
-public class EC2Provider extends SSHProvider{
+public class EC2Provider extends SSHProvider {
 
     //private static MLogger log = MLogger.getLogger(GFacConstants.LOGGER_NAME);
 

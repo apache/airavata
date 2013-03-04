@@ -1,22 +1,19 @@
-package org.apache.airavata.core.gfac.external;
+package org.apache.airavata.gfac.provider.utils;
 
 import com.sshtools.j2ssh.SftpClient;
 import com.sshtools.j2ssh.SshClient;
 import com.sshtools.j2ssh.sftp.SftpFile;
 import org.apache.airavata.core.gfac.context.invocation.ExecutionContext;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.context.security.impl.SSHSecurityContextImpl;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.schemas.wec.SecurityContextDocument;
-import org.apache.airavata.core.gfac.context.invocation.ExecutionContext;
 import org.apache.axiom.om.OMElement;
 import org.apache.xmlbeans.XmlException;
 import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xsul.MLogger;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.*;

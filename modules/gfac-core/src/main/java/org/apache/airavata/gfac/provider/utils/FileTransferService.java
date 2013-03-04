@@ -1,4 +1,4 @@
-package org.apache.airavata.core.gfac.external;
+package org.apache.airavata.gfac.provider.utils;
 
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.ietf.jgss.GSSCredential;
