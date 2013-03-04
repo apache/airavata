@@ -46,6 +46,7 @@ import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.gfac.context.AmazonSecurityContext;
 import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State;
 import org.apache.airavata.workflow.model.component.Component;
@@ -671,23 +672,24 @@ public class WorkflowInterpreter {
 				 */
 				for (Node n : wsNode.getControlInPort().getFromNodes()) {
 					if (n instanceof InstanceNode) {
-						// TODO make it as constant
-						LeadResourceMapping x = new LeadResourceMapping("AMAZON");
+                        AmazonSecurityContext amazonSecurityContext;
+                        final String awsAccessKeyId = AmazonCredential.getInstance().getAwsAccessKeyId();
+                        final String awsSecretKey = AmazonCredential.getInstance().getAwsSecretAccessKey();
+                        final String username = ((InstanceNode) n).getUsername();
 
-						x.addAttribute("ACCESS_KEY", AmazonCredential.getInstance().getAwsAccessKeyId());
-						x.addAttribute("SECRET_KEY", AmazonCredential.getInstance().getAwsSecretAccessKey());
+                        if (((InstanceNode) n).isStartNewInstance()) {
+                            final String amiId = ((InstanceNode) n).getIdAsValue();
+                            final String instanceType = ((InstanceNode) n).getInstanceType();
 
-						if (((InstanceNode) n).isStartNewInstance()) {
-							x.addAttribute("AMI_ID", ((InstanceNode) n).getIdAsValue());
-							x.addAttribute("INS_TYPE", ((InstanceNode) n).getInstanceType());
-						} else {
-							x.addAttribute("INS_ID", ((InstanceNode) n).getIdAsValue());
-						}
+                            amazonSecurityContext =
+                                    new AmazonSecurityContext(username, awsAccessKeyId, awsSecretKey, amiId, instanceType);
+                        } else {
+                            final String instanceId = ((InstanceNode) n).getIdAsValue();
+                            amazonSecurityContext =
+                                    new AmazonSecurityContext(username, awsAccessKeyId, awsSecretKey, instanceId);
+                        }
 
-						x.addAttribute("USERNAME", ((InstanceNode) n).getUsername());
-
-						// set to leadHeader
-						leadCtxHeader.setResourceMapping(x);
+                        this.config.getConfiguration().setAmazonSecurityContext(amazonSecurityContext);
 					}
 				}
 

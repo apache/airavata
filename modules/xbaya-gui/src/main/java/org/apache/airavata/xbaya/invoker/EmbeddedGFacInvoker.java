@@ -264,6 +264,10 @@ public class EmbeddedGFacInvoker implements Invoker {
             jobExecutionContext.setProperty(Constants.PROP_BROKER_URL,this.configuration.getBrokerURL().toASCIIString());
             jobExecutionContext.setProperty(Constants.PROP_WORKFLOW_INSTANCE_ID,this.configuration.getTopic());
 
+            if(this.configuration.getAmazonSecurityContext() != null) {
+                jobExecutionContext.setSecurityContext(this.configuration.getAmazonSecurityContext());
+            }
+
             ApplicationContext applicationContext = new ApplicationContext();
             applicationContext.setApplicationDeploymentDescription(applicationDescription);
             applicationContext.setHostDescription(registeredHost);

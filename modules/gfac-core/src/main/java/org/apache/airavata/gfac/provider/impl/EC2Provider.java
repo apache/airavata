@@ -32,6 +32,10 @@ import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.security.impl.SSHSecurityContextImpl;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.ProviderException;
+import org.apache.airavata.gfac.context.AmazonSecurityContext;
+import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.gfac.provider.GFacProvider;
+import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.schemas.wec.SecurityContextDocument;
 import org.apache.axiom.om.OMElement;
@@ -49,9 +53,7 @@ import java.util.List;
 // TODO
 // import com.sshtools.j2ssh.util.Base64;
 
-public class EC2Provider extends SSHProvider {
-
-    //private static MLogger log = MLogger.getLogger(GFacConstants.LOGGER_NAME);
+public class EC2Provider extends SSHProvider implements GFacProvider {
 
     public static final int SLEEP_TIME_SECOND = 120;
 
@@ -67,27 +69,25 @@ public class EC2Provider extends SSHProvider {
 
     private String username;
 
-    public EC2Provider(InvocationContext invocationContext) throws ProviderException {
-        ExecutionContext execContext = invocationContext.getExecutionContext();
-        OMElement omSecurityContextHeader = execContext.getSecurityContextHeader();
+    private AmazonSecurityContext amazonSecurityContext;
 
-        ContextHeaderDocument document = null;
-        try {
-            document = ContextHeaderDocument.Factory.parse(omSecurityContextHeader.toStringWithConsume());
-        } catch (XMLStreamException e) {
-            e.printStackTrace();
-        } catch (XmlException e) {
-            e.printStackTrace();
+    public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+        if ((jobExecutionContext != null) &&
+                (jobExecutionContext.getSecurityContext() instanceof AmazonSecurityContext)) {
+            this.amazonSecurityContext = (AmazonSecurityContext) jobExecutionContext.getSecurityContext();
+        } else {
+            //TODO : error
         }
-        SecurityContextDocument.SecurityContext.AmazonWebservices amazonWebservices =
-                document.getContextHeader().getSecurityContext().getAmazonWebservices();
-        String access_key = amazonWebservices.getAccessKeyId();
+    }
 
-        String secret_key = amazonWebservices.getSecretAccessKey();
-        String ami_id = amazonWebservices.getAmiId();
-        String ins_id = amazonWebservices.getInstanceId();
-        String ins_type = amazonWebservices.getInstanceType();
-        this.username = amazonWebservices.getUsername();
+    public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+
+        String secret_key = amazonSecurityContext.getSecretKey();
+        String access_key = amazonSecurityContext.getAccessKey();
+        String ami_id = amazonSecurityContext.getAmiId();
+        String ins_id = amazonSecurityContext.getInstanceId();
+        String ins_type = amazonSecurityContext.getInstanceType();
+        this.username = amazonSecurityContext.getUserName();
 
         log.debug("ACCESS_KEY:" + access_key);
         log.debug("SECRET_KEY:" + secret_key);
@@ -100,13 +100,13 @@ public class EC2Provider extends SSHProvider {
          * Validation
          */
         if (access_key == null || access_key.isEmpty())
-            throw new ProviderException("EC2 Access Key is empty", invocationContext);
+            throw new GFacProviderException("EC2 Access Key is empty", jobExecutionContext);
         if (secret_key == null || secret_key.isEmpty())
-            throw new ProviderException("EC2 Secret Key is empty", invocationContext);
+            throw new GFacProviderException("EC2 Secret Key is empty", jobExecutionContext);
         if ((ami_id == null && ins_id == null) || (ami_id != null && ami_id.isEmpty()) || (ins_id != null && ins_id.isEmpty()))
-            throw new ProviderException("EC2 AMI or Instance ID is empty", invocationContext);
+            throw new GFacProviderException("EC2 AMI or Instance ID is empty", jobExecutionContext);
         if (this.username == null || this.username.isEmpty())
-            throw new ProviderException("EC2 Username is empty", invocationContext);
+            throw new GFacProviderException("EC2 Username is empty", jobExecutionContext);
 
         /*
          * Need to start EC2 instance before running it
@@ -122,7 +122,7 @@ public class EC2Provider extends SSHProvider {
 
             // right now, we can run it on one host
             if (ami_id != null)
-                this.instance = startInstances(ec2client, ami_id, ins_type, execContext).get(0);
+                this.instance = startInstances(ec2client, ami_id, ins_type, jobExecutionContext).get(0);
             else {
 
                 // already running instance
@@ -167,18 +167,19 @@ public class EC2Provider extends SSHProvider {
             }
 
         } catch (Exception e) {
-            throw new ProviderException("Invalied Request",e,invocationContext);
+            throw new GFacProviderException("Invalied Request",e,jobExecutionContext);
         }
 
-        SSHSecurityContextImpl sshContext = ((SSHSecurityContextImpl) invocationContext.getSecurityContext(SSH_SECURITY_CONTEXT));
-        if (sshContext == null) {
-            sshContext = new SSHSecurityContextImpl();
-        }
-
-        sshContext.setUsername(username);
-        sshContext.setKeyPass("");
-        sshContext.setPrivateKeyLoc(privateKeyFilePath);
-        invocationContext.addSecurityContext(SSH_SECURITY_CONTEXT, sshContext);
+        // TODO: Fix the following once Raman commits his changes to the SSHProvider.
+//        SSHSecurityContextImpl sshContext = ((SSHSecurityContextImpl) invocationContext.getSecurityContext(SSH_SECURITY_CONTEXT));
+//        if (sshContext == null) {
+//            sshContext = new SSHSecurityContextImpl();
+//        }
+//
+//        sshContext.setUsername(username);
+//        sshContext.setKeyPass("");
+//        sshContext.setPrivateKeyLoc(privateKeyFilePath);
+//        invocationContext.addSecurityContext(SSH_SECURITY_CONTEXT, sshContext);
 
         //set to super class
         /*setUsername(username);
@@ -193,7 +194,15 @@ public class EC2Provider extends SSHProvider {
         execContext.setFileTransferService(new SshFileTransferService(execContext, this.username, privateKeyFilePath));*/
     }
 
-    private List<Instance> startInstances(AmazonEC2Client ec2, String AMI_ID, String INS_TYPE, ExecutionContext executionContext) throws AmazonServiceException {
+    public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public EC2Provider(InvocationContext invocationContext) throws ProviderException {
+
+    }
+
+    private List<Instance> startInstances(AmazonEC2Client ec2, String AMI_ID, String INS_TYPE, JobExecutionContext jobExecutionContext) throws AmazonServiceException {
         // start only 1 instance
         RunInstancesRequest request = new RunInstancesRequest(AMI_ID, 1, 1);
         request.setKeyName(KEY_PAIR_NAME);
