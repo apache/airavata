@@ -21,26 +21,25 @@
 
 package org.apache.airavata.core.gfac.phoebus.impl;
 
-import org.apache.airavata.core.gfac.external.GridConfigurationHandler;
+//import org.apache.airavata.core.gfac.external.GridConfigurationHandler;
 import org.apache.airavata.core.gfac.utils.PhoebusUtils;
 import org.globus.ftp.DataChannelAuthentication;
 import org.globus.ftp.GridFTPClient;
-
-public class PhoebusGridConfigurationHandler implements
-		GridConfigurationHandler {
-
-	@Override
-	public void handleSourceFTPClient(GridFTPClient client) throws Exception {
-		if (PhoebusUtils.isPhoebusDriverConfigurationsDefined(client.getHost())) {
-			client.setDataChannelAuthentication(DataChannelAuthentication.NONE);
-			client.site("SITE SETNETSTACK phoebus:" + PhoebusUtils.getPhoebusDataChannelXIODriverParameters(client.getHost()));
-		}
-	}
-
-	@Override
-	public void handleDestinationFTPClient(GridFTPClient client)
-			throws Exception {
-
-	}
+//
+public class PhoebusGridConfigurationHandler {
+//
+//	@Override
+//	public void handleSourceFTPClient(GridFTPClient client) throws Exception {
+//		if (PhoebusUtils.isPhoebusDriverConfigurationsDefined(client.getHost())) {
+//			client.setDataChannelAuthentication(DataChannelAuthentication.NONE);
+//			client.site("SITE SETNETSTACK phoebus:" + PhoebusUtils.getPhoebusDataChannelXIODriverParameters(client.getHost()));
+//		}
+//	}
+//
+//	@Override
+//	public void handleDestinationFTPClient(GridFTPClient client)
+//			throws Exception {
+//
+//	}
 
 }
