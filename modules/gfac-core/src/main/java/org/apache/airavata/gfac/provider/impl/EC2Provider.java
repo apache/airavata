@@ -27,22 +27,12 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.model.*;
-import org.apache.airavata.core.gfac.context.invocation.ExecutionContext;
-import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.context.security.impl.SSHSecurityContextImpl;
-import org.apache.airavata.core.gfac.exception.GfacException;
-import org.apache.airavata.core.gfac.exception.ProviderException;
 import org.apache.airavata.gfac.context.AmazonSecurityContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
-import org.apache.airavata.schemas.wec.ContextHeaderDocument;
-import org.apache.airavata.schemas.wec.SecurityContextDocument;
-import org.apache.axiom.om.OMElement;
-import org.apache.xmlbeans.XmlException;
 import org.bouncycastle.openssl.PEMWriter;
 
-import javax.xml.stream.XMLStreamException;
 import java.io.*;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -130,14 +120,14 @@ public class EC2Provider extends SSHProvider implements GFacProvider {
                 DescribeInstancesResult describeInstancesResult = ec2client.describeInstances(describeInstancesRequest.withInstanceIds(ins_id));
 
                 if (describeInstancesResult.getReservations().size() == 0 || describeInstancesResult.getReservations().get(0).getInstances().size() == 0) {
-                    throw new GfacException("Instance not found:" + ins_id);
+                    throw new GFacProviderException("Instance not found:" + ins_id);
                 }
 
                 this.instance = describeInstancesResult.getReservations().get(0).getInstances().get(0);
 
                 // check instance keypair
                 if (this.instance.getKeyName() == null || !this.instance.getKeyName().equals(KEY_PAIR_NAME))
-                    throw new GfacException("Keypair for instance:" + ins_id + " is not valid");
+                    throw new GFacProviderException("Keypair for instance:" + ins_id + " is not valid");
             }
 
             //TODO send out instance id
@@ -196,10 +186,6 @@ public class EC2Provider extends SSHProvider implements GFacProvider {
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
         //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public EC2Provider(InvocationContext invocationContext) throws ProviderException {
-
     }
 
     private List<Instance> startInstances(AmazonEC2Client ec2, String AMI_ID, String INS_TYPE, JobExecutionContext jobExecutionContext) throws AmazonServiceException {

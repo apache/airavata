@@ -3,19 +3,13 @@ package org.apache.airavata.gfac.provider.utils;
 import com.sshtools.j2ssh.SftpClient;
 import com.sshtools.j2ssh.SshClient;
 import com.sshtools.j2ssh.sftp.SftpFile;
-import org.apache.airavata.core.gfac.context.invocation.ExecutionContext;
-import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.exception.GfacException;
-import org.apache.airavata.core.gfac.utils.GfacUtils;
-import org.apache.airavata.schemas.wec.ContextHeaderDocument;
-import org.apache.airavata.schemas.wec.SecurityContextDocument;
-import org.apache.axiom.om.OMElement;
-import org.apache.xmlbeans.XmlException;
+import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.gfac.provider.GFacProviderException;
+import org.apache.airavata.gfac.utils.GFacUtils;
 import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.stream.XMLStreamException;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -24,14 +18,14 @@ import java.util.Random;
 import java.util.Vector;
 
 /**
- * This class provides SSH based remote file operations. It needs ssh keys to be
- * setup to autenticate with remote host. It uses
- * SSH_USERNAME,SSH_PASSWD,SSH_KEYFILE,SSH_KNOWN_HOSTFILE from gfac options.
- * However if they does not present it uses ${user.name}, and
- * ${user.home}/.ssh/id_rsa as default. If you have setup ssh keys and they do
- * not need a password, then you do not need to do any configuration at all.
- *
- */
+* This class provides SSH based remote file operations. It needs ssh keys to be
+* setup to autenticate with remote host. It uses
+* SSH_USERNAME,SSH_PASSWD,SSH_KEYFILE,SSH_KNOWN_HOSTFILE from gfac options.
+* However if they does not present it uses ${user.name}, and
+* ${user.home}/.ssh/id_rsa as default. If you have setup ssh keys and they do
+* not need a password, then you do not need to do any configuration at all.
+*
+*/
 public class SshFileTransferService implements FileTransferService {
     public static final Logger log = LoggerFactory.getLogger(SshFileTransferService.class);
     private String username;
@@ -42,25 +36,25 @@ public class SshFileTransferService implements FileTransferService {
 
     private String knownHostsFileName;
 
-    private ExecutionContext executionContext;
+//    private ExecutionContext executionContext;
 
     private static final String SSH_SECURITY_CONTEXT = "ssh";
 
-    public SshFileTransferService(InvocationContext invocationContext) {
+    public SshFileTransferService(JobExecutionContext invocationContext) {
         // --------------------- testing --------------------------------------------
-        ExecutionContext execContext = invocationContext.getExecutionContext();
-        OMElement omSecurityContextHeader = execContext.getSecurityContextHeader();
-
-        ContextHeaderDocument document = null;
-        try {
-            document = ContextHeaderDocument.Factory.parse(omSecurityContextHeader.toStringWithConsume());
-        } catch (XMLStreamException e) {
-            e.printStackTrace();
-        } catch (XmlException e) {
-            e.printStackTrace();
-        }
-        SecurityContextDocument.SecurityContext.AmazonWebservices amazonWebservices =
-                document.getContextHeader().getSecurityContext().getAmazonWebservices();
+//        ExecutionContext execContext = invocationContext.getExecutionContext();
+//        OMElement omSecurityContextHeader = execContext.getSecurityContextHeader();
+//
+//        ContextHeaderDocument document = null;
+//        try {
+//            document = ContextHeaderDocument.Factory.parse(omSecurityContextHeader.toStringWithConsume());
+//        } catch (XMLStreamException e) {
+//            e.printStackTrace();
+//        } catch (XmlException e) {
+//            e.printStackTrace();
+//        }
+//        SecurityContextDocument.SecurityContext.AmazonWebservices amazonWebservices =
+//                document.getContextHeader().getSecurityContext().getAmazonWebservices();
 
         //            TODO
 /*
@@ -84,7 +78,7 @@ public class SshFileTransferService implements FileTransferService {
         }*/
     }
 
-    public SshFileTransferService(InvocationContext invocationContext, String username, String keyFileName) {
+    public SshFileTransferService(JobExecutionContext invocationContext, String username, String keyFileName) {
         this(invocationContext);
         this.username = username;
         this.password = null;
@@ -92,11 +86,11 @@ public class SshFileTransferService implements FileTransferService {
         this.knownHostsFileName = null;
     }
 
-    public URI forcedCopy(URI src, URI dest, GSSCredential gssCred) throws GfacException {
+    public URI forcedCopy(URI src, URI dest, GSSCredential gssCred) throws GFacProviderException {
         return copy(src, dest, gssCred);
     }
 
-    public URI copy(URI src, URI dest, GSSCredential gssCred) throws GfacException {
+    public URI copy(URI src, URI dest, GSSCredential gssCred) throws GFacProviderException {
         log.info("Copying " + src + "->" + dest);
         SshClient sshClient = null;
         SshClient sshClient2 = null;
@@ -106,7 +100,7 @@ public class SshFileTransferService implements FileTransferService {
             String desthost = dest.getHost();
             String destfile = dest.getPath();
 
-            if (GfacUtils.isLocalHost(srchost) && GfacUtils.isLocalHost(desthost)) {
+            if (GFacUtils.isLocalHost(srchost) && GFacUtils.isLocalHost(desthost)) {
                 FileInputStream in = new FileInputStream(srcfile);
                 FileOutputStream out = new FileOutputStream(destfile);
                 byte[] buf = new byte[1024];
@@ -116,12 +110,12 @@ public class SshFileTransferService implements FileTransferService {
                 }
                 out.close();
                 in.close();
-            } else if (GfacUtils.isLocalHost(srchost)) {
+            } else if (GFacUtils.isLocalHost(srchost)) {
                 sshClient = SSHClient.loginToServer(username, desthost, password, keyFileName,
                         knownHostsFileName);
                 SftpClient sftpClient = sshClient.openSftpClient();
                 sftpClient.put(srcfile, destfile);
-            } else if (GfacUtils.isLocalHost(desthost)) {
+            } else if (GFacUtils.isLocalHost(desthost)) {
                 sshClient = SSHClient.loginToServer(username, srchost, password, keyFileName,
                         knownHostsFileName);
                 SftpClient sftpClient = sshClient.openSftpClient();
@@ -159,24 +153,24 @@ public class SshFileTransferService implements FileTransferService {
         return dest;
     }
 
-    public URI copyToDir(URI src, URI destDir, GSSCredential gssCred) throws GfacException {
+    public URI copyToDir(URI src, URI destDir, GSSCredential gssCred) throws GFacProviderException {
         try {
             URI destFile = new URI(destDir.toString() + "/" + new File(src.getPath()).getName());
             return copy(src, destFile, gssCred);
         } catch (URISyntaxException e) {
             //            TODO
-//            throw new GfacException(e,FaultCode.InvaliedLocalArgumnet);
+//            throw new GFacProviderException(e,FaultCode.InvaliedLocalArgumnet);
         }
         //            TODO : Remove
         return null;
     }
 
     public URI copyWithDataID(DataIDType src, URI destURL, GSSCredential gssCred)
-            throws GfacException {
+            throws GFacProviderException {
         throw new UnsupportedOperationException();
     }
 
-    public boolean isExisits(URI srcURI, GSSCredential gssCred) throws GfacException {
+    public boolean isExisits(URI srcURI, GSSCredential gssCred) throws GFacProviderException {
         String desthost = srcURI.getHost();
         String destfile = srcURI.getPath();
 
@@ -208,7 +202,7 @@ public class SshFileTransferService implements FileTransferService {
         return false;
     }
 
-    public Vector<URI> listDir(URI srcURI, GSSCredential gssCred) throws GfacException {
+    public Vector<URI> listDir(URI srcURI, GSSCredential gssCred) throws GFacProviderException {
         String desthost = srcURI.getHost();
         String destfile = srcURI.getPath();
         SshClient sshClient = SSHClient.loginToServer(username, desthost, password, keyFileName,
@@ -232,7 +226,7 @@ public class SshFileTransferService implements FileTransferService {
 //            throw new FileSystemFault(e,FileTransferServiceType.SSH,"listDir",srcURI.toString());
         } catch (URISyntaxException e) {
             //            TODO
-            // throw new GfacException(e,FaultCode.InvaliedLocalArgumnet);
+            // throw new GFacProviderException(e,FaultCode.InvaliedLocalArgumnet);
         } finally {
             if (sshClient != null) {
                 sshClient.disconnect();
@@ -242,7 +236,7 @@ public class SshFileTransferService implements FileTransferService {
         return null;
     }
 
-    public void makeDir(URI destURI, GSSCredential gssCred) throws GfacException {
+    public void makeDir(URI destURI, GSSCredential gssCred) throws GFacProviderException {
         String desthost = destURI.getHost();
         String destfile = destURI.getPath();
         log.info("SFTP to Host:" + desthost);
@@ -264,7 +258,7 @@ public class SshFileTransferService implements FileTransferService {
     }
 
     public String readRemoteFile(URI destURI, GSSCredential gsCredential,
-                                 File localFile) throws GfacException {
+                                 File localFile) throws GFacProviderException {
         SshClient sshClient1 = null;
         SftpClient sftpClient1 = null;
         String fileAsStr = null;
@@ -300,15 +294,15 @@ public class SshFileTransferService implements FileTransferService {
         return fileAsStr;
     }
 
-    public DataIDType store(URI src) throws GfacException {
+    public DataIDType store(URI src) throws GFacProviderException {
         throw new UnsupportedOperationException();
     }
 
-    public ContactInfo findContact(URI uri) throws GfacException {
+    public ContactInfo findContact(URI uri) throws GFacProviderException {
         return new ContactInfo(uri.getHost(),uri.getPort());
     }
 
-    public URI[] copyToDir(URI[] srcList, URI destURL, GSSCredential gssCred) throws GfacException {
+    public URI[] copyToDir(URI[] srcList, URI destURL, GSSCredential gssCred) throws GFacProviderException {
         URI[] destFiles = new URI[srcList.length];
         for (int i = 0; i < srcList.length; i++) {
             destFiles[i] = copy(srcList[i], destURL, gssCred);
