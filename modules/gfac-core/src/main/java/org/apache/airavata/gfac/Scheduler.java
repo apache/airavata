@@ -25,8 +25,10 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.impl.BESProvider;
+import org.apache.airavata.gfac.provider.impl.EC2Provider;
 import org.apache.airavata.gfac.provider.impl.GramProvider;
 import org.apache.airavata.gfac.provider.impl.LocalProvider;
+import org.apache.airavata.schemas.gfac.Ec2HostType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.UnicoreHostType;
 import org.slf4j.Logger;
@@ -65,7 +67,10 @@ public class Scheduler {
         else if (hostDescription.getType() instanceof UnicoreHostType) {
         	return new BESProvider();
         }
-        else{
+        else if (hostDescription.getType() instanceof Ec2HostType) {
+            return new EC2Provider();
+        }
+        else {
             return new LocalProvider();
         }
     }
