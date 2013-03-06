@@ -31,7 +31,10 @@ import org.apache.airavata.gfac.context.AmazonSecurityContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
+import org.apache.airavata.gfac.utils.GramJobSubmissionListener;
 import org.bouncycastle.openssl.PEMWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.security.KeyPairGenerator;
@@ -43,7 +46,9 @@ import java.util.List;
 // TODO
 // import com.sshtools.j2ssh.util.Base64;
 
-public class EC2Provider extends SSHProvider implements GFacProvider {
+public class EC2Provider /*extends SSHProvider*/ implements GFacProvider {
+
+    private static final Logger log = LoggerFactory.getLogger(EC2Provider.class);
 
     public static final int SLEEP_TIME_SECOND = 120;
 
