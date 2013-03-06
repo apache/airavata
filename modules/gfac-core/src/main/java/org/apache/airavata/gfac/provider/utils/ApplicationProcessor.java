@@ -1,8 +1,5 @@
 package org.apache.airavata.gfac.provider.utils;
 
-import java.io.File;
-import java.math.BigInteger;
-
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.schemas.gfac.ExtendedKeyValueType;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
@@ -16,6 +13,9 @@ import org.ggf.schemas.jsdl.x2005.x11.jsdlPosix.LimitsType;
 import org.ogf.schemas.jsdl.x2007.x02.jsdlSpmd.NumberOfProcessesType;
 import org.ogf.schemas.jsdl.x2007.x02.jsdlSpmd.ProcessesPerHostType;
 import org.ogf.schemas.jsdl.x2007.x02.jsdlSpmd.ThreadsPerProcessType;
+
+import java.io.File;
+import java.math.BigInteger;
 
 
 public class ApplicationProcessor {
@@ -41,7 +41,7 @@ public class ApplicationProcessor {
 				LimitsType limitType = LimitsType.Factory.newInstance();
 				Integer i = appDepType.getMaxWallTime();
 				limitType.setStringValue(i.toString());
-				JSDLUtils.getOrCreateSPMDApplication(value).setWallTimeLimit(limitType);
+//				JSDLUtils.getOrCreateSPMDApplication(value).setWallTimeLimit(limitType);
 			}
 		}
 
