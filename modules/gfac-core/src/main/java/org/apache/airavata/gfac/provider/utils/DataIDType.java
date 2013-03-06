@@ -1,6 +1,6 @@
 package org.apache.airavata.gfac.provider.utils;
 
-import org.apache.airavata.core.gfac.exception.GfacException;
+import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.xmlpull.v1.builder.XmlElement;
 
 import java.net.URI;
@@ -26,13 +26,13 @@ public class DataIDType {
         }
     }
 
-    public DataIDType(XmlElement ele) throws GfacException {
+    public DataIDType(XmlElement ele) throws GFacProviderException {
         try {
             String value = ele.requiredTextContent();
             if (value != null) {
                 this.dataID = new URI(value);
             } else {
-                throw new GfacException(
+                throw new GFacProviderException(
                         "Illegal InputMessage, No value content found for the parameter "
                                 + ele.getName() + "/value. Invalid Local Argument");
             }
@@ -41,7 +41,7 @@ public class DataIDType {
                 addDataLocation(new URI(location));
             }
         } catch (URISyntaxException e) {
-            throw new GfacException("Invalid Local Argument", e);
+            throw new GFacProviderException("Invalid Local Argument", e);
         }
     }
 

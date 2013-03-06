@@ -13,7 +13,7 @@ import com.sshtools.j2ssh.transport.publickey.InvalidSshKeyException;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFile;
 import com.sshtools.j2ssh.util.InvalidStateException;
-import org.apache.airavata.core.gfac.exception.GfacException;
+import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,11 +71,11 @@ public class SSHClient {
      * @param keyFileName
      * @param knownHostsFileName
      * @return
-     * @throws GfacException
+     * @throws GFacProviderException
      */
 
     public static SshClient loginToServer(String username, String hostname, String password,
-                                          String keyFileName, String knownHostsFileName) throws GfacException {
+                                          String keyFileName, String knownHostsFileName) throws GFacProviderException {
         try {
 
             log.info("SSH host:" + hostname);
@@ -104,7 +104,7 @@ public class SSHClient {
             String passphrase = null;
             if (file.isPassphraseProtected()) {
                 if (password == null) {
-                    throw new GfacException(
+                    throw new GFacProviderException(
                             "Key file is encrypted, but password has not found in configuration. Invalid Config.");
                 }
                 passphrase = password;
@@ -119,18 +119,18 @@ public class SSHClient {
                 // System.out.println("authenication completed");
                 return ssh;
             } else if (result == AuthenticationProtocolState.PARTIAL) {
-                throw new GfacException("Further authentication requried!. Invalid Config.");
+                throw new GFacProviderException("Further authentication requried!. Invalid Config.");
             } else if (result == AuthenticationProtocolState.FAILED) {
-                throw new GfacException("Authentication failed!. Invalid Config.");
+                throw new GFacProviderException("Authentication failed!. Invalid Config.");
             } else {
-                throw new GfacException("Authentication failed!, Unknown state. Invalid Config.");
+                throw new GFacProviderException("Authentication failed!, Unknown state. Invalid Config.");
             }
         } catch (InvalidSshKeyException e) {
-            throw new GfacException("Invalid Config!", e);
+            throw new GFacProviderException("Invalid Config!", e);
         } catch (InvalidStateException e) {
-            throw new GfacException("Invalid Config!", e);
+            throw new GFacProviderException("Invalid Config!", e);
         } catch (IOException e) {
-            throw new GfacException("Invalid Config!", e);
+            throw new GFacProviderException("Invalid Config!", e);
         }
     }
 
