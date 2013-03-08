@@ -54,4 +54,9 @@ public class LoggingListener {
         log.info("Job status has changed ...");
         log.info(event.getStatusMessage());
     }
+
+    @Subscribe
+    public void logStatusChangeEvent(EC2ProviderEvent event){
+        log.info(event.getStatusMessage());
+    }
 }
