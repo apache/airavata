@@ -27,6 +27,17 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.model.*;
+import com.sshtools.j2ssh.SshClient;
+import com.sshtools.j2ssh.authentication.AuthenticationProtocolState;
+import com.sshtools.j2ssh.authentication.PublicKeyAuthenticationClient;
+import com.sshtools.j2ssh.configuration.SshConnectionProperties;
+import com.sshtools.j2ssh.session.SessionChannelClient;
+import com.sshtools.j2ssh.transport.HostKeyVerification;
+import com.sshtools.j2ssh.transport.TransportProtocolException;
+import com.sshtools.j2ssh.transport.publickey.InvalidSshKeyException;
+import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
+import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFile;
+import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 import org.apache.airavata.gfac.context.AmazonSecurityContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.provider.GFacProvider;
@@ -102,7 +113,73 @@ public class EC2Provider implements GFacProvider {
     }
 
     public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
-        // TODO: Run job
+        final String command2 = "sh run.sh SRR042383.21414#CTGGCACGGAGTTAGCCGATCCTTATTCATAAAGTACATGCAAACGGGTATCCATACTCGACTTTATTCCTTTATAAAAGAAGTTTACAACCCATAGGGCAGTCATCCTTCACGCTACTTGGCTGGTTCAGGCCTGCGCCCATTGACCAATATTCCTCACTGCTGCCTCCCGTAGGAGTTTGGACCGTGTCTCAGTTCCAATGTGGGGGACCTTCCTCTCAGAACCCCTATCCATCGAAGACTAGGTGGGCCGTTACCCCGCCTACTATCTAATGGAACGCATCCCCATCGTCTACCGGAATACCTTTAATCATGTGAACATGCGGACTCATGATGCCATCTTGTATTAATCTTCCTTTCAGAAGGCTGTCCAAGAGTAGACGGCAGGTTGGATACGTGTTACTCACCGTGCCGCCGGTCGCCATCAGTCTTAGCAAGCTAAGACCATGCTGCCCCTGACTTGCATGTGTTAAGCCTGTAGCTTAGCGTTC SRR042383.31933#CTGGCACGGAGTTAGCCGATCCTTATTCATAAAGTACATGCAAACGGGTATCCATACCCGACTTTATTCCTTTATAAAAGAAGTTTACAACCCATAGGGCAGTCATCCTTCACGCTACTTGGCTGGTTCAGGCTCTCGCCCATTGACCAATATTCCTCACTGCTGCCTCCCGTAGGAGTTTGGACCGTGTCTCAGTTCCAATGTGGGGGACCTTCCTCTCAGAACCCCTATCCATCGAAGACTAGGTGGGCCGTTACCCCGCCTACTATCTAATGGAACGCATCCCCATCGTCTACCGGAATACCTTTAATCATGTGAACATGCGGACTCATGATGCCATCTTGTATTAAATCTTCCTTTCAGAAGGCTATCCAAGAGTAGACGGCAGGTTGGATACGTGTTACTCACCGTGCG" + '\n';
+        SshClient sshClient = new SshClient();
+        sshClient.setSocketTimeout(30000);
+        SshConnectionProperties properties = new SshConnectionProperties();
+        properties.setHost( "-----------------------------------" );
+        properties.setPort(22);
+
+        // TODO: Check this ....
+//        instance.getPrivateDnsName();
+
+        // Connect to the host
+        try
+        {
+            sshClient.connect(properties, new HostKeyVerification() {
+                public boolean verifyHost(String s, SshPublicKey sshPublicKey) throws TransportProtocolException {
+                    log.debug("Verifying Host: " + s);
+                    return true;
+                }
+            });
+
+            System.out.println( "Connect Successful." );
+
+            // Initialize the authentication data.
+            PublicKeyAuthenticationClient publicKeyAuth = new PublicKeyAuthenticationClient();
+
+            publicKeyAuth.setUsername("ec2-user");
+
+            SshPrivateKeyFile file = SshPrivateKeyFile.parse(new File("/home/heshan/ec2_keys/ec2key.pem"));
+            SshPrivateKey privateKey = file.toPrivateKey("");
+            publicKeyAuth.setKey( privateKey );
+
+            // Authenticate
+            int result = sshClient.authenticate( publicKeyAuth );
+            String returnValue = "Login result = " + result;
+
+            if(result== AuthenticationProtocolState.FAILED) {
+                returnValue = "The authentication failed";
+            } else if(result==AuthenticationProtocolState.PARTIAL) {
+                returnValue = "The authentication succeeded but another"
+                        + "authentication is required";
+            } else if(result==AuthenticationProtocolState.COMPLETE) {
+                returnValue = "The authentication is complete";
+            }
+
+            SessionChannelClient session = sshClient.openSessionChannel();
+            returnValue = "session is open successfully...";
+            session.requestPseudoTerminal("vt100", 80, 25, 0, 0, "");
+            session.startShell();
+
+            log.debug("return value (authentication): " + returnValue);
+//            final String cmd = "ls -l" + '\n';
+            session.startShell();
+            session.getOutputStream().write(command2.getBytes());
+
+            InputStream in = session.getInputStream();
+            byte buffer[] = new byte[255];
+            int read;
+            while((read = in.read(buffer)) > 0) {
+                String out = new String(buffer, 0, read);
+                System.out.println(out);
+            }
+
+        } catch (InvalidSshKeyException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
