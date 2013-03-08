@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * As a pre-requisite for this your Amazon instance should be in a running state.
+ * As a pre-requisite for running this test is that your Amazon instance should be in a running state.
  */
 public class EC2ProviderTest {
     private JobExecutionContext jobExecutionContext;
@@ -48,7 +48,6 @@ public class EC2ProviderTest {
 
     /* Username used to log into your ec2 instance eg.ec2-user */
     private String userName = "";
-
 
     /* Secret key used to connect to the image */
     private String secretKey = "";
@@ -148,7 +147,7 @@ public class EC2ProviderTest {
         gFacAPI.submitJob(jobExecutionContext);
         MessageContext outMessageContext = jobExecutionContext.getOutMessageContext();
         Assert.assertEquals(MappingFactory.
-                toString((ActualParameter) outMessageContext.getParameter("genome_output")), 457);
+                toString((ActualParameter) outMessageContext.getParameter("genome_output")), "457");
     }
 }
 
