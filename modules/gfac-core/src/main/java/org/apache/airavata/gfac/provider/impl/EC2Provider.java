@@ -38,6 +38,7 @@ import com.sshtools.j2ssh.transport.publickey.InvalidSshKeyException;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFile;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
+import com.sshtools.j2ssh.util.Base64;
 import org.apache.airavata.gfac.context.AmazonSecurityContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.provider.GFacProvider;
@@ -52,8 +53,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
-// TODO
-// import com.sshtools.j2ssh.util.Base64;
 
 public class EC2Provider implements GFacProvider {
 
@@ -64,6 +63,10 @@ public class EC2Provider implements GFacProvider {
     public static final String KEY_PAIR_NAME = "gfac";
 
     public static final String KEY_PAIR_FILE = "ec2_rsa";
+
+    public static final int SOCKET_TIMEOUT = 30000;
+
+    public static final int SSH_PORT = 22;
 
     private static final String privateKeyFilePath = System.getProperty("user.home") + "/.ssh/" + KEY_PAIR_FILE;
 
@@ -115,13 +118,10 @@ public class EC2Provider implements GFacProvider {
     public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
         final String command2 = "sh run.sh SRR042383.21414#CTGGCACGGAGTTAGCCGATCCTTATTCATAAAGTACATGCAAACGGGTATCCATACTCGACTTTATTCCTTTATAAAAGAAGTTTACAACCCATAGGGCAGTCATCCTTCACGCTACTTGGCTGGTTCAGGCCTGCGCCCATTGACCAATATTCCTCACTGCTGCCTCCCGTAGGAGTTTGGACCGTGTCTCAGTTCCAATGTGGGGGACCTTCCTCTCAGAACCCCTATCCATCGAAGACTAGGTGGGCCGTTACCCCGCCTACTATCTAATGGAACGCATCCCCATCGTCTACCGGAATACCTTTAATCATGTGAACATGCGGACTCATGATGCCATCTTGTATTAATCTTCCTTTCAGAAGGCTGTCCAAGAGTAGACGGCAGGTTGGATACGTGTTACTCACCGTGCCGCCGGTCGCCATCAGTCTTAGCAAGCTAAGACCATGCTGCCCCTGACTTGCATGTGTTAAGCCTGTAGCTTAGCGTTC SRR042383.31933#CTGGCACGGAGTTAGCCGATCCTTATTCATAAAGTACATGCAAACGGGTATCCATACCCGACTTTATTCCTTTATAAAAGAAGTTTACAACCCATAGGGCAGTCATCCTTCACGCTACTTGGCTGGTTCAGGCTCTCGCCCATTGACCAATATTCCTCACTGCTGCCTCCCGTAGGAGTTTGGACCGTGTCTCAGTTCCAATGTGGGGGACCTTCCTCTCAGAACCCCTATCCATCGAAGACTAGGTGGGCCGTTACCCCGCCTACTATCTAATGGAACGCATCCCCATCGTCTACCGGAATACCTTTAATCATGTGAACATGCGGACTCATGATGCCATCTTGTATTAAATCTTCCTTTCAGAAGGCTATCCAAGAGTAGACGGCAGGTTGGATACGTGTTACTCACCGTGCG" + '\n';
         SshClient sshClient = new SshClient();
-        sshClient.setSocketTimeout(30000);
+        sshClient.setSocketTimeout(SOCKET_TIMEOUT);
         SshConnectionProperties properties = new SshConnectionProperties();
-        properties.setHost( "-----------------------------------" );
-        properties.setPort(22);
-
-        // TODO: Check this ....
-//        instance.getPrivateDnsName();
+        properties.setHost(this.instance.getPublicDnsName());
+        properties.setPort(SSH_PORT);
 
         // Connect to the host
         try
@@ -133,37 +133,27 @@ public class EC2Provider implements GFacProvider {
                 }
             });
 
-            System.out.println( "Connect Successful." );
-
             // Initialize the authentication data.
             PublicKeyAuthenticationClient publicKeyAuth = new PublicKeyAuthenticationClient();
-
             publicKeyAuth.setUsername("ec2-user");
-
             SshPrivateKeyFile file = SshPrivateKeyFile.parse(new File("/home/heshan/ec2_keys/ec2key.pem"));
             SshPrivateKey privateKey = file.toPrivateKey("");
             publicKeyAuth.setKey( privateKey );
 
             // Authenticate
             int result = sshClient.authenticate( publicKeyAuth );
-            String returnValue = "Login result = " + result;
-
             if(result== AuthenticationProtocolState.FAILED) {
-                returnValue = "The authentication failed";
+                throw new GFacProviderException("The authentication failed", jobExecutionContext);
             } else if(result==AuthenticationProtocolState.PARTIAL) {
-                returnValue = "The authentication succeeded but another"
-                        + "authentication is required";
+                throw new GFacProviderException("The authentication succeeded but another"
+                        + "authentication is required", jobExecutionContext);
             } else if(result==AuthenticationProtocolState.COMPLETE) {
-                returnValue = "The authentication is complete";
+                throw new GFacProviderException("The authentication is complete", jobExecutionContext);
             }
 
             SessionChannelClient session = sshClient.openSessionChannel();
-            returnValue = "session is open successfully...";
+            log.info("ssh session is open successfully...");
             session.requestPseudoTerminal("vt100", 80, 25, 0, 0, "");
-            session.startShell();
-
-            log.debug("return value (authentication): " + returnValue);
-//            final String cmd = "ls -l" + '\n';
             session.startShell();
             session.getOutputStream().write(command2.getBytes());
 
@@ -302,16 +292,14 @@ public class EC2Provider implements GFacProvider {
         return instances;
     }
 
-    private void buildKeyPair(AmazonEC2Client ec2) throws NoSuchAlgorithmException, InvalidKeySpecException, AmazonServiceException, AmazonClientException, IOException {
-
+    private void buildKeyPair(AmazonEC2Client ec2) throws NoSuchAlgorithmException, InvalidKeySpecException,
+            AmazonServiceException, AmazonClientException, IOException {
         boolean newKey = false;
 
         File privateKeyFile = new File(privateKeyFilePath);
         File publicKeyFile = new File(privateKeyFilePath + ".pub");
 
-        /*
-         * Check if Keypair already created on the server
-         */
+        /* Check if Key-pair already created on the server */
         if (!privateKeyFile.exists()) {
 
             // check folder and create if it does not exist
@@ -329,8 +317,7 @@ public class EC2Provider implements GFacProvider {
             // Store Public Key.
             try {
                 fos = new FileOutputStream(privateKeyFilePath + ".pub");
-                // TODO
-                //fos.write(Base64.encodeBytes(keypair.getPublic().getEncoded(), true).getBytes());
+                fos.write(Base64.encodeBytes(keypair.getPublic().getEncoded(), true).getBytes());
             } catch (IOException ioe) {
                 throw ioe;
             } finally {
@@ -349,9 +336,7 @@ public class EC2Provider implements GFacProvider {
                 fos = new FileOutputStream(privateKeyFilePath);
                 StringWriter stringWriter = new StringWriter();
 
-                /*
-                 * Write in PEM format (openssl support)
-                 */
+                /* Write in PEM format (openssl support) */
                 PEMWriter pemFormatWriter = new PEMWriter(stringWriter);
                 pemFormatWriter.writeObject(keypair.getPrivate());
                 pemFormatWriter.close();
@@ -379,9 +364,7 @@ public class EC2Provider implements GFacProvider {
             newKey = true;
         }
 
-        /*
-         * Read Public Key
-         */
+        /* Read Public Key */
         String encodedPublicKey = null;
         BufferedReader br = null;
         try {
