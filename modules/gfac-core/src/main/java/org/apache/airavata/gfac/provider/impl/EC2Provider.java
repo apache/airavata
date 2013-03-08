@@ -167,9 +167,9 @@ public class EC2Provider implements GFacProvider {
             }
 
         } catch (InvalidSshKeyException e) {
-            e.printStackTrace();
+            throw new GFacProviderException("Invalid SSH key", e);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new GFacProviderException("Error in occurred during IO", e);
         }
 
     }
@@ -252,7 +252,8 @@ public class EC2Provider implements GFacProvider {
         return instance;
     }
 
-    private List<Instance> startInstances(AmazonEC2Client ec2, String amiId, String insType, JobExecutionContext jobExecutionContext) throws AmazonServiceException {
+    private List<Instance> startInstances(AmazonEC2Client ec2, String amiId, String insType, JobExecutionContext jobExecutionContext)
+            throws AmazonServiceException {
         // start only 1 instance
         RunInstancesRequest request = new RunInstancesRequest(amiId, 1, 1);
         request.setKeyName(KEY_PAIR_NAME);
