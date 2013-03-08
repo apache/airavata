@@ -142,7 +142,7 @@ public class EC2Provider implements GFacProvider {
             publicKeyAuth.setKey(privateKey);
 
             // Authenticate
-            int result = sshClient.authenticate( publicKeyAuth );
+            int result = sshClient.authenticate(publicKeyAuth);
             if(result== AuthenticationProtocolState.FAILED) {
                 throw new GFacProviderException("The authentication failed", jobExecutionContext);
             } else if(result==AuthenticationProtocolState.PARTIAL) {
