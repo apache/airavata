@@ -40,7 +40,6 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 // TODO
 // import com.sshtools.j2ssh.util.Base64;
@@ -118,7 +117,7 @@ public class EC2Provider implements GFacProvider {
      * @param ec2client AmazonEC2Client object
      */
     private void checkConnection(Instance instance, AmazonEC2Client ec2client) {
-        /* Make sure port 22 is connectable */
+        /* Make sure port 22 is connectible */
         for (GroupIdentifier g : instance.getSecurityGroups()) {
             IpPermission ip = new IpPermission();
             ip.setIpProtocol("tcp");
@@ -146,7 +145,8 @@ public class EC2Provider implements GFacProvider {
      * @return instance id of the running Amazon instance.
      * @throws GFacProviderException
      */
-    private Instance initEc2Environment(JobExecutionContext jobExecutionContext, AmazonEC2Client ec2client) throws GFacProviderException {
+    private Instance initEc2Environment(JobExecutionContext jobExecutionContext, AmazonEC2Client ec2client)
+            throws GFacProviderException {
         Instance instance;
         try {
             /* Build key pair before start instance */
@@ -185,11 +185,11 @@ public class EC2Provider implements GFacProvider {
         return instance;
     }
 
-    private List<Instance> startInstances(AmazonEC2Client ec2, String AMI_ID, String INS_TYPE, JobExecutionContext jobExecutionContext) throws AmazonServiceException {
+    private List<Instance> startInstances(AmazonEC2Client ec2, String amiId, String insType, JobExecutionContext jobExecutionContext) throws AmazonServiceException {
         // start only 1 instance
-        RunInstancesRequest request = new RunInstancesRequest(AMI_ID, 1, 1);
+        RunInstancesRequest request = new RunInstancesRequest(amiId, 1, 1);
         request.setKeyName(KEY_PAIR_NAME);
-        request.setInstanceType(INS_TYPE);
+        request.setInstanceType(insType);
 
         RunInstancesResult result = ec2.runInstances(request);
 
@@ -323,21 +323,14 @@ public class EC2Provider implements GFacProvider {
             }
         }
 
-        /*
-         * Generate key pair in Amazon if necessary
-         */
+        /* Generate key pair in Amazon if necessary */
         try {
-            /*
-             * Get current key pair in Amazon
-             */
+            /* Get current key pair in Amazon */
             DescribeKeyPairsRequest describeKeyPairsRequest = new DescribeKeyPairsRequest();
             ec2.describeKeyPairs(describeKeyPairsRequest.withKeyNames(KEY_PAIR_NAME));
 
-            /*
-             * If key exists and new key is created, delete old key and replace
-             * with new one. Else, do nothing
-             */
-
+            /* If key exists and new key is created, delete old key and replace
+             * with new one. Else, do nothing */
             if (newKey) {
                 DeleteKeyPairRequest deleteKeyPairRequest = new DeleteKeyPairRequest(KEY_PAIR_NAME);
                 ec2.deleteKeyPair(deleteKeyPairRequest);
@@ -346,9 +339,7 @@ public class EC2Provider implements GFacProvider {
             }
 
         } catch (AmazonServiceException ase) {
-            /*
-             * Key doesn't exists, import new key.
-             */
+            /* Key doesn't exists, import new key. */
             if(ase.getErrorCode().equals("InvalidKeyPair.NotFound")){
                 ImportKeyPairRequest importKeyPairRequest = new ImportKeyPairRequest(KEY_PAIR_NAME, encodedPublicKey);
                 ec2.importKeyPair(importKeyPairRequest);
@@ -359,9 +350,7 @@ public class EC2Provider implements GFacProvider {
     }
 
     private boolean anyInstancesStateEqual(List<Instance> instances, InstanceStateName name) {
-        for (Iterator<Instance> iterator = instances.iterator(); iterator.hasNext();) {
-            Instance instance = (Instance) iterator.next();
-
+        for (Instance instance : instances) {
             // if one of instance is not running, return false
             if (InstanceStateName.fromValue(instance.getState().getName()) == name) {
                 return true;
@@ -371,9 +360,7 @@ public class EC2Provider implements GFacProvider {
     }
 
     private boolean allInstancesStateEqual(List<Instance> instances, InstanceStateName name) {
-        for (Iterator<Instance> iterator = instances.iterator(); iterator.hasNext();) {
-            Instance instance = (Instance) iterator.next();
-
+        for (Instance instance : instances) {
             // if one of instance is not running, return false
             if (InstanceStateName.fromValue(instance.getState().getName()) != name) {
                 return false;
@@ -384,8 +371,7 @@ public class EC2Provider implements GFacProvider {
 
     private List<String> getInstanceIDs(List<Instance> instances) {
         List<String> ret = new ArrayList<String>();
-        for (Iterator<Instance> iterator = instances.iterator(); iterator.hasNext();) {
-            Instance instance = (Instance) iterator.next();
+        for (Instance instance : instances) {
             ret.add(instance.getInstanceId());
         }
         return ret;
