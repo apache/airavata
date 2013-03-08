@@ -31,7 +31,6 @@ import org.apache.airavata.gfac.context.AmazonSecurityContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
-import org.apache.airavata.gfac.utils.GramJobSubmissionListener;
 import org.bouncycastle.openssl.PEMWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +45,7 @@ import java.util.List;
 // TODO
 // import com.sshtools.j2ssh.util.Base64;
 
-public class EC2Provider /*extends SSHProvider*/ implements GFacProvider {
+public class EC2Provider implements GFacProvider {
 
     private static final Logger log = LoggerFactory.getLogger(EC2Provider.class);
 
@@ -56,83 +55,77 @@ public class EC2Provider /*extends SSHProvider*/ implements GFacProvider {
 
     public static final String KEY_PAIR_FILE = "ec2_rsa";
 
-    private static final String SSH_SECURITY_CONTEXT = "ssh";
-
     private static final String privateKeyFilePath = System.getProperty("user.home") + "/.ssh/" + KEY_PAIR_FILE;
-
-    private Instance instance;
-
-    private String username;
 
     private AmazonSecurityContext amazonSecurityContext;
 
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException {
-        if ((jobExecutionContext != null) &&
-                (jobExecutionContext.getSecurityContext() instanceof AmazonSecurityContext)) {
-            this.amazonSecurityContext = (AmazonSecurityContext) jobExecutionContext.getSecurityContext();
+        if (jobExecutionContext != null) {
+            if (jobExecutionContext.getSecurityContext() instanceof AmazonSecurityContext) {
+                this.amazonSecurityContext = (AmazonSecurityContext) jobExecutionContext.getSecurityContext();
+            } else {
+                throw new GFacProviderException("Amazon Security Context is not set" + jobExecutionContext);
+            }
         } else {
-            //TODO : error
+            throw new GFacProviderException("Job Execution Context is null" + jobExecutionContext);
         }
     }
 
     public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+        Instance instance;
 
-        String secret_key = amazonSecurityContext.getSecretKey();
-        String access_key = amazonSecurityContext.getAccessKey();
-        String ami_id = amazonSecurityContext.getAmiId();
-        String ins_id = amazonSecurityContext.getInstanceId();
-        String ins_type = amazonSecurityContext.getInstanceType();
-        this.username = amazonSecurityContext.getUserName();
+        if (log.isDebugEnabled()) {
+            log.debug("ACCESS_KEY:" + amazonSecurityContext.getAccessKey());
+            log.debug("SECRET_KEY:" + amazonSecurityContext.getSecretKey());
+            log.debug("AMI_ID:" + amazonSecurityContext.getAmiId());
+            log.debug("INS_ID:" + amazonSecurityContext.getInstanceId());
+            log.debug("INS_TYPE:" + amazonSecurityContext.getInstanceType());
+            log.debug("USERNAME:" + amazonSecurityContext.getUserName());
+        }
 
-        log.debug("ACCESS_KEY:" + access_key);
-        log.debug("SECRET_KEY:" + secret_key);
-        log.debug("AMI_ID:" + ami_id);
-        log.debug("INS_ID:" + ins_id);
-        log.debug("INS_TYPE:" + ins_type);
-        log.debug("USERNAME:" + username);
-
-        /*
-         * Validation
-         */
-        if (access_key == null || access_key.isEmpty())
+        /* Validation */
+        if (amazonSecurityContext.getAccessKey() == null || amazonSecurityContext.getAccessKey().isEmpty())
             throw new GFacProviderException("EC2 Access Key is empty", jobExecutionContext);
-        if (secret_key == null || secret_key.isEmpty())
+        if (amazonSecurityContext.getSecretKey() == null || amazonSecurityContext.getSecretKey().isEmpty())
             throw new GFacProviderException("EC2 Secret Key is empty", jobExecutionContext);
-        if ((ami_id == null && ins_id == null) || (ami_id != null && ami_id.isEmpty()) || (ins_id != null && ins_id.isEmpty()))
+        if ((amazonSecurityContext.getAmiId() == null && amazonSecurityContext.getInstanceId() == null) ||
+                (amazonSecurityContext.getAmiId() != null && amazonSecurityContext.getAmiId().isEmpty()) ||
+                (amazonSecurityContext.getInstanceId() != null && amazonSecurityContext.getInstanceId().isEmpty()))
             throw new GFacProviderException("EC2 AMI or Instance ID is empty", jobExecutionContext);
-        if (this.username == null || this.username.isEmpty())
+        if (amazonSecurityContext.getUserName() == null || amazonSecurityContext.getUserName().isEmpty())
             throw new GFacProviderException("EC2 Username is empty", jobExecutionContext);
 
-        /*
-         * Need to start EC2 instance before running it
-         */
-        AWSCredentials credential = new BasicAWSCredentials(access_key, secret_key);
+        /* Need to start EC2 instance before running it */
+        AWSCredentials credential =
+                new BasicAWSCredentials(amazonSecurityContext.getAccessKey(), amazonSecurityContext.getSecretKey());
         AmazonEC2Client ec2client = new AmazonEC2Client(credential);
 
         try {
-            /*
-             * Build key pair before start instance
-             */
+            /* Build key pair before start instance */
             buildKeyPair(ec2client);
 
             // right now, we can run it on one host
-            if (ami_id != null)
-                this.instance = startInstances(ec2client, ami_id, ins_type, jobExecutionContext).get(0);
+            if (amazonSecurityContext.getInstanceId() != null)
+                instance = startInstances(ec2client, amazonSecurityContext.getInstanceId(),
+                        amazonSecurityContext.getInstanceType(), jobExecutionContext).get(0);
             else {
 
                 // already running instance
                 DescribeInstancesRequest describeInstancesRequest = new DescribeInstancesRequest();
-                DescribeInstancesResult describeInstancesResult = ec2client.describeInstances(describeInstancesRequest.withInstanceIds(ins_id));
+                DescribeInstancesResult describeInstancesResult =
+                        ec2client.describeInstances(describeInstancesRequest.withInstanceIds(amazonSecurityContext.getInstanceId()));
 
-                if (describeInstancesResult.getReservations().size() == 0 || describeInstancesResult.getReservations().get(0).getInstances().size() == 0) {
-                    throw new GFacProviderException("Instance not found:" + ins_id);
+                if (describeInstancesResult.getReservations().size() == 0 ||
+                        describeInstancesResult.getReservations().get(0).getInstances().size() == 0) {
+                    throw new GFacProviderException("Instance not found:" + amazonSecurityContext.getInstanceId());
                 }
 
-                this.instance = describeInstancesResult.getReservations().get(0).getInstances().get(0);
+                instance = describeInstancesResult.getReservations().get(0).getInstances().get(0);
 
                 // check instance keypair
-                if (this.instance.getKeyName() == null || !this.instance.getKeyName().equals(KEY_PAIR_NAME))
-                    throw new GFacProviderException("Keypair for instance:" + ins_id + " is not valid");
+                if (instance.getKeyName() == null || !instance.getKeyName().equals(KEY_PAIR_NAME))
+                    throw new GFacProviderException("Keypair for instance:" + amazonSecurityContext.getInstanceId() +
+                            " is not valid");
             }
 
             //TODO send out instance id
@@ -142,7 +135,7 @@ public class EC2Provider /*extends SSHProvider*/ implements GFacProvider {
             /*
              * Make sure port 22 is connectable
              */
-            for (GroupIdentifier g : this.instance.getSecurityGroups()) {
+            for (GroupIdentifier g : instance.getSecurityGroups()) {
                 IpPermission ip = new IpPermission();
                 ip.setIpProtocol("tcp");
                 ip.setFromPort(22);
@@ -165,28 +158,6 @@ public class EC2Provider /*extends SSHProvider*/ implements GFacProvider {
             throw new GFacProviderException("Invalied Request",e,jobExecutionContext);
         }
 
-        // TODO: Fix the following once Raman commits his changes to the SSHProvider.
-//        SSHSecurityContextImpl sshContext = ((SSHSecurityContextImpl) invocationContext.getSecurityContext(SSH_SECURITY_CONTEXT));
-//        if (sshContext == null) {
-//            sshContext = new SSHSecurityContextImpl();
-//        }
-//
-//        sshContext.setUsername(username);
-//        sshContext.setKeyPass("");
-//        sshContext.setPrivateKeyLoc(privateKeyFilePath);
-//        invocationContext.addSecurityContext(SSH_SECURITY_CONTEXT, sshContext);
-
-        //set to super class
-        /*setUsername(username);
-        setPassword("");
-        setKnownHostsFileName(null);
-        setKeyFileName(privateKeyFilePath);*/
-
-        // we need to erase gridftp URL since we will forcefully use SFTP
-        // TODO
-        /*execContext.setHost(this.instance.getPublicDnsName());
-        execContext.getHostDesc().getHostConfiguration().setGridFTPArray(null);
-        execContext.setFileTransferService(new SshFileTransferService(execContext, this.username, privateKeyFilePath));*/
     }
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
