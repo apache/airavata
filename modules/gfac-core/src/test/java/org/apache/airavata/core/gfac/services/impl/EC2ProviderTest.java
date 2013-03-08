@@ -79,6 +79,8 @@ public class EC2ProviderTest {
         ApplicationDescription ec2Desc = new ApplicationDescription(Ec2ApplicationDeploymentType.type);
         Ec2ApplicationDeploymentType ec2App = (Ec2ApplicationDeploymentType)ec2Desc.getType();
 
+        String serviceName = "Gnome_distance_calculation_workflow";
+        ec2Desc.getType().addNewApplicationName().setStringValue(serviceName);
         ec2App.setJobType(JobTypeType.EC_2);
         ec2App.setExecutable("/home/ec2-user/run.sh");
         ec2App.setExecutableType("sh");
