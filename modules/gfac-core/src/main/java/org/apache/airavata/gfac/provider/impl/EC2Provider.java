@@ -41,6 +41,7 @@ import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 import com.sshtools.j2ssh.util.Base64;
 import org.apache.airavata.gfac.context.AmazonSecurityContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.gfac.notification.events.EC2ProviderEvent;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.bouncycastle.openssl.PEMWriter;
@@ -60,15 +61,15 @@ public class EC2Provider implements GFacProvider {
 
     public static final int SLEEP_TIME_SECOND = 120;
 
-    public static final String KEY_PAIR_NAME = "gfac";
-
-    public static final String KEY_PAIR_FILE = "ec2_rsa";
-
     public static final int SOCKET_TIMEOUT = 30000;
 
     public static final int SSH_PORT = 22;
 
-    private static final String privateKeyFilePath = System.getProperty("user.home") + "/.ssh/" + KEY_PAIR_FILE;
+    public static final String KEY_PAIR_NAME = "gfac";
+
+    public static final String KEY_PAIR_FILE = "ec2_rsa";
+
+    private static final String PRIVATE_KEY_FILE_PATH = System.getProperty("user.home") + "/.ssh/" + KEY_PAIR_FILE;
 
     private Instance instance = null;
 
@@ -136,9 +137,9 @@ public class EC2Provider implements GFacProvider {
             // Initialize the authentication data.
             PublicKeyAuthenticationClient publicKeyAuth = new PublicKeyAuthenticationClient();
             publicKeyAuth.setUsername("ec2-user");
-            SshPrivateKeyFile file = SshPrivateKeyFile.parse(new File("/home/heshan/ec2_keys/ec2key.pem"));
+            SshPrivateKeyFile file = SshPrivateKeyFile.parse(new File(PRIVATE_KEY_FILE_PATH));
             SshPrivateKey privateKey = file.toPrivateKey("");
-            publicKeyAuth.setKey( privateKey );
+            publicKeyAuth.setKey(privateKey);
 
             // Authenticate
             int result = sshClient.authenticate( publicKeyAuth );
@@ -243,8 +244,7 @@ public class EC2Provider implements GFacProvider {
                             " is not valid");
             }
 
-            //TODO send out instance id
-            //execContext.getNotificationService().sendResourceMappingNotifications(this.instance.getPublicDnsName(), "EC2 Instance " + this.instance.getInstanceId() + " is running with public name " + this.instance.getPublicDnsName(), this.instance.getInstanceId());
+            jobExecutionContext.getNotificationService().publish(new EC2ProviderEvent("EC2 Instance " + this.instance.getInstanceId() + " is running with public name " + this.instance.getPublicDnsName()));
 
         } catch (Exception e) {
             throw new GFacProviderException("Invalid Request",e,jobExecutionContext);
@@ -271,8 +271,8 @@ public class EC2Provider implements GFacProvider {
 
             // notify the status
             for (Instance ins: instances) {
-                // TODO
-                //executionContext.getNotificationService().info("EC2 Instance " +ins.getInstanceId() + " is " + ins.getState().getName().toString());
+                jobExecutionContext.getNotificationService().publish(new EC2ProviderEvent("EC2 Instance " +
+                        ins.getInstanceId() + " is " + ins.getState().getName()));
             }
 
             try {
@@ -296,8 +296,8 @@ public class EC2Provider implements GFacProvider {
             AmazonServiceException, AmazonClientException, IOException {
         boolean newKey = false;
 
-        File privateKeyFile = new File(privateKeyFilePath);
-        File publicKeyFile = new File(privateKeyFilePath + ".pub");
+        File privateKeyFile = new File(PRIVATE_KEY_FILE_PATH);
+        File publicKeyFile = new File(PRIVATE_KEY_FILE_PATH + ".pub");
 
         /* Check if Key-pair already created on the server */
         if (!privateKeyFile.exists()) {
@@ -316,7 +316,7 @@ public class EC2Provider implements GFacProvider {
 
             // Store Public Key.
             try {
-                fos = new FileOutputStream(privateKeyFilePath + ".pub");
+                fos = new FileOutputStream(PRIVATE_KEY_FILE_PATH + ".pub");
                 fos.write(Base64.encodeBytes(keypair.getPublic().getEncoded(), true).getBytes());
             } catch (IOException ioe) {
                 throw ioe;
@@ -333,7 +333,7 @@ public class EC2Provider implements GFacProvider {
 
             // Store Private Key.
             try {
-                fos = new FileOutputStream(privateKeyFilePath);
+                fos = new FileOutputStream(PRIVATE_KEY_FILE_PATH);
                 StringWriter stringWriter = new StringWriter();
 
                 /* Write in PEM format (openssl support) */
