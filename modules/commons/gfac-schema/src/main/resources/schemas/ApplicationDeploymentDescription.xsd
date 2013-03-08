@@ -39,7 +39,19 @@
 		</sequence>
 	</complexType>
 
-	<complexType name="hpcApplicationDeploymentType">
+    <complexType name="ec2ApplicationDeploymentType">
+        <complexContent>
+            <extension base="gfac:applicationDeploymentDescriptionType">
+                <sequence>
+                    <element name="jobType" type="gfac:jobTypeType" minOccurs="0" maxOccurs="1" />
+                    <element name="executable" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <element name="executableType" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="hpcApplicationDeploymentType">
 		<complexContent>
 			<extension base="gfac:applicationDeploymentDescriptionType">
 				<sequence>
@@ -97,6 +109,7 @@
 			<enumeration value="mpi" />
 			<enumeration value="openMP" />
             <enumeration value="single" />
+            <enumeration value="ec2" />
 		</restriction>
 	</simpleType>
 
