@@ -57,6 +57,8 @@ public class EC2Provider implements GFacProvider {
 
     private static final String privateKeyFilePath = System.getProperty("user.home") + "/.ssh/" + KEY_PAIR_FILE;
 
+    private Instance instance = null;
+
     private AmazonSecurityContext amazonSecurityContext;
 
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException {
@@ -69,10 +71,6 @@ public class EC2Provider implements GFacProvider {
         } else {
             throw new GFacProviderException("Job Execution Context is null" + jobExecutionContext);
         }
-    }
-
-    public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
-        Instance instance;
 
         if (log.isDebugEnabled()) {
             log.debug("ACCESS_KEY:" + amazonSecurityContext.getAccessKey());
@@ -100,6 +98,56 @@ public class EC2Provider implements GFacProvider {
                 new BasicAWSCredentials(amazonSecurityContext.getAccessKey(), amazonSecurityContext.getSecretKey());
         AmazonEC2Client ec2client = new AmazonEC2Client(credential);
 
+        instance = initEc2Environment(jobExecutionContext, ec2client);
+        checkConnection(instance, ec2client);
+    }
+
+    public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+        // TODO: Run job
+
+    }
+
+    public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+
+    }
+
+    /**
+     * Checks whether the port 22 of the Amazon instance is accessible.
+     *
+     * @param instance Amazon instance id.
+     * @param ec2client AmazonEC2Client object
+     */
+    private void checkConnection(Instance instance, AmazonEC2Client ec2client) {
+        /* Make sure port 22 is connectable */
+        for (GroupIdentifier g : instance.getSecurityGroups()) {
+            IpPermission ip = new IpPermission();
+            ip.setIpProtocol("tcp");
+            ip.setFromPort(22);
+            ip.setToPort(22);
+            AuthorizeSecurityGroupIngressRequest r = new AuthorizeSecurityGroupIngressRequest();
+            r = r.withIpPermissions(ip.withIpRanges("0.0.0.0/0"));
+            r.setGroupId(g.getGroupId());
+            try {
+                ec2client.authorizeSecurityGroupIngress(r);
+            } catch (AmazonServiceException as) {
+                /* If exception is from duplicate room, ignore it. */
+                if (!as.getErrorCode().equals("InvalidPermission.Duplicate"))
+                    throw as;
+            }
+        }
+    }
+
+    /**
+     * Initializes the Amazon EC2 environment needed to run the Cloud job submission. This will bring
+     * up an Amazon instance (out of an AMI) or use an existing instance id.
+     *
+     * @param jobExecutionContext Job execution context.
+     * @param ec2client EC2 Client.
+     * @return instance id of the running Amazon instance.
+     * @throws GFacProviderException
+     */
+    private Instance initEc2Environment(JobExecutionContext jobExecutionContext, AmazonEC2Client ec2client) throws GFacProviderException {
+        Instance instance;
         try {
             /* Build key pair before start instance */
             buildKeyPair(ec2client);
@@ -131,37 +179,10 @@ public class EC2Provider implements GFacProvider {
             //TODO send out instance id
             //execContext.getNotificationService().sendResourceMappingNotifications(this.instance.getPublicDnsName(), "EC2 Instance " + this.instance.getInstanceId() + " is running with public name " + this.instance.getPublicDnsName(), this.instance.getInstanceId());
 
-
-            /*
-             * Make sure port 22 is connectable
-             */
-            for (GroupIdentifier g : instance.getSecurityGroups()) {
-                IpPermission ip = new IpPermission();
-                ip.setIpProtocol("tcp");
-                ip.setFromPort(22);
-                ip.setToPort(22);
-                AuthorizeSecurityGroupIngressRequest r = new AuthorizeSecurityGroupIngressRequest();
-                r = r.withIpPermissions(ip.withIpRanges("0.0.0.0/0"));
-                r.setGroupId(g.getGroupId());
-                try {
-                    ec2client.authorizeSecurityGroupIngress(r);
-                } catch (AmazonServiceException as) {
-                    /*
-                     * If exception is from duplicate room, ignore it.
-                     */
-                    if (!as.getErrorCode().equals("InvalidPermission.Duplicate"))
-                        throw as;
-                }
-            }
-
         } catch (Exception e) {
-            throw new GFacProviderException("Invalied Request",e,jobExecutionContext);
+            throw new GFacProviderException("Invalid Request",e,jobExecutionContext);
         }
-
-    }
-
-    public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        return instance;
     }
 
     private List<Instance> startInstances(AmazonEC2Client ec2, String AMI_ID, String INS_TYPE, JobExecutionContext jobExecutionContext) throws AmazonServiceException {
