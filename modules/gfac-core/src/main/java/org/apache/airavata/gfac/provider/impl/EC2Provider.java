@@ -112,7 +112,7 @@ public class EC2Provider implements GFacProvider {
                 new BasicAWSCredentials(amazonSecurityContext.getAccessKey(), amazonSecurityContext.getSecretKey());
         AmazonEC2Client ec2client = new AmazonEC2Client(credential);
 
-        instance = initEc2Environment(jobExecutionContext, ec2client);
+        initEc2Environment(jobExecutionContext, ec2client);
         checkConnection(instance, ec2client);
     }
 
@@ -149,7 +149,7 @@ public class EC2Provider implements GFacProvider {
                 throw new GFacProviderException("The authentication succeeded but another"
                         + "authentication is required", jobExecutionContext);
             } else if(result==AuthenticationProtocolState.COMPLETE) {
-                throw new GFacProviderException("The authentication is complete", jobExecutionContext);
+                log.info("ssh client authentication is complete...");
             }
 
             SessionChannelClient session = sshClient.openSessionChannel();
@@ -170,6 +170,8 @@ public class EC2Provider implements GFacProvider {
             throw new GFacProviderException("Invalid SSH key", e);
         } catch (IOException e) {
             throw new GFacProviderException("Error in occurred during IO", e);
+        } catch (Exception e) {
+            throw new GFacProviderException("Error parsing standard out for job execution result", e);
         }
 
     }
@@ -213,16 +215,15 @@ public class EC2Provider implements GFacProvider {
      * @return instance id of the running Amazon instance.
      * @throws GFacProviderException
      */
-    private Instance initEc2Environment(JobExecutionContext jobExecutionContext, AmazonEC2Client ec2client)
+    private void initEc2Environment(JobExecutionContext jobExecutionContext, AmazonEC2Client ec2client)
             throws GFacProviderException {
-        Instance instance;
         try {
             /* Build key pair before start instance */
             buildKeyPair(ec2client);
 
             // right now, we can run it on one host
-            if (amazonSecurityContext.getInstanceId() != null)
-                instance = startInstances(ec2client, amazonSecurityContext.getInstanceId(),
+            if (amazonSecurityContext.getAmiId() != null)
+                instance = startInstances(ec2client, amazonSecurityContext.getAmiId(),
                         amazonSecurityContext.getInstanceType(), jobExecutionContext).get(0);
             else {
 
@@ -239,9 +240,10 @@ public class EC2Provider implements GFacProvider {
                 instance = describeInstancesResult.getReservations().get(0).getInstances().get(0);
 
                 // check instance keypair
-                if (instance.getKeyName() == null || !instance.getKeyName().equals(KEY_PAIR_NAME))
+                if (instance.getKeyName() == null || !instance.getKeyName().equals(KEY_PAIR_FILE)) {
                     throw new GFacProviderException("Keypair for instance:" + amazonSecurityContext.getInstanceId() +
                             " is not valid");
+                }
             }
 
             jobExecutionContext.getNotificationService().publish(new EC2ProviderEvent("EC2 Instance " + this.instance.getInstanceId() + " is running with public name " + this.instance.getPublicDnsName()));
@@ -249,14 +251,14 @@ public class EC2Provider implements GFacProvider {
         } catch (Exception e) {
             throw new GFacProviderException("Invalid Request",e,jobExecutionContext);
         }
-        return instance;
+
     }
 
     private List<Instance> startInstances(AmazonEC2Client ec2, String amiId, String insType, JobExecutionContext jobExecutionContext)
             throws AmazonServiceException {
         // start only 1 instance
         RunInstancesRequest request = new RunInstancesRequest(amiId, 1, 1);
-        request.setKeyName(KEY_PAIR_NAME);
+        request.setKeyName(KEY_PAIR_FILE);
         request.setInstanceType(insType);
 
         RunInstancesResult result = ec2.runInstances(request);
@@ -388,21 +390,21 @@ public class EC2Provider implements GFacProvider {
         try {
             /* Get current key pair in Amazon */
             DescribeKeyPairsRequest describeKeyPairsRequest = new DescribeKeyPairsRequest();
-            ec2.describeKeyPairs(describeKeyPairsRequest.withKeyNames(KEY_PAIR_NAME));
+            ec2.describeKeyPairs(describeKeyPairsRequest.withKeyNames(KEY_PAIR_FILE));
 
             /* If key exists and new key is created, delete old key and replace
              * with new one. Else, do nothing */
             if (newKey) {
-                DeleteKeyPairRequest deleteKeyPairRequest = new DeleteKeyPairRequest(KEY_PAIR_NAME);
+                DeleteKeyPairRequest deleteKeyPairRequest = new DeleteKeyPairRequest(KEY_PAIR_FILE);
                 ec2.deleteKeyPair(deleteKeyPairRequest);
-                ImportKeyPairRequest importKeyPairRequest = new ImportKeyPairRequest(KEY_PAIR_NAME, encodedPublicKey);
+                ImportKeyPairRequest importKeyPairRequest = new ImportKeyPairRequest(KEY_PAIR_FILE, encodedPublicKey);
                 ec2.importKeyPair(importKeyPairRequest);
             }
 
         } catch (AmazonServiceException ase) {
             /* Key doesn't exists, import new key. */
             if(ase.getErrorCode().equals("InvalidKeyPair.NotFound")){
-                ImportKeyPairRequest importKeyPairRequest = new ImportKeyPairRequest(KEY_PAIR_NAME, encodedPublicKey);
+                ImportKeyPairRequest importKeyPairRequest = new ImportKeyPairRequest(KEY_PAIR_FILE, encodedPublicKey);
                 ec2.importKeyPair(importKeyPairRequest);
             }else{
                 throw ase;
