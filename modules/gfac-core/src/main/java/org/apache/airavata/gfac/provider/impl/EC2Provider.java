@@ -165,21 +165,38 @@ public class EC2Provider implements GFacProvider {
                 log.info("ssh client authentication is complete...");
             }
 
-            // Execute job
             SessionChannelClient session = sshClient.openSessionChannel();
             log.info("ssh session is open successfully...");
             session.requestPseudoTerminal("vt100", 80, 25, 0, 0, "");
             session.startShell();
             session.getOutputStream().write(command2.getBytes());
 
-            String executionResult = getResultFromStdOut(outParamName, session);
+            InputStream in = session.getInputStream();
+            byte buffer[] = new byte[255];
+            int read;
+            String executionResult = "";
+            while((read = in.read(buffer)) > 0) {
+                String out = new String(buffer, 0, read);
+
+                if(out.startsWith("distance")) {
+                    executionResult = out.split("=")[1];
+                    log.debug("Result found in the StandardOut ");
+                    break;
+                }
+            }
+
+            executionResult = executionResult.replace("\r","").replace("\n","");
             log.info("Result of the job : " + executionResult);
 
-            // Set result
-            ActualParameter outParam = new ActualParameter();
-            outParam.getType().changeType(StringParameterType.type);
-            ((StringParameterType) outParam.getType()).setValue(executionResult);
-            jobExecutionContext.getOutMessageContext().addParameter(outParamName, outParam);
+            for(OutputParameterType outparamType : outputParametersArray){
+                /* Assuming that there is just a single result. If you want to add more results, update the necessary
+                   logic below */
+                String paramName = outparamType.getParameterName();
+                ActualParameter outParam = new ActualParameter();
+                outParam.getType().changeType(StringParameterType.type);
+                ((StringParameterType) outParam.getType()).setValue(executionResult);
+                jobExecutionContext.getOutMessageContext().addParameter(paramName, outParam);
+            }
 
         } catch (InvalidSshKeyException e) {
             throw new GFacProviderException("Invalid SSH key", e);
@@ -189,21 +206,6 @@ public class EC2Provider implements GFacProvider {
             throw new GFacProviderException("Error parsing standard out for job execution result", e);
         }
 
-    }
-
-    private String getResultFromStdOut(String outParamName, SessionChannelClient session) throws IOException {
-        InputStream in = session.getInputStream();
-        byte buffer[] = new byte[255];
-        int read;
-        String executionResult = "";
-        while((read = in.read(buffer)) > 0) {
-            String out = new String(buffer, 0, read);
-            if(out.startsWith(outParamName)) {
-                executionResult = out.split("=")[1].replace("\r","").replace("\n","");
-                break;
-            }
-        }
-        return executionResult;
     }
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
@@ -247,6 +249,7 @@ public class EC2Provider implements GFacProvider {
      */
     private void initEc2Environment(JobExecutionContext jobExecutionContext, AmazonEC2Client ec2client)
             throws GFacProviderException {
+//        Instance instance;
         try {
             /* Build key pair before start instance */
             buildKeyPair(ec2client);
@@ -281,7 +284,7 @@ public class EC2Provider implements GFacProvider {
         } catch (Exception e) {
             throw new GFacProviderException("Invalid Request",e,jobExecutionContext);
         }
-
+//        return instance;
     }
 
     private List<Instance> startInstances(AmazonEC2Client ec2, String amiId, String insType, JobExecutionContext jobExecutionContext)
