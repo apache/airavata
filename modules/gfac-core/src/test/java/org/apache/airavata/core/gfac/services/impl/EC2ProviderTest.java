@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * As a pre-requisite for running this test is that your Amazon instance should be in a running state.
+ * Your Amazon instance should be in a running state before running this test.
  */
 public class EC2ProviderTest {
     private JobExecutionContext jobExecutionContext;
@@ -149,7 +149,7 @@ public class EC2ProviderTest {
         gFacAPI.submitJob(jobExecutionContext);
         MessageContext outMessageContext = jobExecutionContext.getOutMessageContext();
         Assert.assertEquals(MappingFactory.
-                toString((ActualParameter) outMessageContext.getParameter("genome_output")), "457");
+                toString((ActualParameter) outMessageContext.getParameter("genome_output")), "476");
     }
 }
 
