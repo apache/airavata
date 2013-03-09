@@ -39,11 +39,14 @@ import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFile;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 import com.sshtools.j2ssh.util.Base64;
+import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.gfac.context.AmazonSecurityContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.notification.events.EC2ProviderEvent;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
+import org.apache.airavata.schemas.gfac.OutputParameterType;
+import org.apache.airavata.schemas.gfac.StringParameterType;
 import org.bouncycastle.openssl.PEMWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,6 +130,16 @@ public class EC2Provider implements GFacProvider {
         // Connect to the host
         try
         {
+            String outParamName;
+            OutputParameterType[] outputParametersArray = jobExecutionContext.getApplicationContext().
+                    getServiceDescription().getType().getOutputParametersArray();
+            if(outputParametersArray != null) {
+                outParamName = outputParametersArray[0].getParameterName();
+            } else {
+                throw new GFacProviderException("Output parameter name is not set. Therefore, not being able " +
+                        "to filter the job result from standard out ", jobExecutionContext);
+            }
+
             sshClient.connect(properties, new HostKeyVerification() {
                 public boolean verifyHost(String s, SshPublicKey sshPublicKey) throws TransportProtocolException {
                     log.debug("Verifying Host: " + s);
@@ -152,19 +165,21 @@ public class EC2Provider implements GFacProvider {
                 log.info("ssh client authentication is complete...");
             }
 
+            // Execute job
             SessionChannelClient session = sshClient.openSessionChannel();
             log.info("ssh session is open successfully...");
             session.requestPseudoTerminal("vt100", 80, 25, 0, 0, "");
             session.startShell();
             session.getOutputStream().write(command2.getBytes());
 
-            InputStream in = session.getInputStream();
-            byte buffer[] = new byte[255];
-            int read;
-            while((read = in.read(buffer)) > 0) {
-                String out = new String(buffer, 0, read);
-                System.out.println(out);
-            }
+            String executionResult = getResultFromStdOut(outParamName, session);
+            log.info("Result of the job : " + executionResult);
+
+            // Set result
+            ActualParameter outParam = new ActualParameter();
+            outParam.getType().changeType(StringParameterType.type);
+            ((StringParameterType) outParam.getType()).setValue(executionResult);
+            jobExecutionContext.getOutMessageContext().addParameter(outParamName, outParam);
 
         } catch (InvalidSshKeyException e) {
             throw new GFacProviderException("Invalid SSH key", e);
@@ -174,6 +189,21 @@ public class EC2Provider implements GFacProvider {
             throw new GFacProviderException("Error parsing standard out for job execution result", e);
         }
 
+    }
+
+    private String getResultFromStdOut(String outParamName, SessionChannelClient session) throws IOException {
+        InputStream in = session.getInputStream();
+        byte buffer[] = new byte[255];
+        int read;
+        String executionResult = "";
+        while((read = in.read(buffer)) > 0) {
+            String out = new String(buffer, 0, read);
+            if(out.startsWith(outParamName)) {
+                executionResult = out.split("=")[1].replace("\r","").replace("\n","");
+                break;
+            }
+        }
+        return executionResult;
     }
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
