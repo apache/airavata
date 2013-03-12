@@ -41,6 +41,7 @@ import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
+import org.apache.airavata.gfac.context.security.AmazonSecurityContext;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.XMLUtil;
@@ -265,7 +266,7 @@ public class EmbeddedGFacInvoker implements Invoker {
             jobExecutionContext.setProperty(Constants.PROP_WORKFLOW_INSTANCE_ID,this.configuration.getTopic());
 
             if(this.configuration.getAmazonSecurityContext() != null) {
-                jobExecutionContext.setSecurityContext(this.configuration.getAmazonSecurityContext());
+                jobExecutionContext.addSecurityContext(AmazonSecurityContext.AMAZON_SECURITY_CONTEXT, this.configuration.getAmazonSecurityContext());
             }
 
             ApplicationContext applicationContext = new ApplicationContext();
