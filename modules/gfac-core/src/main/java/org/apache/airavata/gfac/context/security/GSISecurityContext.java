@@ -18,9 +18,12 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac.context;
+package org.apache.airavata.gfac.context.security;
 
-import org.apache.airavata.gfac.GFacConfiguration;
+import java.util.Properties;
+
+import org.apache.airavata.gfac.Constants;
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.utils.MyProxyManager;
 import org.globus.gsi.GlobusCredential;
 import org.globus.tools.MyProxy;
@@ -30,6 +33,10 @@ import org.slf4j.LoggerFactory;
 
 public class GSISecurityContext extends SecurityContext {
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
+    /*
+     * context name
+     */
+    public static final String GSI_SECURITY_CONTEXT = "gsi";
 
     private MyProxyManager proxyRenewer;
 
@@ -44,17 +51,25 @@ public class GSISecurityContext extends SecurityContext {
     private String trustedCertLoc;
 
     private GSSCredential gssCredentails;
-    
+
     private GlobusCredential globusCredential;
 
-    public GSISecurityContext(GFacConfiguration configuration) {
-        this.setMyproxyLifetime(configuration.getMyProxyLifeCycle());
-        this.setMyproxyPasswd(configuration.getMyProxyPassphrase());
-        this.setMyproxyServer(configuration.getMyProxyServer());
-        this.setMyproxyUserName(configuration.getMyProxyUser());
-        this.setTrustedCertLoc(configuration.getTrustedCertLocation());
+    public GSISecurityContext(){
     }
-
+    public GSISecurityContext(Properties configuration) throws GFacException{
+    	this.setMyproxyUserName(configuration.getProperty(Constants.MYPROXY_USER));
+        this.setMyproxyServer(configuration.getProperty(Constants.MYPROXY_SERVER));
+        this.setMyproxyPasswd(configuration.getProperty(Constants.MYPROXY_PASS));
+        this.setMyproxyLifetime(Integer.parseInt(configuration.getProperty(Constants.MYPROXY_LIFE)));
+        this.setTrustedCertLoc(configuration.getProperty(Constants.TRUSTED_CERT_LOCATION));
+    }
+    public GSISecurityContext(String myproxyServer, String myproxyUserName,String myproxyPasswd, int myproxyLifetime, String trustedCertLoc){
+    	this.myproxyServer = myproxyServer;
+    	this.myproxyUserName = myproxyUserName;
+    	this.myproxyPasswd = myproxyPasswd;
+    	this.myproxyLifetime = myproxyLifetime;
+    	this.trustedCertLoc = trustedCertLoc;
+    }
     public GSSCredential getGssCredentails() throws SecurityException {
         try {
             if (gssCredentails == null || gssCredentails.getRemainingLifetime() < 10 * 90) {
@@ -73,10 +88,9 @@ public class GSISecurityContext extends SecurityContext {
         }
     }
 
-    
+
     public GlobusCredential getGlobusCredential() {
     	try{
-        System.out.println(gssCredentails);
         if (gssCredentails == null || gssCredentails.getRemainingLifetime() < 10 * 90) {
             if (proxyRenewer != null) {
 //                gssCredentails = proxyRenewer.renewProxy();
@@ -94,10 +108,10 @@ public class GSISecurityContext extends SecurityContext {
         throw new SecurityException(e.getMessage(), e);
     }
     }
-        
-    
 
-    
+
+
+
     public String getTrustedCertLoc() {
         return trustedCertLoc;
     }
@@ -137,7 +151,7 @@ public class GSISecurityContext extends SecurityContext {
     public void setMyproxyLifetime(int myproxyLifetime) {
         this.myproxyLifetime = myproxyLifetime;
     }
-    
-    
-    
+
+
+
 }

@@ -32,12 +32,14 @@ import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacAPI;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
+import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
@@ -72,12 +74,12 @@ public class GramProviderTest {
         URL resource = GramProviderTest.class.getClassLoader().getResource("gfac-config.xml");
         System.out.println(resource.getFile());
         GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()),null,null);
-        gFacConfiguration.setMyProxyLifeCycle(3600);
-        gFacConfiguration.setMyProxyServer("myproxy.teragrid.org");
-        gFacConfiguration.setMyProxyUser("*****");
-        gFacConfiguration.setMyProxyPassphrase("*****");
-        gFacConfiguration.setTrustedCertLocation("./certificates");
-        //have to set InFlwo Handlers and outFlowHandlers
+//        gFacConfiguration.setMyProxyLifeCycle(3600);
+//        gFacConfiguration.setMyProxyServer("myproxy.teragrid.org");
+//        gFacConfiguration.setMyProxyUser("*****");
+//        gFacConfiguration.setMyProxyPassphrase("*****");
+//        gFacConfiguration.setTrustedCertLocation("./certificates");
+//        //have to set InFlwo Handlers and outFlowHandlers
 //        gFacConfiguration.setInHandlers(Arrays.asList(new String[] {"org.apache.airavata.gfac.handler.GramDirectorySetupHandler","org.apache.airavata.gfac.handler.GridFTPInputHandler"}));
 //        gFacConfiguration.setOutHandlers(Arrays.asList(new String[] {"org.apache.airavata.gfac.handler.GridFTPOutputHandler"}));
 
@@ -170,6 +172,8 @@ public class GramProviderTest {
         serv.getType().setOutputParametersArray(outputParamList);
 
         jobExecutionContext = new JobExecutionContext(gFacConfiguration,serv.getType().getName());
+        // Adding security context
+        jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT, getSecurityContext());
         ApplicationContext applicationContext = new ApplicationContext();
         jobExecutionContext.setApplicationContext(applicationContext);
         applicationContext.setServiceDescription(serv);
@@ -205,6 +209,16 @@ public class GramProviderTest {
         jobExecutionContext.setOutMessageContext(outMessage);
 
     }
+
+	private GSISecurityContext getSecurityContext() {
+		GSISecurityContext context = new GSISecurityContext();
+        context.setMyproxyLifetime(3600);
+        context.setMyproxyServer("myproxy.teragrid.org");
+        context.setMyproxyUserName("*****");
+        context.setMyproxyPasswd("*****");
+        context.setTrustedCertLoc("./certificates");
+		return context;
+	}
 
     @Test
     public void testGramProvider() throws GFacException {

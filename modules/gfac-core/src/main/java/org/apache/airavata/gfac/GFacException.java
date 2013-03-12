@@ -22,7 +22,15 @@
 package org.apache.airavata.gfac;
 
 public class GFacException extends Exception {
-    public GFacException(String s, Throwable throwable) {
+    /**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public GFacException(String s) {
+        super(s);
+    }
+	public GFacException(String s, Throwable throwable) {
         super(s, throwable);
     }
 }

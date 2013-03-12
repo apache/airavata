@@ -32,25 +32,27 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.airavata.gfac.context.GSISecurityContext;
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.provider.utils.JSDLGenerator;
 import org.apache.airavata.schemas.gfac.UnicoreHostType;
+import org.apache.xmlbeans.XmlCursor;
 import org.ggf.schemas.bes.x2006.x08.besFactory.ActivityStateEnumeration;
+import org.ggf.schemas.bes.x2006.x08.besFactory.ActivityStatusType;
 import org.ggf.schemas.bes.x2006.x08.besFactory.CreateActivityDocument;
 import org.ggf.schemas.bes.x2006.x08.besFactory.CreateActivityResponseDocument;
+import org.ggf.schemas.bes.x2006.x08.besFactory.GetActivityStatusesDocument;
+import org.ggf.schemas.bes.x2006.x08.besFactory.GetActivityStatusesResponseDocument;
 import org.globus.gsi.GlobusCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3.x2005.x08.addressing.EndpointReferenceType;
 
 import de.fzj.unicore.bes.client.FactoryClient;
-import de.fzj.unicore.bes.faults.InvalidRequestMessageFault;
-import de.fzj.unicore.bes.faults.NotAcceptingNewActivitiesFault;
-import de.fzj.unicore.bes.faults.UnsupportedFeatureFault;
-
+import de.fzj.unicore.bes.faults.UnknownActivityIdentifierFault;
 import de.fzj.unicore.wsrflite.xmlbeans.WSUtilities;
 import eu.emi.security.authn.x509.impl.CertificateUtils.Encoding;
 import eu.emi.security.authn.x509.impl.DirectoryCertChainValidator;
@@ -70,7 +72,7 @@ public class BESProvider implements GFacProvider {
 
     @Override
 	public void initialize(JobExecutionContext jobExecutionContext)
-			throws GFacProviderException {
+			throws GFacProviderException,GFacException {
 
     	log.info("Initializing GFAC's <<< UNICORE Provider >>>");
     	initSecurityProperties(jobExecutionContext);
@@ -87,8 +89,16 @@ public class BESProvider implements GFacProvider {
 
         EndpointReferenceType eprt = EndpointReferenceType.Factory.newInstance();
         eprt.addNewAddress().setStringValue(factoryUrl);
-        log.info("========================================");
-        log.info(String.format("Job Submitted to %s.\n", factoryUrl));
+
+        CreateActivityDocument cad = CreateActivityDocument.Factory
+                .newInstance();
+
+        try {
+			cad.addNewCreateActivity().addNewActivityDocument()
+			        .setJobDefinition(JSDLGenerator.buildJSDLInstance(jobExecutionContext).getJobDefinition());
+		} catch (Exception e1) {
+			throw new GFacProviderException("Cannot generate JSDL instance from the JobExecutionContext.",e1);
+		}
 
         FactoryClient factory = null;
         try {
@@ -96,34 +106,22 @@ public class BESProvider implements GFacProvider {
         } catch (Exception e) {
             throw new GFacProviderException("");
         }
-        CreateActivityDocument cad = CreateActivityDocument.Factory
-                .newInstance();
-
-
-        try {
-			cad.addNewCreateActivity().addNewActivityDocument()
-			        .setJobDefinition(JSDLGenerator.buildJSDLInstance(jobExecutionContext).getJobDefinition());
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
         CreateActivityResponseDocument response = null;
         try {
+            log.info("========================================");
+            log.info(String.format("Activity Submitting to %s ... \n", factoryUrl));
             response = factory.createActivity(cad);
-        } catch (NotAcceptingNewActivitiesFault notAcceptingNewActivitiesFault) {
-            notAcceptingNewActivitiesFault.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (InvalidRequestMessageFault invalidRequestMessageFault) {
-            invalidRequestMessageFault.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (UnsupportedFeatureFault unsupportedFeatureFault) {
-            unsupportedFeatureFault.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.info(String.format("Activity Submitted to %s \n", factoryUrl));
+        } catch (Exception e) {
+        	e.printStackTrace();
+            throw new GFacProviderException("Cannot create activity.", e);
         }
         EndpointReferenceType activityEpr = response
                 .getCreateActivityResponse().getActivityIdentifier();
 
-        log.debug("Job EPR: "+activityEpr);
+        log.debug("Activity EPR: "+activityEpr);
 
-        log.info("Job: "+activityEpr.getAddress().getStringValue()+  " Submitted.");
+        log.info("Activity: "+activityEpr.getAddress().getStringValue()+  " Submitted.");
 
         //factory.waitWhileActivityIsDone(activityEpr, 1000);
         jobId = WSUtilities.extractResourceID(activityEpr);
@@ -132,51 +130,58 @@ public class BESProvider implements GFacProvider {
                     .toString();
         }
 
-
-        String status = String.format("Job %s is %s.\n", activityEpr.getAddress()
-                .getStringValue(), factory.getActivityStatus(activityEpr)
-                .toString()).toString();
+        log.info(formatStatusMessage(activityEpr.getAddress().getStringValue(), factory.getActivityStatus(activityEpr)
+                .toString()));
 
 
-        log.info(status);
-
-
+        //TODO publish the status messages to the message bus
         while ((factory.getActivityStatus(activityEpr) != ActivityStateEnumeration.FINISHED) &&
                 (factory.getActivityStatus(activityEpr) != ActivityStateEnumeration.FAILED)){
-            status = String.format("Job %s is %s.\n", activityEpr.getAddress()
-                    .getStringValue(), factory.getActivityStatus(activityEpr)
-                    .toString()).toString();
+
+            ActivityStatusType activityStatus = null;
+    		try {
+    			activityStatus = getStatus(factory, activityEpr);
+    			log.info (subStatusAsString(activityStatus));
+    		} catch (UnknownActivityIdentifierFault e) {
+    			throw new GFacProviderException(e.getMessage(), e.getCause());
+    		}
+
             try {
-            	log.info(status);
-                Thread.sleep(1000);
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
             continue;
         }
 
-        status = String.format("Job %s is %s.\n", activityEpr.getAddress()
-                .getStringValue(), factory.getActivityStatus(activityEpr)
-                .toString()).toString();
+        ActivityStatusType activityStatus = null;
+		try {
+			activityStatus = getStatus(factory, activityEpr);
+		} catch (UnknownActivityIdentifierFault e) {
+			throw new GFacProviderException(e.getMessage(), e.getCause());
+		}
 
-        log.info(status);
+        log.info(formatStatusMessage(activityEpr.getAddress().getStringValue(), activityStatus.getState().toString()));
 
+		if ((activityStatus.getState() == ActivityStateEnumeration.FAILED)) {
+				log.info(activityStatus.getFault().getFaultcode().getLocalPart()
+						+ "\n" + activityStatus.getFault().getFaultstring());
+				log.info("EXITCODE: "+activityStatus.getExitCode());
+		}
 	}
 
 	@Override
 	public void dispose(JobExecutionContext jobExecutionContext)
 			throws GFacProviderException {
-
 		secProperties = null;
-
 	}
 
 
-	protected void initSecurityProperties(JobExecutionContext jobExecutionContext) throws GFacProviderException{
+	protected void initSecurityProperties(JobExecutionContext jobExecutionContext) throws GFacProviderException,GFacException{
 
 		if (secProperties != null) return;
 
-		GSISecurityContext gssContext = new GSISecurityContext(jobExecutionContext.getGFacConfiguration());
+		GSISecurityContext gssContext = (GSISecurityContext)jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT);
 		GlobusCredential credentials = gssContext.getGlobusCredential();
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
@@ -218,6 +223,7 @@ public class BESProvider implements GFacProvider {
 
 	        secProperties.setOutHandlerClassNames(outHandlerLst.toArray(new String[outHandlerLst.size()]));
 
+
 		}
 		catch (Exception e) {
 			throw new GFacProviderException(e.getMessage(), e);
@@ -234,9 +240,47 @@ public class BESProvider implements GFacProvider {
 		}
 	}
 
+	protected ActivityStatusType getStatus(FactoryClient fc, EndpointReferenceType activityEpr) throws UnknownActivityIdentifierFault{
+
+    	GetActivityStatusesDocument stats = GetActivityStatusesDocument.Factory.newInstance();
+
+    	stats.addNewGetActivityStatuses().setActivityIdentifierArray(new EndpointReferenceType[] {activityEpr});
+
+		GetActivityStatusesResponseDocument resDoc = fc.getActivityStatuses(stats);
+
+		ActivityStatusType activityStatus = resDoc
+				.getGetActivityStatusesResponse()
+				.getResponseArray()[0].getActivityStatus();
+		return activityStatus;
+	}
 
 
+	protected String formatStatusMessage(String activityUrl, String status){
+		return String.format("Activity %s is %s.\n", activityUrl, status);
+	}
+
+	protected String subStatusAsString(ActivityStatusType statusType) {
 
 
+		StringBuffer sb = new StringBuffer();
+
+		sb.append(statusType.getState().toString());
+
+		XmlCursor acursor = statusType.newCursor();
+		if (acursor.toFirstChild()) {
+			do {
+				if(acursor.getName().getNamespaceURI().equals("http://schemas.ogf.org/hpcp/2007/01/fs")) {
+					sb.append(":");
+					sb.append(acursor.getName().getLocalPart());
+				}
+			} while (acursor.toNextSibling());
+			acursor.dispose();
+			return sb.toString();
+		} else {
+			acursor.dispose();
+			return sb.toString();
+		}
+
+	}
 
 }

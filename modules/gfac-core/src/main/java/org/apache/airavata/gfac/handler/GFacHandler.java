@@ -21,9 +21,10 @@
 
 package org.apache.airavata.gfac.handler;
 
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 
 public interface GFacHandler {
 
-    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException;
+    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException,GFacException;
 }

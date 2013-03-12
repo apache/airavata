@@ -1,11 +1,28 @@
 package org.apache.airavata.gfac;
 
-import com.amazonaws.services.glacier.internal.TreeHashInputStream;
-import com.sun.org.apache.bcel.internal.generic.NEW;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.exception.UnspecifiedApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.utils.GridConfigurationHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,33 +31,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.*;
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-
 public class GFacConfiguration {
     public static final Logger log = LoggerFactory.getLogger(GFacConfiguration.class);
-    public static final String TRUSTED_CERT_LOCATION = "trusted.cert.location";
-    public static final String MYPROXY_SERVER = "myproxy.server";
-    public static final String MYPROXY_USER = "myproxy.user";
-    public static final String MYPROXY_PASS = "myproxy.pass";
-    public static final String MYPROXY_LIFE = "myproxy.life";
 
-    private String myProxyServer;
-
-    private String myProxyUser;
-
-    private String myProxyPassphrase;
-
-    private int myProxyLifeCycle;
 
     private AiravataAPI airavataAPI;
-
-    private String trustedCertLocation;
 
     private static Document handlerDoc;
     // Keep list of full qualified class names of GFac handlers which should invoked before
@@ -81,47 +76,14 @@ public class GFacConfiguration {
         return gridConfigurationHandlers.toArray(new GridConfigurationHandler[]{});
     }
 
-    public GFacConfiguration(AiravataAPI airavataAPI, Properties configurationProperties) {
-        this.airavataAPI = airavataAPI;
-        if (configurationProperties != null) {
-            myProxyUser = configurationProperties.getProperty(MYPROXY_USER);
-            myProxyServer = configurationProperties.getProperty(MYPROXY_SERVER);
-            myProxyPassphrase = configurationProperties.getProperty(MYPROXY_PASS);
-            myProxyLifeCycle = Integer.parseInt(configurationProperties.getProperty(MYPROXY_LIFE));
-            trustedCertLocation = configurationProperties.getProperty(TRUSTED_CERT_LOCATION);
-        } else {
-            throw new NullPointerException("GFac Configuration properties cannot be null.");
-        }
-
-    }
-
     public GFacConfiguration(AiravataAPI airavataAPI) {
         this.airavataAPI = airavataAPI;
-    }
-
-    public String getMyProxyServer() {
-        return myProxyServer;
-    }
-
-    public String getMyProxyUser() {
-        return myProxyUser;
-    }
-
-    public String getMyProxyPassphrase() {
-        return myProxyPassphrase;
-    }
-
-    public int getMyProxyLifeCycle() {
-        return myProxyLifeCycle;
     }
 
     public AiravataAPI getAiravataAPI() {
         return airavataAPI;
     }
 
-    public String getTrustedCertLocation() {
-        return trustedCertLocation;
-    }
 
     public List<String> getInHandlers() {
         //This will avoid the misconfiguration done by user in gfac-config.xml
@@ -132,27 +94,6 @@ public class GFacConfiguration {
         //This will avoid the misconfiguration done by user in gfac-config.xml
         return removeDuplicateWithOrder(outHandlers);
     }
-
-    public void setMyProxyServer(String myProxyServer) {
-        this.myProxyServer = myProxyServer;
-    }
-
-    public void setMyProxyUser(String myProxyUser) {
-        this.myProxyUser = myProxyUser;
-    }
-
-    public void setMyProxyPassphrase(String myProxyPassphrase) {
-        this.myProxyPassphrase = myProxyPassphrase;
-    }
-
-    public void setMyProxyLifeCycle(int myProxyLifeCycle) {
-        this.myProxyLifeCycle = myProxyLifeCycle;
-    }
-
-    public void setTrustedCertLocation(String trustedCertLocation) {
-        this.trustedCertLocation = trustedCertLocation;
-    }
-
     public void setInHandlers(List<String> inHandlers) {
         this.inHandlers = inHandlers;
     }
@@ -200,50 +141,43 @@ public class GFacConfiguration {
     /**
      * Parse GFac configuration file and populate GFacConfiguration object. XML configuration
      * file for GFac will look like below.
-     * <p>
-     * &lt;GFac&gt; <br/>
-     * &lt;GlobalHandlers&gt; <br/>
-     * &lt;InHandlers&gt; <br/>
-     * &lt;Handler class="org.apache.airavata.gfac.GlobalHandler1"&gt; <br/>
-     * &lt;/InHandler&gt; <br/>
-     * &lt;OutHandlers&gt; <br/>
-     * &lt;Handler class="org.apache.airavata.gfac.GlabalHandler2"&gt; <br/>
-     * &lt;/OutHandlers&gt; <br/>
-     * &lt;/GlobalHandlers&gt; <br/>
-     * &lt;Provider class="org.apache.airavata.gfac.providers.LocalProvider" host="LocalHost"&gt; <br/>
-     * &lt;InHandlers&gt; <br/>
-     * &lt;Handler class="org.apache.airavata.gfac.handlers.LocalEvenSetupHandler"&gt; <br/>
-     * &lt;/InHandlers&gt; <br/>
-     * &lt;OutHandlers&gt; <br/>
-     * &lt;Handler&gt;org.apache.airavata.LocalOutHandler1&lt;/Handler&gt; <br/>
-     * &lt;/OutHandlers&gt; <br/>
-     * &lt;/Provider&gt; <br/>
-     * &lt;Application name="UltraScan"&gt; <br/>
-     * &lt;InHandlers&gt; <br/>
-     * &lt;Handler class="org.apache.airavata.gfac.handlers.LocalEvenSetupHandler"&gt; <br/>
-     * &lt;/InHandlers&gt; <br/>
-     * &lt;OutHandlers&gt; <br/>
-     * &lt;Handler class="org.apache.airavata.gfac.LocalOutHandler1"&gt; <br/>
-     * &lt;/OutHandlers&gt; <br/>
-     * &lt;/Application&gt; <br/>
-     * &lt;/GFac&gt; <br/>
-     * </p>
+     * <p/>
+     * <GFac>
+     * <GlobalHandlers>
+     * <InHandlers>
+     * <Handler class="org.apache.airavata.gfac.GlobalHandler1">
+     * </InHandler>
+     * <OutHandlers>
+     * <Handler class="org.apache.airavata.gfac.GlabalHandler2">
+     * </OutHandlers>
+     * </GlobalHandlers>
+     * <Provider class="org.apache.airavata.gfac.providers.LocalProvider" host="LocalHost">
+     * <InHandlers>
+     * <Handler class="org.apache.airavata.gfac.handlers.LocalEvenSetupHandler">
+     * </InHandlers>
+     * <OutHandlers>
+     * <Handler>org.apache.airavata.LocalOutHandler1</Handler>
+     * </OutHandlers>
+     * </Provider>
+     * <Application name="UltraScan">
+     * <InHandlers>
+     * <Handler class="org.apache.airavata.gfac.handlers.LocalEvenSetupHandler">
+     * </InHandlers>
+     * <OutHandlers>
+     * <Handler class="org.apache.airavata.gfac.LocalOutHandler1">
+     * </OutHandlers>
+     * </Application>
+     * </GFac>
+     *
      * @param configFile configuration file
      * @return GFacConfiguration object.
      */
+    //FIXME
     public static GFacConfiguration create(File configFile, AiravataAPI airavataAPI, Properties configurationProperties) throws ParserConfigurationException, IOException, SAXException, XPathExpressionException {
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
         handlerDoc = docBuilder.parse(configFile);
-        GFacConfiguration configuration = new GFacConfiguration(airavataAPI);
-        if (configurationProperties != null) {
-            configuration.setMyProxyUser(configurationProperties.getProperty(MYPROXY_USER));
-            configuration.setMyProxyServer(configurationProperties.getProperty(MYPROXY_SERVER));
-            configuration.setMyProxyPassphrase(configurationProperties.getProperty(MYPROXY_PASS));
-            configuration.setMyProxyLifeCycle(Integer.parseInt(configurationProperties.getProperty(MYPROXY_LIFE)));
-            configuration.setTrustedCertLocation(configurationProperties.getProperty(TRUSTED_CERT_LOCATION));
-        }
-        return configuration;
+        return new GFacConfiguration(airavataAPI);
     }
 
     private static String xpathGetText(Document doc, String expression) throws XPathExpressionException {

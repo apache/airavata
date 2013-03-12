@@ -21,6 +21,7 @@
 
 package org.apache.airavata.gfac.provider;
 
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 
 public interface GFacProvider {
@@ -31,19 +32,19 @@ public interface GFacProvider {
      * @param jobExecutionContext containing job execution related information.
      * @throws GFacProviderException in case of a error initializing the environment.
      */
-    void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException;
+    void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException,GFacException;
 
     /**
      * Invoke the providers intended functionality using information and data in job execution context.
      * @param jobExecutionContext containing job execution related information.
      * @throws GFacProviderException in case of a error executing the job.
      */
-    void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException;
+    void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException;
 
     /**
      * Cleans up the acquired resources during initialization and execution of the job.
      * @param jobExecutionContext containing job execution related information.
      * @throws GFacProviderException in case of a error cleaning resources.
      */
-    void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException;
+    void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException,GFacException;
 }
