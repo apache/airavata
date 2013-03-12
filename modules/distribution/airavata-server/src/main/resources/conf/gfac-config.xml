@@ -36,6 +36,16 @@
         </InHandlers>
         <OutHandlers/>
     </Provider>
+    <!-- SSH provider -->
+    <Provider class="org.apache.airavata.gfac.provider.impl.SSHProvider">
+         <InHandlers>
+            <Handler class="org.apache.airavata.gfac.handler.SCPDirectorySetupHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.SCPInputHandler"/>
+        </InHandlers>
+        <OutHandlers>
+            <Handler class="org.apache.airavata.gfac.handler.SCPOutputHandler"/>
+        </OutHandlers>
+    </Provider>
 
     <Application name="UltraScan">
         <InHandlers>
