@@ -46,7 +46,7 @@ import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.gfac.context.AmazonSecurityContext;
+import org.apache.airavata.gfac.context.security.AmazonSecurityContext;
 import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State;
 import org.apache.airavata.workflow.model.component.Component;

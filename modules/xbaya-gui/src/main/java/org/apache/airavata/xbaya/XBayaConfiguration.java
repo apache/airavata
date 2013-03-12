@@ -29,7 +29,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.gfac.context.AmazonSecurityContext;
+import org.apache.airavata.gfac.context.security.AmazonSecurityContext;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.core.ide.XBayaExecutionModeListener;
