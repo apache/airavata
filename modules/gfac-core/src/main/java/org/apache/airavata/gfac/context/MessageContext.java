@@ -21,7 +21,6 @@
 
 package org.apache.airavata.gfac.context;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

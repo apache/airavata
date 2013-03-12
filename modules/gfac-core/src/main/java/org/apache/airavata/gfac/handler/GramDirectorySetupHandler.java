@@ -21,9 +21,10 @@
 package org.apache.airavata.gfac.handler;
 
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.ToolsException;
-import org.apache.airavata.gfac.context.GSISecurityContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.external.GridFtp;
 import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.utils.GFacUtils;
@@ -45,24 +46,24 @@ import java.util.UUID;
 public class GramDirectorySetupHandler implements GFacHandler {
     private static final Logger log = LoggerFactory.getLogger(GramJobSubmissionListener.class);
 
-    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException,GFacException {
         log.info("Invoking GramDirectorySetupHandler ...");
-        
-        
+
+
         String[] gridFTPEndpointArray = null;
-        
+
         String hostName = null;
-        
+
         //TODO: why it is tightly coupled with gridftp
 //        GlobusHostType host = (GlobusHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType();
-        
+
         //TODO: make it more reusable
         HostDescriptionType hostType = jobExecutionContext.getApplicationContext().getHostDescription().getType();
-        
-        
-        
+
+
+
         if(hostType instanceof GlobusHostType){
-        	gridFTPEndpointArray = ((GlobusHostType) hostType).getGridFTPEndPointArray(); 
+        	gridFTPEndpointArray = ((GlobusHostType) hostType).getGridFTPEndPointArray();
         }
         else if (hostType instanceof UnicoreHostType){
         	gridFTPEndpointArray = ((UnicoreHostType) hostType).getGridFTPEndPointArray();
@@ -71,20 +72,14 @@ public class GramDirectorySetupHandler implements GFacHandler {
         	//TODO
         }
 
-        
+
         ApplicationDescription applicationDeploymentDescription = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
         ApplicationDeploymentDescriptionType app = applicationDeploymentDescription.getType();
         GridFtp ftp = new GridFtp();
 
         try {
-            if (jobExecutionContext.getSecurityContext() == null ||
-                    !(jobExecutionContext.getSecurityContext() instanceof GSISecurityContext))
-            {
-                GSISecurityContext gssContext = new GSISecurityContext(jobExecutionContext.getGFacConfiguration());
-                jobExecutionContext.setSecurityContext(gssContext);
-            }
-            GSSCredential gssCred = ((GSISecurityContext)jobExecutionContext.getSecurityContext()).getGssCredentails();
-            
+            GSSCredential gssCred = ((GSISecurityContext)jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getGssCredentails();
+
             if (gridFTPEndpointArray == null || gridFTPEndpointArray.length == 0) {
             	gridFTPEndpointArray = new String[]{hostType.getHostAddress()};
             }

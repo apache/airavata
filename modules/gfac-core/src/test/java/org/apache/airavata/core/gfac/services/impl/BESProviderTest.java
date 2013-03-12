@@ -17,6 +17,7 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
+import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.InputParameterType;
@@ -61,6 +62,9 @@ public class BESProviderTest {
 				+ UUID.randomUUID();
 
 		jobExecutionContext = new JobExecutionContext(getGFACConfig(), getServiceDesc().getType().getName());
+
+		// set security context
+		jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT, getSecurityContext());
 		jobExecutionContext.setApplicationContext(getApplicationContext());
 		jobExecutionContext.setInMessageContext(getInMessageContext());
 		jobExecutionContext.setOutMessageContext(getOutMessageContext());
@@ -74,14 +78,8 @@ public class BESProviderTest {
 
 	private GFacConfiguration getGFACConfig() throws Exception{
         URL resource = BESProviderTest.class.getClassLoader().getResource("gfac-config.xml");
-        System.out.println(resource.getFile());
         GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()),null,null);
-		gFacConfiguration.setMyProxyLifeCycle(3600);
-		gFacConfiguration.setMyProxyServer("myproxy.teragrid.org");
-		gFacConfiguration.setMyProxyUser("*****");
-		gFacConfiguration.setMyProxyPassphrase("*****");
-		gFacConfiguration.setTrustedCertLocation("./certificates");
-		return gFacConfiguration;
+    	return gFacConfiguration;
 	}
 
 	private ApplicationContext getApplicationContext() {
@@ -195,6 +193,15 @@ public class BESProviderTest {
         inMessage.addParameter("arg1", a1);
 
         return inMessage;
+	}
+	private GSISecurityContext getSecurityContext(){
+	    GSISecurityContext context = new GSISecurityContext();
+        context.setMyproxyLifetime(3600);
+        context.setMyproxyServer("myproxy.teragrid.org");
+        context.setMyproxyUserName("*****");
+        context.setMyproxyPasswd("*****");
+        context.setTrustedCertLoc("./certificates");
+        return context;
 	}
 
 	private MessageContext getOutMessageContext() {

@@ -44,11 +44,21 @@
 
     <Application name="UltraScan">
         <InHandlers>
-            <Handler class="org.apache.airavata.handlers.GramDirectorySetupHandler"/>
-            <Handler class="org.apache.airavata.handlers.GridFTPInputHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.GramDirectorySetupHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.GridFTPInputHandler"/>
         </InHandlers>
         <OutHandlers>
-            <Handler class="org.apache.airavata.handlers.GridFTPOutputHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.GridFTPOutputHandler"/>
         </OutHandlers>
     </Application>
+
+     <Provider class="org.apache.airavata.gfac.provider.impl.SSHProvider">
+         <InHandlers>
+            <Handler class="org.apache.airavata.gfac.handler.SCPDirectorySetupHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.SCPInputHandler"/>
+        </InHandlers>
+        <OutHandlers>
+            <Handler class="org.apache.airavata.gfac.handler.SCPOutputHandler"/>
+        </OutHandlers>
+    </Provider>
 </GFac>

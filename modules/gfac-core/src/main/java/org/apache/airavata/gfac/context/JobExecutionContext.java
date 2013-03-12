@@ -22,12 +22,16 @@
 package org.apache.airavata.gfac.context;
 
 import org.apache.airavata.gfac.GFacConfiguration;
+import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.context.security.SecurityContext;
 import org.apache.airavata.gfac.notification.GFacNotifier;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JobExecutionContext extends AbstractContext{
 
@@ -40,8 +44,6 @@ public class JobExecutionContext extends AbstractContext{
     private MessageContext outMessageContext;
 
     private GFacNotifier notifier;
-
-    private SecurityContext securityContext;
 
     private ContextHeaderDocument.ContextHeader contextHeader;
 
@@ -67,6 +69,13 @@ public class JobExecutionContext extends AbstractContext{
     // which service description we should refer during the execution of the current job represented
     // by this context instance.
     private String serviceName;
+
+    /**
+     *  Security context is used to handle authentication for input handlers and providers.
+     *  There can be multiple security requirement for a single job so this allows you to add multiple security types
+     *
+     */
+    private Map<String, SecurityContext> securityContext = new HashMap<String, SecurityContext>();
 
     public JobExecutionContext(GFacConfiguration gFacConfiguration,String serviceName){
         this.gfacConfiguration = gFacConfiguration;
@@ -162,14 +171,6 @@ public class JobExecutionContext extends AbstractContext{
         this.inPath = false;
     }
 
-    public SecurityContext getSecurityContext() {
-        return securityContext;
-    }
-
-    public void setSecurityContext(SecurityContext securityContext) {
-        this.securityContext = securityContext;
-    }
-
     public ContextHeaderDocument.ContextHeader getContextHeader() {
         return contextHeader;
     }
@@ -177,4 +178,17 @@ public class JobExecutionContext extends AbstractContext{
     public void setContextHeader(ContextHeaderDocument.ContextHeader contextHeader) {
         this.contextHeader = contextHeader;
     }
+
+	public SecurityContext getSecurityContext(String name) throws GFacException{
+		SecurityContext secContext = securityContext.get(name);
+		if(secContext == null){
+			throw new GFacException( name + " not set in security context");
+		}
+		return secContext;
+	}
+
+	public void addSecurityContext(String name, SecurityContext value){
+		securityContext.put(name, value);
+    }
+
 }

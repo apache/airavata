@@ -41,7 +41,8 @@ import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 import com.sshtools.j2ssh.util.Base64;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
-import org.apache.airavata.gfac.context.AmazonSecurityContext;
+import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.context.security.AmazonSecurityContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.notification.events.EC2ProviderEvent;
 import org.apache.airavata.gfac.provider.GFacProvider;
@@ -81,10 +82,10 @@ public class EC2Provider implements GFacProvider {
 
     private AmazonSecurityContext amazonSecurityContext;
 
-    public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+    public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException,GFacException{
         if (jobExecutionContext != null) {
-            if (jobExecutionContext.getSecurityContext() instanceof AmazonSecurityContext) {
-                this.amazonSecurityContext = (AmazonSecurityContext) jobExecutionContext.getSecurityContext();
+            if (jobExecutionContext.getSecurityContext(AmazonSecurityContext.AMAZON_SECURITY_CONTEXT) instanceof AmazonSecurityContext) {
+                this.amazonSecurityContext = (AmazonSecurityContext) jobExecutionContext.getSecurityContext(AmazonSecurityContext.AMAZON_SECURITY_CONTEXT);
             } else {
                 throw new GFacProviderException("Amazon Security Context is not set" + jobExecutionContext);
             }

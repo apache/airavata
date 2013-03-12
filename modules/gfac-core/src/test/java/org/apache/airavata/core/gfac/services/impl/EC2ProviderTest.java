@@ -4,7 +4,7 @@ import org.apache.airavata.commons.gfac.type.*;
 import org.apache.airavata.gfac.GFacAPI;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.context.AmazonSecurityContext;
+import org.apache.airavata.gfac.context.security.AmazonSecurityContext;
 import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
@@ -64,11 +64,6 @@ public class EC2ProviderTest {
         assert resource != null;
         System.out.println(resource.getFile());
         GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), null, null);
-        gFacConfiguration.setMyProxyLifeCycle(3600);
-        gFacConfiguration.setMyProxyServer("myproxy.teragrid.org");
-        gFacConfiguration.setMyProxyUser("*****");
-        gFacConfiguration.setMyProxyPassphrase("*****");
-        gFacConfiguration.setTrustedCertLocation("./certificates");
 
         /* EC2 Host */
         HostDescription host = new HostDescription(Ec2HostType.type);
@@ -124,7 +119,7 @@ public class EC2ProviderTest {
 
         AmazonSecurityContext amazonSecurityContext =
                 new AmazonSecurityContext(userName, accessKey, secretKey, instanceId);
-        jobExecutionContext.setSecurityContext(amazonSecurityContext);
+        jobExecutionContext.addSecurityContext(AmazonSecurityContext.AMAZON_SECURITY_CONTEXT, amazonSecurityContext);
 
         MessageContext inMessage = new MessageContext();
         ActualParameter genomeInput1 = new ActualParameter();

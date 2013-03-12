@@ -28,9 +28,11 @@ import org.apache.airavata.gfac.provider.impl.BESProvider;
 import org.apache.airavata.gfac.provider.impl.EC2Provider;
 import org.apache.airavata.gfac.provider.impl.GramProvider;
 import org.apache.airavata.gfac.provider.impl.LocalProvider;
+import org.apache.airavata.gfac.provider.impl.SSHProvider;
 import org.apache.airavata.schemas.gfac.Ec2HostType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.UnicoreHostType;
+import org.apache.airavata.schemas.gfac.SSHHostType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +71,9 @@ public class Scheduler {
         }
         else if (hostDescription.getType() instanceof Ec2HostType) {
             return new EC2Provider();
+        }
+        else if (hostDescription.getType() instanceof SSHHostType) {
+            return new SSHProvider();
         }
         else {
             return new LocalProvider();

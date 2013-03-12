@@ -18,6 +18,7 @@ import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
+import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.provider.utils.JSDLGenerator;
 import org.apache.airavata.gfac.provider.utils.JSDLUtils;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
@@ -65,6 +66,8 @@ public class JSDLGeneratorTest {
 	public void initJobContext() throws Exception {
 		PropertyConfigurator.configure("src/test/resources/logging.properties");
 		jobExecutionContext = new JobExecutionContext(getGFACConfig(), getServiceDesc().getType().getName());
+		//Add security context
+		jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT, getSecurityContext());
 		jobExecutionContext.setApplicationContext(getApplicationContext());
 		jobExecutionContext.setInMessageContext(getInMessageContext());
 		jobExecutionContext.setOutMessageContext(getOutMessageContext());
@@ -74,11 +77,6 @@ public class JSDLGeneratorTest {
         URL resource = BESProviderTest.class.getClassLoader().getResource("gfac-config.xml");
         System.out.println(resource.getFile());
         GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()),null,null);
-		gFacConfiguration.setMyProxyLifeCycle(3600);
-		gFacConfiguration.setMyProxyServer("");
-		gFacConfiguration.setMyProxyUser("");
-		gFacConfiguration.setMyProxyPassphrase("");
-		gFacConfiguration.setTrustedCertLocation("");
 		return gFacConfiguration;
 	}
 
@@ -236,6 +234,14 @@ public class JSDLGeneratorTest {
 		return om1;
 	}
 
-
+	private GSISecurityContext getSecurityContext(){
+	    GSISecurityContext context = new GSISecurityContext();
+        context.setMyproxyLifetime(3600);
+        context.setMyproxyServer("myproxy.teragrid.org");
+        context.setMyproxyUserName("*****");
+        context.setMyproxyPasswd("*****");
+        context.setTrustedCertLoc("./certificates");
+        return context;
+	}
 
 }

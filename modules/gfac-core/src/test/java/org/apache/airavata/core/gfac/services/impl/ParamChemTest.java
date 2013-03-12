@@ -20,20 +20,37 @@
 */
 package org.apache.airavata.core.gfac.services.impl;
 
-import org.apache.airavata.commons.gfac.type.*;
-import org.apache.airavata.gfac.GFacAPI;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import org.apache.airavata.commons.gfac.type.ActualParameter;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
+import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
-import org.apache.airavata.schemas.gfac.*;
-import org.junit.Assert;
+import org.apache.airavata.gfac.context.security.GSISecurityContext;
+import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.airavata.schemas.gfac.DataType;
+import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.InputParameterType;
+import org.apache.airavata.schemas.gfac.JobTypeType;
+import org.apache.airavata.schemas.gfac.OutputParameterType;
+import org.apache.airavata.schemas.gfac.ParameterType;
+import org.apache.airavata.schemas.gfac.ProjectAccountType;
+import org.apache.airavata.schemas.gfac.QueueType;
+import org.apache.airavata.schemas.gfac.StringParameterType;
+import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.io.File;
-import java.util.*;
 
 public class ParamChemTest {
     private JobExecutionContext jobExecutionContext;
@@ -42,11 +59,13 @@ public class ParamChemTest {
     public void setUp() throws Exception {
 
         GFacConfiguration gFacConfiguration = new GFacConfiguration(null);
-        gFacConfiguration.setMyProxyLifeCycle(3600);
-        gFacConfiguration.setMyProxyServer("myproxy.teragrid.org");
-        gFacConfiguration.setMyProxyUser("ccguser");
-        gFacConfiguration.setMyProxyPassphrase("");
-        gFacConfiguration.setTrustedCertLocation("");
+        GSISecurityContext context = new GSISecurityContext();
+		context.setMyproxyLifetime(3600);
+		context.setMyproxyServer("myproxy.teragrid.org");
+		context.setMyproxyUserName("*****");
+		context.setMyproxyPasswd("*****");
+		context.setTrustedCertLoc("./certificates");
+
         //have to set InFlwo Handlers and outFlowHandlers
         gFacConfiguration.setInHandlers(Arrays.asList(new String[]{"org.apache.airavata.gfac.handler.GramDirectorySetupHandler", "org.apache.airavata.gfac.handler.GridFTPInputHandler"}));
         gFacConfiguration.setOutHandlers(Arrays.asList(new String[] {"org.apache.airavata.gfac.handler.GridFTPOutputHandler"}));
@@ -212,6 +231,7 @@ public class ParamChemTest {
         serv.getType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[]{}));
 
         jobExecutionContext = new JobExecutionContext(gFacConfiguration,serv.getType().getName());
+        jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT, context);
         ApplicationContext applicationContext = new ApplicationContext();
         applicationContext.setHostDescription(host);
         applicationContext.setApplicationDeploymentDescription(appDesc);

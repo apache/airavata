@@ -19,7 +19,9 @@
  *
 */
 
-package org.apache.airavata.gfac.context;
+package org.apache.airavata.gfac.context.security;
+
+import org.apache.airavata.gfac.context.AbstractContext;
 
 public class SecurityContext extends AbstractContext {
 }

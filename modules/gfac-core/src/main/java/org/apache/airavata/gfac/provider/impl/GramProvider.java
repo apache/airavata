@@ -20,9 +20,10 @@
 */
 package org.apache.airavata.gfac.provider.impl;
 
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.JobSubmissionFault;
-import org.apache.airavata.gfac.context.GSISecurityContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.notification.events.StartExecutionEvent;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
@@ -50,24 +51,14 @@ public class GramProvider implements GFacProvider {
         job.addListener(listener);
     }
 
-    public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+    public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException{
         jobExecutionContext.getNotifier().publish(new StartExecutionEvent());
         GlobusHostType host = (GlobusHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType();
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
 
         StringBuffer buf = new StringBuffer();
         try {
-
-            /*
-            * Set Security
-            */
-            if (jobExecutionContext.getSecurityContext() == null ||
-                    !(jobExecutionContext.getSecurityContext() instanceof GSISecurityContext))
-            {
-                GSISecurityContext gssContext = new GSISecurityContext(jobExecutionContext.getGFacConfiguration());
-                jobExecutionContext.setSecurityContext(gssContext);
-            }
-            GSSCredential gssCred = ((GSISecurityContext)jobExecutionContext.getSecurityContext()).getGssCredentails();
+            GSSCredential gssCred = ((GSISecurityContext)jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getGssCredentails();
             job.setCredentials(gssCred);
             // We do not support multiple gatekeepers in XBaya GUI, so we simply pick the 0th element in the array
             String gateKeeper = host.getGlobusGateKeeperEndPointArray(0);
