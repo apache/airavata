@@ -25,6 +25,8 @@ public class HostTypes {
     public static final String GLOBUS_HOST_TYPE = "GlobusHostType";
     public static final String GSISSH_HOST_TYPE = "GsisshHostType";
     public static final String EC2_HOST_TYPE = "Ec2HostType";
+    public static final String SSH_HOST_TYPE = "SSHHostType";
+    public static final String UNICORE_HOST_TYPE = "UnicoreHostType";
     public static final String HOST_DESCRIPTION_TYPE = "HostDescriptionType";
 
 }

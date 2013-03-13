@@ -27,7 +27,6 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 @XmlRootElement(name = "host")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -38,7 +37,7 @@ public class HostDescriptor {
 
     private List<String> hostType = new ArrayList<String>();
     private List<String> gridFTPEndPoint = new ArrayList<String>();
-    private List<String> globusGateKeeperEndPoint = new ArrayList<String>();
+    private List<String> gateKeeperEndPoint = new ArrayList<String>();
     private List<String> imageID = new ArrayList<String>();
     private List<String> instanceID = new ArrayList<String>();
 
@@ -74,12 +73,12 @@ public class HostDescriptor {
         this.gridFTPEndPoint = gridFTPEndPoint;
     }
 
-    public List<String> getGlobusGateKeeperEndPoint() {
-        return globusGateKeeperEndPoint;
+    public List<String> getGateKeeperEndPoint() {
+        return gateKeeperEndPoint;
     }
 
-    public void setGlobusGateKeeperEndPoint(List<String> globusGateKeeperEndPoint) {
-        this.globusGateKeeperEndPoint = globusGateKeeperEndPoint;
+    public void setGateKeeperEndPoint(List<String> globusGateKeeperEndPoint) {
+        this.gateKeeperEndPoint = globusGateKeeperEndPoint;
     }
 
     public List<String> getImageID() {
