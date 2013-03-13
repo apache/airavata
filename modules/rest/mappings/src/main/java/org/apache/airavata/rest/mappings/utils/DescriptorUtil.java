@@ -21,6 +21,10 @@
 
 package org.apache.airavata.rest.mappings.utils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
@@ -28,28 +32,44 @@ import org.apache.airavata.rest.mappings.resourcemappings.ApplicationDescriptor;
 import org.apache.airavata.rest.mappings.resourcemappings.HostDescriptor;
 import org.apache.airavata.rest.mappings.resourcemappings.ServiceDescriptor;
 import org.apache.airavata.rest.mappings.resourcemappings.ServiceParameters;
-import org.apache.airavata.schemas.gfac.*;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.airavata.schemas.gfac.DataType;
+import org.apache.airavata.schemas.gfac.Ec2HostType;
+import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.GsisshHostType;
+import org.apache.airavata.schemas.gfac.HostDescriptionType;
+import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.InputParameterType;
+import org.apache.airavata.schemas.gfac.JobTypeType;
+import org.apache.airavata.schemas.gfac.NameValuePairType;
+import org.apache.airavata.schemas.gfac.OutputParameterType;
+import org.apache.airavata.schemas.gfac.ParameterType;
+import org.apache.airavata.schemas.gfac.ProjectAccountType;
+import org.apache.airavata.schemas.gfac.QueueType;
+import org.apache.airavata.schemas.gfac.SSHHostType;
+import org.apache.airavata.schemas.gfac.UnicoreHostType;
 
 public class DescriptorUtil {
 
     public static HostDescription createHostDescription(String hostName, String hostAddress,
-                                                        String hostEndpoint, String gatekeeperEndpoint) {
+                                                        String hostEndpoint, String gatekeeperEndpoint, String providerType) {
         HostDescription host = new HostDescription();
-        if("".equalsIgnoreCase(gatekeeperEndpoint) || "".equalsIgnoreCase(hostEndpoint)) {
-            host.getType().changeType(GlobusHostType.type);
-            host.getType().setHostName(hostName);
-            host.getType().setHostAddress(hostAddress);
-            ((GlobusHostType) host.getType()).
-                    setGridFTPEndPointArray(new String[]{hostEndpoint});
-            ((GlobusHostType) host.getType()).
-                    setGlobusGateKeeperEndPointArray(new String[]{gatekeeperEndpoint});
-        } else {
-            host.getType().setHostName(hostName);
-            host.getType().setHostAddress(hostAddress);
+        host.getType().setHostName(hostName);
+        host.getType().setHostAddress(hostAddress);
+        if(providerType.equalsIgnoreCase(HostTypes.GLOBUS_HOST_TYPE)){
+        	 host.getType().changeType(GlobusHostType.type);
+             ((GlobusHostType) host.getType()).
+                     setGridFTPEndPointArray(new String[]{hostEndpoint});
+             ((GlobusHostType) host.getType()).
+                     setGlobusGateKeeperEndPointArray(new String[]{gatekeeperEndpoint});
+        }else if (providerType.equalsIgnoreCase(HostTypes.SSH_HOST_TYPE)){
+          	 host.getType().changeType(SSHHostType.type);
+        }else if (providerType.equalsIgnoreCase(HostTypes.UNICORE_HOST_TYPE)){
+        	 host.getType().changeType(GlobusHostType.type);
+             ((UnicoreHostType) host.getType()).
+                     setGridFTPEndPointArray(new String[]{hostEndpoint});
+             ((UnicoreHostType) host.getType()).
+                     setUnicoreHostAddressArray(new String[]{gatekeeperEndpoint});
         }
         return host;
     }
@@ -107,7 +127,7 @@ public class DescriptorUtil {
     public static HostDescriptor createHostDescriptor (HostDescription hostDescription){
         List<String> hostType = new ArrayList<String>();
         List<String> gridFTPEndPoint = new ArrayList<String>();
-        List<String> globusGateKeeperEndPoint  = new ArrayList<String>();
+        List<String> gateKeeperEndPoint  = new ArrayList<String>();
         List<String> imageID  = new ArrayList<String>();
         List<String> instanceID  = new ArrayList<String>();
 
@@ -121,7 +141,7 @@ public class DescriptorUtil {
             hostType.add(HostTypes.GLOBUS_HOST_TYPE);
             String[] globusGateKeeperEndPointArray = globusHostType.getGlobusGateKeeperEndPointArray();
             for (int i = 0; i < globusGateKeeperEndPointArray.length ; i++){
-                globusGateKeeperEndPoint.add(globusGateKeeperEndPointArray[i]);
+                gateKeeperEndPoint.add(globusGateKeeperEndPointArray[i]);
             }
 
             String[] gridFTPEndPointArray = globusHostType.getGridFTPEndPointArray();
@@ -136,23 +156,25 @@ public class DescriptorUtil {
             for (int i = 0; i < gridFTPEndPointArray.length ; i++){
                 gridFTPEndPoint.add(gridFTPEndPointArray[i]);
             }
-        }  else if (hostDescriptionType instanceof  Ec2HostType) {
-            Ec2HostType ec2HostType = (Ec2HostType) hostDescriptionType;
-            hostType.add(HostTypes.EC2_HOST_TYPE);
+        }  else if (hostDescriptionType instanceof  SSHHostType) {
+            hostType.add(HostTypes.SSH_HOST_TYPE);
+        } else if (hostDescriptionType instanceof  UnicoreHostType) {
+        	UnicoreHostType unicoreHostType = (UnicoreHostType) hostDescriptionType;
+             hostType.add(HostTypes.UNICORE_HOST_TYPE);
+             String[] unicoreGateKeeperEndPointArray = unicoreHostType.getUnicoreHostAddressArray();
+             for (int i = 0; i < unicoreGateKeeperEndPointArray.length ; i++){
+                 gateKeeperEndPoint.add(unicoreGateKeeperEndPointArray[i]);
+             }
 
-            String[] imageIDArray = ec2HostType.getImageIDArray();
-            for (int i = 0; i < imageIDArray.length ; i++){
-                imageID.add(imageIDArray[i]);
-            }
-
-            String[] instanceIDArray = ec2HostType.getInstanceIDArray();
-            for (int i = 0; i < instanceIDArray.length ; i++){
-                instanceID.add(instanceIDArray[i]);
-            }
-        } else {
+             String[] gridFTPEndPointArray = unicoreHostType.getGridFTPEndPointArray();
+             for (int i = 0; i < gridFTPEndPointArray.length ; i++){
+                 gridFTPEndPoint.add(gridFTPEndPointArray[i]);
+             }
+        }
+        else {
             hostType.add(HostTypes.HOST_DESCRIPTION_TYPE);
         }
-        hostDescriptor.setGlobusGateKeeperEndPoint(globusGateKeeperEndPoint);
+        hostDescriptor.setGateKeeperEndPoint(gateKeeperEndPoint);
         hostDescriptor.setGridFTPEndPoint(gridFTPEndPoint);
         hostDescriptor.setImageID(imageID);
         hostDescriptor.setInstanceID(instanceID);
@@ -168,8 +190,8 @@ public class DescriptorUtil {
         if (hostDescriptor.getHostType() != null && !hostDescriptor.getHostType().isEmpty()) {
             if (hostDescriptor.getHostType().get(0).equals(HostTypes.GLOBUS_HOST_TYPE)) {
                 hostDescription.getType().changeType(GlobusHostType.type);
-                if (!hostDescriptor.getGlobusGateKeeperEndPoint().isEmpty() && hostDescriptor.getGlobusGateKeeperEndPoint() != null){
-                    ((GlobusHostType) hostDescription.getType()).addGlobusGateKeeperEndPoint(hostDescriptor.getGlobusGateKeeperEndPoint().get(0));
+                if (!hostDescriptor.getGateKeeperEndPoint().isEmpty() && hostDescriptor.getGateKeeperEndPoint() != null){
+                    ((GlobusHostType) hostDescription.getType()).addGlobusGateKeeperEndPoint(hostDescriptor.getGateKeeperEndPoint().get(0));
                 }
                 if (!hostDescriptor.getGridFTPEndPoint().isEmpty() && hostDescriptor.getGridFTPEndPoint() != null){
                     ((GlobusHostType) hostDescription.getType()).addGridFTPEndPoint(hostDescriptor.getGridFTPEndPoint().get(0));
@@ -190,6 +212,16 @@ public class DescriptorUtil {
                     ((Ec2HostType) hostDescription).addInstanceID(hostDescriptor.getInstanceID().get(0));
                 }
 
+            }else if (hostDescriptor.getHostType().get(0).equals(HostTypes.SSH_HOST_TYPE)) {
+            	hostDescription.getType().changeType(SSHHostType.type);
+            } else if (hostDescriptor.getHostType().get(0).equals(HostTypes.UNICORE_HOST_TYPE)) {
+                 hostDescription.getType().changeType(UnicoreHostType.type);
+                 if (!hostDescriptor.getGateKeeperEndPoint().isEmpty() && hostDescriptor.getGateKeeperEndPoint() != null){
+                     ((UnicoreHostType) hostDescription.getType()).addUnicoreHostAddress(hostDescriptor.getGateKeeperEndPoint().get(0));
+                 }
+                 if (!hostDescriptor.getGridFTPEndPoint().isEmpty() && hostDescriptor.getGridFTPEndPoint() != null){
+                     ((UnicoreHostType) hostDescription.getType()).addGridFTPEndPoint(hostDescriptor.getGridFTPEndPoint().get(0));
+                 }
             }
         }
 
