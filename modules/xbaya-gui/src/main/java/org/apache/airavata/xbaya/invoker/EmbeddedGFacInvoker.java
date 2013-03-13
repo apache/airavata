@@ -23,7 +23,12 @@ package org.apache.airavata.xbaya.invoker;
 import java.io.File;
 import java.io.StringReader;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
@@ -33,8 +38,12 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
-import org.apache.airavata.commons.gfac.type.*;
+import org.apache.airavata.commons.gfac.type.ActualParameter;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
+import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacAPI;
 import org.apache.airavata.gfac.GFacConfiguration;
@@ -42,15 +51,41 @@ import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.context.security.AmazonSecurityContext;
+import org.apache.airavata.gfac.context.security.GSISecurityContext;
+import org.apache.airavata.gfac.context.security.SSHSecurityContext;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.schemas.gfac.*;
+import org.apache.airavata.schemas.gfac.BooleanArrayType;
+import org.apache.airavata.schemas.gfac.BooleanParameterType;
+import org.apache.airavata.schemas.gfac.DoubleArrayType;
+import org.apache.airavata.schemas.gfac.DoubleParameterType;
+import org.apache.airavata.schemas.gfac.Ec2HostType;
+import org.apache.airavata.schemas.gfac.FileArrayType;
+import org.apache.airavata.schemas.gfac.FileParameterType;
+import org.apache.airavata.schemas.gfac.FloatArrayType;
+import org.apache.airavata.schemas.gfac.FloatParameterType;
+import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.InputParameterType;
+import org.apache.airavata.schemas.gfac.IntegerArrayType;
+import org.apache.airavata.schemas.gfac.IntegerParameterType;
+import org.apache.airavata.schemas.gfac.OutputParameterType;
+import org.apache.airavata.schemas.gfac.SSHHostType;
+import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
+import org.apache.airavata.schemas.gfac.StdErrParameterType;
+import org.apache.airavata.schemas.gfac.StdOutParameterType;
+import org.apache.airavata.schemas.gfac.StringArrayType;
+import org.apache.airavata.schemas.gfac.StringParameterType;
+import org.apache.airavata.schemas.gfac.URIArrayType;
+import org.apache.airavata.schemas.gfac.URIParameterType;
+import org.apache.airavata.schemas.gfac.UnicoreHostType;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.jython.lib.ServiceNotifiable;
 import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
-import org.apache.axiom.om.*;
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
 import org.slf4j.Logger;
@@ -255,9 +290,14 @@ public class EmbeddedGFacInvoker implements Invoker {
             OMElement inputMessage = getInParameters();
             Object wsifMessageElement = new WSIFMessageElement(XMLUtil.stringToXmlElement3(inputMessage.toStringWithConsume()));
             this.notifier.invokingService(new WSIFMessageElement((XmlElement) wsifMessageElement));
-            GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, ServerSettings.getProperties());
+            Properties configurationProperties = ServerSettings.getProperties();
+			GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, configurationProperties);
+
             JobExecutionContext jobExecutionContext = new JobExecutionContext(gFacConfiguration, serviceName);
             //Here we get only the contextheader information sent specific for this node
+            //Add security context
+            addSecurityContext(registeredHost,configurationProperties,jobExecutionContext);
+
             jobExecutionContext.setContextHeader(WorkflowContextHeaderBuilder.removeOtherSchedulingConfig(nodeID,configuration.getContextHeader()));
 
             jobExecutionContext.setProperty(Constants.PROP_WORKFLOW_NODE_ID,this.nodeID);
@@ -265,9 +305,6 @@ public class EmbeddedGFacInvoker implements Invoker {
             jobExecutionContext.setProperty(Constants.PROP_BROKER_URL,this.configuration.getBrokerURL().toASCIIString());
             jobExecutionContext.setProperty(Constants.PROP_WORKFLOW_INSTANCE_ID,this.configuration.getTopic());
 
-            if(this.configuration.getAmazonSecurityContext() != null) {
-                jobExecutionContext.addSecurityContext(AmazonSecurityContext.AMAZON_SECURITY_CONTEXT, this.configuration.getAmazonSecurityContext());
-            }
 
             ApplicationContext applicationContext = new ApplicationContext();
             applicationContext.setApplicationDeploymentDescription(applicationDescription);
@@ -326,6 +363,32 @@ public class EmbeddedGFacInvoker implements Invoker {
         }
         return true;
     }
+
+	private void addSecurityContext(HostDescription registeredHost, Properties configurationProperties,
+			JobExecutionContext jobExecutionContext) {
+		if (registeredHost.getType() instanceof GlobusHostType || registeredHost.getType() instanceof UnicoreHostType) {
+			GSISecurityContext context = new GSISecurityContext();
+			context.setMyproxyLifetime(Integer.parseInt(configurationProperties.getProperty(Constants.MYPROXY_LIFE)));
+			context.setMyproxyServer(configurationProperties.getProperty(Constants.MYPROXY_SERVER));
+			context.setMyproxyUserName(configurationProperties.getProperty(Constants.MYPROXY_USER));
+			context.setMyproxyPasswd(configurationProperties.getProperty(Constants.MYPROXY_PASS));
+			context.setTrustedCertLoc(configurationProperties.getProperty(Constants.TRUSTED_CERT_LOCATION));
+			jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT, context);
+
+		} else if (registeredHost.getType() instanceof Ec2HostType) {
+			if (this.configuration.getAmazonSecurityContext() != null) {
+				jobExecutionContext.addSecurityContext(AmazonSecurityContext.AMAZON_SECURITY_CONTEXT,
+						this.configuration.getAmazonSecurityContext());
+			}
+		} else if (registeredHost.getType() instanceof SSHHostType) {
+			SSHSecurityContext context = new SSHSecurityContext();
+			context.setUsername(configurationProperties.getProperty(Constants.SSH_USER_NAME));
+			context.setPrivateKeyLoc(configurationProperties.getProperty(Constants.SSH_PRIVATE_KEY));
+			context.setKeyPass(configurationProperties.getProperty(Constants.SSH_PRIVATE_KEY_PASS));
+			jobExecutionContext.addSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT, context);
+
+		}
+	}
 
     /**
      * @throws WorkflowException
