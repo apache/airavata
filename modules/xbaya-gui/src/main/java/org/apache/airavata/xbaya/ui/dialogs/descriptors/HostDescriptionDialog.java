@@ -30,17 +30,23 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.HostDescription;
-//import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException;
+import org.apache.airavata.schemas.gfac.Ec2HostType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
+import org.apache.airavata.schemas.gfac.SSHHostType;
+import org.apache.airavata.schemas.gfac.UnicoreHostType;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
@@ -53,9 +59,9 @@ public class HostDescriptionDialog extends JDialog {
 
     private XBayaTextField hostAddressTextField;
 
-    private XBayaTextField globusGateKeeperTextField;
+    private XBayaTextField gateKeeperTextField;
 
-    private XBayaTextField GridFTPTextField;
+    private XBayaTextField gridFTPTextField;
 
     private HostDescription hostDescription;
 
@@ -63,7 +69,7 @@ public class HostDescriptionDialog extends JDialog {
 
     private AiravataAPI registry;
 
-	private XBayaLabel globusGateKeeperLabel;
+	private XBayaLabel gateKeeperLabel;
 
 	private XBayaLabel gridFTPLabel;
 
@@ -72,24 +78,25 @@ public class HostDescriptionDialog extends JDialog {
     private String hostId;
 
     private JButton okButton;
-    
+
     private boolean newHost;
-    
+
     private HostDescription originalHostDescription;
-    
+
 //    private XBayaEngine engine;
 
 	private JComboBox cmbResourceProtocol;
 
 	private GridPanel infoPanel2;
-	
+
 	private static final String REMOTE_PROTOCOL_STR_LOCAL="Local";
+	private static final String REMOTE_PROTOCOL_STR_SSH="SSH";
 	private static final String REMOTE_PROTOCOL_STR_GLOBUS="Globus";
 	private static final String REMOTE_PROTOCOL_STR_UNICORE="Unicore";
 	private static final String REMOTE_PROTOCOL_STR_AMAZON_EC2="Amazon EC2";
 	private static final String REMOTE_PROTOCOL_STR_HADOOP="Hadoop";
-	
-    
+
+
     public HostDescriptionDialog(AiravataAPI registry, JFrame parent) {
     	this(registry,true,null, parent);
     }
@@ -146,29 +153,19 @@ public class HostDescriptionDialog extends JDialog {
 
         setHostId(hostId);
         setHostLocation(hostAddress);
-        if(isGlobusHostType()) {
-        	String globusGateKeeperEPR = this.globusGateKeeperTextField.getText();
-            String gridFTP = this.GridFTPTextField.getText();
-        	setGlobusGateKeeperEPR(globusGateKeeperEPR);
-        	setGridFTPEPR(gridFTP);
-        }
+        HostDescriptionType host = getHostDescription().getType();
+        if(host instanceof GlobusHostType) {
+        	((GlobusHostType)hostDescription.getType()).addGlobusGateKeeperEndPoint(this.gateKeeperTextField.getText());
+            ((GlobusHostType)hostDescription.getType()).addGridFTPEndPoint(this.gridFTPTextField.getText());
+        }else if (host instanceof UnicoreHostType){
+        	((UnicoreHostType)hostDescription.getType()).addUnicoreHostAddress(this.gateKeeperTextField.getText());
+            ((UnicoreHostType)hostDescription.getType()).addGridFTPEndPoint(this.gridFTPTextField.getText());
 
+        }
         saveHostDescription();
         close();
     }
 
-	private boolean isGlobusHostType() {
-		return getHostDescription().getType() instanceof GlobusHostType;
-	}
-
-    private void setGlobusGateKeeperEPR(String epr) {
-        ((GlobusHostType)hostDescription.getType()).addGlobusGateKeeperEndPoint(epr);
-    }
-
-    private void setGridFTPEPR(String epr) {
-        ((GlobusHostType)hostDescription.getType()).addGridFTPEndPoint(epr);
-    }
-    
     private GridPanel createPanelWithMessage(String message){
     	GridPanel gridPanel = new GridPanel();
     	JLabel lblMessage = new JLabel(message, SwingConstants.CENTER);
@@ -195,7 +192,7 @@ public class HostDescriptionDialog extends JDialog {
 
         XBayaLabel hostIdLabel = new XBayaLabel("Host ID", this.hostIdTextField);
         XBayaLabel hostAddressLabel = new XBayaLabel("Host Address", this.hostAddressTextField);
-        cmbResourceProtocol = new JComboBox(new String[]{REMOTE_PROTOCOL_STR_LOCAL,REMOTE_PROTOCOL_STR_GLOBUS,REMOTE_PROTOCOL_STR_UNICORE,REMOTE_PROTOCOL_STR_AMAZON_EC2, REMOTE_PROTOCOL_STR_HADOOP});
+        cmbResourceProtocol = new JComboBox(new String[]{REMOTE_PROTOCOL_STR_LOCAL,REMOTE_PROTOCOL_STR_SSH,REMOTE_PROTOCOL_STR_GLOBUS,REMOTE_PROTOCOL_STR_UNICORE,REMOTE_PROTOCOL_STR_AMAZON_EC2, REMOTE_PROTOCOL_STR_HADOOP});
         JLabel lblResourceProtocol = new JLabel("Resource Protocol");
         GridPanel pnlResourceProtocolSelection=new GridPanel();
         pnlResourceProtocolSelection.add(lblResourceProtocol);
@@ -259,16 +256,16 @@ public class HostDescriptionDialog extends JDialog {
                 close();
             }
         });
-        
+
         buttonPanel.add(cancelButton);
         buttonPanel.layout(1,3,SwingUtil.WEIGHT_NONE,0);
         buttonPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
-        
+
         getContentPane().add(infoPanel.getSwingComponent());
         getContentPane().add(buttonPanel.getSwingComponent());
-        
+
         SwingUtil.layoutToGrid(getContentPane(), 2, 1, 0, 0);
-        
+
         getRootPane().setDefaultButton(okButton);
         cmbResourceProtocol.setSelectedIndex(0);
         updateRemoteProtocolTypeAndControls();
@@ -284,20 +281,35 @@ public class HostDescriptionDialog extends JDialog {
 
 	private GridPanel createGlobusRemoteProtocolPanel() {
 		GridPanel globusPanel = new GridPanel();
-        if (GridFTPTextField==null) {
-			this.GridFTPTextField = new XBayaTextField();
-			this.globusGateKeeperTextField = new XBayaTextField();
-			globusGateKeeperLabel = new XBayaLabel("GRAM Endpoint", this.globusGateKeeperTextField);        
-	        gridFTPLabel = new XBayaLabel("Grid FTP Endpoint", this.GridFTPTextField);
+        if (gridFTPTextField==null) {
+			this.gridFTPTextField = new XBayaTextField();
+			this.gateKeeperTextField = new XBayaTextField();
+			gateKeeperLabel = new XBayaLabel("GRAM Endpoint", this.gateKeeperTextField);
+	        gridFTPLabel = new XBayaLabel("Grid FTP Endpoint", this.gridFTPTextField);
 		}
-        globusPanel.add(globusGateKeeperLabel);
-        globusPanel.add(globusGateKeeperTextField);
+        globusPanel.add(gateKeeperLabel);
+        globusPanel.add(gateKeeperTextField);
         globusPanel.add(gridFTPLabel);
-        globusPanel.add(GridFTPTextField);
+        globusPanel.add(gridFTPTextField);
         SwingUtil.layoutToGrid(globusPanel.getSwingComponent(), 2, 2, SwingUtil.WEIGHT_NONE, 1);
         return globusPanel;
 	}
 
+	private GridPanel createUnicoreRemoteProtocolPanel() {
+		GridPanel globusPanel = new GridPanel();
+        if (gridFTPTextField==null) {
+			this.gridFTPTextField = new XBayaTextField();
+			this.gateKeeperTextField = new XBayaTextField();
+			gateKeeperLabel = new XBayaLabel("Unicore Endpoint", this.gateKeeperTextField);
+	        gridFTPLabel = new XBayaLabel("GridFTP Endpoint", this.gridFTPTextField);
+		}
+        globusPanel.add(gateKeeperLabel);
+        globusPanel.add(gateKeeperTextField);
+        globusPanel.add(gridFTPLabel);
+        globusPanel.add(gridFTPTextField);
+        SwingUtil.layoutToGrid(globusPanel.getSwingComponent(), 2, 2, SwingUtil.WEIGHT_NONE, 1);
+        return globusPanel;
+	}
     private String arrayToString(String[] list) {
     	String result="";
 		for (String s : list) {
@@ -313,16 +325,23 @@ public class HostDescriptionDialog extends JDialog {
     	HostDescriptionType t = getOriginalHostDescription().getType();
     	hostIdTextField.setText(t.getHostName());
 		hostAddressTextField.setText(t.getHostAddress());
-		boolean isGlobus = t instanceof GlobusHostType;
-		if (isGlobus){
+		if (t instanceof GlobusHostType){
 			cmbResourceProtocol.setSelectedItem(REMOTE_PROTOCOL_STR_GLOBUS);
-			globusGateKeeperTextField.setText(arrayToString(((GlobusHostType) t).getGlobusGateKeeperEndPointArray()));
-			GridFTPTextField.setText(arrayToString(((GlobusHostType) t).getGridFTPEndPointArray()));
+			gateKeeperTextField.setText(arrayToString(((GlobusHostType) t).getGlobusGateKeeperEndPointArray()));
+			gridFTPTextField.setText(arrayToString(((GlobusHostType) t).getGridFTPEndPointArray()));
+		}else if (t instanceof SSHHostType){
+			cmbResourceProtocol.setSelectedItem(REMOTE_PROTOCOL_STR_SSH);
+		}else if (t instanceof UnicoreHostType){
+			cmbResourceProtocol.setSelectedItem(REMOTE_PROTOCOL_STR_UNICORE);
+			gateKeeperTextField.setText(arrayToString(((UnicoreHostType) t).getUnicoreHostAddressArray()));
+			gridFTPTextField.setText(arrayToString(((UnicoreHostType) t).getGridFTPEndPointArray()));
+		}else if (t instanceof Ec2HostType){
+			cmbResourceProtocol.setSelectedItem(REMOTE_PROTOCOL_STR_AMAZON_EC2);
 		}
 		hostIdTextField.setEditable(isNewHost());
 		updateRemoteProtocolTypeAndControls();
 	}
-    
+
     public String getHostId() {
         return getHostDescription().getType().getHostName();
     }
@@ -427,10 +446,18 @@ public class HostDescriptionDialog extends JDialog {
 			if (selectedProtocol.equals(REMOTE_PROTOCOL_STR_LOCAL)){
 				getHostDescription().getType().changeType(HostDescriptionType.type);
 				infoPanel2.add(createPanelWithMessage("No configurations needed."));
-			}else if (selectedProtocol.equals(REMOTE_PROTOCOL_STR_GLOBUS)){
+			}else if (selectedProtocol.equals(REMOTE_PROTOCOL_STR_SSH)){
+				getHostDescription().getType().changeType(SSHHostType.type);
+				infoPanel2.add(createPanelWithMessage("No configurations needed."));
+			}
+			else if (selectedProtocol.equals(REMOTE_PROTOCOL_STR_GLOBUS)){
 				getHostDescription().getType().changeType(GlobusHostType.type);
 				infoPanel2.add(createGlobusRemoteProtocolPanel());
-			}else{
+			}else if (selectedProtocol.equals(REMOTE_PROTOCOL_STR_UNICORE)){
+				getHostDescription().getType().changeType(UnicoreHostType.type);
+				infoPanel2.add(createUnicoreRemoteProtocolPanel());
+			}
+			else{
 				infoPanel2.add(createPanelWithMessage("Not supported."));
 			}
 			infoPanel2.getContentPanel().setBorder(BorderFactory.createEtchedBorder());
