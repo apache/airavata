@@ -73,6 +73,13 @@
 						</documentation>
 					</annotation>
 				</element>
+
+                <element name="hostDescriptor" type="string" minOccurs='0' maxOccurs='1'>
+					<annotation>
+						<documentation xml:lang="en"> Which Host Descriptor to be picked
+						</documentation>
+					</annotation>
+				</element>
 			</sequence>
 		</complexType>
 	</element>
