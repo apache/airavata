@@ -279,10 +279,14 @@ public class EmbeddedGFacInvoker implements Invoker {
      */
     public synchronized boolean invoke() throws WorkflowException {
         try {
-
+            String hostName = this.configuration.getContextHeader().getSoaServiceEprs().getHostDescriptor();
             //todo This is the basic scheduling, have to do proper scheduling implementation
             ServiceDescription serviceDescription = airavataAPI.getApplicationManager().getServiceDescription(serviceName);
             HostDescription registeredHost = getRegisteredHost(airavataAPI, this.serviceName);
+            // if user specify a host, no matter what we pick that host for all the nodes, todo: allow users to specifi node specific host
+            if(hostName != null || hostName.isEmpty()) {
+                registeredHost = airavataAPI.getApplicationManager().getHostDescription(hostName);
+            }
             ApplicationDescription applicationDescription = airavataAPI.getApplicationManager().getApplicationDescription(serviceName, registeredHost.getType().getHostName());
 
             // When we run getInParameters we set the actualParameter object, this has to be fixed
@@ -299,6 +303,7 @@ public class EmbeddedGFacInvoker implements Invoker {
             addSecurityContext(registeredHost,configurationProperties,jobExecutionContext);
 
             jobExecutionContext.setContextHeader(WorkflowContextHeaderBuilder.removeOtherSchedulingConfig(nodeID,configuration.getContextHeader()));
+
 
             jobExecutionContext.setProperty(Constants.PROP_WORKFLOW_NODE_ID,this.nodeID);
             jobExecutionContext.setProperty(Constants.PROP_TOPIC,this.configuration.getTopic());
