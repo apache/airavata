@@ -68,7 +68,7 @@
 		<axis2.version>1.5.1</axis2.version>
 		<derby.version>10.9.1.0</derby.version>
 		<org.slf4j.version>1.7.2</org.slf4j.version>
-        <log4j.version>1.2.16</log4j.version>
+                <log4j.version>1.2.16</log4j.version>
 		<axiom.version>1.2.8</axiom.version>
 		<surefire.version>2.12</surefire.version>
 		<junit.version>4.7</junit.version>
@@ -78,6 +78,7 @@
 		<jersey.version>1.13</jersey.version>
 		<tomcat.version>7.0.33</tomcat.version>
 		<cargo.version>1.3.1</cargo.version>
+  		<oa4mp.version>1.0.6</oa4mp.version>
 		<skipTests>false</skipTests>
 	</properties>
 
@@ -348,9 +349,8 @@
 		<repository>
 			<name>oa4mp.repo</name>
 			<id>oa4mp.repo</id>
-			<url>http://cilogon.svn.sourceforge.net/viewvc/cilogon/m2-repo/snapshots</url>
+			<url>http://cilogon.svn.sourceforge.net/viewvc/cilogon/m2-repo/</url>
 			<snapshots>
-				<!--updatePolicy>daily</updatePolicy -->
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>

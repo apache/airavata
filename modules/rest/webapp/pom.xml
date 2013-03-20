@@ -180,7 +180,7 @@
         <dependency>
             <groupId>edu.uiuc.ncsa.myproxy</groupId>
             <artifactId>oa4mp-client-oauth1</artifactId>
-            <version>1.0.6-SNAPSHOT</version>
+            <version>${oa4mp.version}</version>
         </dependency>
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
