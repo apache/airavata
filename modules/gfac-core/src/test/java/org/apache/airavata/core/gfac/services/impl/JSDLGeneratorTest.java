@@ -1,6 +1,7 @@
 package org.apache.airavata.core.gfac.services.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -38,60 +39,77 @@ import org.junit.Test;
 
 public class JSDLGeneratorTest {
 
+	public static final String[] hostArray = new String[] { "https://zam1161v01.zam.kfa-juelich.de:8002/INTEROP1/services/BESFactory?res=default_bes_factory" };
+	public static final String gridftpAddress = "gsiftp://gridftp.blacklight.psc.teragrid.org:2811";
+	public static final String hostAddress = "zam1161v01.zam.kfa-juelich.de";
+	public static final String hostName = "DEMO-INTEROP-SITE";
+	public static final String scratchDir = "/scratch/msmemon/airavata";
+	
+	protected JobExecutionContext jobExecutionContext;
 
-	private static final String[] hostArray = new String[] { "https://zam1161v01.zam.kfa-juelich.de:8002/INTEROP1/services/BESFactory?res=default_bes_factory" };
-	private static final String gridftpAddress = "gsiftp://gridftp.blacklight.psc.teragrid.org:2811";
-	private static final String hostAddress = "zam1161v01.zam.kfa-juelich.de";
-	private static final String hostName = "DEMO-INTEROP-SITE";
-	private static final String scratchDir = "/scratch/msmemon/airavata";
-
-	private JobExecutionContext jobExecutionContext;
-
+	
 	@Test
-	public void testJSDLUtils() throws Exception{
-		JobDefinitionDocument jobDefDoc = JSDLGenerator.buildJSDLInstance(jobExecutionContext);
+	public void testSerialJSDL() throws Exception{
 
+		JobTypeType jobType = JobTypeType.Factory.newInstance();
+		jobType.set(JobTypeType.SERIAL);
+		ApplicationContext appContext = getApplicationContext();
+		appContext.setApplicationDeploymentDescription(getApplicationDesc(jobType));
+		jobExecutionContext.setApplicationContext(appContext);
+
+		JobDefinitionDocument jobDefDoc = JSDLGenerator.buildJSDLInstance(jobExecutionContext);
+		
 		assertTrue (jobDefDoc.getJobDefinition().getJobDescription().getApplication().toString().contains("/bin/cat"));
 		assertTrue(jobDefDoc.getJobDefinition().getJobDescription().getDataStagingArray().length > 2);
-
+		
 		assertTrue(jobDefDoc.getJobDefinition().getJobDescription().getJobIdentification().getJobProjectArray().length > 0);
-
+		
+		assertFalse(JSDLUtils.getPOSIXApplication(jobDefDoc.getJobDefinition())==null);
+		
 		assertEquals("jsdl_stdout", JSDLUtils.getOrCreatePOSIXApplication(jobDefDoc.getJobDefinition()).getOutput().getStringValue().toString());
-
-		System.out.println(jobDefDoc);
-
+		
+	}
+	
+	@Test
+	public void testMPIJSDL() throws Exception{
+		
+		JobTypeType jobType = JobTypeType.Factory.newInstance();
+		jobType.set(JobTypeType.MPI);
+		ApplicationContext appContext = getApplicationContext();
+		appContext.setApplicationDeploymentDescription(getApplicationDesc(jobType));
+		jobExecutionContext.setApplicationContext(appContext);
+		
+		JobDefinitionDocument jobDefDoc = JSDLGenerator.buildJSDLInstance(jobExecutionContext);
+		
+		assertTrue (jobDefDoc.getJobDefinition().getJobDescription().getApplication().toString().contains("/bin/cat"));
+		assertTrue(jobDefDoc.getJobDefinition().getJobDescription().getDataStagingArray().length > 2);
+		
+		assertTrue(jobDefDoc.getJobDefinition().getJobDescription().getJobIdentification().getJobProjectArray().length > 0);
+		
+		assertEquals("jsdl_stdout", JSDLUtils.getOrCreateSPMDApplication(jobDefDoc.getJobDefinition()).getOutput().getStringValue().toString());
+		
+		assertFalse(JSDLUtils.getSPMDApplication(jobDefDoc.getJobDefinition())==null);
+		
+		
 	}
 
-	@Before
-	public void initJobContext() throws Exception {
-		PropertyConfigurator.configure("src/test/resources/logging.properties");
-		jobExecutionContext = new JobExecutionContext(getGFACConfig(), getServiceDesc().getType().getName());
-		//Add security context
-		jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT, getSecurityContext());
-		jobExecutionContext.setApplicationContext(getApplicationContext());
-		jobExecutionContext.setInMessageContext(getInMessageContext());
-		jobExecutionContext.setOutMessageContext(getOutMessageContext());
-	}
-
-	private GFacConfiguration getGFACConfig() throws Exception{
+	protected GFacConfiguration getGFACConfig() throws Exception{
         URL resource = BESProviderTest.class.getClassLoader().getResource("gfac-config.xml");
         System.out.println(resource.getFile());
         GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()),null,null);
 		return gFacConfiguration;
 	}
-
-
-	private ApplicationContext getApplicationContext() {
+	
+	
+	protected ApplicationContext getApplicationContext() {
 		ApplicationContext applicationContext = new ApplicationContext();
 		applicationContext.setHostDescription(getHostDesc());
-		applicationContext
-				.setApplicationDeploymentDescription(getApplicationDesc());
-
+		
 		applicationContext.setServiceDescription(getServiceDesc());
 		return applicationContext;
 	}
 
-	private ApplicationDescription getApplicationDesc() {
+	protected ApplicationDescription getApplicationDesc(JobTypeType jobType) {
 		ApplicationDescription appDesc = new ApplicationDescription(
 				HpcApplicationDeploymentType.type);
 		HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) appDesc
@@ -108,7 +126,16 @@ public class JSDLGeneratorTest {
 
 		app.setCpuCount(1);
 		// TODO: also handle parallel jobs
-		app.setJobType(JobTypeType.SERIAL);
+		if((jobType.enumValue() == JobTypeType.SERIAL) || (jobType.enumValue() == JobTypeType.SINGLE)) {
+			app.setJobType(JobTypeType.SERIAL);
+		}
+		else if (jobType.enumValue() == JobTypeType.MPI) {
+			app.setJobType(JobTypeType.MPI);
+		}
+		else {
+			app.setJobType(JobTypeType.OPEN_MP);
+		}
+		
 		app.setNodeCount(1);
 		app.setProcessorsPerNode(1);
 
@@ -128,21 +155,21 @@ public class JSDLGeneratorTest {
 				+ UUID.randomUUID();
 
 		System.out.println(remoteTempDir);
-
+		
 		// no need of these parameters, as unicore manages by itself
 		app.setScratchWorkingDirectory(remoteTempDir);
 		app.setStaticWorkingDirectory(remoteTempDir);
 		app.setInputDataDirectory(remoteTempDir + File.separator + "inputData");
 		app.setOutputDataDirectory(remoteTempDir + File.separator + "outputData");
-
+		
 		app.setStandardOutput(app.getOutputDataDirectory()+"/jsdl_stdout");
-
+		
 		app.setStandardError(app.getOutputDataDirectory()+"/jsdl_stderr");
 
 		return appDesc;
 	}
 
-	private HostDescription getHostDesc() {
+	protected HostDescription getHostDesc() {
 		HostDescription host = new HostDescription(UnicoreHostType.type);
 		host.getType().setHostAddress(hostAddress);
 		host.getType().setHostName(hostName);
@@ -151,7 +178,7 @@ public class JSDLGeneratorTest {
 		return host;
 	}
 
-	private ServiceDescription getServiceDesc() {
+	protected ServiceDescription getServiceDesc() {
 		ServiceDescription serv = new ServiceDescription();
 		serv.getType().setName("SimpleCat");
 
@@ -173,24 +200,24 @@ public class JSDLGeneratorTest {
 
 		serv.getType().setInputParametersArray(inputParamList);
 		serv.getType().setOutputParametersArray(outputParamList);
-
-
+		
+		
 		return serv;
 	}
 
-	private MessageContext getInMessageContext() {
+	protected MessageContext getInMessageContext() {
 		MessageContext inMessage = new MessageContext();
-
+		
         ActualParameter i1 = new ActualParameter();
         i1.getType().changeType(URIParameterType.type);
         ((URIParameterType)i1.getType()).setValue("file:///tmp/ifile1");
         inMessage.addParameter("i1", i1);
-
+        
         ActualParameter i2 = new ActualParameter();
         i2.getType().changeType(URIParameterType.type);
         ((URIParameterType)i2.getType()).setValue("file:///tmp/ifile2");
         inMessage.addParameter("i2", i2);
-
+        
         ActualParameter i3 = new ActualParameter();
         i2.getType().changeType(URIParameterType.type);
         ((URIParameterType)i2.getType()).setValue("///tmp/ifile2");
@@ -200,24 +227,24 @@ public class JSDLGeneratorTest {
         simpleArg.getType().changeType(StringParameterType.type);
         ((StringParameterType)simpleArg.getType()).setValue("argument1");
         inMessage.addParameter("a1", simpleArg);
-
+        
         ActualParameter nameValueArg = new ActualParameter();
         nameValueArg.getType().changeType(StringParameterType.type);
         ((StringParameterType)nameValueArg.getType()).setValue("name1=value1");
         inMessage.addParameter("nameValueArg", nameValueArg);
-
+        
 		ActualParameter echo_input = new ActualParameter();
 		((StringParameterType) echo_input.getType())
 				.setValue("echo_output=hello");
 		inMessage.addParameter("echo_input", echo_input);
-
+        
 		return inMessage;
 	}
 
-	private MessageContext getOutMessageContext() {
+	protected MessageContext getOutMessageContext() {
 		MessageContext om1 = new MessageContext();
-
-		// TODO: Aint the output parameters are only the name of the files staged out to the gridftp endpoint?
+		
+		// TODO: Aint the output parameters are only the name of the files staged out to the gridftp endpoint? 
 		ActualParameter o1 = new ActualParameter();
 		((StringParameterType) o1.getType())
 		.setValue("tempfile");
@@ -225,23 +252,34 @@ public class JSDLGeneratorTest {
 
 		ActualParameter o2 = new ActualParameter();
 		o2.getType().changeType(URIParameterType.type);
-
+		
 		((URIParameterType)o2.getType()).setValue("http://path/to/upload");
 		om1.addParameter("o2", o2);
 
-
-
+		
+		
 		return om1;
 	}
-
-	private GSISecurityContext getSecurityContext(){
-	    GSISecurityContext context = new GSISecurityContext();
+	private GSISecurityContext getSecurityContext() {
+		GSISecurityContext context = new GSISecurityContext();
         context.setMyproxyLifetime(3600);
         context.setMyproxyServer("myproxy.teragrid.org");
-        context.setMyproxyUserName("*****");
-        context.setMyproxyPasswd("*****");
-        context.setTrustedCertLoc("./certificates");
-        return context;
+        context.setMyproxyUserName("******");
+        context.setMyproxyPasswd("*********");
+        context.setTrustedCertLoc("**********");
+		return context;
 	}
 
+	@Before
+	public void initJobContext() throws Exception {
+		PropertyConfigurator.configure("src/test/resources/logging.properties");
+		jobExecutionContext = new JobExecutionContext(getGFACConfig(), getServiceDesc().getType().getName());
+		jobExecutionContext.setApplicationContext(getApplicationContext());
+		jobExecutionContext.setInMessageContext(getInMessageContext());
+		jobExecutionContext.setOutMessageContext(getOutMessageContext());
+	    jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT, getSecurityContext());
+          
+	}
+	
+	
 }

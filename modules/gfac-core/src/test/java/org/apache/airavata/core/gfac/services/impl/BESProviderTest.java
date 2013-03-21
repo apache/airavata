@@ -1,54 +1,108 @@
 package org.apache.airavata.core.gfac.services.impl;
 
+/*
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements.  See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership.  The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License.  You may obtain a copy of the License at
+*
+*   http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*
+*/
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
-import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.gfac.GFacAPI;
-import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.ApplicationContext;
-import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
-import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.JobTypeType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.ProjectAccountType;
-import org.apache.airavata.schemas.gfac.QueueType;
 import org.apache.airavata.schemas.gfac.StringParameterType;
 import org.apache.airavata.schemas.gfac.URIParameterType;
-import org.apache.airavata.schemas.gfac.UnicoreHostType;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class BESProviderTest {
-	private JobExecutionContext jobExecutionContext;
-
-	private static final String[] hostArray = new String[] { "https://zam1161v01.zam.kfa-juelich.de:8002/INTEROP1/services/BESFactory?res=default_bes_factory" };
-	private static final String gridftpAddress = "gsiftp://gridftp1.ls4.tacc.utexas.edu:2811";
-
-	//directory where data will be copy into and copied out to unicore resources
-
-	// private static final String scratchDir = "/brashear/msmemon/airavata";
-	//FIXME: to move all the configurations to property files.
-	private static final String scratchDir = "/scratch/01437/ogce/test/";
-
-	private String remoteTempDir = null;
-
+public class BESProviderTest extends AbstractBESTest{
+	
+	private String tmpFilePath;
+	
 	@Before
 	public void initJobContext() throws Exception {
-		PropertyConfigurator.configure("src/test/resources/logging.properties");
+		initTest();
+	}
+
+	@Test
+	public void submitJob() throws GFacException {
+		JobTypeType jobType = JobTypeType.Factory.newInstance();
+		jobType.set(JobTypeType.SERIAL);
+		ApplicationContext appContext = getApplicationContext();
+		appContext.setApplicationDeploymentDescription(getApplicationDesc(jobType));
+		jobExecutionContext.setApplicationContext(appContext);
+		
+		GFacAPI gFacAPI = new GFacAPI();
+		gFacAPI.submitJob(jobExecutionContext);
+	}
+	
+	
+	protected ApplicationDescription getApplicationDesc(JobTypeType jobType) {
+		ApplicationDescription appDesc = new ApplicationDescription(
+				HpcApplicationDeploymentType.type);
+		HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) appDesc
+				.getType();
+		ApplicationDeploymentDescriptionType.ApplicationName name = ApplicationDeploymentDescriptionType.ApplicationName.Factory
+				.newInstance();
+		name.setStringValue("CatRemote");
+		app.setApplicationName(name);
+		ProjectAccountType projectAccountType = app.addNewProjectAccount();
+		projectAccountType.setProjectAccountNumber("TG-AST110064");
+
+		app.setCpuCount(1);
+		// TODO: also handle parallel jobs
+		if((jobType.enumValue() == JobTypeType.SERIAL) || (jobType.enumValue() == JobTypeType.SINGLE)) {
+			app.setJobType(JobTypeType.SERIAL);
+		}
+		else if (jobType.enumValue() == JobTypeType.MPI) {
+			app.setJobType(JobTypeType.MPI);
+		}
+		else {
+			app.setJobType(JobTypeType.OPEN_MP);
+		}
+		
+		app.setNodeCount(1);
+		app.setProcessorsPerNode(1);
+
+		/*
+		 * Use bat file if it is compiled on Windows
+		 */
+		app.setExecutableLocation("/bin/cat");
+		
 
 		/*
 		 * Default tmp location
@@ -57,94 +111,25 @@ public class BESProviderTest {
 		date = date.replaceAll(" ", "_");
 		date = date.replaceAll(":", "_");
 
-
-		remoteTempDir = scratchDir + File.separator + "SimpleEcho" + "_" + date + "_"
+		String remoteTempDir = scratchDir + File.separator + "SimpleCat" + "_" + date + "_"
 				+ UUID.randomUUID();
 
-		jobExecutionContext = new JobExecutionContext(getGFACConfig(), getServiceDesc().getType().getName());
-
-		// set security context
-		jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT, getSecurityContext());
-		jobExecutionContext.setApplicationContext(getApplicationContext());
-		jobExecutionContext.setInMessageContext(getInMessageContext());
-		jobExecutionContext.setOutMessageContext(getOutMessageContext());
-	}
-
-	@Test
-	public void testBESProvider() throws GFacException {
-		GFacAPI gFacAPI = new GFacAPI();
-		gFacAPI.submitJob(jobExecutionContext);
-	}
-
-	private GFacConfiguration getGFACConfig() throws Exception{
-        URL resource = BESProviderTest.class.getClassLoader().getResource("gfac-config.xml");
-        GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()),null,null);
-    	return gFacConfiguration;
-	}
-
-	private ApplicationContext getApplicationContext() {
-		ApplicationContext applicationContext = new ApplicationContext();
-		applicationContext.setHostDescription(getHostDesc());
-		applicationContext
-				.setApplicationDeploymentDescription(getApplicationDesc());
-		applicationContext.setServiceDescription(getServiceDesc());
-		return applicationContext;
-	}
-
-	private ApplicationDescription getApplicationDesc() {
-		ApplicationDescription appDesc = new ApplicationDescription(
-				HpcApplicationDeploymentType.type);
-		HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) appDesc
-				.getType();
-		ApplicationDeploymentDescriptionType.ApplicationName name = ApplicationDeploymentDescriptionType.ApplicationName.Factory
-				.newInstance();
-		name.setStringValue("Simple Cat");
-		app.setApplicationName(name);
-		ProjectAccountType projectAccountType = app.addNewProjectAccount();
-		projectAccountType.setProjectAccountNumber("TG-AST110064");
-
-		QueueType queueType = app.addNewQueue();
-		queueType.setQueueName("development");
-
-		app.setCpuCount(1);
-		// TODO: also handle parallel jobs
-		app.setJobType(JobTypeType.SERIAL);
-		app.setNodeCount(1);
-		app.setProcessorsPerNode(1);
-
-		/*
-		 * Use bat file if it is compiled on Windows
-		 */
-		app.setExecutableLocation("/bin/cat");
-
-
 		System.out.println(remoteTempDir);
-
-
+		
+		// no need of these parameters, as unicore manages by itself
 		app.setScratchWorkingDirectory(remoteTempDir);
 		app.setStaticWorkingDirectory(remoteTempDir);
-
-
-		// this is required
 		app.setInputDataDirectory(remoteTempDir + File.separator + "inputData");
 		app.setOutputDataDirectory(remoteTempDir + File.separator + "outputData");
-
-		app.setStandardOutput(app.getOutputDataDirectory()+ File.separator + "stdout");
-		app.setStandardError(app.getOutputDataDirectory()+ File.separator + "stderr");
+		
+		app.setStandardOutput(app.getOutputDataDirectory()+"/jsdl_stdout");
+		
+		app.setStandardError(app.getOutputDataDirectory()+"/jsdl_stderr");
 
 		return appDesc;
 	}
 
-	private HostDescription getHostDesc() {
-		HostDescription host = new HostDescription(UnicoreHostType.type);
-		host.getType().setHostAddress("zam1161v01.zam.kfa-juelich.de");
-		host.getType().setHostName("DEMO-INTEROP-SITE");
-		((UnicoreHostType) host.getType()).setUnicoreHostAddressArray(hostArray);
-		((UnicoreHostType) host.getType()).setGridFTPEndPointArray(new String[]{gridftpAddress});
-		return host;
-	}
-
-	private ServiceDescription getServiceDesc() {
+	protected ServiceDescription getServiceDesc() {
 		ServiceDescription serv = new ServiceDescription();
 		serv.getType().setName("SimpleCat");
 
@@ -169,56 +154,58 @@ public class BESProviderTest {
 		return serv;
 	}
 
-	private MessageContext getInMessageContext() {
+	protected MessageContext getInMessageContext() {
+		
+		File tmpFile = new File("target"+File.separator+"tmp-"+new Random().nextInt(5));
+		try {
+			FileUtils.touch(tmpFile);
+			FileUtils.writeStringToFile(tmpFile, "tmp contents", "UTF-8");
+			tmpFilePath = tmpFile.getAbsolutePath();
+		} catch (Exception e) {
+			assertTrue(false);
+		}
+		
 		MessageContext inMessage = new MessageContext();
-
+        
 		ActualParameter copy_input = new ActualParameter();
         copy_input.getType().changeType(URIParameterType.type);
-        ((URIParameterType)copy_input.getType()).setValue("file:///tmp/rave_db.h2.db ");
+        ((URIParameterType)copy_input.getType()).setValue("file:///"+tmpFile.getAbsolutePath());
         inMessage.addParameter("f1", copy_input);
-
+		
     	ActualParameter f2 = new ActualParameter();
         f2.getType().changeType(URIParameterType.type);
         ((URIParameterType)f2.getType()).setValue("http://unicore-dev.zam.kfa-juelich.de/maven/cog-globus/cog-jglobus/1.4/cog-jglobus-1.4.jar");
         inMessage.addParameter("f2", f2);
-
-    	ActualParameter f3 = new ActualParameter();
-        f3.getType().changeType(URIParameterType.type);
-        ((URIParameterType)f3.getType()).setValue(gridftpAddress+"/"+scratchDir+"/README");
-        inMessage.addParameter("f3", f3);
-
+        
+        
         ActualParameter a1 = new ActualParameter();
         a1.getType().changeType(StringParameterType.type);
-        ((StringParameterType)a1.getType()).setValue("tmpstrace");
+        ((StringParameterType)a1.getType()).setValue(tmpFile.getName());
         inMessage.addParameter("arg1", a1);
 
         return inMessage;
 	}
-	private GSISecurityContext getSecurityContext(){
-	    GSISecurityContext context = new GSISecurityContext();
-        context.setMyproxyLifetime(3600);
-        context.setMyproxyServer("myproxy.teragrid.org");
-        context.setMyproxyUserName("*****");
-        context.setMyproxyPasswd("*****");
-        context.setTrustedCertLoc("./certificates");
-        return context;
-	}
 
-	private MessageContext getOutMessageContext() {
-
+	protected MessageContext getOutMessageContext() {
+		
 		MessageContext outMessage = new MessageContext();
 		ActualParameter a1 = new ActualParameter();
 		a1.getType().changeType(StringParameterType.type);
-		((StringParameterType)a1.getType()).setValue("README");
+		((StringParameterType)a1.getType()).setValue(new File(tmpFilePath).getName());
 		outMessage.addParameter("echo_output", a1);
-
+		
 		ActualParameter o1 = new ActualParameter();
 		o1.getType().changeType(URIParameterType.type);
 		// this may be any gridftp / ftp directory
 		((URIParameterType)o1.getType()).setValue(gridftpAddress+"/"+remoteTempDir + "/" + "outputData"+"/"+"cog-jglobus-1.4.jar");
 		outMessage.addParameter("o1", o1);
-
+		
 		return outMessage;
 	}
-
+	
+	@After
+	public void cleanData(){
+		FileUtils.deleteQuietly(new File(tmpFilePath));
+	}
+	
 }
