@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 /**
  * 
  * Utility class generates a JSDL instance from JobExecutionContext instance
- * @author shahbaz memon
  * 
  * */
 

@@ -1,4 +1,26 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+*/
 package org.apache.airavata.gfac.provider.utils;
+
+import java.io.File;
 
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.schemas.gfac.ExtendedKeyValueType;
@@ -9,13 +31,9 @@ import org.ggf.schemas.jsdl.x2005.x11.jsdl.ApplicationType;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
 import org.ggf.schemas.jsdl.x2005.x11.jsdlPosix.EnvironmentType;
 import org.ggf.schemas.jsdl.x2005.x11.jsdlPosix.FileNameType;
-import org.ggf.schemas.jsdl.x2005.x11.jsdlPosix.LimitsType;
 import org.ogf.schemas.jsdl.x2007.x02.jsdlSpmd.NumberOfProcessesType;
 import org.ogf.schemas.jsdl.x2007.x02.jsdlSpmd.ProcessesPerHostType;
 import org.ogf.schemas.jsdl.x2007.x02.jsdlSpmd.ThreadsPerProcessType;
-
-import java.io.File;
-import java.math.BigInteger;
 
 
 public class ApplicationProcessor {
@@ -28,24 +46,6 @@ public class ApplicationProcessor {
 		
 		createGenericApplication(value, appDepType);
 		
-		if (appDepType.getMaxWallTime() > 0) {
-			
-			if(!isParallelJob(appDepType)) {
-				LimitsType limitType = LimitsType.Factory.newInstance();
-				BigInteger bi = BigInteger.valueOf(appDepType.getMaxWallTime());
-				limitType.setBigIntegerValue(bi);
-				JSDLUtils.getOrCreatePOSIXApplication(value).setWallTimeLimit(limitType);
-			}
-			
-			else {
-				LimitsType limitType = LimitsType.Factory.newInstance();
-				Integer i = appDepType.getMaxWallTime();
-				limitType.setStringValue(i.toString());
-//				JSDLUtils.getOrCreateSPMDApplication(value).setWallTimeLimit(limitType);
-			}
-		}
-
-
 		if (appDepType.getApplicationEnvironmentArray().length > 0) {
 			createApplicationEnvironment(value,
 					appDepType.getApplicationEnvironmentArray(), appDepType);
