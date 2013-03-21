@@ -479,5 +479,13 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 		return getWorkflowExperimentData(experimentId);
 	}
 
-	
+    public void updateWorkflowNodeGramData(WorkflowNodeGramData data) throws AiravataAPIInvocationException {
+        try {
+            client.getRegistryClient().updateWorkflowNodeGramData(data);
+        } catch (RegistryException e) {
+            new AiravataAPIInvocationException(e);
+        } catch (AiravataConfigurationException e) {
+            new AiravataAPIInvocationException(e);
+        }
+    }
 }
