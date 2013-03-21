@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.gfac.provider.impl;
 
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.JobSubmissionFault;
 import org.apache.airavata.gfac.context.JobExecutionContext;
@@ -29,6 +31,7 @@ import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.utils.GramJobSubmissionListener;
 import org.apache.airavata.gfac.utils.GramProviderUtils;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeGramData;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.globus.gram.GramException;
@@ -77,7 +80,15 @@ public class GramProvider implements GFacProvider {
             job.request(gateKeeper, false, false);
             String gramJobid = job.getIDAsString();
             log.info("JobID = " + gramJobid);
-
+            String experimentID = (String) jobExecutionContext.getProperty(Constants.PROP_TOPIC);
+            String nodeID = (String)jobExecutionContext.getProperty(Constants.PROP_WORKFLOW_NODE_ID);
+            String hostName = jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostName();
+            WorkflowNodeGramData workflowNodeGramData = new WorkflowNodeGramData(experimentID, nodeID, hostName, job.getRSL(), job.getIDAsString());
+            try {
+                jobExecutionContext.getGFacConfiguration().getAiravataAPI().getProvenanceManager().updateWorkflowNodeGramData(workflowNodeGramData);
+            } catch (AiravataAPIInvocationException e) {
+                throw new GFacProviderException(e.getMessage(), e, jobExecutionContext);
+            }
             log.info(buf.toString());
             /*
             * Block untill job is done
