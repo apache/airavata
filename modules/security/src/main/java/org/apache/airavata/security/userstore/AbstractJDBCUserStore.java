@@ -21,8 +21,13 @@
 
 package org.apache.airavata.security.userstore;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ApplicationSettings;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.security.UserStore;
 import org.apache.airavata.security.UserStoreException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -31,6 +36,8 @@ import org.w3c.dom.NodeList;
  * An abstract implementation of the UserStore. This will encapsulate JDBC configurations reading code.
  */
 public abstract class AbstractJDBCUserStore implements UserStore {
+
+    protected static Logger log = LoggerFactory.getLogger(JDBCUserStore.class);
 
     private String databaseURL = null;
     private String databaseDriver = null;
@@ -55,9 +62,8 @@ public abstract class AbstractJDBCUserStore implements UserStore {
 
     /**
      * Configures primary JDBC parameters. i.e
-     * 
-     * @param node
-     *            An XML configuration node.
+     *
+     * @param node An XML configuration node.
      * @throws UserStoreException
      */
     public void configure(Node node) throws UserStoreException {
@@ -101,6 +107,27 @@ public abstract class AbstractJDBCUserStore implements UserStore {
                     }
                 }
             }
+        }
+
+        if (databaseURL == null || databaseUserName == null || databasePassword == null) {
+            // If database configurations are not specified in authenticators.xml we will read them from
+            // server.properties file.
+            try {
+                databaseDriver = ServerSettings.getCredentialStoreDBDriver();
+                databaseURL = ServerSettings.getCredentialStoreDBURL();
+                databaseUserName = ServerSettings.getCredentialStoreDBUser();
+                databasePassword = ServerSettings.getCredentialStoreDBPassword();
+
+            } catch (ApplicationSettingsException e) {
+                log.error("Error reading default user store DB configurations.");
+                throw new UserStoreException(e);
+            }
+
+            StringBuilder stringBuilder = new StringBuilder("User store configurations - dbDriver - ");
+            stringBuilder.append(databaseDriver);
+            stringBuilder.append(" URL - ").append(databaseURL).append(" DB user - ").append(databaseUserName);
+            log.info(stringBuilder.toString());
+
         }
 
     }
