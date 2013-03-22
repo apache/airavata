@@ -78,6 +78,7 @@ import org.apache.airavata.schemas.gfac.StringParameterType;
 import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.apache.airavata.schemas.gfac.UnicoreHostType;
+import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.jython.lib.ServiceNotifiable;
@@ -279,12 +280,16 @@ public class EmbeddedGFacInvoker implements Invoker {
      */
     public synchronized boolean invoke() throws WorkflowException {
         try {
-            String hostName = this.configuration.getContextHeader().getSoaServiceEprs().getHostDescriptor();
+            ContextHeaderDocument.ContextHeader contextHeader = this.configuration.getContextHeader();
+            String hostName = null;
+            if(contextHeader != null){
+                hostName = contextHeader.getSoaServiceEprs().getHostDescriptor();
+            }
             //todo This is the basic scheduling, have to do proper scheduling implementation
             ServiceDescription serviceDescription = airavataAPI.getApplicationManager().getServiceDescription(serviceName);
             HostDescription registeredHost = getRegisteredHost(airavataAPI, this.serviceName);
             // if user specify a host, no matter what we pick that host for all the nodes, todo: allow users to specifi node specific host
-            if(hostName != null || hostName.isEmpty()) {
+            if(hostName != null) {
                 registeredHost = airavataAPI.getApplicationManager().getHostDescription(hostName);
             }
             ApplicationDescription applicationDescription = airavataAPI.getApplicationManager().getApplicationDescription(serviceName, registeredHost.getType().getHostName());
