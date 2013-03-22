@@ -254,8 +254,8 @@ public class EC2Provider implements GFacProvider {
         for (GroupIdentifier g : instance.getSecurityGroups()) {
             IpPermission ip = new IpPermission();
             ip.setIpProtocol("tcp");
-            ip.setFromPort(22);
-            ip.setToPort(22);
+            ip.setFromPort(SSH_PORT);
+            ip.setToPort(SSH_PORT);
             AuthorizeSecurityGroupIngressRequest r = new AuthorizeSecurityGroupIngressRequest();
             r = r.withIpPermissions(ip.withIpRanges("0.0.0.0/0"));
             r.setGroupId(g.getGroupId());
