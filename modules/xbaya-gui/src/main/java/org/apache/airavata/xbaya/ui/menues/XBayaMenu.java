@@ -21,15 +21,6 @@
 
 package org.apache.airavata.xbaya.ui.menues;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.Box;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.XBayaConstants;
@@ -41,29 +32,15 @@ import org.apache.airavata.xbaya.ui.dialogs.AboutWindow;
 import org.apache.airavata.xbaya.ui.widgets.XBayaComponent;
 import org.apache.airavata.xbaya.ui.widgets.XBayaToolBar;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
 public class XBayaMenu implements XBayaComponent,XBayaExecutionModeListener{
 
     private XBayaEngine engine;
 
     private JMenuBar menuBar;
-
-//    private WorkflowMenu workflowMenu;
-//
-//    private FileMenu fileMenu;
-//
-//    private ExperimentMenu experimentMenu;
-//
-//    private PegasusMenu pegasusMenu;
-//
-//    private AmazonEC2Menu amazonEC2Menu;
-//
-//    private ComponentMenu componentMenu;
-//
-//    private MonitorMenu monitorMenu;
-
-    // private MyProxyMenu myProxyMenu;
-
-//    private RegisterApplicationsMenu registerApplications;
 
 	private XBayaMenuItem xBayaMenuItem;
 
@@ -74,6 +51,8 @@ public class XBayaMenu implements XBayaComponent,XBayaExecutionModeListener{
 	private RunMenuItem runMenuItem;
 
 	private RegistryMenuItem registryMenuItem;
+
+    private AmazonEC2MenuItem amazonEC2MenuItem;
 
 	private ToolsMenuItem toolsMenuItem;
 
@@ -91,34 +70,16 @@ public class XBayaMenu implements XBayaComponent,XBayaExecutionModeListener{
         setToolBar(toolBar);
         initMenu();
 		engine.getConfiguration().registerExecutionModeChangeListener(this);
-//        SwingUtilities.invokeLater(new Runnable() {
-//            public void run() {
-//                try {
-//                    initMenu();
-//                } catch (Exception exception) {
-//                    exception.printStackTrace();
-//                }
-//            }
-//        });
     }
     
 	private void initMenu() {
-//		fileMenu = new FileMenu(getEngine());
-		
 		xBayaMenuItem = new XBayaMenuItem(getEngine(),getToolBar());
 		editMenuItem = new EditMenuItem(getEngine());
+        amazonEC2MenuItem = new AmazonEC2MenuItem(getEngine());
 		viewMenuItem = new ViewMenuItem(getEngine());
 		runMenuItem = new RunMenuItem(getEngine(), getToolBar());
 		registryMenuItem = new RegistryMenuItem(getEngine(),getToolBar());
 		toolsMenuItem = new ToolsMenuItem(getEngine());
-		
-//		workflowMenu = new WorkflowMenu(getEngine());
-//		experimentMenu = new ExperimentMenu(getEngine());
-//		amazonEC2Menu = new AmazonEC2Menu(getEngine());
-//		componentMenu = new ComponentMenu(getEngine());
-//		monitorMenu = new MonitorMenu(getEngine());
-		// this.myProxyMenu = new MyProxyMenu(this.engine);
-//		registerApplications = new RegisterApplicationsMenu(getEngine());
 
 		createMenuBar();
 		executionModeChanged(getEngine().getConfiguration());
@@ -137,7 +98,6 @@ public class XBayaMenu implements XBayaComponent,XBayaExecutionModeListener{
      * Creates the menu bar.
      */
     private void createMenuBar() {
-
         this.menuBar = new JMenuBar();
         menuBar.add(xBayaMenuItem.getMenu());
         menuBar.add(editMenuItem.getMenu());
@@ -145,6 +105,7 @@ public class XBayaMenu implements XBayaComponent,XBayaExecutionModeListener{
         menuBar.add(runMenuItem.getMenu());
         menuBar.add(toolsMenuItem.getMenu());
         menuBar.add(registryMenuItem.getMenu());
+        menuBar.add(amazonEC2MenuItem.getMenu());
         // Space before Help
         this.menuBar.add(Box.createHorizontalGlue());
 
