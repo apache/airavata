@@ -141,7 +141,9 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         PrivateKey newKey = (PrivateKey) CredentialsDAO.convertByteArrayToObject(array);
 
         Assert.assertNotNull(newKey);
-        Assert.assertEquals(privateKey.toString(), newKey.toString());
+        Assert.assertEquals(privateKey.getClass(), newKey.getClass());
+
+        Assert.assertEquals(privateKey.getFormat(), newKey.getFormat());
         Assert.assertEquals(privateKey.getAlgorithm(), newKey.getAlgorithm());
         Assert.assertTrue(Arrays.equals(privateKey.getEncoded(), newKey.getEncoded()));
     }
