@@ -83,7 +83,7 @@ public class GramProvider implements GFacProvider {
             String experimentID = (String) jobExecutionContext.getProperty(Constants.PROP_TOPIC);
             String nodeID = (String)jobExecutionContext.getProperty(Constants.PROP_WORKFLOW_NODE_ID);
             String hostName = jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostName();
-            WorkflowNodeGramData workflowNodeGramData = new WorkflowNodeGramData(experimentID, nodeID, hostName, job.getRSL(), job.getIDAsString());
+            WorkflowNodeGramData workflowNodeGramData = new WorkflowNodeGramData(experimentID, nodeID, job.getRSL(),hostName , job.getIDAsString());
             try {
                 jobExecutionContext.getGFacConfiguration().getAiravataAPI().getProvenanceManager().updateWorkflowNodeGramData(workflowNodeGramData);
             } catch (AiravataAPIInvocationException e) {
