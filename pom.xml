@@ -443,7 +443,7 @@
 				<module>modules/registry</module>
 				<module>modules/airavata-client</module>
 				<module>modules/security</module>
-				<module>modules/credential-store</module>
+<!-- 				<module>modules/credential-store</module> -->
 				<module>modules/rest</module>
 				<module>tools</module>
 				<module>samples/simple-math-service</module>
