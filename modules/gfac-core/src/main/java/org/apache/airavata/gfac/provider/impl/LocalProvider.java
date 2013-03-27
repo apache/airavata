@@ -20,20 +20,17 @@
 */
 package org.apache.airavata.gfac.provider.impl;
 
-import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.notification.events.StartExecutionEvent;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
+import org.apache.airavata.gfac.provider.utils.ProviderUtils;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.InputStreamToFileWriter;
 import org.apache.airavata.gfac.utils.InputUtils;
 import org.apache.airavata.gfac.utils.OutputUtils;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.NameValuePairType;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
@@ -41,7 +38,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class LocalProvider implements GFacProvider {
     private static final Logger log = LoggerFactory.getLogger(LocalProvider.class);
@@ -56,7 +55,7 @@ public class LocalProvider implements GFacProvider {
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().
                 getApplicationDeploymentDescription().getType();
 
-        buildCommand(app.getExecutableLocation(), getInputParameters(jobExecutionContext));
+        buildCommand(app.getExecutableLocation(), ProviderUtils.getInputParameters(jobExecutionContext));
         initProcessBuilder(app);
 
         // extra environment variables
@@ -138,25 +137,6 @@ public class LocalProvider implements GFacProvider {
         } catch (Exception e){
         	throw new GFacProviderException("Error in retrieving results",e,jobExecutionContext);
         }
-    }
-
-    // TODO: Move to right class based on future requirements.
-    private List<String> getInputParameters(JobExecutionContext jobExecutionContext) throws GFacProviderException {
-        List<String> parameters = new ArrayList<String>();
-        MessageContext inMessageContext = jobExecutionContext.getInMessageContext();
-        InputParameterType[] inputParamDefinitionArray = jobExecutionContext.getApplicationContext().
-                getServiceDescription().getType().getInputParametersArray();
-        for (InputParameterType inputParam : inputParamDefinitionArray) {
-            String parameterName = inputParam.getParameterName();
-            ActualParameter parameter = (ActualParameter)inMessageContext.getParameter(parameterName);
-            if(parameter == null){
-                throw new GFacProviderException("Cannot find required input parameter " + parameterName + ".");
-            }
-
-            parameters.add(MappingFactory.toString(parameter));
-        }
-
-        return parameters;
     }
 
     private void buildCommand(String executable, List<String> inputParameterList){
