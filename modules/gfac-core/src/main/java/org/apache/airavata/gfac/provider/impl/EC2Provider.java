@@ -42,13 +42,13 @@ import com.sshtools.j2ssh.util.Base64;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.context.security.AmazonSecurityContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.gfac.context.security.AmazonSecurityContext;
 import org.apache.airavata.gfac.notification.events.EC2ProviderEvent;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
+import org.apache.airavata.gfac.provider.utils.ProviderUtils;
 import org.apache.airavata.schemas.gfac.Ec2ApplicationDeploymentType;
-import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.StringParameterType;
 import org.bouncycastle.openssl.PEMWriter;
@@ -124,7 +124,7 @@ public class EC2Provider implements GFacProvider {
     }
 
     public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
-        final String command2 = "sh run.sh SRR042383.21414#CTGGCACGGAGTTAGCCGATCCTTATTCATAAAGTACATGCAAACGGGTATCCATACTCGACTTTATTCCTTTATAAAAGAAGTTTACAACCCATAGGGCAGTCATCCTTCACGCTACTTGGCTGGTTCAGGCCTGCGCCCATTGACCAATATTCCTCACTGCTGCCTCCCGTAGGAGTTTGGACCGTGTCTCAGTTCCAATGTGGGGGACCTTCCTCTCAGAACCCCTATCCATCGAAGACTAGGTGGGCCGTTACCCCGCCTACTATCTAATGGAACGCATCCCCATCGTCTACCGGAATACCTTTAATCATGTGAACATGCGGACTCATGATGCCATCTTGTATTAATCTTCCTTTCAGAAGGCTGTCCAAGAGTAGACGGCAGGTTGGATACGTGTTACTCACCGTGCCGCCGGTCGCCATCAGTCTTAGCAAGCTAAGACCATGCTGCCCCTGACTTGCATGTGTTAAGCCTGTAGCTTAGCGTTC SRR042383.31933#CTGGCACGGAGTTAGCCGATCCTTATTCATAAAGTACATGCAAACGGGTATCCATACCCGACTTTATTCCTTTATAAAAGAAGTTTACAACCCATAGGGCAGTCATCCTTCACGCTACTTGGCTGGTTCAGGCTCTCGCCCATTGACCAATATTCCTCACTGCTGCCTCCCGTAGGAGTTTGGACCGTGTCTCAGTTCCAATGTGGGGGACCTTCCTCTCAGAACCCCTATCCATCGAAGACTAGGTGGGCCGTTACCCCGCCTACTATCTAATGGAACGCATCCCCATCGTCTACCGGAATACCTTTAATCATGTGAACATGCGGACTCATGATGCCATCTTGTATTAAATCTTCCTTTCAGAAGGCTATCCAAGAGTAGACGGCAGGTTGGATACGTGTTACTCACCGTGCG" + '\n';
+//        final String command2 = "sh run.sh SRR042383.21414#CTGGCACGGAGTTAGCCGATCCTTATTCATAAAGTACATGCAAACGGGTATCCATACTCGACTTTATTCCTTTATAAAAGAAGTTTACAACCCATAGGGCAGTCATCCTTCACGCTACTTGGCTGGTTCAGGCCTGCGCCCATTGACCAATATTCCTCACTGCTGCCTCCCGTAGGAGTTTGGACCGTGTCTCAGTTCCAATGTGGGGGACCTTCCTCTCAGAACCCCTATCCATCGAAGACTAGGTGGGCCGTTACCCCGCCTACTATCTAATGGAACGCATCCCCATCGTCTACCGGAATACCTTTAATCATGTGAACATGCGGACTCATGATGCCATCTTGTATTAATCTTCCTTTCAGAAGGCTGTCCAAGAGTAGACGGCAGGTTGGATACGTGTTACTCACCGTGCCGCCGGTCGCCATCAGTCTTAGCAAGCTAAGACCATGCTGCCCCTGACTTGCATGTGTTAAGCCTGTAGCTTAGCGTTC SRR042383.31933#CTGGCACGGAGTTAGCCGATCCTTATTCATAAAGTACATGCAAACGGGTATCCATACCCGACTTTATTCCTTTATAAAAGAAGTTTACAACCCATAGGGCAGTCATCCTTCACGCTACTTGGCTGGTTCAGGCTCTCGCCCATTGACCAATATTCCTCACTGCTGCCTCCCGTAGGAGTTTGGACCGTGTCTCAGTTCCAATGTGGGGGACCTTCCTCTCAGAACCCCTATCCATCGAAGACTAGGTGGGCCGTTACCCCGCCTACTATCTAATGGAACGCATCCCCATCGTCTACCGGAATACCTTTAATCATGTGAACATGCGGACTCATGATGCCATCTTGTATTAAATCTTCCTTTCAGAAGGCTATCCAAGAGTAGACGGCAGGTTGGATACGTGTTACTCACCGTGCG" + '\n';
 
         String shellCmd = createShellCmd(jobExecutionContext);
 
@@ -176,7 +176,7 @@ public class EC2Provider implements GFacProvider {
             log.info("ssh session is open successfully...");
             session.requestPseudoTerminal("vt100", 80, 25, 0, 0, "");
             session.startShell();
-            session.getOutputStream().write(command2.getBytes());
+            session.getOutputStream().write(shellCmd.getBytes());
 
             InputStream in = session.getInputStream();
             byte buffer[] = new byte[255];
@@ -215,25 +215,31 @@ public class EC2Provider implements GFacProvider {
 
     }
 
-    private String createShellCmd(JobExecutionContext jobExecutionContext) {
+    private String createShellCmd(JobExecutionContext jobExecutionContext) throws GFacProviderException {
         String command = "";
         ApplicationDescription appDesc = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
 
         if(appDesc.getType() instanceof Ec2ApplicationDeploymentType) {
             Ec2ApplicationDeploymentType type = (Ec2ApplicationDeploymentType) appDesc.getType();
-            command = type.getExecutableType() + " " + type.getExecutable() + " ";
 
-            InputParameterType[] inputParams = jobExecutionContext.getApplicationContext().
-                    getServiceDescription().getType().getInputParametersArray();
-
-            for(InputParameterType inparamType : inputParams){
-                String paramName = inparamType.getParameterName();
-                Object parameter = jobExecutionContext.getInMessageContext().getParameter(paramName);
-                //TODO : check
-//                command = command + ((StringParameterType)parameter).getValue() + " ";
+            if(type.getExecutable() !=null) {
+                command = type.getExecutableType() + " " + type.getExecutable();
+            } else {
+                command = "sh" + " " + type.getExecutable();
             }
 
-            System.out.println("Command to be executed on EC2 : " + command);
+            List<String> inputParams = null;
+            try {
+                inputParams = ProviderUtils.getInputParameters(jobExecutionContext);
+            } catch (GFacProviderException e) {
+                throw new GFacProviderException("Error in extracting input values from JobExecutionContext");
+            }
+
+            for(String param : inputParams){
+                command = " " + command + " " + param;
+            }
+
+            log.info("Command to be executed on EC2 : " + command);
         }
 
         return command;
