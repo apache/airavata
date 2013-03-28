@@ -26,6 +26,10 @@ import org.apache.airavata.client.api.AmazonWebServicesSettings;
 public class AmazonWebServicesSettingsImpl implements AmazonWebServicesSettings {
     private String awsAccessKey;
     private String awsSecretKey;
+    private String amiId;
+    private String instanceId;
+    private String instanceType;
+    private String username;
 
     @Override
     public String getAccessKeyId() {
@@ -34,17 +38,17 @@ public class AmazonWebServicesSettingsImpl implements AmazonWebServicesSettings 
 
     @Override
     public String getAMIId() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return amiId;
     }
 
     @Override
     public String getInstanceId() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return instanceId;
     }
 
     @Override
     public String getInstanceType() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return instanceType;
     }
 
     @Override
@@ -54,7 +58,7 @@ public class AmazonWebServicesSettingsImpl implements AmazonWebServicesSettings 
 
     @Override
     public String getUsername() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return username;
     }
 
     @Override
@@ -64,17 +68,17 @@ public class AmazonWebServicesSettingsImpl implements AmazonWebServicesSettings 
 
     @Override
     public void setAMIId(String amiId) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        this.amiId = amiId;
     }
 
     @Override
     public void setInstanceId(String instanceId) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        this.instanceId = instanceId;
     }
 
     @Override
     public void setInstanceType(String instanceType) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        this.instanceType = instanceType;
     }
 
     @Override
@@ -84,6 +88,6 @@ public class AmazonWebServicesSettingsImpl implements AmazonWebServicesSettings 
 
     @Override
     public void setUsername(String username) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        this.username = username;
     }
 }
