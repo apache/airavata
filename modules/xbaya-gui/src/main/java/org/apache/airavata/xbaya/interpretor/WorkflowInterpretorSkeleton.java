@@ -337,7 +337,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         workflowInterpreterConfiguration.setGfacEmbeddedMode(gfacEmbeddedMode);
         workflowInterpreterConfiguration.setActOnProvenance(provenance);
 
-        if (builder.getSecurityContext().getAmazonWebservices().getSecretAccessKey() != null) {
+        if (builder.getSecurityContext().getAmazonWebservices() != null) {
             workflowInterpreterConfiguration.setAwsSecretKey(builder.getSecurityContext().getAmazonWebservices().getSecretAccessKey());
             workflowInterpreterConfiguration.setAwsAccessKey(builder.getSecurityContext().getAmazonWebservices().getAccessKeyId());
         }
