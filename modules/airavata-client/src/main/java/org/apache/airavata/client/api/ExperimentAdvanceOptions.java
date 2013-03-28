@@ -21,10 +21,11 @@
 
 package org.apache.airavata.client.api;
 
-import java.util.UUID;
-
+import org.apache.airavata.client.impl.SecuritySettingsImpl;
 import org.apache.airavata.client.impl.WorkflowOutputDataSettingsImpl;
 import org.apache.airavata.client.impl.WorkflowSchedulingSettingsImpl;
+
+import java.util.UUID;
 
 public class ExperimentAdvanceOptions {
 	private String executionUser;
@@ -33,6 +34,7 @@ public class ExperimentAdvanceOptions {
 	private String customExperimentId;
 	private WorkflowSchedulingSettings schedulingSettings;
 	private WorkflowOutputDataSettings outputDataSettings;
+    private SecuritySettings securitySettings;
 //	private AiravataAPI api;
 //
 //	public ExperimentAdvanceOptions(AiravataAPI api) {
@@ -149,6 +151,9 @@ public class ExperimentAdvanceOptions {
 	 * @throws AiravataAPIInvocationException
 	 */
 	public SecuritySettings getCustomSecuritySettings() throws AiravataAPIInvocationException{
-		throw new AiravataAPIUnimplementedException("Customizing security is not supported by the client in this binary!!!");
+        if (securitySettings==null){
+            securitySettings= new SecuritySettingsImpl();
+        }
+        return securitySettings;
 	}
 }

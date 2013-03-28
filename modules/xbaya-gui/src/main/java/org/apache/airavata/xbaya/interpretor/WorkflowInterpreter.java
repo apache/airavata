@@ -21,51 +21,20 @@
 
 package org.apache.airavata.xbaya.interpretor;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.xml.namespace.QName;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.gfac.context.security.AmazonSecurityContext;
-import org.apache.airavata.registry.api.workflow.*;
+import org.apache.airavata.registry.api.workflow.WorkflowExecution;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeType;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.amazon.InstanceComponent;
 import org.apache.airavata.workflow.model.component.amazon.TerminateInstanceComponent;
 import org.apache.airavata.workflow.model.component.dynamic.DynamicComponent;
-import org.apache.airavata.workflow.model.component.system.ConstantComponent;
-import org.apache.airavata.workflow.model.component.system.DifferedInputComponent;
-import org.apache.airavata.workflow.model.component.system.DoWhileComponent;
-import org.apache.airavata.workflow.model.component.system.EndDoWhileComponent;
-import org.apache.airavata.workflow.model.component.system.EndForEachComponent;
-import org.apache.airavata.workflow.model.component.system.EndifComponent;
-import org.apache.airavata.workflow.model.component.system.ForEachComponent;
-import org.apache.airavata.workflow.model.component.system.IfComponent;
-import org.apache.airavata.workflow.model.component.system.InputComponent;
-import org.apache.airavata.workflow.model.component.system.MemoComponent;
-import org.apache.airavata.workflow.model.component.system.OutputComponent;
-import org.apache.airavata.workflow.model.component.system.S3InputComponent;
-import org.apache.airavata.workflow.model.component.system.SubWorkflowComponent;
+import org.apache.airavata.workflow.model.component.system.*;
 import org.apache.airavata.workflow.model.component.ws.WSComponent;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
@@ -80,14 +49,7 @@ import org.apache.airavata.workflow.model.graph.dynamic.DynamicNode;
 import org.apache.airavata.workflow.model.graph.impl.EdgeImpl;
 import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
 import org.apache.airavata.workflow.model.graph.subworkflow.SubWorkflowNode;
-import org.apache.airavata.workflow.model.graph.system.ConstantNode;
-import org.apache.airavata.workflow.model.graph.system.DoWhileNode;
-import org.apache.airavata.workflow.model.graph.system.EndForEachNode;
-import org.apache.airavata.workflow.model.graph.system.EndifNode;
-import org.apache.airavata.workflow.model.graph.system.ForEachNode;
-import org.apache.airavata.workflow.model.graph.system.IfNode;
-import org.apache.airavata.workflow.model.graph.system.InputNode;
-import org.apache.airavata.workflow.model.graph.system.OutputNode;
+import org.apache.airavata.workflow.model.graph.system.*;
 import org.apache.airavata.workflow.model.graph.ws.WSGraph;
 import org.apache.airavata.workflow.model.graph.ws.WSNode;
 import org.apache.airavata.workflow.model.graph.ws.WSPort;
@@ -97,13 +59,7 @@ import org.apache.airavata.workflow.model.wf.WorkflowExecutionState;
 import org.apache.airavata.ws.monitor.MonitorConfiguration;
 import org.apache.airavata.ws.monitor.MonitorException;
 import org.apache.airavata.xbaya.concurrent.PredicatedTaskRunner;
-import org.apache.airavata.xbaya.core.amazon.AmazonCredential;
-import org.apache.airavata.xbaya.invoker.DynamicInvoker;
-import org.apache.airavata.xbaya.invoker.EmbeddedGFacInvoker;
-import org.apache.airavata.xbaya.invoker.GenericInvoker;
-import org.apache.airavata.xbaya.invoker.Invoker;
-import org.apache.airavata.xbaya.invoker.WorkflowInputUtil;
-import org.apache.airavata.xbaya.invoker.WorkflowInvokerWrapperForGFacInvoker;
+import org.apache.airavata.xbaya.invoker.*;
 import org.apache.airavata.xbaya.provenance.ProvenanceReader;
 import org.apache.airavata.xbaya.provenance.ProvenanceWrite;
 import org.apache.airavata.xbaya.util.AmazonUtil;
@@ -112,10 +68,22 @@ import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
-
 import xsul.lead.LeadContextHeader;
 import xsul.lead.LeadResourceMapping;
 import xsul5.XmlConstants;
+
+import javax.xml.namespace.QName;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class WorkflowInterpreter {
     private static final Logger log = LoggerFactory.getLogger(WorkflowInterpreter.class);
@@ -569,7 +537,7 @@ public class WorkflowInterpreter {
 	}
 
 	private void handleAmazonInstance(final Node node) {
-		if (AmazonCredential.getInstance().getAwsAccessKeyId().isEmpty() || AmazonCredential.getInstance().getAwsSecretAccessKey().isEmpty()) {
+		if (config.getAwsAccessKey().isEmpty() || config.getAwsSecretKey().isEmpty()) {
 			throw new WorkFlowInterpreterException("Please set Amazon Credential before using EC2 Instance Component");
 		}
 		for (ControlPort ports : node.getControlOutPorts()) {
@@ -673,8 +641,8 @@ public class WorkflowInterpreter {
 				for (Node n : wsNode.getControlInPort().getFromNodes()) {
 					if (n instanceof InstanceNode) {
                         AmazonSecurityContext amazonSecurityContext;
-                        final String awsAccessKeyId = AmazonCredential.getInstance().getAwsAccessKeyId();
-                        final String awsSecretKey = AmazonCredential.getInstance().getAwsSecretAccessKey();
+                        final String awsAccessKeyId = config.getAwsAccessKey();
+                        final String awsSecretKey = config.getAwsSecretKey();
                         final String username = ((InstanceNode) n).getUsername();
 
                         if (((InstanceNode) n).isStartNewInstance()) {

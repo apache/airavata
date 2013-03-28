@@ -21,21 +21,8 @@
 
 package org.apache.airavata.client.impl;
 
-import java.net.URISyntaxException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.UUID;
-
-import javax.xml.stream.XMLStreamException;
-
 import org.apache.airavata.client.AiravataClient;
-import org.apache.airavata.client.api.AiravataAPIInvocationException;
-import org.apache.airavata.client.api.ExecutionManager;
-import org.apache.airavata.client.api.ExperimentAdvanceOptions;
-import org.apache.airavata.client.api.NodeSettings;
-import org.apache.airavata.client.api.OutputDataSettings;
+import org.apache.airavata.client.api.*;
 import org.apache.airavata.client.stub.interpretor.NameValue;
 import org.apache.airavata.client.stub.interpretor.WorkflowInterpretorStub;
 import org.apache.airavata.common.utils.XMLUtil;
@@ -49,15 +36,18 @@ import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
-import org.apache.airavata.ws.monitor.EventData;
-import org.apache.airavata.ws.monitor.EventDataRepository;
-import org.apache.airavata.ws.monitor.Monitor;
-import org.apache.airavata.ws.monitor.MonitorConfiguration;
-import org.apache.airavata.ws.monitor.EventDataListener;
-import org.apache.airavata.ws.monitor.EventDataListenerAdapter;
+import org.apache.airavata.ws.monitor.*;
 import org.apache.airavata.ws.monitor.MonitorUtil.EventType;
 import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
 import org.apache.axis2.AxisFault;
+
+import javax.xml.stream.XMLStreamException;
+import java.net.URISyntaxException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.UUID;
 
 public class ExecutionManagerImpl implements ExecutionManager {
 	private AiravataClient client;
@@ -244,6 +234,11 @@ public class ExecutionManagerImpl implements ExecutionManager {
 		for (OutputDataSettings outputDataSettings : outputDataSettingsList) {
 			builder.addApplicationOutputDataHandling(outputDataSettings.getNodeId(),outputDataSettings.getOutputDataDirectory(), outputDataSettings.getDataRegistryUrl(), outputDataSettings.isDataPersistent());
 		}
+
+        if (options.getCustomSecuritySettings().getAmazonWSSettings().getAccessKeyId() != null) {
+            builder.setAmazonWebServices(options.getCustomSecuritySettings().getAmazonWSSettings().getAccessKeyId(),
+                    options.getCustomSecuritySettings().getAmazonWSSettings().getSecretAccessKey());
+        }
 		return builder;
 	}
 
