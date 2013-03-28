@@ -50,8 +50,11 @@ public class WorkflowContextHeaderBuilder {
 
     public WorkflowContextHeaderBuilder(ContextHeaderDocument.ContextHeader document){
         this.contextHeader = document;
-        this.securityContext=contextHeader.getSecurityContext();
+        if (contextHeader!=null) {
+			this.securityContext = contextHeader.getSecurityContext();
+		}
     }
+    
     public WorkflowContextHeaderBuilder(String brokerUrl, String gfacUrl, String registryUrl, String experimentId,
                                         String workflowId, String msgBoxUrl) {
         this.contextHeader = ContextHeaderDocument.ContextHeader.Factory.newInstance();
