@@ -21,16 +21,17 @@
 
 package org.apache.airavata.xbaya.interpretor;
 
-import java.net.URI;
-
 import org.apache.airavata.client.api.AiravataAPI;
-//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.ws.monitor.Monitor;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.jython.lib.NotificationSender;
 import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
+
+import java.net.URI;
+
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class WorkflowInterpreterConfiguration {
 //	public static final int GUI_MODE = 1;
@@ -52,7 +53,9 @@ public class WorkflowInterpreterConfiguration {
 	private boolean subWorkflow;
 	private boolean testMode=false;
     private AiravataAPI airavataAPI;
-	
+    private String awsAccessKey;
+    private String awsSecretKey;
+
 	public WorkflowInterpreterConfiguration(Workflow workflow,
                                             String topic,
                                             URI messageBoxURL,
@@ -210,5 +213,21 @@ public class WorkflowInterpreterConfiguration {
 
     public void setAiravataAPI(AiravataAPI airavataAPI) {
         this.airavataAPI = airavataAPI;
+    }
+
+    public String getAwsAccessKey() {
+        return awsAccessKey;
+    }
+
+    public void setAwsAccessKey(String awsAccessKey) {
+        this.awsAccessKey = awsAccessKey;
+    }
+
+    public String getAwsSecretKey() {
+        return awsSecretKey;
+    }
+
+    public void setAwsSecretKey(String awsSecretKey) {
+        this.awsSecretKey = awsSecretKey;
     }
 }

@@ -21,21 +21,6 @@
 
 package org.apache.airavata.xbaya.ui.experiment;
 
-import java.awt.event.ActionEvent;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
-
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.xml.namespace.QName;
-
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.ExperimentAdvanceOptions;
 import org.apache.airavata.common.utils.StringUtil;
@@ -51,6 +36,7 @@ import org.apache.airavata.ws.monitor.MonitorException;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.core.amazon.AmazonCredential;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
@@ -64,8 +50,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.v1.builder.XmlInfosetBuilder;
-
 import xsul.XmlConstants;
+
+import javax.swing.*;
+import javax.xml.namespace.QName;
+import java.awt.event.ActionEvent;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class WorkflowInterpreterLaunchWindow {
@@ -319,6 +314,11 @@ public class WorkflowInterpreterLaunchWindow {
                     AiravataAPI api = engine.getConfiguration().getAiravataAPI();
                     
                     ExperimentAdvanceOptions options = api.getExecutionManager().createExperimentAdvanceOptions(instanceNameFinal, api.getCurrentUser(), null);
+                    if (AmazonCredential.getInstance().getAwsAccessKeyId() != null) {
+                        options.getCustomSecuritySettings().getAmazonWSSettings().setAccessKeyId(AmazonCredential.getInstance().getAwsAccessKeyId());
+                        options.getCustomSecuritySettings().getAmazonWSSettings().setSecretAccessKey(AmazonCredential.getInstance().getAwsSecretAccessKey());
+                    }
+
                     String experimentId = api.getExecutionManager().runExperiment(api.getWorkflowManager().getWorkflowAsString(workflow), workflowInputs,options);
                     try {
                         WorkflowInterpreterLaunchWindow.this.engine.getMonitor().getConfiguration().setTopic(experimentId);

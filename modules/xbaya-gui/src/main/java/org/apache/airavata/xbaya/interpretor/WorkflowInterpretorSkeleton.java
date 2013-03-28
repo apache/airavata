@@ -21,26 +21,6 @@
 
 package org.apache.airavata.xbaya.interpretor;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.jcr.RepositoryException;
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
@@ -58,7 +38,6 @@ import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.workflow.model.component.ComponentException;
-import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
@@ -79,6 +58,18 @@ import org.apache.axis2.engine.ServiceLifeCycle;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jcr.RepositoryException;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.*;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
 
 /**
@@ -345,6 +336,11 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 		WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow,topic,conf.getMessageBoxURL(), conf.getBrokerURL(), airavataAPI, conf, null, null);
         workflowInterpreterConfiguration.setGfacEmbeddedMode(gfacEmbeddedMode);
         workflowInterpreterConfiguration.setActOnProvenance(provenance);
+
+        if (builder.getSecurityContext().getAmazonWebservices().getSecretAccessKey() != null) {
+            workflowInterpreterConfiguration.setAwsSecretKey(builder.getSecurityContext().getAmazonWebservices().getSecretAccessKey());
+            workflowInterpreterConfiguration.setAwsAccessKey(builder.getSecurityContext().getAmazonWebservices().getAccessKeyId());
+        }
         // WorkflowInterpreter object should create prior creation of Listener, because listener needs the threadlocal variable
         interpreter = new WorkflowInterpreter(workflowInterpreterConfiguration, new SSWorkflowInterpreterInteractorImpl());
         listener = new WorkflowInterpretorEventListener(workflow, conf);

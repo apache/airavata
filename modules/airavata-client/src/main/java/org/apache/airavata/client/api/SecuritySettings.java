@@ -22,8 +22,8 @@
 package org.apache.airavata.client.api;
 
 public interface SecuritySettings {
-	public AmazonWebServicesSettings getAmazonWSSettings();
-	public CredentialManagementServiceSettings getCMServiceSettings();
-	public GridMyProxyRepositorySettings getGridMyProxyRepositorySettings();
-	public SSHAuthenticationSettings getSSHAuthenticationSettings();
+	public AmazonWebServicesSettings getAmazonWSSettings() throws AiravataAPIInvocationException;
+	public CredentialManagementServiceSettings getCMServiceSettings() throws AiravataAPIInvocationException;
+	public GridMyProxyRepositorySettings getGridMyProxyRepositorySettings() throws AiravataAPIInvocationException;
+	public SSHAuthenticationSettings getSSHAuthenticationSettings() throws AiravataAPIInvocationException;
 }
