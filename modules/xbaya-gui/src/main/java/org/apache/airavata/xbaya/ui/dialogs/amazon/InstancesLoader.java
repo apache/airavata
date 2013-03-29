@@ -21,11 +21,9 @@
 
 package org.apache.airavata.xbaya.ui.dialogs.amazon;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JDialog;
-
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.services.ec2.model.Instance;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.core.amazon.EC2InstanceResult;
 import org.apache.airavata.xbaya.ui.dialogs.WaitDialog;
@@ -33,12 +31,11 @@ import org.apache.airavata.xbaya.ui.utils.Cancelable;
 import org.apache.airavata.xbaya.ui.widgets.XbayaEnhancedList;
 import org.apache.airavata.xbaya.util.AmazonUtil;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.services.ec2.model.Instance;
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class InstancesLoader implements Cancelable {
-
     private XBayaEngine engine;
     private JDialog parent;
 
@@ -47,11 +44,10 @@ public class InstancesLoader implements Cancelable {
     private WaitDialog loadingDialog;
 
     /**
-     * 
      * Constructs a InstancesLoader.
      * 
-     * @param engine
-     * @param parent
+     * @param engine XBayaEngine
+     * @param parent JDialog
      */
     public InstancesLoader(XBayaEngine engine, JDialog parent) {
         this.engine = engine;
@@ -69,8 +65,9 @@ public class InstancesLoader implements Cancelable {
     }
 
     /**
-     * 
-     * @param list
+     * Load instance list.
+     *
+     * @param list instance list
      */
     public void load(final XbayaEnhancedList<EC2InstanceResult> list) {
 

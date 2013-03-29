@@ -21,19 +21,6 @@
 
 package org.apache.airavata.xbaya.ui.dialogs.amazon;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.AbstractAction;
-import javax.swing.ButtonGroup;
-import javax.swing.ComboBoxModel;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
-
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
@@ -42,26 +29,24 @@ import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
 import org.apache.airavata.xbaya.util.AmazonUtil;
 
-public class EC2LaunchWindow {
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+public class EC2LaunchWindow {
     private XBayaEngine engine;
     private XBayaDialog dialog;
-
     private XBayaTextField amiTextField;
     private JSpinner numberOfInstanceSpinner;
     private XBayaComboBox instanceTypeComboBox;
     private XBayaComboBox keyComboBox;
     private JRadioButton existKeyButton;
-    private JRadioButton noKeyButton;
-
     private ComboBoxModel keyComboBoxModel;
 
     /**
-     * 
      * Constructs a EC2LaunchWindow.
      * 
-     * @param engine
-     * @param ec2
+     * @param engine XBayaEngine
      */
     public EC2LaunchWindow(XBayaEngine engine) {
         this.engine = engine;
@@ -69,9 +54,7 @@ public class EC2LaunchWindow {
     }
 
     private void initGUI() {
-        /*
-         * Main Panel
-         */
+        /* Main Panel */
         this.amiTextField = new XBayaTextField();
         XBayaLabel amiLabel = new XBayaLabel("AMI ID", this.amiTextField);
 
@@ -82,9 +65,9 @@ public class EC2LaunchWindow {
         this.instanceTypeComboBox.setSelectedItem(AmazonUtil.INSTANCE_TYPE[1]);
         XBayaLabel instanceTypeLabel = new XBayaLabel("Instance Type", this.instanceTypeComboBox);
 
-        this.noKeyButton = new JRadioButton("No Key Pair");
-        this.noKeyButton.setSelected(true);
-        this.noKeyButton.addActionListener(new ActionListener() {
+        JRadioButton noKeyButton = new JRadioButton("No Key Pair");
+        noKeyButton.setSelected(true);
+        noKeyButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent paramActionEvent) {
                 EC2LaunchWindow.this.keyComboBox.getJComboBox().setEnabled(false);
@@ -106,14 +89,14 @@ public class EC2LaunchWindow {
         });
 
         ButtonGroup serviceTypeButtonGroup = new ButtonGroup();
-        serviceTypeButtonGroup.add(this.noKeyButton);
+        serviceTypeButtonGroup.add(noKeyButton);
         serviceTypeButtonGroup.add(this.existKeyButton);
 
         this.keyComboBox = new XBayaComboBox(new DefaultComboBoxModel());
         this.keyComboBox.getJComboBox().setEnabled(false);
 
         GridPanel radioPanel = new GridPanel();
-        radioPanel.add(this.noKeyButton);
+        radioPanel.add(noKeyButton);
         radioPanel.add(new JPanel());
         radioPanel.add(this.existKeyButton);
         radioPanel.add(this.keyComboBox);
@@ -132,19 +115,16 @@ public class EC2LaunchWindow {
         mainPanel.add(radioPanel);
         mainPanel.layout(4, 2, 0, GridPanel.WEIGHT_EQUALLY);
 
-        /*
-         * Button Panel
-         */
+        /* Button Panel */
         JButton lunchButton = new JButton("Launch");
         lunchButton.addActionListener(new AbstractAction() {
-            private Object numberOfInstanceSpinner;
 
             @Override
             public void actionPerformed(ActionEvent e) {
                 // validation
                 if (EC2LaunchWindow.this.amiTextField.getText() == null
                         || EC2LaunchWindow.this.amiTextField.getText().isEmpty()
-                        || ((Integer) EC2LaunchWindow.this.numberOfInstanceSpinner.getValue()).intValue() <= 0) {
+                        || (Integer) EC2LaunchWindow.this.numberOfInstanceSpinner.getValue() <= 0) {
                     EC2LaunchWindow.this.engine.getGUI().getErrorWindow().info(EC2LaunchWindow.this.dialog.getDialog(),
                             "Warning", "Please input all fields");
                     return;
@@ -191,16 +171,10 @@ public class EC2LaunchWindow {
         this.dialog = new XBayaDialog(this.engine.getGUI(), "Amazon EC2 Launcher", mainPanel, buttonPanel);
     }
 
-    /**
-	 * 
-	 */
     public void hide() {
         this.dialog.hide();
     }
 
-    /**
-	 * 
-	 */
     public void show() {
         this.dialog.show();
     }

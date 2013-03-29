@@ -21,18 +21,6 @@
 
 package org.apache.airavata.xbaya.ui.dialogs.amazon;
 
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.TitledBorder;
-
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.core.amazon.AmazonCredential;
 import org.apache.airavata.xbaya.core.amazon.EC2InstanceResult;
@@ -41,39 +29,34 @@ import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XbayaEnhancedList;
 import org.apache.airavata.xbaya.util.AmazonUtil;
 
+import javax.swing.*;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.List;
+
 public class EC2InstancesManagementWindow {
-
-    private static int WIDTH = 800;
-    private static int HEIGHT = 500;
-
     private XBayaEngine engine;
     private XBayaDialog dialog;
-
     private XbayaEnhancedList<EC2InstanceResult> list;
-
     private ChangeCredentialWindow credentialWindow;
 
     /**
-     * 
      * Constructs a EC2InstancesManagementWindow.
      * 
-     * @param engine
+     * @param engine XBayaEngine
      */
     public EC2InstancesManagementWindow(XBayaEngine engine) {
         this.engine = engine;
         initGUI();
     }
 
-    /**
-	 * 
-	 */
     public void show() {
         this.dialog.show();
     }
 
-    /**
-	 * 
-	 */
     public void hide() {
         this.dialog.hide();
     }
@@ -87,18 +70,14 @@ public class EC2InstancesManagementWindow {
         mainPanel.add(this.list);
         mainPanel.layout(1, 1, 0, 0);
 
-        /*
-         * Connect/Refresh Button
-         */
+        /* Connect/Refresh Button */
         JButton refreshButton = new JButton("Refresh");
         refreshButton.addActionListener(new AbstractAction() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                /*
-                 * Check if Credential is already set or not
-                 */
+                /* Check if Credential is already set or not */
                 if (credentialSet()) {
                     InstancesLoader instancesLoader = new InstancesLoader(EC2InstancesManagementWindow.this.engine,
                             EC2InstancesManagementWindow.this.dialog.getDialog());
@@ -107,9 +86,7 @@ public class EC2InstancesManagementWindow {
             }
         });
 
-        /*
-         * Launch Instance Button
-         */
+        /* Launch Instance Button */
         JButton launchButton = new JButton("Launch");
         launchButton.addActionListener(new AbstractAction() {
 
@@ -122,9 +99,7 @@ public class EC2InstancesManagementWindow {
             }
         });
 
-        /*
-         * Terminate Instance
-         */
+        /* Terminate Instance */
         JButton terminateButton = new JButton("Terminate");
         terminateButton.addActionListener(new AbstractAction() {
 
@@ -163,9 +138,7 @@ public class EC2InstancesManagementWindow {
             }
         });
 
-        /*
-         * Close Button
-         */
+        /* Close Button */
         JButton closeButton = new JButton("Close");
         closeButton.addActionListener(new AbstractAction() {
 
@@ -181,8 +154,10 @@ public class EC2InstancesManagementWindow {
         buttonPanel.add(terminateButton);
         buttonPanel.add(closeButton);
 
-        this.dialog = new XBayaDialog(this.engine.getGUI(), "Amazon EC2 Managment Console", mainPanel, buttonPanel);
-        this.dialog.getDialog().setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Amazon EC2 Management Console", mainPanel, buttonPanel);
+        int width = 800;
+        int height = 500;
+        this.dialog.getDialog().setPreferredSize(new Dimension(width, height));
         this.dialog.setDefaultButton(closeButton);
 
     }

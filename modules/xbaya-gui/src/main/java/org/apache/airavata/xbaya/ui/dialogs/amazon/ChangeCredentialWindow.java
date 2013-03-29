@@ -41,22 +41,16 @@ public class ChangeCredentialWindow {
 
     /**
      * Constructs a ChangeCredentialWindow.
-     * 
-     * @param owner
-     */
-    public ChangeCredentialWindow(JDialog owner) {
-        this.owner = owner;
-        initGUI();
-    }
-
-    /**
-     * 
-     * Constructs a ChangeCredentialWindow.
-     * 
-     * @param engine
+     *
+     * @param engine XBayaEngine
      */
     public ChangeCredentialWindow(XBayaEngine engine) {
         this.engine = engine;
+        initGUI();
+    }
+
+    public ChangeCredentialWindow(JDialog owner) {
+        this.owner = owner;
         initGUI();
     }
 
@@ -115,9 +109,9 @@ public class ChangeCredentialWindow {
         buttonPanel.add(cancelButton);
 
         if (this.owner == null) {
-            this.dialog = new XBayaDialog(this.engine.getGUI(), "S3 Toolkits", mainPanel, buttonPanel);
+            this.dialog = new XBayaDialog(this.engine.getGUI(), "S3 Tool-kits", mainPanel, buttonPanel);
         } else {
-            this.dialog = new XBayaDialog(this.owner, "S3 Toolkits", mainPanel, buttonPanel);
+            this.dialog = new XBayaDialog(this.owner, "S3 Tool-kits", mainPanel, buttonPanel);
         }
     }
 

@@ -21,20 +21,6 @@
 
 package org.apache.airavata.xbaya.ui.dialogs.amazon;
 
-import java.awt.event.ActionEvent;
-import java.io.File;
-
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.core.amazon.AmazonCredential;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
@@ -47,8 +33,14 @@ import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.security.AWSCredentials;
 
-public class AmazonS3UtilsWindow {
+import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import java.awt.event.ActionEvent;
+import java.io.File;
 
+public class AmazonS3UtilsWindow {
     private XBayaDialog dialog;
 
     private static XBayaEngine xBayaEngine;
@@ -65,8 +57,8 @@ public class AmazonS3UtilsWindow {
 
     /**
      * Constructs a AmazonS3UtilsWindow.
-     * 
-     * @param engine
+     *
+     * @param engine XBayaEngine
      */
     private AmazonS3UtilsWindow(XBayaEngine engine) {
         xBayaEngine = engine;
@@ -75,9 +67,8 @@ public class AmazonS3UtilsWindow {
 
     /**
      * getErrorWindow
-     * 
-     * @param engine
-     * @return AmazonS3UtilsWindow
+     *
+     * @param engine XBayaEngine
      */
     public static AmazonS3UtilsWindow getInstance(XBayaEngine engine) {
         if (window == null) {
@@ -90,7 +81,7 @@ public class AmazonS3UtilsWindow {
 
     /**
      * Get S3 Service
-     * 
+     *
      * @return S3Service
      */
     private S3Service getS3Service() {
@@ -105,11 +96,9 @@ public class AmazonS3UtilsWindow {
     }
 
     @SuppressWarnings("serial")
-	protected void initGUI() {
+    protected void initGUI() {
 
-        /*
-         * Upload Panel
-         */
+        /* Upload Panel */
         this.fileTextField = new XBayaTextField();
         XBayaLabel fileLabel = new XBayaLabel("Upload File Path", this.fileTextField);
 
@@ -124,11 +113,9 @@ public class AmazonS3UtilsWindow {
         uploadPanel.add(this.uploadBucketTextField);
         uploadPanel.layout(2, 2, GridPanel.WEIGHT_NONE, 1);
 
-        /*
-         * Download Panel
-         */if (AmazonCredential.getInstance().getAwsAccessKeyId().equals("AKIAI3GNMQVYA5LSQNEQ")) { // Avoid to use
-                                                                                                    // default Aws
-                                                                                                    // Access Key
+        /* Download Panel */
+        if (AmazonCredential.getInstance().getAwsAccessKeyId().equals("AKIAI3GNMQVYA5LSQNEQ")) {
+            // Avoid to use default Aws Access Key
             JOptionPane.showMessageDialog(AmazonS3UtilsWindow.this.dialog.getDialog(), "Aws Access Key not set!",
                     "Error", JOptionPane.ERROR_MESSAGE);
             return;
@@ -152,9 +139,7 @@ public class AmazonS3UtilsWindow {
         downloadPanel.add(this.folderTextField);
         downloadPanel.layout(3, 2, GridPanel.WEIGHT_NONE, 1);
 
-        /*
-         * Button Panel
-         */
+        /* Button Panel */
         JButton refreshButton = new JButton("Connect/Refresh");
         refreshButton.addActionListener(new AbstractAction() {
 
@@ -266,9 +251,7 @@ public class AmazonS3UtilsWindow {
         buttonPanel.add(fileButton);
         buttonPanel.add(cancelButton);
 
-        /*
-         * Main Panel
-         */
+        /* Main Panel */
         GridPanel mainPanel = new GridPanel(true);
         this.s3Tree = new S3Tree();
         mainPanel.add(new JScrollPane(this.s3Tree));
@@ -285,7 +268,7 @@ public class AmazonS3UtilsWindow {
                     return;
 
                 Object nodeInfo = node.getUserObject();
-                String bucketName = "";
+                String bucketName;
                 String downloadPanelBucketName = "";
                 if (node.isLeaf() && node.getParent() != null) { // Node is probably a key
                     DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) node.getParent();
@@ -319,16 +302,10 @@ public class AmazonS3UtilsWindow {
 
     }
 
-    /**
-	 * 
-	 */
     public void hide() {
         this.dialog.hide();
     }
 
-    /**
-	 * 
-	 */
     public void show() {
         this.dialog.show();
     }
