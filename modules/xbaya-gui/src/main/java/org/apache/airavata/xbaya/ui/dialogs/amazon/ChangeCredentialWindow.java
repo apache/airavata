@@ -61,7 +61,6 @@ public class ChangeCredentialWindow {
     }
 
     protected void initGUI() {
-
         this.accessKeyIDTextField = new XBayaTextField();
         XBayaLabel accessKeyIDLabel = new XBayaLabel("Access Key", this.accessKeyIDTextField);
 
@@ -133,11 +132,11 @@ public class ChangeCredentialWindow {
      * show the dialog
      */
     public void show() {
-        if (AmazonCredential.getInstance().getAwsAccessKeyId() != "") {
+        if (!"".equals(AmazonCredential.getInstance().getAwsAccessKeyId())) {
             ChangeCredentialWindow.this.accessKeyIDTextField
                     .setText(AmazonCredential.getInstance().getAwsAccessKeyId());
         }
-        if (AmazonCredential.getInstance().getAwsSecretAccessKey() != "") {
+        if (!"".equals(AmazonCredential.getInstance().getAwsSecretAccessKey())) {
             ChangeCredentialWindow.this.secretAccessKeyTextField.setText(AmazonCredential.getInstance()
                     .getAwsSecretAccessKey());
         }
