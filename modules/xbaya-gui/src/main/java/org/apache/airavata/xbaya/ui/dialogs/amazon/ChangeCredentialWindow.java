@@ -21,19 +21,15 @@
 
 package org.apache.airavata.xbaya.ui.dialogs.amazon;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.core.amazon.AmazonCredential;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 public class ChangeCredentialWindow {
     private XBayaEngine engine;
@@ -90,14 +86,18 @@ public class ChangeCredentialWindow {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String accessID = ChangeCredentialWindow.this.accessKeyIDTextField.getText();
-                if (accessID != "") {
-                    AmazonCredential.getInstance().setAwsAccessKeyId(accessID);
+                if (!"".equals(accessID)) {
+                    String secretID = ChangeCredentialWindow.this.secretAccessKeyTextField.getText();
+
+                    if (!"".equals(secretID)) {
+                        AmazonCredential.getInstance().setAwsAccessKeyId(accessID);
+                        AmazonCredential.getInstance().setAwsSecretAccessKey(secretID);
+                        hide();
+                        return;
+                    }
                 }
-                String secretID = ChangeCredentialWindow.this.secretAccessKeyTextField.getText();
-                if (secretID != "") {
-                    AmazonCredential.getInstance().setAwsSecretAccessKey(secretID);
-                }
-                hide();
+
+                JOptionPane.showMessageDialog(dialog.getDialog(),"SecretKey and AccessKey can not be empty!");
             }
 
         });
