@@ -21,14 +21,11 @@
 
 package org.apache.airavata.xbaya.ui.dialogs.amazon;
 
-import java.awt.event.ActionEvent;
-import java.rmi.RemoteException;
-
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
+import edu.indiana.extreme.amazonec2webservice.AmazonEC2WebserviceCallbackHandler;
+import edu.indiana.extreme.amazonec2webservice.AmazonEC2WebserviceStub;
+import edu.indiana.extreme.amazonec2webservice.AmazonEC2WebserviceStub.JobStatusResponse;
+import edu.indiana.extreme.amazonec2webservice.AmazonEC2WebserviceStub.JobSubmissionReceipt;
+import edu.indiana.extreme.amazonec2webservice.AmazonEC2WebserviceStub.JobSubmitOperation;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
@@ -37,14 +34,11 @@ import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
 import org.apache.axis2.AxisFault;
 
-import edu.indiana.extreme.amazonec2webservice.AmazonEC2WebserviceCallbackHandler;
-import edu.indiana.extreme.amazonec2webservice.AmazonEC2WebserviceStub;
-import edu.indiana.extreme.amazonec2webservice.AmazonEC2WebserviceStub.JobStatusResponse;
-import edu.indiana.extreme.amazonec2webservice.AmazonEC2WebserviceStub.JobSubmissionReceipt;
-import edu.indiana.extreme.amazonec2webservice.AmazonEC2WebserviceStub.JobSubmitOperation;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.rmi.RemoteException;
 
 public class AmazonEC2InvokerWindow {
-
     private XBayaEngine engine;
 
     private XBayaTextField accessKeyIDTextField;
@@ -57,7 +51,6 @@ public class AmazonEC2InvokerWindow {
     private XBayaTextField outputLocationOnS3TextField;
     private XBayaTextField jarFilePathOnS3TextField;
     private XBayaTextField mainClassNameTextField;
-    private JButton invokeButton;
     private XBayaDialog dialog;
 
     /**
@@ -140,8 +133,8 @@ public class AmazonEC2InvokerWindow {
         mainPanel.add(infoPanel);
         mainPanel.layout(1, 1, 0, 0);
 
-        this.invokeButton = new JButton("Invoke");
-        this.invokeButton.addActionListener(new AbstractAction() {
+        JButton invokeButton = new JButton("Invoke");
+        invokeButton.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 execute();
             }
@@ -156,7 +149,7 @@ public class AmazonEC2InvokerWindow {
         });
 
         JPanel buttonPanel = new JPanel();
-        buttonPanel.add(this.invokeButton);
+        buttonPanel.add(invokeButton);
         buttonPanel.add(cancelButton);
 
         this.dialog = new XBayaDialog(this.engine.getGUI(), "Deploy Workflow", mainPanel, buttonPanel);
@@ -212,7 +205,7 @@ public class AmazonEC2InvokerWindow {
 
         @Override
         public void receiveErrorjobSubmitOperation(java.lang.Exception e) {
-            JOptionPane.showMessageDialog(null, "Job Sumit Failed!", "", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Job Submit Failed!", "", JOptionPane.ERROR_MESSAGE);
         }
 
         @Override

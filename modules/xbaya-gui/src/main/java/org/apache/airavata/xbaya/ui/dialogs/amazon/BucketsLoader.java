@@ -21,10 +21,6 @@
 
 package org.apache.airavata.xbaya.ui.dialogs.amazon;
 
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.tree.DefaultMutableTreeNode;
-
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.WaitDialog;
 import org.apache.airavata.xbaya.ui.utils.Cancelable;
@@ -35,8 +31,10 @@ import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.model.S3Bucket;
 import org.jets3t.service.model.S3Object;
 
-public class BucketsLoader implements Cancelable {
+import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 
+public class BucketsLoader implements Cancelable {
     private XBayaGUI xbayaGUI;
     private JDialog parent;
 
@@ -46,9 +44,9 @@ public class BucketsLoader implements Cancelable {
 
     /**
      * Constructs a BucketsLoader.
-     * 
-     * @param engine
-     * @param parent
+     *
+     * @param xbayaGUI XBayaGUI
+     * @param parent JDialog
      */
     public BucketsLoader(XBayaGUI xbayaGUI, JDialog parent) {
         this.xbayaGUI=xbayaGUI;
@@ -67,8 +65,8 @@ public class BucketsLoader implements Cancelable {
 
     /**
      * 
-     * @param s3
-     * @param s3Tree
+     * @param s3 S3Service
+     * @param s3Tree S3Tree
      */
     public void load(final S3Service s3, final S3Tree s3Tree) {
 
@@ -76,7 +74,7 @@ public class BucketsLoader implements Cancelable {
 
             @Override
             public void run() {
-                S3Bucket[] bucketArray = null;
+                S3Bucket[] bucketArray;
                 try {
                     bucketArray = s3.listAllBuckets();
                     for (S3Bucket s3Bucket : bucketArray) {
@@ -98,7 +96,7 @@ public class BucketsLoader implements Cancelable {
 
                     s3Tree.refresh();
 
-                    if (bucketArray == null || bucketArray.length == 0) {
+                    if (bucketArray.length == 0) {
                         JOptionPane.showMessageDialog(BucketsLoader.this.parent, "Connection Failed!", "Error",
                                 JOptionPane.ERROR_MESSAGE);
                         return;

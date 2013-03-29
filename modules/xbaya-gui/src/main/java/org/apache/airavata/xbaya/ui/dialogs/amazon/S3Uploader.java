@@ -21,16 +21,15 @@
 
 package org.apache.airavata.xbaya.ui.dialogs.amazon;
 
-import java.io.File;
-
-import javax.swing.JDialog;
-
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.ui.dialogs.WaitDialog;
 import org.apache.airavata.xbaya.ui.utils.Cancelable;
 import org.apache.airavata.xbaya.ui.widgets.amazon.S3Tree;
 import org.jets3t.service.S3Service;
 import org.jets3t.service.model.S3Object;
+
+import javax.swing.*;
+import java.io.File;
 
 public class S3Uploader implements Cancelable {
     private XBayaEngine engine;
@@ -43,8 +42,8 @@ public class S3Uploader implements Cancelable {
     /**
      * Constructs a S3Uploader.
      * 
-     * @param engine
-     * @param parent
+     * @param engine XBayaEngine
+     * @param parent JDialog
      */
     public S3Uploader(XBayaEngine engine, JDialog parent) {
         this.engine = engine;
@@ -62,11 +61,12 @@ public class S3Uploader implements Cancelable {
     }
 
     /**
-     * 
-     * @param s3
-     * @param s3tree
-     * @param bucket
-     * @param filePath
+     * Upload bucket.
+     *
+     * @param s3 S3Service
+     * @param s3tree S3Tree
+     * @param bucket bucket
+     * @param filePath file path
      */
     public void upload(final S3Service s3, final S3Tree s3tree, final String bucket, final String filePath) {
 
@@ -97,11 +97,10 @@ public class S3Uploader implements Cancelable {
                                 "Uploaded successfully!");
 
                         // add key to S3Tree
-                        String uploadString = bucket;
-                        int startIndex = uploadString.lastIndexOf('/');
+                        int startIndex = bucket.lastIndexOf('/');
                         startIndex = startIndex >= 0 ? startIndex : 0;
                         if (startIndex != 0) {
-                            fileName = uploadString.substring(startIndex) + '/' + fileName;
+                            fileName = bucket.substring(startIndex) + '/' + fileName;
                         }
 
                         if (fileName.startsWith("/")) {

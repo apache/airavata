@@ -21,20 +21,14 @@
 
 package org.apache.airavata.xbaya.ui.dialogs.amazon;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
-import javax.swing.JDialog;
-
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.ui.dialogs.WaitDialog;
 import org.apache.airavata.xbaya.ui.utils.Cancelable;
 import org.jets3t.service.S3Service;
 import org.jets3t.service.model.S3Object;
+
+import javax.swing.*;
+import java.io.*;
 
 public class S3Downloader implements Cancelable {
 
@@ -48,8 +42,8 @@ public class S3Downloader implements Cancelable {
     /**
      * Constructs a S3Downloader.
      * 
-     * @param engine
-     * @param parent
+     * @param engine XBayaEngine
+     * @param parent JDialog
      */
     public S3Downloader(XBayaEngine engine, JDialog parent) {
         this.engine = engine;
@@ -67,11 +61,12 @@ public class S3Downloader implements Cancelable {
     }
 
     /**
-     * 
-     * @param s3
-     * @param bucket
-     * @param key
-     * @param directory
+     * Download bucket.
+     *
+     * @param s3 S3Service
+     * @param bucket bucket
+     * @param key Key
+     * @param directory directory
      */
     public void download(final S3Service s3, final String bucket, final String key, final String directory) {
 
@@ -86,10 +81,12 @@ public class S3Downloader implements Cancelable {
                     S3Object s3Object = s3.getObject(bucket, key);
 
                     File fileOut = new File(directory + File.separator + s3Object.getKey());
-                    if (!fileOut.getParentFile().exists())
+                    if (!fileOut.getParentFile().exists()) {
                         fileOut.getParentFile().mkdirs();
-                    if (!fileOut.exists())
+                    }
+                    if (!fileOut.exists()) {
                         fileOut.createNewFile();
+                    }
 
                     out = new BufferedWriter(new FileWriter(fileOut));
                     in = new BufferedReader(new InputStreamReader(s3Object.getDataInputStream()));
