@@ -278,7 +278,7 @@ public class WorkflowContextHeaderBuilder {
         }
         SecurityContextDocument.SecurityContext.AmazonWebservices amazonWebservices = this.securityContext
                 .addNewAmazonWebservices();
-        amazonWebservices.setSecretAccessKey(accessKeyId);
+        amazonWebservices.setAccessKeyId(accessKeyId);
         amazonWebservices.setSecretAccessKey(secretAccesKey);
         return this;
     }
