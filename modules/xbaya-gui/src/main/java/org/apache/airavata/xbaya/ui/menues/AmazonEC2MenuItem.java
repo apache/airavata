@@ -48,9 +48,9 @@ public class AmazonEC2MenuItem {
         this.amazonEC2Menu.add(this.amazonAuthenticationItem);
         this.amazonEC2Menu.addSeparator();
         this.amazonEC2Menu.add(this.amazonEC2ToolItem);
-        this.amazonEC2Menu.add(this.amazonS3ToolItem);
+//        this.amazonEC2Menu.add(this.amazonS3ToolItem);
         this.amazonEC2Menu.addSeparator();
-        this.amazonEC2Menu.add(this.configAndDeploy);
+//        this.amazonEC2Menu.add(this.configAndDeploy);
     }
 
     private void createAmazonAuthenticationItem() {
