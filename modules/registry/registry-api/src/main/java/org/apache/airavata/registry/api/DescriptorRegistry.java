@@ -65,6 +65,7 @@ public interface DescriptorRegistry extends AiravataSubRegistry {
 	public ApplicationDescription getApplicationDescriptor(String serviceName, String hostname, String applicationName)throws DescriptorDoesNotExistsException, MalformedDescriptorException, RegistryException;
 	public ApplicationDescription getApplicationDescriptors(String serviceName, String hostname)throws MalformedDescriptorException, RegistryException;
 	public Map<String,ApplicationDescription> getApplicationDescriptors(String serviceName)throws MalformedDescriptorException, RegistryException;
+	//public Map<String,ApplicationDescription> getApplicationDescriptorsFromHostName(String hostName)throws MalformedDescriptorException, RegistryException;
 	public Map<String[],ApplicationDescription> getApplicationDescriptors()throws MalformedDescriptorException, RegistryException;
 	public void removeApplicationDescriptor(String serviceName, String hostName, String applicationName)throws DescriptorDoesNotExistsException, RegistryException;
 	public ResourceMetadata getApplicationDescriptorMetadata(String serviceName, String hostName, String applicationName)throws DescriptorDoesNotExistsException, RegistryException;

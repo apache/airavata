@@ -454,9 +454,17 @@ public class AiravataJPARegistry extends AiravataRegistry2{
                 throw new DescriptorDoesNotExistsException(hostName);
             }
             gateway.removeHostDescriptor(hostName);
+            try {
+                //we need to delete the application descriptors bound to this host
+				Map<String, ApplicationDescription> applicationDescriptors = getApplicationDescriptorsFromHostName(hostName);
+				for (String serviceName : applicationDescriptors.keySet()) {
+					removeApplicationDescriptor(serviceName, hostName, applicationDescriptors.get(serviceName).getType().getApplicationName().getStringValue());
+				}
+			} catch (Exception e) {
+				logger.error("Error while removing application descriptors bound to host "+hostName, e);
+			}
         }
     }
-
 
 	@Override
 	public List<HostDescription> getHostDescriptors()
@@ -552,6 +560,15 @@ public class AiravataJPARegistry extends AiravataRegistry2{
                 throw new DescriptorDoesNotExistsException(serviceName);
             }
             gateway.removeServiceDescriptor(serviceName);
+            try {
+				//we need to delete the application descriptors bound to this service
+				Map<String, ApplicationDescription> applicationDescriptors = getApplicationDescriptors(serviceName);
+				for (String hostName : applicationDescriptors.keySet()) {
+					removeApplicationDescriptor(serviceName, hostName, applicationDescriptors.get(hostName).getType().getApplicationName().getStringValue());
+				}
+			} catch (Exception e) {
+				logger.error("Error while removing application descriptors bound to service "+serviceName, e);
+			}
         }
     }
 
@@ -704,6 +721,16 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		return map;
     }
 
+    private Map<String,ApplicationDescription> getApplicationDescriptorsFromHostName(String hostName)throws RegistryException {
+        GatewayResource gateway = jpa.getGateway();
+		Map<String, ApplicationDescription> map=new HashMap<String,ApplicationDescription>();
+		List<ApplicationDescriptorResource> applicationDescriptorResources = gateway.getApplicationDescriptorResources(null, hostName);
+		for (ApplicationDescriptorResource resource : applicationDescriptorResources) {
+			map.put(resource.getServiceDescName(),createApplicationDescriptor(resource));
+		}
+		return map;
+    }
+    
     public Map<String[],ApplicationDescription> getApplicationDescriptors()throws MalformedDescriptorException, RegistryException{
         if (descriptorRegistry != null){
             return descriptorRegistry.getApplicationDescriptors();
