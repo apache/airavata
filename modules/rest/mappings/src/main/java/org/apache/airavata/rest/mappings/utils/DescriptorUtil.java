@@ -170,8 +170,9 @@ public class DescriptorUtil {
              for (int i = 0; i < gridFTPEndPointArray.length ; i++){
                  gridFTPEndPoint.add(gridFTPEndPointArray[i]);
              }
-        }
-        else {
+        }  else if (hostDescriptionType instanceof  Ec2HostType) {
+            hostType.add(HostTypes.EC2_HOST_TYPE);
+        } else {
             hostType.add(HostTypes.HOST_DESCRIPTION_TYPE);
         }
         hostDescriptor.setGateKeeperEndPoint(gateKeeperEndPoint);

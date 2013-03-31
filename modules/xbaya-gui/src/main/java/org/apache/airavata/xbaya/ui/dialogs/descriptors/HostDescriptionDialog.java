@@ -40,6 +40,7 @@ import javax.swing.SwingConstants;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.client.api.DescriptorRecordAlreadyExistsException;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.schemas.gfac.Ec2HostType;
@@ -420,14 +421,16 @@ public class HostDescriptionDialog extends JDialog {
         	if (getRegistry().getApplicationManager().isHostDescriptorExists(desc.getType().getHostName())){
         		getRegistry().getApplicationManager().updateHostDescriptor(desc);
         	}else{
-        		getRegistry().getApplicationManager().saveHostDescription(desc);
+        		getRegistry().getApplicationManager().addHostDescription(desc);
         	}
 			setHostCreated(true);
 		}  catch (AiravataAPIInvocationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}catch (DescriptorRecordAlreadyExistsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-//		setHostCreated(false);
     }
 
     public AiravataAPI getRegistry() {
