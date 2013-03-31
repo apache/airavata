@@ -222,7 +222,7 @@ public class DescriptorEditorDialog extends JDialog {
 	    		break;
 	    	case SERVICE:
 	    		ServiceDescription d = (ServiceDescription) getSelected();
-	    		DeploymentDescriptionDialog serviceDescriptionDialog = new DeploymentDescriptionDialog(getRegistry(),false,d, null);
+	    		DeploymentDescriptionDialog serviceDescriptionDialog = new DeploymentDescriptionDialog(getAPI(),false,d, null);
 	        	serviceDescriptionDialog.open();
 //	    		ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry(),false,d);
 //	    		serviceDescriptionDialog.open();
@@ -253,7 +253,7 @@ public class DescriptorEditorDialog extends JDialog {
 	    		}
 	    		break;
 	    	case SERVICE:
-	    		DeploymentDescriptionDialog serviceDescriptionDialog = new DeploymentDescriptionDialog(null, getRegistry());
+	    		DeploymentDescriptionDialog serviceDescriptionDialog = new DeploymentDescriptionDialog(null, getAPI());
 	        	serviceDescriptionDialog.open();
 //	    		ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry());
 //	    		serviceDescriptionDialog.open();
@@ -308,18 +308,18 @@ public class DescriptorEditorDialog extends JDialog {
             	switch (descriptorType){
 	    	    	case HOST:
 	    	    		HostDescription h = (HostDescription) getSelected();
-	    	        	getRegistry().getApplicationManager().deleteHostDescription(h.getType().getHostName());
+	    	        	getAPI().getApplicationManager().deleteHostDescription(h.getType().getHostName());
                         loadDescriptors();
 	    	    		break;
 	    	    	case SERVICE:
 	    	        	ServiceDescription d = (ServiceDescription) getSelected();
-	    	        	getRegistry().getApplicationManager().deleteServiceDescription(d.getType().getName());
+	    	        	getAPI().getApplicationManager().deleteServiceDescription(d.getType().getName());
                         loadDescriptors();
 	    	    		break;
 	    	    	case APPLICATION:
 	    	    		ApplicationDescription a = (ApplicationDescription) getSelected();
 	    	    		String[] s = dlist.get(a).split("\\$");
-	    	        	getRegistry().getApplicationManager().deleteApplicationDescription(s[0], s[1], a.getType().getApplicationName().getStringValue());
+	    	        	getAPI().getApplicationManager().deleteApplicationDescription(s[0], s[1], a.getType().getApplicationName().getStringValue());
 	    	    		loadDescriptors();
                         break;
             	}
@@ -339,13 +339,13 @@ public class DescriptorEditorDialog extends JDialog {
     		List<?> descriptors=null;
 			switch (descriptorType){
 	    	case HOST:
-	    		descriptors = getRegistry().getApplicationManager().getAllHostDescriptions();
+	    		descriptors = getAPI().getApplicationManager().getAllHostDescriptions();
 	    		break;
 	    	case SERVICE:
-	    		descriptors = getRegistry().getApplicationManager().getAllServiceDescriptions();
+	    		descriptors = getAPI().getApplicationManager().getAllServiceDescriptions();
 	    		break;
 	    	case APPLICATION:
-	    		Map<String,ApplicationDescription> temp =getRegistry().getApplicationManager().getApplicationDescriptors(null);
+	    		Map<String,ApplicationDescription> temp =getAPI().getApplicationManager().getApplicationDescriptors(null);
                 for(String value:temp.keySet()) {
                     dlist.put(temp.get(value), value);
 
@@ -388,7 +388,7 @@ public class DescriptorEditorDialog extends JDialog {
 		}
     	
     }
-    public AiravataAPI getRegistry() {
+    public AiravataAPI getAPI() {
         return registry;
     }
 
