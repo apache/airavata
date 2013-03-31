@@ -642,13 +642,18 @@ public class GatewayResource extends AbstractResource {
         EntityManager em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
         String qString = "SELECT p FROM Application_Descriptor p WHERE " +
-                "p.gateway_name =:gate_name and p.service_descriptor_ID =:service_name";
+                "p.gateway_name =:gate_name";
         if (hostName!=null){
         	qString+=" and p.host_descriptor_ID =:host_name";
         }
+        if (serviceName!=null){
+        	qString+=" and p.service_descriptor_ID =:service_name";
+        }
 		Query q = em.createQuery(qString);
         q.setParameter("gate_name", gatewayName);
-        q.setParameter("service_name", serviceName);
+        if (serviceName!=null){
+        	q.setParameter("service_name", serviceName);
+        }
         if (hostName!=null){
         	q.setParameter("host_name",hostName);
         }

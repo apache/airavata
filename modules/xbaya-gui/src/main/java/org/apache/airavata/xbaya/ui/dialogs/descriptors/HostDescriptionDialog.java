@@ -160,7 +160,6 @@ public class HostDescriptionDialog extends JDialog {
         }else if (host instanceof UnicoreHostType){
         	((UnicoreHostType)hostDescription.getType()).addUnicoreHostAddress(this.gateKeeperTextField.getText());
             ((UnicoreHostType)hostDescription.getType()).addGridFTPEndPoint(this.gridFTPTextField.getText());
-
         }
         saveHostDescription();
         close();
@@ -449,15 +448,16 @@ public class HostDescriptionDialog extends JDialog {
 			}else if (selectedProtocol.equals(REMOTE_PROTOCOL_STR_SSH)){
 				getHostDescription().getType().changeType(SSHHostType.type);
 				infoPanel2.add(createPanelWithMessage("No configurations needed."));
-			}
-			else if (selectedProtocol.equals(REMOTE_PROTOCOL_STR_GLOBUS)){
+			}else if (selectedProtocol.equals(REMOTE_PROTOCOL_STR_GLOBUS)){
 				getHostDescription().getType().changeType(GlobusHostType.type);
 				infoPanel2.add(createGlobusRemoteProtocolPanel());
 			}else if (selectedProtocol.equals(REMOTE_PROTOCOL_STR_UNICORE)){
 				getHostDescription().getType().changeType(UnicoreHostType.type);
 				infoPanel2.add(createUnicoreRemoteProtocolPanel());
-			}
-			else{
+			}else if (selectedProtocol.equals(REMOTE_PROTOCOL_STR_AMAZON_EC2)){
+				getHostDescription().getType().changeType(Ec2HostType.type);
+				infoPanel2.add(createPanelWithMessage("No configurations needed."));
+			}else{
 				infoPanel2.add(createPanelWithMessage("Not supported."));
 			}
 			infoPanel2.getContentPanel().setBorder(BorderFactory.createEtchedBorder());
