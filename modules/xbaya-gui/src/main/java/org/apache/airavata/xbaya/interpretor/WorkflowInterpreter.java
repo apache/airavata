@@ -77,7 +77,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
@@ -594,89 +593,53 @@ public class WorkflowInterpreter {
 	protected void handleWSComponent(Node node) throws WorkflowException {
 		WSComponent wsComponent = ((WSComponent) node.getComponent());
 		QName portTypeQName = wsComponent.getPortTypeQName();
-		Invoker invoker = this.invokerMap.get(node);
-		// We do this because invokers cannot be cached because the puretls
-		// expires
-		if (invoker != null) {
-			this.invokerMap.remove(invoker);
-		}
-		final WSNode wsNode = (WSNode) node;
-		String wsdlLocation = InterpreterUtil.getEPR(wsNode);
-		final String gfacURLString = this.getConfig().getConfiguration().getGFacURL().toString();
-		if (null == wsdlLocation) {
-			if (gfacURLString.startsWith("https")) {
-				LeadContextHeader leadCtxHeader = null;
-				try {
-					leadCtxHeader = XBayaUtil.buildLeadContextHeader(this.getWorkflow(), this.getConfig().getConfiguration(), new MonitorConfiguration(this
-							.getConfig().getConfiguration().getBrokerURL(), this.config.getTopic(), true, this.getConfig().getConfiguration()
-							.getMessageBoxURL()), wsNode.getID(), null);
-				} catch (URISyntaxException e) {
-					throw new WorkflowException(e);
-				}
+        Invoker invoker = this.invokerMap.get(node);
 
-				leadCtxHeader.setServiceId(node.getID());
-				try {
-					leadCtxHeader.setWorkflowId(new URI(this.getWorkflow().getName()));
+        // We do this because invokers cannot be cached because the puretls expires
+        if (invoker != null) {
+            this.invokerMap.remove(invoker);
+        }
 
-					// We do this so that the wsdl resolver can is setup
-					// wsdlresolver.getInstance is static so once this is
-					// done
-					// rest of the loading should work.
+        final WSNode wsNode = (WSNode) node;
+        String wsdlLocation = InterpreterUtil.getEPR(wsNode);
+        final String gfacURLString = this.getConfig().getConfiguration().getGFacURL().toString();
+        if (null == wsdlLocation) {
 
-				} catch (URISyntaxException e) {
-					throw new WorkflowRuntimeException(e);
-				}
+            /* If there is a instance control component connects to this
+             * component send information in soap header */
+            for (Node n : wsNode.getControlInPort().getFromNodes()) {
+                if (n instanceof InstanceNode) {
+                    AmazonSecurityContext amazonSecurityContext;
+                    final String awsAccessKeyId = config.getAwsAccessKey();
+                    final String awsSecretKey = config.getAwsSecretKey();
+                    final String username = ((InstanceNode) n).getUsername();
 
-				/*
-				 * Resource Mapping Header
-				 */
-				if (this.resourceMapping != null) {
-					leadCtxHeader.setResourceMapping(this.resourceMapping);
-				}
+                    if (((InstanceNode) n).isStartNewInstance()) {
+                        final String amiId = ((InstanceNode) n).getIdAsValue();
+                        final String instanceType = ((InstanceNode) n).getInstanceType();
 
-				/*
-				 * If there is a instance control component connects to this
-				 * component send information in soap header
-				 */
-				for (Node n : wsNode.getControlInPort().getFromNodes()) {
-					if (n instanceof InstanceNode) {
-                        AmazonSecurityContext amazonSecurityContext;
-                        final String awsAccessKeyId = config.getAwsAccessKey();
-                        final String awsSecretKey = config.getAwsSecretKey();
-                        final String username = ((InstanceNode) n).getUsername();
+                        amazonSecurityContext =
+                                new AmazonSecurityContext(username, awsAccessKeyId, awsSecretKey, amiId, instanceType);
+                    } else {
+                        final String instanceId = ((InstanceNode) n).getIdAsValue();
+                        amazonSecurityContext =
+                                new AmazonSecurityContext(username, awsAccessKeyId, awsSecretKey, instanceId);
+                    }
 
-                        if (((InstanceNode) n).isStartNewInstance()) {
-                            final String amiId = ((InstanceNode) n).getIdAsValue();
-                            final String instanceType = ((InstanceNode) n).getInstanceType();
+                    this.config.getConfiguration().setAmazonSecurityContext(amazonSecurityContext);
+                }
+            }
 
-                            amazonSecurityContext =
-                                    new AmazonSecurityContext(username, awsAccessKeyId, awsSecretKey, amiId, instanceType);
-                        } else {
-                            final String instanceId = ((InstanceNode) n).getIdAsValue();
-                            amazonSecurityContext =
-                                    new AmazonSecurityContext(username, awsAccessKeyId, awsSecretKey, instanceId);
-                        }
+            if ((this.config.isGfacEmbeddedMode()) || (config.getAwsAccessKey() != null)) {
+                invoker = new EmbeddedGFacInvoker(portTypeQName, WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode.getComponent().getWSDL()), node.getID(),
+                        this.config.getMessageBoxURL().toASCIIString(), this.config.getMessageBrokerURL().toASCIIString(), this.config.getNotifier(),
+                        this.config.getTopic(), this.config.getAiravataAPI(), portTypeQName.getLocalPart(), this.config.getConfiguration());
+            } else {
+                invoker = new GenericInvoker(portTypeQName, WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode.getComponent().getWSDL()), node.getID(),
+                        this.config.getMessageBoxURL().toASCIIString(), gfacURLString, this.config.getNotifier());
+            }
 
-                        this.config.getConfiguration().setAmazonSecurityContext(amazonSecurityContext);
-					}
-				}
-
-				invoker = new WorkflowInvokerWrapperForGFacInvoker(portTypeQName, gfacURLString, this.config.getMonitor().getConfiguration().getMessageBoxURL()
-						.toString(), leadCtxHeader, this.config.getNotifier().createServiceNotificationSender(node.getID()));
-
-			} else {
-				if (this.config.isGfacEmbeddedMode()) {
-					invoker = new EmbeddedGFacInvoker(portTypeQName, WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode.getComponent().getWSDL()), node.getID(),
-							this.config.getMessageBoxURL().toASCIIString(), this.config.getMessageBrokerURL().toASCIIString(), this.config.getNotifier(),
-							this.config.getTopic(), this.config.getAiravataAPI(), portTypeQName.getLocalPart(), this.config.getConfiguration());
-				} else {
-					invoker = new GenericInvoker(portTypeQName, WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode.getComponent().getWSDL()), node.getID(),
-							this.config.getMessageBoxURL().toASCIIString(), gfacURLString, this.config.getNotifier());
-				}
-
-			}
-
-		} else {
+        } else {
 			if (wsdlLocation.endsWith("/")) {
 				wsdlLocation = wsdlLocation.substring(0, wsdlLocation.length() - 1);
 			}
@@ -1288,7 +1251,7 @@ public class WorkflowInterpreter {
 		ArrayList<Node> list = new ArrayList<Node>();
 		List<NodeImpl> nodes = this.getGraph().getNodes();
 		for (Node node : nodes) {
-			if (node instanceof OutputNode && node.getState()==NodeExecutionState.WAITING 
+			if (node instanceof OutputNode && node.getState()==NodeExecutionState.WAITING
 					&& node.getInputPort(0).getFromNode().getState()== NodeExecutionState.FINISHED) {
 
 				list.add(node);
