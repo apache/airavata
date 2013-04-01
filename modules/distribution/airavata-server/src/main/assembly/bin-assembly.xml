@@ -209,10 +209,6 @@
         <dependencySet>
             <outputDirectory>lib</outputDirectory>
             <includes>
-                <!--<include>org.apache.derby:derby:jar</include> -->
-                <!--<include>org.apache.derby:derbytools:jar</include> -->
-                <!--<include>org.apache.derby:derbyclient:jar</include> -->
-                <!--<include>org.apache.derby:derbynet:jar</include> -->
                 <include>org.slf4j:slf4j-api:jar</include>
                 <include>org.slf4j:slf4j-jcl:jar</include>
                 <include>org.slf4j:slf4j-log4j12:jar</include>
@@ -229,7 +225,6 @@
                 <include>xutil:xutil</include>
                 <include>jython:jython</include>
                 <include>cog-jglobus:cog-jglobus</include>
-                <!--include>edu.iub.soic.damsl:jXSP</include> -->
                 <include>lead-security:puretls</include>
                 <include>lead-security:cryptix32</include>
                 <include>lead-security:cryptix-asn1</include>
@@ -293,6 +288,8 @@
                 <include>com.jcraft:jsch</include>
                 <include>net.sf.jopt-simple:jopt-simple</include>
 				<include>net.schmizz:sshj</include>
+				<include>j2ssh:j2ssh-core</include>
+				<include>j2ssh:j2ssh-common</include>
             </includes>
         </dependencySet>
         <dependencySet>
