@@ -48,6 +48,7 @@ import org.apache.airavata.gfac.notification.events.EC2ProviderEvent;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.provider.utils.ProviderUtils;
+import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.Ec2ApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.StringParameterType;
@@ -71,8 +72,6 @@ public class EC2Provider implements GFacProvider {
     public static final int SOCKET_TIMEOUT = 30000;
 
     public static final int SSH_PORT = 22;
-
-    public static final String KEY_PAIR_NAME = "gfac";
 
     public static final String KEY_PAIR_FILE = "ec2_rsa";
 
@@ -184,7 +183,7 @@ public class EC2Provider implements GFacProvider {
             while((read = in.read(buffer)) > 0) {
                 String out = new String(buffer, 0, read);
 
-                if(out.startsWith("distance")) {
+                if(out.startsWith(outParamName)) {
                     executionResult = out.split("=")[1];
                     log.debug("Result found in the StandardOut ");
                     break;
@@ -214,6 +213,13 @@ public class EC2Provider implements GFacProvider {
 
     }
 
+    /**
+     * Creates the command to be executed in the remote shell.
+     *
+     * @param jobExecutionContext JobExecutionContext for the cloud job
+     * @return shell command to be executed
+     * @throws GFacProviderException GFacProviderException
+     */
     private String createShellCmd(JobExecutionContext jobExecutionContext) throws GFacProviderException {
         String command = "";
         ApplicationDescription appDesc = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
@@ -239,9 +245,28 @@ public class EC2Provider implements GFacProvider {
             }
 
             log.info("Command to be executed on EC2 : " + command);
+
+        } else {
+            ApplicationDeploymentDescriptionType type = appDesc.getType();
+
+            command = "sh" + " " + type.getExecutableLocation();
+
+            List<String> inputParams = null;
+            try {
+                inputParams = ProviderUtils.getInputParameters(jobExecutionContext);
+            } catch (GFacProviderException e) {
+                throw new GFacProviderException("Error in extracting input values from JobExecutionContext");
+            }
+
+            for(String param : inputParams){
+                command = " " + command + " " + param;
+            }
+
+            log.info("Command to be executed on EC2 : " + command);
+
         }
 
-        return command;
+        return command + '\n';
     }
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
