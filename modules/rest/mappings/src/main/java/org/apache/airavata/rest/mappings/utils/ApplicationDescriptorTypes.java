@@ -25,4 +25,5 @@ public class ApplicationDescriptorTypes {
     public static final String APP_DEP_DESC_TYPE = "Default";
     public static final String HPC_APP_DEP_DESC_TYPE = "HPC";
     public static final String HADOOP_APP_DEP_DESC_TYPE = "Hadoop";
+    public static final String EC2_APP_DEP_DESC_TYPE = "Amazon EC2";
 }

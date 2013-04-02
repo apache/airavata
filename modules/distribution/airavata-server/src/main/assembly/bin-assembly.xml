@@ -290,6 +290,8 @@
 				<include>net.schmizz:sshj</include>
 				<include>j2ssh:j2ssh-core</include>
 				<include>j2ssh:j2ssh-common</include>
+                <include>org.apache.httpcomponents:httpcore:jar:4.1</include>
+                <include>org.apache.httpcomponents:httpclient:jar:4.1</include>
             </includes>
         </dependencySet>
         <dependencySet>
