@@ -21,10 +21,6 @@
 
 package org.apache.airavata.rest.mappings.utils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
@@ -32,22 +28,11 @@ import org.apache.airavata.rest.mappings.resourcemappings.ApplicationDescriptor;
 import org.apache.airavata.rest.mappings.resourcemappings.HostDescriptor;
 import org.apache.airavata.rest.mappings.resourcemappings.ServiceDescriptor;
 import org.apache.airavata.rest.mappings.resourcemappings.ServiceParameters;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.DataType;
-import org.apache.airavata.schemas.gfac.Ec2HostType;
-import org.apache.airavata.schemas.gfac.GlobusHostType;
-import org.apache.airavata.schemas.gfac.GsisshHostType;
-import org.apache.airavata.schemas.gfac.HostDescriptionType;
-import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
-import org.apache.airavata.schemas.gfac.InputParameterType;
-import org.apache.airavata.schemas.gfac.JobTypeType;
-import org.apache.airavata.schemas.gfac.NameValuePairType;
-import org.apache.airavata.schemas.gfac.OutputParameterType;
-import org.apache.airavata.schemas.gfac.ParameterType;
-import org.apache.airavata.schemas.gfac.ProjectAccountType;
-import org.apache.airavata.schemas.gfac.QueueType;
-import org.apache.airavata.schemas.gfac.SSHHostType;
-import org.apache.airavata.schemas.gfac.UnicoreHostType;
+import org.apache.airavata.schemas.gfac.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class DescriptorUtil {
 
@@ -472,6 +457,8 @@ public class DescriptorUtil {
                     }
                     applicationDescriptor.setProcessorsPerNode(gramApplicationDeploymentType.getProcessorsPerNode());
                 }
+            } else if (applicationDescription.getType() instanceof Ec2ApplicationDeploymentType) {
+                applicationDescriptor.setApplicationDescType(ApplicationDescriptorTypes.EC2_APP_DEP_DESC_TYPE);
             }
         }
 
