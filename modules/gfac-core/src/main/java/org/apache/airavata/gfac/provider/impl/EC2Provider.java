@@ -226,47 +226,36 @@ public class EC2Provider implements GFacProvider {
 
         if(appDesc.getType() instanceof Ec2ApplicationDeploymentType) {
             Ec2ApplicationDeploymentType type = (Ec2ApplicationDeploymentType) appDesc.getType();
-
             if(type.getExecutable() != null) {
                 command = type.getExecutableType() + " " + type.getExecutable();
             } else {
                 command = "sh" + " " + type.getExecutable();
             }
-
-            List<String> inputParams = null;
-            try {
-                inputParams = ProviderUtils.getInputParameters(jobExecutionContext);
-            } catch (GFacProviderException e) {
-                throw new GFacProviderException("Error in extracting input values from JobExecutionContext");
-            }
-
-            for(String param : inputParams){
-                command = " " + command + " " + param;
-            }
-
-            log.info("Command to be executed on EC2 : " + command);
+            command = setCmdParams(jobExecutionContext, command);
 
         } else {
             ApplicationDeploymentDescriptionType type = appDesc.getType();
-
             command = "sh" + " " + type.getExecutableLocation();
-
-            List<String> inputParams = null;
-            try {
-                inputParams = ProviderUtils.getInputParameters(jobExecutionContext);
-            } catch (GFacProviderException e) {
-                throw new GFacProviderException("Error in extracting input values from JobExecutionContext");
-            }
-
-            for(String param : inputParams){
-                command = " " + command + " " + param;
-            }
-
-            log.info("Command to be executed on EC2 : " + command);
-
+            command = setCmdParams(jobExecutionContext, command);
         }
 
         return command + '\n';
+    }
+
+    private String setCmdParams(JobExecutionContext jobExecutionContext, String command) throws GFacProviderException {
+        List<String> inputParams = null;
+        try {
+            inputParams = ProviderUtils.getInputParameters(jobExecutionContext);
+        } catch (GFacProviderException e) {
+            throw new GFacProviderException("Error in extracting input values from JobExecutionContext");
+        }
+
+        for(String param : inputParams){
+            command = " " + command + " " + param;
+        }
+
+        log.info("Command to be executed on EC2 : " + command);
+        return command;
     }
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
