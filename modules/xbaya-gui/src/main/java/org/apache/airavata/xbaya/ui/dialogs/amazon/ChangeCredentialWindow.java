@@ -59,7 +59,7 @@ public class ChangeCredentialWindow {
         XBayaLabel accessKeyIDLabel = new XBayaLabel("Access Key", this.accessKeyIDTextField);
 
         this.secretAccessKeyTextField = new XBayaTextField();
-        XBayaLabel secretAccessKeyLabel = new XBayaLabel("Secret Access Key", this.secretAccessKeyTextField);
+        XBayaLabel secretAccessKeyLabel = new XBayaLabel("Secret Key", this.secretAccessKeyTextField);
 
         GridPanel infoPanel = new GridPanel();
         infoPanel.add(accessKeyIDLabel);
@@ -109,9 +109,9 @@ public class ChangeCredentialWindow {
         buttonPanel.add(cancelButton);
 
         if (this.owner == null) {
-            this.dialog = new XBayaDialog(this.engine.getGUI(), "S3 Tool-kits", mainPanel, buttonPanel);
+            this.dialog = new XBayaDialog(this.engine.getGUI(), "Security Credentials", mainPanel, buttonPanel);
         } else {
-            this.dialog = new XBayaDialog(this.owner, "S3 Tool-kits", mainPanel, buttonPanel);
+            this.dialog = new XBayaDialog(this.owner, "Security Credentials", mainPanel, buttonPanel);
         }
     }
 
