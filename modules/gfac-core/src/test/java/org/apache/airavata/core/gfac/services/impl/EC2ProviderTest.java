@@ -132,7 +132,7 @@ public class EC2ProviderTest {
 
         MessageContext outMessage = new MessageContext();
         ActualParameter echo_out = new ActualParameter();
-        outMessage.addParameter("genome_output", echo_out);
+        outMessage.addParameter("distance", echo_out);
 
         jobExecutionContext.setInMessageContext(inMessage);
         jobExecutionContext.setOutMessageContext(outMessage);
