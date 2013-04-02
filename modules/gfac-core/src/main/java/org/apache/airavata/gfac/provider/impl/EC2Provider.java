@@ -83,8 +83,10 @@ public class EC2Provider implements GFacProvider {
 
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException,GFacException{
         if (jobExecutionContext != null) {
-            if (jobExecutionContext.getSecurityContext(AmazonSecurityContext.AMAZON_SECURITY_CONTEXT) instanceof AmazonSecurityContext) {
-                this.amazonSecurityContext = (AmazonSecurityContext) jobExecutionContext.getSecurityContext(AmazonSecurityContext.AMAZON_SECURITY_CONTEXT);
+            if (jobExecutionContext.getSecurityContext(AmazonSecurityContext.AMAZON_SECURITY_CONTEXT)
+                    instanceof AmazonSecurityContext) {
+                this.amazonSecurityContext = (AmazonSecurityContext) jobExecutionContext.
+                        getSecurityContext(AmazonSecurityContext.AMAZON_SECURITY_CONTEXT);
             } else {
                 throw new GFacProviderException("Amazon Security Context is not set" + jobExecutionContext);
             }
@@ -123,8 +125,6 @@ public class EC2Provider implements GFacProvider {
     }
 
     public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
-//        final String command2 = "sh run.sh SRR042383.21414#CTGGCACGGAGTTAGCCGATCCTTATTCATAAAGTACATGCAAACGGGTATCCATACTCGACTTTATTCCTTTATAAAAGAAGTTTACAACCCATAGGGCAGTCATCCTTCACGCTACTTGGCTGGTTCAGGCCTGCGCCCATTGACCAATATTCCTCACTGCTGCCTCCCGTAGGAGTTTGGACCGTGTCTCAGTTCCAATGTGGGGGACCTTCCTCTCAGAACCCCTATCCATCGAAGACTAGGTGGGCCGTTACCCCGCCTACTATCTAATGGAACGCATCCCCATCGTCTACCGGAATACCTTTAATCATGTGAACATGCGGACTCATGATGCCATCTTGTATTAATCTTCCTTTCAGAAGGCTGTCCAAGAGTAGACGGCAGGTTGGATACGTGTTACTCACCGTGCCGCCGGTCGCCATCAGTCTTAGCAAGCTAAGACCATGCTGCCCCTGACTTGCATGTGTTAAGCCTGTAGCTTAGCGTTC SRR042383.31933#CTGGCACGGAGTTAGCCGATCCTTATTCATAAAGTACATGCAAACGGGTATCCATACCCGACTTTATTCCTTTATAAAAGAAGTTTACAACCCATAGGGCAGTCATCCTTCACGCTACTTGGCTGGTTCAGGCTCTCGCCCATTGACCAATATTCCTCACTGCTGCCTCCCGTAGGAGTTTGGACCGTGTCTCAGTTCCAATGTGGGGGACCTTCCTCTCAGAACCCCTATCCATCGAAGACTAGGTGGGCCGTTACCCCGCCTACTATCTAATGGAACGCATCCCCATCGTCTACCGGAATACCTTTAATCATGTGAACATGCGGACTCATGATGCCATCTTGTATTAAATCTTCCTTTCAGAAGGCTATCCAAGAGTAGACGGCAGGTTGGATACGTGTTACTCACCGTGCG" + '\n';
-
         String shellCmd = createShellCmd(jobExecutionContext);
         SshClient sshClient = new SshClient();
         sshClient.setSocketTimeout(SOCKET_TIMEOUT);
@@ -171,7 +171,7 @@ public class EC2Provider implements GFacProvider {
             }
 
             SessionChannelClient session = sshClient.openSessionChannel();
-            log.info("ssh session is open successfully...");
+            log.info("ssh session successfully opened...");
             session.requestPseudoTerminal("vt100", 80, 25, 0, 0, "");
             session.startShell();
             session.getOutputStream().write(shellCmd.getBytes());
@@ -222,7 +222,8 @@ public class EC2Provider implements GFacProvider {
      */
     private String createShellCmd(JobExecutionContext jobExecutionContext) throws GFacProviderException {
         String command = "";
-        ApplicationDescription appDesc = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
+        ApplicationDescription appDesc = jobExecutionContext.getApplicationContext().
+                getApplicationDeploymentDescription();
 
         if(appDesc.getType() instanceof Ec2ApplicationDeploymentType) {
             Ec2ApplicationDeploymentType type = (Ec2ApplicationDeploymentType) appDesc.getType();
@@ -313,7 +314,8 @@ public class EC2Provider implements GFacProvider {
                 // already running instance
                 DescribeInstancesRequest describeInstancesRequest = new DescribeInstancesRequest();
                 DescribeInstancesResult describeInstancesResult =
-                        ec2client.describeInstances(describeInstancesRequest.withInstanceIds(amazonSecurityContext.getInstanceId()));
+                        ec2client.describeInstances(describeInstancesRequest.
+                                withInstanceIds(amazonSecurityContext.getInstanceId()));
 
                 if (describeInstancesResult.getReservations().size() == 0 ||
                         describeInstancesResult.getReservations().get(0).getInstances().size() == 0) {
@@ -329,7 +331,8 @@ public class EC2Provider implements GFacProvider {
                 }
             }
 
-            jobExecutionContext.getNotificationService().publish(new EC2ProviderEvent("EC2 Instance " + this.instance.getInstanceId() + " is running with public name " + this.instance.getPublicDnsName()));
+            jobExecutionContext.getNotificationService().publish(new EC2ProviderEvent("EC2 Instance " +
+                    this.instance.getInstanceId() + " is running with public name " + this.instance.getPublicDnsName()));
 
         } catch (Exception e) {
             throw new GFacProviderException("Invalid Request",e,jobExecutionContext);
@@ -337,7 +340,8 @@ public class EC2Provider implements GFacProvider {
 //        return instance;
     }
 
-    private List<Instance> startInstances(AmazonEC2Client ec2, String amiId, String insType, JobExecutionContext jobExecutionContext)
+    private List<Instance> startInstances(AmazonEC2Client ec2, String amiId, String insType,
+                                          JobExecutionContext jobExecutionContext)
             throws AmazonServiceException {
         // start only 1 instance
         RunInstancesRequest request = new RunInstancesRequest(amiId, 1, 1);
