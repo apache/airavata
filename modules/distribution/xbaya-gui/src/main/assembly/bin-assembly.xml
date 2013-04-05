@@ -156,7 +156,7 @@
                 <include>org.apache.axis2:axis2-transport-http:jar</include>
                 <include>javax.mail:mail:jar</include>
                 <include>org.apache.woden:woden-api:jar</include>
-                <include>org.apache.httpcomponents:httpcore:jar</include>
+                <!--<include>org.apache.httpcomponents:httpcore:jar</include>-->
                 <include>org.apache.axis2:axis2-adb:jar</include>
                 <include>com.google.guava:guava</include>
                 <include>org.apache.httpcomponents:httpcore:jar:4.1</include>
