@@ -77,7 +77,7 @@ public class CreateApplication {
 
         // Now creating documents to be saved in to registry using above created airavata client object//
 
-        HostDescription descriptor = new HostDescription(GlobusHostType.type);
+        HostDescription descriptor = new HostDescription();
         descriptor.getType().setHostName("localhost");
         descriptor.getType().setHostAddress("127.0.0.1");
 
