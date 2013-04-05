@@ -107,21 +107,21 @@ public class RunWorkflow {
         List<WorkflowExecutionDataImpl> workflowInstanceData = experimentData.getWorkflowExecutionDataList();
         System.out.println("Experiment Results");
         System.out.println("==================");
-        for (WorkflowExecutionDataImpl data : workflowInstanceData) {
-            List<NodeExecutionData> nodeDataList = data.getNodeDataList();
-            for (NodeExecutionData nodeData : nodeDataList) {
-                System.out.println();
-                System.out.println(nodeData.getType() + " : " + nodeData.getId());
-                List<InputData> inputs = nodeData.getInputData();
-                for (InputData input : inputs) {
-                    System.out.println("\t\t[Input] \t" + input.getName() + "\t: " + input.getValue());
-                }
-                List<OutputData> outputs = nodeData.getOutputData();
-                for (OutputData output : outputs) {
-                    System.out.println("\t\t[Output] \t" + output.getName() + "\t: " + output.getValue());
-                }
-            }
-        }
+        for (WorkflowExecutionDataImpl executionDataImpl : workflowInstanceData) {
+			System.out.println("    Instnace ID :" +executionDataImpl.getId()+" ["+executionDataImpl.getTemplateName()+"]");
+			List<NodeExecutionData> nodeDataList = executionDataImpl.getNodeDataList();
+			for (NodeExecutionData nodeExecutionData : nodeDataList) {
+				System.out.println("        Node id :"+nodeExecutionData.getId()+"["+nodeExecutionData.getType().toString()+"]");
+				List<InputData> inputData = nodeExecutionData.getInputData();
+				for (InputData data : inputData) {
+					System.out.println("            [input] "+data.getName()+"="+data.getValue());
+				}
+				List<OutputData> outputData = nodeExecutionData.getOutputData();
+				for (OutputData data : outputData) {
+					System.out.println("            [output] "+data.getName()+"="+data.getValue());
+				}
+			}
+		}
     }
 
     public static String getRegistryURL() {
