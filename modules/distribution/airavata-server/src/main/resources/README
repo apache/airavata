@@ -18,7 +18,7 @@ airavata services shipped with a default derby database as the backend registry.
 
 Release Notes
 =============
-0.6 is the fifth release of Airavata (skipped 0.1-INCUBATNG). This release focuses on providing a REST service interface for Airavata Registry. For detailed tasks list, please see RELEASE_NOTES.
+0.7 is the sixth release of Airavata (skipped 0.1-INCUBATNG). This release focuses GFac rearchitecturing and more GFac level changes. For detailed tasks list, please see RELEASE_NOTES.
 
 Building from source
 ====================
@@ -66,8 +66,8 @@ How to test and run samples
 ===========================
 * If you built Airavata from source, and if you see "BUILD SUCCESS", then the test cases should have passes.
 * The test cases are beyond unit level, they startup embedded services and run through basic workflow use cases.
-* To walk through Airavata features, follow "Airavata in Five Minutes" tutorial at http://airavata.apache.org/documentation/system/airavata-in-5-minutes.html
-* For intermediate level Airavata features, follow "Airavata in Ten Minutes" tutorial at http://airavata.apache.org/documentation/system/airavata-in-10-minutes.html 
+* To walk through Airavata features, follow "Airavata in Five Minutes" tutorial at http://airavata.apache.org/documentation/tutorials/airavata-in-5-minutes.html
+* For intermediate level Airavata features, follow "Airavata in Ten Minutes" tutorial at http://airavata.apache.org/documentation/tutorials/airavata-in-10-minutes.html 
 * For advanced use cases, please contact mailing lists - http://airavata.apache.org/community/mailing-lists.html
 
 Description of Directory Structure

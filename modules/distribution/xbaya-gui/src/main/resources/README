@@ -19,7 +19,7 @@ experiments and analyze the results.
 
 Release Notes
 =============
-0.6 is the fifth release of Airavata (skipped 0.1-INCUBATNG). This release focuses on providing a REST service interface for Airavata Registry. For detailed tasks list, please see RELEASE_NOTES.
+0.7 is the sixth release of Airavata (skipped 0.1-INCUBATNG). This release focuses GFac rearchitecturing and more GFac level changes. For detailed tasks list, please see RELEASE_NOTES.
 
 Building from source
 ====================
