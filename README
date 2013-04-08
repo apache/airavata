@@ -126,5 +126,4 @@ Client Distributions
 * The test cases are beyond unit level, they startup embedded services and run through basic workflow use cases.
 * To walk through Airavata features, follow "Airavata in Five Minutes" tutorial at http://airavata.apache.org/documentation/system/airavata-in-5-minutes.html
 * For intermediate level Airavata features, follow "Airavata in Ten Minutes" tutorial at http://airavata.apache.org/documentation/system/airavata-in-10-minutes.html 
-* For advanced use cases, please contact mailing lists - http://airavata.apache.org/community/mailing-lists.html
- 
+* For advanced use cases, please contact mailing lists - http://airavata.apache.org/community/mailing-lists.html 
