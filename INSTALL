@@ -30,6 +30,6 @@ Running Tests
 Tutorials 
 ----------
 The airavata website has instructions for basic tutorials:
-* For basic understanding of how Airavata works - http://airavata.apache.org/documentation/system/airavata-in-5-minutes.html
-* Describing and executing applications using Airavata - http://airavata.apache.org/documentation/system/airavata-in-10-minutes.html
+* For basic understanding of how Airavata works - http://airavata.apache.org/documentation/tutorials/airavata-in-5-minutes.html
+* Describing and executing applications using Airavata - http://airavata.apache.org/documentation/tutorials/airavata-in-10-minutes.html
 * Advanced tutorial to provide understanding of how to run sample workflows distributed with Airavata - http://airavata.apache.org/documentation/system/advanced-workflow-samples.html
