@@ -18,8 +18,8 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac.provider.utils;
 
+package org.apache.airavata.gfac.provider.utils;
 
 import javax.xml.namespace.QName;
 
@@ -50,10 +50,6 @@ import org.ggf.schemas.jsdl.x2006.x07.jsdlHpcpa.HPCProfileApplicationType;
 import org.ogf.schemas.jsdl.x2007.x02.jsdlSpmd.SPMDApplicationDocument;
 import org.ogf.schemas.jsdl.x2007.x02.jsdlSpmd.SPMDApplicationType;
 
-
-/**
- * 
- */
 public class JSDLUtils
 {
 
