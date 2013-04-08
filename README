@@ -54,7 +54,6 @@ Airavata Source Distribution Directory Structure
 		│   │   ├── airavata-server
 		│   │   ├── xbaya-gui
 		│   │   └── release
-		│   ├── gfac-axis2
 		│   ├── gfac-core
 		│   ├── integration-tests
 		│   ├── registry
