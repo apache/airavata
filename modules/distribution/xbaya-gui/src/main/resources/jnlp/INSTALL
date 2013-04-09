@@ -1,4 +1,4 @@
-Installing  Apache Airavata XBaya 0.6
+Installing  Apache Airavata XBaya 0.7
 -------------------------------------
 
 Prerequisites
@@ -43,6 +43,6 @@ Once the binary is unzipped, instructions to run the tests should be followed fr
 Tutorials 
 ----------
 The airavata website has instructions for basic tutorials:
-* For basic understanding of how Airavata works - http://airavata.apache.org/documentation/system/airavata-in-5-minutes.html
-* Describing and executing applications using Airavata - http://airavata.apache.org/documentation/system/airavata-in-10-minutes.html
-* Advanced tutorial to provide understanding of how to run sample workflows distributed with Airavata - http://airavata.apache.org/documentation/system/advanced-workflow-samples.html
+* For basic understanding of how Airavata works - http://airavata.apache.org/documentation/tutorials/airavata-in-5-minutes.html
+* Describing and executing applications using Airavata - http://airavata.apache.org/documentation/tutorials/airavata-in-10-minutes.html
+* Advanced tutorial to provide understanding of how to run sample workflows distributed with Airavata - http://airavata.apache.org/documentation/tutorials/advanced-workflow-samples.html
