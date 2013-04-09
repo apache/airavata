@@ -1,7 +1,7 @@
 For detailed installation and further instructions please refer http://airavata.apache.org/:
 Documentation section in left hand panel. The website lists step by step instructions
 
-Installing  Apache Airavata 0.6
+Installing  Apache Airavata 0.7
 ------------------------------------------------
 
 Prerequisites
@@ -32,4 +32,4 @@ Tutorials
 The airavata website has instructions for basic tutorials:
 * For basic understanding of how Airavata works - http://airavata.apache.org/documentation/tutorials/airavata-in-5-minutes.html
 * Describing and executing applications using Airavata - http://airavata.apache.org/documentation/tutorials/airavata-in-10-minutes.html
-* Advanced tutorial to provide understanding of how to run sample workflows distributed with Airavata - http://airavata.apache.org/documentation/system/advanced-workflow-samples.html
+* Advanced tutorial to provide understanding of how to run sample workflows distributed with Airavata - http://airavata.apache.org/documentation/tutorials/advanced-workflow-samples.html

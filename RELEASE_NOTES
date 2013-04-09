@@ -1,17 +1,39 @@
-Apache Airavata Change Log
+Apache Airavata Release Notes
 
 See http://issues.apache.org/jira/browse/AIRAVATA-* (where * is the number of the issue below)
 
-Apache Airavata Version 0.6 Released on 2013-01-25
+Apache Airavata Version 0.7 Released on 2013-04-13
 ==================================================
-0.7 is the sixth release of Airavata (skipped 0.1-INCUBATNG). This release focuses GFac rearchitecturing and more GFac level changes. For detailed tasks list, please see RELEASE_NOTES.
+Key focus on this release is to improve the Airavata Application Factory (GFac) to facilitate integration of new handlers and ease the development of new providers. The following JIRA issues provide details of the changes made. 
+
+Known Issues in This Release
+============================
+Apache Airavata Version 0.7 is an important step towards a extendable core components and a stable Airavata 1.0 release. This version is not yet recommended for production usage.
+
+** Story
+    * [AIRAVATA-530] - Implement a new Handler architecture
+
+** New Feature
+    * [AIRAVATA-315] - Provide an interface for Gateway administrator 
+    * [AIRAVATA-316] - Provide a way to access the log for each experiment 
+
+** Improvement
+    * [AIRAVATA-202] - Add EC2 Provider to Airavata
+    * [AIRAVATA-540] - There's no way to find final workflow outputs from notifications
+    * [AIRAVATA-780] - Add support to add multiple security context 
+    * [AIRAVATA-782] - Add the EC2 Job Submission Schedular to the trunk
+    * [AIRAVATA-787] - Add support for Unicore and SSH provider in Xbaya UI
+
+** Task
+    * [AIRAVATA-471] - Add sample workflows to demonstrate the use of foreach construct
+    * [AIRAVATA-757] - Remove dependency to OA4MP snapshot jars once OA4MP 1.0.6 is released
+    * [AIRAVATA-803] - Run Amazon EC2 workflows through XBaya 
+    * [AIRAVATA-804] - Fix the mechanism to keep the AWS secret key and access key within the workflow.
 
 ** Sub-task
     * [AIRAVATA-531] - Writing new Context classes to keep all the Context data
     * [AIRAVATA-770] - Add Unicore provider to submit jobs
     * [AIRAVATA-783] - Brief diagram about authentication framework
-
-
 
 ** Bug
     * [AIRAVATA-635] - Providing sample to configure workflow context header for each node
@@ -33,38 +55,410 @@ Apache Airavata Version 0.6 Released on 2013-01-25
     * [AIRAVATA-809] - EC2 Instance Management window is not properly functioning due to backend issues
     * [AIRAVATA-812] - Add documentation for EC2 job submissions through XBaya
     * [AIRAVATA-813] - Incorrect instructions given in the wiki for Sample Workflow SimpleForEach
-    * [AIRAVATA-815] - Issues when terminating and starting instances/AMIs using Amazon instance managment window
+    * [AIRAVATA-815] - Issues when terminating and starting instances/AMIs using Amazon instance management window
     * [AIRAVATA-816] - Workflow Run sample fails  because of wrong host
 
+Apache Airavata Version 0.6 Released on 2013-01-25
+==================================================
+0.6 is the fifth release of Apache Airavata. This release focuses on providing a REST service interface for Airavata Registry.
 
-
-
-** Improvement
-    * [AIRAVATA-202] - Add EC2 Provider to Airavata
-    * [AIRAVATA-540] - There's no way to find final workflow outputs from notifications
-    * [AIRAVATA-780] - Add support to add multiple security context 
-    * [AIRAVATA-782] - Add the EC2 Job Submission Schedular to the trunk
-    * [AIRAVATA-787] - Add support for Unicore and SSH provider in Xbaya UI
+Known Issues in This Release
+============================
+This release is an important step towards a stable Airavata Server components and a good Airavata API client library. This version is not yet recommended for production usage.
 
 ** New Feature
-    * [AIRAVATA-315] - Provide an interface for Gateway administrator 
-    * [AIRAVATA-316] - Provide a way to access the log for each experiment 
+    * [AIRAVATA-387] - Support for individual users in a community
+    * [AIRAVATA-572] - Add basic auth based authenticator to Airavata
+    * [AIRAVATA-573] - Add support to connect different types of user stores to authenticate Airavata REST API
+    * [AIRAVATA-631] - Change Airavata API (airavata-client) to use Airavata REST Service
+    * [AIRAVATA-632] - Change XBaya to use the Airavata Client
+    * [AIRAVATA-633] - Change XBaya to use Airavata Client for Workflow Launches
 
-
-
-
-** Story
-    * [AIRAVATA-530] - Implement a new Handler architecture
-
+** Improvement
+    * [AIRAVATA-539] - Provide WorklfowNodeID in wokflowInvoked Notification
+    * [AIRAVATA-644] - Change default authenticating database to Derby
+    * [AIRAVATA-645] - Provide a utility method to set basic access headers in client side
+    * [AIRAVATA-653] - Use Embedded Tomcat as servlet container for Airavata
+    * [AIRAVATA-658] - Create a context class to store request specific properties
+    * [AIRAVATA-683] - Improving Application Manager API
+    * [AIRAVATA-684] - Add stop monitoring functionality for the Monitor object
+    * [AIRAVATA-685] - Improvements to the WorkflowManager API
+    * [AIRAVATA-704] - BPELScript log messages to parse wsdl should be of debug level
+    * [AIRAVATA-719] - Enable rest client to communicate over HTTPS
 
 ** Task
-    * [AIRAVATA-471] - Add sample workflows to demonstrate the use of foreach construct
-    * [AIRAVATA-757] - Remove dependency to OA4MP snapshot jars once OA4MP 1.0.6 is released
-    * [AIRAVATA-803] - Run Amazon EC2 workflows through XBaya 
-    * [AIRAVATA-804] - Fix the mechanism to keep the AWS secret key and access key within the workflow.
+    * [AIRAVATA-556] - Adding REST interface to Airavata Registry API
+    * [AIRAVATA-670] - Update LICENSE & NOTICE files in distribution
+    * [AIRAVATA-677] - Simplify runExperiment function overloading in Execution Manager
+    * [AIRAVATA-679] - Make the WorkflowContextHeaderBuilder transparent to the API User
+    * [AIRAVATA-698] - Move the registry related property data included on airavata-client and airavata-server properties files instead
+    * [AIRAVATA-726] - Generate a WAR distribution for Airavata Server at build time
+
+** Sub-task
+    * [AIRAVATA-65] - Update Audit Notifier
+    * [AIRAVATA-66] - Update Performance Notifier
+
+** Bug
+    * [AIRAVATA-259] - A notification is sent out with the description "Invoking a workflow" for each service invocation this is misleading.
+    * [AIRAVATA-528] - During workflow data saving node with a name of "experiments[1]" creating
+    * [AIRAVATA-619] - MsgBoxWsaResponsesCorrelator is creating an infinite thread  and there's no way to interrupt that thread
+    * [AIRAVATA-621] - WorkflowInterpretorEventListener is accumulating - not properly shutting down
+    * [AIRAVATA-622] - Error in console when running a workflow- Not always
+    * [AIRAVATA-628] - Add new user displays user add to JCR registry
+    * [AIRAVATA-643] - Add different registry accessors to airavata-server.properties and update AiravataJPARegistry accordingly
+    * [AIRAVATA-646] - Make tests work with paths that include spaces (Fix build failure in tests due to paths with spaces)
+    * [AIRAVATA-648] - MsgBoxWsaResponseCorrelator thread is not returning
+    * [AIRAVATA-650] - Provide a sample how to push notification messages to someother endpoint after capturing them in airavata client
+    * [AIRAVATA-652] - Create Java REST client to REST service
+    * [AIRAVATA-654] - Cannot start Airavata if the installed path contains spaces
+    * [AIRAVATA-664] - Null pointer exception is thrown from REST service when calling the registry API
+    * [AIRAVATA-672] - Adding embedded tomcat as default  server to Airavata
+    * [AIRAVATA-680] - Application Service menu get repeated in XBAya GUI
+    * [AIRAVATA-681] - Enable hash passwords in Airavata local user store and make SHA as default password hash method
+    * [AIRAVATA-682] - Failed login when connecting to an existing database
+    * [AIRAVATA-690] - Lonestar GridFTP URL is wrong in default host objects
+    * [AIRAVATA-692] - Not able to set HPC Configuration on New Application Deployment screen. Urgent!!
+    * [AIRAVATA-693] - Edit Application- Edit deployment link does not work
+    * [AIRAVATA-694] - Edit Application >  Edit deployment > Scratch working directory empty
+    * [AIRAVATA-696] - Airavata-client needs database configuration in client side code which is wrong
+    * [AIRAVATA-699] - When executing workflow user is authenticated multiple times for the same session
+    * [AIRAVATA-700] - Edit Host Description dialog vanishes once one description get deleted
+    * [AIRAVATA-701] - Maven clean install does not remove existing target folders for xbaya-gui
+    * [AIRAVATA-705] - There are some dependencies missing in Airavata client distribution
+    * [AIRAVATA-706] - Updating the HPC Configuration Options
+    * [AIRAVATA-708] - XBaya doesn't return when backend gfac operation fail
+    * [AIRAVATA-713] - Cleaning up unnecessary dependencies from Xbaya distribution and airavata-client distribution
+    * [AIRAVATA-715] - Database setting are picked up from registry.properties.
+    * [AIRAVATA-718] - An exception while starting integration tests
+    * [AIRAVATA-724] - A valid SimpleMathService is not available for the 5 minute tutorial
+    * [AIRAVATA-727] - Airavata distributions are not installed to the maven repository
+    * [AIRAVATA-728] - OutputDataSettings does not have method to set node information.
+    * [AIRAVATA-729] - Advanced options are not saved when creating an application
+    * [AIRAVATA-734] - Multiple Workflow is invoked messages in the workflow
+    * [AIRAVATA-741] - Airavata startup fails when Airavata is pointed to a new database
+
+Apache Airavata Version 0.5 Released on 2012-10-28
+=============================================================
+0.5 is the fourth release of Airavata (skipped 0.1-INCUBATNG). This release focuses on improving test cases and stability of code, documentation.
+
+** New Feature
+    * [AIRAVATA-277] - Add do-while support to Xbaya and workflow engine
+    * [AIRAVATA-314] - Hide workflow experiment ID from the user and allow user to add a user friendly experiment ID
+    * [AIRAVATA-517] - Add XBaya JNLP generation to the Airavata Build
+    * [AIRAVATA-548] - Implement StringArray incase output parameters are coming multiple times in STDOUT
+    * [AIRAVATA-562] - Replacing existing Jackrabbit registry with MySQL
+
+** Improvement
+    * [AIRAVATA-57] - Consolidate XBaya Web Service Invoker Clients and Re-factor them to use Axis2
+    * [AIRAVATA-220] - XBaya not prompting Myproxy dialog for secure workflow invocation
+    * [AIRAVATA-229] - Managing Shutdown tasks using shutdown hooks
+    * [AIRAVATA-363] - Adding Embedded GFac feature in to ducumentation
+    * [AIRAVATA-476] - Add sample workflows to be shipped with Airavata to demonstrate grid job submissions
+    * [AIRAVATA-533] - Add scripts to run Airavata in Windows environment
+    * [AIRAVATA-541] - Some code is duplicated in AiravataJCRregistry
+    * [AIRAVATA-543] - Some improvements to "Airavata HowTo" doc 
+    * [AIRAVATA-546] - Implementing Persistency Data Storage for Airavata
+    * [AIRAVATA-589] - Need to remove jackrabbit dependency from 0.5 build
+    * [AIRAVATA-613] - Cleanup XBaya Invokers and remove legacy security calls
+    * [AIRAVATA-614] - Cleanup all myproxy and gsi dependencies from XBaya
+
+** Bug
+    * [AIRAVATA-232] - GridFTPFileTransferClient has file paths that refer to a local file paths need to generalize this
+    * [AIRAVATA-317] - After changing the username of jackrabbit still I can save service description
+    * [AIRAVATA-400] - ConcurrentModificationException during using RegistryAPI
+    * [AIRAVATA-497] - Deprecating xbaya engine running in the gui mode and make WorkflowInterpreter invocation by default
+    * [AIRAVATA-506] - No log file is creating during standalone mode run of Airavata server
+    * [AIRAVATA-516] - Input Output node data can not be retreived by using Airavata API's ProvananceManager
+    * [AIRAVATA-522] - Application Failed status is not updated in XBaya
+    * [AIRAVATA-527] - Monitor panel does not report final error when a node fails
+    * [AIRAVATA-534] - Error creating the database in Windows environment - When starting the Airavata Server
+    * [AIRAVATA-538] - getWorkflowExecutionByUser(...) method implementation is not correct
+    * [AIRAVATA-544] - Could not deploy WS-Messenger with MySQL
+    * [AIRAVATA-545] - 5 minutes tutorial fails when running WS-Messenger with MySQL
+    * [AIRAVATA-559] - Improvements to AiravataJCRRegistry class
+    * [AIRAVATA-564] - ForEach does not work if Array size is 1
+    * [AIRAVATA-575] - Data type of workflow_graph and workflow_content of User_Workflow table and Published_Workflow table should be BLOB datatype
+    * [AIRAVATA-581] - Supporting derby by default for airavata
+    * [AIRAVATA-582] - Make run button of Xbaya to go through interpreter server by default
+    * [AIRAVATA-584] - GridFTP transfer does not set type to Binary for binary data
+    * [AIRAVATA-586] - Node deletion is giving some issues
+    * [AIRAVATA-588] - Error when try to open a workflow from filesystem
+    * [AIRAVATA-594] - Improving data retrieval time in provenance data 
+    * [AIRAVATA-595] - Gram RSL generated is missing the jobtype parameter
+    * [AIRAVATA-597] - XBaya pom have Junit jar version but its not added to properties
+    * [AIRAVATA-598] - Warn user before closing XBaya
+    * [AIRAVATA-611] - Remove derby.sh and startNetworkServer scripts
+    * [AIRAVATA-612] - File transfer error getting masked to a general error
+
+Apache Airavata Version 0.4-INCUBATING Released on 2012-07-28
+=============================================================
+0.4-INCUBATNG is the third release of Airavata (skipped 0.1-INCUBATNG). This release focuses on improving test cases
+ and stability of code, documentation. 
+ 
+** New Feature
+    * [AIRAVATA-236] - Develop Gdirftp and and file transfer utils to GFac
+    * [AIRAVATA-237] - Support http url sameway gridftp url is supported in the GFac URI type
+    * [AIRAVATA-287] - Add while construct 
+    * [AIRAVATA-298] - Allow workflow intepreter to start executing even when all the "Input Node" valuese are not set
+    * [AIRAVATA-309] - XRegistry entries transfer (from OGCE XRegistry to Airavata XRegistry)
+    * [AIRAVATA-358] - Integrate GFac with XBaya to run in embedded mode
+    * [AIRAVATA-365] - Creating temporary location based on the given executable location
+    * [AIRAVATA-366] - Adding default set of host descriptions during startup
+    * [AIRAVATA-377] - Allowing users disable some of the input Nodes in a workflow during Invocation
+    * [AIRAVATA-392] - Allowing users to specify the workflow name during XBaya startup and open the given workflow
+    * [AIRAVATA-417] - Create a getter on AiravataClient to read the location to save the output file
+    * [AIRAVATA-517] - Add XBaya JNLP generation to the Airavata Build
+
+** Task
+    * [AIRAVATA-414] - Refactor XBaya
+    
+** Sub-task
+    * [AIRAVATA-321] - Create documentation for XRegistry to Airavata Registry migration tool
+    * [AIRAVATA-326] - Gram and GridFTP ERP's are not populated in XRegistry entries transfer
+    * [AIRAVATA-327] - Application temporary directory was not populated
+    * [AIRAVATA-328] - Service Inputs and outputs are not coming
+    * [AIRAVATA-329] - Verify different name spaces
+    * [AIRAVATA-336] - After migration of xregistry resources, Application Services are not listed in Component List
+    * [AIRAVATA-337] - Compare the OGCE Schema and Airavata Schema then add missing parts to airavata Schema
+    * [AIRAVATA-491] - Do-While GUI component
+    * [AIRAVATA-492] - Changing the workflow model for do-while
+    * [AIRAVATA-493] - Add Do-while handler for Workflow Interpreter
+
+** Improvement
+    * [AIRAVATA-284] - Making the timeout value configurable in ws-messenger client package
+    * [AIRAVATA-313] - Add validation in to airavata before submitting jobs to Grid
+    * [AIRAVATA-334] - Xbaya Application description GUI
+    * [AIRAVATA-381] - Copying gridftp and urls in to Grid during input Staging
+    * [AIRAVATA-390] - Allowing users to configure the XBaya GUI placement in the screen
+    * [AIRAVATA-401] - Allowing users to give empty String and URL inputs for a workflow
+    * [AIRAVATA-403] - Workflow Execution Context should be used for all workflow executions
+    * [AIRAVATA-405] - Adding monitoring capability to AiravataClient
+    * [AIRAVATA-412] - GFac outputdata directory name should be customizable from application description
+    * [AIRAVATA-464] - Extension for Application Deployment Description to specify Hadoop provider specific parameters 
+    * [AIRAVATA-483] - Create java docs with the build using maven
+    * [AIRAVATA-484] - Airavata API improvements
+    * [AIRAVATA-486] - Add a document describing Airavata Users to the website
+    * [AIRAVATA-520] - Service outputs as stdout and stderr
+    
+** Bug Fixes
+    * [AIRAVATA-296] - Threads get create continuously in WorkflowInterpreter during accessing registry
+    * [AIRAVATA-362] - Error while saving Gram Configuration
+    * [AIRAVATA-368] - Host description update doesn't work properly
+    * [AIRAVATA-369] - Huge Error message box comes when try to show an huge error
+    * [AIRAVATA-380] - GFac doesn't keep the order properly for application invocation
+    * [AIRAVATA-382] - Workflow loading when there's a URIParameterType is there in the workflow
+    * [AIRAVATA-384] - Wrong workflow is saving so during loading of the workflow it shows a weird input nodes without Edges
+    * [AIRAVATA-385] - Registry related commandline arguments are not picked up by the XBaya GUI
+    * [AIRAVATA-386] - Cannot configure input nodes by clicking on inputNodes
+    * [AIRAVATA-393] - Error while processing input from another node at Gfac-service
+    * [AIRAVATA-395] - gfac fails with ArrayInput types
+    * [AIRAVATA-411] - Service Description editing fails
+    * [AIRAVATA-416] - Notifications are not delivering sometimes when a workflow run in Interpreter Service mode
+    * [AIRAVATA-418] - Handling application exit codes and if its non zero through and error up to XBaya GUI
+    * [AIRAVATA-421] - Propagate GFac failures in to XBaya GUI properly and make the failure nodes red
+    * [AIRAVATA-425] - jackrabbit.log_IS_UNDEFINED
+    * [AIRAVATA-431] - Error when importing a workflow from file system
+    * [AIRAVATA-432] - GFAC is not creating outputData directory for GRAM Jobs
+    * [AIRAVATA-435] - outputData directory variable is set as inputData in Gram RSL
+    * [AIRAVATA-436] - GFAC does not support reading output data directly from outputData and set values into output array
+    * [AIRAVATA-438] - Sometimes Gfac notifications are not receiving to XBaya so the failures scenarios are not visible to the user
+    * [AIRAVATA-456] - Input type URIArray is not handled properly
+    * [AIRAVATA-466] - WorkflowInterpreter notification is broken
+    * [AIRAVATA-487] - Changing the host dynamically based on the request content
+    * [AIRAVATA-494] - Not able to Run a local service in GFAC from Xbaya
+    * [AIRAVATA-502] - -workflow option doesn't work on trunk
+    * [AIRAVATA-503] - Workflow nodes are not becoming red when it failes but it receives the proper notification
+    * [AIRAVATA-504] - NPE while starting Airavata Server
+    * [AIRAVATA-505] - Saved workflow with EndWhile is loading the component wrong
+    * [AIRAVATA-507] - NPE when deploying Airavata on Tomcat
+    * [AIRAVATA-508] - Cannot add multipe hosts for a single service
+    * [AIRAVATA-509] - Gram Hosts are not showing properly in XBAya gui
+    * [AIRAVATA-510] - When connecting through XBaya to an Airavata which is deployed on tomcat, MessageBox and MessageBroker URLs are not propagated properly
+
+** Test
+    * [AIRAVATA-472] - Add more test cases to cover ForEach construct functionality
 
 
+Apache Airavata Version 0.3-INCUBATING Released on 2012-05-14
+=============================================================
+0.3-INCUBATNG is the second release of Airavata (skipped 0.1-INCUBATNG). This release focuses on improving test cases
++and stability of code, documentation.
 
+** New Feature
+    * [AIRAVATA-100] - Workflow Execution Context Header schema
+    * [AIRAVATA-305] - Allow users to configure provenacne Writer Thread pool size and shutdown the thread pool during service shutdown
+    * [AIRAVATA-348] - Need Maven profiles for building Airavata clients.
+
+** Task
+    * [AIRAVATA-106] - Adding a Sample which demonstares the usage of XMLBean generated POJO classes
+    * [AIRAVATA-301] - create documentation for how to use XBayaClient with a sample code
+    * [AIRAVATA-302] - Document the xbaya.properties file entries used in WorkflowInterpreter service in detail
+    * [AIRAVATA-303] - Document how to invoke echo service in one of the super computers (ranger)
+    
+** Sub-task
+    * [AIRAVATA-291] - Test Foreach when workflow interpreter is  running without the ws-messenger
+    * [AIRAVATA-292] - Long running stress evaluation of workflow interpreter without the ws-messenger
+    * [AIRAVATA-407] - name all module jars with airavata prefix
+
+** Improvement
+    * [AIRAVATA-253] - Remove weps.jar
+    * [AIRAVATA-263] - Improve WorkflowInterpreter to run multiple jobs in parallel
+    * [AIRAVATA-267] - minimize the default size of XBaya Window
+    * [AIRAVATA-273] - Providing multiple port suppor for EndForEach Node
+    * [AIRAVATA-274] - Threads get created during a long run of Interpreter service
+    * [AIRAVATA-279] - xml serialization error in 10 minute tutorial
+    * [AIRAVATA-285] - Remove messenger to attic
+    * [AIRAVATA-293] - Allow users to configure the time interval to delete old messageboxes
+    * [AIRAVATA-294] - Create new api method to initialize the XBaya client without the notificaton listner
+    * [AIRAVATA-319] - Move the XBayaClient to a separate module
+    * [AIRAVATA-398] - remove src and target folders from binary distribution of samples
+
+** Bug
+    * [AIRAVATA-266] - Fix intermittent test failures in XBaya test cases
+    * [AIRAVATA-269] - Hyphen replacement is not working properly
+    * [AIRAVATA-272] - XBaya UI Application Description saving - executable selection doens't work properly
+    * [AIRAVATA-275] - PUBLISHER threads are not interrupted after the workflow inovacation
+    * [AIRAVATA-276] - Unnecessary QueueName element in ApplicationDescription dialog 
+    * [AIRAVATA-283] - Old messagebox deletion doesn't work 
+    * [AIRAVATA-286] - Registry API random test failures
+    * [AIRAVATA-295] - In a long run messagePuller threads are not killing completely
+    * [AIRAVATA-297] - New Deployment Description panel "save" button
+    * [AIRAVATA-310] - Not able to edit existing service description
+    * [AIRAVATA-311] - New Deployment Description panel layout issue
+    * [AIRAVATA-312] - Host Description Advanced Options panel layout issue
+    * [AIRAVATA-378] - Update Gram Configuration Dialog to accept Static Working Directory option
+    * [AIRAVATA-389] - jobs fails with lack of memory in batch submission
+    * [AIRAVATA-399] - Improve GramProvider to support transfer of local files 
+    
+** Test
+    * [AIRAVATA-239] - Create a Edit distance based dot product and cartisian product ForEach test case
+
+Airavata Version 0.2-INCUBATING Released on 2012-04-22
+======================================================
+
+0.2-INCUBATNG is the first release of Airavata, 0.1-INCUBATNG was attempted but the vote was cancelled. 
+This notes covers both the releases. This release focuses on improving test cases and stability of code, 
+cleaning up of donated code, packaging all components into modular architecture, documentation, and 
+removal of non-compatible license dependencies.
+ 
+
+** New Feature
+    * [AIRAVATA-104] - Allow creating new account using XBaya GUI for Jackrabbit registry
+
+** Task
+    * [AIRAVATA-78] - Creating a document how to deploy gfac-axis2 service on axis2
+    * [AIRAVATA-145] - Deprecate support for GPEL Client in XBaya
+    * [AIRAVATA-227] - Disable Jython Execution Menu
+    * [AIRAVATA-246] - Update the site documentation
+    * [AIRAVATA-247] - Create new document for advance workflow sample running
+    * [AIRAVATA-248] - Add the Complex-math-service and Levinshtine-distance-service to the maven build, in order to build axis2 service archives
+
+** Improvement
+    * [AIRAVATA-222] - Workflow launch input box requires inserting xml wrapper elements
+    * [AIRAVATA-223] - Workflow Interpreter should go to pause if it waits on a failed service
+    * [AIRAVATA-224] - Popup  save dialog when closing the workflow tab if changed
+    * [AIRAVATA-225] - Add more samples/workflows which demonstrates the use of basic constructs
+    * [AIRAVATA-226] - Allow user to browse the Application during definition of application description
+    * [AIRAVATA-230] - Review XBaya code
+    * [AIRAVATA-231] - Deprecate Stream component
+    * [AIRAVATA-235] - Ability to edit existing application/service and host descriptions
+    * [AIRAVATA-241] - Check App/Service/host descriptions before saving whether it overrides existing document
+
+** Bug
+    * [AIRAVATA-81] - Workflow interpreter- Workflow already running
+    * [AIRAVATA-118] - WS-Notification monitoring tool is failing in airavata
+    * [AIRAVATA-181] - When adding a ServiceDescription through the UI sometimes the out parameter is not added
+    * [AIRAVATA-184] - Messagebox test should skip if a listener port cannot be started on machine due to firewall or system issues. 
+    * [AIRAVATA-194] - XBaya Registry Test throws XML Parsing error
+    * [AIRAVATA-203] - XBaya console error: node does not have a parent
+    * [AIRAVATA-205] - SimpleMathService can be added 2 time but not more than that
+    * [AIRAVATA-217] - GramProvider Test is failing with new schema
+    * [AIRAVATA-218] - Application registration randomly sets application name to Application1
+    * [AIRAVATA-219] - Appearence of dynamic workflow run toolbar during workflow execution
+    * [AIRAVATA-221] - Inconsistency in managing of the Workflow instance status from GUI
+    * [AIRAVATA-228] - XBaya Registry Connection Error Message
+    * [AIRAVATA-233] - ressurect workflow test
+    * [AIRAVATA-234] - HostDescription is allowed to be saved over and over in HostDescriptionDialog
+    * [AIRAVATA-244] - CrossProductWorkflowTest fails with a NP
+    * [AIRAVATA-245] - Fixing a build failure in WorkflowTrackingTest
+
+** Test
+    * [AIRAVATA-238] - Include a workflow tracking test that include the Messaging system
+    * [AIRAVATA-242] - Registry Delete test
+    * [AIRAVATA-243] - Registry Restart while XBaya is running Test
+
+
+Version 0.1 Attempted Release on 2011-11-11 and Cancelled
+=========================================================
+
+** Initial Setup
+    * [AIRAVATA-1 to AIRAVATA-10] - Accepting Code donation from OGCE. Setup and organize SVN, Website JIRA.
+    
+** Crypto Requirements & License Compatibility
+    * [AIRAVATA-7] - Crypto Requirements for all SSL and GSI Security Dependencies
+    * [AIRAVATA-23, AIRAVATA-26 to 28] - Remove MySQL jars and integrate with Apache Derby In-Memory database
+   
+** Build, Tools, Documentation & Code Cleanup
+    * [AIRAVATA-38] - Improve Eclipse support
+    * [AIRAVATA-94] - Add Airavata to Apache Sonar analysis service
+    * [AIRAVATA-95] - Add Airavata to Apache's Jenkins build system
+    * [AIRAVATA-42] - Providing README.txt and install files in to source
+    * [AIRAVATA-58] - SVN Reorganization
+    * [AIRAVATA-56] - Clean up Workflow-Interpreter pom file and correct the build profile for this module
+    * [AIRAVATA-86] - create complete airavata distribution
+    * [AIRAVATA-101] - Clean up WS-Messenger package
+    * [AIRAVATA-122] - Add Architecture to Website
+    * [AIRAVATA-144] - Deprecate XRegistry and move to Attic
+    
+** Improvement
+    * [AIRAVATA-68] - Import OGCE GFac Schema as based type system for airavata Gfac
+    * [AIRAVATA-102] - Simplify XBaya Menu to make it self explanatory
+    * [AIRAVATA-105] - Improvements to the HostDescription, ServiceDescription and ApplicationDeploymentDescription classes
+    * [AIRAVATA-107 to AIRAVATA-110] - Switch Logging Library to SLF4J
+    * [AIRAVATA-123] - Aggregate the existing 3 forms & create a single form to support adding Application/Service/Host descriptors from XBaya GUI
+    * [AIRAVATA-143] - Integrate Globus Online file transfer capability to XBaya
+    * [AIRAVATA-146] - Add a Window to XBaya to support Globus online file transfers
+    * [AIRAVATA-152] - Support application level scheduling and outputs in execution context
+    * [AIRAVATA-153] - Improve ShellApplicationDeployment to use POJOs generated from XMLBeans
+    * [AIRAVATA-161] - Reorganize Application Schema to make it extendable. 
+    * [AIRAVATA-162] - Service Description Schema should have method and port types to generate wsdl
+    * [AIRAVATA-171] - Remove GFac POJO and replace with XMLBeans object
+
+** New Feature
+    * [AIRAVATA-75] - Integrate new Registry API and GFAC Pojos to XBaya
+    * [AIRAVATA-117] - Provided set of gfac-urls can be used in xbaya by referring registry
+    * [AIRAVATA-134] - Saving outputs of Nodes in to Registry User space
+    * [AIRAVATA-148] - Create a JCR registry browser for XBaya
+    * [AIRAVATA-157] - Add workflow provenance interface to catalog workflow execution data
+    * [AIRAVATA-158] - Implement Provenance Cataloging with JCR registry
+    * [AIRAVATA-163] - Add WSDL Generation utilities to gfac-schema-utils
+    * [AIRAVATA-119] - Save Application Descriptors through the JCRComponentRegistry in ApplicationDescriptionRegistrationWindow
+    * [AIRAVATA-137] - When creating/updating a Service Description the WSDL for that service should be autogenerated & saved to the registry  
+    * [AIRAVATA-61] - Integration of improved workflow tracking library
+    * [AIRAVATA-36] - Change XBaya event handling to new WS-Messenger Client
+    * [AIRAVATA-50] - Integrate all Airavata components system to use improved WS-Messenger
+    * [AIRAVATA-171] - Improved GFac Application Registration Schema to use XML Beans, change the GFac Architecture
+    * [AIRAVATA-183] - Change GFac architecture to serve incoming request, without starting temporary services each time
+    * [AIRAVATA-73] - Add a Repository interface to GFac to experiment with JCR repository API
+    * [AIRAVATA-74] - Integrate new Registry API to GFAC
+    * [AIRAVATA-148 Create a JCR registry browser for XBaya
+    * [AIRAVATA-159] - Add data browsing to the registry browser
+    * [AIRAVATA-183] - Changing GFac architecture to better integrate with Axis2
+
+** Bug
+    * [AIRAVATA-24] - Error while running MsgBoxSample
+    * [AIRAVATA-140] - Removing XRegistry menus from Xbaya since they are no longer functioning.
+    * [AIRAVATA-142] - Cannot execute a workflow in XBaya when MessageBox is deployed on other machine
+    * [AIRAVATA-150] - XBayaService is not working
+    * [AIRAVATA-151] - Fixing a build error in Airavata trunk
+    * [AIRAVATA-154] - Fixing a test failure in PropertiesBasedServiceImplTest
+    * [AIRAVATA-155] - Improve ServiceDescription to use POJOs generated from XMLBeans
+    * [AIRAVATA-156] - Improve DataType class to use POJOs generated from XMLBeans
+    * [AIRAVATA-160] - Storing inputs for workflow in to Registry
+    * [AIRAVATA-164] - XML format error while running the test WorkflowTest
+    * [AIRAVATA-168] - Fixing the name of generated apache-airavata--0.0.1-SNAPSHOT-bin.zip file
+    * [AIRAVATA-172] - Fix build warnings
+    * [AIRAVATA-182] - Fixing the build failure in airavata trunk
 
 
 
