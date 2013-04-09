@@ -2,7 +2,7 @@ Apache Airavata Change Log
 
 See http://issues.apache.org/jira/browse/AIRAVATA-* (where * is the number of the issue below)
 
-Apache Airavata Version 0.6 Released on 2013-01-25
+Apache Airavata Version 0.7 Released on 2013-04-09
 ==================================================
 0.7 is the sixth release of Airavata (skipped 0.1-INCUBATNG). This release focuses GFac rearchitecturing and more GFac level changes. For detailed tasks list, please see RELEASE_NOTES.
 
