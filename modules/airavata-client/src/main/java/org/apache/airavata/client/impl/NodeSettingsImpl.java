@@ -76,4 +76,14 @@ public class NodeSettingsImpl implements NodeSettings {
 		this.serviceId=serviceId;
 	}
 
+	@Override
+	public void setHostSettings(HostSchedulingSettings hostSchedulingSettings) {
+		this.hostSchedulingSettings = hostSchedulingSettings;
+	}
+
+	@Override
+	public void setHPCSettings(HPCSettings hpcSettings) {
+		this.hpcSettings = hpcSettings;
+	}
+
 }
