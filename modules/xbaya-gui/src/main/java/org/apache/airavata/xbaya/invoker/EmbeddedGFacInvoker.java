@@ -280,12 +280,12 @@ public class EmbeddedGFacInvoker implements Invoker {
      */
     public synchronized boolean invoke() throws WorkflowException {
         try {
-            ContextHeaderDocument.ContextHeader contextHeader = this.configuration.getContextHeader();
-            String hostName = null;
-            if(contextHeader != null){
-                hostName = contextHeader.getSoaServiceEprs().getHostDescriptor();
-            }
-            //todo This is the basic scheduling, have to do proper scheduling implementation
+        	 ContextHeaderDocument.ContextHeader contextHeader =  WorkflowContextHeaderBuilder.removeOtherSchedulingConfig(nodeID,this.configuration.getContextHeader());
+             String hostName = null;
+             if(contextHeader != null){
+                 hostName = contextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray(0).getHostName();
+             }
+        	//todo This is the basic scheduling, have to do proper scheduling implementation
             ServiceDescription serviceDescription = airavataAPI.getApplicationManager().getServiceDescription(serviceName);
             HostDescription registeredHost = getRegisteredHost(airavataAPI, this.serviceName);
             // if user specify a host, no matter what we pick that host for all the nodes, todo: allow users to specifi node specific host
