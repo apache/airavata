@@ -58,4 +58,16 @@ public interface NodeSettings {
 	 * @param serviceId
 	 */
 	public void setServiceId(String serviceId);
+	
+	/**
+	 * set host settings for the application
+	 * @param hostSchedulingSettings
+	 */
+	public void setHostSettings(HostSchedulingSettings hostSchedulingSettings);
+	
+	/**
+	 * Set HPC settings for the grid application
+	 * @param hpcSettings
+	 */
+	public void setHPCSettings(HPCSettings hpcSettings);
 }
