@@ -1,6 +1,6 @@
 /*
  *
- * Licensed to the Apache Software Foundation (ASF) under one
+ * Licensed to the Apache Software Foundation (ASF) und= nuer one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
  * regarding copyright ownership.  The ASF licenses this file
@@ -283,7 +283,9 @@ public class EmbeddedGFacInvoker implements Invoker {
         	 ContextHeaderDocument.ContextHeader contextHeader =  WorkflowContextHeaderBuilder.removeOtherSchedulingConfig(nodeID,this.configuration.getContextHeader());
              String hostName = null;
              if(contextHeader != null){
+            	 if(contextHeader.getWorkflowSchedulingContext() != null && contextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray().length > 0 && contextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray(0).getHostName() != null){
                  hostName = contextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray(0).getHostName();
+                 }
              }
         	//todo This is the basic scheduling, have to do proper scheduling implementation
             ServiceDescription serviceDescription = airavataAPI.getApplicationManager().getServiceDescription(serviceName);
