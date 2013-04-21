@@ -12,4 +12,20 @@
         <xb:package>org.apache.airavata.schemas.gfac</xb:package>
     </xb:namespace>
     
+    <xb:namespace uri="http://schemas.ggf.org/jsdl/2005/11/jsdl">
+        <xb:package>org.ogf.schemas.jsdl</xb:package>
+    </xb:namespace>
+    
+    <xb:namespace uri="http://schemas.ggf.org/jsdl/2005/11/jsdl-posix">
+        <xb:package>org.ogf.schemas.jsdl.posix</xb:package>
+    </xb:namespace>
+    
+    <xb:namespace uri="http://schemas.ogf.org/jsdl/2007/02/jsdl-spmd">
+        <xb:package>org.ogf.schemas.jsdl.spmd</xb:package>
+    </xb:namespace>
+  
+    <xb:namespace uri="http://schemas.ggf.org/jsdl/2006/07/jsdl-hpcpa">
+        <xb:package>org.ogf.schemas.jsdl.hpcpa</xb:package>
+    </xb:namespace>
+      
 </xb:config>
