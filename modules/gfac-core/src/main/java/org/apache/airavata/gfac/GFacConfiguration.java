@@ -218,7 +218,7 @@ public class GFacConfiguration {
      * @return list of attribute values.
      * @throws XPathExpressionException
      */
-    private static List<String> xpathGetAttributeValueList(Document doc, String expression, String attribute) throws XPathExpressionException {
+    public static List<String> xpathGetAttributeValueList(Document doc, String expression, String attribute) throws XPathExpressionException {
         XPathFactory xPathFactory = XPathFactory.newInstance();
         XPath xPath = xPathFactory.newXPath();
         XPathExpression expr = xPath.compile(expression);
@@ -251,4 +251,7 @@ public class GFacConfiguration {
         return arlList;
     }
 
+    public static Document getHandlerDoc() {
+        return handlerDoc;
+    }
 }
