@@ -119,10 +119,10 @@ public class GridFTPInputHandler implements GFacHandler {
         for (String endpoint : gridFTPEndpointArray) {
             URI inputURI = GFacUtils.createGsiftpURI(endpoint, app.getInputDataDirectory());
             String fileName = new File(gridftpURL.getPath()).getName();
-            String s = inputURI.getPath() + File.separator + fileName;
+            String destLocalPath = inputURI.getPath() + File.separator + fileName;
             //if user give a url just to refer an endpoint, not a web resource we are not doing any transfer
             if (fileName != null && !"".equals(fileName)) {
-                destURI = GFacUtils.createGsiftpURI(endpoint, s);
+                destURI = GFacUtils.createGsiftpURI(endpoint, destLocalPath);
                 if (paramValue.startsWith("gsiftp")) {
                 	// no need to do if it is unicore, as unicore will download this on user's behalf to the job space dir
                 	if(isInputNonLocal) ftp.uploadFile(gridftpURL, destURI, gssCred);
@@ -160,7 +160,7 @@ public class GridFTPInputHandler implements GFacHandler {
                 return paramValue;
             }
         }
-        return destURI.toString();
+        return destURI.getPath();
     }
 
 
