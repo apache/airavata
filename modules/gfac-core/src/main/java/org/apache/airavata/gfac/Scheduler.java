@@ -71,14 +71,13 @@ public class Scheduler {
         String s = "";
         try {
             List<String> aClass = GFacConfiguration.xpathGetAttributeValueList(GFacConfiguration.getHandlerDoc(),
-                    Constants.XPATH_EXPR_APPLICATION_HANDLERS_START + applicationName + "]", Constants.GFAC_CONFIG_APPLICATION_NAME_ATTRIBUTE);
+                    Constants.XPATH_EXPR_APPLICATION_HANDLERS_START + applicationName + "']", Constants.GFAC_CONFIG_APPLICATION_NAME_ATTRIBUTE);
             // This should be have a single element only.
             if (!aClass.isEmpty()) {
                 s = aClass.get(0);
                 Class<? extends GFacProvider> aClass1 = Class.forName(s).asSubclass(GFacProvider.class);
                 return aClass1.newInstance();
             }
-
         } catch (XPathExpressionException e) {
            log.error("Error configuring gfac-config.xml for application specific configuration");
             throw new GFacException("Error configuring gfac-config.xml for application specific configuration", e);
