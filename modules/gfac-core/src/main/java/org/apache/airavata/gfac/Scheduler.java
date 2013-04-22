@@ -36,6 +36,9 @@ import org.apache.airavata.schemas.gfac.SSHHostType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.xpath.XPathExpressionException;
+import java.util.List;
+
 
 /**
  * Scheduler decides the execution order of handlers based on application description. In addition
@@ -50,7 +53,7 @@ public class Scheduler {
      * job configuration.
      * @param jobExecutionContext containing job request as well as all the configurations.
      */
-    public static void schedule(JobExecutionContext jobExecutionContext) {
+    public static void schedule(JobExecutionContext jobExecutionContext) throws GFacException{
         // Current implementation only support static handler sequence.
         jobExecutionContext.setProvider(getProvider(jobExecutionContext));
         // TODO: Selecting the provider based on application description.
@@ -61,8 +64,34 @@ public class Scheduler {
      * @param jobExecutionContext containing all the required configurations.
      * @return GFacProvider instance.
      */
-    private static GFacProvider getProvider(JobExecutionContext jobExecutionContext){
+    private static GFacProvider getProvider(JobExecutionContext jobExecutionContext) throws GFacException{
         HostDescription hostDescription = jobExecutionContext.getApplicationContext().getHostDescription();
+        String applicationName = jobExecutionContext.getApplicationContext().
+                getApplicationDeploymentDescription().getType().getApplicationName().getStringValue();
+        String s = "";
+        try {
+            List<String> aClass = GFacConfiguration.xpathGetAttributeValueList(GFacConfiguration.getHandlerDoc(),
+                    Constants.XPATH_EXPR_APPLICATION_HANDLERS_START + applicationName + "]", Constants.GFAC_CONFIG_APPLICATION_NAME_ATTRIBUTE);
+            // This should be have a single element only.
+            if (!aClass.isEmpty()) {
+                s = aClass.get(0);
+                Class<? extends GFacProvider> aClass1 = Class.forName(s).asSubclass(GFacProvider.class);
+                return aClass1.newInstance();
+            }
+
+        } catch (XPathExpressionException e) {
+           log.error("Error configuring gfac-config.xml for application specific configuration");
+            throw new GFacException("Error configuring gfac-config.xml for application specific configuration", e);
+        } catch (ClassNotFoundException e) {
+            log.error("Application Provider class: " + s + "couldn't find");
+            throw new GFacException("Error initializing application specific Handler", e);
+        } catch (InstantiationException e) {
+            log.error("Error initializing application specific Handler");
+            throw new GFacException("Error initializing application specific Handler", e);
+        } catch (IllegalAccessException e) {
+            log.error("Error initializing application specific Handler");
+            throw new GFacException("Error initializing application specific Handler", e);
+        }
         if(hostDescription.getType() instanceof GlobusHostType){
             return new GramProvider();
         }

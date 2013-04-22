@@ -28,6 +28,8 @@ public class Constants {
 	public static final String XPATH_EXPR_APPLICATION_HANDLERS_START = "/GFac/Application[@name='";
 	public static final String XPATH_EXPR_APPLICATION_INFLOW_HANDLERS_END = "']/InHandlers/Handler";
 	public static final String XPATH_EXPR_APPLICATION_OUTFLOW_HANDLERS_END = "']/OutHandlers/Handler";
+    public static final String XPATH_EXPR_APPLICATION_PROVIDER = "']/OutHandlers/Handler";
+
 
 	public static final String XPATH_EXPR_PROVIDER_HANDLERS_START = "/GFac/Provider[@class='";
 	public static final String XPATH_EXPR_PROVIDER_INFLOW_HANDLERS_END = "']/InHandlers/Handler";
