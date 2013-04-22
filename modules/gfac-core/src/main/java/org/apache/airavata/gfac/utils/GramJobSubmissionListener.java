@@ -102,6 +102,7 @@ public class GramJobSubmissionListener implements GramJobListener{
         switch (this.status) {
         case GramJob.STATUS_FAILED:
             log.info("Job Error Code: " + error);
+            this.finished = true;
         case GramJob.STATUS_DONE:
             this.finished = true;
         }
@@ -109,7 +110,7 @@ public class GramJobSubmissionListener implements GramJobListener{
         return this.finished;
     }
 
-    public void statusChanged(GramJob job) {
+    public synchronized void statusChanged(GramJob job) {
         String jobStatusMessage = "Status of job " + job.getIDAsString() + "is " + job.getStatusAsString();
         /*
          * Notify status change
