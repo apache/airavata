@@ -26,6 +26,7 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.JobSubmissionFault;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
+import org.apache.airavata.gfac.notification.events.GramJobIDEvent;
 import org.apache.airavata.gfac.notification.events.StartExecutionEvent;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
@@ -69,7 +70,6 @@ public class GramProvider implements GFacProvider {
             String gateKeeper = host.getGlobusGateKeeperEndPointArray(0);
             log.info("Request to contact:" + gateKeeper);
 
-            log.info(job.getRSL());
             buf.append("Finished launching job, Host = ").append(host.getHostAddress()).append(" RSL = ")
                     .append(job.getRSL()).append(" working directory = ").append(app.getStaticWorkingDirectory())
                     .append(" temp directory = ").append(app.getScratchWorkingDirectory())
@@ -80,44 +80,41 @@ public class GramProvider implements GFacProvider {
             * The second boolean is to specify to use the full proxy and not delegate a limited proxy.
             */
             job.request(gateKeeper, false, false);
+            log.info(buf.toString());
+            checkJobStatus(jobExecutionContext, host, gateKeeper);
+            
             String gramJobid = job.getIDAsString();
-            log.info("JobID = " + gramJobid);
+            String jobID = "JobID= " + gramJobid;
+            log.info(jobID);
+            jobExecutionContext.getNotifier().publish(new GramJobIDEvent(jobID));
+           
             String experimentID = (String) jobExecutionContext.getProperty(Constants.PROP_TOPIC);
             String nodeID = (String)jobExecutionContext.getProperty(Constants.PROP_WORKFLOW_NODE_ID);
             String hostName = jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostName();
             WorkflowNodeGramData workflowNodeGramData = new WorkflowNodeGramData(experimentID, nodeID, job.getRSL(),hostName , job.getIDAsString());
             try {
+            	// for provider test
+            	if(jobExecutionContext.getGFacConfiguration().getAiravataAPI() != null)
                 jobExecutionContext.getGFacConfiguration().getAiravataAPI().getProvenanceManager().updateWorkflowNodeGramData(workflowNodeGramData);
             } catch (AiravataAPIInvocationException e) {
                 throw new GFacProviderException(e.getMessage(), e, jobExecutionContext);
             }
-            log.info(buf.toString());
             /*
-            * Block untill job is done
+            * Wait until job is done
             */
             listener.waitFor();
 
-
-            /*
-            * Fail job
-            */
-            int jobStatus = listener.getStatus();
-
-//            if (job.getExitCode() != 0 || jobStatus == GramJob.STATUS_FAILED) {
-              if (jobStatus == GramJob.STATUS_FAILED) {
-                int errCode = listener.getError();
-                String errorMsg = "Job " + job.getID() + " on host " + host.getHostAddress() + " Job Exit Code = "
-                        + listener.getError();
-                JobSubmissionFault error = new JobSubmissionFault(this, new Exception(errorMsg), "GFAC HOST",
-                        gateKeeper, job.getRSL(), jobExecutionContext);
-                throw error;
-            }
+            checkJobStatus(jobExecutionContext, host, gateKeeper);
+            
         } catch (GramException e) {
             log.error(e.getMessage());
             JobSubmissionFault error = new JobSubmissionFault(this, e, host.getHostAddress(),
                     host.getGlobusGateKeeperEndPointArray(0), job.getRSL(), jobExecutionContext);
             throw error;
-        } catch (GSSException e) {
+        }catch(JobSubmissionFault e){
+        	throw new GFacProviderException(e.getMessage(), e, jobExecutionContext);
+        } 
+        catch (GSSException e) {
             log.error(e.getMessage());
             throw new GFacProviderException(e.getMessage(), e, jobExecutionContext);
         } catch (InterruptedException e) {
@@ -140,11 +137,24 @@ public class GramProvider implements GFacProvider {
         }
 
     }
-
+	
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
     }
 
     public void initProperties(Map<String, String> properties) throws GFacProviderException, GFacException {
 
     }
+    private void checkJobStatus(JobExecutionContext jobExecutionContext, GlobusHostType host, String gateKeeper)
+			throws JobSubmissionFault {
+		int jobStatus = listener.getStatus();
+
+		if (jobStatus == GramJob.STATUS_FAILED) {
+			String errorMsg = "Job " + job.getID() + " on host " + host.getHostAddress() + " Job Exit Code = "
+					+ listener.getError();
+			JobSubmissionFault error = new JobSubmissionFault(this, new Exception(errorMsg), "GFAC HOST", gateKeeper,
+					job.getRSL(), jobExecutionContext);
+			throw error;
+		}
+	}
+
 }
