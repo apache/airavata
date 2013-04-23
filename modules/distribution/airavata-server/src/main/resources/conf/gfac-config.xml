@@ -13,7 +13,11 @@
 <GFac>
     <GlobalHandlers>
         <InHandlers>
-            <Handler class="org.apache.airavata.gfac.handler.AppDescriptorCheckHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.AppDescriptorCheckHandler">
+               <!-- In case custom properties need to be set to provider 
+       			 <property name="name" value="value"/> 
+        		-->
+            </Handler>
         </InHandlers>
         <OutHandlers></OutHandlers>
     </GlobalHandlers>
@@ -23,6 +27,9 @@
         </InHandlers>
     </Provider>
     <Provider class="org.apache.airavata.gfac.provider.impl.GramProvider">
+       <!-- In case custom properties need to be set to provider 
+       			 <property name="name" value="value"/> 
+        		-->
         <InHandlers>
             <Handler class="org.apache.airavata.gfac.handler.GramDirectorySetupHandler"/>
             <Handler class="org.apache.airavata.gfac.handler.GridFTPInputHandler"/>
@@ -31,7 +38,7 @@
             <Handler class="org.apache.airavata.gfac.handler.GridFTPOutputHandler"/>
         </OutHandlers>
     </Provider>
-      <Provider class="org.apache.airavata.gfac.provider.BESProvider">
+      <Provider class="org.apache.airavata.gfac.provider.impl.BESProvider">
         <InHandlers>
         	<Handler class="org.apache.airavata.gfac.handler.GramDirectorySetupHandler"/>
             <Handler class="org.apache.airavata.gfac.handler.GridFTPInputHandler"/>
@@ -59,7 +66,7 @@
         </OutHandlers>
     </Provider>
 
-    <Application name="UltraScan">
+    <Application name="UltraScan" class="org.apache.airavata.gfac.provider.impl.GramProvider">
         <InHandlers>
             <Handler class="org.apache.airavata.handlers.GramDirectorySetupHandler"/>
             <Handler class="org.apache.airavata.handlers.GridFTPInputHandler"/>
