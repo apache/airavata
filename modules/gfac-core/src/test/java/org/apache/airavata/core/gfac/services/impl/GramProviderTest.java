@@ -100,7 +100,7 @@ public class GramProviderTest {
         name.setStringValue("EchoLocal");
         app.setApplicationName(name);
         ProjectAccountType projectAccountType = app.addNewProjectAccount();
-        projectAccountType.setProjectAccountNumber("TG-AST110064");
+        projectAccountType.setProjectAccountNumber("TG-STA110014S");
 
         QueueType queueType = app.addNewQueue();
         queueType.setQueueName("development");
