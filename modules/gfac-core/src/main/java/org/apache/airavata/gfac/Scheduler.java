@@ -69,8 +69,7 @@ public class Scheduler {
      */
     private static GFacProvider getProvider(JobExecutionContext jobExecutionContext) throws GFacException{
         HostDescription hostDescription = jobExecutionContext.getApplicationContext().getHostDescription();
-        String applicationName = jobExecutionContext.getApplicationContext().
-                getApplicationDeploymentDescription().getType().getApplicationName().getStringValue();
+        String applicationName = jobExecutionContext.getServiceName();
         GFacProviderConfig s = null;
         GFacProvider provider = null;
         List<GFacProviderConfig> aClass = null;
