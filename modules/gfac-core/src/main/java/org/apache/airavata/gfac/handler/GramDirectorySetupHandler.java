@@ -20,13 +20,16 @@
 */
 package org.apache.airavata.gfac.handler;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Map;
+
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.ToolsException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.external.GridFtp;
-import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.GramJobSubmissionListener;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
@@ -37,13 +40,6 @@ import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
-
 public class GramDirectorySetupHandler implements GFacHandler {
     private static final Logger log = LoggerFactory.getLogger(GramJobSubmissionListener.class);
 
@@ -52,8 +48,6 @@ public class GramDirectorySetupHandler implements GFacHandler {
 
 
         String[] gridFTPEndpointArray = null;
-
-        String hostName = null;
 
         //TODO: why it is tightly coupled with gridftp
 //        GlobusHostType host = (GlobusHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType();
