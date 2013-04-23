@@ -20,46 +20,46 @@
 */
 package org.apache.airavata.gfac.utils;
 
-import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.MappingFactory;
-import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.context.MessageContext;
-import org.apache.airavata.schemas.gfac.OutputParameterType;
-import org.apache.airavata.schemas.gfac.StdErrParameterType;
-import org.apache.airavata.schemas.gfac.StdOutParameterType;
-
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.airavata.commons.gfac.type.ActualParameter;
+import org.apache.airavata.commons.gfac.type.MappingFactory;
+import org.apache.airavata.schemas.gfac.StdErrParameterType;
+import org.apache.airavata.schemas.gfac.StdOutParameterType;
+import org.apache.airavata.schemas.gfac.URIParameterType;
 
 public class OutputUtils {
     private static String regexPattern = "\\s*=\\s*([^\\[\\s'\"][^\\s]*|\"[^\"]*\"|'[^']*'|\\[[^\\[]*\\])";
 
-    public static Map<String, ActualParameter> fillOutputFromStdout(JobExecutionContext context, String stdout, String stderr) throws Exception {
+    public static Map<String, ActualParameter> fillOutputFromStdout(Map<String, Object> output, String stdout, String stderr) throws Exception {
 
         Map<String, ActualParameter> result = new HashMap<String, ActualParameter>();
-        OutputParameterType[] outputParametersArray = context.getApplicationContext().
-                getServiceDescription().getType().getOutputParametersArray();
-        MessageContext outMessageContext = context.getOutMessageContext();
-        for (OutputParameterType outparamType : outputParametersArray) {
-            String parameterName = outparamType.getParameterName();
-            ActualParameter actual = (ActualParameter)outMessageContext.getParameter(outparamType.getParameterName());
+        Set<String> keys = output.keySet();
+        for (String paramName : keys) {
+        	ActualParameter actual = (ActualParameter) output.get(paramName);
             // if parameter value is not already set, we let it go
+            
             if (actual == null) {
                 continue;
             }
             if ("StdOut".equals(actual.getType().getType().toString())) {
                 ((StdOutParameterType) actual.getType()).setValue(stdout);
-                result.put(parameterName, actual);
+                result.put(paramName, actual);
             } else if ("StdErr".equals(actual.getType().getType().toString())) {
                 ((StdErrParameterType) actual.getType()).setValue(stderr);
-                result.put(parameterName, actual);
+                result.put(paramName, actual);
             } else {
-                String parseStdout = parseStdout(stdout, parameterName);
+            	if ("URI".equals(actual.getType().getType().toString()) &&  !((URIParameterType) actual.getType()).getValue().isEmpty()){
+            		continue;
+            	}
+                String parseStdout = parseStdout(stdout, paramName);
                 if (parseStdout != null) {
                     MappingFactory.fromString(actual, parseStdout);
-                    result.put(parameterName, actual);
+                    result.put(paramName, actual);
                 }
             }
         }

@@ -130,7 +130,8 @@ public class LocalProvider implements GFacProvider {
         try {
             String stdOutStr = GFacUtils.readFileToString(app.getStandardOutput());
             String stdErrStr = GFacUtils.readFileToString(app.getStandardError());
-            OutputUtils.fillOutputFromStdout(jobExecutionContext, stdOutStr, stdErrStr);
+			Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
+            OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
         } catch (XmlException e) {
             throw new GFacProviderException("Cannot read output:" + e.getMessage(), e, jobExecutionContext);
         } catch (IOException io) {

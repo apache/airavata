@@ -65,18 +65,15 @@ public class GridFTPOutputHandler implements GFacHandler {
  	   HostDescriptionType hostType = jobExecutionContext.getApplicationContext().getHostDescription().getType();
  	   String[] gridFTPEndpointArray = null;
  	   String hostName = null;
- 	   String hostAddress = null;
-
+ 
        if(jobExecutionContext.getApplicationContext().getHostDescription().getType() instanceof GlobusHostType){
         	gridFTPEndpointArray = ((GlobusHostType) hostType).getGridFTPEndPointArray();
         	hostName = ((GlobusHostType) hostType).getHostName();
-        	hostAddress = ((GlobusHostType) hostType).getHostAddress();
-
+ 
        }
        else if (jobExecutionContext.getApplicationContext().getHostDescription().getType() instanceof UnicoreHostType){
         	gridFTPEndpointArray = ((UnicoreHostType) hostType).getGridFTPEndPointArray();
         	hostName = ((UnicoreHostType) hostType).getHostName();
-        	hostAddress = ((UnicoreHostType) hostType).getHostAddress();
        }
        else {
         	//TODO
@@ -152,7 +149,16 @@ public class GridFTPOutputHandler implements GFacHandler {
 //                            stringMap = new HashMap<String, ActualParameter>();
                             stringMap.put(paramName, actualParameter);
                         } else if ("URI".equals(actualParameter.getType().getType().toString())) {
-                            stringMap.put(paramName, actualParameter);
+                        	  URI outputURI = GFacUtils.createGsiftpURI(endpoint, app.getOutputDataDirectory());
+                              List<String> outputList = ftp.listDir(outputURI, gssCred);
+                              String valueList = outputList.get(0);
+                              if(valueList.isEmpty()){
+                            	  stringMap = OutputUtils.fillOutputFromStdout(output, stdout, stderr);
+                              }else{
+                              ((URIParameterType) actualParameter.getType()).setValue(valueList);
+                              stringMap = new HashMap<String, ActualParameter>();
+                              stringMap.put(paramName, actualParameter);
+                              }
                         }
                         else if ("String".equals(actualParameter.getType().getType().toString())) {
                         	String path = app.getOutputDataDirectory()+"/"+((StringParameterType) actualParameter.getType()).getValue();
@@ -163,7 +169,7 @@ public class GridFTPOutputHandler implements GFacHandler {
                         }
                         else {
                             // This is to handle exception during the output parsing.
-                            stringMap = OutputUtils.fillOutputFromStdout(jobExecutionContext, stdout, stderr);
+                            stringMap = OutputUtils.fillOutputFromStdout(output, stdout, stderr);
                         }
                     }
                     if (stringMap == null || stringMap.isEmpty()) {
