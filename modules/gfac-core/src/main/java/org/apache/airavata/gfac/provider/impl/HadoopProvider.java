@@ -22,6 +22,7 @@
 package org.apache.airavata.gfac.provider.impl;
 
 import org.apache.airavata.commons.gfac.type.ActualParameter;
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.provider.GFacProvider;
@@ -137,5 +138,9 @@ public class HadoopProvider implements GFacProvider{
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
         // TODO: How to handle cluster shutdown. Best way is to introduce inPath/outPath to handler.
+    }
+
+    public void initProperties(Map<String, String> properties) throws GFacProviderException, GFacException {
+
     }
 }

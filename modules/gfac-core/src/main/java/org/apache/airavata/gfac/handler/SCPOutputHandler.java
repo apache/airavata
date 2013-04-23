@@ -30,6 +30,7 @@ import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 
 import org.apache.airavata.commons.gfac.type.ActualParameter;
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
 import org.apache.airavata.gfac.utils.GFacUtils;
@@ -39,7 +40,7 @@ import org.apache.xmlbeans.XmlException;
 
 public class SCPOutputHandler implements GFacHandler{
 
-	@Override
+
 	public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
 		ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
 		try {
@@ -78,4 +79,7 @@ public class SCPOutputHandler implements GFacHandler{
 
 	}
 
+    public void init(Map<String, String> properties) throws GFacHandlerException, GFacException {
+
+    }
 }

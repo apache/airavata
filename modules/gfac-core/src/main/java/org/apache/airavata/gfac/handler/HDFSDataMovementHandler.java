@@ -21,6 +21,7 @@
 
 package org.apache.airavata.gfac.handler;
 
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.handler.GFacHandler;
@@ -38,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Map;
 
 public class HDFSDataMovementHandler implements GFacHandler {
     private static final Logger logger = LoggerFactory.getLogger(HDFSDataMovementHandler.class);
@@ -96,4 +98,8 @@ public class HDFSDataMovementHandler implements GFacHandler {
     }
 
     private void handleOutPath(JobExecutionContext jobExecutionContext){}
+
+    public void init(Map<String, String> properties) throws GFacHandlerException, GFacException {
+
+    }
 }

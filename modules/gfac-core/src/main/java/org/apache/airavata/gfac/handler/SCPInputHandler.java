@@ -22,10 +22,7 @@ package org.apache.airavata.gfac.handler;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 
@@ -45,7 +42,7 @@ public class SCPInputHandler implements GFacHandler{
 
 	private static final Logger log = LoggerFactory.getLogger(SCPInputHandler.class);
 
-	@Override
+
 	public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException,GFacException {
 
 		  log.info("Invoking SCPInputHandler");
@@ -88,4 +85,8 @@ public class SCPInputHandler implements GFacHandler{
 		 fileTransfer.upload(inputFile.getAbsolutePath(), remoteFile);
 		 return remoteFile;
 	 }
+
+    public void init(Map<String, String> properties) throws GFacHandlerException, GFacException {
+
+    }
 }

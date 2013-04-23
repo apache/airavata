@@ -18,17 +18,34 @@
  * under the License.
  *
 */
-
 package org.apache.airavata.gfac.handler;
-
-import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.context.JobExecutionContext;
 
 import java.util.Map;
 
-public interface GFacHandler {
+public class GFacHandlerConfig {
 
-    public void init(Map<String,String> properties) throws GFacHandlerException,GFacException;
+    public GFacHandlerConfig(Map<String, String> properties, String className) {
+        this.properties = properties;
+        this.className = className;
+    }
 
-    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException,GFacException;
+    private Map<String,String> properties;
+
+    private String className;
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    public String getClassName() {
+        return className;
+    }
 }

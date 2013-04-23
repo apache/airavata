@@ -23,12 +23,7 @@ package org.apache.airavata.gfac;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -43,13 +38,12 @@ import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.exception.UnspecifiedApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.gfac.context.security.GSISecurityContext;
+import org.apache.airavata.gfac.handler.GFacHandlerConfig;
+import org.apache.airavata.gfac.provider.GFacProviderConfig;
 import org.apache.airavata.gfac.utils.GridConfigurationHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 public class GFacConfiguration {
@@ -61,11 +55,11 @@ public class GFacConfiguration {
     private static Document handlerDoc;
     // Keep list of full qualified class names of GFac handlers which should invoked before
     // the provider
-    private List<String> inHandlers = new ArrayList<String>();
+    private List<GFacHandlerConfig> inHandlers = new ArrayList<GFacHandlerConfig>();
 
     // Keep list of full qualified class names of GFac handlers which should invoked after
     // the provider
-    private List<String> outHandlers = new ArrayList<String>();
+    private List<GFacHandlerConfig> outHandlers = new ArrayList<GFacHandlerConfig>();
 
     private static List<GridConfigurationHandler> gridConfigurationHandlers;
 
@@ -106,35 +100,35 @@ public class GFacConfiguration {
     }
 
 
-    public List<String> getInHandlers() {
+    public List<GFacHandlerConfig> getInHandlers() {
         //This will avoid the misconfiguration done by user in gfac-config.xml
         return removeDuplicateWithOrder(inHandlers);
     }
 
-    public List<String> getOutHandlers() {
+    public List<GFacHandlerConfig> getOutHandlers() {
         //This will avoid the misconfiguration done by user in gfac-config.xml
         return removeDuplicateWithOrder(outHandlers);
     }
-    public void setInHandlers(List<String> inHandlers) {
+    public void setInHandlers(List<GFacHandlerConfig> inHandlers) {
         this.inHandlers = inHandlers;
     }
 
-    public void setOutHandlers(List<String> outHandlers) {
+    public void setOutHandlers(List<GFacHandlerConfig> outHandlers) {
         this.outHandlers = outHandlers;
     }
 
     public void setInHandlers(String providerName, String applicationName) {
         try {
-            this.inHandlers = xpathGetAttributeValueList(handlerDoc, Constants.XPATH_EXPR_GLOBAL_INFLOW_HANDLERS, Constants.GFAC_CONFIG_HANDLER_CLASS_ATTRIBUTE);
+            this.inHandlers = getHandlerConfig(handlerDoc, Constants.XPATH_EXPR_GLOBAL_INFLOW_HANDLERS, Constants.GFAC_CONFIG_HANDLER_CLASS_ATTRIBUTE);
             if (applicationName != null) {
                 String xPath = Constants.XPATH_EXPR_APPLICATION_HANDLERS_START + applicationName + Constants.XPATH_EXPR_APPLICATION_INFLOW_HANDLERS_END;
-                List<String> strings = xpathGetAttributeValueList(handlerDoc, xPath, Constants.GFAC_CONFIG_HANDLER_CLASS_ATTRIBUTE);
-                this.inHandlers.addAll(strings);
+                List<GFacHandlerConfig> handlers = getHandlerConfig(handlerDoc, xPath, Constants.GFAC_CONFIG_HANDLER_CLASS_ATTRIBUTE);
+                this.inHandlers.addAll(handlers);
             }
             if (providerName != null) {
                 String xPath = Constants.XPATH_EXPR_PROVIDER_HANDLERS_START + providerName + Constants.XPATH_EXPR_PROVIDER_INFLOW_HANDLERS_END;
-                List<String> strings = xpathGetAttributeValueList(handlerDoc, xPath, Constants.GFAC_CONFIG_APPLICATION_NAME_ATTRIBUTE);
-                this.inHandlers.addAll(strings);
+                List<GFacHandlerConfig> handlers = getHandlerConfig(handlerDoc, xPath, Constants.GFAC_CONFIG_APPLICATION_NAME_ATTRIBUTE);
+                this.inHandlers.addAll(handlers);
             }
         } catch (XPathExpressionException e) {
             new GFacException("Error parsing Handler Configuration", e);
@@ -143,16 +137,16 @@ public class GFacConfiguration {
 
     public void setOutHandlers(String providerName, String applicationName) {
         try {
-            this.outHandlers = xpathGetAttributeValueList(handlerDoc, Constants.XPATH_EXPR_GLOBAL_OUTFLOW_HANDLERS, Constants.GFAC_CONFIG_HANDLER_CLASS_ATTRIBUTE);
+            this.outHandlers = getHandlerConfig(handlerDoc, Constants.XPATH_EXPR_GLOBAL_OUTFLOW_HANDLERS, Constants.GFAC_CONFIG_HANDLER_CLASS_ATTRIBUTE);
             if (applicationName != null) {
                 String xPath = Constants.XPATH_EXPR_APPLICATION_HANDLERS_START + applicationName + Constants.XPATH_EXPR_APPLICATION_OUTFLOW_HANDLERS_END;
-                List<String> strings = xpathGetAttributeValueList(handlerDoc, xPath, Constants.GFAC_CONFIG_HANDLER_CLASS_ATTRIBUTE);
-                this.outHandlers.addAll(strings);
+                List<GFacHandlerConfig> handlers = getHandlerConfig(handlerDoc, xPath, Constants.GFAC_CONFIG_HANDLER_CLASS_ATTRIBUTE);
+                this.outHandlers.addAll(handlers);
             }
             if(providerName != null) {
                 String xPath = Constants.XPATH_EXPR_PROVIDER_HANDLERS_START + providerName + Constants.XPATH_EXPR_PROVIDER_OUTFLOW_HANDLERS_END;
-                List<String> strings = xpathGetAttributeValueList(handlerDoc, xPath, Constants.GFAC_CONFIG_HANDLER_CLASS_ATTRIBUTE);
-                this.outHandlers.addAll(strings);
+                List<GFacHandlerConfig> handlers = getHandlerConfig(handlerDoc, xPath, Constants.GFAC_CONFIG_HANDLER_CLASS_ATTRIBUTE);
+                this.outHandlers.addAll(handlers);
             }
         } catch (XPathExpressionException e) {
             new GFacException("Error parsing Handler Configuration", e);
@@ -218,20 +212,54 @@ public class GFacConfiguration {
      * @return list of attribute values.
      * @throws XPathExpressionException
      */
-    public static List<String> xpathGetAttributeValueList(Document doc, String expression, String attribute) throws XPathExpressionException {
+    public static List<GFacHandlerConfig> getHandlerConfig(Document doc, String expression, String attribute) throws XPathExpressionException {
         XPathFactory xPathFactory = XPathFactory.newInstance();
         XPath xPath = xPathFactory.newXPath();
         XPathExpression expr = xPath.compile(expression);
 
         NodeList nl = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
-
-        List<String> attributeValues = new ArrayList<String>();
-
+        List<GFacHandlerConfig> gFacHandlerConfigs = new ArrayList<GFacHandlerConfig>();
+        Map<String, String> properties = new HashMap<String, String>();
+        String className = "";
         for (int i = 0; i < nl.getLength(); i++) {
-            attributeValues.add(((Element) nl.item(i)).getAttribute(attribute));
+            className = ((Element) nl.item(i)).getAttribute(attribute);
+            NodeList childNodes = (nl.item(i)).getChildNodes();
+            for(int j = 0;j < childNodes.getLength();j++){
+               if("property".equals(childNodes.item(j).getNodeName())) {
+                   String name = ((Element) childNodes.item(j)).getAttribute("name");
+                   String value = ((Element) childNodes.item(j)).getAttribute("value");
+                   properties.put(name, value);
+               }
+            }
+            GFacHandlerConfig gFacHandlerConfig = new GFacHandlerConfig(properties,className);
+            gFacHandlerConfigs.add(gFacHandlerConfig);
         }
+        return gFacHandlerConfigs;
+    }
 
-        return attributeValues;
+    public static List<GFacProviderConfig> getProviderConfig(Document doc, String expression, String attribute) throws XPathExpressionException {
+        XPathFactory xPathFactory = XPathFactory.newInstance();
+        XPath xPath = xPathFactory.newXPath();
+        XPathExpression expr = xPath.compile(expression);
+
+        NodeList nl = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+        List<GFacProviderConfig> gFacProviderConfigs = new ArrayList<GFacProviderConfig>();
+        Map<String, String> properties = new HashMap<String, String>();
+        String className = "";
+        for (int i = 0; i < nl.getLength(); i++) {
+            className = ((Element) nl.item(i)).getAttribute(attribute);
+            NodeList childNodes = (nl.item(i)).getChildNodes();
+            for (int j = 0; j < childNodes.getLength(); j++) {
+                if ("property".equals(childNodes.item(j).getNodeName())) {
+                    String name = ((Element) childNodes.item(j)).getAttribute("name");
+                    String value = ((Element) childNodes.item(j)).getAttribute("value");
+                    properties.put(name, value);
+                }
+            }
+            GFacProviderConfig gFacProviderConfig = new GFacProviderConfig(properties,className);
+            gFacProviderConfigs.add(gFacProviderConfig);
+        }
+        return gFacProviderConfigs;
     }
 
     public static GFacConfiguration create(Properties configProps) {

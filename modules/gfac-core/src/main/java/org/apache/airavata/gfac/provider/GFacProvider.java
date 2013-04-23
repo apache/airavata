@@ -23,9 +23,13 @@ package org.apache.airavata.gfac.provider;
 
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.schemas.gfac.HadoopHostType;
+
+import java.util.Map;
 
 public interface GFacProvider {
 
+    void initProperties(Map<String,String> properties) throws GFacProviderException,GFacException;
     /**
      * Initialize environment required for invoking the execute method of the provider. If environment setup is
      * done during the in handler execution, validation of environment will go here.

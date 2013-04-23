@@ -23,6 +23,7 @@ package org.apache.airavata.gfac;
 
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.handler.GFacHandler;
+import org.apache.airavata.gfac.handler.GFacHandlerConfig;
 import org.apache.airavata.gfac.handler.GFacHandlerException;
 import org.apache.airavata.gfac.notification.events.ExecutionFailEvent;
 import org.apache.airavata.gfac.notification.events.FinishExecutionEvent;
@@ -113,12 +114,12 @@ public class GFacAPI {
     }
 
     private void invokeInFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
-        List<String> handlers = jobExecutionContext.getGFacConfiguration().getInHandlers();
-        for (String handlerClassName : handlers) {
+        List<GFacHandlerConfig> handlers = jobExecutionContext.getGFacConfiguration().getInHandlers();
+        for (GFacHandlerConfig handlerClassName : handlers) {
             Class<? extends GFacHandler> handlerClass;
             GFacHandler handler;
             try {
-                handlerClass = Class.forName(handlerClassName.trim()).asSubclass(GFacHandler.class);
+                handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
                 handler = handlerClass.newInstance();
             } catch (ClassNotFoundException e) {
                 throw new GFacException("Cannot load handler class " + handlerClassName, e);
@@ -136,13 +137,13 @@ public class GFacAPI {
     }
 
     private void invokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
-        List<String> handlers = jobExecutionContext.getGFacConfiguration().getOutHandlers();
+        List<GFacHandlerConfig> handlers = jobExecutionContext.getGFacConfiguration().getOutHandlers();
 
-        for (String handlerClassName : handlers) {
+        for (GFacHandlerConfig handlerClassName : handlers) {
             Class<? extends GFacHandler> handlerClass;
             GFacHandler handler;
             try {
-                 handlerClass = Class.forName(handlerClassName.trim()).asSubclass(GFacHandler.class);
+                 handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
                 handler = handlerClass.newInstance();
             } catch (ClassNotFoundException e) {
                 log.error(e.getMessage());

@@ -61,7 +61,6 @@ public class SSHProvider implements GFacProvider {
 	private static final Logger log = LoggerFactory.getLogger(SSHProvider.class);
 	private SSHSecurityContext securityContext;
 
-	@Override
 	public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException,GFacException {
 		securityContext = (SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT);
 		ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
@@ -76,7 +75,6 @@ public class SSHProvider implements GFacProvider {
 		}
 	}
 
-	@Override
 	public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
 		ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
 		Session session = null;
@@ -113,7 +111,6 @@ public class SSHProvider implements GFacProvider {
 
 	}
 
-	@Override
 	public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
 	}
 
@@ -192,5 +189,8 @@ public class SSHProvider implements GFacProvider {
 
 		return shellScript;
 	}
+    public void initProperties(Map<String, String> properties) throws GFacProviderException, GFacException {
+
+    }
 
 }

@@ -41,6 +41,8 @@ import org.ietf.jgss.GSSException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 public class GramProvider implements GFacProvider {
     private static final Logger log = LoggerFactory.getLogger(GramJobSubmissionListener.class);
 
@@ -140,5 +142,9 @@ public class GramProvider implements GFacProvider {
     }
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+    }
+
+    public void initProperties(Map<String, String> properties) throws GFacProviderException, GFacException {
+
     }
 }

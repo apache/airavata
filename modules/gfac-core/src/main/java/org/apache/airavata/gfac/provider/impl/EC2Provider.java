@@ -62,6 +62,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class EC2Provider implements GFacProvider {
 
@@ -525,6 +526,9 @@ public class EC2Provider implements GFacProvider {
             ret.add(instance.getInstanceId());
         }
         return ret;
+    }
+    public void initProperties(Map<String, String> properties) throws GFacProviderException, GFacException {
+
     }
 
 }

@@ -37,6 +37,7 @@ import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
+import org.apache.airavata.gfac.handler.GFacHandlerConfig;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.DataType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
@@ -67,8 +68,8 @@ public class ParamChemTest {
 		context.setTrustedCertLoc("./certificates");
 
         //have to set InFlwo Handlers and outFlowHandlers
-        gFacConfiguration.setInHandlers(Arrays.asList(new String[]{"org.apache.airavata.gfac.handler.GramDirectorySetupHandler", "org.apache.airavata.gfac.handler.GridFTPInputHandler"}));
-        gFacConfiguration.setOutHandlers(Arrays.asList(new String[] {"org.apache.airavata.gfac.handler.GridFTPOutputHandler"}));
+        gFacConfiguration.setInHandlers(Arrays.asList(new GFacHandlerConfig[]{new GFacHandlerConfig(null,"org.apache.airavata.gfac.handler.GramDirectorySetupHandler"), new GFacHandlerConfig(null,"org.apache.airavata.gfac.handler.GridFTPInputHandler")}));
+        gFacConfiguration.setOutHandlers(Arrays.asList(new GFacHandlerConfig[] {new GFacHandlerConfig(null,"org.apache.airavata.gfac.handler.GridFTPOutputHandler")}));
         /*
         * Host
         */

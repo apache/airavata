@@ -21,6 +21,7 @@
 package org.apache.airavata.gfac.handler;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import net.schmizz.sshj.connection.ConnectionException;
@@ -38,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 public class SCPDirectorySetupHandler implements GFacHandler{
     private static final Logger log = LoggerFactory.getLogger(SCPDirectorySetupHandler.class);
-	@Override
+
 	public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException,GFacException {
 		log.info("Setup SSH job directorties");
 		makeDirectory(jobExecutionContext);
@@ -77,4 +78,8 @@ public class SCPDirectorySetupHandler implements GFacHandler{
 			securityContext.closeSession(session);
 		}
 	}
+
+    public void init(Map<String, String> properties) throws GFacHandlerException, GFacException {
+
+    }
 }

@@ -23,7 +23,10 @@ package org.apache.airavata.gfac;
 
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.gfac.handler.GFacHandlerConfig;
 import org.apache.airavata.gfac.provider.GFacProvider;
+import org.apache.airavata.gfac.provider.GFacProviderConfig;
+import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.provider.impl.BESProvider;
 import org.apache.airavata.gfac.provider.impl.EC2Provider;
 import org.apache.airavata.gfac.provider.impl.GramProvider;
@@ -68,15 +71,17 @@ public class Scheduler {
         HostDescription hostDescription = jobExecutionContext.getApplicationContext().getHostDescription();
         String applicationName = jobExecutionContext.getApplicationContext().
                 getApplicationDeploymentDescription().getType().getApplicationName().getStringValue();
-        String s = "";
+        GFacProviderConfig s = null;
+        GFacProvider provider = null;
+        List<GFacProviderConfig> aClass = null;
         try {
-            List<String> aClass = GFacConfiguration.xpathGetAttributeValueList(GFacConfiguration.getHandlerDoc(),
+             aClass = GFacConfiguration.getProviderConfig(GFacConfiguration.getHandlerDoc(),
                     Constants.XPATH_EXPR_APPLICATION_HANDLERS_START + applicationName + "']", Constants.GFAC_CONFIG_APPLICATION_NAME_ATTRIBUTE);
             // This should be have a single element only.
             if (!aClass.isEmpty()) {
                 s = aClass.get(0);
-                Class<? extends GFacProvider> aClass1 = Class.forName(s).asSubclass(GFacProvider.class);
-                return aClass1.newInstance();
+                Class<? extends GFacProvider> aClass1 = Class.forName(s.getClassName()).asSubclass(GFacProvider.class);
+                provider = aClass1.newInstance();
             }
         } catch (XPathExpressionException e) {
            log.error("Error configuring gfac-config.xml for application specific configuration");
@@ -92,20 +97,34 @@ public class Scheduler {
             throw new GFacException("Error initializing application specific Handler", e);
         }
         if(hostDescription.getType() instanceof GlobusHostType){
-            return new GramProvider();
+            provider = new GramProvider();
         }
         else if (hostDescription.getType() instanceof UnicoreHostType) {
-        	return new BESProvider();
+        	provider = new BESProvider();
         }
         else if (hostDescription.getType() instanceof Ec2HostType) {
-            return new EC2Provider();
+            provider = new EC2Provider();
         }
         else if (hostDescription.getType() instanceof SSHHostType) {
-            return new SSHProvider();
+            provider = new SSHProvider();
         }
         else {
-            return new LocalProvider();
+            provider = new LocalProvider();
         }
+        String providerName = provider.getClass().getName();
+        try {
+            aClass = GFacConfiguration.getProviderConfig(GFacConfiguration.getHandlerDoc(), Constants.XPATH_EXPR_PROVIDER_HANDLERS_START +
+                    providerName + "']", Constants.GFAC_CONFIG_APPLICATION_NAME_ATTRIBUTE);
+            if(!aClass.isEmpty()){
+                provider.initProperties(aClass.get(0).getProperties());
+            }
+        } catch (XPathExpressionException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (GFacProviderException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return provider;
+
     }
 
 

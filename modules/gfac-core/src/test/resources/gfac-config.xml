@@ -13,7 +13,9 @@
 <GFac>
     <GlobalHandlers>
         <InHandlers>
-            <Handler class="org.apache.airavata.gfac.handler.AppDescriptorCheckHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.AppDescriptorCheckHandler">
+                    <property name="name" value="value"/>
+            </Handler>
         </InHandlers>
         <OutHandlers></OutHandlers>
     </GlobalHandlers>
@@ -23,8 +25,11 @@
         </InHandlers>
     </Provider>
     <Provider class="org.apache.airavata.gfac.provider.impl.GramProvider">
+        <property name="name" value="value"/>
         <InHandlers>
-            <Handler class="org.apache.airavata.gfac.handler.GramDirectorySetupHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.GramDirectorySetupHandler">
+                    <property name="name" value="value"/>
+            </Handler>
             <Handler class="org.apache.airavata.gfac.handler.GridFTPInputHandler"/>
         </InHandlers>
         <OutHandlers>
