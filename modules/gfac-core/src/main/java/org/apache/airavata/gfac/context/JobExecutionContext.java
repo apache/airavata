@@ -121,9 +121,9 @@ public class JobExecutionContext extends AbstractContext{
 
     public void setProvider(GFacProvider provider) {
         this.gfacConfiguration.setInHandlers(provider.getClass().getName(),
-                this.getApplicationContext().getApplicationDeploymentDescription().getType().getApplicationName().getStringValue());
+                this.getServiceName());
         this.gfacConfiguration.setOutHandlers(provider.getClass().getName(),
-                this.getApplicationContext().getApplicationDeploymentDescription().getType().getApplicationName().getStringValue());
+        		 this.getServiceName());
         this.provider = provider;
     }
 
