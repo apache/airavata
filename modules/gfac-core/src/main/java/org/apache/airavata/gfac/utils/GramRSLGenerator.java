@@ -56,7 +56,6 @@ public class GramRSLGenerator {
         jobAttr.setDirectory(app.getStaticWorkingDirectory());
         jobAttr.setStdout(app.getStandardOutput());
         jobAttr.setStderr(app.getStandardError());
-
         /*
          * The env here contains the env of the host and the application. i.e the env specified in the host description
          * and application description documents
@@ -77,18 +76,7 @@ public class GramRSLGenerator {
         jobAttr.addEnvVariable(Constants.INPUT_DATA_DIR_VAR_NAME, app.getInputDataDirectory());
         jobAttr.addEnvVariable(Constants.OUTPUT_DATA_DIR_VAR_NAME, app.getOutputDataDirectory());
 
-        if (app.getMaxWallTime() > 0) {
-            log.debug("Setting max wall clock time to " + app.getMaxWallTime());
-
-            if (app.getMaxWallTime() > 30 && app.getQueue() != null && app.getQueue().getQueueName().equals("debug")) {
-                throw new ToolsException("NCSA debug Queue only support jobs < 30 minutes");
-            }
-
-            jobAttr.setMaxWallTime(app.getMaxWallTime());
-            jobAttr.set("proxy_timeout", "1");
-        } else {
-            jobAttr.setMaxWallTime(30);
-        }
+    
 
         if (app.getStandardInput() != null && !"".equals(app.getStandardInput())) {
             jobAttr.setStdin(app.getStandardInput());
@@ -97,7 +85,7 @@ public class GramRSLGenerator {
             Map<String,Object> inputs = input.getParameters();
             Set<String> keys = inputs.keySet();
             for (String paramName : keys ) {
-                ActualParameter actualParameter = (ActualParameter) inputs.get(paramName);
+             	ActualParameter actualParameter = (ActualParameter) inputs.get(paramName);
                 if ("URIArray".equals(actualParameter.getType().getType().toString())) {
                     String[] values = ((URIArrayType) actualParameter.getType()).getValueArray();
                     for (String value : values) {
@@ -149,6 +137,15 @@ public class GramRSLGenerator {
                     log.debug("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used");
                      new GFacProviderException("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used",e);
                 }
+                try {
+                    int maxwallTime = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getMaxWallTime();
+                    if(maxwallTime>0){
+                        app.setMaxWallTime(maxwallTime);
+                    }
+                } catch (NullPointerException e) {
+                    log.debug("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used");
+                     new GFacProviderException("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used",e);
+                }
             }
         }
         if(currentContextHeader.getWorkflowOutputDataHandling() != null){
@@ -183,6 +180,18 @@ public class GramRSLGenerator {
                 log.debug("Setting job queue to " + app.getQueue().getQueueName());
                 jobAttr.setQueue(app.getQueue().getQueueName());
             }
+        }
+        if (app.getMaxWallTime() > 0) {
+            log.debug("Setting max wall clock time to " + app.getMaxWallTime());
+
+            if (app.getMaxWallTime() > 30 && app.getQueue() != null && app.getQueue().getQueueName().equals("debug")) {
+                throw new ToolsException("NCSA debug Queue only support jobs < 30 minutes");
+            }
+
+            jobAttr.setMaxWallTime(app.getMaxWallTime());
+            jobAttr.set("proxy_timeout", "1");
+        } else {
+            jobAttr.setMaxWallTime(30);
         }
         String jobType = JobType.SINGLE.toString();
         if (app.getJobType() != null) {
