@@ -26,10 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
@@ -163,7 +160,7 @@ public class GridFTPInputHandler implements GFacHandler {
         return destURI.getPath();
     }
 
+    public void init(Map<String, String> properties) throws GFacHandlerException, GFacException {
 
-
-
+    }
 }

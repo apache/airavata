@@ -25,12 +25,7 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
@@ -70,7 +65,6 @@ public class BESProvider implements GFacProvider {
     
     
         
-    @Override
 	public void initialize(JobExecutionContext jobExecutionContext)
 			throws GFacProviderException, GFacException {
 		
@@ -80,7 +74,7 @@ public class BESProvider implements GFacProvider {
 
 	}
 
-	@Override
+
 	public void execute(JobExecutionContext jobExecutionContext)
 			throws GFacProviderException {
 		UnicoreHostType host = (UnicoreHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType();
@@ -169,7 +163,6 @@ public class BESProvider implements GFacProvider {
 		} 
 	}
 
-	@Override
 	public void dispose(JobExecutionContext jobExecutionContext)
 			throws GFacProviderException {
 		secProperties = null;
@@ -288,4 +281,8 @@ public class BESProvider implements GFacProvider {
 		}
 		
 	}
+    public void initProperties(Map<String, String> properties) throws GFacProviderException, GFacException {
+
+    }
+
 }

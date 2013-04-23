@@ -23,6 +23,7 @@ package org.apache.airavata.gfac.handler;
 
 import com.google.common.io.Files;
 import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.schemas.gfac.HadoopHostType;
@@ -267,5 +268,7 @@ public class HadoopDeploymentHandler implements GFacHandler {
         return ((HadoopHostType)hostDescription.getType()).getHadoopConfigurationDirectory();
     }
 
+    public void init(Map<String, String> properties) throws GFacHandlerException, GFacException {
 
+    }
 }

@@ -21,6 +21,7 @@
 package org.apache.airavata.gfac.handler;
 
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
@@ -28,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.Map;
 
 public class LocalDirectorySetupHandler implements GFacHandler{
     private static final Logger log = LoggerFactory.getLogger(LocalDirectorySetupHandler.class);
@@ -52,6 +54,9 @@ public class LocalDirectorySetupHandler implements GFacHandler{
            } else if (!new File(dir).mkdir()) {
                throw new GFacHandlerException("Cannot make directory "+dir, jobExecutionContext);
            }
-       }
+    }
 
+    public void init(Map<String, String> properties) throws GFacHandlerException, GFacException {
+
+    }
 }

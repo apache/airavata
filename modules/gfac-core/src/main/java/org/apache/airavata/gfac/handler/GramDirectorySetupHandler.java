@@ -41,6 +41,7 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 
 public class GramDirectorySetupHandler implements GFacHandler {
@@ -119,5 +120,9 @@ public class GramDirectorySetupHandler implements GFacHandler {
         } catch (SecurityException e) {
             throw new GFacHandlerException(e.getMessage(), e, jobExecutionContext);
         }
+    }
+
+    public void init(Map<String, String> properties) throws GFacHandlerException, GFacException {
+
     }
 }

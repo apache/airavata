@@ -293,4 +293,7 @@ public class GridFTPOutputHandler implements GFacHandler {
         return outputFileStagingPath + File.separator + fileName;
     }
 
+    public void init(Map<String, String> properties) throws GFacHandlerException, GFacException {
+
+    }
 }

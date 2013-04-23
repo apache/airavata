@@ -21,6 +21,7 @@
 package org.apache.airavata.gfac.provider.impl;
 
 import org.apache.airavata.gfac.Constants;
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.notification.events.StartExecutionEvent;
 import org.apache.airavata.gfac.provider.GFacProvider;
@@ -155,5 +156,9 @@ public class LocalProvider implements GFacProvider {
                 builderEnv.put(entry.getName(), entry.getValue());
             }
         }
+    }
+
+    public void initProperties(Map<String, String> properties) throws GFacProviderException, GFacException {
+
     }
 }
