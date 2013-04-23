@@ -42,9 +42,11 @@ public class SCPOutputHandler implements GFacHandler{
 
 
 	public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
-		ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
+		ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext()
+				.getApplicationDeploymentDescription().getType();
 		try {
-			 SSHSecurityContext securityContext = (SSHSecurityContext)jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT);
+			SSHSecurityContext securityContext = (SSHSecurityContext) jobExecutionContext
+					.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT);
 
 			// Get the Stdouts and StdErrs
 			String timeStampedServiceName = GFacUtils.createUniqueNameForService(jobExecutionContext.getServiceName());
@@ -57,13 +59,14 @@ public class SCPOutputHandler implements GFacHandler{
 
 			String stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
 			String stdErrStr = GFacUtils.readFileToString(localStdErrFile.getAbsolutePath());
-			 Map<String, ActualParameter> stringMap = new HashMap<String, ActualParameter>();
-
-			 stringMap =  OutputUtils.fillOutputFromStdout(jobExecutionContext, stdOutStr, stdErrStr);
-			 if (stringMap == null || stringMap.isEmpty()) {
-                 throw new GFacHandlerException("Empty Output returned from the Application, Double check the application" +
-                         "and ApplicationDescriptor output Parameter Names");
-             }
+			Map<String, ActualParameter> stringMap = new HashMap<String, ActualParameter>();
+			Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
+			stringMap = OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
+			if (stringMap == null || stringMap.isEmpty()) {
+				throw new GFacHandlerException(
+						"Empty Output returned from the Application, Double check the application"
+								+ "and ApplicationDescriptor output Parameter Names");
+			}
 
 		} catch (XmlException e) {
 			throw new GFacHandlerException("Cannot read output:" + e.getMessage(), e);
