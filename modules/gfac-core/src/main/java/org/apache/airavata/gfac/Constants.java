@@ -32,10 +32,11 @@ public class Constants {
 
 
 	public static final String XPATH_EXPR_PROVIDER_HANDLERS_START = "/GFac/Provider[@class='";
+    public static final String XPATH_EXPR_PROVIDER_ON_HOST = "/GFac/Provider[@host='";
 	public static final String XPATH_EXPR_PROVIDER_INFLOW_HANDLERS_END = "']/InHandlers/Handler";
 	public static final String XPATH_EXPR_PROVIDER_OUTFLOW_HANDLERS_END = "']/OutHandlers/Handler";
 
-	public static final String GFAC_CONFIG_HANDLER_CLASS_ATTRIBUTE = "class";
+	public static final String GFAC_CONFIG_CLASS_ATTRIBUTE = "class";
 	public static final String GFAC_CONFIG_APPLICATION_NAME_ATTRIBUTE = "class";
 	public static final String NEWLINE = System.getProperty("line.separator");
 	public static final String INPUT_DATA_DIR_VAR_NAME = "inputData";
@@ -63,4 +64,7 @@ public class Constants {
     public static final String SSH_PRIVATE_KEY = "ssh.key";
     public static final String SSH_PRIVATE_KEY_PASS = "ssh.keypass";
     public static final String SSH_USER_NAME = "ssh.username";
+    public static final String PROPERTY = "property";
+    public static final String NAME = "name";
+    public static final String VALUE = "value";
 }
