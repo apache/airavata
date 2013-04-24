@@ -119,10 +119,10 @@ public class GFacConfiguration {
 
     public void setInHandlers(String providerName, String applicationName) {
         try {
-            this.inHandlers = getHandlerConfig(handlerDoc, Constants.XPATH_EXPR_GLOBAL_INFLOW_HANDLERS, Constants.GFAC_CONFIG_HANDLER_CLASS_ATTRIBUTE);
+            this.inHandlers = getHandlerConfig(handlerDoc, Constants.XPATH_EXPR_GLOBAL_INFLOW_HANDLERS, Constants.GFAC_CONFIG_CLASS_ATTRIBUTE);
             if (applicationName != null) {
                 String xPath = Constants.XPATH_EXPR_APPLICATION_HANDLERS_START + applicationName + Constants.XPATH_EXPR_APPLICATION_INFLOW_HANDLERS_END;
-                List<GFacHandlerConfig> handlers = getHandlerConfig(handlerDoc, xPath, Constants.GFAC_CONFIG_HANDLER_CLASS_ATTRIBUTE);
+                List<GFacHandlerConfig> handlers = getHandlerConfig(handlerDoc, xPath, Constants.GFAC_CONFIG_CLASS_ATTRIBUTE);
                 this.inHandlers.addAll(handlers);
             }
             if (providerName != null) {
@@ -137,15 +137,15 @@ public class GFacConfiguration {
 
     public void setOutHandlers(String providerName, String applicationName) {
         try {
-            this.outHandlers = getHandlerConfig(handlerDoc, Constants.XPATH_EXPR_GLOBAL_OUTFLOW_HANDLERS, Constants.GFAC_CONFIG_HANDLER_CLASS_ATTRIBUTE);
+            this.outHandlers = getHandlerConfig(handlerDoc, Constants.XPATH_EXPR_GLOBAL_OUTFLOW_HANDLERS, Constants.GFAC_CONFIG_CLASS_ATTRIBUTE);
             if (applicationName != null) {
                 String xPath = Constants.XPATH_EXPR_APPLICATION_HANDLERS_START + applicationName + Constants.XPATH_EXPR_APPLICATION_OUTFLOW_HANDLERS_END;
-                List<GFacHandlerConfig> handlers = getHandlerConfig(handlerDoc, xPath, Constants.GFAC_CONFIG_HANDLER_CLASS_ATTRIBUTE);
+                List<GFacHandlerConfig> handlers = getHandlerConfig(handlerDoc, xPath, Constants.GFAC_CONFIG_CLASS_ATTRIBUTE);
                 this.outHandlers.addAll(handlers);
             }
             if(providerName != null) {
                 String xPath = Constants.XPATH_EXPR_PROVIDER_HANDLERS_START + providerName + Constants.XPATH_EXPR_PROVIDER_OUTFLOW_HANDLERS_END;
-                List<GFacHandlerConfig> handlers = getHandlerConfig(handlerDoc, xPath, Constants.GFAC_CONFIG_HANDLER_CLASS_ATTRIBUTE);
+                List<GFacHandlerConfig> handlers = getHandlerConfig(handlerDoc, xPath, Constants.GFAC_CONFIG_CLASS_ATTRIBUTE);
                 this.outHandlers.addAll(handlers);
             }
         } catch (XPathExpressionException e) {
@@ -225,9 +225,9 @@ public class GFacConfiguration {
             className = ((Element) nl.item(i)).getAttribute(attribute);
             NodeList childNodes = (nl.item(i)).getChildNodes();
             for(int j = 0;j < childNodes.getLength();j++){
-               if("property".equals(childNodes.item(j).getNodeName())) {
-                   String name = ((Element) childNodes.item(j)).getAttribute("name");
-                   String value = ((Element) childNodes.item(j)).getAttribute("value");
+               if(Constants.PROPERTY.equals(childNodes.item(j).getNodeName())) {
+                   String name = ((Element) childNodes.item(j)).getAttribute(Constants.NAME);
+                   String value = ((Element) childNodes.item(j)).getAttribute(Constants.VALUE);
                    properties.put(name, value);
                }
             }
@@ -250,9 +250,9 @@ public class GFacConfiguration {
             className = ((Element) nl.item(i)).getAttribute(attribute);
             NodeList childNodes = (nl.item(i)).getChildNodes();
             for (int j = 0; j < childNodes.getLength(); j++) {
-                if ("property".equals(childNodes.item(j).getNodeName())) {
-                    String name = ((Element) childNodes.item(j)).getAttribute("name");
-                    String value = ((Element) childNodes.item(j)).getAttribute("value");
+                if (Constants.PROPERTY.equals(childNodes.item(j).getNodeName())) {
+                    String name = ((Element) childNodes.item(j)).getAttribute(Constants.NAME);
+                    String value = ((Element) childNodes.item(j)).getAttribute(Constants.VALUE);
                     properties.put(name, value);
                 }
             }
@@ -260,6 +260,20 @@ public class GFacConfiguration {
             gFacProviderConfigs.add(gFacProviderConfig);
         }
         return gFacProviderConfigs;
+    }
+
+     public static String getProviderClassName(Document doc, String expression, String attribute) throws XPathExpressionException {
+        XPathFactory xPathFactory = XPathFactory.newInstance();
+        XPath xPath = xPathFactory.newXPath();
+        XPathExpression expr = xPath.compile(expression);
+
+        NodeList nl = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+        String className = "";
+        for (int i = 0; i < nl.getLength(); i++) {
+            className = ((Element) nl.item(i)).getAttribute(attribute);
+            break;
+        }
+        return className;
     }
 
     public static GFacConfiguration create(Properties configProps) {

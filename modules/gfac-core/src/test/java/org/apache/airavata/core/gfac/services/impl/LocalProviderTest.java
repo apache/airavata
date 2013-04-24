@@ -46,7 +46,9 @@ public class LocalProviderTest {
     @Before
     public void setUp() throws Exception {
 
-        GFacConfiguration gFacConfiguration = new GFacConfiguration(null);
+        URL resource = this.getClass().getClassLoader().getResource("gfac-config.xml");
+        File configFile = new File(resource.getPath());
+        GFacConfiguration gFacConfiguration = GFacConfiguration.create(configFile, null, null);
         //have to set InFlwo Handlers and outFlowHandlers
         ApplicationContext applicationContext = new ApplicationContext();
         HostDescription host = new HostDescription();
@@ -115,7 +117,7 @@ public class LocalProviderTest {
         serv.getType().setInputParametersArray(inputParamList);
         serv.getType().setOutputParametersArray(outputParamList);
 
-        jobExecutionContext = new JobExecutionContext(gFacConfiguration,serv.getType().getName());
+        jobExecutionContext = new JobExecutionContext(gFacConfiguration, serv.getType().getName());
         jobExecutionContext.setApplicationContext(applicationContext);
         /*
         * Host
@@ -124,7 +126,7 @@ public class LocalProviderTest {
 
         MessageContext inMessage = new MessageContext();
         ActualParameter echo_input = new ActualParameter();
-		((StringParameterType)echo_input.getType()).setValue("echo_output=hello");
+        ((StringParameterType) echo_input.getType()).setValue("echo_output=hello");
         inMessage.addParameter("echo_input", echo_input);
 
         jobExecutionContext.setInMessageContext(inMessage);
