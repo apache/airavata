@@ -14,31 +14,29 @@
     <GlobalHandlers>
         <InHandlers>
             <Handler class="org.apache.airavata.gfac.handler.AppDescriptorCheckHandler">
-               <!-- In case custom properties need to be set to provider 
-       			 <property name="name" value="value"/> 
-        		-->
+                    <property name="name" value="value"/>
             </Handler>
         </InHandlers>
         <OutHandlers></OutHandlers>
     </GlobalHandlers>
-    <Provider class="org.apache.airavata.gfac.provider.impl.LocalProvider">
+    <Provider class="org.apache.airavata.gfac.provider.impl.LocalProvider" host="org.apache.airavata.schemas.gfac.impl.HostDescriptionTypeImpl">
         <InHandlers>
             <Handler class="org.apache.airavata.gfac.handler.LocalDirectorySetupHandler"/>
         </InHandlers>
     </Provider>
-    <Provider class="org.apache.airavata.gfac.provider.impl.GramProvider">
-       <!-- In case custom properties need to be set to provider 
-       			 <property name="name" value="value"/> 
-        		-->
+    <Provider class="org.apache.airavata.gfac.provider.impl.GramProvider" host="org.apache.airavata.schemas.gfac.impl.GlobusHostTypeImpl">
+        <property name="name" value="value"/>
         <InHandlers>
-            <Handler class="org.apache.airavata.gfac.handler.GramDirectorySetupHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.GramDirectorySetupHandler">
+                    <property name="name" value="value"/>
+            </Handler>
             <Handler class="org.apache.airavata.gfac.handler.GridFTPInputHandler"/>
         </InHandlers>
         <OutHandlers>
             <Handler class="org.apache.airavata.gfac.handler.GridFTPOutputHandler"/>
         </OutHandlers>
     </Provider>
-      <Provider class="org.apache.airavata.gfac.provider.impl.BESProvider">
+      <Provider class="org.apache.airavata.gfac.provider.impl.BESProvider" host="org.apache.airavata.schemas.gfac.impl.UnicoreHostTypeImpl">
         <InHandlers>
         	<Handler class="org.apache.airavata.gfac.handler.GramDirectorySetupHandler"/>
             <Handler class="org.apache.airavata.gfac.handler.GridFTPInputHandler"/>
@@ -48,15 +46,30 @@
         </OutHandlers>
     </Provider>
 
-     <Provider class="org.apache.airavata.gfac.provider.impl.HadoopProvider">
+    <Provider class="org.apache.airavata.gfac.provider.impl.EC2Provider" host="org.apache.airavata.schemas.gfac.impl.Ec2HostTypeImpl">
+        <InHandlers/>
+        <OutHandlers/>
+    </Provider>
+
+    <Provider class="org.apache.airavata.gfac.provider.impl.HadoopProvider" host="org.apache.airavata.schemas.gfac.impl.HadoopHostTypeImpl">
         <InHandlers>
         	<Handler class="org.apache.airavata.gfac.handler.HadoopDeploymentHandler"/>
             <Handler class="org.apache.airavata.gfac.handler.HDFSDataMovementHandler"/>
         </InHandlers>
         <OutHandlers/>
     </Provider>
-    <!-- SSH provider -->
-    <Provider class="org.apache.airavata.gfac.provider.impl.SSHProvider">
+
+    <Application name="UltraScan">
+        <InHandlers>
+            <Handler class="org.apache.airavata.gfac.handler.GramDirectorySetupHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.GridFTPInputHandler"/>
+        </InHandlers>
+        <OutHandlers>
+            <Handler class="org.apache.airavata.gfac.handler.GridFTPOutputHandler"/>
+        </OutHandlers>
+    </Application>
+
+     <Provider class="org.apache.airavata.gfac.provider.impl.SSHProvider" host="org.apache.airavata.schemas.gfac.impl.SSHHostTypeImpl">
          <InHandlers>
             <Handler class="org.apache.airavata.gfac.handler.SCPDirectorySetupHandler"/>
             <Handler class="org.apache.airavata.gfac.handler.SCPInputHandler"/>
@@ -65,14 +78,4 @@
             <Handler class="org.apache.airavata.gfac.handler.SCPOutputHandler"/>
         </OutHandlers>
     </Provider>
-
-    <Application name="UltraScan" class="org.apache.airavata.gfac.provider.impl.GramProvider">
-        <InHandlers>
-            <Handler class="org.apache.airavata.handlers.GramDirectorySetupHandler"/>
-            <Handler class="org.apache.airavata.handlers.GridFTPInputHandler"/>
-        </InHandlers>
-        <OutHandlers>
-            <Handler class="org.apache.airavata.handlers.GridFTPOutputHandler"/>
-        </OutHandlers>
-    </Application>
 </GFac>
