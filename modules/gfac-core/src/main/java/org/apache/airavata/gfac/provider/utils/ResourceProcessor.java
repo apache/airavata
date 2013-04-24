@@ -22,7 +22,7 @@ package org.apache.airavata.gfac.provider.utils;
 
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
+import org.ogf.schemas.jsdl.JobDefinitionType;
 
 public class ResourceProcessor {
 
@@ -36,7 +36,7 @@ public class ResourceProcessor {
 		createMemory(value, appDepType);
 		
 		if (appDepType.getCpuCount() > 0) {
-			RangeValueType rangeType = new RangeValueType();
+			UCRangeValueType rangeType = new UCRangeValueType();
 			rangeType.setLowerBound(Double.NaN);
 			rangeType.setUpperBound(Double.NaN);
 			rangeType.setExact(appDepType.getCpuCount());
@@ -44,7 +44,7 @@ public class ResourceProcessor {
 		}
 
 		if (appDepType.getProcessorsPerNode() > 0) {
-			RangeValueType rangeType = new RangeValueType();
+			UCRangeValueType rangeType = new UCRangeValueType();
 			rangeType.setLowerBound(Double.NaN);
 			rangeType.setUpperBound(Double.NaN);
 			rangeType.setExact(appDepType.getProcessorsPerNode());
@@ -52,7 +52,7 @@ public class ResourceProcessor {
 		}
 		
 		if (appDepType.getNodeCount() > 0) {
-			RangeValueType rangeType = new RangeValueType();
+			UCRangeValueType rangeType = new UCRangeValueType();
 			rangeType.setLowerBound(Double.NaN);
 			rangeType.setUpperBound(Double.NaN);
 			rangeType.setExact(appDepType.getNodeCount());
@@ -60,7 +60,7 @@ public class ResourceProcessor {
 		}
 		
 		if(appDepType.getMaxWallTime() > 0) {
-			RangeValueType cpuTime = new RangeValueType();
+			UCRangeValueType cpuTime = new UCRangeValueType();
 			cpuTime.setLowerBound(Double.NaN);
 			cpuTime.setUpperBound(Double.NaN);
 			long wallTime = appDepType.getMaxWallTime() * 60;
@@ -72,7 +72,7 @@ public class ResourceProcessor {
 	
 	private static void createMemory(JobDefinitionType value, HpcApplicationDeploymentType appDepType){
 		if (appDepType.getMinMemory() > 0 && appDepType.getMaxMemory() > 0) {
-			RangeValueType rangeType = new RangeValueType();
+			UCRangeValueType rangeType = new UCRangeValueType();
 			rangeType.setLowerBound(appDepType.getMinMemory());
 			rangeType.setUpperBound(appDepType.getMaxMemory());
 			JSDLUtils.setIndividualPhysicalMemoryRequirements(value, rangeType);
@@ -80,14 +80,14 @@ public class ResourceProcessor {
 
 		else if (appDepType.getMinMemory() > 0 && appDepType.getMaxMemory() <= 0) {
 			// TODO set Wall time
-			RangeValueType rangeType = new RangeValueType();
+			UCRangeValueType rangeType = new UCRangeValueType();
 			rangeType.setLowerBound(appDepType.getMinMemory());
 			JSDLUtils.setIndividualPhysicalMemoryRequirements(value, rangeType);
 		}
 		
 		else if (appDepType.getMinMemory() <= 0 && appDepType.getMaxMemory() > 0) {
 			// TODO set Wall time
-			RangeValueType rangeType = new RangeValueType();
+			UCRangeValueType rangeType = new UCRangeValueType();
 			rangeType.setUpperBound(appDepType.getMinMemory());
 			JSDLUtils.setIndividualPhysicalMemoryRequirements(value, rangeType);
 		}
