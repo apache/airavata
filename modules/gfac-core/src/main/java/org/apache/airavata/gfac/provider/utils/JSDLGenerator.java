@@ -23,8 +23,8 @@ package org.apache.airavata.gfac.provider.utils;
 
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionDocument;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
+import org.ogf.schemas.jsdl.JobDefinitionDocument;
+import org.ogf.schemas.jsdl.JobDefinitionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +52,7 @@ public class JSDLGenerator {
 		// build Identification
 		createJobIdentification(value, appDepType);
 		
-		ResourceProcessor.generateResourceElements(value, context);
+		//ResourceProcessor.generateResourceElements(value, context);
 		
 		ApplicationProcessor.generateJobSpecificAppElements(value, context);
 		
@@ -60,7 +60,6 @@ public class JSDLGenerator {
 		
 		return jobDefDoc;
 	}
-
 		
 	private static void createJobIdentification(JobDefinitionType value, HpcApplicationDeploymentType appDepType){
 		if( appDepType.getProjectAccount() != null ){

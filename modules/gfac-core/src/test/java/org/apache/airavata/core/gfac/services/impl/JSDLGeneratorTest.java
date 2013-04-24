@@ -54,9 +54,9 @@ import org.apache.airavata.schemas.gfac.StringParameterType;
 import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.apache.airavata.schemas.gfac.UnicoreHostType;
 import org.apache.log4j.PropertyConfigurator;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionDocument;
 import org.junit.Before;
 import org.junit.Test;
+import org.ogf.schemas.jsdl.JobDefinitionDocument;
 
 public class JSDLGeneratorTest {
 
