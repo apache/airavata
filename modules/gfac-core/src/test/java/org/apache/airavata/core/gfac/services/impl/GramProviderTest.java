@@ -214,9 +214,9 @@ public class GramProviderTest {
 		GSISecurityContext context = new GSISecurityContext();
         context.setMyproxyLifetime(3600);
         context.setMyproxyServer("myproxy.teragrid.org");
-        context.setMyproxyUserName("*****");
-        context.setMyproxyPasswd("*****");
-        context.setTrustedCertLoc("./certificates");
+        context.setMyproxyUserName("ogce");
+        context.setMyproxyPasswd("Jdas7wph");
+        context.setTrustedCertLoc("/Users/lahirugunathilake/Downloads/certificates");
 		return context;
 	}
 

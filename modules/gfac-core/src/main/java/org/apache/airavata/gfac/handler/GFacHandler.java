@@ -28,7 +28,7 @@ import java.util.Map;
 
 public interface GFacHandler {
 
-    public void init(Map<String,String> properties) throws GFacHandlerException,GFacException;
+    public void initProperties(Map<String, String> properties) throws GFacHandlerException,GFacException;
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException,GFacException;
 }

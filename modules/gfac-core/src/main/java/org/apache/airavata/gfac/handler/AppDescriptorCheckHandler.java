@@ -81,7 +81,7 @@ public class AppDescriptorCheckHandler implements GFacHandler {
         jobExecutionContext.getApplicationContext().setApplicationDeploymentDescription(app);
     }
 
-    public void init(Map<String, String> properties) throws GFacHandlerException, GFacException {
+    public void initProperties(Map<String, String> properties) throws GFacHandlerException, GFacException {
 
     }
 }

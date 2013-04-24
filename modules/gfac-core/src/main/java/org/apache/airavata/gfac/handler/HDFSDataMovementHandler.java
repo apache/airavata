@@ -99,7 +99,7 @@ public class HDFSDataMovementHandler implements GFacHandler {
 
     private void handleOutPath(JobExecutionContext jobExecutionContext){}
 
-    public void init(Map<String, String> properties) throws GFacHandlerException, GFacException {
+    public void initProperties(Map<String, String> properties) throws GFacHandlerException, GFacException {
 
     }
 }

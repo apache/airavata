@@ -268,7 +268,7 @@ public class HadoopDeploymentHandler implements GFacHandler {
         return ((HadoopHostType)hostDescription.getType()).getHadoopConfigurationDirectory();
     }
 
-    public void init(Map<String, String> properties) throws GFacHandlerException, GFacException {
+    public void initProperties(Map<String, String> properties) throws GFacHandlerException, GFacException {
 
     }
 }
