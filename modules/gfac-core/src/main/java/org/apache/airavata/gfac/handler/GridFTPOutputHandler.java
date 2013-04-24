@@ -20,24 +20,6 @@
 */
 package org.apache.airavata.gfac.handler;
 
-import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.MappingFactory;
-import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.ToolsException;
-import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.context.MessageContext;
-import org.apache.airavata.gfac.context.security.GSISecurityContext;
-import org.apache.airavata.gfac.external.GridFtp;
-import org.apache.airavata.gfac.provider.GFacProviderException;
-import org.apache.airavata.gfac.utils.GFacUtils;
-import org.apache.airavata.gfac.utils.GramJobSubmissionListener;
-import org.apache.airavata.gfac.utils.OutputUtils;
-import org.apache.airavata.schemas.gfac.*;
-import org.ietf.jgss.GSSCredential;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -53,9 +35,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.airavata.commons.gfac.type.ActualParameter;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
+import org.apache.airavata.commons.gfac.type.MappingFactory;
+import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.ToolsException;
+import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.gfac.context.MessageContext;
+import org.apache.airavata.gfac.context.security.GSISecurityContext;
+import org.apache.airavata.gfac.external.GridFtp;
+import org.apache.airavata.gfac.provider.GFacProviderException;
+import org.apache.airavata.gfac.utils.GFacUtils;
+import org.apache.airavata.gfac.utils.OutputUtils;
+import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.HostDescriptionType;
+import org.apache.airavata.schemas.gfac.StringArrayType;
+import org.apache.airavata.schemas.gfac.StringParameterType;
+import org.apache.airavata.schemas.gfac.URIArrayType;
+import org.apache.airavata.schemas.gfac.URIParameterType;
+import org.apache.airavata.schemas.gfac.UnicoreHostType;
+import org.apache.airavata.schemas.wec.ApplicationOutputDataHandlingDocument.ApplicationOutputDataHandling;
+import org.apache.airavata.schemas.wec.ContextHeaderDocument;
+import org.ietf.jgss.GSSCredential;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class GridFTPOutputHandler implements GFacHandler {
-    private static final Logger log = LoggerFactory.getLogger(GramJobSubmissionListener.class);
+    private static final Logger log = LoggerFactory.getLogger(GridFTPOutputHandler.class);
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         log.info("Invoking GridFTPOutputHandler ...");
@@ -110,12 +118,6 @@ public class GridFTPOutputHandler implements GFacHandler {
                     localStdErrFile = File.createTempFile(timeStampedServiceName, "stderr");
 
 
-
-
-                    // Shahbaz Comment: in principle when job is failed the execution chain must be stopped
-                    // there
-
-
                     String stdout = null;
                     String stderr = null;
 
@@ -125,6 +127,11 @@ public class GridFTPOutputHandler implements GFacHandler {
                      stdout = ftp.readRemoteFile(stdoutURI, gssCred, localStdOutFile);
                      stderr = ftp.readRemoteFile(stderrURI, gssCred, localStdErrFile);
                      //TODO: do we also need to set them as output parameters for another job
+                     ApplicationDescription application = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
+                     ApplicationDeploymentDescriptionType appDesc = application.getType();
+                     appDesc.setStandardOutput(stdout);
+                     appDesc.setStandardError(stderr);
+                     jobExecutionContext.getApplicationContext().setApplicationDeploymentDescription(application);
                     }
                     catch(ToolsException e) {
                         log.error("Cannot download stdout/err files. One reason could be the job is not successfully finished:  "+e.getMessage());
@@ -176,8 +183,17 @@ public class GridFTPOutputHandler implements GFacHandler {
                         throw new GFacHandlerException("Empty Output returned from the Application, Double check the application" +
                                 "and ApplicationDescriptor output Parameter Names");
                     }
-                    //todo check the workflow context header and run the stateOutputFiles method to stage the output files in to a user defined location
-//                    stageOutputFiles(jobExecutionContext, app.getOutputDataDirectory());
+                    // If users has given an output Data path to download the output files this will download the file on machine where GFac is installed
+                    ContextHeaderDocument.ContextHeader currentContextHeader = jobExecutionContext.getContextHeader();
+                    if(currentContextHeader != null && currentContextHeader.getWorkflowOutputDataHandling() != null){
+                    	ApplicationOutputDataHandling[] handlings = currentContextHeader.getWorkflowOutputDataHandling().getApplicationOutputDataHandlingArray();
+                        if(handlings != null && handlings.length != 0){
+                            String outputDataDirectory = handlings[0].getOutputDataDirectory();
+                            if(outputDataDirectory != null && !"".equals(outputDataDirectory)){
+                                stageOutputFiles(jobExecutionContext,outputDataDirectory);
+                            }
+                        }
+                    }
                 } catch (ToolsException e) {
                     log.error(e.getMessage());
                     throw new GFacHandlerException(e.getMessage(), jobExecutionContext, e, readLastLinesofStdOut(localStdErrFile.getPath(), 20));
