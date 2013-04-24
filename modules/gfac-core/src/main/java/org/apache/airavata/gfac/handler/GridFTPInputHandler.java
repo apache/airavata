@@ -160,7 +160,7 @@ public class GridFTPInputHandler implements GFacHandler {
         return destURI.getPath();
     }
 
-    public void init(Map<String, String> properties) throws GFacHandlerException, GFacException {
+    public void initProperties(Map<String, String> properties) throws GFacHandlerException, GFacException {
 
     }
 }

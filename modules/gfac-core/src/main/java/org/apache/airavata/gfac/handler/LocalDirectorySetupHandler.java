@@ -56,7 +56,7 @@ public class LocalDirectorySetupHandler implements GFacHandler{
            }
     }
 
-    public void init(Map<String, String> properties) throws GFacHandlerException, GFacException {
+    public void initProperties(Map<String, String> properties) throws GFacHandlerException, GFacException {
 
     }
 }

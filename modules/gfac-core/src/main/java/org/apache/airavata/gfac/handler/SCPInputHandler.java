@@ -86,7 +86,7 @@ public class SCPInputHandler implements GFacHandler{
 		 return remoteFile;
 	 }
 
-    public void init(Map<String, String> properties) throws GFacHandlerException, GFacException {
+    public void initProperties(Map<String, String> properties) throws GFacHandlerException, GFacException {
 
     }
 }
