@@ -177,7 +177,7 @@ public class WorkflowInterpreter {
 				}
 				// get task list and execute them
 				ArrayList<Node> readyNodes = this.getReadyNodesDynamically();
-				for (Node node : readyNodes) {
+				for (final Node node : readyNodes) {
 					if (node.isBreak()) {
 						this.notifyPause();
 						break;
@@ -186,7 +186,20 @@ public class WorkflowInterpreter {
 							|| this.getWorkflow().getExecutionState() == WorkflowExecutionState.STOPPED) {
 						break;
 					}
-					executeDynamically(node);
+
+                    // Since this is an independent node execution we can run these nodes in separate threads.
+                    Thread th = new Thread() {
+
+                        public synchronized void run() {
+                            try {
+                                executeDynamically(node);
+                            } catch (WorkflowException e) {
+                                log.error("Error execution workflow Node : " + node.getID());
+                                return;
+                            }
+                        }
+                    };
+                    th.start();
 					if (this.getWorkflow().getExecutionState() == WorkflowExecutionState.STEP) {
 						this.getWorkflow().setExecutionState(WorkflowExecutionState.PAUSED);
 						break;
