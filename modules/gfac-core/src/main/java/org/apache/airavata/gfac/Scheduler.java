@@ -21,26 +21,17 @@
 
 package org.apache.airavata.gfac;
 
+import java.util.List;
+
+import javax.xml.xpath.XPathExpressionException;
+
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.handler.GFacHandlerConfig;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderConfig;
 import org.apache.airavata.gfac.provider.GFacProviderException;
-import org.apache.airavata.gfac.provider.impl.BESProvider;
-import org.apache.airavata.gfac.provider.impl.EC2Provider;
-import org.apache.airavata.gfac.provider.impl.GramProvider;
-import org.apache.airavata.gfac.provider.impl.LocalProvider;
-import org.apache.airavata.gfac.provider.impl.SSHProvider;
-import org.apache.airavata.schemas.gfac.Ec2HostType;
-import org.apache.airavata.schemas.gfac.GlobusHostType;
-import org.apache.airavata.schemas.gfac.UnicoreHostType;
-import org.apache.airavata.schemas.gfac.SSHHostType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.xml.xpath.XPathExpressionException;
-import java.util.List;
 
 
 /**
