@@ -120,6 +120,7 @@ public class GFacAPI {
             try {
                 handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
                 handler = handlerClass.newInstance();
+                handler.initProperties(handlerClassName.getProperties());
             } catch (ClassNotFoundException e) {
                 throw new GFacException("Cannot load handler class " + handlerClassName, e);
             } catch (InstantiationException e) {
@@ -144,6 +145,7 @@ public class GFacAPI {
             try {
                  handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
                 handler = handlerClass.newInstance();
+                handler.initProperties(handlerClassName.getProperties());
             } catch (ClassNotFoundException e) {
                 log.error(e.getMessage());
                 throw new GFacException("Cannot load handler class " + handlerClassName, e);
