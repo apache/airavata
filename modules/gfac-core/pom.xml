@@ -186,11 +186,6 @@
             <artifactId>jopt-simple</artifactId>
             <version>3.2</version>
         </dependency>
-        <dependency>
-            <groupId>net.sf.wsag4j.types</groupId>
-            <artifactId>wsag4j-jsdl-types</artifactId>
-            <version>2.0.0</version>
-        </dependency>
         <!-- Guava -->
         <dependency>
             <groupId>com.google.guava</groupId>
