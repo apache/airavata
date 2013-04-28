@@ -188,7 +188,7 @@ public class JSDLGeneratorTest {
         HostDescription host = new HostDescription(UnicoreHostType.type);
         host.getType().setHostAddress(hostAddress);
         host.getType().setHostName(hostName);
-        ((UnicoreHostType) host.getType()).setUnicoreHostAddressArray(hostArray);
+        ((UnicoreHostType) host.getType()).setUnicoreBESEndPointArray(hostArray);
         ((UnicoreHostType) host.getType()).setGridFTPEndPointArray(new String[] { gridftpAddress });
         return host;
     }

@@ -67,7 +67,7 @@
                    <sequence>
 					<element name="gridFTPEndPoint" type="xsd:string"
 						minOccurs="0" maxOccurs="unbounded" />
-					<element name="unicoreHostAddress" type="xsd:string"
+					<element name="unicoreBESEndPoint" type="xsd:string"
 						minOccurs="1" maxOccurs="unbounded" />
 				</sequence>
                 </sequence>

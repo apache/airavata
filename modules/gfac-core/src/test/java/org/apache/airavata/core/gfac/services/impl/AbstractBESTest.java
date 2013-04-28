@@ -105,7 +105,7 @@ public abstract class AbstractBESTest {
 		host.getType().setHostAddress("zam1161v01.zam.kfa-juelich.de");
 		host.getType().setHostName("DEMO-INTEROP-SITE");
 		((UnicoreHostType) host.getType())
-				.setUnicoreHostAddressArray(hostArray);
+				.setUnicoreBESEndPointArray(hostArray);
 		((UnicoreHostType) host.getType())
 				.setGridFTPEndPointArray(new String[] { gridftpAddress });
 		return host;
