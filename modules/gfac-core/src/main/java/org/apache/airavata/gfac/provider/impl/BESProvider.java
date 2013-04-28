@@ -79,7 +79,7 @@ public class BESProvider implements GFacProvider {
 			throws GFacProviderException {
 		UnicoreHostType host = (UnicoreHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType();
         
-        String factoryUrl = host.getUnicoreHostAddressArray()[0];
+        String factoryUrl = host.getUnicoreBESEndPointArray()[0];
 
         EndpointReferenceType eprt = EndpointReferenceType.Factory.newInstance();
         eprt.addNewAddress().setStringValue(factoryUrl);

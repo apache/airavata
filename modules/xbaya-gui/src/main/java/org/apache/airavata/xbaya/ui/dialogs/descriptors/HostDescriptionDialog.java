@@ -159,7 +159,7 @@ public class HostDescriptionDialog extends JDialog {
         	((GlobusHostType)hostDescription.getType()).addGlobusGateKeeperEndPoint(this.gateKeeperTextField.getText());
             ((GlobusHostType)hostDescription.getType()).addGridFTPEndPoint(this.gridFTPTextField.getText());
         }else if (host instanceof UnicoreHostType){
-        	((UnicoreHostType)hostDescription.getType()).addUnicoreHostAddress(this.gateKeeperTextField.getText());
+        	((UnicoreHostType)hostDescription.getType()).addUnicoreBESEndPoint(this.gateKeeperTextField.getText());
             ((UnicoreHostType)hostDescription.getType()).addGridFTPEndPoint(this.gridFTPTextField.getText());
         }
         saveHostDescription();
@@ -333,7 +333,7 @@ public class HostDescriptionDialog extends JDialog {
 			cmbResourceProtocol.setSelectedItem(REMOTE_PROTOCOL_STR_SSH);
 		}else if (t instanceof UnicoreHostType){
 			cmbResourceProtocol.setSelectedItem(REMOTE_PROTOCOL_STR_UNICORE);
-			gateKeeperTextField.setText(arrayToString(((UnicoreHostType) t).getUnicoreHostAddressArray()));
+			gateKeeperTextField.setText(arrayToString(((UnicoreHostType) t).getUnicoreBESEndPointArray()));
 			gridFTPTextField.setText(arrayToString(((UnicoreHostType) t).getGridFTPEndPointArray()));
 		}else if (t instanceof Ec2HostType){
 			cmbResourceProtocol.setSelectedItem(REMOTE_PROTOCOL_STR_AMAZON_EC2);
