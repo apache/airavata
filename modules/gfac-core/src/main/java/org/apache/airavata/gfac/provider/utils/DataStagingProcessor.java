@@ -34,7 +34,7 @@ import org.apache.airavata.schemas.gfac.StringParameterType;
 import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.apache.airavata.schemas.gfac.UnicoreHostType;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
+import org.ogf.schemas.jsdl.JobDefinitionType;
 
 public class DataStagingProcessor {
 	
@@ -217,7 +217,7 @@ public class DataStagingProcessor {
 			else if ("String".equals(paramDataType)) {
 				String stringPrm = ((StringParameterType) inParam.getType())
 						.getValue();
-				ApplicationProcessor.addApplicationArgument(value, appDepType, stringPrm);
+                ApplicationProcessor.addApplicationArgument(value, appDepType, stringPrm);
 			}
 		}
 		

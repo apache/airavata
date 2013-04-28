@@ -20,11 +20,10 @@
  */
 package org.apache.airavata.gfac.provider.utils;
 
-
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionDocument;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
+import org.ogf.schemas.jsdl.JobDefinitionDocument;
+import org.ogf.schemas.jsdl.JobDefinitionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,45 +34,39 @@ import org.slf4j.LoggerFactory;
  * */
 
 public class JSDLGenerator {
-	
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-	
-	
-	public synchronized static JobDefinitionDocument buildJSDLInstance(JobExecutionContext context) throws Exception {
 
-		JobDefinitionDocument jobDefDoc = JobDefinitionDocument.Factory
-				.newInstance();
-		JobDefinitionType value = jobDefDoc.addNewJobDefinition();
+    protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
-		HpcApplicationDeploymentType appDepType = (HpcApplicationDeploymentType) context
-				.getApplicationContext().getApplicationDeploymentDescription()
-				.getType();
+    public synchronized static JobDefinitionDocument buildJSDLInstance(JobExecutionContext context) throws Exception {
 
-		// build Identification
-		createJobIdentification(value, appDepType);
-		
-		ResourceProcessor.generateResourceElements(value, context);
-		
-		ApplicationProcessor.generateJobSpecificAppElements(value, context);
-		
-		DataStagingProcessor.generateDataStagingElements(value, context);
-		
-		return jobDefDoc;
-	}
+        JobDefinitionDocument jobDefDoc = JobDefinitionDocument.Factory.newInstance();
+        JobDefinitionType value = jobDefDoc.addNewJobDefinition();
 
-		
-	private static void createJobIdentification(JobDefinitionType value, HpcApplicationDeploymentType appDepType){
-		if( appDepType.getProjectAccount() != null ){
-			
-			if (appDepType.getProjectAccount().getProjectAccountNumber() != null)
-				JSDLUtils.addProjectName(value, appDepType.getProjectAccount()
-						.getProjectAccountNumber());
+        HpcApplicationDeploymentType appDepType = (HpcApplicationDeploymentType) context.getApplicationContext()
+                .getApplicationDeploymentDescription().getType();
 
-			if (appDepType.getProjectAccount().getProjectAccountDescription() != null)
-				JSDLUtils.getOrCreateJobIdentification(value).setDescription(
-						appDepType.getProjectAccount()
-								.getProjectAccountDescription());
-		}
-	}
-	
+        // build Identification
+        createJobIdentification(value, appDepType);
+
+        ResourceProcessor.generateResourceElements(value, context);
+
+        ApplicationProcessor.generateJobSpecificAppElements(value, context);
+
+        DataStagingProcessor.generateDataStagingElements(value, context);
+
+        return jobDefDoc;
+    }
+
+    private static void createJobIdentification(JobDefinitionType value, HpcApplicationDeploymentType appDepType) {
+        if (appDepType.getProjectAccount() != null) {
+
+            if (appDepType.getProjectAccount().getProjectAccountNumber() != null)
+                JSDLUtils.addProjectName(value, appDepType.getProjectAccount().getProjectAccountNumber());
+
+            if (appDepType.getProjectAccount().getProjectAccountDescription() != null)
+                JSDLUtils.getOrCreateJobIdentification(value).setDescription(
+                        appDepType.getProjectAccount().getProjectAccountDescription());
+        }
+    }
+
 }
