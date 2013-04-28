@@ -27,7 +27,6 @@
         <plugins>
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.6</version>
                 <executions>
                     <execution>
                         <id>restore-persistence</id>
@@ -47,7 +46,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>${surefire.version}</version>
                 <configuration>
                     <includes>
                         <include>**/*Suite.java</include>
@@ -149,7 +147,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
         </dependency>
         <dependency>
             <groupId>xsul</groupId>
@@ -326,11 +323,6 @@
             <groupId>org.apache.derby</groupId>
             <artifactId>derbyclient</artifactId>
             <version>${derby.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.fzj.unicore</groupId>
-            <artifactId>jsdl-xmlbeans</artifactId>
-            <version>2.1.0</version>
         </dependency>
     </dependencies>
 </project>
