@@ -88,8 +88,10 @@ public class BESProvider implements GFacProvider {
                 .newInstance();
         
         try {
-			cad.addNewCreateActivity().addNewActivityDocument()
-			        .setJobDefinition(JSDLGenerator.buildJSDLInstance(jobExecutionContext).getJobDefinition());
+            //FIXME: Replace by a native client
+//			cad.addNewCreateActivity().addNewActivityDocument()
+//			        .setJobDefinition(JSDLGenerator.buildJSDLInstance(jobExecutionContext).getJobDefinition());
+			System.out.println("REMOVE ME");
 		} catch (Exception e1) {
 			throw new GFacProviderException("Cannot generate JSDL instance from the JobExecutionContext.",e1);
 		}
