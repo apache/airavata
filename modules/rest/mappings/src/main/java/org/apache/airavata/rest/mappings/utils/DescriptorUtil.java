@@ -54,7 +54,7 @@ public class DescriptorUtil {
              ((UnicoreHostType) host.getType()).
                      setGridFTPEndPointArray(new String[]{hostEndpoint});
              ((UnicoreHostType) host.getType()).
-                     setUnicoreHostAddressArray(new String[]{gatekeeperEndpoint});
+                     setUnicoreBESEndPointArray(new String[]{gatekeeperEndpoint});
         }
         return host;
     }
@@ -146,7 +146,7 @@ public class DescriptorUtil {
         } else if (hostDescriptionType instanceof  UnicoreHostType) {
         	UnicoreHostType unicoreHostType = (UnicoreHostType) hostDescriptionType;
              hostType.add(HostTypes.UNICORE_HOST_TYPE);
-             String[] unicoreGateKeeperEndPointArray = unicoreHostType.getUnicoreHostAddressArray();
+             String[] unicoreGateKeeperEndPointArray = unicoreHostType.getUnicoreBESEndPointArray();
              for (int i = 0; i < unicoreGateKeeperEndPointArray.length ; i++){
                  gateKeeperEndPoint.add(unicoreGateKeeperEndPointArray[i]);
              }
@@ -203,7 +203,7 @@ public class DescriptorUtil {
             } else if (hostDescriptor.getHostType().get(0).equals(HostTypes.UNICORE_HOST_TYPE)) {
                  hostDescription.getType().changeType(UnicoreHostType.type);
                  if (!hostDescriptor.getGateKeeperEndPoint().isEmpty() && hostDescriptor.getGateKeeperEndPoint() != null){
-                     ((UnicoreHostType) hostDescription.getType()).addUnicoreHostAddress(hostDescriptor.getGateKeeperEndPoint().get(0));
+                     ((UnicoreHostType) hostDescription.getType()).addUnicoreBESEndPoint(hostDescriptor.getGateKeeperEndPoint().get(0));
                  }
                  if (!hostDescriptor.getGridFTPEndPoint().isEmpty() && hostDescriptor.getGridFTPEndPoint() != null){
                      ((UnicoreHostType) hostDescription.getType()).addGridFTPEndPoint(hostDescriptor.getGridFTPEndPoint().get(0));
