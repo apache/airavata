@@ -21,6 +21,10 @@
 
 package org.apache.airavata.client.api;
 
+import java.util.List;
+
+import org.apache.airavata.client.tools.NameValuePairType;
+
 public interface NodeSettings {
 	
 	/**
@@ -48,6 +52,12 @@ public interface NodeSettings {
 	public HPCSettings getHPCSettings();
 	
 	/**
+	 * get the list of name-value pair settings 
+	 * @return
+	 */
+	public List<NameValuePairType> getNameValuePair();
+	
+	/**
 	 * Set the node Id of the workflow
 	 * @param nodeId
 	 */
@@ -70,4 +80,11 @@ public interface NodeSettings {
 	 * @param hpcSettings
 	 */
 	public void setHPCSettings(HPCSettings hpcSettings);
+	
+	/**
+	 * 
+	 * @param nameValuePair
+	 */
+	public void setNameValuePair(List<NameValuePairType> nameValuePair);
+	
 }

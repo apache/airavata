@@ -232,10 +232,21 @@
 		<complexType>
 			<sequence>
 				<element minOccurs="1" maxOccurs="unbounded" ref="wec:application-scheduling-context" />
+				<element name="nameValuePair" type="wec:nameValuePairType" minOccurs="0" maxOccurs="unbounded" />
 			</sequence>
 		</complexType>
 	</element>
 
+	<complexType name="nameValuePairType">
+		<simpleContent>
+			<extension base="string">
+				<attribute name="workflow-node-id" type="string" use="optional"/>
+				<attribute name="name" type="string" use="required" />
+				<attribute name="value" type="string" use="required" />
+				<attribute name="description" type="string" use="optional"/>
+			</extension>
+		</simpleContent>
+	</complexType>
 	<element name="application-scheduling-context">
 		<complexType>
 			<simpleContent>

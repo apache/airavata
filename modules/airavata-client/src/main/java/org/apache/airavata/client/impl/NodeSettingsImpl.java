@@ -21,15 +21,19 @@
 
 package org.apache.airavata.client.impl;
 
+import java.util.List;
+
 import org.apache.airavata.client.api.HPCSettings;
 import org.apache.airavata.client.api.HostSchedulingSettings;
 import org.apache.airavata.client.api.NodeSettings;
+import org.apache.airavata.client.tools.NameValuePairType;
 
 public class NodeSettingsImpl implements NodeSettings {
 	private String nodeId;
 	private String serviceId;
 	private HPCSettings hpcSettings;
 	private HostSchedulingSettings hostSchedulingSettings;
+	private List<NameValuePairType> nameValuePair;
 	
 	public NodeSettingsImpl(String nodeId) {
 		this(nodeId,null);
@@ -84,6 +88,17 @@ public class NodeSettingsImpl implements NodeSettings {
 	@Override
 	public void setHPCSettings(HPCSettings hpcSettings) {
 		this.hpcSettings = hpcSettings;
+	}
+
+	@Override
+	public List<NameValuePairType> getNameValuePair() {
+		return nameValuePair;
+	}
+
+	@Override
+	public void setNameValuePair(List<NameValuePairType> nameValuePair) {
+		this.nameValuePair = nameValuePair;
+		
 	}
 
 }

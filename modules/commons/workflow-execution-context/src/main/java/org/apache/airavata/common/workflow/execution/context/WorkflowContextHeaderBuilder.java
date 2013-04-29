@@ -20,9 +20,13 @@
  */
 package org.apache.airavata.common.workflow.execution.context;
 
+import java.lang.reflect.Array;
+import java.util.Map;
+
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.schemas.wec.*;
 import org.apache.xmlbeans.XmlException;
+import org.omg.CORBA.NameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
@@ -319,7 +323,41 @@ public class WorkflowContextHeaderBuilder {
             Boolean dataPersistence) {
         return addApplicationOutputDataHandling(null, outputDir, outputDataRegistry, dataPersistence);
     }
+    
+    public WorkflowContextHeaderBuilder addApplicationSchedulingKeyPair(String workflowNodeId, String name, String value, String description){
+    
+    	   if (this.workflowSchedulingContext == null) {
+               this.workflowSchedulingContext = WorkflowSchedulingContextDocument.WorkflowSchedulingContext.Factory
+                       .newInstance();
+           }
+    	   NameValuePairType  nameValuePair = workflowSchedulingContext.addNewNameValuePair();
+    	   if(workflowNodeId != null){
+    		   nameValuePair.setWorkflowNodeId(workflowNodeId);
+    	   }
+    	   if(name != null && value != null){
+    		   nameValuePair.setName(name);
+    		   nameValuePair.setValue(value);
+    	   }
+    	   if(description != null){
+    		   nameValuePair.setDescription(description);
+    	   } 
+    	   return this;
+    }
 
+   /**
+    * Add Application scheduling information to workflow context per node
+    * @param workflowNodeId
+    * @param serviceId
+    * @param hostName
+    * @param wsGramPreffered
+    * @param gateKeepersEpr
+    * @param jobManager
+    * @param cpuCount
+    * @param nodeCount
+    * @param qName
+    * @param maxWalTime
+    * @return
+    */
     public WorkflowContextHeaderBuilder addApplicationSchedulingContext(String workflowNodeId, String serviceId,
             String hostName, Boolean wsGramPreffered, String gateKeepersEpr, String jobManager, Integer cpuCount,
             Integer nodeCount, String qName, Integer maxWalTime) {
