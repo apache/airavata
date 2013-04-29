@@ -25,6 +25,7 @@ import org.apache.airavata.client.AiravataClient;
 import org.apache.airavata.client.api.*;
 import org.apache.airavata.client.stub.interpretor.NameValue;
 import org.apache.airavata.client.stub.interpretor.WorkflowInterpretorStub;
+import org.apache.airavata.client.tools.NameValuePairType;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus;
@@ -228,7 +229,12 @@ public class ExecutionManagerImpl implements ExecutionManager {
 		builder.setUserIdentifier(submissionUser);
 		NodeSettings[] nodeSettingsList = options.getCustomWorkflowSchedulingSettings().getNodeSettingsList();
 		for (NodeSettings nodeSettings : nodeSettingsList) {
+			List<NameValuePairType> nameValuePairTypes = nodeSettings.getNameValuePair();
+			for (NameValuePairType nameValuePairType : nameValuePairTypes) {
+				builder.addApplicationSchedulingKeyPair(nodeSettings.getNodeId(),nameValuePairType.getName(), nameValuePairType.getValue(), nameValuePairType.getDescription());
+			}
 			builder.addApplicationSchedulingContext(nodeSettings.getNodeId(), nodeSettings.getServiceId(), nodeSettings.getHostSettings().getHostId(), nodeSettings.getHostSettings().isWSGRAMPreffered(), nodeSettings.getHostSettings().getGatekeeperEPR(), nodeSettings.getHPCSettings().getJobManager(), nodeSettings.getHPCSettings().getCPUCount(), nodeSettings.getHPCSettings().getNodeCount(), nodeSettings.getHPCSettings().getQueueName(), nodeSettings.getHPCSettings().getMaxWallTime());
+		
 		}
 		OutputDataSettings[] outputDataSettingsList = options.getCustomWorkflowOutputDataSettings().getOutputDataSettingsList();
 		for (OutputDataSettings outputDataSettings : outputDataSettingsList) {
