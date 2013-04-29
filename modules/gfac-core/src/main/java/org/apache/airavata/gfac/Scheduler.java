@@ -74,8 +74,6 @@ public class Scheduler {
                 Class<? extends GFacProvider> aClass1 = Class.forName(s.getClassName()).asSubclass(GFacProvider.class);
                 provider = aClass1.newInstance();
                 //loading the provider properties
-                aClass = GFacConfiguration.getProviderConfig(GFacConfiguration.getHandlerDoc(), Constants.XPATH_EXPR_APPLICATION_HANDLERS_START +
-                        s.getClassName() + "']", Constants.GFAC_CONFIG_APPLICATION_NAME_ATTRIBUTE);
                 if(!aClass.isEmpty()){
                     provider.initProperties(aClass.get(0).getProperties());
                 }
