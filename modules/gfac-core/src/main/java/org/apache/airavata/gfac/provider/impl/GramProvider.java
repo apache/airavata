@@ -144,17 +144,37 @@ public class GramProvider implements GFacProvider {
     public void initProperties(Map<String, String> properties) throws GFacProviderException, GFacException {
 
     }
-    private void checkJobStatus(JobExecutionContext jobExecutionContext, GlobusHostType host, String gateKeeper)
-			throws JobSubmissionFault {
-		int jobStatus = listener.getStatus();
 
-		if (jobStatus == GramJob.STATUS_FAILED) {
-			String errorMsg = "Job " + job.getID() + " on host " + host.getHostAddress() + " Job Exit Code = "
-					+ listener.getError();
-			JobSubmissionFault error = new JobSubmissionFault(this, new Exception(errorMsg), "GFAC HOST", gateKeeper,
-					job.getRSL(), jobExecutionContext);
-			throw error;
-		}
-	}
+    private void checkJobStatus(JobExecutionContext jobExecutionContext, GlobusHostType host, String gateKeeper)
+            throws GFacProviderException {
+        int jobStatus = listener.getStatus();
+
+        if (jobStatus == GramJob.STATUS_FAILED) {
+            String errorMsg = "Job " + job.getID() + " on host " + host.getHostAddress() + " Job Exit Code = "
+                    + listener.getError();
+            if (listener.getError() == 24) {
+                try {
+                    job.request(gateKeeper, false, false);
+                    listener.waitFor();
+                } catch (GramException e) {
+                    log.error(e.getMessage());
+                    JobSubmissionFault error = new JobSubmissionFault(this, e, host.getHostAddress(),
+                            host.getGlobusGateKeeperEndPointArray(0), job.getRSL(), jobExecutionContext);
+                    throw error;
+                } catch (GSSException e) {
+                    log.error(e.getMessage());
+                    throw new GFacProviderException(e.getMessage(), e, jobExecutionContext);
+                } catch (InterruptedException e) {
+                    log.error(e.getMessage());
+                    throw new GFacProviderException("Thread", e, jobExecutionContext);
+                } catch (GFacException e) {
+                    JobSubmissionFault error = new JobSubmissionFault(this, new Exception(errorMsg), "GFAC HOST", gateKeeper,
+                            job.getRSL(), jobExecutionContext);
+                    throw error;
+                }
+            }
+
+        }
+    }
 
 }
