@@ -173,6 +173,9 @@ public class GramProvider implements GFacProvider {
                     throw error;
                 }
             }
+            JobSubmissionFault error = new JobSubmissionFault(this, new Exception(errorMsg), "GFAC HOST", gateKeeper,
+                            job.getRSL(), jobExecutionContext);
+                    throw error;
 
         }
     }
