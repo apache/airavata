@@ -158,14 +158,14 @@ public class GridFTPOutputHandler implements GFacHandler {
                         } else if ("URI".equals(actualParameter.getType().getType().toString())) {
                         	  URI outputURI = GFacUtils.createGsiftpURI(endpoint, app.getOutputDataDirectory());
                               List<String> outputList = ftp.listDir(outputURI, gssCred);
-                              String valueList = outputList.get(0);
-                              if(valueList.isEmpty()){
-                            	  stringMap = OutputUtils.fillOutputFromStdout(output, stdout, stderr);
-                              }else{
-                              ((URIParameterType) actualParameter.getType()).setValue(valueList);
-                              stringMap = new HashMap<String, ActualParameter>();
-                              stringMap.put(paramName, actualParameter);
-                              }
+							if (outputList.size() == 0 || outputList.get(0).isEmpty()) {
+								stringMap = OutputUtils.fillOutputFromStdout(output, stdout, stderr);
+							} else {
+								String valueList = outputList.get(0);
+								((URIParameterType) actualParameter.getType()).setValue(valueList);
+								stringMap = new HashMap<String, ActualParameter>();
+								stringMap.put(paramName, actualParameter);
+							}
                         }
                         else if ("String".equals(actualParameter.getType().getType().toString())) {
                         	String path = app.getOutputDataDirectory()+"/"+((StringParameterType) actualParameter.getType()).getValue();
@@ -309,7 +309,11 @@ public class GridFTPOutputHandler implements GFacHandler {
     private static String doStaging(String outputFileStagingPath, String paramValue, GridFtp ftp, GSSCredential gssCred, String endpoint) throws URISyntaxException, ToolsException {
         URI srcURI = GFacUtils.createGsiftpURI(endpoint, paramValue);
         String fileName = new File(srcURI.getPath()).getName();
-        File outputFile = new File(outputFileStagingPath + File.separator + fileName);
+        File outputpath = new File(outputFileStagingPath);
+        if(!outputpath.exists()){
+        	outputpath.mkdirs();
+        }
+        File outputFile = new File(outputpath.getAbsolutePath() + File.separator + fileName);
         ftp.readRemoteFile(srcURI,
                 gssCred, outputFile);
         return outputFileStagingPath + File.separator + fileName;
