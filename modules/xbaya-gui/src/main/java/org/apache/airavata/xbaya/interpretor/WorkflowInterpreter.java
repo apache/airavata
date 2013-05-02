@@ -163,6 +163,7 @@ public class WorkflowInterpreter {
 			this.config.getNotifier().workflowStarted(values, keywords);
 			this.config.getConfiguration().setContextHeader(WorkflowContextHeaderBuilder.getCurrentContextHeader());
 
+            int lastReadNodeSize = -1;
 			while (this.getWorkflow().getExecutionState() != WorkflowExecutionState.STOPPED) {
 				if (getRemainNodesDynamically() == 0) {
 					notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_STATE_CHANGED, WorkflowExecutionState.PAUSED);
@@ -177,6 +178,14 @@ public class WorkflowInterpreter {
 				}
 				// get task list and execute them
 				ArrayList<Node> readyNodes = this.getReadyNodesDynamically();
+                while(lastReadNodeSize != 0 && lastReadNodeSize == readyNodes.size()){
+                    try {
+						Thread.sleep(400);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+                }
+                lastReadNodeSize = readyNodes.size();
 				for (final Node node : readyNodes) {
 					if (node.isBreak()) {
 						this.notifyPause();
