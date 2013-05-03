@@ -135,7 +135,9 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
             }
             this.wseClient.unSubscribe(this.subscriptionID);
         } catch (MsgBrokerClientException e) {
-            throw new MonitorException("Failed to unsubscribe.", e);
+            // We do not throw exception because we unsubscribe for all the failures, there could be multiple failure messages
+            //for a given case.
+            logger.info("Given subscription is already unsubscribed.");
         }
 
     }
