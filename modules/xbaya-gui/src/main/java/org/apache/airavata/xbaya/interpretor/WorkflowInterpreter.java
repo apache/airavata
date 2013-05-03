@@ -178,8 +178,9 @@ public class WorkflowInterpreter {
 				}
 				// get task list and execute them
 				ArrayList<Node> readyNodes = this.getReadyNodesDynamically();
-                while(lastReadNodeSize != 0 && lastReadNodeSize == readyNodes.size()){
+                while(lastReadNodeSize != 0  && lastReadNodeSize == this.getReadyNodesDynamically().size() && !(readyNodes.get(0) instanceof OutputNode) ){
                     try {
+                        System.out.println(lastReadNodeSize);
 						Thread.sleep(400);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
