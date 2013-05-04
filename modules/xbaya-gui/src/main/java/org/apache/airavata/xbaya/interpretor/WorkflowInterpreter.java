@@ -198,18 +198,18 @@ public class WorkflowInterpreter {
 					}
 
                     // Since this is an independent node execution we can run these nodes in separate threads.
-                    Thread th = new Thread() {
-
-                        public synchronized void run() {
-                            try {
+//                    Thread th = new Thread() {
+//
+//                        public synchronized void run() {
+//                            try {
                                 executeDynamically(node);
-                            } catch (WorkflowException e) {
-                                log.error("Error execution workflow Node : " + node.getID());
-                                return;
-                            }
-                        }
-                    };
-                    th.start();
+//                            } catch (WorkflowException e) {
+//                                log.error("Error execution workflow Node : " + node.getID());
+//                                return;
+//                            }
+//                        }
+//                    };
+//                    th.start();
 					if (this.getWorkflow().getExecutionState() == WorkflowExecutionState.STEP) {
 						this.getWorkflow().setExecutionState(WorkflowExecutionState.PAUSED);
 						break;
