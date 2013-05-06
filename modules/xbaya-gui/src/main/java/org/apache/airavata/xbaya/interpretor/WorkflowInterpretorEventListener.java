@@ -71,6 +71,7 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
     private WorkflowStatusUpdater workflowStatusUpdater;
     private WorkflowNodeStatusUpdater workflowNodeStatusUpdater;
     private WorkflowInterpreterConfiguration workflowInterpreterConfiguration;
+    private String lastSubscriptionId;
 
     private static Logger logger = LoggerFactory.getLogger(WorkflowInterpretorEventListener.class);
 
@@ -135,9 +136,7 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
             }
             this.wseClient.unSubscribe(this.subscriptionID);
         } catch (MsgBrokerClientException e) {
-            // We do not throw exception because we unsubscribe for all the failures, there could be multiple failure messages
-            //for a given case.
-            logger.info("Given subscription is already unsubscribed.");
+            throw new MonitorException("Failed to unsubscribe.", e);
         }
 
     }
@@ -204,8 +203,7 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
                 workflowNodeStatusUpdater.workflowFinished(event.getExperimentID(), event.getNodeID(), event.getMessage(),
                         event.getWorkflowID().toASCIIString());
             }
-        } else if (type == EventType.INVOKING_SERVICE_FAILED || type == EventType.RECEIVED_FAULT
-        // TODO
+        } else if (type == EventType.RECEIVED_FAULT
                 || type == EventType.SENDING_FAULT || type == EventType.SENDING_RESPONSE_FAILED) {
             if (node == null) {
             	if (nodeID!=null && !nodeID.equals("")) {
