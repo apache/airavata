@@ -19,12 +19,16 @@
  *
  */
 
-package org.apache.airavata.credential.store;
+package org.apache.airavata.credential.store.credential;
+
+import java.io.Serializable;
 
 /**
  * Represents the community user.
  */
-public class CommunityUser {
+public class CommunityUser implements Serializable {
+
+    static final long serialVersionUID = 5783370135149452010L;
 
     private String gatewayName;
     private String userName;

@@ -19,23 +19,41 @@
  *
  */
 
-package org.apache.airavata.credential.store;
+package org.apache.airavata.credential.store.credential.impl.password;
+
+import org.apache.airavata.credential.store.credential.Credential;
+
+import java.util.Date;
 
 /**
- * The entity who's writing credentials to DB will use this interface.
+ * User: AmilaJ (amilaj@apache.org)
+ * Date: 3/22/13
+ * Time: 11:41 AM
  */
-public interface CredentialWriter {
 
-    /**
-     * Writes given credentials to a persistent storage.
-     * @param credential The credentials implementation.
-     */
-    void writeCredentials(Credential credential) throws CredentialStoreException;
+/**
+ * User name password credentials.
+ */
+public class PasswordCredential extends Credential {
 
-    /**
-     * Writes community user information.
-     * @param communityUser Writes community user information to a persistent storage.
-     * @throws CredentialStoreException If an error occurred while writing community user.
-     */
-    void writeCommunityUser(CommunityUser communityUser) throws CredentialStoreException;
+    private String userName;
+    private String password;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+
 }

@@ -48,15 +48,17 @@ public class CredentialStoreOA4MPServer extends OA4MPService {
     }
 
     public OA4MPResponse requestCert(Map additionalParameters) {
+
         if (additionalParameters == null) {
             additionalParameters = new HashMap();
         }
+
         try {
             KeyPair keyPair = generateKeyPair();
             PKCS10CertificationRequest certReq = createCertRequest(keyPair);
             OA4MPResponse mpdsResponse = new OA4MPResponse();
             mpdsResponse.setPrivateKey(keyPair.getPrivate());
-            additionalParameters.put(ClientEnvironment.CERT_REQUEST_KEY, Base64.encodeBase64String(certReq.getDEREncoded()));
+            additionalParameters.put(ClientEnvironment.CERT_REQUEST_KEY, Base64.encodeBase64(certReq.getDEREncoded()));
 
             if (additionalParameters.get(getEnvironment().getConstants().get(CALLBACK_URI_KEY)) == null) {
                 additionalParameters.put(getEnvironment().getConstants().get(CALLBACK_URI_KEY), getEnvironment().

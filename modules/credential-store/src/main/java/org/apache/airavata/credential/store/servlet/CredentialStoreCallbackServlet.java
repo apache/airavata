@@ -28,11 +28,10 @@ import edu.uiuc.ncsa.myproxy.oa4mp.client.OA4MPService;
 import edu.uiuc.ncsa.myproxy.oa4mp.client.servlet.ClientServlet;
 import edu.uiuc.ncsa.security.core.exceptions.GeneralException;
 import edu.uiuc.ncsa.security.servlet.JSPUtil;
-import edu.uiuc.ncsa.security.util.pkcs.CertUtil;
 import org.apache.airavata.common.utils.DBUtil;
-import org.apache.airavata.credential.store.CertificateCredential;
-import org.apache.airavata.credential.store.CommunityUser;
-import org.apache.airavata.credential.store.impl.CertificateCredentialWriter;
+import org.apache.airavata.credential.store.credential.CommunityUser;
+import org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;
+import org.apache.airavata.credential.store.store.impl.CertificateCredentialWriter;
 import org.apache.airavata.credential.store.util.Utility;
 
 import javax.servlet.ServletException;
@@ -58,6 +57,7 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
     private static final String GATEWAY_NAME_QUERY_PARAMETER = "gatewayName";
     private static final String PORTAL_USER_QUERY_PARAMETER = "portalUserName";
     private static final String PORTAL_USER_EMAIL_QUERY_PARAMETER = "email";
+    private static final String PORTAL_TOKEN_ID_ASSIGNED = "tokenId";
     private static final String DURATION_QUERY_PARAMETER = "duration";
 
     private OA4MPService oa4mpService;
@@ -98,6 +98,7 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
         String portalUserName = request.getParameter(PORTAL_USER_QUERY_PARAMETER);
         String durationParameter = request.getParameter(DURATION_QUERY_PARAMETER);
         String contactEmail = request.getParameter(PORTAL_USER_EMAIL_QUERY_PARAMETER);
+        String portalTokenId = request.getParameter(PORTAL_TOKEN_ID_ASSIGNED);
 
         //TODO remove hard coded values, once passing query parameters is
         //fixed in OA4MP client api
@@ -107,9 +108,18 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
             duration = Long.parseLong(durationParameter);
         }
 
+        if (portalTokenId == null) {
+            error("Token given by portal is invalid.");
+            GeneralException ge = new GeneralException("Error: The token presented by portal is null.");
+            request.setAttribute("exception", ge);
+            JSPUtil.fwd(request, response, ERROR_PAGE);
+            return;
+        }
+
         info("Gateway name " + gatewayName);
         info("Portal user name " + portalUserName);
         info("Community user contact email " + contactEmail);
+        info("Token id presented " + portalTokenId);
 
         info("2.a. Getting token and verifier.");
         String token = request.getParameter(TOKEN_KEY);
@@ -157,6 +167,7 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
                 contactEmail));
         certificateCredential.setPortalUserName(portalUserName);
         certificateCredential.setLifeTime(duration);
+        certificateCredential.setToken(portalTokenId);
 
         certificateCredentialWriter.writeCredentials(certificateCredential);
 
