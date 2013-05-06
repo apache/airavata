@@ -106,8 +106,15 @@ public class DatabaseTestCases {
         dbUtil.executeSQL(sql);
     }
 
-    protected DBUtil getDbUtil () throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    public DBUtil getDbUtil () throws Exception {
         return new DBUtil(getJDBCUrl(), getUserName(), getPassword(), getDriver());
+
+    }
+
+    public Connection getConnection() throws Exception {
+
+        DBUtil dbUtil =  getDbUtil ();
+        return dbUtil.getConnection();
 
     }
 

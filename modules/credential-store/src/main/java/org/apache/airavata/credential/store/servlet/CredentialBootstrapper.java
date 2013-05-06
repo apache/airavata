@@ -23,6 +23,8 @@ package org.apache.airavata.credential.store.servlet;
 
 import edu.uiuc.ncsa.myproxy.oa4mp.client.loader.ClientBootstrapper;
 import edu.uiuc.ncsa.security.core.util.ConfigurationLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import java.io.File;
@@ -32,12 +34,15 @@ import java.io.File;
  */
 public class CredentialBootstrapper extends ClientBootstrapper {
 
+    protected static Logger log = LoggerFactory.getLogger(CredentialBootstrapper.class);
+
+
     public ConfigurationLoader getConfigurationLoader(ServletContext servletContext)
             throws Exception {
 
         File currentDirectory = new File(".");
-        System.out.println("Current directory is - " + currentDirectory.getAbsolutePath());
 
+        log.info("Current directory is - " + currentDirectory.getAbsolutePath());
 
         return super.getConfigurationLoader(servletContext);
 

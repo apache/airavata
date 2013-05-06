@@ -217,7 +217,7 @@ public class DBUtil {
      * @param connection
      *            The connection to close.
      */
-    public void cleanup(PreparedStatement preparedStatement, Connection connection) {
+    public static void cleanup(PreparedStatement preparedStatement, Connection connection) {
         if (preparedStatement != null) {
             try {
                 preparedStatement.close();
@@ -230,6 +230,36 @@ public class DBUtil {
                 connection.close();
             } catch (SQLException e) {
                 log.error("Error closing database connection.", e);
+            }
+        }
+    }
+
+    /**
+     * Utility method to close statements and connections.
+     *
+     * @param preparedStatement
+     *            The prepared statement to close.
+     */
+    public static void cleanup(PreparedStatement preparedStatement) {
+        if (preparedStatement != null) {
+            try {
+                preparedStatement.close();
+            } catch (SQLException e) {
+                log.error("Error closing prepared statement.", e);
+            }
+        }
+    }
+
+    /**
+     * Cleanup the connection.
+     * @param connection The connection to close.
+     */
+    public static void cleanup(Connection connection) {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                log.error("Error closing prepared statement.", e);
             }
         }
     }

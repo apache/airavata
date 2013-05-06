@@ -1,3 +1,4 @@
+package org.apache.airavata.credential.store.credential;
 /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,13 +20,39 @@
  *
  */
 
-package org.apache.airavata.credential.store;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
- * This class represents the actual credential. The credential can be a certificate, user name password
- * or a SSH key. As per now we only have certificate implementation.
+ * User: AmilaJ (amilaj@apache.org)
+ * Date: 3/22/13
+ * Time: 11:55 AM
  */
-public interface Credential {
+
+/**
+ * Any audit information related to a credential.
+ */
+public interface AuditInfo extends Serializable {
+
+    /**
+     * Gets the community user associated with the credential.
+     * @return The community user associated with the credential.
+     */
+    public CommunityUser getCommunityUser();
+
+    /**
+     * The portal user associated with the credential.
+     * @return The portal user name.
+     */
+    public String getPortalUserId();
+
+    /**
+     * Get the time which credentials are persisted.
+     * @return Time credentials are persisted.
+     */
+    public Date getTimePersisted();
+
+
+
 }
