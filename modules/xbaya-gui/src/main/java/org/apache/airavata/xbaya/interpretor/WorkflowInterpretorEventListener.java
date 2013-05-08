@@ -187,8 +187,8 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
 				}
             } else {
                 nodeStarted(node, forward);
-                workflowNodeStatusUpdater.workflowStarted(event.getExperimentID(), event.getNodeID()
-                        ,event.getMessage(),event.getWorkflowID().toASCIIString());
+                workflowNodeStatusUpdater.workflowNodeStarted(event.getExperimentID(), event.getNodeID()
+                        , event.getMessage(), event.getWorkflowID().toASCIIString());
             }
         } else if (type == MonitorUtil.EventType.RECEIVED_RESULT
         // TODO this should be removed when GPEL sends all notification
@@ -200,7 +200,7 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
 				}
         	} else {
                 nodeFinished(node, forward);
-                workflowNodeStatusUpdater.workflowFinished(event.getExperimentID(), event.getNodeID(), event.getMessage(),
+                workflowNodeStatusUpdater.workflowNodeFinished(event.getExperimentID(), event.getNodeID(), event.getMessage(),
                         event.getWorkflowID().toASCIIString());
             }
         } else if (type == EventType.RECEIVED_FAULT
@@ -211,7 +211,7 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
 				}
             } else {
                 nodeFailed(node, forward);
-                workflowNodeStatusUpdater.workflowFailed(event.getExperimentID(), event.getNodeID());
+                workflowNodeStatusUpdater.workflowNodeFailed(event.getExperimentID(), event.getNodeID());
             }
             try {
                 this.unsubscribe();
@@ -225,7 +225,17 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
 				}
             } else {
                 // nodeResourceMapped(node, event.getEvent(), forward);
-                workflowNodeStatusUpdater.workflowRunning(event.getExperimentID(), event.getNodeID());
+                workflowNodeStatusUpdater.workflowNodeRunning(event.getExperimentID(), event.getNodeID());
+            }
+        } else if(type == MonitorUtil.EventType.LOG_INFO){
+            // This is not very gram specific, if these data is required in other provider they have to send
+            // the notification in info mode with ending these text, DONE,PENDING and ACTIVE
+            if(event.getMessage().endsWith("DONE")) {
+                workflowNodeStatusUpdater.workflowNodeStatusDone(event.getExperimentID(), event.getNodeID());
+            } else if(event.getMessage().endsWith("PENDING")){
+                workflowNodeStatusUpdater.workflowNodeStatusPending(event.getExperimentID(), event.getNodeID());
+            } else if(event.getMessage().endsWith("ACTIVE")){
+                workflowNodeStatusUpdater.workflowNodeStatusActive(event.getExperimentID(), event.getNodeID());
             }
         } else {
             // Ignore the rest.
