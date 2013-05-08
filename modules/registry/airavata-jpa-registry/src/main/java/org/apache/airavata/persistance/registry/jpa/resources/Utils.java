@@ -28,22 +28,7 @@ import java.util.Properties;
 import org.apache.airavata.persistance.registry.jpa.JPAConstants;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
-import org.apache.airavata.persistance.registry.jpa.model.Application_Descriptor;
-import org.apache.airavata.persistance.registry.jpa.model.Configuration;
-import org.apache.airavata.persistance.registry.jpa.model.Experiment;
-import org.apache.airavata.persistance.registry.jpa.model.Experiment_Data;
-import org.apache.airavata.persistance.registry.jpa.model.Experiment_Metadata;
-import org.apache.airavata.persistance.registry.jpa.model.Gateway;
-import org.apache.airavata.persistance.registry.jpa.model.Gateway_Worker;
-import org.apache.airavata.persistance.registry.jpa.model.Gram_Data;
-import org.apache.airavata.persistance.registry.jpa.model.Host_Descriptor;
-import org.apache.airavata.persistance.registry.jpa.model.Node_Data;
-import org.apache.airavata.persistance.registry.jpa.model.Project;
-import org.apache.airavata.persistance.registry.jpa.model.Published_Workflow;
-import org.apache.airavata.persistance.registry.jpa.model.Service_Descriptor;
-import org.apache.airavata.persistance.registry.jpa.model.User_Workflow;
-import org.apache.airavata.persistance.registry.jpa.model.Users;
-import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
+import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.registry.api.AiravataRegistryConnectionDataProvider;
 import org.apache.airavata.registry.api.AiravataRegistryFactory;
 import org.apache.airavata.registry.api.exception.RegistrySettingsException;
@@ -292,6 +277,13 @@ public class Utils {
                 }else {
                     logger.error("Object should be a Gram Data.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Gram Data.");
+                }
+            case NODE_ERROR:
+                if (o instanceof Node_Error){
+                    return createNodeError((Node_Error) o);
+                }else {
+                    logger.error("Object should be a Node Error type.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Node Error.");
                 }
             default:
         }
@@ -555,6 +547,23 @@ public class Utils {
         gramDataResource.setInvokedHost(o.getInvoked_host());
         gramDataResource.setLocalJobID(o.getLocal_Job_ID());
         return gramDataResource;
+    }
+
+    private static Resource createNodeError (Node_Error o){
+        NodeErrorResource nodeErrorResource = new NodeErrorResource();
+        ExperimentDataResource experimentDataResource = (ExperimentDataResource)createExperimentData(o.getExperiment_Data());
+        nodeErrorResource.setExperimentDataResource(experimentDataResource);
+        WorkflowDataResource workflowDataResource = (WorkflowDataResource)createWorkflowData(o.getWorkflow_Data());
+        nodeErrorResource.setWorkflowDataResource(workflowDataResource);
+        nodeErrorResource.setNodeID(o.getNode_id());
+        nodeErrorResource.setErrorID(o.getError_id());
+        nodeErrorResource.setGfacJobID(o.getGfacJobID());
+        nodeErrorResource.setSourceType(o.getSource_type());
+        nodeErrorResource.setErrorTime(o.getError_date());
+        nodeErrorResource.setErrorMsg(o.getError_msg());
+        nodeErrorResource.setErrorDes(o.getError_des());
+        nodeErrorResource.setErrorCode(o.getError_code());
+        return nodeErrorResource;
     }
 
 //    public static byte[] getByteArray(String content){

@@ -27,12 +27,16 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Node_Data;
 import org.apache.airavata.persistance.registry.jpa.model.Node_DataPK;
+import org.apache.airavata.persistance.registry.jpa.model.Node_Error;
 import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
+import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 public class NodeDataResource extends AbstractResource{
@@ -127,8 +131,35 @@ public class NodeDataResource extends AbstractResource{
     }
 
     public List<Resource> get(ResourceType type) {
-        logger.error("Unsupported resource type for node data resource.", new UnsupportedOperationException());
-        throw new UnsupportedOperationException();
+        List<Resource> resourceList = new ArrayList<Resource>();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        Query q;
+        QueryGenerator generator;
+        List<?> results;
+        switch (type){
+            case  NODE_ERROR:
+                generator = new QueryGenerator(NODE_ERROR);
+                generator.setParameter(NodeErrorConstants.NODE_ID, nodeID);
+                q = generator.selectQuery(em);
+                results = q.getResultList();
+                if (results.size() != 0) {
+                    for (Object result : results) {
+                        Node_Error nodeError = (Node_Error)result;
+                        NodeErrorResource nodeErrorResource = (NodeErrorResource)Utils.getResource(ResourceType.NODE_ERROR, nodeError);
+                        resourceList.add(nodeErrorResource);
+                    }
+                }
+                break;
+            default:
+                em.getTransaction().commit();
+                em.close();
+                logger.error("Unsupported resource type for node data resource.", new IllegalArgumentException());
+                throw new IllegalArgumentException("Unsupported resource type for node data resource.");
+        }
+        em.getTransaction().commit();
+        em.close();
+        return resourceList;
     }
 
     public void save() {
