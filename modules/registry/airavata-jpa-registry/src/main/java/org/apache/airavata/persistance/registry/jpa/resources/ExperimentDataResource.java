@@ -26,6 +26,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Experiment_Data;
 import org.apache.airavata.persistance.registry.jpa.model.Experiment_Metadata;
+import org.apache.airavata.persistance.registry.jpa.model.Node_Error;
 import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 import org.slf4j.Logger;
@@ -176,6 +177,19 @@ public class ExperimentDataResource extends AbstractResource{
                         Experiment_Metadata expMetadata = (Experiment_Metadata) result;
                         ExperimentMetadataResource experimentMetadataResource = (ExperimentMetadataResource)Utils.getResource(ResourceType.EXPERIMENT_METADATA, expMetadata);
                         resourceList.add(experimentMetadataResource);
+                    }
+                }
+                break;
+            case NODE_ERROR:
+                generator = new QueryGenerator(NODE_ERROR);
+                generator.setParameter(NodeErrorConstants.EXPERIMENT_ID, experimentID);
+                q = generator.selectQuery(em);
+                results = q.getResultList();
+                if (results.size() != 0) {
+                    for (Object result : results) {
+                        Node_Error nodeError = (Node_Error)result;
+                        NodeErrorResource nodeErrorResource = (NodeErrorResource)Utils.getResource(ResourceType.NODE_ERROR, nodeError);
+                        resourceList.add(nodeErrorResource);
                     }
                 }
                 break;

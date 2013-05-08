@@ -42,7 +42,8 @@ public abstract class AbstractResource implements Resource {
     public static final String EXPERIMENT_DATA = "Experiment_Data";
     public static final String WORKFLOW_DATA = "Workflow_Data";
     public static final String EXPERIMENT_METADATA = "Experiment_Metadata";
-    
+    public static final String NODE_ERROR = "Node_Error";
+
     //Gateway Table
     public final class GatewayConstants {
         public static final String GATEWAY_NAME = "gateway_name";
@@ -173,8 +174,19 @@ public abstract class AbstractResource implements Resource {
         public static final String RSL = "rsl";
         public static final String INVOKED_HOST = "invoked_host";
         public static final String LOCAL_JOB_ID = "local_Job_ID";
+    }
 
-
+    public final class NodeErrorConstants {
+        public static final String ERROR_ID = "error_id";
+        public static final String EXPERIMENT_ID = "experiment_ID";
+        public static final String WORKFLOW_ID = "workflow_instanceID";
+        public static final String NODE_ID = "node_id";
+        public static final String GFAC_JOB_ID = "gfacJobID";
+        public static final String SOURCE_TYPE = "source_type";
+        public static final String ERROR_DATE = "error_date";
+        public static final String ERROR_MSG = "error_msg";
+        public static final String ERROR_DES = "error_des";
+        public static final String ERROR_CODE = "error_code";
     }
 
     protected AbstractResource() {

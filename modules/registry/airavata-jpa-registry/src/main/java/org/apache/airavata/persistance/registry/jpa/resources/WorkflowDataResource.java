@@ -24,10 +24,7 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
-import org.apache.airavata.persistance.registry.jpa.model.Experiment_Data;
-import org.apache.airavata.persistance.registry.jpa.model.Gram_Data;
-import org.apache.airavata.persistance.registry.jpa.model.Node_Data;
-import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
+import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +39,7 @@ public class WorkflowDataResource extends AbstractResource{
     private final static Logger logger = LoggerFactory.getLogger(WorkflowDataResource.class);
     public static final String NODE_DATA = "Node_Data";
     public static final String GRAM_DATA = "Gram_Data";
+    public static final String NODE_ERROR = "Node_Error";
     private String experimentID;
     private String workflowInstanceID;
     private String templateName;
@@ -107,6 +105,9 @@ public class WorkflowDataResource extends AbstractResource{
                GramDataResource gramDataResource = new GramDataResource();
                gramDataResource.setWorkflowDataResource(this);
                return gramDataResource;
+           case NODE_ERROR:
+               NodeErrorResource nodeErrorResource = new NodeErrorResource();
+               nodeErrorResource.setWorkflowDataResource(this);
            default:
                logger.error("Unsupported resource type for workflow data resource.", new IllegalArgumentException());
                throw new IllegalArgumentException("Unsupported resource type for workflow data resource.");
@@ -130,6 +131,12 @@ public class WorkflowDataResource extends AbstractResource{
                 generator = new QueryGenerator(GRAM_DATA);
                 generator.setParameter(GramDataConstants.WORKFLOW_INSTANCE_ID, workflowInstanceID);
                 generator.setParameter(GramDataConstants.NODE_ID, name);
+                q = generator.deleteQuery(em);
+                q.executeUpdate();
+                break;
+            case NODE_ERROR:
+                generator = new QueryGenerator(NODE_ERROR);
+                generator.setParameter(NodeErrorConstants.ERROR_ID, name);
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
                 break;
@@ -167,6 +174,15 @@ public class WorkflowDataResource extends AbstractResource{
                 em.getTransaction().commit();
                 em.close();
                 return gramDataResource;
+            case NODE_ERROR:
+                generator = new QueryGenerator(NODE_ERROR);
+                generator.setParameter(NodeErrorConstants.ERROR_ID, name);
+                q = generator.selectQuery(em);
+                Node_Error node_error = (Node_Error)q.getSingleResult();
+                NodeErrorResource nodeErrorResource = (NodeErrorResource)Utils.getResource(ResourceType.NODE_ERROR, node_error);
+                em.getTransaction().commit();
+                em.close();
+                return nodeErrorResource;
             default:
                 em.getTransaction().commit();
                 em.close();
@@ -209,6 +225,19 @@ public class WorkflowDataResource extends AbstractResource{
                         Gram_Data gramData = (Gram_Data)result;
                         GramDataResource gramDataResource = (GramDataResource)Utils.getResource(ResourceType.GRAM_DATA, gramData);
                         resourceList.add(gramDataResource);
+                    }
+                }
+                break;
+            case  NODE_ERROR:
+                generator = new QueryGenerator(NODE_ERROR);
+                generator.setParameter(NodeErrorConstants.WORKFLOW_ID, workflowInstanceID);
+                q = generator.selectQuery(em);
+                results = q.getResultList();
+                if (results.size() != 0) {
+                    for (Object result : results) {
+                        Node_Error nodeError = (Node_Error)result;
+                        NodeErrorResource nodeErrorResource = (NodeErrorResource)Utils.getResource(ResourceType.NODE_ERROR, nodeError);
+                        resourceList.add(nodeErrorResource);
                     }
                 }
                 break;

@@ -36,6 +36,7 @@ public enum ResourceType {
     EXPERIMENT_METADATA,
     WORKFLOW_DATA,
     NODE_DATA,
-    GRAM_DATA
+    GRAM_DATA,
+    NODE_ERROR
 
 }
