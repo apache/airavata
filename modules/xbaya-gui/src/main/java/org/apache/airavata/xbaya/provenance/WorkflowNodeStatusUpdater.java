@@ -39,7 +39,7 @@ public class WorkflowNodeStatusUpdater {
         this.airavataAPI = airavataAPI;
     }
 
-    public boolean workflowStarted(String workflowInstanceID,String nodeID,String inputs,String workflowID){
+    public boolean workflowNodeStarted(String workflowInstanceID,String nodeID,String inputs,String workflowID){
         try {
             //todo we currently save only service nodes
             WorkflowNodeType workflowNodeType = new WorkflowNodeType();
@@ -55,7 +55,7 @@ public class WorkflowNodeStatusUpdater {
         return true;
     }
 
-    public boolean workflowFailed(String workflowInstanceID,String nodeID){
+    public boolean workflowNodeFailed(String workflowInstanceID,String nodeID){
         try {
             airavataAPI.getProvenanceManager().setWorkflowInstanceNodeStatus(workflowInstanceID, workflowInstanceID, nodeID, WorkflowExecutionStatus.State.FAILED);
             airavataAPI.getProvenanceManager().setWorkflowInstanceStatus(workflowInstanceID, workflowInstanceID, WorkflowExecutionStatus.State.FAILED);
@@ -66,7 +66,7 @@ public class WorkflowNodeStatusUpdater {
         return true;
     }
 
-    public boolean workflowFinished(String workflowInstanceID,String nodeID,String inputs,String workflowID){
+    public boolean workflowNodeFinished(String workflowInstanceID,String nodeID,String inputs,String workflowID){
         try {
         	WorkflowNodeType workflowNodeType = new WorkflowNodeType();
             workflowNodeType.setNodeType(WorkflowNodeType.WorkflowNode.SERVICENODE);
@@ -81,7 +81,7 @@ public class WorkflowNodeStatusUpdater {
         return true;
     }
 
-    public boolean workflowRunning(String workflowInstanceID,String nodeID){
+    public boolean workflowNodeRunning(String workflowInstanceID,String nodeID){
         try {
             airavataAPI.getProvenanceManager().setWorkflowInstanceNodeStatus(workflowInstanceID, workflowInstanceID, nodeID, WorkflowExecutionStatus.State.RUNNING);
         } catch (AiravataAPIInvocationException e) {
@@ -91,7 +91,7 @@ public class WorkflowNodeStatusUpdater {
         return true;
     }
 
-     public boolean workflowPaused(String workflowInstanceID,String nodeID){
+     public boolean workflowNodePaused(String workflowInstanceID,String nodeID){
         try {
             airavataAPI.getProvenanceManager().setWorkflowInstanceNodeStatus(workflowInstanceID, workflowInstanceID, nodeID, WorkflowExecutionStatus.State.PAUSED);
         } catch (AiravataAPIInvocationException e) {
@@ -100,4 +100,36 @@ public class WorkflowNodeStatusUpdater {
         }
         return true;
     }
+
+    public boolean workflowNodeStatusPending(String workflowInstanceID,String nodeID){
+        try {
+            airavataAPI.getProvenanceManager().setWorkflowInstanceNodeStatus(workflowInstanceID, workflowInstanceID, nodeID, WorkflowExecutionStatus.State.PENDING);
+        } catch (AiravataAPIInvocationException e) {
+            logger.error("Error updating Wokflow Node status !!");
+            return false;
+        }
+        return true;
+    }
+
+       public boolean workflowNodeStatusActive(String workflowInstanceID,String nodeID){
+        try {
+            airavataAPI.getProvenanceManager().setWorkflowInstanceNodeStatus(workflowInstanceID, workflowInstanceID, nodeID, WorkflowExecutionStatus.State.ACTIVE);
+        } catch (AiravataAPIInvocationException e) {
+            logger.error("Error updating Wokflow Node status !!");
+            return false;
+        }
+        return true;
+    }
+
+       public boolean workflowNodeStatusDone(String workflowInstanceID,String nodeID){
+        try {
+            airavataAPI.getProvenanceManager().setWorkflowInstanceNodeStatus(workflowInstanceID, workflowInstanceID, nodeID, WorkflowExecutionStatus.State.DONE);
+        } catch (AiravataAPIInvocationException e) {
+            logger.error("Error updating Wokflow Node status !!");
+            return false;
+        }
+        return true;
+    }
+
+
 }
