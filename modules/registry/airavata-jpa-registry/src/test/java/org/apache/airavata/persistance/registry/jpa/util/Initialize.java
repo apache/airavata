@@ -101,7 +101,7 @@ public class Initialize {
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new RuntimeException("Database failure");
+            throw new RuntimeException("Database failure", e);
         } finally {
             try {
                 if (!conn.getAutoCommit()) {
