@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.URI;
 import java.sql.*;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.Date;
 
@@ -37,23 +38,34 @@ public class DBMigrator {
     private static final String MIGRATE_SQL_DERBY = "migrate_derby.sql";
     private static final String MIGRATE_SQL_MYSQL = "migrate_mysql.sql";
     private static final String REGISTRY_VERSION = "registry.version";
-    private static String currentAiravataVersion = "0.5";
-    private static final String RELATIVE_PATH = "db-scripts/0.6/";
-    private static final String SELECT_QUERY = "SELECT config_val FROM CONFIGURATION WHERE config_key=' " + REGISTRY_VERSION + "'";
-    private static final String INSERT_QUERY = "INSERT INTO CONFIGURATION (config_key, config_val, expire_date, category_id) VALUES('" +
-            REGISTRY_VERSION + "', '" + getIncrementedVersion(currentAiravataVersion) + "', '" + getCurrentDate() +
-            "','SYSTEM')";
+    private static String currentAiravataVersion;
+    private static String relativePath;
+    private static String SELECT_QUERY;
+    private static String INSERT_QUERY;
+    private static String UPDATE_QUERY;
     private static String jdbcURL;
     private static String jdbcUser;
     private static String jdbcPwd;
 
     public static void main(String[] args) {
         parseArguments(args);
+        generateConfigTableQueries();
         updateDB(jdbcURL, jdbcUser, jdbcPwd);
+    }
+
+    public static void generateConfigTableQueries(){
+        SELECT_QUERY = "SELECT * FROM CONFIGURATION WHERE config_key='" + REGISTRY_VERSION + "' and category_id='SYSTEM'";
+        INSERT_QUERY = "INSERT INTO CONFIGURATION (config_key, config_val, expire_date, category_id) VALUES('" +
+                REGISTRY_VERSION + "', '" + getIncrementedVersion(currentAiravataVersion) + "', '" + getCurrentDate() +
+                "','SYSTEM')";
+        UPDATE_QUERY = "UPDATE CONFIGURATION SET config_val='" + getIncrementedVersion(currentAiravataVersion) + "', expire_date='" + getCurrentDate() +
+                        "' WHERE config_key='" + REGISTRY_VERSION + "' and category_id='SYSTEM'";
+
     }
 
     //we assume given database is up and running
     public static void updateDB (String jdbcUrl, String jdbcUser, String jdbcPwd){
+        relativePath = "db-scripts/" + getIncrementedVersion(currentAiravataVersion) + "/";
         InputStream sqlStream = null;
         Scanner in = new Scanner(System.in);
         if (jdbcUrl == null || jdbcUrl.equals("")){
@@ -74,13 +86,15 @@ public class DBMigrator {
 
         Connection connection;
         try {
+            File file = null;
             if (dbType.contains("derby")){
                 jdbcDriver = "org.apache.derby.jdbc.ClientDriver";
-                sqlStream = DBMigrator.class.getClassLoader().getResourceAsStream(RELATIVE_PATH + MIGRATE_SQL_DERBY);
+                file = new File(relativePath + MIGRATE_SQL_DERBY);
             } else if (dbType.contains("mysql")){
                 jdbcDriver = "com.mysql.jdbc.Driver";
-                sqlStream = DBMigrator.class.getClassLoader().getResourceAsStream(RELATIVE_PATH + MIGRATE_SQL_MYSQL);
+                file = new File(relativePath + MIGRATE_SQL_MYSQL);
             }
+            sqlStream = readFile(file);
             Class.forName(jdbcDriver).newInstance();
             connection = DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcPwd);
             if (canUpdated(connection)){
@@ -103,15 +117,23 @@ public class DBMigrator {
 
     private static boolean canUpdated (Connection conn){
         String config = executeSelectQuery(conn);
-        if (config != null) {
-            return false;
-        } else {
-            return true;
+        if (config != null){
+            if (config.equals(getIncrementedVersion(currentAiravataVersion))) {
+                return false;
+            } else {
+                return true;
+            }
         }
+        return false;
     }
 
     private static void updateConfigTable (Connection connection){
-        executeInsertQuery(connection);
+        // if existing need to update, otherwise insert
+        if (executeSelectQuery(connection) != null){
+            executeQuery(connection, UPDATE_QUERY);
+        } else {
+            executeQuery(connection, INSERT_QUERY);
+        }
     }
 
     private static Timestamp getCurrentDate (){
@@ -122,8 +144,12 @@ public class DBMigrator {
     }
 
     private static String getIncrementedVersion (String currentVersion){
-        Double currentVer = Double.valueOf(currentVersion);
-        return String.valueOf(currentVer + 0.1);
+
+        DecimalFormat decimalFormat = new DecimalFormat("#,##0.0");
+        Double currentVer = Double.parseDouble(currentVersion);
+        double v = currentVer + .1;
+        String formattedVal = decimalFormat.format(v);
+        return formattedVal;
     }
 
     private static String executeSelectQuery (Connection conn){
@@ -132,7 +158,7 @@ public class DBMigrator {
             ResultSet rs = statement.executeQuery(SELECT_QUERY);
             if (rs != null){
                 while (rs.next()) {
-                    currentAiravataVersion = rs.getString(1);
+                    currentAiravataVersion = rs.getString(2);
                     return currentAiravataVersion;
                 }
             }
@@ -142,10 +168,10 @@ public class DBMigrator {
         return null;
     }
 
-    private static void executeInsertQuery (Connection conn){
+    private static void executeQuery (Connection conn, String query){
         try {
             Statement statement = conn.createStatement();
-            statement.execute(INSERT_QUERY) ;
+            statement.execute(query) ;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -291,6 +317,7 @@ public class DBMigrator {
             options.addOption("url", true , "JDBC URL");
             options.addOption("user", true, "JDBC Username");
             options.addOption("pwd", true, "JDBC Password");
+            options.addOption("v", true, "Airavata Current Version");
             CommandLineParser parser = new PosixParser();
             CommandLine cmd = parser.parse( options, args);
             jdbcURL = cmd.getOptionValue("url");
@@ -302,8 +329,43 @@ public class DBMigrator {
                 logger.info("You should enter JDBC URL and JDBC Credentials as parameters...");
             }
             jdbcPwd = cmd.getOptionValue("pwd");
+            currentAiravataVersion = cmd.getOptionValue("v");
+            if (currentAiravataVersion == null){
+                logger.info("You should enter current Airavata version you are using...");
+            }
         } catch (ParseException e) {
             logger.error("Error while reading command line parameters" , e);
         }
+    }
+
+    protected static InputStream readFile(File file) {
+        StringBuilder fileContentsBuilder = new StringBuilder();
+        BufferedReader bufferedReader = null;
+        try {
+            char[] buffer = new char[32767];
+            bufferedReader = new BufferedReader(new FileReader(file));
+            int read = 0;
+
+            do {
+                read = bufferedReader.read(buffer);
+                if (read > 0) {
+                    fileContentsBuilder.append(buffer, 0, read);
+                }
+            } while (read > 0);
+        } catch (Exception e) {
+            logger.error("Failed to read file " + file.getPath(), e);
+        } finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    logger.error("Unable to close BufferedReader for " + file.getPath(), e);
+                }
+            }
+        }
+        System.out.println(fileContentsBuilder.toString());
+        InputStream is = new ByteArrayInputStream(fileContentsBuilder.toString().getBytes());
+
+        return is;
     }
 }
