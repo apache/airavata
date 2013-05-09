@@ -65,6 +65,21 @@ public class WorkflowExecutionStatus {
                 return "FINISHED";
             }
         },
+        PENDING {
+            public String toString() {
+                return "PENDING";
+            }
+        },
+        ACTIVE {
+            public String toString() {
+                return "ACTIVE";
+            }
+        },
+        DONE {
+            public String toString() {
+                return "DONE";
+            }
+        },
         UNKNOWN {
             public String toString() {
                 return "UNKNOWN";
