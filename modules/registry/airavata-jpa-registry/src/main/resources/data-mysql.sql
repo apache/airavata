@@ -216,7 +216,7 @@ CREATE TABLE CREDENTIALS
         PRIMARY KEY (GATEWAY_NAME, COMMUNITY_USER_NAME)
 );
 
-CREATE TABLE Node_Error
+CREATE TABLE Execution_Error
 (
        error_id INT NOT NULL AUTO_INCREMENT,
        experiment_ID varchar(255),
@@ -228,6 +228,9 @@ CREATE TABLE Node_Error
        error_msg LONGTEXT,
        error_des LONGTEXT,
        error_code varchar(255),
+       error_reporter varchar(255),
+       error_location varchar(255),
+       action_taken varchar(255),
        PRIMARY KEY(error_id),
        FOREIGN KEY (workflow_instanceID) REFERENCES Workflow_Data(workflow_instanceID) ON DELETE CASCADE,
        FOREIGN KEY (experiment_ID) REFERENCES Experiment_Data(experiment_ID) ON DELETE CASCADE

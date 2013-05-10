@@ -25,7 +25,7 @@ import javax.persistence.*;
 import java.security.Timestamp;
 
 @Entity
-public class Node_Error {
+public class Execution_Error {
     @Id @GeneratedValue
     private int error_id;
     private String experiment_ID;
@@ -34,6 +34,9 @@ public class Node_Error {
     private String gfacJobID;
     private String source_type;
     private Timestamp error_date;
+    private String error_reporter;
+    private String error_location;
+    private String action_taken;
 
     @ManyToOne()
     @JoinColumn(name = "experiment_ID")
@@ -143,5 +146,33 @@ public class Node_Error {
 
     public void setExperiment_data(Experiment_Data experiment_data) {
         this.experiment_data = experiment_data;
+    }
+
+    public String getError_reporter() {
+        return error_reporter;
+    }
+
+    public String getError_location() {
+        return error_location;
+    }
+
+    public String getAction_taken() {
+        return action_taken;
+    }
+
+    public Experiment_Data getExperiment_data() {
+        return experiment_data;
+    }
+
+    public void setError_reporter(String error_reporter) {
+        this.error_reporter = error_reporter;
+    }
+
+    public void setError_location(String error_location) {
+        this.error_location = error_location;
+    }
+
+    public void setAction_taken(String action_taken) {
+        this.action_taken = action_taken;
     }
 }

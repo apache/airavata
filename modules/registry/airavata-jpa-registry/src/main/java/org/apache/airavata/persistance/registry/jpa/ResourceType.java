@@ -37,6 +37,6 @@ public enum ResourceType {
     WORKFLOW_DATA,
     NODE_DATA,
     GRAM_DATA,
-    NODE_ERROR
+    EXECUTION_ERROR
 
 }

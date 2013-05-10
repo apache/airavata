@@ -25,9 +25,9 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
+import org.apache.airavata.persistance.registry.jpa.model.Execution_Error;
 import org.apache.airavata.persistance.registry.jpa.model.Node_Data;
 import org.apache.airavata.persistance.registry.jpa.model.Node_DataPK;
-import org.apache.airavata.persistance.registry.jpa.model.Node_Error;
 import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 import org.slf4j.Logger;
@@ -138,16 +138,16 @@ public class NodeDataResource extends AbstractResource{
         QueryGenerator generator;
         List<?> results;
         switch (type){
-            case  NODE_ERROR:
+            case EXECUTION_ERROR:
                 generator = new QueryGenerator(NODE_ERROR);
-                generator.setParameter(NodeErrorConstants.NODE_ID, nodeID);
+                generator.setParameter(ExecutionErrorConstants.NODE_ID, nodeID);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        Node_Error nodeError = (Node_Error)result;
-                        NodeErrorResource nodeErrorResource = (NodeErrorResource)Utils.getResource(ResourceType.NODE_ERROR, nodeError);
-                        resourceList.add(nodeErrorResource);
+                        Execution_Error execution_error = (Execution_Error)result;
+                        ExecutionErrorResource executionErrorResource = (ExecutionErrorResource)Utils.getResource(ResourceType.EXECUTION_ERROR, execution_error);
+                        resourceList.add(executionErrorResource);
                     }
                 }
                 break;

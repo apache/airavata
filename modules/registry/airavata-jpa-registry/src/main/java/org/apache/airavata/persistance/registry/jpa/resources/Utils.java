@@ -20,10 +20,7 @@
  */
 package org.apache.airavata.persistance.registry.jpa.resources;
 
-import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
-import java.util.Properties;
 
 import org.apache.airavata.persistance.registry.jpa.JPAConstants;
 import org.apache.airavata.persistance.registry.jpa.Resource;
@@ -32,7 +29,6 @@ import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.registry.api.AiravataRegistryConnectionDataProvider;
 import org.apache.airavata.registry.api.AiravataRegistryFactory;
 import org.apache.airavata.registry.api.exception.RegistrySettingsException;
-import org.apache.airavata.registry.api.exception.UnknownRegistryConnectionDataException;
 import org.apache.airavata.registry.api.util.RegistrySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -278,9 +274,9 @@ public class Utils {
                     logger.error("Object should be a Gram Data.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Gram Data.");
                 }
-            case NODE_ERROR:
-                if (o instanceof Node_Error){
-                    return createNodeError((Node_Error) o);
+            case EXECUTION_ERROR:
+                if (o instanceof Execution_Error){
+                    return createExecutionError((Execution_Error) o);
                 }else {
                     logger.error("Object should be a Node Error type.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Node Error.");
@@ -549,21 +545,24 @@ public class Utils {
         return gramDataResource;
     }
 
-    private static Resource createNodeError (Node_Error o){
-        NodeErrorResource nodeErrorResource = new NodeErrorResource();
+    private static Resource createExecutionError(Execution_Error o){
+        ExecutionErrorResource executionErrorResource = new ExecutionErrorResource();
         ExperimentDataResource experimentDataResource = (ExperimentDataResource)createExperimentData(o.getExperiment_Data());
-        nodeErrorResource.setExperimentDataResource(experimentDataResource);
+        executionErrorResource.setExperimentDataResource(experimentDataResource);
         WorkflowDataResource workflowDataResource = (WorkflowDataResource)createWorkflowData(o.getWorkflow_Data());
-        nodeErrorResource.setWorkflowDataResource(workflowDataResource);
-        nodeErrorResource.setNodeID(o.getNode_id());
-        nodeErrorResource.setErrorID(o.getError_id());
-        nodeErrorResource.setGfacJobID(o.getGfacJobID());
-        nodeErrorResource.setSourceType(o.getSource_type());
-        nodeErrorResource.setErrorTime(o.getError_date());
-        nodeErrorResource.setErrorMsg(o.getError_msg());
-        nodeErrorResource.setErrorDes(o.getError_des());
-        nodeErrorResource.setErrorCode(o.getError_code());
-        return nodeErrorResource;
+        executionErrorResource.setWorkflowDataResource(workflowDataResource);
+        executionErrorResource.setNodeID(o.getNode_id());
+        executionErrorResource.setErrorID(o.getError_id());
+        executionErrorResource.setGfacJobID(o.getGfacJobID());
+        executionErrorResource.setSourceType(o.getSource_type());
+        executionErrorResource.setErrorTime(o.getError_date());
+        executionErrorResource.setErrorMsg(o.getError_msg());
+        executionErrorResource.setErrorDes(o.getError_des());
+        executionErrorResource.setErrorCode(o.getError_code());
+        executionErrorResource.setErrorReporter(o.getError_reporter());
+        executionErrorResource.setErrorLocation(o.getError_location());
+        executionErrorResource.setActionTaken(o.getAction_taken());
+        return executionErrorResource;
     }
 
 //    public static byte[] getByteArray(String content){

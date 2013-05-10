@@ -39,7 +39,7 @@ public class WorkflowDataResource extends AbstractResource{
     private final static Logger logger = LoggerFactory.getLogger(WorkflowDataResource.class);
     public static final String NODE_DATA = "Node_Data";
     public static final String GRAM_DATA = "Gram_Data";
-    public static final String NODE_ERROR = "Node_Error";
+    public static final String NODE_ERROR = "Execution_Error";
     private String experimentID;
     private String workflowInstanceID;
     private String templateName;
@@ -105,9 +105,9 @@ public class WorkflowDataResource extends AbstractResource{
                GramDataResource gramDataResource = new GramDataResource();
                gramDataResource.setWorkflowDataResource(this);
                return gramDataResource;
-           case NODE_ERROR:
-               NodeErrorResource nodeErrorResource = new NodeErrorResource();
-               nodeErrorResource.setWorkflowDataResource(this);
+           case EXECUTION_ERROR:
+               ExecutionErrorResource executionErrorResource = new ExecutionErrorResource();
+               executionErrorResource.setWorkflowDataResource(this);
            default:
                logger.error("Unsupported resource type for workflow data resource.", new IllegalArgumentException());
                throw new IllegalArgumentException("Unsupported resource type for workflow data resource.");
@@ -134,9 +134,9 @@ public class WorkflowDataResource extends AbstractResource{
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
                 break;
-            case NODE_ERROR:
+            case EXECUTION_ERROR:
                 generator = new QueryGenerator(NODE_ERROR);
-                generator.setParameter(NodeErrorConstants.ERROR_ID, name);
+                generator.setParameter(ExecutionErrorConstants.ERROR_ID, name);
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
                 break;
@@ -174,15 +174,15 @@ public class WorkflowDataResource extends AbstractResource{
                 em.getTransaction().commit();
                 em.close();
                 return gramDataResource;
-            case NODE_ERROR:
+            case EXECUTION_ERROR:
                 generator = new QueryGenerator(NODE_ERROR);
-                generator.setParameter(NodeErrorConstants.ERROR_ID, name);
+                generator.setParameter(ExecutionErrorConstants.ERROR_ID, name);
                 q = generator.selectQuery(em);
-                Node_Error node_error = (Node_Error)q.getSingleResult();
-                NodeErrorResource nodeErrorResource = (NodeErrorResource)Utils.getResource(ResourceType.NODE_ERROR, node_error);
+                Execution_Error execution_error = (Execution_Error)q.getSingleResult();
+                ExecutionErrorResource executionErrorResource = (ExecutionErrorResource)Utils.getResource(ResourceType.EXECUTION_ERROR, execution_error);
                 em.getTransaction().commit();
                 em.close();
-                return nodeErrorResource;
+                return executionErrorResource;
             default:
                 em.getTransaction().commit();
                 em.close();
@@ -228,16 +228,16 @@ public class WorkflowDataResource extends AbstractResource{
                     }
                 }
                 break;
-            case  NODE_ERROR:
+            case EXECUTION_ERROR:
                 generator = new QueryGenerator(NODE_ERROR);
-                generator.setParameter(NodeErrorConstants.WORKFLOW_ID, workflowInstanceID);
+                generator.setParameter(ExecutionErrorConstants.WORKFLOW_ID, workflowInstanceID);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        Node_Error nodeError = (Node_Error)result;
-                        NodeErrorResource nodeErrorResource = (NodeErrorResource)Utils.getResource(ResourceType.NODE_ERROR, nodeError);
-                        resourceList.add(nodeErrorResource);
+                        Execution_Error executionError = (Execution_Error)result;
+                        ExecutionErrorResource executionErrorResource = (ExecutionErrorResource)Utils.getResource(ResourceType.EXECUTION_ERROR, executionError);
+                        resourceList.add(executionErrorResource);
                     }
                 }
                 break;
