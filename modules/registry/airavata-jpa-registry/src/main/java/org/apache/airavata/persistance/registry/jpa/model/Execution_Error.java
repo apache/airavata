@@ -37,6 +37,7 @@ public class Execution_Error {
     private String error_reporter;
     private String error_location;
     private String action_taken;
+    private int error_reference;
 
     @ManyToOne()
     @JoinColumn(name = "experiment_ID")
@@ -174,5 +175,13 @@ public class Execution_Error {
 
     public void setAction_taken(String action_taken) {
         this.action_taken = action_taken;
+    }
+
+    public int getError_reference() {
+        return error_reference;
+    }
+
+    public void setError_reference(int error_reference) {
+        this.error_reference = error_reference;
     }
 }

@@ -562,6 +562,7 @@ public class Utils {
         executionErrorResource.setErrorReporter(o.getError_reporter());
         executionErrorResource.setErrorLocation(o.getError_location());
         executionErrorResource.setActionTaken(o.getAction_taken());
+        executionErrorResource.setErrorReference(o.getError_reference());
         return executionErrorResource;
     }
 
