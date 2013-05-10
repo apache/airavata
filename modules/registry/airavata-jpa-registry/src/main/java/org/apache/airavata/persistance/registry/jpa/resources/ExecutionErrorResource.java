@@ -28,6 +28,7 @@ public class ExecutionErrorResource extends AbstractResource {
     private String errorReporter;
     private String errorLocation;
     private String actionTaken;
+    private int errorReference;
 
     @Override
     public Resource create(ResourceType type) {
@@ -178,5 +179,13 @@ public class ExecutionErrorResource extends AbstractResource {
 
     public void setActionTaken(String actionTaken) {
         this.actionTaken = actionTaken;
+    }
+
+    public int getErrorReference() {
+        return errorReference;
+    }
+
+    public void setErrorReference(int errorReference) {
+        this.errorReference = errorReference;
     }
 }

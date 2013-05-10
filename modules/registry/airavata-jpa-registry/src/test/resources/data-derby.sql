@@ -233,6 +233,7 @@ CREATE TABLE Execution_Error
        error_reporter varchar(255),
        error_location varchar(255),
        action_taken varchar(255),
+       error_reference INTEGER,
        PRIMARY KEY(error_id),
        FOREIGN KEY (workflow_instanceID) REFERENCES Workflow_Data(workflow_instanceID) ON DELETE CASCADE,
        FOREIGN KEY (experiment_ID) REFERENCES Experiment_Data(experiment_ID) ON DELETE CASCADE
