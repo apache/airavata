@@ -154,7 +154,7 @@ public class EC2Provider implements GFacProvider {
 
             // Initialize the authentication data.
             PublicKeyAuthenticationClient publicKeyAuth = new PublicKeyAuthenticationClient();
-            publicKeyAuth.setUsername("ec2-user");
+            publicKeyAuth.setUsername(amazonSecurityContext.getUserName());
             SshPrivateKeyFile file = SshPrivateKeyFile.parse(new File(PRIVATE_KEY_FILE_PATH));
             SshPrivateKey privateKey = file.toPrivateKey("");
             publicKeyAuth.setKey(privateKey);
@@ -182,6 +182,7 @@ public class EC2Provider implements GFacProvider {
             String executionResult = "";
             while((read = in.read(buffer)) > 0) {
                 String out = new String(buffer, 0, read);
+//                System.out.println(out);
 
                 if(out.startsWith(outParamName)) {
                     executionResult = out.split("=")[1];
