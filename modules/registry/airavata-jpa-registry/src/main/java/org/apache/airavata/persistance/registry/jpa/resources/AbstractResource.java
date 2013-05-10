@@ -42,7 +42,7 @@ public abstract class AbstractResource implements Resource {
     public static final String EXPERIMENT_DATA = "Experiment_Data";
     public static final String WORKFLOW_DATA = "Workflow_Data";
     public static final String EXPERIMENT_METADATA = "Experiment_Metadata";
-    public static final String NODE_ERROR = "Node_Error";
+    public static final String NODE_ERROR = "Execution_Error";
 
     //Gateway Table
     public final class GatewayConstants {
@@ -176,7 +176,7 @@ public abstract class AbstractResource implements Resource {
         public static final String LOCAL_JOB_ID = "local_Job_ID";
     }
 
-    public final class NodeErrorConstants {
+    public final class ExecutionErrorConstants {
         public static final String ERROR_ID = "error_id";
         public static final String EXPERIMENT_ID = "experiment_ID";
         public static final String WORKFLOW_ID = "workflow_instanceID";

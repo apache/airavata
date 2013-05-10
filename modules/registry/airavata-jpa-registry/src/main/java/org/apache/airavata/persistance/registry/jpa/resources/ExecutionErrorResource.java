@@ -4,7 +4,7 @@ import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Experiment_Data;
-import org.apache.airavata.persistance.registry.jpa.model.Node_Error;
+import org.apache.airavata.persistance.registry.jpa.model.Execution_Error;
 import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +13,8 @@ import javax.persistence.EntityManager;
 import java.security.Timestamp;
 import java.util.List;
 
-public class NodeErrorResource extends AbstractResource {
-    private final static Logger logger = LoggerFactory.getLogger(NodeErrorResource.class);
+public class ExecutionErrorResource extends AbstractResource {
+    private final static Logger logger = LoggerFactory.getLogger(ExecutionErrorResource.class);
     private ExperimentDataResource experimentDataResource;
     private WorkflowDataResource workflowDataResource;
     private String nodeID;
@@ -25,6 +25,9 @@ public class NodeErrorResource extends AbstractResource {
     private String errorDes;
     private String errorCode;
     private int errorID;
+    private String errorReporter;
+    private String errorLocation;
+    private String actionTaken;
 
     @Override
     public Resource create(ResourceType type) {
@@ -55,18 +58,18 @@ public class NodeErrorResource extends AbstractResource {
         EntityManager em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
 
-        Node_Error node_error = new Node_Error();
-        node_error.setNode_id(nodeID);
+        Execution_Error execution_error = new Execution_Error();
+        execution_error.setNode_id(nodeID);
         Experiment_Data experiment_data = em.find(Experiment_Data.class, experimentDataResource.getExperimentID());
-        node_error.setExperiment_data(experiment_data);
+        execution_error.setExperiment_data(experiment_data);
         Workflow_Data workflow_data = em.find(Workflow_Data.class, workflowDataResource.getWorkflowInstanceID());
-        node_error.setWorkflow_Data(workflow_data);
-        node_error.setError_code(errorCode);
-        node_error.setError_date(errorTime);
-        node_error.setError_des(errorDes);
-        node_error.setError_msg(errorMsg);
-        node_error.setSource_type(sourceType);
-        node_error.setGfacJobID(gfacJobID);
+        execution_error.setWorkflow_Data(workflow_data);
+        execution_error.setError_code(errorCode);
+        execution_error.setError_date(errorTime);
+        execution_error.setError_des(errorDes);
+        execution_error.setError_msg(errorMsg);
+        execution_error.setSource_type(sourceType);
+        execution_error.setGfacJobID(gfacJobID);
 
         em.getTransaction().commit();
         em.close();
@@ -151,5 +154,29 @@ public class NodeErrorResource extends AbstractResource {
 
     public void setErrorID(int errorID) {
         this.errorID = errorID;
+    }
+
+    public String getErrorReporter() {
+        return errorReporter;
+    }
+
+    public String getErrorLocation() {
+        return errorLocation;
+    }
+
+    public String getActionTaken() {
+        return actionTaken;
+    }
+
+    public void setErrorReporter(String errorReporter) {
+        this.errorReporter = errorReporter;
+    }
+
+    public void setErrorLocation(String errorLocation) {
+        this.errorLocation = errorLocation;
+    }
+
+    public void setActionTaken(String actionTaken) {
+        this.actionTaken = actionTaken;
     }
 }
