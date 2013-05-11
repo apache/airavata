@@ -21,6 +21,11 @@
 
 package org.apache.airavata.xbaya.ui.dialogs.amazon;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.ec2.AmazonEC2Client;
+import org.apache.airavata.gfac.provider.impl.EC2Provider;
+import org.apache.airavata.gfac.provider.utils.EC2ProviderUtil;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.core.amazon.AmazonCredential;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
@@ -30,6 +35,10 @@ import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 public class ChangeCredentialWindow {
     private XBayaEngine engine;
@@ -95,6 +104,61 @@ public class ChangeCredentialWindow {
 
         });
 
+        JButton generateButton = new JButton("Generate Key Pair");
+        generateButton.addActionListener(new AbstractAction() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String accessID = ChangeCredentialWindow.this.accessKeyIDTextField.getText();
+                if (!"".equals(accessID)) {
+                    String secretID = ChangeCredentialWindow.this.secretAccessKeyTextField.getText();
+
+                    if (!"".equals(secretID)) {
+                        AmazonCredential.getInstance().setAwsAccessKeyId(accessID);
+                        AmazonCredential.getInstance().setAwsSecretAccessKey(secretID);
+
+                        File file = new File(System.getProperty("user.home") + "/.ssh/" + EC2Provider.KEY_PAIR_NAME);
+
+                        if (file.exists()) {
+                            ChangeCredentialWindow.this.engine.getGUI().getErrorWindow().
+                                    info(ChangeCredentialWindow.this.dialog.getDialog(),
+                                    "Warning", "The file " + file.getAbsolutePath() + " exists.");
+
+                        } else {
+                            AWSCredentials credential =
+                                    new BasicAWSCredentials(accessID, secretID);
+                            AmazonEC2Client ec2client = new AmazonEC2Client(credential);
+
+                            try {
+                                EC2ProviderUtil.buildKeyPair(ec2client, EC2Provider.KEY_PAIR_NAME);
+                            } catch (NoSuchAlgorithmException e1) {
+                                ChangeCredentialWindow.this.engine.getGUI().getErrorWindow().
+                                        info(ChangeCredentialWindow.this.dialog.getDialog(),
+                                        "Warning", e1.getMessage());
+                            } catch (InvalidKeySpecException e1) {
+                                ChangeCredentialWindow.this.engine.getGUI().getErrorWindow().
+                                        info(ChangeCredentialWindow.this.dialog.getDialog(),
+                                        "Warning", e1.getMessage());
+                            } catch (IOException e1) {
+                                ChangeCredentialWindow.this.engine.getGUI().getErrorWindow().
+                                        info(ChangeCredentialWindow.this.dialog.getDialog(),
+                                        "Warning", e1.getMessage());
+                            }
+
+                            JOptionPane.showMessageDialog(dialog.getDialog(),"The key " +
+                                    file.getAbsolutePath() + " generated.");
+                        }
+
+                        hide();
+                        return;
+                    }
+                }
+
+                JOptionPane.showMessageDialog(dialog.getDialog(),"SecretKey and AccessKey can not be empty!");
+            }
+
+        });
+
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new AbstractAction() {
 
@@ -106,6 +170,7 @@ public class ChangeCredentialWindow {
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(okButton);
+        buttonPanel.add(generateButton);
         buttonPanel.add(cancelButton);
 
         if (this.owner == null) {
