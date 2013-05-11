@@ -21,7 +21,6 @@
 
 package org.apache.airavata.gfac.provider.impl;
 
-import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -38,7 +37,6 @@ import com.sshtools.j2ssh.transport.publickey.InvalidSshKeyException;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFile;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
-import com.sshtools.j2ssh.util.Base64;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.gfac.GFacException;
@@ -47,20 +45,19 @@ import org.apache.airavata.gfac.context.security.AmazonSecurityContext;
 import org.apache.airavata.gfac.notification.events.EC2ProviderEvent;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
+import org.apache.airavata.gfac.provider.utils.AmazonEC2Util;
+import org.apache.airavata.gfac.provider.utils.EC2ProviderUtil;
 import org.apache.airavata.gfac.provider.utils.ProviderUtils;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.Ec2ApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.StringParameterType;
-import org.bouncycastle.openssl.PEMWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.util.ArrayList;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -68,15 +65,11 @@ public class EC2Provider implements GFacProvider {
 
     private static final Logger log = LoggerFactory.getLogger(EC2Provider.class);
 
-    public static final int SLEEP_TIME_SECOND = 120;
-
     public static final int SOCKET_TIMEOUT = 30000;
 
     public static final int SSH_PORT = 22;
 
-    public static final String KEY_PAIR_FILE = "ec2_rsa";
-
-    private static final String PRIVATE_KEY_FILE_PATH = System.getProperty("user.home") + "/.ssh/" + KEY_PAIR_FILE;
+    public static final String KEY_PAIR_NAME = "ec2_rsa";
 
     private Instance instance = null;
 
@@ -156,7 +149,8 @@ public class EC2Provider implements GFacProvider {
             // Initialize the authentication data.
             PublicKeyAuthenticationClient publicKeyAuth = new PublicKeyAuthenticationClient();
             publicKeyAuth.setUsername(amazonSecurityContext.getUserName());
-            SshPrivateKeyFile file = SshPrivateKeyFile.parse(new File(PRIVATE_KEY_FILE_PATH));
+            SshPrivateKeyFile file = SshPrivateKeyFile.
+                    parse(new File(System.getProperty("user.home") + "/.ssh/" + KEY_PAIR_NAME));
             SshPrivateKey privateKey = file.toPrivateKey("");
             publicKeyAuth.setKey(privateKey);
 
@@ -215,6 +209,10 @@ public class EC2Provider implements GFacProvider {
 
     }
 
+    public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+        // Do nothing
+    }
+
     /**
      * Creates the command to be executed in the remote shell.
      *
@@ -261,10 +259,6 @@ public class EC2Provider implements GFacProvider {
         return command;
     }
 
-    public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
-        // Do nothing
-    }
-
     /**
      * Checks whether the port 22 of the Amazon instance is accessible.
      *
@@ -302,15 +296,14 @@ public class EC2Provider implements GFacProvider {
      */
     private void initEc2Environment(JobExecutionContext jobExecutionContext, AmazonEC2Client ec2client)
             throws GFacProviderException {
-//        Instance instance;
         try {
             /* Build key pair before start instance */
-            buildKeyPair(ec2client);
+            EC2ProviderUtil.buildKeyPair(ec2client, KEY_PAIR_NAME);
 
             // right now, we can run it on one host
             if (amazonSecurityContext.getAmiId() != null)
-                instance = startInstances(ec2client, amazonSecurityContext.getAmiId(),
-                        amazonSecurityContext.getInstanceType(), jobExecutionContext).get(0);
+                instance = AmazonEC2Util.startInstances(ec2client, amazonSecurityContext.getAmiId(),
+                        amazonSecurityContext.getInstanceType(), jobExecutionContext, KEY_PAIR_NAME).get(0);
             else {
 
                 // already running instance
@@ -327,7 +320,7 @@ public class EC2Provider implements GFacProvider {
                 instance = describeInstancesResult.getReservations().get(0).getInstances().get(0);
 
                 // check instance keypair
-                if (instance.getKeyName() == null || !instance.getKeyName().equals(KEY_PAIR_FILE)) {
+                if (instance.getKeyName() == null || !instance.getKeyName().equals(KEY_PAIR_NAME)) {
                     throw new GFacProviderException("Keypair for instance:" + amazonSecurityContext.getInstanceId() +
                             " is not valid");
                 }
@@ -339,197 +332,11 @@ public class EC2Provider implements GFacProvider {
         } catch (Exception e) {
             throw new GFacProviderException("Invalid Request",e,jobExecutionContext);
         }
-//        return instance;
+
     }
 
-    private List<Instance> startInstances(AmazonEC2Client ec2, String amiId, String insType,
-                                          JobExecutionContext jobExecutionContext)
-            throws AmazonServiceException {
-        // start only 1 instance
-        RunInstancesRequest request = new RunInstancesRequest(amiId, 1, 1);
-        request.setKeyName(KEY_PAIR_FILE);
-        request.setInstanceType(insType);
-
-        RunInstancesResult result = ec2.runInstances(request);
-
-        List<Instance> instances = result.getReservation().getInstances();
-
-        while (!allInstancesStateEqual(instances, InstanceStateName.Running)) {
-
-            // instance status should not be Terminated
-            if (anyInstancesStateEqual(instances, InstanceStateName.Terminated)) {
-                throw new AmazonClientException("Some Instance is terminated before running a job");
-            }
-
-            // notify the status
-            for (Instance ins: instances) {
-                jobExecutionContext.getNotificationService().publish(new EC2ProviderEvent("EC2 Instance " +
-                        ins.getInstanceId() + " is " + ins.getState().getName()));
-            }
-
-            try {
-                Thread.sleep(SLEEP_TIME_SECOND * 1000l);
-            } catch (Exception ex) {
-                // no op
-            }
-
-            DescribeInstancesRequest describeInstancesRequest = new DescribeInstancesRequest();
-            describeInstancesRequest.setInstanceIds(getInstanceIDs(instances));
-
-            DescribeInstancesResult describeInstancesResult = ec2.describeInstances(describeInstancesRequest);
-            instances = describeInstancesResult.getReservations().get(0).getInstances();
-        }
-
-        log.info("All amazon instances are running");
-        return instances;
-    }
-
-    private void buildKeyPair(AmazonEC2Client ec2) throws NoSuchAlgorithmException, InvalidKeySpecException,
-            AmazonServiceException, AmazonClientException, IOException {
-        boolean newKey = false;
-
-        File privateKeyFile = new File(PRIVATE_KEY_FILE_PATH);
-        File publicKeyFile = new File(PRIVATE_KEY_FILE_PATH + ".pub");
-
-        /* Check if Key-pair already created on the server */
-        if (!privateKeyFile.exists()) {
-
-            // check folder and create if it does not exist
-            File sshDir = new File(System.getProperty("user.home") + "/.ssh/");
-            if (!sshDir.exists())
-                sshDir.mkdir();
-
-            // Generate a 1024-bit RSA key pair
-            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-            keyGen.initialize(1024);
-            java.security.KeyPair keypair = keyGen.genKeyPair();
-
-            FileOutputStream fos = null;
-
-            // Store Public Key.
-            try {
-                fos = new FileOutputStream(PRIVATE_KEY_FILE_PATH + ".pub");
-                fos.write(Base64.encodeBytes(keypair.getPublic().getEncoded(), true).getBytes());
-            } catch (IOException ioe) {
-                throw ioe;
-            } finally {
-                if (fos != null) {
-                    try {
-                        fos.close();
-                        fos = null;
-                    } catch (IOException ioe) {
-                        throw ioe;
-                    }
-                }
-            }
-
-            // Store Private Key.
-            try {
-                fos = new FileOutputStream(PRIVATE_KEY_FILE_PATH);
-                StringWriter stringWriter = new StringWriter();
-
-                /* Write in PEM format (openssl support) */
-                PEMWriter pemFormatWriter = new PEMWriter(stringWriter);
-                pemFormatWriter.writeObject(keypair.getPrivate());
-                pemFormatWriter.close();
-                fos.write(stringWriter.toString().getBytes());
-            } catch (IOException ioe) {
-                throw ioe;
-            } finally {
-                if (fos != null) {
-                    try {
-                        fos.close();
-                        fos = null;
-                    } catch (IOException ioe) {
-                        throw ioe;
-                    }
-                }
-            }
-
-            privateKeyFile.setWritable(false, false);
-            privateKeyFile.setExecutable(false, false);
-            privateKeyFile.setReadable(false, false);
-            privateKeyFile.setReadable(true);
-            privateKeyFile.setWritable(true);
-
-            // set that this key is just created
-            newKey = true;
-        }
-
-        /* Read Public Key */
-        String encodedPublicKey = null;
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new FileReader(publicKeyFile));
-            encodedPublicKey = br.readLine();
-        } catch (IOException ioe) {
-            throw ioe;
-        } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                    br = null;
-                } catch (IOException ioe) {
-                    throw ioe;
-                }
-            }
-        }
-
-        /* Generate key pair in Amazon if necessary */
-        try {
-            /* Get current key pair in Amazon */
-            DescribeKeyPairsRequest describeKeyPairsRequest = new DescribeKeyPairsRequest();
-            ec2.describeKeyPairs(describeKeyPairsRequest.withKeyNames(KEY_PAIR_FILE));
-
-            /* If key exists and new key is created, delete old key and replace
-             * with new one. Else, do nothing */
-            if (newKey) {
-                DeleteKeyPairRequest deleteKeyPairRequest = new DeleteKeyPairRequest(KEY_PAIR_FILE);
-                ec2.deleteKeyPair(deleteKeyPairRequest);
-                ImportKeyPairRequest importKeyPairRequest = new ImportKeyPairRequest(KEY_PAIR_FILE, encodedPublicKey);
-                ec2.importKeyPair(importKeyPairRequest);
-            }
-
-        } catch (AmazonServiceException ase) {
-            /* Key doesn't exists, import new key. */
-            if(ase.getErrorCode().equals("InvalidKeyPair.NotFound")){
-                ImportKeyPairRequest importKeyPairRequest = new ImportKeyPairRequest(KEY_PAIR_FILE, encodedPublicKey);
-                ec2.importKeyPair(importKeyPairRequest);
-            }else{
-                throw ase;
-            }
-        }
-    }
-
-    private boolean anyInstancesStateEqual(List<Instance> instances, InstanceStateName name) {
-        for (Instance instance : instances) {
-            // if one of instance is not running, return false
-            if (InstanceStateName.fromValue(instance.getState().getName()) == name) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean allInstancesStateEqual(List<Instance> instances, InstanceStateName name) {
-        for (Instance instance : instances) {
-            // if one of instance is not running, return false
-            if (InstanceStateName.fromValue(instance.getState().getName()) != name) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private List<String> getInstanceIDs(List<Instance> instances) {
-        List<String> ret = new ArrayList<String>();
-        for (Instance instance : instances) {
-            ret.add(instance.getInstanceId());
-        }
-        return ret;
-    }
     public void initProperties(Map<String, String> properties) throws GFacProviderException, GFacException {
-
+        // do nothing
     }
 
 }
