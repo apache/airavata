@@ -19,11 +19,37 @@
  *
  */
 
-package org.apache.airavata.client.api;
+package org.apache.airavata.client.impl;
 
-public interface SecuritySettings {
-	public AmazonWebServicesSettings getAmazonWSSettings() throws AiravataAPIInvocationException;
-	public CredentialStoreSecuritySettings getCredentialStoreSecuritySettings() throws AiravataAPIInvocationException;
-	public GridMyProxyRepositorySettings getGridMyProxyRepositorySettings() throws AiravataAPIInvocationException;
-	public SSHAuthenticationSettings getSSHAuthenticationSettings() throws AiravataAPIInvocationException;
+import org.apache.airavata.client.api.CredentialStoreSecuritySettings;
+
+/**
+ * User: AmilaJ (amilaj@apache.org)
+ * Date: 5/7/13
+ * Time: 2:44 PM
+ */
+
+/**
+ * Implementation of credential store security settings class.
+ */
+public class CredentialStoreSecuritySettingsImpl implements CredentialStoreSecuritySettings {
+
+    private String tokenId;
+
+    public CredentialStoreSecuritySettingsImpl(String tokenId) {
+        this.tokenId = tokenId;
+    }
+
+    public CredentialStoreSecuritySettingsImpl() {
+    }
+
+    public void setTokenId(String tokenId) {
+        this.tokenId = tokenId;
+    }
+
+
+    public String getTokenId() {
+        return tokenId;
+    }
+
 }

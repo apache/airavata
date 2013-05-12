@@ -60,12 +60,7 @@ public class ParamChemTest {
     public void setUp() throws Exception {
 
         GFacConfiguration gFacConfiguration = new GFacConfiguration(null);
-        GSISecurityContext context = new GSISecurityContext();
-		context.setMyproxyLifetime(3600);
-		context.setMyproxyServer("myproxy.teragrid.org");
-		context.setMyproxyUserName("*****");
-		context.setMyproxyPasswd("*****");
-		context.setTrustedCertLoc("./certificates");
+        GSISecurityContext context = new GSISecurityContext("myproxy.teragrid.org", "*****", "*****", 3600, "./certificates");
 
         //have to set InFlwo Handlers and outFlowHandlers
         gFacConfiguration.setInHandlers(Arrays.asList(new GFacHandlerConfig[]{new GFacHandlerConfig(null,"org.apache.airavata.gfac.handler.GramDirectorySetupHandler"), new GFacHandlerConfig(null,"org.apache.airavata.gfac.handler.GridFTPInputHandler")}));

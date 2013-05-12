@@ -294,7 +294,8 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     }
 
     private String setupAndLaunch(String workflowAsString, String topic, String gatewayId, String username,
-                                  NameValue[] inputs,Map<String,String>configurations,boolean inNewThread,WorkflowContextHeaderBuilder builder) throws XMLStreamException, MalformedURLException, RepositoryException, RegistryException, AiravataAPIInvocationException {
+                                  NameValue[] inputs,Map<String,String>configurations,boolean inNewThread,
+                                  WorkflowContextHeaderBuilder builder) throws XMLStreamException, MalformedURLException, RepositoryException, RegistryException, AiravataAPIInvocationException {
         log.debug("Launch is called for topic:"+topic);
 
         Workflow workflow = null;

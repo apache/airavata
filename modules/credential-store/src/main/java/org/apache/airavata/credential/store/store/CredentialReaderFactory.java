@@ -19,15 +19,23 @@
  *
  */
 
-package org.apache.airavata.client.api;
+package org.apache.airavata.credential.store.store;
 
-public interface CredentialManagementServiceSettings {
-	public String getExecutionSessionId();
-	public String getScmsURL();
-	
-	public void setExecutionSessionId(String executionSessionId);
-	public void setScmsURL(String scmsURL);
-	
-	public void resetExecutionSessionId();
-	public void resetScmsURL();
+/**
+ * User: AmilaJ (amilaj@apache.org)
+ * Date: 5/8/13
+ * Time: 3:44 PM
+ */
+
+import org.apache.airavata.common.utils.DBUtil;
+import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
+
+/**
+ * Factory class to create credential store readers.
+ */
+public class CredentialReaderFactory {
+
+    public static CredentialReader createCredentialStoreReader(DBUtil dbUti) {
+        return new CredentialReaderImpl(dbUti);
+    }
 }

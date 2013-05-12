@@ -32,7 +32,6 @@ import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
-import org.apache.airavata.gfac.provider.utils.JSDLGenerator;
 import org.apache.airavata.schemas.gfac.UnicoreHostType;
 import org.apache.xmlbeans.XmlCursor;
 import org.ggf.schemas.bes.x2006.x08.besFactory.ActivityStateEnumeration;
@@ -177,10 +176,10 @@ public class BESProvider implements GFacProvider {
 		
 
 		
-		GSISecurityContext gssContext = (GSISecurityContext)jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT);
-//		GlobusCredential credentials = gssContext.getGlobusCredential();
-		
-		GlobusGSSCredentialImpl gss = (GlobusGSSCredentialImpl) gssContext.getGssCredentails();
+		GSISecurityContext gssContext = (GSISecurityContext)jobExecutionContext.
+                getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT);
+
+		GlobusGSSCredentialImpl gss = (GlobusGSSCredentialImpl) gssContext.getGssCredentials();
 		
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		
@@ -196,8 +195,8 @@ public class BESProvider implements GFacProvider {
 			
 			//TODO: to be supported by airavata gsscredential class
 			List<String> trustedCert = new ArrayList<String>();
-			trustedCert.add(gssContext.getTrustedCertLoc()+"/*.0");
-			trustedCert.add(gssContext.getTrustedCertLoc()+"/*.pem");
+			trustedCert.add(gssContext.getMyProxyManager().getTrustedCertsLoc() + "/*.0");
+			trustedCert.add(gssContext.getMyProxyManager().getTrustedCertsLoc() + "/*.pem");
 			
 			char[] c = null;
 			

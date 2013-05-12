@@ -111,7 +111,7 @@ public class GridFTPInputHandler implements GFacHandler {
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
         GridFtp ftp = new GridFtp();
         URI destURI = null;
-        GSSCredential gssCred = ((GSISecurityContext)jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getGssCredentails();
+        GSSCredential gssCred = ((GSISecurityContext)jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getGssCredentials();
 
         for (String endpoint : gridFTPEndpointArray) {
             URI inputURI = GFacUtils.createGsiftpURI(endpoint, app.getInputDataDirectory());

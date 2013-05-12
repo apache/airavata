@@ -23,9 +23,24 @@
 <p>This demonstrates how portal can use Credential Store to obtain community credentials ...</p>
 <form name="input" action="../credential-store" method="post">
 
-    Gateway Name   : <input type="text" name="gatewayName"><br>
-    Portal Username: <input type="text" name="portalUserName"><br>
-    Contact Email: <input type="text" name="email">
+    <table border="0">
+        <tr>
+            <td>Gateway Name</td>
+            <td><input type="text" name="gatewayName"></td>
+        </tr>
+        <tr>
+            <td>Portal Username</td>
+            <td><input type="text" name="portalUserName"></td>
+        </tr>
+        <tr>
+            <td>Contact Email</td>
+            <td><input type="text" name="email"></td>
+        </tr>
+        <tr>
+            <td>Associated Token</td>
+            <td><input type="password" name="associatedToken"></td>
+        </tr>
+    </table>
 
     <input type="submit" value="Submit">
 </form>

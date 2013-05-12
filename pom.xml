@@ -346,14 +346,6 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
-		<repository>
-			<name>oa4mp.repo</name>
-			<id>oa4mp.repo</id>
-			<url>http://cilogon.svn.sourceforge.net/viewvc/cilogon/m2-repo/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
 
 		<repository>
 			<id>m2-snapshot-repository</id>

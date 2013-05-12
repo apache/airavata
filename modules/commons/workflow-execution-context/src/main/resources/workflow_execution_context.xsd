@@ -509,22 +509,15 @@
 					</annotation>
 					<complexType>
 						<sequence>
-							<element name="scms-url" type="anyURI">
+							<element name="token_id" type="string">
 								<annotation>
-									<documentation xml:lang="en"> Location of the SCMS
-										(Session
-										Credential Management Service).
+									<documentation xml:lang="en"> Token id used in credential-store. Represents the community user.
 									</documentation>
 								</annotation>
 							</element>
-							<element name="execution-session-id" type="string">
+							<element name="portal-user" type="string">
 								<annotation>
-									<documentation xml:lang="en"> The ID of the session
-										credential
-										to be used for executing grid operations
-										as needed
-										by the
-										workflow.
+									<documentation xml:lang="en"> The portal user id who is invoking the workflow.
 									</documentation>
 								</annotation>
 							</element>

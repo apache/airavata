@@ -55,6 +55,7 @@ public class Constants {
 
 	public static final String TRUSTED_CERT_LOCATION = "trusted.cert.location";
     public static final String MYPROXY_SERVER = "myproxy.server";
+    public static final String MYPROXY_SERVER_PORT = "myproxy.port";
     public static final String MYPROXY_USER = "myproxy.user";
     public static final String MYPROXY_PASS = "myproxy.pass";
     public static final String MYPROXY_LIFE = "myproxy.life";

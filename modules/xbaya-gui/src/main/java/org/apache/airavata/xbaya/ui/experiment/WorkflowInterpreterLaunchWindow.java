@@ -319,6 +319,12 @@ public class WorkflowInterpreterLaunchWindow {
                         options.getCustomSecuritySettings().getAmazonWSSettings().setSecretAccessKey(AmazonCredential.getInstance().getAwsSecretAccessKey());
                     }
 
+                    //TODO get the token id from UI
+                    // For the moment hard code it
+                    // TODO Build UI to get the token id
+                    //options.getCustomSecuritySettings().getCredentialStoreSecuritySettings().setTokenId("1234");
+
+
                     String experimentId = api.getExecutionManager().runExperiment(api.getWorkflowManager().getWorkflowAsString(workflow), workflowInputs,options);
                     try {
                         WorkflowInterpreterLaunchWindow.this.engine.getMonitor().getConfiguration().setTopic(experimentId);

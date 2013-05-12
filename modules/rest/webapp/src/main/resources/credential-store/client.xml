@@ -1,21 +1,9 @@
-<!-- ~ Licensed to the Apache Software Foundation (ASF) under one ~ or more
-    contributor license agreements. See the NOTICE file ~ distributed with this
-    work for additional information ~ regarding copyright ownership. The ASF
-    licenses this file ~ to you under the Apache License, Version 2.0 (the ~
-    "License"); you may not use this file except in compliance ~ with the License.
-    You may obtain a copy of the License at ~ ~ http://www.apache.org/licenses/LICENSE-2.0
-    ~ ~ Unless required by applicable law or agreed to in writing, ~ software
-    distributed under the License is distributed on an ~ "AS IS" BASIS, WITHOUT
-    WARRANTIES OR CONDITIONS OF ANY ~ KIND, either express or implied. See the
-    License for the ~ specific language governing permissions and limitations
-    ~ under the License. -->
-
 <config>
     <client name="sample">
         <id>myproxy:oa4mp,2012:/client/24c45c2eb65d93231d02d423e94d0362</id>
         <serviceUri>https://portal.xsede.org/oauth</serviceUri>
         <!--callbackUri>https://156.56.179.104:8443/client/pages/client-success.jsp</callbackUri-->
-        <callbackUri>https://149.160.181.212:8443/airavata-registry/callback</callbackUri>
+        <callbackUri>https://156.56.179.169:8443/airavata-registry/callback</callbackUri>
         <lifetime>864000</lifetime>
         <!--publicKeyFile>/Users/thejaka/manager-server/webapps/airavata-registry/WEB-INF/classes/credential-store/oauth-pubkey.pem</publicKeyFile-->
         <publicKeyFile>../webapps/airavata-registry/WEB-INF/classes/credential-store/oauth-pubkey.pem</publicKeyFile>

@@ -32,6 +32,7 @@ public class CommunityUserDAOTest extends DatabaseTestCases {
                 "                        PRIMARY KEY (GATEWAY_NAME, COMMUNITY_USER_NAME, TOKEN_ID)\n" +
                 "                )";
 
+
         String dropTable = "drop table COMMUNITY_USER";
 
         try {

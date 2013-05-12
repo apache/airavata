@@ -85,6 +85,13 @@
             <version>0.8.0</version>
         </dependency>
 
+        <!-- Credential Store -->
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-credential-store</artifactId>
+            <version>${pom.version}</version>
+        </dependency>
+
         <!-- Amazon EC2 Provider -->
         <dependency>
             <groupId>com.amazonaws</groupId>

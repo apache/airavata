@@ -64,6 +64,7 @@ public class CredentialsDAOTest extends DatabaseTestCases {
                 "        PRIMARY KEY (GATEWAY_ID, TOKEN_ID)\n" +
                 ")";
 
+
         String dropTable = "drop table CREDENTIALS";
 
         try {

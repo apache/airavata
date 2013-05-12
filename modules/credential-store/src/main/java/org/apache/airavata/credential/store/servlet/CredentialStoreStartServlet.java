@@ -82,6 +82,7 @@ public class CredentialStoreStartServlet extends ClientServlet {
         String gatewayName = request.getParameter("gatewayName");
         String portalUserName = request.getParameter("portalUserName");
         String contactEmail = request.getParameter("email");
+        String associatedToken = request.getParameter("associatedToken");
 
         if (gatewayName == null) {
             JSPUtil.handleException(new RuntimeException("Please specify a gateway name."), request,
@@ -109,6 +110,7 @@ public class CredentialStoreStartServlet extends ClientServlet {
         queryParameters.put("gatewayName", gatewayName);
         queryParameters.put("portalUserName", portalUserName);
         queryParameters.put("email", contactEmail);
+        queryParameters.put("associatedToken", associatedToken);
 
         Map<String, String> additionalParameters = new HashMap<String, String>();
 
