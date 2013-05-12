@@ -391,6 +391,9 @@ public class BaseCaseIT {
         String workflowName = workflow.getName();
         ExperimentAdvanceOptions options = airavataAPI.getExecutionManager().createExperimentAdvanceOptions(
                 workflowName, getUserName(), null);
+
+        options.getCustomSecuritySettings().getCredentialStoreSecuritySettings().setTokenId("1234");
+
         String experimentId = airavataAPI.getExecutionManager().runExperiment(workflowName, workflowInputs, options);
 
         Assert.assertNotNull(experimentId);
@@ -411,7 +414,6 @@ public class BaseCaseIT {
                 workflowName, getUserName(), null);
         String experimentId = airavataAPI.getExecutionManager().runExperiment(workflowName, workflowInputs, options,
                 new EventDataListenerAdapter() {
-                    @Override
                     public void notify(EventDataRepository eventDataRepo, EventData eventData) {
                         // do nothing
                     }
@@ -496,7 +498,6 @@ public class BaseCaseIT {
         final Monitor experimentMonitor = airavataAPI.getExecutionManager().getExperimentMonitor(experimentId,
                 new EventDataListenerAdapter() {
 
-                    @Override
                     public void notify(EventDataRepository eventDataRepo, EventData eventData) {
                         Assert.assertNotNull(eventDataRepo);
                         Assert.assertNotNull(eventData);

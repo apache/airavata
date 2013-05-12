@@ -57,7 +57,7 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
     private static final String GATEWAY_NAME_QUERY_PARAMETER = "gatewayName";
     private static final String PORTAL_USER_QUERY_PARAMETER = "portalUserName";
     private static final String PORTAL_USER_EMAIL_QUERY_PARAMETER = "email";
-    private static final String PORTAL_TOKEN_ID_ASSIGNED = "tokenId";
+    private static final String PORTAL_TOKEN_ID_ASSIGNED = "associatedToken";
     private static final String DURATION_QUERY_PARAMETER = "duration";
 
     private OA4MPService oa4mpService;
@@ -137,11 +137,12 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
         OA4MPResponse oa4MPResponse = null;
 
         Map<String, String> parameters = createQueryParameters(gatewayName, portalUserName,
-                                                     contactEmail, duration);
+                                                     contactEmail, portalTokenId);
 
         try {
             info("Requesting private key ...");
             oa4MPResponse = getOA4MPService().requestCert(parameters);
+            //oa4MPResponse = getOA4MPService().requestCert();
 
             info("2.a. Getting the cert(s) from the service");
             assetResponse = getOA4MPService().getCert(token, verifier);
@@ -190,7 +191,7 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
     private Map<String, String> createQueryParameters (String gatewayName,
                                                             String portalUserName,
                                                             String portalEmail,
-                                                            long duration) {
+                                                            String tokenId) {
 
         String callbackUriKey = getEnvironment().getConstants().get(CALLBACK_URI_KEY);
         ClientEnvironment clientEnvironment = (ClientEnvironment) getEnvironment();
@@ -202,7 +203,9 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
         stringBuilder.append("?").append(GATEWAY_NAME_QUERY_PARAMETER).append("=").append(gatewayName)
                 .append("&").append(PORTAL_USER_QUERY_PARAMETER).append("=").append(portalUserName)
                 .append("&")
-                .append(PORTAL_USER_EMAIL_QUERY_PARAMETER).append("=").append(portalEmail);
+                .append(PORTAL_USER_EMAIL_QUERY_PARAMETER).append("=").append(portalEmail)
+                .append("&")
+                .append(PORTAL_TOKEN_ID_ASSIGNED).append("=").append(tokenId);
 
         info("Callback URI is set to - " + stringBuilder.toString());
 

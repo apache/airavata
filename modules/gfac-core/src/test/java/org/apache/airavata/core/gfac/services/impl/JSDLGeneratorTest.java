@@ -270,12 +270,8 @@ public class JSDLGeneratorTest {
     }
 
     private GSISecurityContext getSecurityContext() {
-        GSISecurityContext context = new GSISecurityContext();
-        context.setMyproxyLifetime(3600);
-        context.setMyproxyServer("myproxy.teragrid.org");
-        context.setMyproxyUserName("******");
-        context.setMyproxyPasswd("*********");
-        context.setTrustedCertLoc("**********");
+        GSISecurityContext context = new GSISecurityContext("myproxy.teragrid.org", "******", "*********", 3600,
+                "**********");
         return context;
     }
 

@@ -98,4 +98,10 @@ public interface AiravataAPI {
 
 	public void setGateway(String gateway);
 
+    /**
+     * Gets the gateway id.
+     * @return The gateway id.
+     */
+    public String getGateway();
+
 }

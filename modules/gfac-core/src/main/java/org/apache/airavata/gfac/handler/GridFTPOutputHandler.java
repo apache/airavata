@@ -91,7 +91,7 @@ public class GridFTPOutputHandler implements GFacHandler {
        File localStdErrFile = null;
        Map<String, ActualParameter> stringMap = new HashMap<String, ActualParameter>();
        try {
-    	    GSSCredential gssCred = ((GSISecurityContext)jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getGssCredentails();
+    	    GSSCredential gssCred = ((GSISecurityContext)jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getGssCredentials();
     	    String[] hostgridFTP = gridFTPEndpointArray;
             if (hostgridFTP == null || hostgridFTP.length == 0) {
                 hostgridFTP = new String[]{hostName};
@@ -276,7 +276,7 @@ public class GridFTPOutputHandler implements GFacHandler {
                     .get(paramName);
 
             GridFtp ftp = new GridFtp();
-            GSSCredential gssCred = ((GSISecurityContext)jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getGssCredentails();
+            GSSCredential gssCred = ((GSISecurityContext)jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getGssCredentials();
             try {
                 if ("URI".equals(actualParameter.getType().getType().toString())) {
                     for (String endpoint : gridFTPEndpointArray) {

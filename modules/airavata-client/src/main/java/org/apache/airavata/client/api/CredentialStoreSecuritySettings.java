@@ -21,9 +21,23 @@
 
 package org.apache.airavata.client.api;
 
-public interface SecuritySettings {
-	public AmazonWebServicesSettings getAmazonWSSettings() throws AiravataAPIInvocationException;
-	public CredentialStoreSecuritySettings getCredentialStoreSecuritySettings() throws AiravataAPIInvocationException;
-	public GridMyProxyRepositorySettings getGridMyProxyRepositorySettings() throws AiravataAPIInvocationException;
-	public SSHAuthenticationSettings getSSHAuthenticationSettings() throws AiravataAPIInvocationException;
+/**
+ * Encapsulates security information related to credential-store.
+ * Mainly we need information about the token id and and user id of the portal user
+ * who is invoking the workflow.
+ */
+public interface CredentialStoreSecuritySettings {
+
+    /**
+     * Returns the token id to get the credentials.
+     * @return The token id.
+     */
+    public String getTokenId();
+
+    /**
+     * Sets the token to be used when accessing the credential store.
+     * @param token The token.
+     */
+    public void setTokenId(String token);
+
 }

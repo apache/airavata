@@ -25,23 +25,20 @@ import org.apache.airavata.client.api.*;
 
 public class SecuritySettingsImpl implements SecuritySettings {
     private AmazonWebServicesSettings amazonWebServicesSettings = new AmazonWebServicesSettingsImpl();
+    private CredentialStoreSecuritySettings credentialStoreSecuritySettings = new CredentialStoreSecuritySettingsImpl();
 
-    @Override
     public AmazonWebServicesSettings getAmazonWSSettings() {
         return amazonWebServicesSettings;
     }
 
-    @Override
-    public CredentialManagementServiceSettings getCMServiceSettings() throws AiravataAPIUnimplementedException {
-        throw new AiravataAPIUnimplementedException("Customizing security is not supported by the client in this binary!!!");
+    public CredentialStoreSecuritySettings getCredentialStoreSecuritySettings() throws AiravataAPIUnimplementedException {
+        return credentialStoreSecuritySettings;
     }
 
-    @Override
     public GridMyProxyRepositorySettings getGridMyProxyRepositorySettings() throws AiravataAPIUnimplementedException {
         throw new AiravataAPIUnimplementedException("Customizing security is not supported by the client in this binary!!!");
     }
 
-    @Override
     public SSHAuthenticationSettings getSSHAuthenticationSettings() throws AiravataAPIUnimplementedException {
         throw new AiravataAPIUnimplementedException("Customizing security is not supported by the client in this binary!!!");
     }

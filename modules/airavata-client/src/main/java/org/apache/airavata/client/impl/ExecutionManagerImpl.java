@@ -245,6 +245,14 @@ public class ExecutionManagerImpl implements ExecutionManager {
             builder.setAmazonWebServices(options.getCustomSecuritySettings().getAmazonWSSettings().getAccessKeyId(),
                     options.getCustomSecuritySettings().getAmazonWSSettings().getSecretAccessKey());
         }
+
+        if (options.getCustomSecuritySettings().getCredentialStoreSecuritySettings() != null) {
+            builder.setCredentialManagementService(options.getCustomSecuritySettings().
+                    getCredentialStoreSecuritySettings().getTokenId(),
+                    submissionUser);
+        }
+
+
 		return builder;
 	}
 

@@ -125,13 +125,8 @@ public abstract class AbstractBESTest {
 	protected abstract MessageContext getOutMessageContext();
 
 	private GSISecurityContext getSecurityContext() {
-		GSISecurityContext context = new GSISecurityContext();
-		context.setMyproxyLifetime(3600);
-		context.setMyproxyServer("myproxy.teragrid.org");
-		context.setMyproxyUserName("******");
-		context.setMyproxyPasswd("*******");
-		// Add Unicore certificate to this folder
-		context.setTrustedCertLoc("/Users/raminder/.globus/certificates");
+		GSISecurityContext context = new GSISecurityContext("myproxy.teragrid.org", "******", "*******", 3600,
+                "/Users/raminder/.globus/certificates");
 		return context;
 	}
 

@@ -265,14 +265,14 @@ public class WorkflowContextHeaderBuilder {
         return this;
     }
 
-    public WorkflowContextHeaderBuilder setCredentialManagementService(String scmUrl, String securitySessionId) {
+    public WorkflowContextHeaderBuilder setCredentialManagementService(String tokenId, String portalUser) {
         if (this.securityContext == null) {
             this.securityContext = SecurityContextDocument.SecurityContext.Factory.newInstance();
         }
         SecurityContextDocument.SecurityContext.CredentialManagementService credentialManagementService = this.securityContext
                 .addNewCredentialManagementService();
-        credentialManagementService.setScmsUrl(scmUrl);
-        credentialManagementService.setExecutionSessionId(securitySessionId);
+        credentialManagementService.setTokenId(tokenId);
+        credentialManagementService.setPortalUser(portalUser);
         return this;
     }
 

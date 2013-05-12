@@ -1,12 +1,23 @@
 package org.apache.airavata.credential.store.store;
 
 import org.apache.airavata.credential.store.credential.AuditInfo;
+import org.apache.airavata.credential.store.credential.Credential;
 
 /**
  * This interface provides an API for Credential Store.
  * Provides methods to manipulate credential store data.
  */
 public interface CredentialReader {
+
+
+    /**
+     * Retrieves the credential from the credential store.
+     * @param gatewayId The gateway id
+     * @param tokenId The token id associated with the credential
+     * @return The Credential object associated with the token.
+     * @throws CredentialStoreException If an error occurred while retrieving a credential.
+     */
+    Credential getCredential(String gatewayId, String tokenId) throws CredentialStoreException;
 
     /**
      * Gets the admin portal user name who  retrieved given community user for

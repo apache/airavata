@@ -379,12 +379,18 @@ public class EmbeddedGFacInvoker implements Invoker {
 	private void addSecurityContext(HostDescription registeredHost, Properties configurationProperties,
 			JobExecutionContext jobExecutionContext) {
 		if (registeredHost.getType() instanceof GlobusHostType || registeredHost.getType() instanceof UnicoreHostType) {
-			GSISecurityContext context = new GSISecurityContext();
-			context.setMyproxyLifetime(Integer.parseInt(configurationProperties.getProperty(Constants.MYPROXY_LIFE)));
-			context.setMyproxyServer(configurationProperties.getProperty(Constants.MYPROXY_SERVER));
-			context.setMyproxyUserName(configurationProperties.getProperty(Constants.MYPROXY_USER));
-			context.setMyproxyPasswd(configurationProperties.getProperty(Constants.MYPROXY_PASS));
-			context.setTrustedCertLoc(configurationProperties.getProperty(Constants.TRUSTED_CERT_LOCATION));
+
+            String tokenId
+                    = jobExecutionContext.getContextHeader().getSecurityContext().
+                    getCredentialManagementService().getTokenId();
+            String gatewayUser = jobExecutionContext.getContextHeader().getSecurityContext().
+                    getCredentialManagementService().getPortalUser();
+
+            String gatewayId = jobExecutionContext.getGFacConfiguration().getAiravataAPI().getGateway();
+
+			GSISecurityContext context = new GSISecurityContext(configurationProperties, tokenId, gatewayId,
+                    gatewayUser);
+
 			jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT, context);
 
 		} else if (registeredHost.getType() instanceof Ec2HostType) {
