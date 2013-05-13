@@ -30,7 +30,7 @@ public class AiravataAPIInvocationException extends Exception {
 	private static final long serialVersionUID = 1L;
 
 	public AiravataAPIInvocationException(Throwable e) {
-		super("Error invoking API", e);
+		super(e.getLocalizedMessage(), e);
 		log.error(e.getLocalizedMessage(),e);
 	}
 	public AiravataAPIInvocationException(String message) {
