@@ -74,6 +74,10 @@ public class ExperimentDataResource extends AbstractResource{
                 WorkflowDataResource workflowDataResource = new WorkflowDataResource();
                 workflowDataResource.setExperimentID(experimentID);
                 return workflowDataResource;
+            case EXECUTION_ERROR:
+				ExecutionErrorResource executionErrorResource = new ExecutionErrorResource();
+				executionErrorResource.setExperimentDataResource(this);
+				return executionErrorResource;
             case EXPERIMENT_METADATA:
                 ExperimentMetadataResource experimentMetadataResource = new ExperimentMetadataResource();
                 experimentMetadataResource.setExpID(experimentID);
@@ -181,7 +185,7 @@ public class ExperimentDataResource extends AbstractResource{
                 }
                 break;
             case EXECUTION_ERROR:
-                generator = new QueryGenerator(NODE_ERROR);
+                generator = new QueryGenerator(EXECUTION_ERROR);
                 generator.setParameter(ExecutionErrorConstants.EXPERIMENT_ID, experimentID);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
@@ -257,11 +261,52 @@ public class ExperimentDataResource extends AbstractResource{
     	return (ExperimentMetadataResource)create(ResourceType.EXPERIMENT_METADATA);
     }
     
+    public ExecutionErrorResource createExecutionError(){
+    	return (ExecutionErrorResource) create(ResourceType.EXECUTION_ERROR);
+    }
+    
     public void removeWorkflowInstance(String workflowInstanceId){
     	remove(ResourceType.WORKFLOW_DATA, workflowInstanceId);
     }
     
     public void removeExperimentMetadata(){
     	remove(ResourceType.EXPERIMENT_METADATA,getExperimentID());
+    }
+    
+    public List<ExecutionErrorResource> getExecutionErrors(String type, String experimentId, String workflowInstanceId, String nodeId, String gfacJobId){
+    	List<ExecutionErrorResource> resourceList = new ArrayList<ExecutionErrorResource>();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        Query q;
+        QueryGenerator generator;
+        List<?> results;
+    	generator = new QueryGenerator(EXECUTION_ERROR);
+        if (experimentId!=null){
+            generator.setParameter(ExecutionErrorConstants.EXPERIMENT_ID, experimentId);
+        }
+        if (type!=null){
+            generator.setParameter(ExecutionErrorConstants.SOURCE_TYPE, type);
+        }
+        if (workflowInstanceId!=null){
+        	generator.setParameter(ExecutionErrorConstants.WORKFLOW_ID, workflowInstanceId);	
+        }
+        if (nodeId!=null){
+        	generator.setParameter(ExecutionErrorConstants.NODE_ID, nodeId);	
+        }
+        if (gfacJobId!=null){
+        	generator.setParameter(ExecutionErrorConstants.GFAC_JOB_ID, gfacJobId);	
+        }
+        q = generator.selectQuery(em);
+        results = q.getResultList();
+        if (results.size() != 0) {
+            for (Object result : results) {
+                Execution_Error executionError = (Execution_Error)result;
+                ExecutionErrorResource executionErrorResource = (ExecutionErrorResource)Utils.getResource(ResourceType.EXECUTION_ERROR, executionError);
+                resourceList.add(executionErrorResource);
+            }
+        }
+        em.getTransaction().commit();
+        em.close();
+        return resourceList;
     }
 }

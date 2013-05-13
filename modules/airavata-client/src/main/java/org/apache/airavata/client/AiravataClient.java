@@ -95,7 +95,7 @@ public class AiravataClient extends Observable implements AiravataAPI {
 	private String gateway;
 	private boolean configCreated = false;
 
-	private static final Version API_VERSION = new Version("Airavata", 0, 7,
+	private static final Version API_VERSION = new Version("Airavata", 0, 8,
 			null, null, null);
 
 	// FIXME: Need a constructor to set registry URL

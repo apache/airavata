@@ -27,5 +27,6 @@
 		<module>workflow-model-core</module>
 		<module>workflow-model-component</module>
 		<module>workflow-model-component-node</module>
+		<!--module>workflow-engine</module-->
 	</modules>
 </project>

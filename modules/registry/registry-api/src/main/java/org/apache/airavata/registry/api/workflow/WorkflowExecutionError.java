@@ -19,23 +19,25 @@
  *
  */
 
-package org.apache.airavata.workflow.model.utils;
+package org.apache.airavata.registry.api.workflow;
 
-import org.apache.airavata.common.utils.Version;
+public class WorkflowExecutionError extends ExecutionError {
+	private String experimentId;
+	private String workflowInstanceId;
 
-public class ApplicationVersion {
+	public String getExperimentId() {
+		return experimentId;
+	}
 
-    /**
-     * Version number
-     */
-    public final static Version VERSION = new Version("Airavata",0,8,null,null,null);
+	public void setExperimentId(String experimentId) {
+		this.experimentId = experimentId;
+	}
 
-    /**
-     * Prints the version
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-        System.out.println(VERSION);
-    }
+	public String getWorkflowInstanceId() {
+		return workflowInstanceId;
+	}
+
+	public void setWorkflowInstanceId(String workflowInstanceId) {
+		this.workflowInstanceId = workflowInstanceId;
+	}
 }

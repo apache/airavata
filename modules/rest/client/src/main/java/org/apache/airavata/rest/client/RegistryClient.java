@@ -33,13 +33,13 @@ import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.AiravataExperiment;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataUser;
+import org.apache.airavata.registry.api.ExecutionErrors.Source;
 import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.registry.api.ResourceMetadata;
 import org.apache.airavata.registry.api.WorkspaceProject;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.worker.ExperimentDoesNotExistsException;
 import org.apache.airavata.registry.api.workflow.*;
-import org.apache.airavata.registry.api.workflow.NodeExecutionData;
 import org.apache.airavata.rest.utils.CookieManager;
 
 public class RegistryClient extends AiravataRegistry2 {
@@ -835,5 +835,78 @@ public class RegistryClient extends AiravataRegistry2 {
 
 	public PasswordCallback getCallback() {
 		return callback;
+	}
+
+	@Override
+	public List<ExperimentExecutionError> getExperimentExecutionErrors(
+			String experimentId) throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<WorkflowExecutionError> getWorkflowExecutionErrors(
+			String experimentId, String workflowInstanceId)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<NodeExecutionError> getNodeExecutionErrors(String experimentId,
+			String workflowInstanceId, String nodeId) throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<GFacJobExecutionError> getGFacJobErrors(String experimentId,
+			String workflowInstanceId, String nodeId, String gfacJobId)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<GFacJobExecutionError> getGFacJobErrors(String gfacJobId)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<ExecutionError> getExecutionErrors(String experimentId,
+			String workflowInstanceId, String nodeId, String gfacJobId,
+			Source... filterBy) throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int addExperimentError(ExperimentExecutionError error)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int addWorkflowExecutionError(WorkflowExecutionError error)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int addNodeExecutionError(NodeExecutionError error)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int addGFacJobExecutionError(GFacJobExecutionError error)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }
