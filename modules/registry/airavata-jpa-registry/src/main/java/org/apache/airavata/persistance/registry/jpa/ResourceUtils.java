@@ -52,8 +52,6 @@ public class ResourceUtils {
             Map<String, String> properties = new HashMap<String, String>();
             properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");
             properties.put("openjpa.ConnectionProperties", connectionProperties);
-            properties.put("openjpa.validationQuery","SELECT 1 from Configuration");
-            properties.put("openjpa.testWhileIdle", "true");
             properties.put("openjpa.DynamicEnhancementAgent", "true");
             properties.put("openjpa.RuntimeUnenhancedClasses", "unsupported");
             properties.put("openjpa.Log", "SQL=ERROR");
