@@ -329,7 +329,8 @@ public class GridFtp {
         } finally {
             if (ftpClient != null) {
                 try {
-                    ftpClient.close();
+                    //ftpClient.close();
+                    ftpClient.close(false);
                 } catch (Exception e) {
                     log.warn("Cannot close GridFTP client connection",e);
                 }

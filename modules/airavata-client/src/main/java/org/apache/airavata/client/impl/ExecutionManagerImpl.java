@@ -21,13 +21,32 @@
 
 package org.apache.airavata.client.impl;
 
+import java.net.URISyntaxException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.UUID;
+
+import javax.xml.stream.XMLStreamException;
+
 import org.apache.airavata.client.AiravataClient;
-import org.apache.airavata.client.api.*;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.client.api.ExecutionManager;
+import org.apache.airavata.client.api.ExperimentAdvanceOptions;
+import org.apache.airavata.client.api.NodeSettings;
+import org.apache.airavata.client.api.OutputDataSettings;
 import org.apache.airavata.client.stub.interpretor.NameValue;
 import org.apache.airavata.client.stub.interpretor.WorkflowInterpretorStub;
 import org.apache.airavata.client.tools.NameValuePairType;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
+import org.apache.airavata.registry.api.ExecutionErrors.Source;
+import org.apache.airavata.registry.api.workflow.ExecutionError;
+import org.apache.airavata.registry.api.workflow.ExperimentExecutionError;
+import org.apache.airavata.registry.api.workflow.GFacJobExecutionError;
+import org.apache.airavata.registry.api.workflow.NodeExecutionError;
+import org.apache.airavata.registry.api.workflow.WorkflowExecutionError;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State;
 import org.apache.airavata.schemas.wec.ApplicationOutputDataHandlingDocument.ApplicationOutputDataHandling;
@@ -37,18 +56,15 @@ import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
-import org.apache.airavata.ws.monitor.*;
+import org.apache.airavata.ws.monitor.EventData;
+import org.apache.airavata.ws.monitor.EventDataListener;
+import org.apache.airavata.ws.monitor.EventDataListenerAdapter;
+import org.apache.airavata.ws.monitor.EventDataRepository;
+import org.apache.airavata.ws.monitor.Monitor;
+import org.apache.airavata.ws.monitor.MonitorConfiguration;
 import org.apache.airavata.ws.monitor.MonitorUtil.EventType;
 import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
 import org.apache.axis2.AxisFault;
-
-import javax.xml.stream.XMLStreamException;
-import java.net.URISyntaxException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.UUID;
 
 public class ExecutionManagerImpl implements ExecutionManager {
 	private AiravataClient client;
@@ -399,6 +415,114 @@ public class ExecutionManagerImpl implements ExecutionManager {
 			System.out.println(XMLUtil.xmlElementToString(c.getXml()));
 		} catch (AiravataAPIInvocationException e) {
 			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public List<ExperimentExecutionError> getExperimentExecutionErrors(
+			String experimentId) throws AiravataAPIInvocationException {
+		try {
+			return getClient().getRegistryClient().getExperimentExecutionErrors(experimentId);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public List<WorkflowExecutionError> getWorkflowExecutionErrors(
+			String experimentId, String workflowInstanceId)
+			throws AiravataAPIInvocationException {
+		try {
+			return getClient().getRegistryClient().getWorkflowExecutionErrors(experimentId, 
+					workflowInstanceId);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public List<NodeExecutionError> getNodeExecutionErrors(String experimentId,
+			String workflowInstanceId, String nodeId)
+			throws AiravataAPIInvocationException {
+		try {
+			return getClient().getRegistryClient().getNodeExecutionErrors(experimentId, 
+					workflowInstanceId, nodeId);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public List<GFacJobExecutionError> getGFacJobErrors(String experimentId,
+			String workflowInstanceId, String nodeId, String gfacJobId)
+			throws AiravataAPIInvocationException {
+		try {
+			return getClient().getRegistryClient().getGFacJobErrors(experimentId, 
+					workflowInstanceId, nodeId, gfacJobId);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public List<GFacJobExecutionError> getGFacJobErrors(String gfacJobId)
+			throws AiravataAPIInvocationException {
+		try {
+			return getClient().getRegistryClient().getGFacJobErrors(gfacJobId);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public List<ExecutionError> getExecutionErrors(String experimentId,
+			String workflowInstanceId, String nodeId, String gfacJobId,
+			Source... filterBy) throws AiravataAPIInvocationException {
+		try {
+			return getClient().getRegistryClient().getExecutionErrors(experimentId, 
+					workflowInstanceId, nodeId, gfacJobId, filterBy);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public int addExperimentError(ExperimentExecutionError error)
+			throws AiravataAPIInvocationException {
+		try {
+			return getClient().getRegistryClient().addExperimentError(error);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public int addWorkflowExecutionError(WorkflowExecutionError error)
+			throws AiravataAPIInvocationException {
+		try {
+			return getClient().getRegistryClient().addWorkflowExecutionError(error);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public int addNodeExecutionError(NodeExecutionError error)
+			throws AiravataAPIInvocationException {
+		try {
+			return getClient().getRegistryClient().addNodeExecutionError(error);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public int addGFacJobExecutionError(GFacJobExecutionError error)
+			throws AiravataAPIInvocationException {
+		try {
+			return getClient().getRegistryClient().addGFacJobExecutionError(error);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
 		}
 	}
 }

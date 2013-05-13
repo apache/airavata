@@ -139,7 +139,7 @@ public class NodeDataResource extends AbstractResource{
         List<?> results;
         switch (type){
             case EXECUTION_ERROR:
-                generator = new QueryGenerator(NODE_ERROR);
+                generator = new QueryGenerator(EXECUTION_ERROR);
                 generator.setParameter(ExecutionErrorConstants.NODE_ID, nodeID);
                 q = generator.selectQuery(em);
                 results = q.getResultList();

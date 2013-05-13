@@ -40,6 +40,7 @@ import org.apache.airavata.persistance.registry.jpa.JPAResourceAccessor;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.ApplicationDescriptorResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ConfigurationResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ExecutionErrorResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ExperimentDataResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ExperimentDataRetriever;
 import org.apache.airavata.persistance.registry.jpa.resources.ExperimentMetadataResource;
@@ -55,6 +56,7 @@ import org.apache.airavata.persistance.registry.jpa.resources.UserWorkflowResour
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkflowDataResource;
 import org.apache.airavata.registry.api.*;
+import org.apache.airavata.registry.api.ExecutionErrors.Source;
 import org.apache.airavata.registry.api.exception.*;
 import org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException;
 import org.apache.airavata.registry.api.exception.gateway.DescriptorDoesNotExistsException;
@@ -76,7 +78,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     private JPAResourceAccessor jpa;
     private boolean active=false;
     private static final String DEFAULT_PROJECT_NAME = "default";
-    private static final Version API_VERSION=new Version("Airavata Registry API",0,7,null,null,null);
+    private static final Version API_VERSION=new Version("Airavata Registry API",0,8,null,null,null);
     private URI registryConnectionURI;
     private ConfigurationRegistry configurationRegistry;
     private DescriptorRegistry descriptorRegistry;
@@ -1949,6 +1951,223 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public PasswordCallback getCallback() {
 		return callback;
+	}
+
+	@Override
+	public List<ExperimentExecutionError> getExperimentExecutionErrors(
+			String experimentId) throws RegistryException {
+		if (provenanceRegistry != null){
+            return provenanceRegistry.getExperimentExecutionErrors(experimentId);
+        }
+		List<ExperimentExecutionError> result=new ArrayList<ExperimentExecutionError>();
+		List<ExecutionErrorResource> executionErrors = jpa.getWorker().getExperiment(experimentId).getData().getExecutionErrors(Source.GFAC.toString(), experimentId, null, null, null);
+		for (ExecutionErrorResource errorResource : executionErrors) {
+			ExperimentExecutionError error = new ExperimentExecutionError();
+			setupValues(errorResource, error);
+			error.setExperimentId(errorResource.getExperimentDataResource().getExperimentID());
+			result.add(error);
+		}
+		return result;
+	}
+
+	@Override
+	public List<WorkflowExecutionError> getWorkflowExecutionErrors(
+			String experimentId, String workflowInstanceId)
+			throws RegistryException {
+		if (provenanceRegistry != null){
+            return provenanceRegistry.getWorkflowExecutionErrors(experimentId, workflowInstanceId);
+        }
+		List<WorkflowExecutionError> result=new ArrayList<WorkflowExecutionError>();
+		List<ExecutionErrorResource> executionErrors = jpa.getWorker().getExperiment(experimentId).getData().getExecutionErrors(Source.GFAC.toString(), experimentId, workflowInstanceId, null, null);
+		for (ExecutionErrorResource errorResource : executionErrors) {
+			WorkflowExecutionError error = new WorkflowExecutionError();
+			setupValues(errorResource, error);
+			error.setExperimentId(errorResource.getExperimentDataResource().getExperimentID());
+			error.setWorkflowInstanceId(errorResource.getWorkflowDataResource().getWorkflowInstanceID());
+			result.add(error);
+		}
+		return result;
+	}
+
+	@Override
+	public List<NodeExecutionError> getNodeExecutionErrors(String experimentId,
+			String workflowInstanceId, String nodeId) throws RegistryException {
+		if (provenanceRegistry != null){
+            return provenanceRegistry.getNodeExecutionErrors(experimentId, workflowInstanceId, nodeId);
+        }
+		List<NodeExecutionError> result=new ArrayList<NodeExecutionError>();
+		List<ExecutionErrorResource> executionErrors = jpa.getWorker().getExperiment(experimentId).getData().getExecutionErrors(Source.GFAC.toString(), experimentId, workflowInstanceId, nodeId, null);
+		for (ExecutionErrorResource errorResource : executionErrors) {
+			NodeExecutionError error = new NodeExecutionError();
+			setupValues(errorResource, error);
+			error.setExperimentId(errorResource.getExperimentDataResource().getExperimentID());
+			error.setNodeId(errorResource.getNodeID());
+			error.setWorkflowInstanceId(errorResource.getWorkflowDataResource().getWorkflowInstanceID());
+			result.add(error);
+		}
+		return result;
+	}
+
+	@Override
+	public List<GFacJobExecutionError> getGFacJobErrors(String experimentId,
+			String workflowInstanceId, String nodeId, String gfacJobId)
+			throws RegistryException {
+		if (provenanceRegistry != null){
+            return provenanceRegistry.getGFacJobErrors(experimentId, workflowInstanceId, nodeId, gfacJobId);
+        }
+		List<GFacJobExecutionError> result=new ArrayList<GFacJobExecutionError>();
+		List<ExecutionErrorResource> executionErrors = jpa.getWorker().getExperiment(experimentId).getData().getExecutionErrors(Source.GFAC.toString(), experimentId, workflowInstanceId, nodeId, gfacJobId);
+		for (ExecutionErrorResource errorResource : executionErrors) {
+			GFacJobExecutionError error = new GFacJobExecutionError();
+			setupValues(errorResource, error);
+			error.setExperimentId(errorResource.getExperimentDataResource().getExperimentID());
+			error.setGfacJobId(errorResource.getGfacJobID());
+			error.setNodeId(errorResource.getNodeID());
+			error.setWorkflowInstanceId(errorResource.getWorkflowDataResource().getWorkflowInstanceID());
+			result.add(error);
+		}
+		return result;
+	}
+
+	private void setupValues(ExecutionErrorResource source,
+			ExecutionError destination) {
+		destination.setActionTaken(source.getActionTaken());
+		destination.setErrorCode(source.getErrorCode());
+		destination.setErrorDescription(source.getErrorDes());
+		destination.setErrorLocation(source.getErrorLocation());
+		destination.setErrorMessage(source.getErrorMsg());
+		destination.setErrorReported(source.getErrorReporter());
+		destination.setErrorTime(source.getErrorTime());
+		destination.setSource(Source.valueOf(source.getSourceType()));
+		destination.setErrorReference(source.getErrorReference());
+	}
+
+	@Override
+	public List<GFacJobExecutionError> getGFacJobErrors(String gfacJobId)
+			throws RegistryException {
+		if (provenanceRegistry != null){
+            return provenanceRegistry.getGFacJobErrors(gfacJobId);
+        }
+		return getGFacJobErrors(null, null, null, gfacJobId);
+	}
+
+	@Override
+	public List<ExecutionError> getExecutionErrors(String experimentId,
+			String workflowInstanceId, String nodeId, String gfacJobId,
+			Source... filterBy) throws RegistryException {
+		if (provenanceRegistry != null){
+            return provenanceRegistry.getExecutionErrors(experimentId, workflowInstanceId, nodeId, gfacJobId, filterBy);
+        }
+		List<ExecutionError> errors = new ArrayList<ExecutionError>();
+		for (Source sourceType : filterBy) {
+			if (sourceType==Source.ALL){
+				errors.addAll(getExperimentExecutionErrors(experimentId));
+				errors.addAll(getWorkflowExecutionErrors(experimentId, workflowInstanceId));
+				errors.addAll(getNodeExecutionErrors(experimentId, workflowInstanceId, nodeId));
+				errors.addAll(getGFacJobErrors(experimentId, workflowInstanceId, nodeId, gfacJobId));
+				break;
+			} else if (sourceType==Source.EXPERIMENT){
+				errors.addAll(getExperimentExecutionErrors(experimentId));
+			} else if (sourceType==Source.WORKFLOW){
+				errors.addAll(getWorkflowExecutionErrors(experimentId, workflowInstanceId));
+			} else if (sourceType==Source.NODE){
+				errors.addAll(getNodeExecutionErrors(experimentId, workflowInstanceId, nodeId));
+			} else if (sourceType==Source.GFAC){
+				errors.addAll(getGFacJobErrors(experimentId, workflowInstanceId, nodeId, gfacJobId));
+			}
+		}
+		return errors;
+	}
+	
+//	@Override
+//	public List<ExecutionError> getAllExperimentErrors(String experimentId,
+//			Source... filterBy) throws RegistryException {
+//		return getExecutionErrors(experimentId, null, null, null, filterBy);
+//	}
+//	@Override
+//	public List<ExecutionError> getAllWorkflowErrors(String experimentId,
+//			String workflowInstanceId, Source... filterBy)
+//			throws RegistryException {
+//		return getExecutionErrors(experimentId, workflowInstanceId, null, null, filterBy);
+//	}
+//	@Override
+//	public List<ExecutionError> getAllNodeErrors(String experimentId,
+//			String workflowInstanceId, String nodeId, Source... filterBy)
+//			throws RegistryException {
+//		return getExecutionErrors(experimentId, workflowInstanceId, nodeId, null, filterBy);
+//	}
+
+	@Override
+	public int addExperimentError(ExperimentExecutionError error)
+			throws RegistryException {
+		if (provenanceRegistry != null){
+            return provenanceRegistry.addExperimentError(error);
+        }
+		ExecutionErrorResource executionError = createNewExecutionErrorResource(error.getExperimentId(),error,ExecutionErrors.Source.EXPERIMENT);
+		executionError.save();
+		return 0;
+	}
+
+	private ExecutionErrorResource createNewExecutionErrorResource(
+			String experimentId, ExecutionError errorSource, ExecutionErrors.Source type) throws RegistryException {
+		if (!isExperimentExists(experimentId)){
+			throw new ExperimentDoesNotExistsException(experimentId);
+		}
+		ExecutionErrorResource executionError = jpa.getWorker().getExperiment(experimentId).getData().createExecutionError();
+		setupValues(errorSource, executionError);
+		executionError.setSourceType(type.toString());
+		return executionError;
+	}
+
+	private void setupValues(ExecutionError source,
+			ExecutionErrorResource destination) {
+		destination.setErrorCode(source.getErrorCode());
+		destination.setErrorDes(source.getErrorDescription());
+		destination.setErrorLocation(source.getErrorLocation());
+		destination.setErrorMsg(source.getErrorMessage());
+		destination.setErrorReference(source.getErrorReference());
+		destination.setErrorReporter(source.getErrorReported());
+		destination.setErrorTime(new Timestamp(source.getErrorTime().getTime()));
+		destination.setActionTaken(source.getActionTaken());
+	}
+
+	@Override
+	public int addWorkflowExecutionError(WorkflowExecutionError error)
+			throws RegistryException {
+		if (provenanceRegistry != null){
+            return provenanceRegistry.addWorkflowExecutionError(error);
+        }
+		ExecutionErrorResource executionError = createNewExecutionErrorResource(error.getExperimentId(),error,ExecutionErrors.Source.WORKFLOW);
+		executionError.setWorkflowDataResource(jpa.getWorker().getExperiment(error.getExperimentId()).getData().getWorkflowInstance(error.getWorkflowInstanceId()));
+		executionError.save();
+		return 0;
+	}
+
+	@Override
+	public int addNodeExecutionError(NodeExecutionError error)
+			throws RegistryException {
+		if (provenanceRegistry != null){
+            return provenanceRegistry.addNodeExecutionError(error);
+        }
+		ExecutionErrorResource executionError = createNewExecutionErrorResource(error.getExperimentId(),error,ExecutionErrors.Source.WORKFLOW);
+		executionError.setWorkflowDataResource(jpa.getWorker().getExperiment(error.getExperimentId()).getData().getWorkflowInstance(error.getWorkflowInstanceId()));
+		executionError.setNodeID(error.getNodeId());
+		executionError.save();
+		return 0;
+	}
+
+	@Override
+	public int addGFacJobExecutionError(GFacJobExecutionError error)
+			throws RegistryException {
+		if (provenanceRegistry != null){
+            return provenanceRegistry.addGFacJobExecutionError(error);
+        }
+		ExecutionErrorResource executionError = createNewExecutionErrorResource(error.getExperimentId(),error,ExecutionErrors.Source.WORKFLOW);
+		executionError.setWorkflowDataResource(jpa.getWorker().getExperiment(error.getExperimentId()).getData().getWorkflowInstance(error.getWorkflowInstanceId()));
+		executionError.setNodeID(error.getNodeId());
+		executionError.setGfacJobID(error.getGfacJobId());
+		executionError.save();
+		return 0;
 	}
 
 }

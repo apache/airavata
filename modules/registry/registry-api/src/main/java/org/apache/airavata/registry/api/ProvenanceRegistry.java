@@ -118,7 +118,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
     public abstract void setWorkflowInstanceTemplateName(String workflowInstanceId, String templateName) throws RegistryException;
     
     public List<WorkflowExecution> getExperimentWorkflowInstances(String experimentId) throws RegistryException;
-	
+    
     /*-------------------------------------- Experiment Workflow instance node data ----------------------------------------*/
 
     public boolean isWorkflowInstanceExists(String instanceId) throws RegistryException;
@@ -326,4 +326,130 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
     public void updateWorkflowNodeType(WorkflowInstanceNode node, WorkflowNodeType type) throws RegistryException;
     
     public void addWorkflowInstanceNode(String workflowInstance, String nodeId) throws RegistryException;
+    
+    /*
+     * Errors in experiment executions
+     */
+    
+    /**
+     * Return errors defined at the experiment level 
+     * @param experimentId
+     * @return
+     * @throws RegistryException
+     */
+    public List<ExperimentExecutionError> getExperimentExecutionErrors(String experimentId) throws RegistryException;
+    
+    /**
+     * Return errors defined at the workflow level 
+     * @param experimentId
+     * @param workflowInstanceId
+     * @return
+     * @throws RegistryException
+     */
+    public List<WorkflowExecutionError> getWorkflowExecutionErrors(String experimentId, String workflowInstanceId) throws RegistryException;
+
+    /**
+     * Return errors defined at the node level 
+     * @param experimentId
+     * @param workflowInstanceId
+     * @param nodeId
+     * @return
+     * @throws RegistryException
+     */
+    public List<NodeExecutionError> getNodeExecutionErrors(String experimentId, String workflowInstanceId, String nodeId) throws RegistryException;
+    
+    /**
+     * Return errors defined for a GFac job 
+     * @param experimentId
+     * @param workflowInstanceId
+     * @param nodeId
+     * @param gfacJobId
+     * @return
+     * @throws RegistryException
+     */
+    public List<GFacJobExecutionError> getGFacJobErrors(String experimentId, String workflowInstanceId, String nodeId, String gfacJobId) throws RegistryException;
+
+    /**
+     * Return errors defined for a GFac job 
+     * @param gfacJobId
+     * @return
+     * @throws RegistryException
+     */
+    public List<GFacJobExecutionError> getGFacJobErrors(String gfacJobId) throws RegistryException;
+
+    /**
+     * Return errors filtered by the parameters
+     * @param experimentId 
+     * @param workflowInstanceId
+     * @param nodeId
+     * @param gfacJobId
+     * @param filterBy - what type of source types the results should contain
+     * @return
+     * @throws RegistryException
+     */
+    public List<ExecutionError> getExecutionErrors(String experimentId, String workflowInstanceId, String nodeId, String gfacJobId, ExecutionErrors.Source...filterBy) throws RegistryException;
+
+    
+    
+//    /**
+//     * Return errors defined for the experiment Id
+//     * @param experimentId 
+//     * @param filterBy - what type of source types the results should contain
+//     * @return
+//     * @throws RegistryException
+//     */
+//    public List<ExecutionError> getAllExperimentErrors(String experimentId, ExecutionErrors.Source...filterBy) throws RegistryException;
+//  
+//     /**
+//     * Return errors defined for the workflow instance
+//     * @param experimentId 
+//     * @param workflowInstanceId
+//     * @param filterBy - what type of source types the results should contain
+//     * @return
+//     * @throws RegistryException
+//     */
+//    public List<ExecutionError> getAllWorkflowErrors(String experimentId, String workflowInstanceId, ExecutionErrors.Source...filterBy) throws RegistryException;
+//
+//    /**
+//     * Return errors defined for the node execution
+//     * @param experimentId 
+//     * @param workflowInstanceId
+//     * @param nodeId
+//     * @param filterBy - what type of source types the results should contain
+//     * @return
+//     * @throws RegistryException
+//     */
+//    public List<ExecutionError> getAllNodeErrors(String experimentId, String workflowInstanceId, String nodeId, ExecutionErrors.Source...filterBy) throws RegistryException;
+
+    /**
+     * Adds an experiment execution error 
+     * @param error
+     * @return
+     * @throws RegistryException
+     */
+    public int addExperimentError(ExperimentExecutionError error) throws RegistryException;
+    
+    /**
+     * Adds an workflow execution error 
+     * @param error
+     * @return
+     * @throws RegistryException
+     */
+    public int addWorkflowExecutionError(WorkflowExecutionError error) throws RegistryException;
+    
+    /**
+     * Adds an node execution error 
+     * @param error
+     * @return
+     * @throws RegistryException
+     */
+    public int addNodeExecutionError(NodeExecutionError error) throws RegistryException;
+
+    /**
+     * Adds an GFac job execution error 
+     * @param error
+     * @return
+     * @throws RegistryException
+     */
+    public int addGFacJobExecutionError(GFacJobExecutionError error) throws RegistryException;
 }

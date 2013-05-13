@@ -19,23 +19,15 @@
  *
  */
 
-package org.apache.airavata.workflow.model.utils;
+package org.apache.airavata.registry.api;
 
-import org.apache.airavata.common.utils.Version;
-
-public class ApplicationVersion {
-
-    /**
-     * Version number
-     */
-    public final static Version VERSION = new Version("Airavata",0,8,null,null,null);
-
-    /**
-     * Prints the version
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-        System.out.println(VERSION);
-    }
+public class ExecutionErrors {
+	public static enum Source{
+		ALL,
+		EXPERIMENT,
+		WORKFLOW,
+		NODE,
+		GFAC
+	}
+	
 }

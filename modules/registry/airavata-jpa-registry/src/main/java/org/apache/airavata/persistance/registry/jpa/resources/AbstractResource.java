@@ -42,7 +42,7 @@ public abstract class AbstractResource implements Resource {
     public static final String EXPERIMENT_DATA = "Experiment_Data";
     public static final String WORKFLOW_DATA = "Workflow_Data";
     public static final String EXPERIMENT_METADATA = "Experiment_Metadata";
-    public static final String NODE_ERROR = "Execution_Error";
+    public static final String EXECUTION_ERROR = "Execution_Error";
 
     //Gateway Table
     public final class GatewayConstants {

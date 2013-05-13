@@ -21,8 +21,14 @@
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
-import javax.persistence.*;
-import java.security.Timestamp;
+import java.sql.Timestamp;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Execution_Error {

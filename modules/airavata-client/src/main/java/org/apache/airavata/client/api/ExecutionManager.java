@@ -24,6 +24,13 @@ package org.apache.airavata.client.api;
 import java.util.List;
 
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
+import org.apache.airavata.registry.api.ExecutionErrors;
+import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.workflow.ExecutionError;
+import org.apache.airavata.registry.api.workflow.ExperimentExecutionError;
+import org.apache.airavata.registry.api.workflow.GFacJobExecutionError;
+import org.apache.airavata.registry.api.workflow.NodeExecutionError;
+import org.apache.airavata.registry.api.workflow.WorkflowExecutionError;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.apache.airavata.ws.monitor.Monitor;
@@ -171,5 +178,99 @@ public interface ExecutionManager {
      * @throws AiravataAPIInvocationException
      */
     public void waitForExperimentTermination(String experimentId) throws AiravataAPIInvocationException;
+
+    /*
+     * Errors in experiment executions
+     */
+    
+    /**
+     * Return errors defined at the experiment level 
+     * @param experimentId
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
+    public List<ExperimentExecutionError> getExperimentExecutionErrors(String experimentId) throws AiravataAPIInvocationException;
+    
+    /**
+     * Return errors defined at the workflow level 
+     * @param experimentId
+     * @param workflowInstanceId
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
+    public List<WorkflowExecutionError> getWorkflowExecutionErrors(String experimentId, String workflowInstanceId) throws AiravataAPIInvocationException;
+
+    /**
+     * Return errors defined at the node level 
+     * @param experimentId
+     * @param workflowInstanceId
+     * @param nodeId
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
+    public List<NodeExecutionError> getNodeExecutionErrors(String experimentId, String workflowInstanceId, String nodeId) throws AiravataAPIInvocationException;
+    
+    /**
+     * Return errors defined for a GFac job 
+     * @param experimentId
+     * @param workflowInstanceId
+     * @param nodeId
+     * @param gfacJobId
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
+    public List<GFacJobExecutionError> getGFacJobErrors(String experimentId, String workflowInstanceId, String nodeId, String gfacJobId) throws AiravataAPIInvocationException;
+
+    /**
+     * Return errors defined for a GFac job 
+     * @param gfacJobId
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
+    public List<GFacJobExecutionError> getGFacJobErrors(String gfacJobId) throws AiravataAPIInvocationException;
+
+    /**
+     * Return errors filtered by the parameters
+     * @param experimentId 
+     * @param workflowInstanceId
+     * @param nodeId
+     * @param gfacJobId
+     * @param filterBy - what type of source types the results should contain
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
+    public List<ExecutionError> getExecutionErrors(String experimentId, String workflowInstanceId, String nodeId, String gfacJobId, ExecutionErrors.Source...filterBy) throws AiravataAPIInvocationException;
+
+    /**
+     * Adds an experiment execution error 
+     * @param error
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
+    public int addExperimentError(ExperimentExecutionError error) throws AiravataAPIInvocationException;
+    
+    /**
+     * Adds an workflow execution error 
+     * @param error
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
+    public int addWorkflowExecutionError(WorkflowExecutionError error) throws AiravataAPIInvocationException;
+    
+    /**
+     * Adds an node execution error 
+     * @param error
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
+    public int addNodeExecutionError(NodeExecutionError error) throws AiravataAPIInvocationException;
+
+    /**
+     * Adds an GFac job execution error 
+     * @param error
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
+    public int addGFacJobExecutionError(GFacJobExecutionError error) throws AiravataAPIInvocationException;
 
 }
