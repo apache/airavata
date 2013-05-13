@@ -23,10 +23,12 @@ package org.apache.airavata.persistance.registry.jpa;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.apache.openjpa.jdbc.sql.Select;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
+import javax.rmi.CORBA.Util;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,20 +45,24 @@ public class ResourceUtils {
 
     public static EntityManager getEntityManager(){
         if (factory == null) {
+            String connectionProperties = "DriverClassName=" + Utils.getJDBCDriver() + "," + "Url=" + Utils.getJDBCURL() + "," +
+                    "Username=" + Utils.getJDBCUser() + "," + "Password=" + Utils.getJDBCPassword() + ",MaxActive=10,MaxIdle=5,MinIdle=2,MaxWait=60000,validationQuery=" +
+            "Select 1,testWhileIdle=true";
+            System.out.println(connectionProperties);
             Map<String, String> properties = new HashMap<String, String>();
-            properties.put("openjpa.ConnectionURL", Utils.getJDBCURL());
-            properties.put("openjpa.ConnectionDriverName", Utils.getJDBCDriver());
-            properties.put("openjpa.ConnectionUserName",Utils.getJDBCUser());
-            properties.put("openjpa.ConnectionPassword",Utils.getJDBCPassword());
-            properties.put("openjpa.DynamicEnhancementAgent","true");
-            properties.put("openjpa.RuntimeUnenhancedClasses","unsupported");
-            properties.put("openjpa.Log","SQL=ERROR");
+            properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");
+            properties.put("openjpa.ConnectionProperties", connectionProperties);
+            properties.put("openjpa.validationQuery","SELECT 1 from Configuration");
+            properties.put("openjpa.testWhileIdle", "true");
+            properties.put("openjpa.DynamicEnhancementAgent", "true");
+            properties.put("openjpa.RuntimeUnenhancedClasses", "unsupported");
+            properties.put("openjpa.Log", "SQL=ERROR");
 //            properties.put("openjpa.Log","DefaultLevel=WARN, Runtime=INFO, Tool=INFO, SQL=TRACE");
             properties.put("openjpa.ReadLockLevel", "none");
             properties.put("openjpa.WriteLockLevel", "none");
             properties.put("openjpa.LockTimeout", "30000");
             properties.put("openjpa.LockManager", "none");
-            properties.put("openjpa.ConnectionFactoryProperties","PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=60000");
+            properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=60000");
             factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
         }
 
