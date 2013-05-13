@@ -1,5 +1,11 @@
 <config>
-    <client name="sample">
+    <client name="acs">
+        <logging
+                logFileName="../logs/oa4mp.log"
+                logName="oa4mp"
+                logSize="1000000"
+                logFileCount="2"
+                debug="true"/>
         <id>myproxy:oa4mp,2012:/client/24c45c2eb65d93231d02d423e94d0362</id>
         <serviceUri>https://portal.xsede.org/oauth</serviceUri>
         <!--callbackUri>https://156.56.179.104:8443/client/pages/client-success.jsp</callbackUri-->
