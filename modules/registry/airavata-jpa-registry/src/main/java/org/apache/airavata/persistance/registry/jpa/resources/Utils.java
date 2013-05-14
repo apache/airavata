@@ -127,6 +127,23 @@ public class Utils {
 		}
     }
 
+    public static String getValidationQuery(){
+    	try {
+			if (getProvider()!=null){
+                if(getProvider().getValue(JPAConstants.VALIDATION_QUERY) != null){
+				    return getProvider().getValue(JPAConstants.VALIDATION_QUERY).toString();
+                }
+			} else {
+                if(getProvider().getValue(JPAConstants.VALIDATION_QUERY) != null){
+                    return RegistrySettings.getSetting(JPAConstants.VALIDATION_QUERY);
+                }
+            }
+            return "";
+		} catch (RegistrySettingsException e) {
+            logger.error(e.getMessage(), e);
+            return null;
+		}
+    }
     public static String getJDBCPassword(){
     	try {
 			if (getProvider()!=null){
