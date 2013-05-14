@@ -160,6 +160,8 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
             // }
         } catch (RuntimeException e) {
             logger.warn("Failed to process notification: " + message, e);
+        } catch (AiravataAPIInvocationException e) {
+            logger.error("Error occured during Exception saving to the Registry");
         }
     }
 
