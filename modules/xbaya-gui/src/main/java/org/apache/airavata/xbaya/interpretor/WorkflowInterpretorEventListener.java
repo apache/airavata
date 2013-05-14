@@ -26,7 +26,9 @@ import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.registry.api.workflow.NodeExecutionError;
 import org.apache.airavata.workflow.model.graph.EPRPort;
 import org.apache.airavata.workflow.model.graph.Edge;
 import org.apache.airavata.workflow.model.graph.Graph;
@@ -161,7 +163,7 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
         }
     }
 
-    private void handleEvent(EventData event, boolean forward, Graph graph) {
+    private void handleEvent(EventData event, boolean forward, Graph graph) throws AiravataAPIInvocationException {
         EventType type = event.getType();
         String nodeID = event.getNodeID();
         Node node = graph.getNode(nodeID);
@@ -205,6 +207,13 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
             }
         } else if (type == EventType.RECEIVED_FAULT
                 || type == EventType.SENDING_FAULT || type == EventType.SENDING_RESPONSE_FAILED) {
+            //Constructing NodeExecutionError with required data...
+            NodeExecutionError nodeExecutionError = new NodeExecutionError();
+            nodeExecutionError.setExperimentId(event.getExperimentID());
+            nodeExecutionError.setNodeId(event.getNodeID());
+            nodeExecutionError.setWorkflowInstanceId(event.getExperimentID());
+            nodeExecutionError.setErrorMessage(event.getMessage());
+            this.workflowInterpreterConfiguration.getAiravataAPI().getExecutionManager().addNodeExecutionError(nodeExecutionError);
             if (node == null) {
             	if (nodeID!=null && !nodeID.equals("")) {
 					logger.warn("There is no node that has ID, " + nodeID);
