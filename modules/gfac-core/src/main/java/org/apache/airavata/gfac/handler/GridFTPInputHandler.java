@@ -130,8 +130,12 @@ public class GridFTPInputHandler implements GFacHandler {
                     try {
                     	fis = new FileInputStream(localFile);
                     	ftp.uploadFile(destURI, gssCred, fis);
-                    }finally {
-                    	fis.close();
+                    } catch (IOException e) {
+                        throw new GFacException("Unable to create file : " + localFile ,e);
+                    } finally {
+                        if (fis != null) {
+                            fis.close();
+                        }
                     }
                 } else if (paramValue.startsWith("http")) {
                 	// no need to do if it is unicore
