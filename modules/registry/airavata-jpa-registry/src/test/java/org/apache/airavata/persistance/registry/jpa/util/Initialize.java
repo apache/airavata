@@ -271,7 +271,7 @@ public class Initialize {
             System.setProperty(DERBY_SERVER_MODE_SYS_PROPERTY, "true");
             server = new NetworkServerControl(InetAddress.getByName(Utils.getHost()),
                     20000,
-                    Utils.getJDBCUser(), Utils.getJDBCUser());
+                    Utils.getJDBCUser(), Utils.getJDBCPassword());
             java.io.PrintWriter consoleWriter = new java.io.PrintWriter(System.out, true);
             server.start(consoleWriter);
         } catch (IOException e) {

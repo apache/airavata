@@ -22,6 +22,7 @@
 package org.apache.airavata.services.registry.rest.resources;
 
 import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.ExecutionErrors;
 import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
 import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
 import org.apache.airavata.registry.api.workflow.*;
@@ -1341,5 +1342,265 @@ public class ProvenanceRegistryResource {
 
     }
 
+    /**
+     *
+     * @param experimentId experiment ID
+     * @return
+     */
+    @GET
+    @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENT_ERRORS)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getExperimentExecutionErrors(@QueryParam("experimentId") String experimentId) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
+        try {
+            List<ExperimentExecutionError> experimentExecutionErrors = airavataRegistry.getExperimentExecutionErrors(experimentId);
+            if (experimentExecutionErrors.size() != 0) {
+                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+                builder.entity(experimentExecutionErrors);
+                return builder.build();
+            } else {
+                Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
+                return builder.build();
+            }
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENT_ERRORS, e);
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
+            }
+        }
+
+    }
+
+    @GET
+    @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_WORKFLOW_ERRORS)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getWorkflowExecutionErrors(@QueryParam("experimentId") String experimentId,
+                                               @QueryParam("workflowInstanceId") String workflowInstanceId) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
+        try {
+            List<WorkflowExecutionError> workflowExecutionErrors = airavataRegistry.getWorkflowExecutionErrors(experimentId, workflowInstanceId);
+            if (workflowExecutionErrors.size() != 0) {
+                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+                builder.entity(workflowExecutionErrors);
+                return builder.build();
+            } else {
+                Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
+                return builder.build();
+            }
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.GET_WORKFLOW_ERRORS, e);
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
+            }
+        }
+
+    }
+
+    @GET
+    @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_NODE_ERRORS)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getNodeExecutionErrors(@QueryParam("experimentId") String experimentId,
+                                           @QueryParam("workflowInstanceId") String workflowInstanceId,
+                                           @QueryParam("nodeId") String nodeId ) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
+        try {
+            List<NodeExecutionError> nodeExecutionErrors = airavataRegistry.getNodeExecutionErrors(experimentId, workflowInstanceId, nodeId);
+            if (nodeExecutionErrors.size() != 0) {
+                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+                builder.entity(nodeExecutionErrors);
+                return builder.build();
+            } else {
+                Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
+                return builder.build();
+            }
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.GET_NODE_ERRORS, e);
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
+            }
+        }
+    }
+
+    @GET
+    @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_GFAC_ERRORS)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getGFacJobErrors(@QueryParam("experimentId") String experimentId,
+                                           @QueryParam("workflowInstanceId") String workflowInstanceId,
+                                           @QueryParam("nodeId") String nodeId,
+                                           @QueryParam("gfacJobId") String gfacJobId ) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
+        try {
+            List<GFacJobExecutionError> gFacJobErrors = airavataRegistry.getGFacJobErrors(experimentId, workflowInstanceId, nodeId, gfacJobId);
+            if (gFacJobErrors.size() != 0) {
+                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+                builder.entity(gFacJobErrors);
+                return builder.build();
+            } else {
+                Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
+                return builder.build();
+            }
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.GET_GFAC_ERRORS, e);
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
+            }
+        }
+    }
+
+    @GET
+    @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_ALL_GFAC_ERRORS)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getAllGFacJobErrors(@QueryParam("gfacJobId") String gfacJobId ) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
+        try {
+            List<GFacJobExecutionError> gFacJobErrors = airavataRegistry.getGFacJobErrors(gfacJobId);
+            if (gFacJobErrors.size() != 0) {
+                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+                builder.entity(gFacJobErrors);
+                return builder.build();
+            } else {
+                Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
+                return builder.build();
+            }
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.GET_ALL_GFAC_ERRORS, e);
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
+            }
+        }
+    }
+
+    @GET
+    @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXECUTION_ERRORS)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getExecutionErrors(@QueryParam("experimentId") String experimentId,
+                                       @QueryParam("workflowInstanceId") String workflowInstanceId,
+                                       @QueryParam("nodeId") String nodeId,
+                                       @QueryParam("gfacJobId") String gfacJobId,
+                                       @QueryParam("sourceFilter") ExecutionErrors.Source sourceFilter) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
+        try {
+            List<ExecutionError> executionErrors = airavataRegistry.getExecutionErrors(experimentId, workflowInstanceId, nodeId, gfacJobId, sourceFilter);
+            if (executionErrors.size() != 0) {
+                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+                builder.entity(executionErrors);
+                return builder.build();
+            } else {
+                Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
+                return builder.build();
+            }
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXECUTION_ERRORS, e);
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
+            }
+        }
+    }
+
+    @POST
+    @Path(ResourcePathConstants.ProvenanceResourcePathConstants.ADD_EXPERIMENT_ERROR)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response addExperimentError(ExperimentExecutionError error) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
+        try {
+            int errorID = airavataRegistry.addExperimentError(error);
+            if (errorID != 0){
+                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+                builder.entity(errorID);
+                return builder.build();
+            } else {
+                Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
+                return builder.build();
+            }
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.ADD_EXPERIMENT_ERROR, e);
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
+            }
+        }
+    }
+
+    @POST
+    @Path(ResourcePathConstants.ProvenanceResourcePathConstants.ADD_WORKFLOW_ERROR)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response addWorkflowError(WorkflowExecutionError error) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
+        try {
+            int errorID = airavataRegistry.addWorkflowExecutionError(error);
+            if (errorID != 0){
+                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+                builder.entity(errorID);
+                return builder.build();
+            } else {
+                Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
+                return builder.build();
+            }
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.ADD_WORKFLOW_ERROR, e);
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
+            }
+        }
+    }
+
+    @POST
+    @Path(ResourcePathConstants.ProvenanceResourcePathConstants.ADD_NODE_ERROR)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response addNodeExecutionError(NodeExecutionError error) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
+        try {
+            int errorID = airavataRegistry.addNodeExecutionError(error);
+            if (errorID != 0){
+                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+                builder.entity(errorID);
+                return builder.build();
+            } else {
+                Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
+                return builder.build();
+            }
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.ADD_NODE_ERROR, e);
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
+            }
+        }
+    }
+
+    @POST
+    @Path(ResourcePathConstants.ProvenanceResourcePathConstants.ADD_GFAC_ERROR)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response addGFacJobExecutionError(GFacJobExecutionError error) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
+        try {
+            int errorID = airavataRegistry.addGFacJobExecutionError(error);
+            if (errorID != 0){
+                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+                builder.entity(errorID);
+                return builder.build();
+            } else {
+                Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
+                return builder.build();
+            }
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.ADD_GFAC_ERROR, e);
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
+            }
+        }
+    }
 
 }

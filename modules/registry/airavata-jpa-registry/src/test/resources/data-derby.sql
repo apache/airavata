@@ -162,7 +162,7 @@ create table Workflow_Data
        experiment_ID varchar(255),
        workflow_instanceID varchar(255),
        template_name varchar(255),
-       status varchar(100),
+       status varchar(255),
        start_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
        last_update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
        PRIMARY KEY(workflow_instanceID),
@@ -176,7 +176,7 @@ create table Node_Data
        node_type varchar(255),
        inputs BLOB,
        outputs BLOB,
-       status varchar(100),
+       status varchar(255),
        start_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
        last_update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
        execution_index int NOT NULL,
@@ -238,6 +238,14 @@ CREATE TABLE Execution_Error
        FOREIGN KEY (workflow_instanceID) REFERENCES Workflow_Data(workflow_instanceID) ON DELETE CASCADE,
        FOREIGN KEY (experiment_ID) REFERENCES Experiment_Data(experiment_ID) ON DELETE CASCADE
 );
+
+-- CREATE TABLE openjpa_sequence_table
+-- (
+--   id SMALLINT NOT NULL,
+--   sequence_value BIGINT,
+--   PRIMARY KEY  (id)
+-- );
+
 
 
 

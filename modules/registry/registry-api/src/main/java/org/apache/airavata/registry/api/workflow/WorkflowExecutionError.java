@@ -21,6 +21,12 @@
 
 package org.apache.airavata.registry.api.workflow;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class WorkflowExecutionError extends ExecutionError {
 	private String experimentId;
 	private String workflowInstanceId;

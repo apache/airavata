@@ -65,16 +65,21 @@ public class ExecutionErrorResource extends AbstractResource {
         Experiment_Data experiment_data = em.find(Experiment_Data.class, experimentDataResource.getExperimentID());
         execution_error.setExperiment_data(experiment_data);
         Workflow_Data workflow_data = em.find(Workflow_Data.class, workflowDataResource.getWorkflowInstanceID());
+        execution_error.setExperiment_ID(experiment_data.getExperiment_ID());
         execution_error.setWorkflow_Data(workflow_data);
+        execution_error.setWorkflow_instanceID(workflow_data.getWorkflow_instanceID());
         execution_error.setError_code(errorCode);
         execution_error.setError_date(errorTime);
         execution_error.setError_des(errorDes);
         execution_error.setError_msg(errorMsg);
         execution_error.setSource_type(sourceType);
         execution_error.setGfacJobID(gfacJobID);
-
+        em.persist(execution_error);
+        errorID = execution_error.getError_id();
+//        System.out.println("Error ID : " + errorID);
         em.getTransaction().commit();
         em.close();
+
     }
 
 

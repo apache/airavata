@@ -2105,7 +2105,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
 		ExecutionErrorResource executionError = createNewExecutionErrorResource(error.getExperimentId(),error,ExecutionErrors.Source.EXPERIMENT);
 		executionError.save();
-		return 0;
+		return executionError.getErrorID();
 	}
 
 	private ExecutionErrorResource createNewExecutionErrorResource(
@@ -2140,7 +2140,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		ExecutionErrorResource executionError = createNewExecutionErrorResource(error.getExperimentId(),error,ExecutionErrors.Source.WORKFLOW);
 		executionError.setWorkflowDataResource(jpa.getWorker().getExperiment(error.getExperimentId()).getData().getWorkflowInstance(error.getWorkflowInstanceId()));
 		executionError.save();
-		return 0;
+		return executionError.getErrorID();
 	}
 
 	@Override
@@ -2153,7 +2153,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		executionError.setWorkflowDataResource(jpa.getWorker().getExperiment(error.getExperimentId()).getData().getWorkflowInstance(error.getWorkflowInstanceId()));
 		executionError.setNodeID(error.getNodeId());
 		executionError.save();
-		return 0;
+		return executionError.getErrorID();
 	}
 
 	@Override
@@ -2167,7 +2167,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		executionError.setNodeID(error.getNodeId());
 		executionError.setGfacJobID(error.getGfacJobId());
 		executionError.save();
-		return 0;
+		return executionError.getErrorID();
 	}
 
 }
