@@ -39,7 +39,7 @@ public class WorkflowDataResource extends AbstractResource{
     private final static Logger logger = LoggerFactory.getLogger(WorkflowDataResource.class);
     public static final String NODE_DATA = "Node_Data";
     public static final String GRAM_DATA = "Gram_Data";
-    public static final String NODE_ERROR = "Execution_Error";
+    public static final String EXECUTION_ERROR = "Execution_Error";
     private String experimentID;
     private String workflowInstanceID;
     private String templateName;
@@ -108,6 +108,7 @@ public class WorkflowDataResource extends AbstractResource{
            case EXECUTION_ERROR:
                ExecutionErrorResource executionErrorResource = new ExecutionErrorResource();
                executionErrorResource.setWorkflowDataResource(this);
+               return executionErrorResource;
            default:
                logger.error("Unsupported resource type for workflow data resource.", new IllegalArgumentException());
                throw new IllegalArgumentException("Unsupported resource type for workflow data resource.");
@@ -135,7 +136,7 @@ public class WorkflowDataResource extends AbstractResource{
                 q.executeUpdate();
                 break;
             case EXECUTION_ERROR:
-                generator = new QueryGenerator(NODE_ERROR);
+                generator = new QueryGenerator(EXECUTION_ERROR);
                 generator.setParameter(ExecutionErrorConstants.ERROR_ID, name);
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
@@ -175,7 +176,7 @@ public class WorkflowDataResource extends AbstractResource{
                 em.close();
                 return gramDataResource;
             case EXECUTION_ERROR:
-                generator = new QueryGenerator(NODE_ERROR);
+                generator = new QueryGenerator(EXECUTION_ERROR);
                 generator.setParameter(ExecutionErrorConstants.ERROR_ID, name);
                 q = generator.selectQuery(em);
                 Execution_Error execution_error = (Execution_Error)q.getSingleResult();
@@ -229,7 +230,7 @@ public class WorkflowDataResource extends AbstractResource{
                 }
                 break;
             case EXECUTION_ERROR:
-                generator = new QueryGenerator(NODE_ERROR);
+                generator = new QueryGenerator(EXECUTION_ERROR);
                 generator.setParameter(ExecutionErrorConstants.WORKFLOW_ID, workflowInstanceID);
                 q = generator.selectQuery(em);
                 results = q.getResultList();

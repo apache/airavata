@@ -141,6 +141,17 @@ public class ResourcePathConstants {
         public static final String GET_EXPERIMENT_METAINFORMATION = "get/experiment/metainformation";
         public static final String GET_ALL_EXPERIMENT_METAINFORMATION = "get/all/experiment/metainformation";
         public static final String SEARCH_EXPERIMENTS = "search/experiments";
+
+        public static final String GET_EXPERIMENT_ERRORS = "experiment/errors";
+        public static final String GET_WORKFLOW_ERRORS = "workflow/errors";
+        public static final String GET_NODE_ERRORS = "node/errors";
+        public static final String GET_GFAC_ERRORS = "gfac/errors";
+        public static final String GET_ALL_GFAC_ERRORS = "gfac/all/errors";
+        public static final String GET_EXECUTION_ERRORS = "execution/errors";
+        public static final String ADD_EXPERIMENT_ERROR = "add/experiment/errors";
+        public static final String ADD_WORKFLOW_ERROR = "add/workflow/errors";
+        public static final String ADD_NODE_ERROR = "add/node/errors";
+        public static final String ADD_GFAC_ERROR = "add/gfac/errors";
     }
 
     public final class PublishedWFConstants {

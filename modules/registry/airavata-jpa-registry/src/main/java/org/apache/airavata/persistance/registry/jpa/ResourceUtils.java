@@ -60,6 +60,7 @@ public class ResourceUtils {
             properties.put("openjpa.WriteLockLevel", "none");
             properties.put("openjpa.LockTimeout", "30000");
             properties.put("openjpa.LockManager", "none");
+            properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
             properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=60000");
             factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
         }

@@ -30,6 +30,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class WorkflowInstanceNode{
 	private WorkflowExecution workflowInstance;
 	private String nodeId;
+    private String originalNodeID;
+    private int executionIndex;
 
     public WorkflowInstanceNode() {
     }
@@ -55,4 +57,11 @@ public class WorkflowInstanceNode{
 		this.nodeId = nodeId;
 	}
 
+    public String getOriginalNodeID() {
+        return originalNodeID;
+    }
+
+    public int getExecutionIndex() {
+        return executionIndex;
+    }
 }
