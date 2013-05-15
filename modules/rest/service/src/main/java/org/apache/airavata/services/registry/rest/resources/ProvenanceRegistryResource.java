@@ -26,9 +26,7 @@ import org.apache.airavata.registry.api.ExecutionErrors;
 import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
 import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
 import org.apache.airavata.registry.api.workflow.*;
-import org.apache.airavata.rest.mappings.resourcemappings.ExperimentDataList;
-import org.apache.airavata.rest.mappings.resourcemappings.ExperimentIDList;
-import org.apache.airavata.rest.mappings.resourcemappings.WorkflowInstancesList;
+import org.apache.airavata.rest.mappings.resourcemappings.*;
 import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
 import org.apache.airavata.rest.mappings.utils.RegPoolUtils;
 import org.apache.airavata.services.registry.rest.utils.WebAppUtil;
@@ -1353,10 +1351,12 @@ public class ProvenanceRegistryResource {
     public Response getExperimentExecutionErrors(@QueryParam("experimentId") String experimentId) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
+            ExperimentErrorsList experimentErrorsList = new ExperimentErrorsList();
             List<ExperimentExecutionError> experimentExecutionErrors = airavataRegistry.getExperimentExecutionErrors(experimentId);
             if (experimentExecutionErrors.size() != 0) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
-                builder.entity(experimentExecutionErrors);
+                experimentErrorsList.setExperimentExecutionErrorList(experimentExecutionErrors);
+                builder.entity(experimentErrorsList);
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
@@ -1379,10 +1379,12 @@ public class ProvenanceRegistryResource {
                                                @QueryParam("workflowInstanceId") String workflowInstanceId) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
+            WorkflowErrorsList workflowErrorsList = new WorkflowErrorsList();
             List<WorkflowExecutionError> workflowExecutionErrors = airavataRegistry.getWorkflowExecutionErrors(experimentId, workflowInstanceId);
             if (workflowExecutionErrors.size() != 0) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
-                builder.entity(workflowExecutionErrors);
+                workflowErrorsList.setWorkflowExecutionErrorList(workflowExecutionErrors);
+                builder.entity(workflowErrorsList);
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
@@ -1406,10 +1408,12 @@ public class ProvenanceRegistryResource {
                                            @QueryParam("nodeId") String nodeId ) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
+            NodeErrorsList nodeErrorsList = new NodeErrorsList();
             List<NodeExecutionError> nodeExecutionErrors = airavataRegistry.getNodeExecutionErrors(experimentId, workflowInstanceId, nodeId);
             if (nodeExecutionErrors.size() != 0) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
-                builder.entity(nodeExecutionErrors);
+                nodeErrorsList.setNodeExecutionErrorList(nodeExecutionErrors);
+                builder.entity(nodeErrorsList);
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
@@ -1433,10 +1437,12 @@ public class ProvenanceRegistryResource {
                                            @QueryParam("gfacJobId") String gfacJobId ) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
+            GFacErrorsList gFacErrorsList = new GFacErrorsList();
             List<GFacJobExecutionError> gFacJobErrors = airavataRegistry.getGFacJobErrors(experimentId, workflowInstanceId, nodeId, gfacJobId);
             if (gFacJobErrors.size() != 0) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
-                builder.entity(gFacJobErrors);
+                gFacErrorsList.setgFacJobExecutionErrorList(gFacJobErrors);
+                builder.entity(gFacErrorsList);
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
@@ -1457,10 +1463,12 @@ public class ProvenanceRegistryResource {
     public Response getAllGFacJobErrors(@QueryParam("gfacJobId") String gfacJobId ) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
+            GFacErrorsList gFacErrorsList = new GFacErrorsList();
             List<GFacJobExecutionError> gFacJobErrors = airavataRegistry.getGFacJobErrors(gfacJobId);
             if (gFacJobErrors.size() != 0) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
-                builder.entity(gFacJobErrors);
+                gFacErrorsList.setgFacJobExecutionErrorList(gFacJobErrors);
+                builder.entity(gFacErrorsList);
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
@@ -1485,10 +1493,12 @@ public class ProvenanceRegistryResource {
                                        @QueryParam("sourceFilter") ExecutionErrors.Source sourceFilter) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
+            ExecutionErrorsList executionErrorsList = new ExecutionErrorsList();
             List<ExecutionError> executionErrors = airavataRegistry.getExecutionErrors(experimentId, workflowInstanceId, nodeId, gfacJobId, sourceFilter);
             if (executionErrors.size() != 0) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
-                builder.entity(executionErrors);
+                executionErrorsList.setExecutionErrors(executionErrors);
+                builder.entity(executionErrorsList);
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
