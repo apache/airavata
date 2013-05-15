@@ -75,18 +75,21 @@ public class GSISecurityContext extends SecurityContext {
 
     public GSSCredential getGssCredentials() throws SecurityException {
 
+        GSSCredential credential = null;
+
         try {
 
-            GSSCredential credential = this.myProxyManager.getCredentialsFromStore(gatewayId, tokenId);
-
-            if (credential == null)
-                return getGssCredentialsFromUserPassword();
-            else
-                return credential;
+            credential = this.myProxyManager.getCredentialsFromStore(gatewayId, tokenId);
 
         } catch (Exception e) {
-            throw new SecurityException(e.getMessage(), e);
+            log.warn("An error occurred while retrieving credentials from credential store. " +
+                    "But continuing with password credentials. ", e);
         }
+
+        if (credential == null)
+            return getGssCredentialsFromUserPassword();
+        else
+            return credential;
     }
 
 
