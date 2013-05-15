@@ -32,7 +32,6 @@ import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacAPI;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
@@ -64,10 +63,10 @@ public class GramProviderTest {
 //    private static final String gramAddress = "";
 
     //FIXME: move job properties to configuration file
-    private static final String hostAddress = "lonestar.tacc.teragrid.org";
-    private static final String hostName = "lonestar";
-    private static final String gridftpAddress = "gsiftp://gridftp1.ls4.tacc.utexas.edu:2811";
-    private static final String gramAddress = "gridftp1.ls4.tacc.utexas.edu:2119/jobmanager-sge";
+    private static final String hostAddress = "trestles.sdsc.edu";
+    private static final String hostName = "trestles";
+    private static final String gridftpAddress = "gsiftp://trestles.sdsc.edu:2811/";
+    private static final String gramAddress = "trestles-login2.sdsc.edu:2119/jobmanager-pbstest2";
 
     @Before
     public void setUp() throws Exception {
@@ -100,7 +99,7 @@ public class GramProviderTest {
         name.setStringValue("EchoLocal");
         app.setApplicationName(name);
         ProjectAccountType projectAccountType = app.addNewProjectAccount();
-        projectAccountType.setProjectAccountNumber("TG-STA110014S");
+        projectAccountType.setProjectAccountNumber("sds128");
 
         QueueType queueType = app.addNewQueue();
         queueType.setQueueName("development");
@@ -211,7 +210,7 @@ public class GramProviderTest {
     }
 
 	private GSISecurityContext getSecurityContext() {
-		GSISecurityContext context = new GSISecurityContext("myproxy.teragrid.org", "xxx", "xxx", 3600, "/Users/path");
+		GSISecurityContext context = new GSISecurityContext("myproxy.teragrid.org", "xxxx", "xxxxxx", 3600, "~/.globus/certificates");
 		return context;
 	}
 
