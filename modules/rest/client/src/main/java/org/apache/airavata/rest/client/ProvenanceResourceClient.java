@@ -34,23 +34,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 
+import org.apache.airavata.registry.api.ExecutionErrors;
 import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
 import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
-import org.apache.airavata.registry.api.workflow.ExperimentData;
-import org.apache.airavata.registry.api.workflow.NodeExecutionData;
-import org.apache.airavata.registry.api.workflow.NodeExecutionStatus;
-import org.apache.airavata.registry.api.workflow.WorkflowExecution;
-import org.apache.airavata.registry.api.workflow.WorkflowExecutionData;
-import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus;
-import org.apache.airavata.registry.api.workflow.WorkflowIOData;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
-import org.apache.airavata.registry.api.workflow.WorkflowNodeGramData;
-import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
-import org.apache.airavata.registry.api.workflow.WorkflowNodeType;
-import org.apache.airavata.rest.mappings.resourcemappings.ExperimentDataList;
-import org.apache.airavata.rest.mappings.resourcemappings.ExperimentIDList;
-import org.apache.airavata.rest.mappings.resourcemappings.WorkflowInstancesList;
+import org.apache.airavata.registry.api.workflow.*;
+import org.apache.airavata.rest.mappings.resourcemappings.*;
 import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
 import org.apache.airavata.rest.utils.BasicAuthHeaderUtil;
 import org.apache.airavata.rest.utils.ClientConstant;
@@ -1813,6 +1802,466 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
+    }
+
+    public List<ExperimentExecutionError> getExperimentExecutionErrors(String experimentId) {
+        webResource = getProvenanceRegistryBaseResource().path(
+                ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENT_ERRORS);
+        MultivaluedMap queryParams = new MultivaluedMapImpl();
+        queryParams.add("experimentId", experimentId);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+
+        ClientResponse response = builder.accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        int status = response.getStatus();
+
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
+            }
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            status = response.getStatus();
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
+                return null;
+            }
+            if (status != ClientConstant.HTTP_OK) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            } else {
+                if (response.getCookies().size() > 0) {
+                    cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return null;
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
+        }
+
+        ExperimentErrorsList experimentErrorsList = response.getEntity(ExperimentErrorsList.class);
+        return experimentErrorsList.getExperimentExecutionErrorList();
+    }
+
+    public List<WorkflowExecutionError> getWorkflowExecutionErrors(String experimentId, String workflowInstanceId) {
+        webResource = getProvenanceRegistryBaseResource().path(
+                ResourcePathConstants.ProvenanceResourcePathConstants.GET_WORKFLOW_ERRORS);
+        MultivaluedMap queryParams = new MultivaluedMapImpl();
+        queryParams.add("experimentId", experimentId);
+        queryParams.add("workflowInstanceId", workflowInstanceId);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+
+        ClientResponse response = builder.accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        int status = response.getStatus();
+
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
+            }
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            status = response.getStatus();
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
+                return null;
+            }
+            if (status != ClientConstant.HTTP_OK) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            } else {
+                if (response.getCookies().size() > 0) {
+                    cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return null;
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
+        }
+
+        WorkflowErrorsList workflowErrorsList = response.getEntity(WorkflowErrorsList.class);
+        return workflowErrorsList.getWorkflowExecutionErrorList();
+    }
+
+    public List<NodeExecutionError> getNodeExecutionErrors(String experimentId,
+                                                           String workflowInstanceId, String nodeId) {
+        webResource = getProvenanceRegistryBaseResource().path(
+                ResourcePathConstants.ProvenanceResourcePathConstants.GET_NODE_ERRORS);
+        MultivaluedMap queryParams = new MultivaluedMapImpl();
+        queryParams.add("experimentId", experimentId);
+        queryParams.add("workflowInstanceId", workflowInstanceId);
+        queryParams.add("nodeId", nodeId);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+
+        ClientResponse response = builder.accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        int status = response.getStatus();
+
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
+            }
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            status = response.getStatus();
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
+                return null;
+            }
+            if (status != ClientConstant.HTTP_OK) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            } else {
+                if (response.getCookies().size() > 0) {
+                    cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return null;
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
+        }
+
+        NodeErrorsList nodeErrorsList = response.getEntity(NodeErrorsList.class);
+        return nodeErrorsList.getNodeExecutionErrorList();
+    }
+
+    public List<GFacJobExecutionError> getGFacJobErrors(String experimentId,
+                                                        String workflowInstanceId,
+                                                        String nodeId,
+                                                        String gfacJobId){
+        webResource = getProvenanceRegistryBaseResource().path(
+                ResourcePathConstants.ProvenanceResourcePathConstants.GET_GFAC_ERRORS);
+        MultivaluedMap queryParams = new MultivaluedMapImpl();
+        queryParams.add("experimentId", experimentId);
+        queryParams.add("workflowInstanceId", workflowInstanceId);
+        queryParams.add("nodeId", nodeId);
+        queryParams.add("gfacJobId", gfacJobId);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+
+        ClientResponse response = builder.accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        int status = response.getStatus();
+
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
+            }
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            status = response.getStatus();
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
+                return null;
+            }
+            if (status != ClientConstant.HTTP_OK) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            } else {
+                if (response.getCookies().size() > 0) {
+                    cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return null;
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
+        }
+
+        GFacErrorsList gFacErrorsList = response.getEntity(GFacErrorsList.class);
+        return gFacErrorsList.getgFacJobExecutionErrorList();
+    }
+
+    public List<GFacJobExecutionError> getGFacJobErrors(String gfacJobId){
+        webResource = getProvenanceRegistryBaseResource().path(
+                ResourcePathConstants.ProvenanceResourcePathConstants.GET_ALL_GFAC_ERRORS);
+        MultivaluedMap queryParams = new MultivaluedMapImpl();
+        queryParams.add("gfacJobId", gfacJobId);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+
+        ClientResponse response = builder.accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        int status = response.getStatus();
+
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
+            }
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            status = response.getStatus();
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
+                return null;
+            }
+            if (status != ClientConstant.HTTP_OK) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            } else {
+                if (response.getCookies().size() > 0) {
+                    cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return null;
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
+        }
+
+        GFacErrorsList gFacErrorsList = response.getEntity(GFacErrorsList.class);
+        return gFacErrorsList.getgFacJobExecutionErrorList();
+    }
+
+    public List<ExecutionError> getExecutionErrors(String experimentId,
+                                                   String workflowInstanceId,
+                                                   String nodeId,
+                                                   String gfacJobId,
+                                                   ExecutionErrors.Source... filterBy){
+        webResource = getProvenanceRegistryBaseResource().path(
+                ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXECUTION_ERRORS);
+        MultivaluedMap queryParams = new MultivaluedMapImpl();
+        queryParams.add("experimentId", experimentId);
+        queryParams.add("workflowInstanceId", workflowInstanceId);
+        queryParams.add("nodeId", nodeId);
+        queryParams.add("gfacJobId", gfacJobId);
+        queryParams.add("sourceFilter", filterBy);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+
+        ClientResponse response = builder.accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        int status = response.getStatus();
+
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
+            }
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            status = response.getStatus();
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
+                return null;
+            }
+            if (status != ClientConstant.HTTP_OK) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            } else {
+                if (response.getCookies().size() > 0) {
+                    cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return null;
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
+        }
+
+        ExecutionErrorsList executionErrorsList = response.getEntity(ExecutionErrorsList.class);
+        return executionErrorsList.getExecutionErrors();
+    }
+
+    public int addExperimentError(ExperimentExecutionError error){
+        webResource = getProvenanceRegistryBaseResource().path(
+                ResourcePathConstants.ProvenanceResourcePathConstants.ADD_EXPERIMENT_ERROR);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
+        ClientResponse response = builder.accept(
+                MediaType.TEXT_PLAIN).post(ClientResponse.class, error);
+        int status = response.getStatus();
+
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
+                Integer errorID = response.getEntity(Integer.class);
+                return errorID;
+            }
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(
+                    MediaType.TEXT_PLAIN).post(ClientResponse.class, error);
+            status = response.getStatus();
+            if (status != ClientConstant.HTTP_OK) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            } else {
+                if (response.getCookies().size() > 0) {
+                    cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
+                }
+            }
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
+        }
+        return 0;
+    }
+
+    public int addWorkflowExecutionError(WorkflowExecutionError error){
+        webResource = getProvenanceRegistryBaseResource().path(
+                ResourcePathConstants.ProvenanceResourcePathConstants.ADD_WORKFLOW_ERROR);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
+        ClientResponse response = builder.accept(
+                MediaType.TEXT_PLAIN).post(ClientResponse.class, error);
+        int status = response.getStatus();
+
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
+                Integer errorID = response.getEntity(Integer.class);
+                return errorID;
+            }
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(
+                    MediaType.TEXT_PLAIN).post(ClientResponse.class, error);
+            status = response.getStatus();
+            if (status != ClientConstant.HTTP_OK) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            } else {
+                if (response.getCookies().size() > 0) {
+                    cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
+                }
+            }
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
+        }
+        return 0;
+    }
+
+    public int addNodeExecutionError(NodeExecutionError error){
+        webResource = getProvenanceRegistryBaseResource().path(
+                ResourcePathConstants.ProvenanceResourcePathConstants.ADD_NODE_ERROR);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
+        ClientResponse response = builder.accept(
+                MediaType.TEXT_PLAIN).post(ClientResponse.class, error);
+        int status = response.getStatus();
+
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
+                Integer errorID = response.getEntity(Integer.class);
+                return errorID;
+            }
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(
+                    MediaType.TEXT_PLAIN).post(ClientResponse.class, error);
+            status = response.getStatus();
+            if (status != ClientConstant.HTTP_OK) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            } else {
+                if (response.getCookies().size() > 0) {
+                    cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
+                }
+            }
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
+        }
+        return 0;
+    }
+
+    public int addGFacJobExecutionError(GFacJobExecutionError error){
+        webResource = getProvenanceRegistryBaseResource().path(
+                ResourcePathConstants.ProvenanceResourcePathConstants.ADD_GFAC_ERROR);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
+        ClientResponse response = builder.accept(
+                MediaType.TEXT_PLAIN).post(ClientResponse.class, error);
+        int status = response.getStatus();
+
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
+                Integer errorID = response.getEntity(Integer.class);
+                return errorID;
+            }
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(
+                    MediaType.TEXT_PLAIN).post(ClientResponse.class, error);
+            status = response.getStatus();
+            if (status != ClientConstant.HTTP_OK) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            } else {
+                if (response.getCookies().size() > 0) {
+                    cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
+                }
+            }
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
+        }
+        return 0;
     }
 
     public List<WorkflowNodeIOData> searchWorkflowInstanceNodeInput(String experimentIdRegEx,
