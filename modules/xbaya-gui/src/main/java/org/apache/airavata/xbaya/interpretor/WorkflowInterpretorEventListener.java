@@ -215,6 +215,7 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
             nodeExecutionError.setNodeId(event.getNodeID());
             nodeExecutionError.setWorkflowInstanceId(event.getExperimentID());
             nodeExecutionError.setErrorMessage(event.getMessage());
+            nodeExecutionError.setErrorDescription(event.getMessage());
             this.workflowInterpreterConfiguration.getAiravataAPI().getExecutionManager().addNodeExecutionError(nodeExecutionError);
             if (node == null) {
             	if (nodeID!=null && !nodeID.equals("")) {
