@@ -79,6 +79,7 @@ import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.apache.airavata.schemas.gfac.UnicoreHostType;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
+import org.apache.airavata.schemas.wec.SecurityContextDocument;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.jython.lib.ServiceNotifiable;
@@ -376,20 +377,48 @@ public class EmbeddedGFacInvoker implements Invoker {
         return true;
     }
 
+    private SecurityContextDocument.SecurityContext.CredentialManagementService getCredentialManagementService(
+            JobExecutionContext jobExecutionContext) {
+
+        if (jobExecutionContext.getContextHeader() != null) {
+
+            SecurityContextDocument.SecurityContext.CredentialManagementService credentialManagementService
+                    = jobExecutionContext.getContextHeader().getSecurityContext().getCredentialManagementService();
+
+           if (credentialManagementService != null) {
+               return credentialManagementService;
+           }
+        }
+
+        return null;
+    }
+
 	private void addSecurityContext(HostDescription registeredHost, Properties configurationProperties,
 			JobExecutionContext jobExecutionContext) {
 		if (registeredHost.getType() instanceof GlobusHostType || registeredHost.getType() instanceof UnicoreHostType) {
 
-            String tokenId
-                    = jobExecutionContext.getContextHeader().getSecurityContext().
-                    getCredentialManagementService().getTokenId();
-            String gatewayUser = jobExecutionContext.getContextHeader().getSecurityContext().
-                    getCredentialManagementService().getPortalUser();
+            SecurityContextDocument.SecurityContext.CredentialManagementService credentialManagementService
+                    = getCredentialManagementService(jobExecutionContext);
 
-            String gatewayId = jobExecutionContext.getGFacConfiguration().getAiravataAPI().getGateway();
+            GSISecurityContext context;
 
-			GSISecurityContext context = new GSISecurityContext(configurationProperties, tokenId, gatewayId,
-                    gatewayUser);
+            if (credentialManagementService != null) {
+                String tokenId
+                        = jobExecutionContext.getContextHeader().getSecurityContext().
+                        getCredentialManagementService().getTokenId();
+                String gatewayUser = jobExecutionContext.getContextHeader().getSecurityContext().
+                        getCredentialManagementService().getPortalUser();
+
+                String gatewayId = jobExecutionContext.getGFacConfiguration().getAiravataAPI().getGateway();
+
+                context = new GSISecurityContext(configurationProperties, tokenId, gatewayId,
+                        gatewayUser);
+
+            } else {
+
+                context = new GSISecurityContext(configurationProperties);
+            }
+
 
 			jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT, context);
 
