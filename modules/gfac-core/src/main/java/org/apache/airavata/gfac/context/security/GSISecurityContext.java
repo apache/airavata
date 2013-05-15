@@ -62,7 +62,7 @@ public class GSISecurityContext extends SecurityContext {
         myProxyManager = new MyProxyManager(configuration);
     }
 
-    public GSISecurityContext(Properties configuration) throws GFacException {
+    public GSISecurityContext(Properties configuration) {
 
         myProxyManager = new MyProxyManager(configuration);
     }
