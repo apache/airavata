@@ -227,7 +227,7 @@ public class CredentialsDAO extends ParentDAO {
             stringBuilder.append("gateway - ").append(gatewayName);
             stringBuilder.append("token id - ").append(tokenId);
 
-            log.error(stringBuilder.toString(), e);
+            log.debug(stringBuilder.toString(), e);
 
             throw new CredentialStoreException(stringBuilder.toString(), e);
         } catch (ClassNotFoundException e) {
@@ -236,7 +236,7 @@ public class CredentialsDAO extends ParentDAO {
             stringBuilder.append("gateway - ").append(gatewayName);
             stringBuilder.append("token id - ").append(tokenId);
 
-            log.error(stringBuilder.toString(), e);
+            log.debug(stringBuilder.toString(), e);
 
             throw new CredentialStoreException(stringBuilder.toString(), e);
         } catch (IOException e) {
@@ -245,7 +245,7 @@ public class CredentialsDAO extends ParentDAO {
             stringBuilder.append("gateway - ").append(gatewayName);
             stringBuilder.append("tokenId - ").append(tokenId);
 
-            log.error(stringBuilder.toString(), e);
+            log.debug(stringBuilder.toString(), e);
 
             throw new CredentialStoreException(stringBuilder.toString(), e);
         } finally {
@@ -302,21 +302,21 @@ public class CredentialsDAO extends ParentDAO {
             StringBuilder stringBuilder = new StringBuilder("Error retrieving credential list for ");
             stringBuilder.append("gateway - ").append(gatewayName);
 
-            log.error(stringBuilder.toString(), e);
+            log.debug(stringBuilder.toString(), e);
 
             throw new CredentialStoreException(stringBuilder.toString(), e);
         } catch (ClassNotFoundException e) {
             StringBuilder stringBuilder = new StringBuilder("Error retrieving credential list for ");
             stringBuilder.append("gateway - ").append(gatewayName);
             stringBuilder.append("Error de-serializing objects.");
-            log.error(stringBuilder.toString(), e);
+            log.debug(stringBuilder.toString(), e);
 
             throw new CredentialStoreException(stringBuilder.toString(), e);
         } catch (IOException e) {
             StringBuilder stringBuilder = new StringBuilder("Error retrieving credential list for ");
             stringBuilder.append("gateway - ").append(gatewayName);
             stringBuilder.append("Error de-serializing objects.");
-            log.error(stringBuilder.toString(), e);
+            log.debug(stringBuilder.toString(), e);
 
             throw new CredentialStoreException(stringBuilder.toString(), e);
         } finally {
