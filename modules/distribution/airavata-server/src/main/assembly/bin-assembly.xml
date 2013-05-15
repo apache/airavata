@@ -238,6 +238,7 @@
                 <include>org.apache.airavata:airavata-workflow-execution-context</include>
                 <include>org.apache.airavata:airavata-workflow-tracking</include>
                 <include>org.apache.airavata:airavata-gfac-core</include>
+                <include>org.apache.airavata:airavata-credential-store</include>
                 <include>org.apache.airavata:airavata-messenger-client</include>
                 <include>org.apache.airavata:airavata-messenger-commons</include>
                 <include>org.apache.airavata:airavata-gfac-schema-utils</include>
