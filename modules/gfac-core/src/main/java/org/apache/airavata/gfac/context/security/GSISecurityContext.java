@@ -22,7 +22,6 @@ package org.apache.airavata.gfac.context.security;
 
 import java.util.Properties;
 
-import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.utils.MyProxyManager;
 import org.globus.gsi.GlobusCredential;
 import org.ietf.jgss.GSSCredential;
@@ -42,7 +41,7 @@ public class GSISecurityContext extends SecurityContext {
 
     private MyProxyManager myProxyManager;
 
-    private GSSCredential gssCredentials;
+    private GSSCredential gssCredentials = null;
 
     private GlobusCredential globusCredential;
 
@@ -75,21 +74,22 @@ public class GSISecurityContext extends SecurityContext {
 
     public GSSCredential getGssCredentials() throws SecurityException {
 
-        GSSCredential credential = null;
+        if (gssCredentials != null)
+            return gssCredentials;
 
         try {
 
-            credential = this.myProxyManager.getCredentialsFromStore(gatewayId, tokenId);
+            gssCredentials = this.myProxyManager.getCredentialsFromStore(gatewayId, tokenId);
 
         } catch (Exception e) {
             log.warn("An error occurred while retrieving credentials from credential store. " +
                     "But continuing with password credentials. ", e);
         }
 
-        if (credential == null)
+        if (gssCredentials == null)
             return getGssCredentialsFromUserPassword();
         else
-            return credential;
+            return gssCredentials;
     }
 
 
