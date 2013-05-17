@@ -59,6 +59,8 @@ public class AuthenticatorConfigurationReader extends AbstractConfigurationReade
 
     public void init(InputStream inputStream) throws IOException, ParserConfigurationException, SAXException {
 
+        authenticationEnabled = true;
+
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         Document doc = dBuilder.parse(inputStream);
