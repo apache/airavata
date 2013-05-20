@@ -46,8 +46,8 @@ public class ResourceUtils {
     public static EntityManager getEntityManager(){
         if (factory == null) {
             String connectionProperties = "DriverClassName=" + Utils.getJDBCDriver() + "," + "Url=" + Utils.getJDBCURL() + "," +
-                    "Username=" + Utils.getJDBCUser() + "," + "Password=" + Utils.getJDBCPassword() + ",MaxActive=10,MaxIdle=5,MinIdle=2,MaxWait=60000,validationQuery=" +
-            Utils.getValidationQuery() + ",testWhileIdle=true,testOnBorrow=true";
+                    "Username=" + Utils.getJDBCUser() + "," + "Password=" + Utils.getJDBCPassword() + ",validationQuery=" +
+            Utils.getValidationQuery() + "," + Utils.getJPAConnectionProperties();
             System.out.println(connectionProperties);
             Map<String, String> properties = new HashMap<String, String>();
             properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");

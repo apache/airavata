@@ -144,6 +144,25 @@ public class Utils {
             return null;
 		}
     }
+
+     public static String getJPAConnectionProperties(){
+    	try {
+			if (getProvider()!=null){
+                if(getProvider().getValue(JPAConstants.CONNECTION_JPA_PROPERTY) != null){
+				    return getProvider().getValue(JPAConstants.CONNECTION_JPA_PROPERTY).toString();
+                }
+			} else {
+                if(getProvider().getValue(JPAConstants.CONNECTION_JPA_PROPERTY) != null){
+                    return RegistrySettings.getSetting(JPAConstants.CONNECTION_JPA_PROPERTY);
+                }
+            }
+            return "";
+		} catch (RegistrySettingsException e) {
+            logger.error(e.getMessage(), e);
+            return null;
+		}
+    }
+
     public static String getJDBCPassword(){
     	try {
 			if (getProvider()!=null){
