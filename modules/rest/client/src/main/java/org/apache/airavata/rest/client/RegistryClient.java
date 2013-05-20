@@ -840,73 +840,63 @@ public class RegistryClient extends AiravataRegistry2 {
 	@Override
 	public List<ExperimentExecutionError> getExperimentExecutionErrors(
 			String experimentId) throws RegistryException {
-		// TODO Auto-generated method stub
-		return null;
+		return provenanceResourceClient.getExperimentExecutionErrors(experimentId);
 	}
 
 	@Override
 	public List<WorkflowExecutionError> getWorkflowExecutionErrors(
 			String experimentId, String workflowInstanceId)
 			throws RegistryException {
-		// TODO Auto-generated method stub
-		return null;
+		return provenanceResourceClient.getWorkflowExecutionErrors(experimentId, workflowInstanceId);
 	}
 
 	@Override
 	public List<NodeExecutionError> getNodeExecutionErrors(String experimentId,
 			String workflowInstanceId, String nodeId) throws RegistryException {
-		// TODO Auto-generated method stub
-		return null;
+		return getProvenanceResourceClient().getNodeExecutionErrors(experimentId, workflowInstanceId, nodeId);
 	}
 
 	@Override
 	public List<GFacJobExecutionError> getGFacJobErrors(String experimentId,
 			String workflowInstanceId, String nodeId, String gfacJobId)
 			throws RegistryException {
-		// TODO Auto-generated method stub
-		return null;
+		return getProvenanceResourceClient().getGFacJobErrors(experimentId, workflowInstanceId, nodeId, gfacJobId);
 	}
 
 	@Override
 	public List<GFacJobExecutionError> getGFacJobErrors(String gfacJobId)
 			throws RegistryException {
-		// TODO Auto-generated method stub
-		return null;
+		return getProvenanceResourceClient().getGFacJobErrors(gfacJobId);
 	}
 
 	@Override
 	public List<ExecutionError> getExecutionErrors(String experimentId,
 			String workflowInstanceId, String nodeId, String gfacJobId,
 			Source... filterBy) throws RegistryException {
-		// TODO Auto-generated method stub
-		return null;
+		return getProvenanceResourceClient().getExecutionErrors(experimentId, workflowInstanceId, nodeId, gfacJobId, filterBy);
 	}
 
 	@Override
 	public int addExperimentError(ExperimentExecutionError error)
 			throws RegistryException {
-		// TODO Auto-generated method stub
-		return 0;
+		return getProvenanceResourceClient().addExperimentError(error);
 	}
 
 	@Override
 	public int addWorkflowExecutionError(WorkflowExecutionError error)
 			throws RegistryException {
-		// TODO Auto-generated method stub
-		return 0;
+		return getProvenanceResourceClient().addWorkflowExecutionError(error);
 	}
 
 	@Override
 	public int addNodeExecutionError(NodeExecutionError error)
 			throws RegistryException {
-		// TODO Auto-generated method stub
-		return 0;
+		return getProvenanceResourceClient().addNodeExecutionError(error);
 	}
 
 	@Override
 	public int addGFacJobExecutionError(GFacJobExecutionError error)
 			throws RegistryException {
-		// TODO Auto-generated method stub
-		return 0;
+		return getProvenanceResourceClient().addGFacJobExecutionError(error);
 	}
 }

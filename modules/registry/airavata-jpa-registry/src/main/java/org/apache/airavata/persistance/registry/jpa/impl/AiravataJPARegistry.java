@@ -23,12 +23,7 @@ package org.apache.airavata.persistance.registry.jpa.impl;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import org.apache.airavata.common.exception.AiravataConfigurationException;
@@ -86,6 +81,8 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     private ProvenanceRegistry provenanceRegistry;
     private UserWorkflowRegistry userWorkflowRegistry;
     private PublishedWorkflowRegistry publishedWorkflowRegistry;
+    private static Map<String, String[]> compatibleVersionMap;
+
 
 
     private PasswordCallback callback;
@@ -98,6 +95,28 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     	active=true;
 
         initializeCustomRegistries();
+        String apiVersion = getVersion().toString();
+        String registryVersion = getConfiguration("registry.version").toString();
+        if (!apiVersion.equals(registryVersion)){
+           throw new RegistryAPIVersionIncompatibleException("Incompatible registry versions. Please check whether you updated the API and Registry " +
+                   "versions.");
+        }
+        String[] list = compatibleVersionMap.get(apiVersion);
+        if (list == null){
+            throw new RegistryAPIVersionIncompatibleException("Incompatible registry versions. Please check whether you updated the API and Registry " +
+                    "versions.");
+        }
+        if (!Arrays.asList(list).contains(registryVersion)){
+            throw new RegistryAPIVersionIncompatibleException("Incompatible registry versions. Please check whether you updated the API and Registry " +
+                    "versions.");
+        }
+    }
+
+    static {
+        compatibleVersionMap = new HashMap<String, String[]>();
+        compatibleVersionMap.put("0.6", new String[]{"0.6"});
+        compatibleVersionMap.put("0.7", new String[]{"0.6", "0.7"});
+        compatibleVersionMap.put("0.8", new String[]{"0.8"});
     }
 
     /**
