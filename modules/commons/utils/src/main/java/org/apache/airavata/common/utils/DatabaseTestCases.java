@@ -114,7 +114,9 @@ public class DatabaseTestCases {
     public Connection getConnection() throws Exception {
 
         DBUtil dbUtil =  getDbUtil ();
-        return dbUtil.getConnection();
+        Connection connection = dbUtil.getConnection();
+        connection.setAutoCommit(true);
+        return connection;
 
     }
 

@@ -86,7 +86,7 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         credentialsDAO = new CredentialsDAO();
 
         // Cleanup tables;
-        Connection connection = getDbUtil().getConnection();
+        Connection connection = getConnection();
 
         try {
             DBUtil.truncate("credentials", connection);
