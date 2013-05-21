@@ -67,7 +67,7 @@ public class LocalUserStore {
 
     public void addUser(String userName, String password) {
 
-        String sql = "insert into users values (?, ?)";
+        String sql = "insert into Users values (?, ?)";
 
         Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -106,7 +106,7 @@ public class LocalUserStore {
 
     protected String getPassword(String userName, Connection connection) {
 
-        String sql = "select password from users where user_name = ?";
+        String sql = "select password from Users where user_name = ?";
 
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -170,7 +170,7 @@ public class LocalUserStore {
                 }
             }
 
-            String sql = "update users set password = ? where user_name = ?";
+            String sql = "update Users set password = ? where user_name = ?";
 
             preparedStatement = connection.prepareStatement(sql);
 
@@ -210,7 +210,7 @@ public class LocalUserStore {
         try {
             connection = dbUtil.getConnection();
 
-            String sql = "update users set password = ? where user_name = ?";
+            String sql = "update Users set password = ? where user_name = ?";
 
             preparedStatement = connection.prepareStatement(sql);
 
@@ -244,7 +244,7 @@ public class LocalUserStore {
 
     public void deleteUser(String userName) {
 
-        String sql = "delete from users where user_name=?";
+        String sql = "delete from Users where user_name=?";
 
         Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -278,7 +278,7 @@ public class LocalUserStore {
 
         List<String> userList = new ArrayList<String>();
 
-        String sql = "select user_name from users";
+        String sql = "select user_name from Users";
 
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -296,7 +296,7 @@ public class LocalUserStore {
             }
 
         } catch (SQLException e) {
-            String errorString = "Error retrieving users.";
+            String errorString = "Error retrieving Users.";
             log.error(errorString, e);
 
             throw new RuntimeException(errorString, e);
