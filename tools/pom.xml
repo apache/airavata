@@ -31,8 +31,8 @@
             </activation>
             <modules>
                 <module>phoebus-integration</module>
-		<module>registry-tool</module>
-            </modules>
+		        <module>registry-tool</module>
+        </modules>
         </profile>
     </profiles>
     <properties>
