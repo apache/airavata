@@ -89,12 +89,11 @@ public class DBMigrator {
             File file = null;
             if (dbType.contains("derby")){
                 jdbcDriver = "org.apache.derby.jdbc.ClientDriver";
-                file = new File(relativePath + MIGRATE_SQL_DERBY);
+                sqlStream = DBMigrator.class.getClassLoader().getResourceAsStream(relativePath + MIGRATE_SQL_DERBY);
             } else if (dbType.contains("mysql")){
                 jdbcDriver = "com.mysql.jdbc.Driver";
-                file = new File(relativePath + MIGRATE_SQL_MYSQL);
+                sqlStream = DBMigrator.class.getClassLoader().getResourceAsStream(relativePath + MIGRATE_SQL_MYSQL);
             }
-            sqlStream = readFile(file);
             Class.forName(jdbcDriver).newInstance();
             connection = DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcPwd);
             if (canUpdated(connection)){
