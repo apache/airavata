@@ -206,7 +206,9 @@ public class DBUtil {
      *             If an error occurred while creating the connection.
      */
     public Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(jdbcUrl, properties);
+        Connection connection = DriverManager.getConnection(jdbcUrl, properties);
+        connection.setAutoCommit(false);
+        return connection;
     }
 
     /**

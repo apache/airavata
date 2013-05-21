@@ -308,7 +308,8 @@ public class EmbeddedGFacInvoker implements Invoker {
             JobExecutionContext jobExecutionContext = new JobExecutionContext(gFacConfiguration, serviceName);
             //Here we get only the contextheader information sent specific for this node
             //Add security context
-            addSecurityContext(registeredHost,configurationProperties,jobExecutionContext);
+            addSecurityContext(registeredHost,configurationProperties,jobExecutionContext,
+                    configuration.getContextHeader());
 
             jobExecutionContext.setContextHeader(WorkflowContextHeaderBuilder.removeOtherSchedulingConfig(nodeID,configuration.getContextHeader()));
 
@@ -378,36 +379,43 @@ public class EmbeddedGFacInvoker implements Invoker {
     }
 
     private SecurityContextDocument.SecurityContext.CredentialManagementService getCredentialManagementService(
-            JobExecutionContext jobExecutionContext) {
+            ContextHeaderDocument.ContextHeader contextHeader) {
 
-        if (jobExecutionContext.getContextHeader() != null) {
+        if (contextHeader != null) {
 
             SecurityContextDocument.SecurityContext.CredentialManagementService credentialManagementService
-                    = jobExecutionContext.getContextHeader().getSecurityContext().getCredentialManagementService();
+                    = contextHeader.getSecurityContext().getCredentialManagementService();
 
-           if (credentialManagementService != null) {
-               return credentialManagementService;
-           }
+            if (credentialManagementService != null) {
+                // Make sure token id and portal user id is properly populated
+                if (credentialManagementService.getTokenId() != null &&
+                        credentialManagementService.getPortalUser() != null) {
+
+                    return credentialManagementService;
+                } else {
+                    return null;
+                }
+            } else {
+                return null;
+            }
         }
 
         return null;
     }
 
 	private void addSecurityContext(HostDescription registeredHost, Properties configurationProperties,
-			JobExecutionContext jobExecutionContext) {
+			JobExecutionContext jobExecutionContext, ContextHeaderDocument.ContextHeader contextHeader) {
 		if (registeredHost.getType() instanceof GlobusHostType || registeredHost.getType() instanceof UnicoreHostType) {
 
             SecurityContextDocument.SecurityContext.CredentialManagementService credentialManagementService
-                    = getCredentialManagementService(jobExecutionContext);
+                    = getCredentialManagementService(contextHeader);
 
             GSISecurityContext context;
 
             if (credentialManagementService != null) {
                 String tokenId
-                        = jobExecutionContext.getContextHeader().getSecurityContext().
-                        getCredentialManagementService().getTokenId();
-                String gatewayUser = jobExecutionContext.getContextHeader().getSecurityContext().
-                        getCredentialManagementService().getPortalUser();
+                        = credentialManagementService.getTokenId();
+                String gatewayUser = credentialManagementService.getPortalUser();
 
                 String gatewayId = jobExecutionContext.getGFacConfiguration().getAiravataAPI().getGateway();
 
