@@ -1490,11 +1490,17 @@ public class ProvenanceRegistryResource {
                                        @QueryParam("workflowInstanceId") String workflowInstanceId,
                                        @QueryParam("nodeId") String nodeId,
                                        @QueryParam("gfacJobId") String gfacJobId,
-                                       @QueryParam("sourceFilter") ExecutionErrors.Source sourceFilter) {
+                                       @QueryParam("sourceFilter") String sourceFilter) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             ExecutionErrorsList executionErrorsList = new ExecutionErrorsList();
-            List<ExecutionError> executionErrors = airavataRegistry.getExecutionErrors(experimentId, workflowInstanceId, nodeId, gfacJobId, sourceFilter);
+            String[] sourceList = sourceFilter.split(",");
+            List<ExecutionErrors.Source> sourceFilters = new ArrayList<ExecutionErrors.Source>();
+            for (String source : sourceList){
+                ExecutionErrors.Source errorSource = ExecutionErrors.Source.valueOf(source);
+                sourceFilters.add(errorSource);
+            }
+            List<ExecutionError> executionErrors = airavataRegistry.getExecutionErrors(experimentId, workflowInstanceId, nodeId, gfacJobId, sourceFilters.toArray(new ExecutionErrors.Source[]{}));
             if (executionErrors.size() != 0) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 executionErrorsList.setExecutionErrors(executionErrors);

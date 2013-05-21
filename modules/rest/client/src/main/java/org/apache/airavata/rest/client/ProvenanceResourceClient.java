@@ -2056,12 +2056,18 @@ public class ProvenanceResourceClient {
                                                    ExecutionErrors.Source... filterBy){
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXECUTION_ERRORS);
+        String sourceErrors = "";
+        for (ExecutionErrors.Source source : filterBy){
+            sourceErrors += source.toString() + ",";
+        }
+        sourceErrors = sourceErrors.substring(0, sourceErrors.length() - 1);
+        System.out.println(sourceErrors);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("experimentId", experimentId);
         queryParams.add("workflowInstanceId", workflowInstanceId);
         queryParams.add("nodeId", nodeId);
         queryParams.add("gfacJobId", gfacJobId);
-        queryParams.add("sourceFilter", filterBy);
+        queryParams.add("sourceFilter", sourceErrors);
         builder = BasicAuthHeaderUtil.getBuilder(
                 webResource, queryParams, userName, null, cookie, gateway);
 
@@ -2099,7 +2105,6 @@ public class ProvenanceResourceClient {
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
-
         ExecutionErrorsList executionErrorsList = response.getEntity(ExecutionErrorsList.class);
         return executionErrorsList.getExecutionErrors();
     }
