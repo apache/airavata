@@ -1979,7 +1979,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             return provenanceRegistry.getExperimentExecutionErrors(experimentId);
         }
 		List<ExperimentExecutionError> result=new ArrayList<ExperimentExecutionError>();
-		List<ExecutionErrorResource> executionErrors = jpa.getWorker().getExperiment(experimentId).getData().getExecutionErrors(Source.GFAC.toString(), experimentId, null, null, null);
+		List<ExecutionErrorResource> executionErrors = jpa.getWorker().getExperiment(experimentId).getData().getExecutionErrors(Source.EXPERIMENT.toString(), experimentId, null, null, null);
 		for (ExecutionErrorResource errorResource : executionErrors) {
 			ExperimentExecutionError error = new ExperimentExecutionError();
 			setupValues(errorResource, error);
@@ -1997,7 +1997,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             return provenanceRegistry.getWorkflowExecutionErrors(experimentId, workflowInstanceId);
         }
 		List<WorkflowExecutionError> result=new ArrayList<WorkflowExecutionError>();
-		List<ExecutionErrorResource> executionErrors = jpa.getWorker().getExperiment(experimentId).getData().getExecutionErrors(Source.GFAC.toString(), experimentId, workflowInstanceId, null, null);
+		List<ExecutionErrorResource> executionErrors = jpa.getWorker().getExperiment(experimentId).getData().getExecutionErrors(Source.WORKFLOW.toString(), experimentId, workflowInstanceId, null, null);
 		for (ExecutionErrorResource errorResource : executionErrors) {
 			WorkflowExecutionError error = new WorkflowExecutionError();
 			setupValues(errorResource, error);
@@ -2015,7 +2015,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             return provenanceRegistry.getNodeExecutionErrors(experimentId, workflowInstanceId, nodeId);
         }
 		List<NodeExecutionError> result=new ArrayList<NodeExecutionError>();
-		List<ExecutionErrorResource> executionErrors = jpa.getWorker().getExperiment(experimentId).getData().getExecutionErrors(Source.GFAC.toString(), experimentId, workflowInstanceId, nodeId, null);
+		List<ExecutionErrorResource> executionErrors = jpa.getWorker().getExperiment(experimentId).getData().getExecutionErrors(Source.NODE.toString(), experimentId, workflowInstanceId, nodeId, null);
 		for (ExecutionErrorResource errorResource : executionErrors) {
 			NodeExecutionError error = new NodeExecutionError();
 			setupValues(errorResource, error);
@@ -2168,7 +2168,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		if (provenanceRegistry != null){
             return provenanceRegistry.addNodeExecutionError(error);
         }
-		ExecutionErrorResource executionError = createNewExecutionErrorResource(error.getExperimentId(),error,ExecutionErrors.Source.WORKFLOW);
+		ExecutionErrorResource executionError = createNewExecutionErrorResource(error.getExperimentId(),error, Source.NODE);
 		executionError.setWorkflowDataResource(jpa.getWorker().getExperiment(error.getExperimentId()).getData().getWorkflowInstance(error.getWorkflowInstanceId()));
 		executionError.setNodeID(error.getNodeId());
 		executionError.save();
@@ -2181,7 +2181,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		if (provenanceRegistry != null){
             return provenanceRegistry.addGFacJobExecutionError(error);
         }
-		ExecutionErrorResource executionError = createNewExecutionErrorResource(error.getExperimentId(),error,ExecutionErrors.Source.WORKFLOW);
+		ExecutionErrorResource executionError = createNewExecutionErrorResource(error.getExperimentId(),error, Source.GFAC);
 		executionError.setWorkflowDataResource(jpa.getWorker().getExperiment(error.getExperimentId()).getData().getWorkflowInstance(error.getWorkflowInstanceId()));
 		executionError.setNodeID(error.getNodeId());
 		executionError.setGfacJobID(error.getGfacJobId());
