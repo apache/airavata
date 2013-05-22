@@ -47,6 +47,7 @@ import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacAPI;
 import org.apache.airavata.gfac.GFacConfiguration;
+import org.apache.airavata.gfac.Scheduler;
 import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
@@ -281,21 +282,27 @@ public class EmbeddedGFacInvoker implements Invoker {
      */
     public synchronized boolean invoke() throws WorkflowException {
         try {
-        	 ContextHeaderDocument.ContextHeader contextHeader =  WorkflowContextHeaderBuilder.removeOtherSchedulingConfig(nodeID,this.configuration.getContextHeader());
+        	 ContextHeaderDocument.ContextHeader contextHeader =
+                     WorkflowContextHeaderBuilder.removeOtherSchedulingConfig(nodeID,this.configuration.getContextHeader());
              String hostName = null;
+            HostDescription registeredHost;
              if(contextHeader != null){
-            	 if(contextHeader.getWorkflowSchedulingContext() != null && contextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray().length > 0 && contextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray(0).getHostName() != null){
+            	 if(contextHeader.getWorkflowSchedulingContext() != null &&
+                         contextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray().length > 0 &&
+                         contextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray(0).getHostName() != null){
                  hostName = contextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray(0).getHostName();
                  }
              }
         	//todo This is the basic scheduling, have to do proper scheduling implementation
             ServiceDescription serviceDescription = airavataAPI.getApplicationManager().getServiceDescription(serviceName);
-            HostDescription registeredHost = getRegisteredHost(airavataAPI, this.serviceName);
+            if(hostName == null){
+                registeredHost = Scheduler.pickaHost(airavataAPI, this.serviceName);
+            }else{
             // if user specify a host, no matter what we pick that host for all the nodes, todo: allow users to specifi node specific host
-            if(hostName != null) {
                 registeredHost = airavataAPI.getApplicationManager().getHostDescription(hostName);
             }
-            ApplicationDescription applicationDescription = airavataAPI.getApplicationManager().getApplicationDescription(serviceName, registeredHost.getType().getHostName());
+            ApplicationDescription applicationDescription =
+                    airavataAPI.getApplicationManager().getApplicationDescription(serviceName, registeredHost.getType().getHostName());
 
             // When we run getInParameters we set the actualParameter object, this has to be fixed
             URL resource = EmbeddedGFacInvoker.class.getClassLoader().getResource("gfac-config.xml");
