@@ -35,31 +35,6 @@ import java.util.List;
 public interface AiravataManager {
 	
     /**
-     * @deprecated - The GFaC service is deprecated from 0.7 version onwards
-     * Return a list of GFaC service urls registered in the system
-     * @return 0 or more urls
-     * @throws AiravataAPIInvocationException
-     */
-	public List<URI> getGFaCURLs() throws AiravataAPIInvocationException;
-
-    /**
-     * @deprecated - The GFaC service is deprecated from 0.7 version onwards
-     * Return a the first GFaC service url registered in the system
-     * @return url or null if a url is not registered
-     * @throws AiravataAPIInvocationException
-     */
-	public URI getGFaCURL() throws AiravataAPIInvocationException;
-
-    /**
-     * @deprecated - The GFaC service is deprecated from 0.7 version onwards
-     * Return a the first GFaC service url registered in the system orelse return the <code>defaultURL</code>
-     * @param defaultURL
-     * @return url
-     * @throws AiravataAPIInvocationException
-     */
-	public URI getGFaCURL(URI defaultURL) throws AiravataAPIInvocationException;
-
-    /**
      * Return a list of Workflow Interpreter service urls registered in the system
      * @return 0 or more urls
      * @throws AiravataAPIInvocationException
@@ -125,22 +100,6 @@ public interface AiravataManager {
      */
 	public URI getEventingServiceURL(URI defaultURL) throws AiravataAPIInvocationException;
 
-    /**
-     * Return the Airavata registry url 
-     * @return url or null if url is not defined
-     * @throws AiravataAPIInvocationException
-     */
-    @Deprecated
-	public URI getRegistryURL() throws AiravataAPIInvocationException;
-
-    /**
-     * Return the Airavata registry url or return default url
-     * @param defaultURL
-     * @return url
-     * @throws AiravataAPIInvocationException
-     */
-	public URI getRegistryURL(URI defaultURL) throws AiravataAPIInvocationException;
-
     public void setConfiguration(String key, String value, Date expire) throws AiravataAPIInvocationException;
 
     public void addConfiguration(String key, String value, Date expire) throws AiravataAPIInvocationException;
@@ -148,46 +107,18 @@ public interface AiravataManager {
     public void removeAllConfiguration(String key) throws AiravataAPIInvocationException;
 
     public void removeConfiguration(String key, String value) throws AiravataAPIInvocationException;
-    
-    /**
-     * @deprecated - The GFaC service is deprecated from 0.7 version onwards
-     * @param uri
-     * @throws AiravataAPIInvocationException
-     */
-    public void addGFacURI(URI uri) throws AiravataAPIInvocationException;
 
     public void addWorkflowInterpreterURI(URI uri) throws AiravataAPIInvocationException;
 
     public void setEventingURI(URI uri) throws AiravataAPIInvocationException;
 
     public void setMessageBoxURI(URI uri) throws AiravataAPIInvocationException;
-    
-    /**
-     * @deprecated - The GFaC service is deprecated from 0.7 version onwards
-     * @param uri
-     * @param expire
-     * @throws AiravataAPIInvocationException
-     */
-    public void addGFacURI(URI uri, Date expire) throws AiravataAPIInvocationException;
 
     public void addWorkflowInterpreterURI(URI uri, Date expire) throws AiravataAPIInvocationException;
 
     public void setEventingURI(URI uri, Date expire) throws AiravataAPIInvocationException;
 
     public void setMessageBoxURI(URI uri, Date expire) throws AiravataAPIInvocationException;
-
-    /**
-     * @deprecated - The GFaC service is deprecated from 0.7 version onwards
-     * @param uri
-     * @throws AiravataAPIInvocationException
-     */
-    public void removeGFacURI(URI uri) throws AiravataAPIInvocationException ;
-
-    /**
-     * @deprecated - The GFaC service is deprecated from 0.7 version onwards
-     * @throws AiravataAPIInvocationException
-     */
-    public void removeAllGFacURI() throws AiravataAPIInvocationException;
 
     public void removeWorkflowInterpreterURI(URI uri) throws AiravataAPIInvocationException;
 

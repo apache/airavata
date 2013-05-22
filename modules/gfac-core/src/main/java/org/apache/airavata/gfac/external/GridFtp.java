@@ -92,7 +92,7 @@ public class GridFtp {
                     destClient.setAuthorization(new HostAuthorization(GridFtp.HOST));
                     destClient.authenticate(gssCred);
                     destClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
-                    makeExternalConfigurations(destClient, false);
+                    makeDirExternalConfigurations(destClient, destPath);
 
                     if (!destClient.exists(destPath)) {
                         destClient.makeDir(destPath);
@@ -152,7 +152,7 @@ public class GridFtp {
             ftpClient.setAuthorization(new HostAuthorization(GridFtp.HOST));
             ftpClient.authenticate(gsCredential);
             ftpClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
-            makeExternalConfigurations(ftpClient, false);
+            makeFileTransferExternalConfigurations(null, ftpClient);
 
             log.info("Uploading file");
             if (checkBinaryExtensions(remoteFile)) {
@@ -197,14 +197,14 @@ public class GridFtp {
             srcClient.setAuthorization(new HostAuthorization(GridFtp.HOST));
             srcClient.authenticate(gsCredential);
             srcClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
-            makeExternalConfigurations(srcClient, true);
 
             GridFTPClient destClient = new GridFTPClient(destContactInfo.hostName, destContactInfo.port);
             destClient.setAuthorization(new HostAuthorization(GridFtp.HOST));
             destClient.authenticate(gsCredential);
             destClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
-            makeExternalConfigurations(destClient, false);
-		log.debug("Uploading file");
+            makeFileTransferExternalConfigurations(srcClient, destClient);
+            
+            log.debug("Uploading file");
             if (checkBinaryExtensions(remoteFile)) {
                 log.debug("Transfer mode is set to Binary for a file upload");
                 srcClient.setType(Session.TYPE_IMAGE);
@@ -255,7 +255,7 @@ public class GridFtp {
             ftpClient.setAuthorization(new HostAuthorization(GridFtp.HOST));
             ftpClient.authenticate(gsCredential);
             ftpClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
-            makeExternalConfigurations(ftpClient, false);
+            makeFileTransferExternalConfigurations(null, ftpClient);
 
             log.debug("Uploading file");
             if (checkBinaryExtensions(remoteFile)) {
@@ -308,7 +308,7 @@ public class GridFtp {
             ftpClient.setAuthorization(new HostAuthorization(GridFtp.HOST));
             ftpClient.authenticate(gsCredential);
             ftpClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
-            makeExternalConfigurations(ftpClient, true);
+            makeFileTransferExternalConfigurations(ftpClient, null);
 
             log.debug("Downloading file");
             if (checkBinaryExtensions(remoteFile)) {
@@ -407,7 +407,6 @@ public class GridFtp {
             destClient = new GridFTPClient(desthost.getHost(), desthost.getPort());
             destClient.setAuthorization(new HostAuthorization(GridFtp.HOST));
             destClient.authenticate(gssCred);
-            makeExternalConfigurations(destClient, false);
 
             if (checkBinaryExtensions(desthost.getPath())) {
                 log.debug("Transfer mode is set to Binary");
@@ -417,7 +416,7 @@ public class GridFtp {
             srcClient = new GridFTPClient(srchost.getHost(), srchost.getPort());
             srcClient.setAuthorization(new HostAuthorization(GridFtp.HOST));
             srcClient.authenticate(gssCred);
-            makeExternalConfigurations(srcClient, true);
+            makeFileTransferExternalConfigurations(srcClient, destClient);
 
             if (checkBinaryExtensions(srchost.getPath())) {
                 log.debug("Transfer mode is set to Binary");
@@ -493,8 +492,8 @@ public class GridFtp {
 				srcClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
 				srcClient.setType(Session.TYPE_ASCII);
 				srcClient.changeDir(dirURI.getPath());
-	            makeExternalConfigurations(srcClient, true);
-
+				makelistDirExternalConfigurations(srcClient);
+				
 				Vector<Object> fileInfo = null;
 				try {
 					fileInfo = srcClient.mlsd();
@@ -555,26 +554,67 @@ public class GridFtp {
     }
 
     /**
-     * This function will call the external configuration handlers to configure the GridFTPClient
+     * This function will call the external configuration handlers to configure the GridFTPClients 
+     * when file transferring is required
      * object.
      * @param client
      * @param source
      */
-	private void makeExternalConfigurations(GridFTPClient client, boolean source) {
+	private void makeFileTransferExternalConfigurations(GridFTPClient source, GridFTPClient destination) {
 		GridConfigurationHandler[] handlers = GFacConfiguration.getGridConfigurationHandlers();
 		for(GridConfigurationHandler handler:handlers){
 			try {
-				if (source) {
-					handler.handleSourceFTPClient(client);
-				}else{
-					handler.handleDestinationFTPClient(client);
-				}
+				handler.handleFileTransferFTPClientConfigurations(source,destination);
 			} catch (Exception e) {
 				//TODO Right now we are just catching & ignoring the exception. But later on we need
 				//to throw this exception to notify the user of configuration errors of their
 				//custom configuration handlers.
-				log.error("Error while configuring GridFTPClient for "
-								+ client.getHost(), e);
+				log.error("Error while external configurings for GridFTPClient(s) of " 
+				+ (source!=null? " "+source.getHost():"")+" "+(destination!=null? " "+destination.getHost():""), e);
+			}
+		}
+
+	}
+	
+	/**
+     * This function will call the external configuration handlers to configure the GridFTPClients 
+     * when file transferring is required
+     * object.
+     * @param client
+     * @param source
+     */
+	private void makeDirExternalConfigurations(GridFTPClient client, String dirPath) {
+		GridConfigurationHandler[] handlers = GFacConfiguration.getGridConfigurationHandlers();
+		for(GridConfigurationHandler handler:handlers){
+			try {
+				handler.handleMakeDirFTPClientConfigurations(client, dirPath);
+			} catch (Exception e) {
+				//TODO Right now we are just catching & ignoring the exception. But later on we need
+				//to throw this exception to notify the user of configuration errors of their
+				//custom configuration handlers.
+				log.error("Error while external configurings for GridFTPClient(s) of " + client.getHost(), e);
+			}
+		}
+
+	}
+	
+	/**
+     * This function will call the external configuration handlers to configure the GridFTPClients 
+     * when file transferring is required
+     * object.
+     * @param client
+     * @param source
+     */
+	private void makelistDirExternalConfigurations(GridFTPClient client) {
+		GridConfigurationHandler[] handlers = GFacConfiguration.getGridConfigurationHandlers();
+		for(GridConfigurationHandler handler:handlers){
+			try {
+				handler.handleListDirFTPClientConfigurations(client);
+			} catch (Exception e) {
+				//TODO Right now we are just catching & ignoring the exception. But later on we need
+				//to throw this exception to notify the user of configuration errors of their
+				//custom configuration handlers.
+				log.error("Error while external configurings for GridFTPClient(s) of " + client.getHost(), e);
 			}
 		}
 
