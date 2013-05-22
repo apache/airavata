@@ -60,7 +60,7 @@ public class ServiceUtils {
         }
         
         try {
-            port = ServerSettings.getTomcatPort();
+            port = ServerSettings.getSetting(PORT);
         } catch (ApplicationSettingsException e) {
 			//we will ignore this exception since the properties file will not contain the values
 			//when it is ok to retrieve them from the axis2 context
