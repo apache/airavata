@@ -26,7 +26,7 @@ import java.util.List;
 
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.workflow.*;
-import org.apache.airavata.registry.api.workflow.WorkflowExecutionData;
+import org.apache.airavata.registry.api.workflow.GFacJob.GFacJobStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State;
 
 public interface ProvenanceRegistry extends AiravataSubRegistry{
@@ -307,6 +307,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
     public Date getWorkflowStartTime(WorkflowExecution workflowInstance)throws RegistryException;
     
     /**
+     * @deprecated - Will be removed from 0.9 release onwards. Use {@see #addGFacJob #updateGFacJob(GFacJob) etc.} functions instead.
      * This will store the gram specific data in to repository, this can be called before submitting the workflow in to Grid
      * @param workflowNodeGramData
      * @return
@@ -327,10 +328,9 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
     
     public void addWorkflowInstanceNode(String workflowInstance, String nodeId) throws RegistryException;
     
-    /*
-     * Errors in experiment executions
-     */
     
+	/*---------------------------------------  Errors in experiment executions ------------------------------------------*/
+
     /**
      * Return errors defined at the experiment level 
      * @param experimentId
@@ -389,38 +389,6 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      */
     public List<ExecutionError> getExecutionErrors(String experimentId, String workflowInstanceId, String nodeId, String gfacJobId, ExecutionErrors.Source...filterBy) throws RegistryException;
 
-    
-    
-//    /**
-//     * Return errors defined for the experiment Id
-//     * @param experimentId 
-//     * @param filterBy - what type of source types the results should contain
-//     * @return
-//     * @throws RegistryException
-//     */
-//    public List<ExecutionError> getAllExperimentErrors(String experimentId, ExecutionErrors.Source...filterBy) throws RegistryException;
-//  
-//     /**
-//     * Return errors defined for the workflow instance
-//     * @param experimentId 
-//     * @param workflowInstanceId
-//     * @param filterBy - what type of source types the results should contain
-//     * @return
-//     * @throws RegistryException
-//     */
-//    public List<ExecutionError> getAllWorkflowErrors(String experimentId, String workflowInstanceId, ExecutionErrors.Source...filterBy) throws RegistryException;
-//
-//    /**
-//     * Return errors defined for the node execution
-//     * @param experimentId 
-//     * @param workflowInstanceId
-//     * @param nodeId
-//     * @param filterBy - what type of source types the results should contain
-//     * @return
-//     * @throws RegistryException
-//     */
-//    public List<ExecutionError> getAllNodeErrors(String experimentId, String workflowInstanceId, String nodeId, ExecutionErrors.Source...filterBy) throws RegistryException;
-
     /**
      * Adds an experiment execution error 
      * @param error
@@ -452,4 +420,98 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @throws RegistryException
      */
     public int addGFacJobExecutionError(GFacJobExecutionError error) throws RegistryException;
+    
+    
+	/*---------------------------------------  Managing Data for GFac Jobs ------------------------------------------*/
+
+    /**
+     * Returns <code>true</code> if a gfac job data is existing in the registry
+     * @param gfacJobId
+     * @return
+     * @throws RegistryException
+     */
+    public boolean isGFacJobExists(String gfacJobId) throws RegistryException;
+    
+    /**
+     * Adding data related to a new GFac job submission
+     * @param job - the <code>jobId</code> cannot be <code>null</code>.
+     * @throws RegistryException
+     */
+    public void addGFacJob(GFacJob job) throws RegistryException;
+    
+    /**
+     * update data related to a existing GFac job record in the registry
+     * @param job - the <code>jobId</code> cannot be <code>null</code> and should already exist in registry
+     * @throws RegistryException
+     */
+    public void updateGFacJob(GFacJob job) throws RegistryException;
+    
+    /**
+     * Update the status of the job
+     * @param gfacJobId
+     * @param status
+     * @throws RegistryException
+     */
+    public void updateGFacJobStatus(String gfacJobId, GFacJobStatus status) throws RegistryException;
+    
+    /**
+     * Update the job data. GFacProvider implementation should decide the job data. Typically it'll 
+     * be a serialization of the submitted job query (eg: rsl for a GRAM job) 
+     * @param gfacJobId
+     * @param jobdata
+     * @throws RegistryException
+     */
+    public void updateGFacJobData(String gfacJobId, String jobdata) throws RegistryException;
+    
+    /**
+     * Update the time of job submission or job started executing
+     * @param gfacJobId
+     * @param submitted
+     * @throws RegistryException
+     */
+    public void updateGFacJobSubmittedTime(String gfacJobId, Date submitted) throws RegistryException;
+    
+    /**
+     * Update the time of job finished executing.
+     * @param gfacJobId
+     * @param completed
+     * @throws RegistryException
+     */
+    public void updateGFacJobCompletedTime(String gfacJobId, Date completed) throws RegistryException;
+    
+    /**
+     * Custom data field for users
+     * @param gfacJobId
+     * @param metadata
+     * @throws RegistryException
+     */
+    public void updateGFacJobMetadta(String gfacJobId, String metadata) throws RegistryException;
+    
+    /**
+     * Retrieve the GFac Job for the given job id
+     * @param gfacJobId
+     * @return
+     * @throws RegistryException
+     */
+    public GFacJob getGFacJob(String gfacJobId) throws RegistryException;
+    
+    /**
+     * Retrieve a list of GFac jobs executed for the given descriptors
+     * @param serviceDescriptionId - should be <code>null</code> if user does not care what service description the job corresponds to
+     * @param hostDescriptionId - should be <code>null</code> if user does not care what host description the job corresponds to
+     * @param applicationDescriptionId - should be <code>null</code> if user does not care what application description the job corresponds to
+     * @return
+     * @throws RegistryException
+     */
+    public List<GFacJob> getGFacJobsForDescriptors(String serviceDescriptionId, String hostDescriptionId, String applicationDescriptionId) throws RegistryException;
+    
+    /**
+     * Retrieve a list of GFac jobs executed for the given experiment credentials
+     * @param experimentId - should be <code>null</code> if user does not care what experiment the job corresponds to
+     * @param workflowExecutionId -  - should be <code>null</code> if user does not care what workflow execution the job corresponds to
+     * @param nodeId  - should be <code>null</code> if user does not care what node id the job corresponds to
+     * @return
+     * @throws RegistryException
+     */
+    public List<GFacJob> getGFacJobs(String experimentId, String workflowExecutionId, String nodeId) throws RegistryException;
 }

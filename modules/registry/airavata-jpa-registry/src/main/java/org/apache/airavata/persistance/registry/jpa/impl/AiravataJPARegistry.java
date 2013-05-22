@@ -63,6 +63,7 @@ import org.apache.airavata.registry.api.exception.worker.*;
 import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
 import org.apache.airavata.registry.api.util.RegistryConstants;
 import org.apache.airavata.registry.api.workflow.*;
+import org.apache.airavata.registry.api.workflow.GFacJob.GFacJobStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
@@ -2187,6 +2188,80 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		executionError.setGfacJobID(error.getGfacJobId());
 		executionError.save();
 		return executionError.getErrorID();
+	}
+
+	@Override
+	public void addGFacJob(GFacJob job) throws RegistryException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateGFacJob(GFacJob job) throws RegistryException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateGFacJobStatus(String gfacJobId, GFacJobStatus status)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateGFacJobData(String gfacJobId, String jobdata)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateGFacJobSubmittedTime(String gfacJobId, Date submitted)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateGFacJobCompletedTime(String gfacJobId, Date completed)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateGFacJobMetadta(String gfacJobId, String metadata)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public GFacJob getGFacJob(String gfacJobId) throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<GFacJob> getGFacJobsForDescriptors(String serviceDescriptionId,
+			String hostDescriptionId, String applicationDescriptionId)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<GFacJob> getGFacJobs(String experimentId,
+			String workflowExecutionId, String nodeId) throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isGFacJobExists(String gfacJobId) throws RegistryException {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

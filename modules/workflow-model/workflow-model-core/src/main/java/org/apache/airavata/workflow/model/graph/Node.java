@@ -24,7 +24,6 @@ package org.apache.airavata.workflow.model.graph;
 import java.awt.Point;
 import java.util.Collection;
 import java.util.List;
-import java.util.Observer;
 
 import org.apache.airavata.workflow.model.component.Component;
 

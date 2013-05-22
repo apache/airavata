@@ -27,15 +27,27 @@ import org.globus.ftp.GridFTPClient;
 
 public class PhoebusGridConfigurationHandler implements GridConfigurationHandler{
 
-    public void handleSourceFTPClient(GridFTPClient client) throws Exception {
-        if (PhoebusUtils.isPhoebusDriverConfigurationsDefined(client.getHost())) {
-            client.setDataChannelAuthentication(DataChannelAuthentication.NONE);
-            client.site("SITE SETNETSTACK phoebus:" + PhoebusUtils.getPhoebusDataChannelXIODriverParameters(client.getHost()));
+    public void handleFileTransferFTPClientConfigurations(GridFTPClient source, GridFTPClient destination) throws Exception {
+        if (source!=null && PhoebusUtils.isPhoebusDriverConfigurationsDefined(source.getHost())) {
+            source.setDataChannelAuthentication(DataChannelAuthentication.NONE);
+            source.site("SITE SETNETSTACK phoebus:" + PhoebusUtils.getPhoebusDataChannelXIODriverParameters(source.getHost()));
         }
     }
 
-    public void handleDestinationFTPClient(GridFTPClient client)
+    public void handleMakeDirFTPClientConfigurations(GridFTPClient client, String dirPath)
             throws Exception {
-
+    	//nothing to do
     }
+
+	@Override
+	public void handleListDirFTPClientConfigurations(GridFTPClient client)
+			throws Exception {
+    	//nothing to do
+	}
+
+	@Override
+	public void handleFTPClientConfigurations(GridFTPClient client,
+			String taskDescription) throws Exception {
+    	//nothing to do
+	}
 }

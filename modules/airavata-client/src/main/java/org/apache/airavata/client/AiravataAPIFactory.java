@@ -65,19 +65,4 @@ public class AiravataAPIFactory {
 		}
     }
 
-	@Deprecated
-    public static AiravataAPI getAPI(URI registryURL, String username, String password) throws AiravataAPIInvocationException{
-		return getAPI(registryURL, username, password, username);
-	}
-	
-    @Deprecated
-    public static AiravataAPI getAPI(URI registryURL, String username, PasswordCallback callback) throws AiravataAPIInvocationException{
-        return getAPI(registryURL, null, username, callback);
-    }
-
-    @Deprecated
-	public static AiravataAPI getAPI(URI registryURL, String username, String password, String alternateUsername) throws AiravataAPIInvocationException{
-		return getAPI(registryURL, null, username, alternateUsername, new PasswordCallBackImpl(username, password));
-	}
-
 }

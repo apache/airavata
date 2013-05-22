@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.registry.api.ExecutionErrors;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.workflow.ExecutionError;
 import org.apache.airavata.registry.api.workflow.ExperimentExecutionError;
 import org.apache.airavata.registry.api.workflow.GFacJobExecutionError;
@@ -33,8 +32,8 @@ import org.apache.airavata.registry.api.workflow.NodeExecutionError;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionError;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
-import org.apache.airavata.ws.monitor.Monitor;
 import org.apache.airavata.ws.monitor.EventDataListener;
+import org.apache.airavata.ws.monitor.Monitor;
 
 public interface ExecutionManager {
     /**
@@ -77,58 +76,6 @@ public interface ExecutionManager {
 	public String runExperiment(Workflow workflow,List<WorkflowInput> inputs, ExperimentAdvanceOptions options) throws AiravataAPIInvocationException;
 
     /**
-     * @deprecated Use the function <code>runExperiment(String,List&ltWorkflowInput&gt,ExperimentAdvanceOptions)</code> instead. <br />
-     * Run an experiment containing single workflow
-     * @param workflowTemplateId
-     * @param inputs
-     * @param user
-     * @param metadata
-     * @param workflowInstanceName
-     * @return
-     * @throws AiravataAPIInvocationException
-     */
-	public String runExperiment(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName)throws AiravataAPIInvocationException;
-
-	/**
-	 * @deprecated Use the function <code>runExperiment(String,List&ltWorkflowInput&gt,ExperimentAdvanceOptions)</code> instead. <br />
-     * Run an experiment containing single workflow
-     * @param workflowTemplateId
-     * @param inputs
-     * @param user
-     * @param metadata
-     * @param workflowInstanceName
-     * @return
-     * @throws AiravataAPIInvocationException
-     */
-	public String runExperiment(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName, String experimentName)throws AiravataAPIInvocationException;
-
-	/**
-	 * @deprecated Use the function <code>runExperiment(String,List&ltWorkflowInput&gt,ExperimentAdvanceOptions)</code> instead. <br />
-	 * Run an experiment containing single workflow
-	 * @param workflowTemplateId
-	 * @param inputs
-	 * @param user
-	 * @param metadata
-	 * @param workflowInstanceName
-	 * @param builder
-	 * @return
-	 * @throws AiravataAPIInvocationException
-	 */
-	public String runExperiment(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName, WorkflowContextHeaderBuilder builder)throws AiravataAPIInvocationException;
-
-    /**
-     * @deprecated Use the function <code>runExperiment(String,List&ltWorkflowInput&gt,ExperimentAdvanceOptions)</code> instead. <br />
-     * Run an experiment containing single workflow
-     * @param workflow
-     * @param inputs
-     * @param user
-     * @param metadata
-     * @return
-     * @throws AiravataAPIInvocationException
-     */
-	public String runExperiment(Workflow workflow,List<WorkflowInput> inputs, String user, String metadata)throws AiravataAPIInvocationException;
-
-    /**
      * Get a monitor for a running experiment
      * @param experimentId
      * @return
@@ -144,16 +91,6 @@ public interface ExecutionManager {
      * @throws AiravataAPIInvocationException
      */
 	public Monitor getExperimentMonitor(String experimentId, EventDataListener listener) throws AiravataAPIInvocationException;
-	
-	/**
-	 * @deprecated
-	 * Creates a WorkflowContextHeaderBuilder object that can be used to customize the scheduling of a workflow execution.
-	 * Once configured this object run the workflow using
-	 *   <code>runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName, WorkflowContextHeaderBuilder builder)</code>
-	 * @return
-	 * @throws AiravataAPIInvocationException
-	 */
-	public WorkflowContextHeaderBuilder createWorkflowContextHeader() throws AiravataAPIInvocationException;
 
 	/**
 	 * Create a new experiment advance options

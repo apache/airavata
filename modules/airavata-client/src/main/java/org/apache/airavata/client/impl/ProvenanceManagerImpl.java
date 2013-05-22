@@ -21,6 +21,7 @@
 
 package org.apache.airavata.client.impl;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.registry.api.AiravataExperiment;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.workflow.*;
+import org.apache.airavata.registry.api.workflow.GFacJob.GFacJobStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State;
 
 public class ProvenanceManagerImpl implements ProvenanceManager {
@@ -483,9 +485,121 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
         try {
             client.getRegistryClient().updateWorkflowNodeGramData(data);
         } catch (RegistryException e) {
-            new AiravataAPIInvocationException(e);
+            throw new AiravataAPIInvocationException(e);
         } catch (AiravataConfigurationException e) {
-            new AiravataAPIInvocationException(e);
+            throw new AiravataAPIInvocationException(e);
         }
     }
+
+	@Override
+	public boolean isGFacJobExists(String gfacJobId)
+			throws AiravataAPIInvocationException {
+		try {
+			return client.getRegistryClient().isGFacJobExists(gfacJobId);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+	
+	@Override
+	public void addGFacJob(GFacJob job) throws AiravataAPIInvocationException {
+		try {
+			client.getRegistryClient().addGFacJob(job);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public void updateGFacJob(GFacJob job)
+			throws AiravataAPIInvocationException {
+		try {
+			client.getRegistryClient().updateGFacJob(job);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public void updateGFacJobStatus(String gfacJobId, GFacJobStatus status)
+			throws AiravataAPIInvocationException {
+		try {
+			client.getRegistryClient().updateGFacJobStatus(gfacJobId, status);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public void updateGFacJobData(String gfacJobId, String jobdata)
+			throws AiravataAPIInvocationException {
+		try {
+			client.getRegistryClient().updateGFacJobData(gfacJobId, jobdata);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public void updateGFacJobSubmittedTime(String gfacJobId, Date submitted)
+			throws AiravataAPIInvocationException {
+		try {
+			client.getRegistryClient().updateGFacJobSubmittedTime(gfacJobId, submitted);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public void updateGFacJobCompletedTime(String gfacJobId, Date completed)
+			throws AiravataAPIInvocationException {
+		try {
+			client.getRegistryClient().updateGFacJobCompletedTime(gfacJobId, completed);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public void updateGFacJobMetadta(String gfacJobId, String metadata)
+			throws AiravataAPIInvocationException {
+		try {
+			client.getRegistryClient().updateGFacJobMetadta(gfacJobId, metadata);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public GFacJob getGFacJob(String gfacJobId)
+			throws AiravataAPIInvocationException {
+		try {
+			return client.getRegistryClient().getGFacJob(gfacJobId);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public List<GFacJob> getGFacJobsForDescriptors(String serviceDescriptionId,
+			String hostDescriptionId, String applicationDescriptionId)
+			throws AiravataAPIInvocationException {
+		try {
+			return client.getRegistryClient().getGFacJobsForDescriptors(serviceDescriptionId, hostDescriptionId, applicationDescriptionId);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public List<GFacJob> getGFacJobs(String experimentId,
+			String workflowExecutionId, String nodeId)
+			throws AiravataAPIInvocationException {
+		try {
+			return client.getRegistryClient().getGFacJobs(experimentId, workflowExecutionId, nodeId);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
 }

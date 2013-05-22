@@ -41,36 +41,6 @@ public class AiravataManagerImpl implements AiravataManager {
 	}
 
 	@Override
-	public List<URI> getGFaCURLs()  throws AiravataAPIInvocationException{
-	        List<URI> list=new ArrayList<URI>();
-	        try {
-	                List<URI> gFacDescriptorList = getClient().getRegistryClient().getGFacURIs();
-	                for (URI url : gFacDescriptorList) {
-	                        list.add(url);
-	                }
-	        } catch (Exception e) {
-	                throw new AiravataAPIInvocationException(e);
-	        }
-	        return list;
-	}
-
-	@Override
-	public URI getGFaCURL()  throws AiravataAPIInvocationException{
-	        try {
-	                return getClient().getClientConfiguration().getGfacURL().toURI();
-	        } catch (URISyntaxException e) {
-	                throw new AiravataAPIInvocationException(e);
-	        }
-	}
-
-	@Override
-	public URI getGFaCURL(URI defaultURL)  throws AiravataAPIInvocationException{
-	        if (getGFaCURL()==null){
-	                return defaultURL;
-	        }
-	        return getGFaCURL();
-	}
-	@Override
 	public List<URI> getWorkflowInterpreterServiceURLs()  throws AiravataAPIInvocationException{
 		try {
 			return getClient().getRegistryClient().getWorkflowInterpreterURIs();
@@ -167,25 +137,6 @@ public class AiravataManagerImpl implements AiravataManager {
 		return getEventingServiceURL();
 	}
 
-	@Override
-	public URI getRegistryURL() throws AiravataAPIInvocationException {
-		try {
-			return getClient().getClientConfiguration().getRegistryURL().toURI();
-		} catch (URISyntaxException e) {
-			throw new AiravataAPIInvocationException(e);
-		}
-	}
-
-	@Override
-    @Deprecated
-	public URI getRegistryURL(URI defaultURL)
-			throws AiravataAPIInvocationException {
-		if (getRegistryURL()==null){
-			return defaultURL;	
-		}
-		return getRegistryURL();
-	}
-
     @Override
     public void setConfiguration(String key, String value, Date expire) throws AiravataAPIInvocationException {
        try{
@@ -223,15 +174,6 @@ public class AiravataManagerImpl implements AiravataManager {
     }
 
     @Override
-    public void addGFacURI(URI uri) throws AiravataAPIInvocationException {
-        try{
-            getClient().getRegistryClient().addGFacURI(uri);
-        }catch (Exception e){
-            throw new AiravataAPIInvocationException(e);
-        }
-    }
-
-    @Override
     public void addWorkflowInterpreterURI(URI uri) throws AiravataAPIInvocationException {
         try{
             getClient().getRegistryClient().addWorkflowInterpreterURI(uri);
@@ -259,15 +201,6 @@ public class AiravataManagerImpl implements AiravataManager {
     }
 
     @Override
-    public void addGFacURI(URI uri, Date expire) throws AiravataAPIInvocationException {
-        try{
-            getClient().getRegistryClient().addGFacURI(uri, expire);
-        }catch (Exception e){
-            throw new AiravataAPIInvocationException(e);
-        }
-    }
-
-    @Override
     public void addWorkflowInterpreterURI(URI uri, Date expire) throws AiravataAPIInvocationException {
         try{
             getClient().getRegistryClient().addWorkflowInterpreterURI(uri, expire);
@@ -289,24 +222,6 @@ public class AiravataManagerImpl implements AiravataManager {
     public void setMessageBoxURI(URI uri, Date expire) throws AiravataAPIInvocationException {
         try{
             getClient().getRegistryClient().setMessageBoxURI(uri, expire);
-        }catch (Exception e){
-            throw new AiravataAPIInvocationException(e);
-        }
-    }
-
-    @Override
-    public void removeGFacURI(URI uri) throws AiravataAPIInvocationException {
-        try{
-            getClient().getRegistryClient().removeGFacURI(uri);
-        }catch (Exception e){
-            throw new AiravataAPIInvocationException(e);
-        }
-    }
-
-    @Override
-    public void removeAllGFacURI() throws AiravataAPIInvocationException {
-        try{
-            getClient().getRegistryClient().removeAllGFacURI();
         }catch (Exception e){
             throw new AiravataAPIInvocationException(e);
         }

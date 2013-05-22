@@ -24,17 +24,34 @@ import org.globus.ftp.GridFTPClient;
 public interface GridConfigurationHandler {
 
 	/**
-	 * Do the configurations required for the source GridFTPClient object
+	 * Gets triggered if any GridFTP tasks other than mentioned below if called. This is there to 
+	 * support future extensions in GridFTP tasks so that the handlers need not be updated necessarily 
 	 * @param client
+	 * @param taskDescription - a description of the task that is being carried out.
 	 * @throws Exception
 	 */
-	public void handleSourceFTPClient(GridFTPClient client) throws Exception;
+	public void handleFTPClientConfigurations(GridFTPClient client, String taskDescription) throws Exception;
 
 	/**
-	 * Do the configurations required for the destination GridFTPClient object
+	 * Do the configurations required for the source GridFTPClient object
+	 * @param source - <code>null</code> if the transfer is from the local file-system
+	 * @param destination - <code>null</code> if the transfer is to the local file-system 
+	 * @throws Exception
+	 */
+	public void handleFileTransferFTPClientConfigurations(GridFTPClient source, GridFTPClient destination) throws Exception;
+
+	/**
+	 * Do the configurations required for the GridFTPClient object which is going to create a directory
 	 * @param client
 	 * @throws Exception
 	 */
-	public void handleDestinationFTPClient(GridFTPClient client) throws Exception;
+	public void handleMakeDirFTPClientConfigurations(GridFTPClient client, String dirPath) throws Exception;
+	
+	/**
+	 * Do the configurations required for the GridFTPClient object which is going to list a directory
+	 * @param client
+	 * @throws Exception
+	 */
+	public void handleListDirFTPClientConfigurations(GridFTPClient client) throws Exception;
 }
 

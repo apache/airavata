@@ -49,8 +49,6 @@ import org.apache.airavata.registry.api.workflow.NodeExecutionError;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionError;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State;
-import org.apache.airavata.schemas.wec.ApplicationOutputDataHandlingDocument.ApplicationOutputDataHandling;
-import org.apache.airavata.schemas.wec.ApplicationSchedulingContextDocument.ApplicationSchedulingContext;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
 import org.apache.airavata.workflow.model.graph.GraphException;
@@ -338,52 +336,7 @@ public class ExecutionManagerImpl implements ExecutionManager {
 
 	//------------------Deprecated Functions---------------------//
 	
-	@Override
-	public String runExperiment(String workflowTemplateId,
-			List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName)
-			throws AiravataAPIInvocationException {
-		ExperimentAdvanceOptions options = createExperimentAdvanceOptions(workflowInstanceName, user, metadata);
-		return runExperiment(workflowTemplateId, inputs, options);
-
-	}
-
-	@Override
-	public String runExperiment(Workflow workflow, List<WorkflowInput> inputs,
-			String user, String metadata) throws AiravataAPIInvocationException {
-		ExperimentAdvanceOptions options=createExperimentAdvanceOptions(workflow.getName()+"_"+Calendar.getInstance().getTime().toString(), user, metadata);
-		return runExperiment(workflow,inputs,options);
-	}
-	
-	@Override
-	public String runExperiment(String workflowTemplateId,
-			List<WorkflowInput> inputs, String user, String metadata,
-			String workflowInstanceName, WorkflowContextHeaderBuilder builder)
-			throws AiravataAPIInvocationException {
-		ExperimentAdvanceOptions options = createExperimentAdvanceOptions(workflowInstanceName, user, metadata);
-		ApplicationSchedulingContext[] nodeSchedules = builder.getWorkflowSchedulingContext().getApplicationSchedulingContextArray();
-		for (ApplicationSchedulingContext context : nodeSchedules) {
-			NodeSettings nodeSettings = options.getCustomWorkflowSchedulingSettings().addNewNodeSettings(context.getWorkflowNodeId());
-			if (context.isSetServiceId()) nodeSettings.setServiceId(context.getServiceId());
-			if (context.isSetGatekeeperEpr()) nodeSettings.getHostSettings().setGatekeeperEPR(context.getGatekeeperEpr());
-			if (context.isSetHostName()) nodeSettings.getHostSettings().setHostId(context.getHostName());
-			if (context.isSetWsgramPreferred()) nodeSettings.getHostSettings().setWSGramPreffered(context.getWsgramPreferred());
-			if (context.isSetCpuCount()) nodeSettings.getHPCSettings().setCPUCount(context.getCpuCount());
-			if (context.isSetJobManager()) nodeSettings.getHPCSettings().setJobManager(context.getJobManager());
-			if (context.isSetMaxWallTime()) nodeSettings.getHPCSettings().setMaxWallTime(context.getMaxWallTime());
-			if (context.isSetNodeCount()) nodeSettings.getHPCSettings().setNodeCount(context.getNodeCount());
-			if (context.isSetQueueName()) nodeSettings.getHPCSettings().setQueueName(context.getQueueName());
-		}
-		ApplicationOutputDataHandling[] dataHandlingSettings = builder.getWorkflowOutputDataHandling().getApplicationOutputDataHandlingArray();
-		for (ApplicationOutputDataHandling handling : dataHandlingSettings) {
-			options.getCustomWorkflowOutputDataSettings().addNewOutputDataSettings(handling.getNodeId(), handling.getOutputDataDirectory(),handling.getDataRegistryUrl(),handling.getDataPersistance());
-		}
-		//TODO rest of the builder configurations as they are added to the experiment options
-		return runExperiment(workflowTemplateId, inputs, options);
-	}
-	
-
-	@Override
-	public WorkflowContextHeaderBuilder createWorkflowContextHeader()
+	private WorkflowContextHeaderBuilder createWorkflowContextHeader()
 			throws AiravataAPIInvocationException {
 		try {
 			return new WorkflowContextHeaderBuilder(null,
@@ -392,16 +345,6 @@ public class ExecutionManagerImpl implements ExecutionManager {
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
-	}
-
-	@Override
-	public String runExperiment(String workflowName,
-			List<WorkflowInput> inputs, String user, String metadata,
-			String workflowInstanceName, String experimentName)
-			throws AiravataAPIInvocationException {
-		ExperimentAdvanceOptions options = createExperimentAdvanceOptions(workflowInstanceName, user, metadata);
-		options.setCustomExperimentId(experimentName);
-		return runExperiment(workflowName, inputs, options);
 	}
 	
 	//------------------End of Deprecated Functions---------------------//
