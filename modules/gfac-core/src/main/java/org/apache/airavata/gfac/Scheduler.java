@@ -21,10 +21,15 @@
 
 package org.apache.airavata.gfac;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.xpath.XPathExpressionException;
 
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.provider.GFacProvider;
@@ -108,5 +113,19 @@ public class Scheduler {
             throw new GFacException("Error initializing application specific Handler", e);
         }
         return provider;
+    }
+
+    public static HostDescription pickaHost(AiravataAPI api, String serviceName) throws AiravataAPIInvocationException {
+        List<HostDescription> registeredHosts = new ArrayList<HostDescription>();
+        Map<String, ApplicationDescription> applicationDescriptors = api.getApplicationManager().getApplicationDescriptors(serviceName);
+        for (String hostDescName : applicationDescriptors.keySet()) {
+            registeredHosts.add(api.getApplicationManager().getHostDescription(hostDescName));
+        }
+        return scheduleHost(registeredHosts);
+    }
+
+    private static HostDescription scheduleHost(List<HostDescription> registeredHosts) {
+        //todo implement an algorithm to pick a host among different hosts, ideally this could be configurable in an xml
+        return registeredHosts.get(0);
     }
 }
