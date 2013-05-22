@@ -421,7 +421,7 @@ public interface ProvenanceManager {
       * @param metadata
       * @throws AiravataAPIInvocationException
       */
-     public void updateGFacJobMetadta(String gfacJobId, String metadata) throws AiravataAPIInvocationException;
+     public void updateGFacJobMetadata(String gfacJobId, String metadata) throws AiravataAPIInvocationException;
      
      /**
       * Retrieve the GFac Job for the given job id

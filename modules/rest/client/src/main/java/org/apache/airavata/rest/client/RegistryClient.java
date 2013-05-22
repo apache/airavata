@@ -942,7 +942,7 @@ public class RegistryClient extends AiravataRegistry2 {
 	}
 
 	@Override
-	public void updateGFacJobMetadta(String gfacJobId, String metadata)
+	public void updateGFacJobMetadata(String gfacJobId, String metadata)
 			throws RegistryException {
 		// TODO Auto-generated method stub
 		

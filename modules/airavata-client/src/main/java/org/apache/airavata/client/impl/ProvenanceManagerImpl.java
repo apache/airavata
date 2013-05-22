@@ -561,10 +561,10 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	}
 
 	@Override
-	public void updateGFacJobMetadta(String gfacJobId, String metadata)
+	public void updateGFacJobMetadata(String gfacJobId, String metadata)
 			throws AiravataAPIInvocationException {
 		try {
-			client.getRegistryClient().updateGFacJobMetadta(gfacJobId, metadata);
+			client.getRegistryClient().updateGFacJobMetadata(gfacJobId, metadata);
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
