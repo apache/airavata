@@ -317,6 +317,13 @@ public class Utils {
                     logger.error("Object should be a Node Error type.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Node Error.");
                 }
+            case GFAC_JOB_DATA:
+                if (o instanceof GFac_Job_Data){
+                    return createGfacJobData((GFac_Job_Data) o);
+                }else {
+                    logger.error("Object should be a GFac Job Data type.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a GFac Job Data.");
+                }
             default:
         }
         return null;
@@ -600,6 +607,25 @@ public class Utils {
         executionErrorResource.setActionTaken(o.getAction_taken());
         executionErrorResource.setErrorReference(o.getError_reference());
         return executionErrorResource;
+    }
+
+    private static Resource createGfacJobData (GFac_Job_Data o){
+        GFacJobDataResource gFacJobDataResource = new GFacJobDataResource();
+        ExperimentDataResource experimentDataResource = (ExperimentDataResource)createExperimentData(o.getExperiment_data());
+        WorkflowDataResource workflowDataResource = (WorkflowDataResource)createWorkflowData(o.getWorkflow_Data());
+        gFacJobDataResource.setExperimentDataResource(experimentDataResource);
+        gFacJobDataResource.setWorkflowDataResource(workflowDataResource);
+        gFacJobDataResource.setNodeID(o.getNode_id());
+        gFacJobDataResource.setApplicationDescID(o.getApplication_descriptor_ID());
+        gFacJobDataResource.setServiceDescID(o.getService_descriptor_ID());
+        gFacJobDataResource.setHostDescID(o.getHost_descriptor_ID());
+        gFacJobDataResource.setJobData(o.getJob_data());
+        gFacJobDataResource.setLocalJobID(o.getLocal_Job_ID());
+        gFacJobDataResource.setSubmittedTime(o.getSubmitted_time());
+        gFacJobDataResource.setCompletedTime(o.getCompleted_time());
+        gFacJobDataResource.setStatus(o.getStatus());
+        gFacJobDataResource.setMetadata(o.getMetadata());
+        return gFacJobDataResource;
     }
 
 //    public static byte[] getByteArray(String content){

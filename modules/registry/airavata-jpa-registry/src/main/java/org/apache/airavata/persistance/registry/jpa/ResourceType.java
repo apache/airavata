@@ -37,6 +37,7 @@ public enum ResourceType {
     WORKFLOW_DATA,
     NODE_DATA,
     GRAM_DATA,
-    EXECUTION_ERROR
+    EXECUTION_ERROR,
+    GFAC_JOB_DATA
 
 }
