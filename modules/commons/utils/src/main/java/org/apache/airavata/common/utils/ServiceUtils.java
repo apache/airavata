@@ -65,28 +65,28 @@ public class ServiceUtils {
 			//we will ignore this exception since the properties file will not contain the values
 			//when it is ok to retrieve them from the axis2 context
 		}
+        String protocol="http";
         if(ServerSettings.getEnableHttp()){
-            localAddress = "https://" + localAddress + ":" + port;
-        }else{
-            if (port == null) {
-                TransportInDescription transportInDescription = context
-                    .getAxisConfiguration().getTransportsIn()
-                    .get("http");
-                if (transportInDescription != null
-                    && transportInDescription.getParameter(PORT) != null) {
-                    port = (String) transportInDescription
-                        .getParameter(PORT).getValue();
-                }
-            }
-            localAddress = "http://" + localAddress + ":" + port;
-            localAddress = localAddress + "/"
-        		//We are not using axis2 config context to get the context root because it is invalid
-                //+ context.getContextRoot() + "/"
-        		//FIXME: the context root will be correct after updating the web.xml 
-                + ServerSettings.getServerContextRoot() + "/"
-                + context.getServicePath() + "/"
-                + serviceName;
+        	protocol="https";
         }
+        if (port == null) {
+            TransportInDescription transportInDescription = context
+                .getAxisConfiguration().getTransportsIn()
+                .get(protocol);
+            if (transportInDescription != null
+                && transportInDescription.getParameter(PORT) != null) {
+                port = (String) transportInDescription
+                    .getParameter(PORT).getValue();
+            }
+        }
+        localAddress = protocol+"://" + localAddress + ":" + port;
+        localAddress = localAddress + "/"
+    		//We are not using axis2 config context to get the context root because it is invalid
+            //+ context.getContextRoot() + "/"
+    		//FIXME: the context root will be correct after updating the web.xml 
+            + ServerSettings.getServerContextRoot() + "/"
+            + context.getServicePath() + "/"
+            + serviceName;
         log.debug("Service Address Configured:" + localAddress);
         return localAddress;
 	}
