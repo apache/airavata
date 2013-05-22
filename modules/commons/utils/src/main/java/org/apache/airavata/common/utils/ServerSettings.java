@@ -55,7 +55,7 @@ public class ServerSettings extends ApplicationSettings{
     private static final String REGISTRY_DB_USER ="registry.jdbc.user";
     private static final String REGISTRY_DB_PASSWORD ="registry.jdbc.password";
     private static final String REGISTRY_DB_DRIVER ="registry.jdbc.driver";
-    private static final String ENABLE_HTTP = "enable.https";
+    private static final String ENABLE_HTTPS = "enable.https";
 
     public static String getDefaultGatewayId()throws ApplicationSettingsException{
     	return getSetting(DEFAULT_GATEWAY_ID);
@@ -110,9 +110,9 @@ public class ServerSettings extends ApplicationSettings{
 
     }
 
-    public static boolean getEnableHttp() {
+    public static boolean isEnableHttps() {
         try {
-            return Boolean.parseBoolean(getSetting(ENABLE_HTTP));
+            return Boolean.parseBoolean(getSetting(ENABLE_HTTPS));
         } catch (ApplicationSettingsException e) {
             return false;
         }

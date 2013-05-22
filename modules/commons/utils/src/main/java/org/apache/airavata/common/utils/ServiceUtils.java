@@ -66,7 +66,7 @@ public class ServiceUtils {
 			//when it is ok to retrieve them from the axis2 context
 		}
         String protocol="http";
-        if(ServerSettings.getEnableHttp()){
+        if(ServerSettings.isEnableHttps()){
         	protocol="https";
         }
         if (port == null) {
