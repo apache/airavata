@@ -1023,18 +1023,19 @@ public class WorkflowInterpreter {
 		String wsdlLocation = InterpreterUtil.getEPR((WSNode) foreachWSNode);
 		QName portTypeQName = wsComponent.getPortTypeQName();
 		if (null == wsdlLocation) {
-			if (gfacURLString.startsWith("https")) {
-				LeadContextHeader leadCtxHeader = null;
-				try {
-					leadCtxHeader = XBayaUtil.buildLeadContextHeader(this.getWorkflow(), this.getConfig().getConfiguration(), new MonitorConfiguration(this
-							.getConfig().getConfiguration().getBrokerURL(), this.config.getTopic(), true, this.getConfig().getConfiguration()
-							.getMessageBoxURL()), foreachWSNode.getID(), null);
-				} catch (URISyntaxException e) {
-					throw new WorkflowException(e);
-				}
-				invoker = new WorkflowInvokerWrapperForGFacInvoker(portTypeQName, gfacURLString, this.getConfig().getConfiguration().getMessageBoxURL()
-						.toString(), leadCtxHeader, this.config.getNotifier().createServiceNotificationSender(foreachWSNode.getID()));
-			} else {
+            // WorkflowInterpreter is no longer using gfac in service mode. we only support embedded mode.
+//			if (gfacURLString.startsWith("https")) {
+//				LeadContextHeader leadCtxHeader = null;
+//				try {
+//					leadCtxHeader = XBayaUtil.buildLeadContextHeader(this.getWorkflow(), this.getConfig().getConfiguration(), new MonitorConfiguration(this
+//							.getConfig().getConfiguration().getBrokerURL(), this.config.getTopic(), true, this.getConfig().getConfiguration()
+//							.getMessageBoxURL()), foreachWSNode.getID(), null);
+//				} catch (URISyntaxException e) {
+//					throw new WorkflowException(e);
+//				}
+//				invoker = new WorkflowInvokerWrapperForGFacInvoker(portTypeQName, gfacURLString, this.getConfig().getConfiguration().getMessageBoxURL()
+//						.toString(), leadCtxHeader, this.config.getNotifier().createServiceNotificationSender(foreachWSNode.getID()));
+//			} else {
                 if (this.config.isGfacEmbeddedMode()) {
 					invoker = new EmbeddedGFacInvoker(portTypeQName, WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(((WSNode)foreachWSNode).getComponent().getWSDL()), foreachWSNode.getID(),
 							this.config.getMessageBoxURL().toASCIIString(), this.config.getMessageBrokerURL().toASCIIString(), this.config.getNotifier(),
@@ -1043,7 +1044,7 @@ public class WorkflowInterpreter {
 					invoker = new GenericInvoker(portTypeQName, WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(((WSNode)foreachWSNode).getComponent().getWSDL()), foreachWSNode.getID(),
 							this.config.getMessageBoxURL().toASCIIString(), gfacURLString, this.config.getNotifier());
 				}
-			}
+//			}
 
 		} else {
 			if (wsdlLocation.endsWith("/")) {
