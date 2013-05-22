@@ -21,7 +21,7 @@
 create table Gateway
 (
         gateway_name varchar(255),
-	    owner varchar(255),
+	      owner varchar(255),
         PRIMARY KEY (gateway_name)
 );
 
@@ -143,17 +143,17 @@ create table Experiment
 
 create table Experiment_Data
 (
-	experiment_ID varchar(255),
-	name varchar(255),
-	username varchar(255),
-	PRIMARY KEY (experiment_ID)
+        experiment_ID varchar(255),
+        name varchar(255),
+        username varchar(255),
+        PRIMARY KEY (experiment_ID)
 );
 
 create table Experiment_Metadata
 (
-	experiment_ID varchar(255),
-	metadata BLOB,
-	PRIMARY KEY (experiment_ID)
+        experiment_ID varchar(255),
+        metadata BLOB,
+        PRIMARY KEY (experiment_ID)
 );
 
 
@@ -193,6 +193,25 @@ create table Gram_Data
        local_Job_ID varchar(255),
        PRIMARY KEY(workflow_instanceID, node_id),
        FOREIGN KEY (workflow_instanceID) REFERENCES Workflow_Data(workflow_instanceID) ON DELETE CASCADE
+);
+
+create table GFac_Job_Data
+(
+       experiment_ID varchar(255),
+       workflow_instanceID varchar(255),
+       node_id varchar(255),
+       application_descriptor_ID varchar(255),
+       host_descriptor_ID varchar(255),
+       service_descriptor_ID varchar(255),
+       job_data CLOB,
+       local_Job_ID varchar(255),
+       submitted_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
+       completed_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
+       status INT,
+       metadata CLOB,
+       PRIMARY KEY(local_Job_ID),
+       FOREIGN KEY (experiment_ID) REFERENCES Experiment_Data(experiment_ID),
+       FOREIGN KEY (workflow_instanceID) REFERENCES Workflow_Data(workflow_instanceID)
 );
 
 CREATE TABLE COMMUNITY_USER

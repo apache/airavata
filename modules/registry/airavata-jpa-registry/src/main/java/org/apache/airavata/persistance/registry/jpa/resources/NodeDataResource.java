@@ -25,10 +25,7 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
-import org.apache.airavata.persistance.registry.jpa.model.Execution_Error;
-import org.apache.airavata.persistance.registry.jpa.model.Node_Data;
-import org.apache.airavata.persistance.registry.jpa.model.Node_DataPK;
-import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
+import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,18 +113,59 @@ public class NodeDataResource extends AbstractResource{
     }
 
     public Resource create(ResourceType type) {
-        logger.error("Unsupported resource type for node data resource.", new UnsupportedOperationException());
-        throw new UnsupportedOperationException();
+        switch (type){
+            case GFAC_JOB_DATA:
+                GFacJobDataResource gFacJobDataResource = new GFacJobDataResource();
+                gFacJobDataResource.setWorkflowDataResource(workflowDataResource);
+                gFacJobDataResource.setNodeID(nodeID);
+                return gFacJobDataResource;
+            default:
+                logger.error("Unsupported resource type for node data resource.", new IllegalArgumentException());
+                throw new IllegalArgumentException("Unsupported resource type for node data resource.");
+        }
     }
 
     public void remove(ResourceType type, Object name) {
-        logger.error("Unsupported resource type for node data resource.", new UnsupportedOperationException());
-        throw new UnsupportedOperationException();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        Query q;
+        QueryGenerator generator;
+        switch (type){
+            case GFAC_JOB_DATA:
+                generator = new QueryGenerator(GFAC_JOB_DATA);
+                generator.setParameter(GFacJobDataConstants.LOCAL_JOB_ID, name);
+                q = generator.deleteQuery(em);
+                q.executeUpdate();
+                break;
+            default:
+                logger.error("Unsupported resource type for node data resource.", new IllegalArgumentException());
+                break;
+        }
+        em.getTransaction().commit();
+        em.close();
     }
 
     public Resource get(ResourceType type, Object name) {
-        logger.error("Unsupported resource type for node data resource.", new UnsupportedOperationException());
-        throw new UnsupportedOperationException();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        QueryGenerator generator;
+        Query q;
+        switch (type) {
+            case GFAC_JOB_DATA:
+                generator = new QueryGenerator(GFAC_JOB_DATA);
+                generator.setParameter(GFacJobDataConstants.LOCAL_JOB_ID, name);
+                q = generator.selectQuery(em);
+                GFac_Job_Data gFac_job_data = (GFac_Job_Data)q.getSingleResult();
+                GFacJobDataResource gFacJobDataResource = (GFacJobDataResource)Utils.getResource(ResourceType.GFAC_JOB_DATA, gFac_job_data);
+                em.getTransaction().commit();
+                em.close();
+                return gFacJobDataResource;
+            default:
+                em.getTransaction().commit();
+                em.close();
+                logger.error("Unsupported resource type for node data resource.", new IllegalArgumentException());
+                throw new IllegalArgumentException("Unsupported resource type for node data resource.");
+        }
     }
 
     public List<Resource> get(ResourceType type) {
@@ -148,6 +186,19 @@ public class NodeDataResource extends AbstractResource{
                         Execution_Error execution_error = (Execution_Error)result;
                         ExecutionErrorResource executionErrorResource = (ExecutionErrorResource)Utils.getResource(ResourceType.EXECUTION_ERROR, execution_error);
                         resourceList.add(executionErrorResource);
+                    }
+                }
+                break;
+            case GFAC_JOB_DATA:
+                generator = new QueryGenerator(GFAC_JOB_DATA);
+                generator.setParameter(GFacJobDataConstants.NODE_ID, nodeID);
+                q = generator.selectQuery(em);
+                results = q.getResultList();
+                if (results.size() != 0) {
+                    for (Object result : results) {
+                        GFac_Job_Data gFac_job_data = (GFac_Job_Data)result;
+                        GFacJobDataResource gFacJobDataResource = (GFacJobDataResource)Utils.getResource(ResourceType.GFAC_JOB_DATA, gFac_job_data);
+                        resourceList.add(gFacJobDataResource);
                     }
                 }
                 break;

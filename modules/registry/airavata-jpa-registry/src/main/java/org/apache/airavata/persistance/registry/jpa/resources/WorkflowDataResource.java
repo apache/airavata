@@ -109,6 +109,10 @@ public class WorkflowDataResource extends AbstractResource{
                ExecutionErrorResource executionErrorResource = new ExecutionErrorResource();
                executionErrorResource.setWorkflowDataResource(this);
                return executionErrorResource;
+           case GFAC_JOB_DATA:
+               GFacJobDataResource gFacJobDataResource = new GFacJobDataResource();
+               gFacJobDataResource.setWorkflowDataResource(this);
+               return gFacJobDataResource;
            default:
                logger.error("Unsupported resource type for workflow data resource.", new IllegalArgumentException());
                throw new IllegalArgumentException("Unsupported resource type for workflow data resource.");
@@ -138,6 +142,12 @@ public class WorkflowDataResource extends AbstractResource{
             case EXECUTION_ERROR:
                 generator = new QueryGenerator(EXECUTION_ERROR);
                 generator.setParameter(ExecutionErrorConstants.ERROR_ID, name);
+                q = generator.deleteQuery(em);
+                q.executeUpdate();
+                break;
+            case GFAC_JOB_DATA:
+                generator = new QueryGenerator(GFAC_JOB_DATA);
+                generator.setParameter(GFacJobDataConstants.LOCAL_JOB_ID, name);
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
                 break;
@@ -184,13 +194,20 @@ public class WorkflowDataResource extends AbstractResource{
                 em.getTransaction().commit();
                 em.close();
                 return executionErrorResource;
+            case GFAC_JOB_DATA:
+                generator = new QueryGenerator(GFAC_JOB_DATA);
+                generator.setParameter(GFacJobDataConstants.LOCAL_JOB_ID, name);
+                q = generator.selectQuery(em);
+                GFac_Job_Data gFac_job_data = (GFac_Job_Data)q.getSingleResult();
+                GFacJobDataResource gFacJobDataResource = (GFacJobDataResource)Utils.getResource(ResourceType.GFAC_JOB_DATA, gFac_job_data);
+                em.getTransaction().commit();
+                em.close();
+                return gFacJobDataResource;
             default:
                 em.getTransaction().commit();
                 em.close();
                 logger.error("Unsupported resource type for workflow data resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported resource type for workflow data resource.");
-
-
         }
     }
 
@@ -239,6 +256,19 @@ public class WorkflowDataResource extends AbstractResource{
                         Execution_Error executionError = (Execution_Error)result;
                         ExecutionErrorResource executionErrorResource = (ExecutionErrorResource)Utils.getResource(ResourceType.EXECUTION_ERROR, executionError);
                         resourceList.add(executionErrorResource);
+                    }
+                }
+                break;
+            case GFAC_JOB_DATA:
+                generator = new QueryGenerator(GFAC_JOB_DATA);
+                generator.setParameter(GFacJobDataConstants.WORKFLOW_INSTANCE_ID, workflowInstanceID);
+                q = generator.selectQuery(em);
+                results = q.getResultList();
+                if (results.size() != 0) {
+                    for (Object result : results) {
+                        GFac_Job_Data gFac_job_data = (GFac_Job_Data)result;
+                        GFacJobDataResource gFacJobDataResource = (GFacJobDataResource)Utils.getResource(ResourceType.GFAC_JOB_DATA, gFac_job_data);
+                        resourceList.add(gFacJobDataResource);
                     }
                 }
                 break;

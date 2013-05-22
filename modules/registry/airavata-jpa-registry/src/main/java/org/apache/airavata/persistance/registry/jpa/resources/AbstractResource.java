@@ -43,6 +43,7 @@ public abstract class AbstractResource implements Resource {
     public static final String WORKFLOW_DATA = "Workflow_Data";
     public static final String EXPERIMENT_METADATA = "Experiment_Metadata";
     public static final String EXECUTION_ERROR = "Execution_Error";
+    public static final String GFAC_JOB_DATA = "GFac_Job_Data";
 
     //Gateway Table
     public final class GatewayConstants {
@@ -187,6 +188,21 @@ public abstract class AbstractResource implements Resource {
         public static final String ERROR_MSG = "error_msg";
         public static final String ERROR_DES = "error_des";
         public static final String ERROR_CODE = "error_code";
+    }
+
+    public final class GFacJobDataConstants {
+        public static final String EXPERIMENT_ID = "experiment_ID";
+        public static final String WORKFLOW_INSTANCE_ID = "workflow_instanceID";
+        public static final String NODE_ID = "node_id";
+        public static final String APP_DESC_ID = "application_descriptor_ID";
+        public static final String HOST_DESC_ID = "host_descriptor_ID";
+        public static final String SERVICE_DESC_ID = "service_descriptor_ID";
+        public static final String JOB_DATA = "job_data";
+        public static final String LOCAL_JOB_ID = "local_Job_ID";
+        public static final String SUBMITTED_TIME = "submitted_time";
+        public static final String COMPLETED_TIME = "completed_time";
+        public static final String STATUS = "status";
+        public static final String METADATA = "metadata";
     }
 
     protected AbstractResource() {

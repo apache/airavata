@@ -24,10 +24,7 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
-import org.apache.airavata.persistance.registry.jpa.model.Execution_Error;
-import org.apache.airavata.persistance.registry.jpa.model.Experiment_Data;
-import org.apache.airavata.persistance.registry.jpa.model.Experiment_Metadata;
-import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
+import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +79,10 @@ public class ExperimentDataResource extends AbstractResource{
                 ExperimentMetadataResource experimentMetadataResource = new ExperimentMetadataResource();
                 experimentMetadataResource.setExpID(experimentID);
                 return experimentMetadataResource;
+            case GFAC_JOB_DATA:
+                GFacJobDataResource gFacJobDataResource = new GFacJobDataResource();
+                gFacJobDataResource.setExperimentDataResource(this);
+                return gFacJobDataResource;
             default:
                 logger.error("Unsupported resource type for experiment data resource... ", new UnsupportedOperationException());
                 throw new IllegalArgumentException("Unsupported resource type for experiment data resource.");
@@ -105,6 +106,12 @@ public class ExperimentDataResource extends AbstractResource{
             case EXPERIMENT_METADATA:
                 generator = new QueryGenerator(EXPERIMENT_METADATA);
                 generator.setParameter(ExperimentDataConstants.EXPERIMENT_ID, name);
+                q = generator.deleteQuery(em);
+                q.executeUpdate();
+                break;
+            case GFAC_JOB_DATA:
+                generator = new QueryGenerator(GFAC_JOB_DATA);
+                generator.setParameter(GFacJobDataConstants.LOCAL_JOB_ID, name);
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
                 break;
@@ -140,6 +147,15 @@ public class ExperimentDataResource extends AbstractResource{
                 em.getTransaction().commit();
                 em.close();
                 return experimentMetadataResource;
+            case GFAC_JOB_DATA:
+                generator = new QueryGenerator(GFAC_JOB_DATA);
+                generator.setParameter(GFacJobDataConstants.LOCAL_JOB_ID, name);
+                q = generator.selectQuery(em);
+                GFac_Job_Data gFacJobData = (GFac_Job_Data)q.getSingleResult();
+                GFacJobDataResource gFacJobDataResource = (GFacJobDataResource)Utils.getResource(ResourceType.GFAC_JOB_DATA, gFacJobData);
+                em.getTransaction().commit();
+                em.close();
+                return gFacJobDataResource;
             default:
                 em.getTransaction().commit();
                 em.close();
@@ -194,6 +210,19 @@ public class ExperimentDataResource extends AbstractResource{
                         Execution_Error executionError = (Execution_Error)result;
                         ExecutionErrorResource executionErrorResource = (ExecutionErrorResource)Utils.getResource(ResourceType.EXECUTION_ERROR, executionError);
                         resourceList.add(executionErrorResource);
+                    }
+                }
+                break;
+            case GFAC_JOB_DATA:
+                generator = new QueryGenerator(GFAC_JOB_DATA);
+                generator.setParameter(GFacJobDataConstants.EXPERIMENT_ID, experimentID);
+                q = generator.selectQuery(em);
+                results = q.getResultList();
+                if (results.size() != 0) {
+                    for (Object result : results) {
+                        GFac_Job_Data gFacJobData = (GFac_Job_Data)result;
+                        GFacJobDataResource gFacJobDataResource = (GFacJobDataResource)Utils.getResource(ResourceType.GFAC_JOB_DATA, gFacJobData);
+                        resourceList.add(gFacJobDataResource);
                     }
                 }
                 break;
