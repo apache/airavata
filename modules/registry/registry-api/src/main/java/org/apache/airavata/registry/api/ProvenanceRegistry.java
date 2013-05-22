@@ -485,7 +485,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @param metadata
      * @throws RegistryException
      */
-    public void updateGFacJobMetadta(String gfacJobId, String metadata) throws RegistryException;
+    public void updateGFacJobMetadata(String gfacJobId, String metadata) throws RegistryException;
     
     /**
      * Retrieve the GFac Job for the given job id

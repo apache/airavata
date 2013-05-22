@@ -77,9 +77,9 @@ public class ServiceUtils {
                     port = (String) transportInDescription
                         .getParameter(PORT).getValue();
                 }
-                localAddress = "http://" + localAddress + ":" + port;
             }
-        localAddress = localAddress + "/"
+            localAddress = "http://" + localAddress + ":" + port;
+            localAddress = localAddress + "/"
         		//We are not using axis2 config context to get the context root because it is invalid
                 //+ context.getContextRoot() + "/"
         		//FIXME: the context root will be correct after updating the web.xml 
