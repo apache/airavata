@@ -118,7 +118,7 @@ public class ServerSettings extends ApplicationSettings{
         }
     }
 
-    public static String getTomcatPort() throws ApplicationSettingsException {
+    public static String getTomcatPort(String protocol) throws ApplicationSettingsException {
     	if (tomcatPort==null) {
 			try {
 				//First try to get the port from a tomcat if it is already running
@@ -143,6 +143,7 @@ public class ServerSettings extends ApplicationSettings{
 						for (Service service : findServices) {
 							for (Connector connector : service.findConnectors()) {
 								ProtocolHandler protocolHandler = connector.getProtocolHandler();
+                                if(protocol != null && protocol.equals(connector.getScheme())){
 								if (protocolHandler instanceof Http11Protocol
 										|| protocolHandler instanceof Http11AprProtocol
 										|| protocolHandler instanceof Http11NioProtocol) {
@@ -153,6 +154,7 @@ public class ServerSettings extends ApplicationSettings{
 										tomcatPort = String.valueOf(connector
 												.getPort());
 									}
+                                }
 								}
 							}
 						}
