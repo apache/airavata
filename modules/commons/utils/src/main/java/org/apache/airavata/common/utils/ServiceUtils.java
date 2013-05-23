@@ -58,16 +58,16 @@ public class ServiceUtils {
 	            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 	        }
         }
-        
-        try {
-            port = ServerSettings.getSetting(PORT);
-        } catch (ApplicationSettingsException e) {
-			//we will ignore this exception since the properties file will not contain the values
-			//when it is ok to retrieve them from the axis2 context
-		}
         String protocol="http";
         if(ServerSettings.isEnableHttps()){
-        	protocol="https";
+            protocol="https";
+        }
+
+        try {
+            port = ServerSettings.getTomcatPort(protocol);
+        } catch (ApplicationSettingsException e) {
+            //we will ignore this exception since the properties file will not contain the values
+            //when it is ok to retrieve them from the axis2 context
         }
         if (port == null) {
             TransportInDescription transportInDescription = context
