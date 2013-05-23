@@ -19,13 +19,26 @@
  *
  */
 
-package org.apache.airavata.client.api;
+package org.apache.airavata.client.api.exception;
 
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 
-public interface SecuritySettings {
-	public AmazonWebServicesSettings getAmazonWSSettings() throws AiravataAPIInvocationException;
-	public CredentialStoreSecuritySettings getCredentialStoreSecuritySettings() throws AiravataAPIInvocationException;
-	public GridMyProxyRepositorySettings getGridMyProxyRepositorySettings() throws AiravataAPIInvocationException;
-	public SSHAuthenticationSettings getSSHAuthenticationSettings() throws AiravataAPIInvocationException;
+/**
+ * If a saving descriptor already found in the system this exception will be thrown.
+ */
+public class DescriptorAlreadyExistsException extends AiravataAPIInvocationException {
+
+    private static final long serialVersionUID = 1231L;
+
+    public DescriptorAlreadyExistsException(Throwable e) {
+        super(e);
+    }
+
+    public DescriptorAlreadyExistsException(String message) {
+        super(message, null);
+    }
+
+    public DescriptorAlreadyExistsException(String message, Throwable e) {
+        super(message, e);
+    }
+
 }

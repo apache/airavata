@@ -29,7 +29,7 @@ import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.xbaya.model.registrybrowser.HostDescriptions;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;

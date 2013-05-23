@@ -28,9 +28,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.airavata.client.AiravataClient;
-import org.apache.airavata.client.api.AiravataAPIInvocationException;
-import org.apache.airavata.client.api.DescriptorRecordAlreadyExistsException;
 import org.apache.airavata.client.api.WorkflowManager;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
+import org.apache.airavata.client.api.exception.DescriptorAlreadyExistsException;
 import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.registry.api.exception.RegistryException;
@@ -62,7 +62,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
     @Override
     public void addOwnerWorkflow (String workflowAsString, String owner)
-            throws AiravataAPIInvocationException, DescriptorRecordAlreadyExistsException {
+            throws AiravataAPIInvocationException, DescriptorAlreadyExistsException {
          addWorkflow(getWorkflowFromString(workflowAsString), workflowAsString, owner);
     }
 
@@ -74,7 +74,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
     @Override
     public void addOwnerWorkflow (URI workflowPath, String owner)
-            throws AiravataAPIInvocationException, DescriptorRecordAlreadyExistsException {
+            throws AiravataAPIInvocationException, DescriptorAlreadyExistsException {
         Workflow workflow = getWorkflowFromURI(workflowPath);
         addWorkflow(workflow, XMLUtil.xmlElementToString(workflow.toXML()), owner);
     }
@@ -94,7 +94,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
     @Override
     public void addOwnerWorkflow (Workflow workflow, String owner) throws AiravataAPIInvocationException,
-            DescriptorRecordAlreadyExistsException {
+            DescriptorAlreadyExistsException {
         addWorkflow(workflow, XMLUtil.xmlElementToString(workflow.toXML()), owner);
     }
 
@@ -104,11 +104,11 @@ public class WorkflowManagerImpl implements WorkflowManager {
     }
 
     private void addWorkflow(Workflow workflow, String workflowAsString, String owner)
-            throws AiravataAPIInvocationException, DescriptorRecordAlreadyExistsException {
+            throws AiravataAPIInvocationException, DescriptorAlreadyExistsException {
         try {
             getClient().getRegistryClient().addWorkflow(workflow.getName(), workflowAsString);
         } catch (UserWorkflowAlreadyExistsException e) {
-            throw new DescriptorRecordAlreadyExistsException("Workflow " +
+            throw new DescriptorAlreadyExistsException("Workflow " +
                     workflow.getName()
                     + " already exists in the system.", e);
         } catch (RegistryException e) {
@@ -242,7 +242,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 	}
 
     @Override
-    public void addWorkflow (String workflowAsString) throws DescriptorRecordAlreadyExistsException,
+    public void addWorkflow (String workflowAsString) throws DescriptorAlreadyExistsException,
             AiravataAPIInvocationException {
         addOwnerWorkflow(workflowAsString, getCurrentUser());
     }
@@ -260,7 +260,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
     @Override
     public void addWorkflowAsPublic (String workflowAsString) throws AiravataAPIInvocationException,
-            DescriptorRecordAlreadyExistsException {
+            DescriptorAlreadyExistsException {
         addOwnerWorkflow (workflowAsString, null);
     }
 
@@ -271,7 +271,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
     @Override
     public void addWorkflowAsPublic (URI workflowPath) throws AiravataAPIInvocationException,
-            DescriptorRecordAlreadyExistsException {
+            DescriptorAlreadyExistsException {
         addOwnerWorkflow (getWorkflowFromURI(workflowPath), null);
     }
 
@@ -288,7 +288,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
     @Override
     public void addWorkflow (Workflow workflow) throws AiravataAPIInvocationException,
-            DescriptorRecordAlreadyExistsException{
+            DescriptorAlreadyExistsException{
         addOwnerWorkflow(workflow, getCurrentUser());
     }
 
@@ -299,7 +299,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
     @Override
     public void addWorkflow (URI workflowPath) throws AiravataAPIInvocationException,
-            DescriptorRecordAlreadyExistsException {
+            DescriptorAlreadyExistsException {
         addOwnerWorkflow(getWorkflowFromURI(workflowPath), getCurrentUser());
     }
 

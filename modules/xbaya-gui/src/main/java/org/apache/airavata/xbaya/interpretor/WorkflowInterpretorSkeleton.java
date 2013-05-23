@@ -23,8 +23,8 @@ package org.apache.airavata.xbaya.interpretor;
 
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.AiravataAPIInvocationException;
-import org.apache.airavata.client.api.DescriptorRecordAlreadyExistsException;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
+import org.apache.airavata.client.api.exception.DescriptorAlreadyExistsException;
 import org.apache.airavata.client.stub.interpretor.NameValue;
 import org.apache.airavata.client.tools.PeriodicExecutorThread;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -161,10 +161,11 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
                                     registry.getApplicationManager().addHostDescription(host);
                                 }
                             }
-		                } catch (AiravataAPIInvocationException e) {
-		                    e.printStackTrace();
-		                } catch (DescriptorRecordAlreadyExistsException e) {
+		                } catch (DescriptorAlreadyExistsException e) {
                             e.printStackTrace();
+                        } catch (AiravataAPIInvocationException e) {
+		                    e.printStackTrace();
+		                
                         }
                     }else{
 		                provenance = false;

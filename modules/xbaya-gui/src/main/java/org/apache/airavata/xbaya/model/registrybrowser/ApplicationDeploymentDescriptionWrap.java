@@ -22,7 +22,7 @@
 package org.apache.airavata.xbaya.model.registrybrowser;
 
 import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;

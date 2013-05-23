@@ -21,10 +21,12 @@
 
 package org.apache.airavata.client.api;
 
+
 /**
+ * @deprecated - {@use #org.apache.airavata.client.api.exception.DescriptorAlreadyExistsException} 
  * If a saving descriptor already found in the system this exception will be thrown.
  */
-public class DescriptorRecordAlreadyExistsException extends Exception {
+public class DescriptorRecordAlreadyExistsException extends org.apache.airavata.client.api.exception.DescriptorAlreadyExistsException {
 
     private static final long serialVersionUID = 1231L;
 

@@ -21,7 +21,7 @@
 package org.apache.airavata.xbaya.provenance;
 
 import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.workflow.WorkflowExecution;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;

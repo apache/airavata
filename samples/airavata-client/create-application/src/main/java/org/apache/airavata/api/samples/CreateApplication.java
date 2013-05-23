@@ -23,8 +23,8 @@ package org.apache.airavata.api.samples;
 
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.AiravataAPIInvocationException;
-import org.apache.airavata.client.api.DescriptorRecordAlreadyExistsException;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
+import org.apache.airavata.client.api.exception.DescriptorAlreadyExistsException;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
@@ -56,7 +56,7 @@ public class CreateApplication {
     private static AiravataAPI airavataAPI;
 
     public static void main(String[] args) throws AiravataAPIInvocationException, IOException, URISyntaxException,
-            DescriptorRecordAlreadyExistsException {
+            DescriptorAlreadyExistsException {
 
         // creating airavata client object //
         port = Integer.parseInt("8080");

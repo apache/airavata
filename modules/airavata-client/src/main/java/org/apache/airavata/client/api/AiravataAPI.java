@@ -24,6 +24,7 @@ package org.apache.airavata.client.api;
 import java.net.URI;
 
 import org.apache.airavata.client.api.builder.DescriptorBuilder;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.registry.api.PasswordCallback;
 

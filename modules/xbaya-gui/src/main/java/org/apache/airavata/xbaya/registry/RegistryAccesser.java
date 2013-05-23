@@ -30,7 +30,7 @@ import javax.jcr.RepositoryException;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.registry.api.exception.RegistryException;

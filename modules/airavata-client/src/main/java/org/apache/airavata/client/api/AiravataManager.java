@@ -21,6 +21,7 @@
 
 package org.apache.airavata.client.api;
 
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.Gateway;
 

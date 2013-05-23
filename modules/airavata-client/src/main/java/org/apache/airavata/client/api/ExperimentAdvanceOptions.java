@@ -21,6 +21,7 @@
 
 package org.apache.airavata.client.api;
 
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.client.impl.SecuritySettingsImpl;
 import org.apache.airavata.client.impl.WorkflowOutputDataSettingsImpl;
 import org.apache.airavata.client.impl.WorkflowSchedulingSettingsImpl;

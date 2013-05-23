@@ -24,7 +24,7 @@ package org.apache.airavata.xbaya.model.registrybrowser;
 import java.util.List;
 
 import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 //import org.apache.airavata.registry.api.AiravataRegistry2;

@@ -19,15 +19,12 @@
  *
  */
 
-package org.apache.airavata.client.api;
+package org.apache.airavata.client.api.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * @deprecated - {@use #org.apache.airavata.client.api.exception.AiravataAPIInvocationException}
- */
-public class AiravataAPIInvocationException extends org.apache.airavata.client.api.exception.AiravataAPIInvocationException {
+public class AiravataAPIInvocationException extends Exception {
 	private static final Logger log = LoggerFactory.getLogger(AiravataAPIInvocationException.class);
 
 	private static final long serialVersionUID = 1L;

@@ -28,8 +28,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.airavata.client.AiravataClient;
-import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.AiravataManager;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.Gateway;
 

@@ -19,13 +19,15 @@
  *
  */
 
-package org.apache.airavata.client.api;
+package org.apache.airavata.client.api.exception;
 
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
+public class AiravataAPIUnimplementedException extends
+		AiravataAPIInvocationException {
 
-public interface SecuritySettings {
-	public AmazonWebServicesSettings getAmazonWSSettings() throws AiravataAPIInvocationException;
-	public CredentialStoreSecuritySettings getCredentialStoreSecuritySettings() throws AiravataAPIInvocationException;
-	public GridMyProxyRepositorySettings getGridMyProxyRepositorySettings() throws AiravataAPIInvocationException;
-	public SSHAuthenticationSettings getSSHAuthenticationSettings() throws AiravataAPIInvocationException;
+	private static final long serialVersionUID = -8233342290087971830L;
+
+	public AiravataAPIUnimplementedException(String message) {
+		super(message);
+	}
+
 }

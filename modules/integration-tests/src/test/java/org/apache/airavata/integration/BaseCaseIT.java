@@ -34,10 +34,10 @@ import junit.framework.Assert;
 
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.AiravataAPIInvocationException;
-import org.apache.airavata.client.api.DescriptorRecordAlreadyExistsException;
 import org.apache.airavata.client.api.ExperimentAdvanceOptions;
 import org.apache.airavata.client.api.builder.DescriptorBuilder;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
+import org.apache.airavata.client.api.exception.DescriptorAlreadyExistsException;
 import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -308,7 +308,7 @@ public class BaseCaseIT {
         try {
             airavataAPI.getApplicationManager().addHostDescription(hostDescription);
             Assert.fail("Host Descriptor should already exists and should go to update.");
-        } catch (DescriptorRecordAlreadyExistsException e) {
+        } catch (DescriptorAlreadyExistsException e) {
 
             log("Updating host description ....");
             airavataAPI.getApplicationManager().updateHostDescription(hostDescription);
@@ -330,7 +330,7 @@ public class BaseCaseIT {
         try {
             airavataAPI.getApplicationManager().addServiceDescription(serviceDescription);
             Assert.fail("Service Descriptor should already exists and should go to update.");
-        } catch (DescriptorRecordAlreadyExistsException e) {
+        } catch (DescriptorAlreadyExistsException e) {
 
             log("Updating service description ....");
             airavataAPI.getApplicationManager().updateServiceDescription(serviceDescription);
@@ -348,7 +348,7 @@ public class BaseCaseIT {
             airavataAPI.getApplicationManager().addApplicationDescription(serviceDescription, hostDescription,
                     applicationDeploymentDescription);
             Assert.fail("Application Descriptor should already exists and should go to update.");
-        } catch (DescriptorRecordAlreadyExistsException e) {
+        } catch (DescriptorAlreadyExistsException e) {
 
             log("Updating application description ....");
             airavataAPI.getApplicationManager().updateApplicationDescription(serviceDescription, hostDescription,
@@ -365,7 +365,7 @@ public class BaseCaseIT {
         try {
             airavataAPI.getWorkflowManager().addWorkflow(workflow);
             Assert.fail("Workflow should already exists and should go to update.");
-        } catch (DescriptorRecordAlreadyExistsException e) {
+        } catch (DescriptorAlreadyExistsException e) {
 
             log("Updating workflow...");
             airavataAPI.getWorkflowManager().updateWorkflow(workflow);
