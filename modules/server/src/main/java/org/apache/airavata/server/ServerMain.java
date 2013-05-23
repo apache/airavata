@@ -45,7 +45,8 @@ public class ServerMain {
      */
     public void startTomcat() throws Exception {
         AiravataUtils.setExecutionAsServer();
-        BetterTomcat tomcat = new BetterTomcat(Integer.parseInt(ServerSettings.getTomcatPort()));
+        String protocol = ServerSettings.isEnableHttps() ? "https" : "http";
+        BetterTomcat tomcat = new BetterTomcat(Integer.parseInt(ServerSettings.getTomcatPort(protocol)));
         tomcat.addContext("/axis2", System.getenv("AIRAVATA_HOME"));
         Wrapper axis2Servlet = tomcat.addServlet("/axis2", "AxisServlet", "org.apache.axis2.transport.http.AxisServlet");
         axis2Servlet.addMapping("/servlet/AxisServlet");

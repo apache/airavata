@@ -571,21 +571,6 @@ public class EmbeddedGFacInvoker implements Invoker {
         return invoke_inputParams;
     }
 
-    private HostDescription getRegisteredHost(AiravataAPI regService, String serviceName) {
-        HostDescription result = null;
-        try {
-            Map<String, ApplicationDescription> applicationDescriptors = regService.getApplicationManager().getApplicationDescriptors(serviceName);
-            for (String hostDescName : applicationDescriptors.keySet()) {
-                HostDescription hostDescriptor = regService.getApplicationManager().getHostDescription(hostDescName);
-                result = hostDescriptor;
-                logger.info("Found service on: " + result.getType().getHostAddress());
-            }
-        } catch (AiravataAPIInvocationException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
     private MessageContext getOutParameters(ServiceDescription serviceDescription) {
         MessageContext outContext = new MessageContext();
         for (OutputParameterType parameter : serviceDescription.getType().getOutputParametersArray()) {
