@@ -46,7 +46,7 @@ public class GFacJobDataResource extends AbstractResource {
     private String localJobID;
     private Timestamp submittedTime;
     private Timestamp completedTime;
-    private int status;
+    private String status;
     private String metadata;
 
     public ExperimentDataResource getExperimentDataResource() {
@@ -89,7 +89,7 @@ public class GFacJobDataResource extends AbstractResource {
         return completedTime;
     }
 
-    public int getStatus() {
+    public String getStatus() {
         return status;
     }
 
@@ -137,7 +137,7 @@ public class GFacJobDataResource extends AbstractResource {
         this.completedTime = completedTime;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 

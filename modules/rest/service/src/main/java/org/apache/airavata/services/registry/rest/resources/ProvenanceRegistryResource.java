@@ -1619,4 +1619,258 @@ public class ProvenanceRegistryResource {
         }
     }
 
+    @POST
+    @Path(ResourcePathConstants.ProvenanceResourcePathConstants.ADD_GFAC_JOB)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response addGFacJob(GFacJob job) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
+        try {
+            airavataRegistry.addGFacJob(job);
+            Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+            builder.entity("GFac Job added successfully");
+            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.ADD_GFAC_JOB, e);
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
+            }
+        }
+    }
+
+    @POST
+    @Path(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response updateGFacJob(GFacJob job) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
+        try {
+            airavataRegistry.updateGFacJob(job);
+            Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+            builder.entity("GFac Job updated successfully");
+            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB, e);
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
+            }
+        }
+    }
+
+    @POST
+    @Path(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB_STATUS)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response updateGFacJobStatus(@FormParam("gfacJobID") String gfacJobID,
+                                        @FormParam("gfacJobStatus") String gfacJobStatus ) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
+        try {
+            GFacJob.GFacJobStatus status = GFacJob.GFacJobStatus.valueOf(gfacJobStatus);
+            airavataRegistry.updateGFacJobStatus(gfacJobID, status);
+            Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+            builder.entity("GFac Job status updated successfully");
+            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB_STATUS, e);
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
+            }
+        }
+    }
+
+    @POST
+    @Path(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB_DATA)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response updateGFacJobData(@FormParam("gfacJobID") String gfacJobID,
+                                      @FormParam("jobdata") String jobdata ) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
+        try {
+            airavataRegistry.updateGFacJobData(gfacJobID, jobdata);
+            Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+            builder.entity("GFac Job data updated successfully");
+            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB_DATA, e);
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
+            }
+        }
+    }
+
+    @POST
+    @Path(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB_SUBMITTED_TIME)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response updateGFacJobSubmittedTime(@FormParam("gfacJobID") String gfacJobID,
+                                               @FormParam("submittedDate") String submittedDate ) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
+        try {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date formattedDate = dateFormat.parse(submittedDate);
+            airavataRegistry.updateGFacJobSubmittedTime(gfacJobID, formattedDate);
+            Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+            builder.entity("GFac Job data submitted date updated successfully");
+            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB_SUBMITTED_TIME, e);
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
+            }
+        }
+    }
+
+    @POST
+     @Path(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB_COMPLETED_TIME)
+     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+     @Produces(MediaType.TEXT_PLAIN)
+     public Response updateGFacJobCompletedTime(@FormParam("gfacJobID") String gfacJobID,
+                                                @FormParam("completedDate") String completedDate ) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
+        try {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date formattedDate = dateFormat.parse(completedDate);
+            airavataRegistry.updateGFacJobCompletedTime(gfacJobID, formattedDate);
+            Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+            builder.entity("GFac Job data completed date updated successfully");
+            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB_COMPLETED_TIME, e);
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
+            }
+        }
+    }
+
+    @POST
+    @Path(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB_METADATA)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response updateGFacJobMetadata(@FormParam("gfacJobID") String gfacJobID,
+                                               @FormParam("metadata") String metadata ) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
+        try {
+            airavataRegistry.updateGFacJobMetadata(gfacJobID, metadata);
+            Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+            builder.entity("GFac Job metadata updated successfully");
+            return builder.build();
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB_METADATA, e);
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
+            }
+        }
+    }
+
+    @GET
+    @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_GFAC_JOB)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getGFacJob(@QueryParam("gfacJobId") String gfacJobId){
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
+        try {
+            GFacJob gFacJob = airavataRegistry.getGFacJob(gfacJobId);
+            if (gFacJob != null) {
+                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+                builder.entity(gFacJob);
+                return builder.build();
+            } else {
+                Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
+                return builder.build();
+            }
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.GET_GFAC_JOB, e);
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
+            }
+        }
+    }
+
+    @GET
+    @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_GFAC_JOBS_FOR_DESCRIPTORS)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getGFacJobsForDescriptors(@QueryParam("serviceDescriptionId") String serviceDescriptionId,
+                                              @QueryParam("hostDescriptionId") String hostDescriptionId,
+                                              @QueryParam("applicationDescriptionId") String applicationDescriptionId){
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
+        try {
+            GFacJobList gFacJobList = new GFacJobList();
+            List<GFacJob> gFacJobsForDescriptors = airavataRegistry.getGFacJobsForDescriptors(serviceDescriptionId, hostDescriptionId, applicationDescriptionId);
+            gFacJobList.setJobList(gFacJobsForDescriptors);
+            if (gFacJobsForDescriptors.size() != 0) {
+                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+                builder.entity(gFacJobList);
+                return builder.build();
+            } else {
+                Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
+                return builder.build();
+            }
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.GET_GFAC_JOBS_FOR_DESCRIPTORS, e);
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
+            }
+        }
+    }
+
+    @GET
+    @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_GFAC_JOBS)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getGFacJobs(@QueryParam("experimentId") String experimentID,
+                                @QueryParam("workflowExecutionId") String workflowInstanceID,
+                                @QueryParam("nodeId") String nodeID){
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
+        try {
+            GFacJobList gFacJobList = new GFacJobList();
+            List<GFacJob> gFacJobsForDescriptors = airavataRegistry.getGFacJobsForDescriptors(experimentID, workflowInstanceID, nodeID);
+            gFacJobList.setJobList(gFacJobsForDescriptors);
+            if (gFacJobsForDescriptors.size() != 0) {
+                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+                builder.entity(gFacJobList);
+                return builder.build();
+            } else {
+                Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
+                return builder.build();
+            }
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.GET_GFAC_JOBS_FOR_DESCRIPTORS, e);
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
+            }
+        }
+    }
+
+    @GET
+    @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GFAC_JOB_EXIST)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response isGFacJobExists(@QueryParam("gfacJobId") String gfacJobId){
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
+        try {
+            boolean gFacJobExists = airavataRegistry.isGFacJobExists(gfacJobId);
+            if (gFacJobExists) {
+                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+                builder.entity("GFac Job exists in the system");
+                return builder.build();
+            } else {
+                Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
+                builder.entity("GFac Job does not exist in the system");
+                return builder.build();
+            }
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.GFAC_JOB_EXIST, e);
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
+            }
+        }
+    }
 }

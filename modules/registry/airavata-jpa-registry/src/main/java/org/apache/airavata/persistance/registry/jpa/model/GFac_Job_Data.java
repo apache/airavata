@@ -38,7 +38,7 @@ public class GFac_Job_Data {
     private String local_Job_ID;
     private Timestamp  submitted_time;
     private Timestamp  completed_time;
-    private int status;
+    private String status;
     @Lob
     private String metadata;
 
@@ -90,7 +90,7 @@ public class GFac_Job_Data {
         return completed_time;
     }
 
-    public int getStatus() {
+    public String getStatus() {
         return status;
     }
 
@@ -146,7 +146,7 @@ public class GFac_Job_Data {
         this.completed_time = completed_time;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 

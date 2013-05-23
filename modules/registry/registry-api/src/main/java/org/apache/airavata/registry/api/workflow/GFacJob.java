@@ -21,8 +21,13 @@
 
 package org.apache.airavata.registry.api.workflow;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class GFacJob {
 	public static enum GFacJobStatus{
 		SUBMITTED, //job is submitted, possibly waiting to start executing
