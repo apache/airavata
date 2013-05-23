@@ -154,6 +154,14 @@
                                     <replacetoken>8080</replacetoken>
                                     <replacevalue>${test.running.port}</replacevalue>
                                 </replace>
+                                <!--replace file="${tomcat.work.dir}/webapps/airavata-registry/WEB-INF/classes/airavata-server.properties">
+                                    <replacetoken>8080</replacetoken>
+                                    <replacevalue>${test.running.port}</replacevalue>
+                                </replace>
+                                <replace file="${tomcat.work.dir}/webapps/axis2/WEB-INF/classes/airavata-server.properties">
+                                    <replacetoken>8080</replacetoken>
+                                    <replacevalue>${test.running.port}</replacevalue>
+                                </replace-->
                             </target>
                         </configuration>
                         <goals>
@@ -467,7 +475,7 @@
         <major.tomcat.version>7</major.tomcat.version>
         <cargo.debug.address>8000</cargo.debug.address>
         <cargo.debug.suspend>y</cargo.debug.suspend>
-        <test.running.port>8088</test.running.port>
+        <test.running.port>8080</test.running.port>
         <tomcat.work.dir>${project.build.directory}/tests/apache-tomcat-${tomcat.version}</tomcat.work.dir>
         <airavata.work.dir>${project.build.directory}/tests/apache-airavata-server-${project.version}</airavata.work.dir>
         <xbaya.work.dir>${project.build.directory}/tests/apache-airavata-xbaya-gui-${project.version}</xbaya.work.dir>
