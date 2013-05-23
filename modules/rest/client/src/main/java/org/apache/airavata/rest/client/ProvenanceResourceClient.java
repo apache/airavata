@@ -2269,6 +2269,479 @@ public class ProvenanceResourceClient {
         return 0;
     }
 
+    public void addGFacJob(GFacJob job) {
+        webResource = getProvenanceRegistryBaseResource().path(
+                ResourcePathConstants.ProvenanceResourcePathConstants.ADD_GFAC_JOB);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
+        ClientResponse response = builder.accept(
+                MediaType.TEXT_PLAIN).post(ClientResponse.class, job);
+        int status = response.getStatus();
+
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
+            }
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(
+                    MediaType.TEXT_PLAIN).post(ClientResponse.class, job);
+            status = response.getStatus();
+            if (status != ClientConstant.HTTP_OK) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            } else {
+                if (response.getCookies().size() > 0) {
+                    cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
+                }
+            }
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
+        }
+    }
+
+    public void updateGFacJob(GFacJob job) {
+        webResource = getProvenanceRegistryBaseResource().path(
+                ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
+        ClientResponse response = builder.accept(
+                MediaType.TEXT_PLAIN).post(ClientResponse.class, job);
+        int status = response.getStatus();
+
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
+            }
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(
+                    MediaType.TEXT_PLAIN).post(ClientResponse.class, job);
+            status = response.getStatus();
+            if (status != ClientConstant.HTTP_OK) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            } else {
+                if (response.getCookies().size() > 0) {
+                    cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
+                }
+            }
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
+        }
+    }
+
+    public void updateGFacJobStatus(String gfacJobId, GFacJob.GFacJobStatus status) {
+        webResource = getProvenanceRegistryBaseResource().path(
+                ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB_STATUS);
+        MultivaluedMap formParams = new MultivaluedMapImpl();
+        formParams.add("gfacJobID", gfacJobId);
+        formParams.add("gfacJobStatus", status.toString());
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
+        ClientResponse response = builder.accept(
+                MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        int responseStatus = response.getStatus();
+
+        if (responseStatus == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
+            }
+        } else if (responseStatus == ClientConstant.HTTP_UNAUTHORIZED) {
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(
+                    MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+            responseStatus = response.getStatus();
+            if (responseStatus != ClientConstant.HTTP_OK) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + responseStatus);
+            } else {
+                if (response.getCookies().size() > 0) {
+                    cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
+                }
+            }
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + responseStatus);
+        }
+    }
+
+    public void updateGFacJobData(String gfacJobId, String jobdata){
+        webResource = getProvenanceRegistryBaseResource().path(
+                ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB_DATA);
+        MultivaluedMap formParams = new MultivaluedMapImpl();
+        formParams.add("gfacJobID", gfacJobId);
+        formParams.add("jobdata", jobdata);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
+        ClientResponse response = builder.accept(
+                MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        int responseStatus = response.getStatus();
+
+        if (responseStatus == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
+            }
+        } else if (responseStatus == ClientConstant.HTTP_UNAUTHORIZED) {
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(
+                    MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+            responseStatus = response.getStatus();
+            if (responseStatus != ClientConstant.HTTP_OK) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + responseStatus);
+            } else {
+                if (response.getCookies().size() > 0) {
+                    cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
+                }
+            }
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + responseStatus);
+        }
+    }
+
+    public void updateGFacJobSubmittedTime(String gfacJobId, Date submitted){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String submittedDate = dateFormat.format(submitted);
+        webResource = getProvenanceRegistryBaseResource().path(
+                ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB_SUBMITTED_TIME);
+        MultivaluedMap formParams = new MultivaluedMapImpl();
+        formParams.add("gfacJobID", gfacJobId);
+        formParams.add("submittedDate", submittedDate);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
+        ClientResponse response = builder.accept(
+                MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        int responseStatus = response.getStatus();
+
+        if (responseStatus == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
+            }
+        } else if (responseStatus == ClientConstant.HTTP_UNAUTHORIZED) {
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(
+                    MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+            responseStatus = response.getStatus();
+            if (responseStatus != ClientConstant.HTTP_OK) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + responseStatus);
+            } else {
+                if (response.getCookies().size() > 0) {
+                    cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
+                }
+            }
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + responseStatus);
+        }
+
+    }
+
+    public void updateGFacJobCompletedTime(String gfacJobId, Date completed){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String completedDate = dateFormat.format(completed);
+        webResource = getProvenanceRegistryBaseResource().path(
+                ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB_COMPLETED_TIME);
+        MultivaluedMap formParams = new MultivaluedMapImpl();
+        formParams.add("gfacJobID", gfacJobId);
+        formParams.add("completedDate", completedDate);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
+        ClientResponse response = builder.accept(
+                MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        int responseStatus = response.getStatus();
+
+        if (responseStatus == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
+            }
+        } else if (responseStatus == ClientConstant.HTTP_UNAUTHORIZED) {
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(
+                    MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+            responseStatus = response.getStatus();
+            if (responseStatus != ClientConstant.HTTP_OK) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + responseStatus);
+            } else {
+                if (response.getCookies().size() > 0) {
+                    cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
+                }
+            }
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + responseStatus);
+        }
+    }
+
+    public void updateGFacJobMetadata(String gfacJobId, String metadata){
+        webResource = getProvenanceRegistryBaseResource().path(
+                ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB_METADATA);
+        MultivaluedMap formParams = new MultivaluedMapImpl();
+        formParams.add("gfacJobID", gfacJobId);
+        formParams.add("metadata", metadata);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, null, userName, null, cookie, gateway);
+        ClientResponse response = builder.accept(
+                MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        int responseStatus = response.getStatus();
+
+        if (responseStatus == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
+            }
+        } else if (responseStatus == ClientConstant.HTTP_UNAUTHORIZED) {
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, null, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(
+                    MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+            responseStatus = response.getStatus();
+            if (responseStatus != ClientConstant.HTTP_OK) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + responseStatus);
+            } else {
+                if (response.getCookies().size() > 0) {
+                    cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
+                }
+            }
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + responseStatus);
+        }
+    }
+
+    public GFacJob getGFacJob(String gfacJobId){
+        webResource = getProvenanceRegistryBaseResource().path(
+                ResourcePathConstants.ProvenanceResourcePathConstants.GET_GFAC_JOB);
+        MultivaluedMap queryParams = new MultivaluedMapImpl();
+        queryParams.add("gfacJobId", gfacJobId);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+        ClientResponse response = builder.accept(
+                MediaType.TEXT_PLAIN).get(ClientResponse.class);
+        int status = response.getStatus();
+
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
+            }
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+            status = response.getStatus();
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
+                return null;
+            }
+            if (status != ClientConstant.HTTP_OK) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            } else {
+                if (response.getCookies().size() > 0) {
+                    cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return null;
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
+        }
+
+        GFacJob gFacJob = response.getEntity(GFacJob.class);
+        return gFacJob;
+    }
+
+    public List<GFacJob> getGFacJobsForDescriptors(String serviceDescriptionId,
+                                                   String hostDescriptionId,
+                                                   String applicationDescriptionId){
+        webResource = getProvenanceRegistryBaseResource().path(
+                ResourcePathConstants.ProvenanceResourcePathConstants.GET_GFAC_JOB);
+        MultivaluedMap queryParams = new MultivaluedMapImpl();
+        queryParams.add("serviceDescriptionId", serviceDescriptionId);
+        queryParams.add("hostDescriptionId", hostDescriptionId);
+        queryParams.add("applicationDescriptionId", applicationDescriptionId);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+        ClientResponse response = builder.accept(
+                MediaType.TEXT_PLAIN).get(ClientResponse.class);
+        int status = response.getStatus();
+
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
+            }
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+            status = response.getStatus();
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
+                return null;
+            }
+            if (status != ClientConstant.HTTP_OK) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            } else {
+                if (response.getCookies().size() > 0) {
+                    cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return null;
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
+        }
+
+        GFacJobList gFacJobList = response.getEntity(GFacJobList.class);
+        return gFacJobList.getJobList();
+    }
+
+    public List<GFacJob> getGFacJobs(String experimentId,
+                                     String workflowExecutionId,
+                                     String nodeId) {
+        webResource = getProvenanceRegistryBaseResource().path(
+                ResourcePathConstants.ProvenanceResourcePathConstants.GET_GFAC_JOB);
+        MultivaluedMap queryParams = new MultivaluedMapImpl();
+        queryParams.add("experimentId", experimentId);
+        queryParams.add("workflowExecutionId", workflowExecutionId);
+        queryParams.add("nodeId", nodeId);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+        ClientResponse response = builder.accept(
+                MediaType.TEXT_PLAIN).get(ClientResponse.class);
+        int status = response.getStatus();
+
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
+            }
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+            status = response.getStatus();
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
+                return null;
+            }
+            if (status != ClientConstant.HTTP_OK) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            } else {
+                if (response.getCookies().size() > 0) {
+                    cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return null;
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
+        }
+        GFacJobList gFacJobList = response.getEntity(GFacJobList.class);
+        return gFacJobList.getJobList();
+    }
+
+    public boolean isGFacJobExists(String gfacJobId){
+        webResource = getProvenanceRegistryBaseResource().path(
+                ResourcePathConstants.ProvenanceResourcePathConstants.GFAC_JOB_EXIST);
+        MultivaluedMap queryParams = new MultivaluedMapImpl();
+        queryParams.add("gfacJobId", gfacJobId);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+        ClientResponse response = builder.accept(
+                MediaType.TEXT_PLAIN).get(ClientResponse.class);
+        int status = response.getStatus();
+
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
+            }
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+            status = response.getStatus();
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
+                return false;
+            }
+            if (status != ClientConstant.HTTP_OK) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            } else {
+                if (response.getCookies().size() > 0) {
+                    cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return false;
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
+        }
+        String exists = response.getEntity(String.class);
+        if (exists.equals("true")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public List<WorkflowNodeIOData> searchWorkflowInstanceNodeInput(String experimentIdRegEx,
                                                                     String workflowNameRegEx,
                                                                     String nodeNameRegEx) {

@@ -903,75 +903,71 @@ public class RegistryClient extends AiravataRegistry2 {
 
 	@Override
 	public void addGFacJob(GFacJob job) throws RegistryException {
-		// TODO Auto-generated method stub
+		getProvenanceResourceClient().addGFacJob(job);
 		
 	}
 
 	@Override
 	public void updateGFacJob(GFacJob job) throws RegistryException {
-		// TODO Auto-generated method stub
+        getProvenanceResourceClient().updateGFacJob(job);
 		
 	}
 
 	@Override
 	public void updateGFacJobStatus(String gfacJobId, GFacJobStatus status)
 			throws RegistryException {
-		// TODO Auto-generated method stub
+        getProvenanceResourceClient().updateGFacJobStatus(gfacJobId, status);
 		
 	}
 
 	@Override
 	public void updateGFacJobData(String gfacJobId, String jobdata)
 			throws RegistryException {
-		// TODO Auto-generated method stub
+        getProvenanceResourceClient().updateGFacJobData(gfacJobId, jobdata);
 		
 	}
 
 	@Override
 	public void updateGFacJobSubmittedTime(String gfacJobId, Date submitted)
 			throws RegistryException {
-		// TODO Auto-generated method stub
+        getProvenanceResourceClient().updateGFacJobSubmittedTime(gfacJobId, submitted);
 		
 	}
 
 	@Override
 	public void updateGFacJobCompletedTime(String gfacJobId, Date completed)
 			throws RegistryException {
-		// TODO Auto-generated method stub
+        getProvenanceResourceClient().updateGFacJobCompletedTime(gfacJobId, completed);
 		
 	}
 
 	@Override
 	public void updateGFacJobMetadata(String gfacJobId, String metadata)
 			throws RegistryException {
-		// TODO Auto-generated method stub
+        getProvenanceResourceClient().updateGFacJobMetadata(gfacJobId, metadata);
 		
 	}
 
 	@Override
 	public GFacJob getGFacJob(String gfacJobId) throws RegistryException {
-		// TODO Auto-generated method stub
-		return null;
+		return getProvenanceResourceClient().getGFacJob(gfacJobId);
 	}
 
 	@Override
 	public List<GFacJob> getGFacJobsForDescriptors(String serviceDescriptionId,
 			String hostDescriptionId, String applicationDescriptionId)
 			throws RegistryException {
-		// TODO Auto-generated method stub
-		return null;
+		return getProvenanceResourceClient().getGFacJobsForDescriptors(serviceDescriptionId, hostDescriptionId, applicationDescriptionId);
 	}
 
 	@Override
 	public List<GFacJob> getGFacJobs(String experimentId,
 			String workflowExecutionId, String nodeId) throws RegistryException {
-		// TODO Auto-generated method stub
-		return null;
+		return getProvenanceResourceClient().getGFacJobs(experimentId, workflowExecutionId, nodeId);
 	}
 
 	@Override
 	public boolean isGFacJobExists(String gfacJobId) throws RegistryException {
-		// TODO Auto-generated method stub
-		return false;
+		return getProvenanceResourceClient().isGFacJobExists(gfacJobId);
 	}
 }

@@ -1753,7 +1753,7 @@ public class ProvenanceRegistryResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces(MediaType.TEXT_PLAIN)
     public Response updateGFacJobMetadata(@FormParam("gfacJobID") String gfacJobID,
-                                               @FormParam("metadata") String metadata ) {
+                                          @FormParam("metadata") String metadata ) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             airavataRegistry.updateGFacJobMetadata(gfacJobID, metadata);
@@ -1858,11 +1858,11 @@ public class ProvenanceRegistryResource {
             boolean gFacJobExists = airavataRegistry.isGFacJobExists(gfacJobId);
             if (gFacJobExists) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
-                builder.entity("GFac Job exists in the system");
+                builder.entity("true");
                 return builder.build();
             } else {
                 Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                builder.entity("GFac Job does not exist in the system");
+                builder.entity("false");
                 return builder.build();
             }
         } catch (Throwable e) {
