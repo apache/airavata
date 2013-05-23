@@ -68,8 +68,14 @@ public class WorkflowInput {
 		return value;
 	}
 	
+	private void validateData(Object data) throws InvalidDataFormatException{
+		if (data!=null){
+			//TODO validate against type
+		}
+	}
+	
 	public void setValue(Object value) throws InvalidDataFormatException {
-		//TODO validate against type
+		validateData(value);
 		this.value = value;
 	}
 
