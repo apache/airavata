@@ -182,6 +182,14 @@ public class WorkerResource extends AbstractResource {
                 WorkflowDataResource workflowDataResource = (WorkflowDataResource)Utils.getResource(ResourceType.WORKFLOW_DATA, eworkflowData);
                 result= workflowDataResource;
                 break;
+            case GFAC_JOB_DATA:
+                generator = new QueryGenerator(GFAC_JOB_DATA);
+                generator.setParameter(GFacJobDataConstants.LOCAL_JOB_ID, name);
+                q = generator.selectQuery(em);
+                GFac_Job_Data gFacJobData = (GFac_Job_Data)q.getSingleResult();
+                GFacJobDataResource gFacJobDataResource = (GFacJobDataResource)Utils.getResource(ResourceType.GFAC_JOB_DATA, gFacJobData);
+                result= gFacJobDataResource;
+                break;
 			default:
                 logger.error("Unsupported resource type for worker resource.", new IllegalArgumentException());
                 break;
