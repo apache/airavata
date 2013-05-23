@@ -25,6 +25,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
+import org.apache.airavata.client.api.exception.DescriptorAlreadyExistsException;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowData;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
@@ -53,10 +55,10 @@ public interface WorkflowManager {
      * @param owner Under which user workflow should be added. This is a privileged method and usually
      *              only admin calls this.
      * @throws AiravataAPIInvocationException If an error occurred while adding a new workflow.
-     * @throws DescriptorRecordAlreadyExistsException If adding workflow already exists for the given owner.
+     * @throws DescriptorAlreadyExistsException If adding workflow already exists for the given owner.
      */
     public void addOwnerWorkflow (String workflowAsString, String owner) throws AiravataAPIInvocationException,
-            DescriptorRecordAlreadyExistsException;
+            DescriptorAlreadyExistsException;
 
     /**
      * Adds a new workflow. Workflow is added to users private space. i.e. only user who added the
@@ -65,10 +67,10 @@ public interface WorkflowManager {
      * @param owner Under which user workflow should be added. This is a privileged method and usually
      *              only admin calls this.
      * @throws AiravataAPIInvocationException If an error occurred while adding a new workflow.
-     * @throws DescriptorRecordAlreadyExistsException If adding workflow already exists for the given owner.
+     * @throws DescriptorAlreadyExistsException If adding workflow already exists for the given owner.
      */
     public void addOwnerWorkflow (URI workflowPath, String owner) throws AiravataAPIInvocationException,
-            DescriptorRecordAlreadyExistsException;
+            DescriptorAlreadyExistsException;
 
     /**
      * Adds a new workflow. Workflow is added to users private space. i.e. only user who added the
@@ -77,10 +79,10 @@ public interface WorkflowManager {
      * @param owner Under which user workflow should be added. This is a privileged method and usually
      *              only admin calls this.
      * @throws AiravataAPIInvocationException If an error occurred while adding a new workflow.
-     * @throws DescriptorRecordAlreadyExistsException If adding workflow already exists for the given owner.
+     * @throws DescriptorAlreadyExistsException If adding workflow already exists for the given owner.
      */
     public void addOwnerWorkflow (Workflow workflow, String owner) throws AiravataAPIInvocationException,
-            DescriptorRecordAlreadyExistsException;
+            DescriptorAlreadyExistsException;
 
     /**
      * Updates a given workflow. Only user who added the workflow will be able to update it.
@@ -206,7 +208,7 @@ public interface WorkflowManager {
      * @throws AiravataAPIInvocationException If an error occurred while adding a new workflow.
      */
     public void addWorkflowAsPublic (String workflowAsString) throws AiravataAPIInvocationException,
-            DescriptorRecordAlreadyExistsException;
+            DescriptorAlreadyExistsException;
 
     /**
      * Updates a given workflow. Only user who added the workflow will be able to update it.
@@ -222,7 +224,7 @@ public interface WorkflowManager {
      * @throws AiravataAPIInvocationException If an error occurred while adding a new workflow.
      */
     public void addWorkflowAsPublic (URI workflowUri) throws AiravataAPIInvocationException,
-            DescriptorRecordAlreadyExistsException;
+            DescriptorAlreadyExistsException;
 
     /**
      * Updates a given workflow. Only user who added the workflow will be able to update it.
@@ -240,7 +242,7 @@ public interface WorkflowManager {
      * @throws AiravataAPIInvocationException If an error occurred while adding a new workflow.
      */
     public void addWorkflow (String workflowAsString) throws AiravataAPIInvocationException,
-            DescriptorRecordAlreadyExistsException;
+            DescriptorAlreadyExistsException;
 
     /**
      * Updates a given workflow. Only user who added the workflow will be able to update it.
@@ -257,7 +259,7 @@ public interface WorkflowManager {
      * @throws AiravataAPIInvocationException If an error occurred while adding a new workflow.
      */
     public void addWorkflow (Workflow workflow) throws AiravataAPIInvocationException,
-            DescriptorRecordAlreadyExistsException;
+            DescriptorAlreadyExistsException;
 
     /**
      * Updates a given workflow. Only user who added the workflow will be able to update it.
@@ -274,7 +276,7 @@ public interface WorkflowManager {
      * @throws AiravataAPIInvocationException If an error occurred while adding a new workflow.
      */
     public void addWorkflow (URI workflowUri) throws AiravataAPIInvocationException,
-            DescriptorRecordAlreadyExistsException;
+            DescriptorAlreadyExistsException;
 
     /**
      * Updates a given workflow. Only user who added the workflow will be able to update it.

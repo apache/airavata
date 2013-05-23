@@ -27,16 +27,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.airavata.client.AiravataClient;
-import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.ApplicationManager;
-import org.apache.airavata.client.api.DescriptorRecordAlreadyExistsException;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
+import org.apache.airavata.client.api.exception.DescriptorAlreadyExistsException;
 import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.UnimplementedRegistryOperationException;
-import org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException;
 
 public class ApplicationManagerImpl implements ApplicationManager {
 	private AiravataClient client;
@@ -87,11 +86,11 @@ public class ApplicationManagerImpl implements ApplicationManager {
 
     @Override
     public void addServiceDescription(ServiceDescription serviceDescription) throws AiravataAPIInvocationException,
-            DescriptorRecordAlreadyExistsException {
+            DescriptorAlreadyExistsException {
         try {
             getClient().getRegistryClient().addServiceDescriptor(serviceDescription);
-        } catch (DescriptorAlreadyExistsException e) {
-            throw new DescriptorRecordAlreadyExistsException("Service descriptor "
+        } catch (org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException e) {
+            throw new DescriptorAlreadyExistsException("Service descriptor "
                     + serviceDescription.getType().getName()
                     + " already exists.", e);
         } catch (RegistryException e) {
@@ -169,13 +168,13 @@ public class ApplicationManagerImpl implements ApplicationManager {
     @Override
     public void addApplicationDescription(ServiceDescription serviceDescription, HostDescription hostDescription,
                                           ApplicationDescription applicationDeploymentDescription)
-            throws AiravataAPIInvocationException, DescriptorRecordAlreadyExistsException {
+            throws AiravataAPIInvocationException, DescriptorAlreadyExistsException {
 
         try {
             getClient().getRegistryClient().addApplicationDescriptor(serviceDescription.getType().getName(),
                     hostDescription.getType().getHostName(), applicationDeploymentDescription);
-        } catch (DescriptorAlreadyExistsException e) {
-            throw new DescriptorRecordAlreadyExistsException("Application descriptor " +
+        } catch (org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException e) {
+            throw new DescriptorAlreadyExistsException("Application descriptor " +
                     applicationDeploymentDescription.getType().getApplicationName().getStringValue()
                     + " already associated to host " + hostDescription.getType().getHostName()
                     + " and service " + serviceDescription.getType().getName(), e);
@@ -313,12 +312,12 @@ public class ApplicationManagerImpl implements ApplicationManager {
 
     @Override
     public void addHostDescription(HostDescription host) throws AiravataAPIInvocationException,
-            DescriptorRecordAlreadyExistsException {
+            DescriptorAlreadyExistsException {
 
         try {
             getClient().getRegistryClient().addHostDescriptor(host);
-        } catch (DescriptorAlreadyExistsException e) {
-            throw new DescriptorRecordAlreadyExistsException("Host descriptor " + host.getType().getHostName()
+        } catch (org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException e) {
+            throw new DescriptorAlreadyExistsException("Host descriptor " + host.getType().getHostName()
                     + " already exists.", e);
         } catch (RegistryException e) {
             throw new AiravataAPIInvocationException("An internal error occurred while trying to add host descriptor"

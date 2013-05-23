@@ -26,7 +26,7 @@ import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.registry.api.workflow.NodeExecutionError;
 import org.apache.airavata.workflow.model.graph.EPRPort;

@@ -31,7 +31,6 @@ import java.util.Observable;
 import javax.jcr.RepositoryException;
 
 import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.AiravataManager;
 import org.apache.airavata.client.api.ApplicationManager;
 import org.apache.airavata.client.api.ExecutionManager;
@@ -39,6 +38,7 @@ import org.apache.airavata.client.api.ProvenanceManager;
 import org.apache.airavata.client.api.UserManager;
 import org.apache.airavata.client.api.WorkflowManager;
 import org.apache.airavata.client.api.builder.DescriptorBuilder;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.client.impl.AiravataManagerImpl;
 import org.apache.airavata.client.impl.ApplicationManagerImpl;
 import org.apache.airavata.client.impl.ExecutionManagerImpl;

@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.workflow.model.wf.Workflow;
 //import org.apache.airavata.registry.api.AiravataRegistry2;

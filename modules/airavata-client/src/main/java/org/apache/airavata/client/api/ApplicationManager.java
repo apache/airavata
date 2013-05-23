@@ -24,6 +24,8 @@ package org.apache.airavata.client.api;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
+import org.apache.airavata.client.api.exception.DescriptorAlreadyExistsException;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
@@ -63,10 +65,10 @@ public interface ApplicationManager {
      * service descriptor use {@see #updateServiceDescription}.
      * @param serviceDescription The service descriptor.
      * @throws AiravataAPIInvocationException If an error occurred while adding service description.
-     * @throws DescriptorRecordAlreadyExistsException If service descriptor already exists in the system.
+     * @throws DescriptorAlreadyExistsException If service descriptor already exists in the system.
      */
     public void addServiceDescription(ServiceDescription serviceDescription)throws AiravataAPIInvocationException,
-            DescriptorRecordAlreadyExistsException;
+            DescriptorAlreadyExistsException;
 
     /**
      * Updates the service descriptor.
@@ -125,11 +127,11 @@ public interface ApplicationManager {
      * @param hostDescription The host description to associate, should have been saved before calling this method.
      * @param applicationDeploymentDescription The application descriptor to save.
      * @throws AiravataAPIInvocationException If an error occurred while saving application descriptor.
-     * @throws DescriptorRecordAlreadyExistsException If deployment descriptor already exists in the system.
+     * @throws DescriptorAlreadyExistsException If deployment descriptor already exists in the system.
      */
     public void addApplicationDescription(ServiceDescription serviceDescription, HostDescription hostDescription,
                                           ApplicationDescription applicationDeploymentDescription)
-        throws AiravataAPIInvocationException, DescriptorRecordAlreadyExistsException;
+        throws AiravataAPIInvocationException, DescriptorAlreadyExistsException;
 
     /**
      * Adds a new deployment description associating with given service description and given host description. If
@@ -219,10 +221,10 @@ public interface ApplicationManager {
      * {@see #updateHostDescription(HostDescription host)} method.
      * @param host The host descriptor object to save in the database.
      * @throws AiravataAPIInvocationException If an error occurred while saving the host description.
-     * @throws DescriptorRecordAlreadyExistsException If host descriptor object already exists in the system.
+     * @throws DescriptorAlreadyExistsException If host descriptor object already exists in the system.
      */
     public void addHostDescription (HostDescription host) throws AiravataAPIInvocationException,
-            DescriptorRecordAlreadyExistsException;
+            DescriptorAlreadyExistsException;
 
 
     /**

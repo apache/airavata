@@ -26,7 +26,7 @@ import java.net.URISyntaxException;
 
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.rest.client.PasswordCallbackImpl;
 import org.apache.airavata.ws.monitor.Monitor;

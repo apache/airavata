@@ -22,6 +22,7 @@
 package org.apache.airavata.client.impl;
 
 import org.apache.airavata.client.api.*;
+import org.apache.airavata.client.api.exception.AiravataAPIUnimplementedException;
 
 public class SecuritySettingsImpl implements SecuritySettings {
     private AmazonWebServicesSettings amazonWebServicesSettings = new AmazonWebServicesSettingsImpl();

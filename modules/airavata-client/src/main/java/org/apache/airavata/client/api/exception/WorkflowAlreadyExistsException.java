@@ -19,15 +19,25 @@
  *
  */
 
-package org.apache.airavata.client.api;
+package org.apache.airavata.client.api.exception;
 
-public class AiravataAPIUnimplementedException extends
-		AiravataAPIInvocationException {
+/**
+ * If a saving descriptor already found in the system this exception will be thrown.
+ */
+public class WorkflowAlreadyExistsException extends AiravataAPIInvocationException {
 
-	private static final long serialVersionUID = -8233342290087971830L;
+    private static final long serialVersionUID = 1231L;
 
-	public AiravataAPIUnimplementedException(String message) {
-		super(message);
-	}
+    public WorkflowAlreadyExistsException(Throwable e) {
+        super(e);
+    }
+
+    public WorkflowAlreadyExistsException(String message) {
+        super(message, null);
+    }
+
+    public WorkflowAlreadyExistsException(String message, Throwable e) {
+        super(message, e);
+    }
 
 }

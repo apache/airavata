@@ -32,7 +32,7 @@ import java.util.List;
 
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.AiravataAPIInvocationException;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
 import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
@@ -41,6 +41,7 @@ import org.apache.airavata.registry.api.workflow.InputData;
 import org.apache.airavata.registry.api.workflow.NodeExecutionData;
 import org.apache.airavata.registry.api.workflow.OutputData;
 import org.apache.airavata.rest.client.PasswordCallbackImpl;
+import org.apache.airavata.workflow.model.wf.InvalidDataFormatException;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +62,7 @@ public class RunWorkflow {
     private static AiravataAPI airavataAPI;
 
     public static void main(String[] args) throws AiravataAPIInvocationException, IOException, URISyntaxException,
-            ExperimentLazyLoadedException {
+            ExperimentLazyLoadedException, InvalidDataFormatException {
 
         // creating airavata client object //
         port = Integer.parseInt("8080");
@@ -84,7 +85,7 @@ public class RunWorkflow {
         // Saving workflow method, workflow file has the workflow Name set to EchoSample, so when we use saveWorkflow
         // method it will
         // save the workflow with that name.
-        airavataAPI.getWorkflowManager().saveWorkflow(getWorkflowComposeContent());
+        airavataAPI.getWorkflowManager().addWorkflow(getWorkflowComposeContent());
 
         // Now workflow has saved, Now we have to set inputs
         List<WorkflowInput> workflowInputs = new ArrayList<WorkflowInput>();

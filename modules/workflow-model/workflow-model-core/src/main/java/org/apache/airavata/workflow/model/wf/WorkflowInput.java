@@ -28,11 +28,11 @@ public class WorkflowInput {
 	private Object value;
 	private boolean optional;
 	
-	public WorkflowInput(String name,Object value) {
+	public WorkflowInput(String name,Object value) throws InvalidDataFormatException {
 		this(name, null, null, value, false);
 	}
 	
-	public WorkflowInput(String name,String type,Object defaultValue,Object value, boolean optional) {
+	public WorkflowInput(String name,String type,Object defaultValue,Object value, boolean optional) throws InvalidDataFormatException {
 		setName(name);
 		setType(type);
 		setDefaultValue(defaultValue);
@@ -68,7 +68,8 @@ public class WorkflowInput {
 		return value;
 	}
 	
-	public void setValue(Object value) {
+	public void setValue(Object value) throws InvalidDataFormatException {
+		//TODO validate against type
 		this.value = value;
 	}
 
