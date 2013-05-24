@@ -85,8 +85,8 @@ public class ApplicationManagerImpl implements ApplicationManager {
 	}
 
     @Override
-    public void addServiceDescription(ServiceDescription serviceDescription) throws AiravataAPIInvocationException,
-            DescriptorAlreadyExistsException {
+    public void addServiceDescription(ServiceDescription serviceDescription) throws DescriptorAlreadyExistsException,
+    		AiravataAPIInvocationException{
         try {
             getClient().getRegistryClient().addServiceDescriptor(serviceDescription);
         } catch (org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException e) {
@@ -168,7 +168,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
     @Override
     public void addApplicationDescription(ServiceDescription serviceDescription, HostDescription hostDescription,
                                           ApplicationDescription applicationDeploymentDescription)
-            throws AiravataAPIInvocationException, DescriptorAlreadyExistsException {
+            throws DescriptorAlreadyExistsException, AiravataAPIInvocationException{
 
         try {
             getClient().getRegistryClient().addApplicationDescriptor(serviceDescription.getType().getName(),
@@ -311,8 +311,8 @@ public class ApplicationManagerImpl implements ApplicationManager {
 	}
 
     @Override
-    public void addHostDescription(HostDescription host) throws AiravataAPIInvocationException,
-            DescriptorAlreadyExistsException {
+    public void addHostDescription(HostDescription host) throws DescriptorAlreadyExistsException,
+    		AiravataAPIInvocationException{
 
         try {
             getClient().getRegistryClient().addHostDescriptor(host);

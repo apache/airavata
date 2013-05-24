@@ -19,27 +19,16 @@
  *
  */
 
-package org.apache.airavata.client.api;
+package org.apache.airavata.registry.api.exception.worker;
 
+import org.apache.airavata.registry.api.exception.RegistryException;
 
-/**
- * @deprecated - {@use #org.apache.airavata.client.api.exception.DescriptorAlreadyExistsException} 
- * If a saving descriptor already found in the system this exception will be thrown.
- */
-public class DescriptorRecordAlreadyExistsException extends org.apache.airavata.client.api.exception.DescriptorAlreadyExistsException {
+public class GFacJobAlreadyExistsException extends RegistryException {
 
-    private static final long serialVersionUID = 1231L;
+	private static final long serialVersionUID = -8006347245307495767L;
 
-    public DescriptorRecordAlreadyExistsException(Throwable e) {
-        super(e);
-    }
-
-    public DescriptorRecordAlreadyExistsException(String message) {
-        super(message, null);
-    }
-
-    public DescriptorRecordAlreadyExistsException(String message, Throwable e) {
-        super(message, e);
-    }
+	public GFacJobAlreadyExistsException(String jobId) {
+		super("A GFac job from the ID '"+jobId+"' is already present in the registry!!!");
+	}
 
 }

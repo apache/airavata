@@ -223,8 +223,8 @@ public interface ApplicationManager {
      * @throws AiravataAPIInvocationException If an error occurred while saving the host description.
      * @throws DescriptorAlreadyExistsException If host descriptor object already exists in the system.
      */
-    public void addHostDescription (HostDescription host) throws AiravataAPIInvocationException,
-            DescriptorAlreadyExistsException;
+    public void addHostDescription (HostDescription host) throws DescriptorAlreadyExistsException,
+    		AiravataAPIInvocationException;
 
 
     /**

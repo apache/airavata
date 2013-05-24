@@ -165,7 +165,7 @@ public class UserWorkflowResourceClient {
             status = response.getStatus();
             if (status == ClientConstant.HTTP_BAD_REQUEST){
                 logger.debug("Workflow already exists...");
-                throw new UserWorkflowAlreadyExistsException(workflowName + " already exists !!!");
+                throw new UserWorkflowAlreadyExistsException(workflowName);
             }
             else if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
@@ -179,7 +179,7 @@ public class UserWorkflowResourceClient {
             }
         } else if (status == ClientConstant.HTTP_BAD_REQUEST){
             logger.debug("Descriptor already exists...");
-            throw new UserWorkflowAlreadyExistsException(workflowName + " already exists !!!");
+            throw new UserWorkflowAlreadyExistsException(workflowName);
         } else {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
