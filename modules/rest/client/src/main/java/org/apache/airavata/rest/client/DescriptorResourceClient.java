@@ -169,7 +169,7 @@ public class DescriptorResourceClient {
                         + status);
             }else if (status == ClientConstant.HTTP_BAD_REQUEST){
                 logger.debug("Descriptor already exists...");
-                throw new DescriptorAlreadyExistsException(hostDescription.getType().getHostName() + " already exists !!!");
+                throw new DescriptorAlreadyExistsException(hostDescription.getType().getHostName());
             } else {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
@@ -178,7 +178,7 @@ public class DescriptorResourceClient {
             }
         }else if (status == ClientConstant.HTTP_BAD_REQUEST){
             logger.debug("Descriptor already exists...");
-            throw new DescriptorAlreadyExistsException(hostDescription.getType().getHostName() + " already exists !!!");
+            throw new DescriptorAlreadyExistsException(hostDescription.getType().getHostName());
         }
         else {
             logger.error(response.getEntity(String.class));
@@ -498,7 +498,7 @@ public class DescriptorResourceClient {
 
             if (status == ClientConstant.HTTP_BAD_REQUEST){
                 logger.debug("Descriptor already exists...");
-                throw new DescriptorAlreadyExistsException(serviceDescriptor.getServiceName() + " already exists !!!");
+                throw new DescriptorAlreadyExistsException(serviceDescriptor.getServiceName());
             } else if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -511,7 +511,7 @@ public class DescriptorResourceClient {
             }
         } else if (status == ClientConstant.HTTP_BAD_REQUEST){
             logger.debug("Descriptor already exists...");
-            throw new DescriptorAlreadyExistsException(serviceDescriptor.getServiceName() + " already exists !!!");
+            throw new DescriptorAlreadyExistsException(serviceDescriptor.getServiceName());
         } else {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
@@ -783,7 +783,7 @@ public class DescriptorResourceClient {
 
             if (status == ClientConstant.HTTP_BAD_REQUEST){
                 logger.debug("Descriptor already exists...");
-                throw new DescriptorAlreadyExistsException(applicationDescriptor.getName() + " already exists !!!");
+                throw new DescriptorAlreadyExistsException(applicationDescriptor.getName());
             } else if (status != ClientConstant.HTTP_OK && status != ClientConstant.HTTP_UNAUTHORIZED) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -796,7 +796,7 @@ public class DescriptorResourceClient {
             }
         } else if (status == ClientConstant.HTTP_BAD_REQUEST){
             logger.debug("Descriptor already exists...");
-            throw new DescriptorAlreadyExistsException(applicationDescriptor.getName() + " already exists !!!");
+            throw new DescriptorAlreadyExistsException(applicationDescriptor.getName());
         } else {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
@@ -837,7 +837,7 @@ public class DescriptorResourceClient {
 
             if (status == ClientConstant.HTTP_BAD_REQUEST){
                 logger.debug("Descriptor already exists...");
-                throw new DescriptorAlreadyExistsException(applicationDescriptor.getName() + " already exists !!!");
+                throw new DescriptorAlreadyExistsException(applicationDescriptor.getName());
             } else if (status != ClientConstant.HTTP_OK) {
                 logger.error(response.getEntity(String.class));
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -850,7 +850,7 @@ public class DescriptorResourceClient {
             }
         } else if (status == ClientConstant.HTTP_BAD_REQUEST){
             logger.debug("Descriptor already exists...");
-            throw new DescriptorAlreadyExistsException(applicationDescriptor.getName() + " already exists !!!");
+            throw new DescriptorAlreadyExistsException(applicationDescriptor.getName());
         } else {
             logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
