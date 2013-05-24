@@ -93,8 +93,8 @@ public class WorkflowManagerImpl implements WorkflowManager {
 	}
 
     @Override
-    public void addOwnerWorkflow (Workflow workflow, String owner) throws AiravataAPIInvocationException,
-            WorkflowAlreadyExistsException {
+    public void addOwnerWorkflow (Workflow workflow, String owner) throws WorkflowAlreadyExistsException,
+    		AiravataAPIInvocationException{
         addWorkflow(workflow, XMLUtil.xmlElementToString(workflow.toXML()), owner);
     }
 
@@ -287,8 +287,8 @@ public class WorkflowManagerImpl implements WorkflowManager {
 	}
 
     @Override
-    public void addWorkflow (Workflow workflow) throws AiravataAPIInvocationException,
-            WorkflowAlreadyExistsException{
+    public void addWorkflow (Workflow workflow) throws WorkflowAlreadyExistsException,
+    		AiravataAPIInvocationException{
         addOwnerWorkflow(workflow, getCurrentUser());
     }
 
