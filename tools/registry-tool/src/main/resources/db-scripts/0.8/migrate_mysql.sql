@@ -39,3 +39,26 @@ CREATE TABLE Execution_Error
        FOREIGN KEY (workflow_instanceID) REFERENCES Workflow_Data(workflow_instanceID) ON DELETE CASCADE,
        FOREIGN KEY (experiment_ID) REFERENCES Experiment_Data(experiment_ID) ON DELETE CASCADE
 );
+
+create table GFac_Job_Data
+(
+       experiment_ID varchar(255),
+       workflow_instanceID varchar(255),
+       node_id varchar(255),
+       application_descriptor_ID varchar(255),
+       host_descriptor_ID varchar(255),
+       service_descriptor_ID varchar(255),
+       job_data LONGTEXT,
+       local_Job_ID varchar(255),
+       submitted_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
+       completed_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
+       status INT,
+       metadata LONGTEXT,
+       PRIMARY KEY(local_Job_ID),
+       FOREIGN KEY (experiment_ID) REFERENCES Experiment_Data(experiment_ID),
+       FOREIGN KEY (workflow_instanceID) REFERENCES Workflow_Data(workflow_instanceID)
+);
+
+INSERT INTO GFac_Job_Data(experiment_ID, workflow_instanceID, node_id, application_descriptor_ID, host_descriptor_ID, service_descriptor_ID,
+job_data, local_Job_ID, submitted_time, completed_time, status, metadata) SELECT null, workflow_instanceID, node_id, null, invoked_host,
+null, null, local_Job_ID, null, null, null, null FROM Gram_Data;
