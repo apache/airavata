@@ -57,8 +57,8 @@ public interface WorkflowManager {
      * @throws AiravataAPIInvocationException If an error occurred while adding a new workflow.
      * @throws WorkflowAlreadyExistsException If adding workflow already exists for the given owner.
      */
-    public void addOwnerWorkflow (String workflowAsString, String owner) throws AiravataAPIInvocationException,
-            WorkflowAlreadyExistsException;
+    public void addOwnerWorkflow (String workflowAsString, String owner) throws WorkflowAlreadyExistsException,
+			AiravataAPIInvocationException;
 
     /**
      * Adds a new workflow. Workflow is added to users private space. i.e. only user who added the
@@ -69,8 +69,8 @@ public interface WorkflowManager {
      * @throws AiravataAPIInvocationException If an error occurred while adding a new workflow.
      * @throws WorkflowAlreadyExistsException If adding workflow already exists for the given owner.
      */
-    public void addOwnerWorkflow (URI workflowPath, String owner) throws AiravataAPIInvocationException,
-            WorkflowAlreadyExistsException;
+    public void addOwnerWorkflow (URI workflowPath, String owner) throws WorkflowAlreadyExistsException,
+			AiravataAPIInvocationException;
 
     /**
      * Adds a new workflow. Workflow is added to users private space. i.e. only user who added the
@@ -81,8 +81,8 @@ public interface WorkflowManager {
      * @throws AiravataAPIInvocationException If an error occurred while adding a new workflow.
      * @throws WorkflowAlreadyExistsException If adding workflow already exists for the given owner.
      */
-    public void addOwnerWorkflow (Workflow workflow, String owner) throws AiravataAPIInvocationException,
-            WorkflowAlreadyExistsException;
+    public void addOwnerWorkflow (Workflow workflow, String owner) throws WorkflowAlreadyExistsException,
+			AiravataAPIInvocationException;
 
     /**
      * Updates a given workflow. Only user who added the workflow will be able to update it.
@@ -241,8 +241,8 @@ public interface WorkflowManager {
      * @param workflowAsString The new workflow to add and its content as a string.
      * @throws AiravataAPIInvocationException If an error occurred while adding a new workflow.
      */
-    public void addWorkflow (String workflowAsString) throws AiravataAPIInvocationException,
-            WorkflowAlreadyExistsException;
+    public void addWorkflow (String workflowAsString) throws WorkflowAlreadyExistsException,
+    		AiravataAPIInvocationException;
 
     /**
      * Updates a given workflow. Only user who added the workflow will be able to update it.
