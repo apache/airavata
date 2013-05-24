@@ -38,6 +38,7 @@ import org.apache.airavata.client.api.ExperimentAdvanceOptions;
 import org.apache.airavata.client.api.builder.DescriptorBuilder;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.exception.DescriptorAlreadyExistsException;
+import org.apache.airavata.client.api.exception.WorkflowAlreadyExistsException;
 import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -365,7 +366,7 @@ public class BaseCaseIT {
         try {
             airavataAPI.getWorkflowManager().addWorkflow(workflow);
             Assert.fail("Workflow should already exists and should go to update.");
-        } catch (DescriptorAlreadyExistsException e) {
+        } catch (WorkflowAlreadyExistsException e) {
 
             log("Updating workflow...");
             airavataAPI.getWorkflowManager().updateWorkflow(workflow);
