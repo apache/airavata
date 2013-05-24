@@ -264,6 +264,10 @@ public class ExperimentDataResource extends AbstractResource{
 		return isExists(ResourceType.WORKFLOW_DATA, workflowInstanceId);
     }
     
+    public boolean isGFacJobPresent(String jobId){
+		return isExists(ResourceType.GFAC_JOB_DATA, jobId);
+    }
+    
     public boolean isExperimentMetadataPresent(){
 		return isExists(ResourceType.EXPERIMENT_METADATA, getExperimentID());
     }
@@ -283,6 +287,12 @@ public class ExperimentDataResource extends AbstractResource{
     public WorkflowDataResource createWorkflowInstanceResource(String workflowInstanceID){
     	WorkflowDataResource r=(WorkflowDataResource)create(ResourceType.WORKFLOW_DATA);
     	r.setWorkflowInstanceID(workflowInstanceID);
+    	return r;
+    }
+    
+    public GFacJobDataResource createGFacJob(String jobID){
+    	GFacJobDataResource r=(GFacJobDataResource)create(ResourceType.GFAC_JOB_DATA);
+    	r.setLocalJobID(jobID);
     	return r;
     }
     

@@ -21,26 +21,24 @@
 
 package org.apache.airavata.client.api.exception;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class AiravataAPIInvocationException extends Exception {
-	private static final Logger log = LoggerFactory.getLogger(AiravataAPIInvocationException.class);
+	//private static final Logger log = LoggerFactory.getLogger(AiravataAPIInvocationException.class);
 
 	private static final long serialVersionUID = 1L;
 
 	public AiravataAPIInvocationException(Throwable e) {
 		super(e.getLocalizedMessage(), e);
-		log.error(e.getLocalizedMessage(),e);
+		//log.error(e.getLocalizedMessage(),e);
 	}
 	public AiravataAPIInvocationException(String message) {
 		super(message, null);
-		log.error(message);
+		//log.error(message);
 	}
 
 	public AiravataAPIInvocationException(String message, Throwable e) {
 		super(message, e);
-		log.error(message,e);
+		//log.error(message,e);
 	}
 
 }
