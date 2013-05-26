@@ -168,6 +168,9 @@ public class NodeDataResource extends AbstractResource{
         }
     }
 
+    public List<Resource> getGFacJobs(){
+    	return get(ResourceType.GFAC_JOB_DATA);
+    }
     public List<Resource> get(ResourceType type) {
         List<Resource> resourceList = new ArrayList<Resource>();
         EntityManager em = ResourceUtils.getEntityManager();
@@ -191,6 +194,8 @@ public class NodeDataResource extends AbstractResource{
                 break;
             case GFAC_JOB_DATA:
                 generator = new QueryGenerator(GFAC_JOB_DATA);
+                generator.setParameter(GFacJobDataConstants.EXPERIMENT_ID, workflowDataResource.getExperimentID());
+                generator.setParameter(GFacJobDataConstants.WORKFLOW_INSTANCE_ID, workflowDataResource.getWorkflowInstanceID());
                 generator.setParameter(GFacJobDataConstants.NODE_ID, nodeID);
                 q = generator.selectQuery(em);
                 results = q.getResultList();

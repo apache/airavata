@@ -40,7 +40,7 @@ public class PhoebusGridConfigurationHandler implements GridConfigurationHandler
     }
 
 	@Override
-	public void handleListDirFTPClientConfigurations(GridFTPClient client)
+	public void handleListDirFTPClientConfigurations(GridFTPClient client, String dirPath)
 			throws Exception {
     	//nothing to do
 	}
