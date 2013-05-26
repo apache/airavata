@@ -50,8 +50,9 @@ public interface GridConfigurationHandler {
 	/**
 	 * Do the configurations required for the GridFTPClient object which is going to list a directory
 	 * @param client
+	 * @param dirPath
 	 * @throws Exception
 	 */
-	public void handleListDirFTPClientConfigurations(GridFTPClient client) throws Exception;
+	public void handleListDirFTPClientConfigurations(GridFTPClient client, String dirPath) throws Exception;
 }
 

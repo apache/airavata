@@ -198,6 +198,26 @@ public class WorkerResource extends AbstractResource {
         em.close();
 		return result;
 	}
+	
+	public List<GFacJobDataResource> getGFacJobs(String serviceDescriptionId, String hostDescriptionId, String applicationDescriptionId){
+		List<GFacJobDataResource> result = new ArrayList<GFacJobDataResource>();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        QueryGenerator generator;
+        Query q;
+        generator = new QueryGenerator(GFAC_JOB_DATA);
+        generator.setParameter(GFacJobDataConstants.SERVICE_DESC_ID, serviceDescriptionId);
+        generator.setParameter(GFacJobDataConstants.HOST_DESC_ID, hostDescriptionId);
+        generator.setParameter(GFacJobDataConstants.APP_DESC_ID, applicationDescriptionId);
+        q = generator.selectQuery(em);
+        for (Object o : q.getResultList()) {
+            GFac_Job_Data gFacJobData = (GFac_Job_Data)o;
+            result.add((GFacJobDataResource)Utils.getResource(ResourceType.GFAC_JOB_DATA, gFacJobData));
+        }
+        em.getTransaction().commit();
+        em.close();
+		return result;
+	}
 
     /**
      *
@@ -424,6 +444,15 @@ public class WorkerResource extends AbstractResource {
 	public boolean isExperimentExists(String name){
 		return isExists(ResourceType.EXPERIMENT, name);
 	}
+	
+	/**
+	 * Returns of the gfac job record is present for the job id
+	 * @param jobId
+	 * @return
+	 */
+	public boolean isGFacJobExists(String jobId){
+		return isExists(ResourceType.GFAC_JOB_DATA, jobId);
+	}
 
     /**
      *
@@ -433,6 +462,10 @@ public class WorkerResource extends AbstractResource {
     public ExperimentResource getExperiment(String name){
 		return (ExperimentResource)get(ResourceType.EXPERIMENT, name);
 	}
+    
+    public GFacJobDataResource getGFacJob(String jobId){
+    	return (GFacJobDataResource)get(ResourceType.GFAC_JOB_DATA,jobId);
+    }
 
     /**
      *

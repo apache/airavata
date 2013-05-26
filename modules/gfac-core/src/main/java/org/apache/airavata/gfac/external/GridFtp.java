@@ -492,7 +492,7 @@ public class GridFtp {
 				srcClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
 				srcClient.setType(Session.TYPE_ASCII);
 				srcClient.changeDir(dirURI.getPath());
-				makelistDirExternalConfigurations(srcClient);
+				makelistDirExternalConfigurations(srcClient, srcClient.getCurrentDir());
 				
 				Vector<Object> fileInfo = null;
 				try {
@@ -605,11 +605,11 @@ public class GridFtp {
      * @param client
      * @param source
      */
-	private void makelistDirExternalConfigurations(GridFTPClient client) {
+	private void makelistDirExternalConfigurations(GridFTPClient client, String dirPath) {
 		GridConfigurationHandler[] handlers = GFacConfiguration.getGridConfigurationHandlers();
 		for(GridConfigurationHandler handler:handlers){
 			try {
-				handler.handleListDirFTPClientConfigurations(client);
+				handler.handleListDirFTPClientConfigurations(client, dirPath);
 			} catch (Exception e) {
 				//TODO Right now we are just catching & ignoring the exception. But later on we need
 				//to throw this exception to notify the user of configuration errors of their
