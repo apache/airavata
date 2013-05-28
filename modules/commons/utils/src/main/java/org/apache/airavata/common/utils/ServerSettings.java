@@ -56,6 +56,7 @@ public class ServerSettings extends ApplicationSettings{
     private static final String REGISTRY_DB_PASSWORD ="registry.jdbc.password";
     private static final String REGISTRY_DB_DRIVER ="registry.jdbc.driver";
     private static final String ENABLE_HTTPS = "enable.https";
+    private static final String HOST_SCHEDULER = "host.scheduler";
 
     public static String getDefaultGatewayId()throws ApplicationSettingsException{
     	return getSetting(DEFAULT_GATEWAY_ID);
@@ -170,5 +171,9 @@ public class ServerSettings extends ApplicationSettings{
 			}
 		}
 		return tomcatPort;
+    }
+
+    public static String getHostScheduler() throws ApplicationSettingsException {
+        return getSetting(HOST_SCHEDULER);
     }
 }

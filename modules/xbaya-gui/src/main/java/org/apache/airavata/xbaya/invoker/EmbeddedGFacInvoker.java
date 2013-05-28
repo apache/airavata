@@ -54,6 +54,7 @@ import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.context.security.AmazonSecurityContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
+import org.apache.airavata.gfac.scheduler.HostScheduler;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.schemas.gfac.BooleanArrayType;
@@ -293,12 +294,19 @@ public class EmbeddedGFacInvoker implements Invoker {
                  hostName = contextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray(0).getHostName();
                  }
              }
-        	//todo This is the basic scheduling, have to do proper scheduling implementation
+        	//todo This is the basic scheduling, have to do proper scheduling implementation by implementing HostScheduler interface
             ServiceDescription serviceDescription = airavataAPI.getApplicationManager().getServiceDescription(serviceName);
-            if(hostName == null){
-                registeredHost = Scheduler.pickaHost(airavataAPI, this.serviceName);
-            }else{
-            // if user specify a host, no matter what we pick that host for all the nodes, todo: allow users to specifi node specific host
+            if (hostName == null) {
+                List<HostDescription> registeredHosts = new ArrayList<HostDescription>();
+                Map<String, ApplicationDescription> applicationDescriptors = airavataAPI.getApplicationManager().getApplicationDescriptors(serviceName);
+                for (String hostDescName : applicationDescriptors.keySet()) {
+                    registeredHosts.add(airavataAPI.getApplicationManager().getHostDescription(hostDescName));
+                }
+                Class<? extends HostScheduler> aClass = Class.forName(ServerSettings.getHostScheduler()).asSubclass(HostScheduler.class);
+                HostScheduler hostScheduler = aClass.newInstance();
+                registeredHost = hostScheduler.schedule(registeredHosts);
+            } else {
+                // if user specify a host, no matter what we pick that host for all the nodes, todo: allow users to specifi node specific host
                 registeredHost = airavataAPI.getApplicationManager().getHostDescription(hostName);
             }
             ApplicationDescription applicationDescription =
