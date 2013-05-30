@@ -19,9 +19,30 @@
  *
 */
 package org.apache.airavata.gfac.utils;
+import org.apache.airavata.common.utils.Version;
 import org.globus.ftp.GridFTPClient;
 
 public interface GridConfigurationHandler {
+	public static class GridConfigurationHandlerException extends Exception{
+		private static final long serialVersionUID = 4009827774771871814L;
+
+		public GridConfigurationHandlerException(String message, Throwable e){
+			super(message,e);
+		}
+	}
+	
+	/**
+	 * A unique name for this GridConfigruationHandler
+	 * @return
+	 */
+	public String getHandlerName();
+	
+	/**
+	 * The version of this handler. 
+	 * Note: Given multiple versions of the same handler, the latest version will be used. 
+	 * @return
+	 */
+	public Version getHandlerVersion();
 
 	/**
 	 * Gets triggered if any GridFTP tasks other than mentioned below if called. This is there to 
@@ -30,7 +51,7 @@ public interface GridConfigurationHandler {
 	 * @param taskDescription - a description of the task that is being carried out.
 	 * @throws Exception
 	 */
-	public void handleFTPClientConfigurations(GridFTPClient client, String taskDescription) throws Exception;
+	public void handleFTPClientConfigurations(GridFTPClient client, String taskDescription) throws GridConfigurationHandlerException;
 
 	/**
 	 * Do the configurations required for the source GridFTPClient object
@@ -38,14 +59,14 @@ public interface GridConfigurationHandler {
 	 * @param destination - <code>null</code> if the transfer is to the local file-system 
 	 * @throws Exception
 	 */
-	public void handleFileTransferFTPClientConfigurations(GridFTPClient source, GridFTPClient destination) throws Exception;
+	public void handleFileTransferFTPClientConfigurations(GridFTPClient source, GridFTPClient destination) throws GridConfigurationHandlerException;
 
 	/**
 	 * Do the configurations required for the GridFTPClient object which is going to create a directory
 	 * @param client
 	 * @throws Exception
 	 */
-	public void handleMakeDirFTPClientConfigurations(GridFTPClient client, String dirPath) throws Exception;
+	public void handleMakeDirFTPClientConfigurations(GridFTPClient client, String dirPath) throws GridConfigurationHandlerException;
 	
 	/**
 	 * Do the configurations required for the GridFTPClient object which is going to list a directory
@@ -53,6 +74,6 @@ public interface GridConfigurationHandler {
 	 * @param dirPath
 	 * @throws Exception
 	 */
-	public void handleListDirFTPClientConfigurations(GridFTPClient client, String dirPath) throws Exception;
+	public void handleListDirFTPClientConfigurations(GridFTPClient client, String dirPath) throws GridConfigurationHandlerException;
 }
 

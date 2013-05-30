@@ -20,34 +20,51 @@
 */
 package org.apache.airavata.gfac.phoebus;
 
+import org.apache.airavata.common.utils.Version;
+import org.apache.airavata.common.utils.Version.BuildType;
 import org.apache.airavata.gfac.utils.GridConfigurationHandler;
 import org.apache.airavata.gfac.utils.PhoebusUtils;
 import org.globus.ftp.DataChannelAuthentication;
 import org.globus.ftp.GridFTPClient;
 
 public class PhoebusGridConfigurationHandler implements GridConfigurationHandler{
-
-    public void handleFileTransferFTPClientConfigurations(GridFTPClient source, GridFTPClient destination) throws Exception {
-        if (source!=null && PhoebusUtils.isPhoebusDriverConfigurationsDefined(source.getHost())) {
-            source.setDataChannelAuthentication(DataChannelAuthentication.NONE);
-            source.site("SITE SETNETSTACK phoebus:" + PhoebusUtils.getPhoebusDataChannelXIODriverParameters(source.getHost()));
-        }
+	private static String HANDLER_NAME="PHOEBUS";
+	
+    public void handleFileTransferFTPClientConfigurations(GridFTPClient source, GridFTPClient destination) throws GridConfigurationHandlerException {
+        try {
+			if (source!=null && PhoebusUtils.isPhoebusDriverConfigurationsDefined(source.getHost())) {
+			    source.setDataChannelAuthentication(DataChannelAuthentication.NONE);
+			    source.site("SITE SETNETSTACK phoebus:" + PhoebusUtils.getPhoebusDataChannelXIODriverParameters(source.getHost()));
+			}
+		} catch (Exception e) {
+			throw new GridConfigurationHandlerException("Error configuring for Phoebus handler: "+e.getLocalizedMessage(),e);
+		}
     }
 
     public void handleMakeDirFTPClientConfigurations(GridFTPClient client, String dirPath)
-            throws Exception {
+            throws GridConfigurationHandlerException {
     	//nothing to do
     }
 
 	@Override
 	public void handleListDirFTPClientConfigurations(GridFTPClient client, String dirPath)
-			throws Exception {
+			throws GridConfigurationHandlerException {
     	//nothing to do
 	}
 
 	@Override
 	public void handleFTPClientConfigurations(GridFTPClient client,
-			String taskDescription) throws Exception {
+			String taskDescription) throws GridConfigurationHandlerException {
     	//nothing to do
+	}
+
+	@Override
+	public String getHandlerName() {
+		return HANDLER_NAME;
+	}
+
+	@Override
+	public Version getHandlerVersion() {
+		return new Version(HANDLER_NAME, 1, 0, 0, null, BuildType.RC);
 	}
 }

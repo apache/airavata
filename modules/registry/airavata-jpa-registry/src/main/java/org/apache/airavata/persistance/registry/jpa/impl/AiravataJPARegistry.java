@@ -49,7 +49,6 @@ import org.apache.airavata.persistance.registry.jpa.resources.ExperimentMetadata
 import org.apache.airavata.persistance.registry.jpa.resources.ExperimentResource;
 import org.apache.airavata.persistance.registry.jpa.resources.GFacJobDataResource;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
-import org.apache.airavata.persistance.registry.jpa.resources.GramDataResource;
 import org.apache.airavata.persistance.registry.jpa.resources.HostDescriptorResource;
 import org.apache.airavata.persistance.registry.jpa.resources.NodeDataResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
@@ -1808,20 +1807,18 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         if (provenanceRegistry != null){
             provenanceRegistry.updateWorkflowNodeGramData(workflowNodeGramData);
         }else {
-            if (!isWorkflowInstanceNodePresent(workflowNodeGramData.getWorkflowInstanceId(),workflowNodeGramData.getNodeID(), true)){
-                throw new WorkflowInstanceNodeDoesNotExistsException(workflowNodeGramData.getWorkflowInstanceId(),workflowNodeGramData.getNodeID());
-            }
-            WorkflowDataResource workflowInstance = jpa.getWorker().getWorkflowInstance(workflowNodeGramData.getWorkflowInstanceId());
-            GramDataResource gramData;
-            if (workflowInstance.isGramDataExists(workflowNodeGramData.getNodeID())){
-                gramData = workflowInstance.getGramData(workflowNodeGramData.getNodeID());
-            }else{
-                gramData = workflowInstance.createGramData(workflowNodeGramData.getNodeID());
-            }
-            gramData.setInvokedHost(workflowNodeGramData.getInvokedHost());
-            gramData.setLocalJobID(workflowNodeGramData.getGramJobID());
-            gramData.setRsl(workflowNodeGramData.getRsl());
-            gramData.save();
+        	GFacJob job = new GFacJob();
+        	job.setJobId(workflowNodeGramData.getGramJobID());
+        	job.setMetadata(workflowNodeGramData.getInvokedHost());
+        	job.setExperimentId(workflowNodeGramData.getWorkflowInstanceId());
+        	job.setWorkflowExecutionId(workflowNodeGramData.getWorkflowInstanceId());
+        	job.setNodeId(workflowNodeGramData.getNodeID());
+        	job.setJobData(workflowNodeGramData.getRsl());
+        	if (isGFacJobExists(job.getJobId())){
+        		updateGFacJob(job);
+        	}else{
+        		addGFacJob(job);
+        	}
         }
 	}
 
