@@ -31,8 +31,8 @@ import org.apache.airavata.registry.api.workflow.ExperimentData;
 import org.apache.airavata.registry.api.workflow.ExperimentMetadata;
 import org.apache.airavata.registry.api.workflow.ExperimentName;
 import org.apache.airavata.registry.api.workflow.ExperimentUser;
-import org.apache.airavata.registry.api.workflow.GFacJob;
-import org.apache.airavata.registry.api.workflow.GFacJob.GFacJobStatus;
+import org.apache.airavata.registry.api.workflow.ApplicationJob;
+import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
 import org.apache.airavata.registry.api.workflow.NodeExecutionStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowExecution;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionData;
@@ -357,98 +357,104 @@ public interface ProvenanceManager {
 
     public void saveWorkflowExecutionOutput(String experimentId, String outputNodeName, String output) throws AiravataAPIInvocationException;
 
-     public void updateWorkflowNodeGramData(WorkflowNodeGramData data) throws AiravataAPIInvocationException;
+    /**
+     * @deprecated - Will be removed from 0.9 release onwards. Use {@see #addApplicationJob #updateApplicationJob(ApplucationJob) etc.} functions instead.
+     * This will store the gram specific data in to repository, this can be called before submitting the workflow in to Grid
+     * @param data
+     * @throws AiravataAPIInvocationException
+     */
+    public void updateWorkflowNodeGramData(WorkflowNodeGramData data) throws AiravataAPIInvocationException;
      
- 	/*---------------------------------------  Managing Data for GFac Jobs ------------------------------------------*/
+ 	/*---------------------------------------  Managing Data for Application Jobs ------------------------------------------*/
 
      /**
-      * Returns <code>true</code> if a gfac job data is existing in Airavata
-      * @param gfacJobId
+      * Returns <code>true</code> if a Application job data is existing in Airavata
+      * @param jobId
       * @return
       * @throws RegistryException
       */
-     public boolean isGFacJobExists(String gfacJobId) throws AiravataAPIInvocationException;
+     public boolean isApplicationJobExists(String jobId) throws AiravataAPIInvocationException;
      
      /**
-      * Adding data related to a new GFac job submission
+      * Adding data related to a new Application job submission
       * @param job - the <code>jobId</code> cannot be <code>null</code>.
       * @throws AiravataAPIInvocationException
       */
-     public void addGFacJob(GFacJob job) throws AiravataAPIInvocationException;
+     public void addApplicationJob(ApplicationJob job) throws AiravataAPIInvocationException;
      
      /**
-      * Update data related to a existing GFac job record in Airavata
+      * Update data related to a existing Application job record in Airavata
       * @param job - the <code>jobId</code> cannot be <code>null</code> and should already exist in Airavata
       * @throws AiravataAPIInvocationException
       */
-     public void updateGFacJob(GFacJob job) throws AiravataAPIInvocationException;
+     public void updateApplicationJob(ApplicationJob job) throws AiravataAPIInvocationException;
      
      /**
       * Update the status of the job
-      * @param gfacJobId
+      * @param jobId
       * @param status
       * @throws AiravataAPIInvocationException
       */
-     public void updateGFacJobStatus(String gfacJobId, GFacJobStatus status) throws AiravataAPIInvocationException;
+     public void updateApplicationJobStatus(String jobId, ApplicationJobStatus status) throws AiravataAPIInvocationException;
      
      /**
       * Update the job data. GFacProvider implementation should decide the job data. Typically it'll 
       * be a serialization of the submitted job query (eg: rsl for a GRAM job) 
-      * @param gfacJobId
+      * @param jobId
       * @param jobdata
       * @throws AiravataAPIInvocationException
       */
-     public void updateGFacJobData(String gfacJobId, String jobdata) throws AiravataAPIInvocationException;
+     public void updateApplicationJobData(String jobId, String jobdata) throws AiravataAPIInvocationException;
      
      /**
       * Update the time of job submission or job started executing
-      * @param gfacJobId
+      * @param jobId
       * @param submitted
       * @throws AiravataAPIInvocationException
       */
-     public void updateGFacJobSubmittedTime(String gfacJobId, Date submitted) throws AiravataAPIInvocationException;
+     public void updateApplicationJobSubmittedTime(String jobId, Date submitted) throws AiravataAPIInvocationException;
      
      /**
       * Update the time of job finished executing.
-      * @param gfacJobId
+      * @param jobId
       * @param completed
       * @throws AiravataAPIInvocationException
       */
-     public void updateGFacJobCompletedTime(String gfacJobId, Date completed) throws AiravataAPIInvocationException;
+     public void updateApplicationJobCompletedTime(String jobId, Date completed) throws AiravataAPIInvocationException;
      
      /**
       * Custom data field for users
-      * @param gfacJobId
+      * @param jobId
       * @param metadata
       * @throws AiravataAPIInvocationException
       */
-     public void updateGFacJobMetadata(String gfacJobId, String metadata) throws AiravataAPIInvocationException;
+     public void updateApplicationJobMetadata(String jobId, String metadata) throws AiravataAPIInvocationException;
      
      /**
-      * Retrieve the GFac Job for the given job id
-      * @param gfacJobId
+      * Retrieve the Application Job for the given job id
+      * @param jobId
       * @return
       * @throws AiravataAPIInvocationException
       */
-     public GFacJob getGFacJob(String gfacJobId) throws AiravataAPIInvocationException;
+     public ApplicationJob getApplicationJob(String jobId) throws AiravataAPIInvocationException;
      
      /**
-      * Retrieve a list of GFac jobs executed for the given descriptors
+      * Retrieve a list of Application jobs executed for the given descriptors
       * @param serviceDescriptionId - should be <code>null</code> if user does not care what service description the job corresponds to
       * @param hostDescriptionId - should be <code>null</code> if user does not care what host description the job corresponds to
       * @param applicationDescriptionId - should be <code>null</code> if user does not care what application description the job corresponds to
       * @return
       * @throws AiravataAPIInvocationException
       */
-     public List<GFacJob> getGFacJobsForDescriptors(String serviceDescriptionId, String hostDescriptionId, String applicationDescriptionId) throws AiravataAPIInvocationException;
+     public List<ApplicationJob> getApplicationJobsForDescriptors(String serviceDescriptionId, String hostDescriptionId, String applicationDescriptionId) throws AiravataAPIInvocationException;
      
      /**
-      * Retrieve a list of GFac jobs executed for the given experiment credentials
+      * Retrieve a list of Application jobs executed for the given experiment credentials
       * @param experimentId - should be <code>null</code> if user does not care what experiment the job corresponds to
       * @param workflowExecutionId -  - should be <code>null</code> if user does not care what workflow execution the job corresponds to
       * @param nodeId  - should be <code>null</code> if user does not care what node id the job corresponds to
       * @return
       * @throws AiravataAPIInvocationException
       */
-     public List<GFacJob> getGFacJobs(String experimentId, String workflowExecutionId, String nodeId) throws AiravataAPIInvocationException;
+     public List<ApplicationJob> getApplicationJobs(String experimentId, String workflowExecutionId, String nodeId) throws AiravataAPIInvocationException;
 }

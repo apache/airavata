@@ -27,7 +27,7 @@ public class ExecutionErrors {
 		EXPERIMENT,
 		WORKFLOW,
 		NODE,
-		GFAC
+		APPLICATION
 	}
 	
 }

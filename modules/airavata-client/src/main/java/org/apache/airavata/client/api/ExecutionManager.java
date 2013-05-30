@@ -27,7 +27,7 @@ import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.ExecutionErrors;
 import org.apache.airavata.registry.api.workflow.ExecutionError;
 import org.apache.airavata.registry.api.workflow.ExperimentExecutionError;
-import org.apache.airavata.registry.api.workflow.GFacJobExecutionError;
+import org.apache.airavata.registry.api.workflow.ApplicationJobExecutionError;
 import org.apache.airavata.registry.api.workflow.NodeExecutionError;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionError;
 import org.apache.airavata.workflow.model.wf.Workflow;
@@ -148,35 +148,35 @@ public interface ExecutionManager {
     public List<NodeExecutionError> getNodeExecutionErrors(String experimentId, String workflowInstanceId, String nodeId) throws AiravataAPIInvocationException;
     
     /**
-     * Return errors defined for a GFac job 
+     * Return errors defined for a Application job 
      * @param experimentId
      * @param workflowInstanceId
      * @param nodeId
-     * @param gfacJobId
+     * @param jobId
      * @return
      * @throws AiravataAPIInvocationException
      */
-    public List<GFacJobExecutionError> getGFacJobErrors(String experimentId, String workflowInstanceId, String nodeId, String gfacJobId) throws AiravataAPIInvocationException;
+    public List<ApplicationJobExecutionError> getApplicationJobErrors(String experimentId, String workflowInstanceId, String nodeId, String jobId) throws AiravataAPIInvocationException;
 
     /**
-     * Return errors defined for a GFac job 
-     * @param gfacJobId
+     * Return errors defined for a Application job 
+     * @param jobId
      * @return
      * @throws AiravataAPIInvocationException
      */
-    public List<GFacJobExecutionError> getGFacJobErrors(String gfacJobId) throws AiravataAPIInvocationException;
+    public List<ApplicationJobExecutionError> getApplicationJobErrors(String jobId) throws AiravataAPIInvocationException;
 
     /**
      * Return errors filtered by the parameters
      * @param experimentId 
      * @param workflowInstanceId
      * @param nodeId
-     * @param gfacJobId
+     * @param jobId
      * @param filterBy - what type of source types the results should contain
      * @return
      * @throws AiravataAPIInvocationException
      */
-    public List<ExecutionError> getExecutionErrors(String experimentId, String workflowInstanceId, String nodeId, String gfacJobId, ExecutionErrors.Source...filterBy) throws AiravataAPIInvocationException;
+    public List<ExecutionError> getExecutionErrors(String experimentId, String workflowInstanceId, String nodeId, String jobId, ExecutionErrors.Source...filterBy) throws AiravataAPIInvocationException;
 
     /**
      * Adds an experiment execution error 
@@ -203,11 +203,11 @@ public interface ExecutionManager {
     public int addNodeExecutionError(NodeExecutionError error) throws AiravataAPIInvocationException;
 
     /**
-     * Adds an GFac job execution error 
+     * Adds an Application job execution error 
      * @param error
      * @return
      * @throws AiravataAPIInvocationException
      */
-    public int addGFacJobExecutionError(GFacJobExecutionError error) throws AiravataAPIInvocationException;
+    public int addApplicationJobExecutionError(ApplicationJobExecutionError error) throws AiravataAPIInvocationException;
 
 }

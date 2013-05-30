@@ -23,12 +23,12 @@ package org.apache.airavata.registry.api.exception.worker;
 
 import org.apache.airavata.registry.api.exception.RegistryException;
 
-public class GFacJobAlreadyExistsException extends RegistryException {
+public class ApplicationJobDoesNotExistsException extends RegistryException {
 
 	private static final long serialVersionUID = -8006347245307495767L;
 
-	public GFacJobAlreadyExistsException(String jobId) {
-		super("A GFac job from the ID '"+jobId+"' is already present in the registry!!!");
+	public ApplicationJobDoesNotExistsException(String jobId) {
+		super("There is no Application job corresponding to ID '"+jobId+"' present in the registry!!!");
 	}
 
 }

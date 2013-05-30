@@ -1438,7 +1438,7 @@ public class ProvenanceRegistryResource {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             GFacErrorsList gFacErrorsList = new GFacErrorsList();
-            List<GFacJobExecutionError> gFacJobErrors = airavataRegistry.getGFacJobErrors(experimentId, workflowInstanceId, nodeId, gfacJobId);
+            List<ApplicationJobExecutionError> gFacJobErrors = airavataRegistry.getApplicationJobErrors(experimentId, workflowInstanceId, nodeId, gfacJobId);
             if (gFacJobErrors.size() != 0) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 gFacErrorsList.setgFacJobExecutionErrorList(gFacJobErrors);
@@ -1464,7 +1464,7 @@ public class ProvenanceRegistryResource {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             GFacErrorsList gFacErrorsList = new GFacErrorsList();
-            List<GFacJobExecutionError> gFacJobErrors = airavataRegistry.getGFacJobErrors(gfacJobId);
+            List<ApplicationJobExecutionError> gFacJobErrors = airavataRegistry.getApplicationJobErrors(gfacJobId);
             if (gFacJobErrors.size() != 0) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 gFacErrorsList.setgFacJobExecutionErrorList(gFacJobErrors);
@@ -1598,10 +1598,10 @@ public class ProvenanceRegistryResource {
     @Path(ResourcePathConstants.ProvenanceResourcePathConstants.ADD_GFAC_ERROR)
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces(MediaType.TEXT_PLAIN)
-    public Response addGFacJobExecutionError(GFacJobExecutionError error) {
+    public Response addGFacJobExecutionError(ApplicationJobExecutionError error) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            int errorID = airavataRegistry.addGFacJobExecutionError(error);
+            int errorID = airavataRegistry.addApplicationJobExecutionError(error);
             if (errorID != 0){
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity(errorID);
@@ -1623,10 +1623,10 @@ public class ProvenanceRegistryResource {
     @Path(ResourcePathConstants.ProvenanceResourcePathConstants.ADD_GFAC_JOB)
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces(MediaType.TEXT_PLAIN)
-    public Response addGFacJob(GFacJob job) {
+    public Response addGFacJob(ApplicationJob job) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            airavataRegistry.addGFacJob(job);
+            airavataRegistry.addApplicationJob(job);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("GFac Job added successfully");
             return builder.build();
@@ -1643,10 +1643,10 @@ public class ProvenanceRegistryResource {
     @Path(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB)
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces(MediaType.TEXT_PLAIN)
-    public Response updateGFacJob(GFacJob job) {
+    public Response updateGFacJob(ApplicationJob job) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            airavataRegistry.updateGFacJob(job);
+            airavataRegistry.updateApplicationJob(job);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("GFac Job updated successfully");
             return builder.build();
@@ -1667,8 +1667,8 @@ public class ProvenanceRegistryResource {
                                         @FormParam("gfacJobStatus") String gfacJobStatus ) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            GFacJob.GFacJobStatus status = GFacJob.GFacJobStatus.valueOf(gfacJobStatus);
-            airavataRegistry.updateGFacJobStatus(gfacJobID, status);
+            ApplicationJob.ApplicationJobStatus status = ApplicationJob.ApplicationJobStatus.valueOf(gfacJobStatus);
+            airavataRegistry.updateApplicationJobStatus(gfacJobID, status);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("GFac Job status updated successfully");
             return builder.build();
@@ -1689,7 +1689,7 @@ public class ProvenanceRegistryResource {
                                       @FormParam("jobdata") String jobdata ) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            airavataRegistry.updateGFacJobData(gfacJobID, jobdata);
+            airavataRegistry.updateApplicationJobData(gfacJobID, jobdata);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("GFac Job data updated successfully");
             return builder.build();
@@ -1712,7 +1712,7 @@ public class ProvenanceRegistryResource {
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date formattedDate = dateFormat.parse(submittedDate);
-            airavataRegistry.updateGFacJobSubmittedTime(gfacJobID, formattedDate);
+            airavataRegistry.updateApplicationJobSubmittedTime(gfacJobID, formattedDate);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("GFac Job data submitted date updated successfully");
             return builder.build();
@@ -1735,7 +1735,7 @@ public class ProvenanceRegistryResource {
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date formattedDate = dateFormat.parse(completedDate);
-            airavataRegistry.updateGFacJobCompletedTime(gfacJobID, formattedDate);
+            airavataRegistry.updateApplicationJobCompletedTime(gfacJobID, formattedDate);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("GFac Job data completed date updated successfully");
             return builder.build();
@@ -1756,7 +1756,7 @@ public class ProvenanceRegistryResource {
                                           @FormParam("metadata") String metadata ) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            airavataRegistry.updateGFacJobMetadata(gfacJobID, metadata);
+            airavataRegistry.updateApplicationJobMetadata(gfacJobID, metadata);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("GFac Job metadata updated successfully");
             return builder.build();
@@ -1775,7 +1775,7 @@ public class ProvenanceRegistryResource {
     public Response getGFacJob(@QueryParam("gfacJobId") String gfacJobId){
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            GFacJob gFacJob = airavataRegistry.getGFacJob(gfacJobId);
+            ApplicationJob gFacJob = airavataRegistry.getApplicationJob(gfacJobId);
             if (gFacJob != null) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity(gFacJob);
@@ -1802,7 +1802,7 @@ public class ProvenanceRegistryResource {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             GFacJobList gFacJobList = new GFacJobList();
-            List<GFacJob> gFacJobsForDescriptors = airavataRegistry.getGFacJobsForDescriptors(serviceDescriptionId, hostDescriptionId, applicationDescriptionId);
+            List<ApplicationJob> gFacJobsForDescriptors = airavataRegistry.getApplicationJobsForDescriptors(serviceDescriptionId, hostDescriptionId, applicationDescriptionId);
             gFacJobList.setJobList(gFacJobsForDescriptors);
             if (gFacJobsForDescriptors.size() != 0) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -1830,7 +1830,7 @@ public class ProvenanceRegistryResource {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             GFacJobList gFacJobList = new GFacJobList();
-            List<GFacJob> gFacJobsForDescriptors = airavataRegistry.getGFacJobsForDescriptors(experimentID, workflowInstanceID, nodeID);
+            List<ApplicationJob> gFacJobsForDescriptors = airavataRegistry.getApplicationJobsForDescriptors(experimentID, workflowInstanceID, nodeID);
             gFacJobList.setJobList(gFacJobsForDescriptors);
             if (gFacJobsForDescriptors.size() != 0) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
@@ -1855,7 +1855,7 @@ public class ProvenanceRegistryResource {
     public Response isGFacJobExists(@QueryParam("gfacJobId") String gfacJobId){
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
-            boolean gFacJobExists = airavataRegistry.isGFacJobExists(gfacJobId);
+            boolean gFacJobExists = airavataRegistry.isApplicationJobExists(gfacJobId);
             if (gFacJobExists) {
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity("true");

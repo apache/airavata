@@ -44,7 +44,7 @@ import org.apache.airavata.common.workflow.execution.context.WorkflowContextHead
 import org.apache.airavata.registry.api.ExecutionErrors.Source;
 import org.apache.airavata.registry.api.workflow.ExecutionError;
 import org.apache.airavata.registry.api.workflow.ExperimentExecutionError;
-import org.apache.airavata.registry.api.workflow.GFacJobExecutionError;
+import org.apache.airavata.registry.api.workflow.ApplicationJobExecutionError;
 import org.apache.airavata.registry.api.workflow.NodeExecutionError;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionError;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus;
@@ -396,11 +396,11 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	}
 
 	@Override
-	public List<GFacJobExecutionError> getGFacJobErrors(String experimentId,
+	public List<ApplicationJobExecutionError> getApplicationJobErrors(String experimentId,
 			String workflowInstanceId, String nodeId, String gfacJobId)
 			throws AiravataAPIInvocationException {
 		try {
-			return getClient().getRegistryClient().getGFacJobErrors(experimentId, 
+			return getClient().getRegistryClient().getApplicationJobErrors(experimentId, 
 					workflowInstanceId, nodeId, gfacJobId);
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
@@ -408,10 +408,10 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	}
 
 	@Override
-	public List<GFacJobExecutionError> getGFacJobErrors(String gfacJobId)
+	public List<ApplicationJobExecutionError> getApplicationJobErrors(String gfacJobId)
 			throws AiravataAPIInvocationException {
 		try {
-			return getClient().getRegistryClient().getGFacJobErrors(gfacJobId);
+			return getClient().getRegistryClient().getApplicationJobErrors(gfacJobId);
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
@@ -460,10 +460,10 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	}
 
 	@Override
-	public int addGFacJobExecutionError(GFacJobExecutionError error)
+	public int addApplicationJobExecutionError(ApplicationJobExecutionError error)
 			throws AiravataAPIInvocationException {
 		try {
-			return getClient().getRegistryClient().addGFacJobExecutionError(error);
+			return getClient().getRegistryClient().addApplicationJobExecutionError(error);
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}

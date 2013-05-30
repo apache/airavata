@@ -20,7 +20,7 @@
  */
 package org.apache.airavata.rest.mappings.resourcemappings;
 
-import org.apache.airavata.registry.api.workflow.GFacJob;
+import org.apache.airavata.registry.api.workflow.ApplicationJob;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
@@ -28,13 +28,13 @@ import java.util.List;
 
 @XmlRootElement
 public class GFacJobList {
-    List<GFacJob> jobList = new ArrayList<GFacJob>();
+    List<ApplicationJob> jobList = new ArrayList<ApplicationJob>();
 
-    public List<GFacJob> getJobList() {
+    public List<ApplicationJob> getJobList() {
         return jobList;
     }
 
-    public void setJobList(List<GFacJob> jobList) {
+    public void setJobList(List<ApplicationJob> jobList) {
         this.jobList = jobList;
     }
 }
