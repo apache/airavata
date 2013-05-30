@@ -28,8 +28,8 @@ import java.util.Date;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class GFacJob {
-	public static enum GFacJobStatus{
+public class ApplicationJob {
+	public static enum ApplicationJobStatus{
 		SUBMITTED, //job is submitted, possibly waiting to start executing
 		EXECUTING, //submitted job is being executed
 		CANCELLED, //job was cancelled
@@ -53,7 +53,7 @@ public class GFacJob {
 	
 	private Date submittedTime;
 	private Date completedTime;
-	private GFacJobStatus jobStatus;
+	private ApplicationJobStatus jobStatus;
 	
 	private String metadata;
 
@@ -137,11 +137,11 @@ public class GFacJob {
 		this.completedTime = completedTime;
 	}
 
-	public GFacJobStatus getJobStatus() {
+	public ApplicationJobStatus getJobStatus() {
 		return jobStatus;
 	}
 
-	public void setJobStatus(GFacJobStatus jobStatus) {
+	public void setJobStatus(ApplicationJobStatus jobStatus) {
 		this.jobStatus = jobStatus;
 	}
 

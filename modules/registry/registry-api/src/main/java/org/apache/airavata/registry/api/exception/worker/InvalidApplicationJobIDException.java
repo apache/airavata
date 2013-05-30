@@ -23,12 +23,12 @@ package org.apache.airavata.registry.api.exception.worker;
 
 import org.apache.airavata.registry.api.exception.RegistryException;
 
-public class InvalidGFacJobIDException extends RegistryException {
+public class InvalidApplicationJobIDException extends RegistryException {
 
 	private static final long serialVersionUID = -8006347245307495767L;
 
-	public InvalidGFacJobIDException() {
-		super("The GFac job ID cannot be null or empty!!!");
+	public InvalidApplicationJobIDException() {
+		super("The Application job ID cannot be null or empty!!!");
 	}
 
 }

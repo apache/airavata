@@ -27,11 +27,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class GFacJobExecutionError extends ExecutionError {
+public class ApplicationJobExecutionError extends ExecutionError {
 	private String experimentId;
 	private String workflowInstanceId;
 	private String nodeId;
-	private String gfacJobId;
+	private String jobId;
 
 	public String getExperimentId() {
 		return experimentId;
@@ -57,11 +57,11 @@ public class GFacJobExecutionError extends ExecutionError {
 		this.nodeId = nodeId;
 	}
 
-	public String getGfacJobId() {
-		return gfacJobId;
+	public String getJobId() {
+		return jobId;
 	}
 
-	public void setGfacJobId(String gfacJobId) {
-		this.gfacJobId = gfacJobId;
+	public void setJobId(String jobId) {
+		this.jobId = jobId;
 	}
 }

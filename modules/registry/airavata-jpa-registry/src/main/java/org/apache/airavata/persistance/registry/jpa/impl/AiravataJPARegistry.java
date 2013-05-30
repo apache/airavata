@@ -88,9 +88,9 @@ import org.apache.airavata.registry.api.exception.gateway.PublishedWorkflowAlrea
 import org.apache.airavata.registry.api.exception.gateway.PublishedWorkflowDoesNotExistsException;
 import org.apache.airavata.registry.api.exception.worker.ExperimentDoesNotExistsException;
 import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
-import org.apache.airavata.registry.api.exception.worker.GFacJobAlreadyExistsException;
-import org.apache.airavata.registry.api.exception.worker.GFacJobDoesNotExistsException;
-import org.apache.airavata.registry.api.exception.worker.InvalidGFacJobIDException;
+import org.apache.airavata.registry.api.exception.worker.ApplicationJobAlreadyExistsException;
+import org.apache.airavata.registry.api.exception.worker.ApplicationJobDoesNotExistsException;
+import org.apache.airavata.registry.api.exception.worker.InvalidApplicationJobIDException;
 import org.apache.airavata.registry.api.exception.worker.UserWorkflowAlreadyExistsException;
 import org.apache.airavata.registry.api.exception.worker.UserWorkflowDoesNotExistsException;
 import org.apache.airavata.registry.api.exception.worker.WorkflowInstanceAlreadyExistsException;
@@ -104,9 +104,9 @@ import org.apache.airavata.registry.api.util.RegistryConstants;
 import org.apache.airavata.registry.api.workflow.ExecutionError;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
 import org.apache.airavata.registry.api.workflow.ExperimentExecutionError;
-import org.apache.airavata.registry.api.workflow.GFacJob;
-import org.apache.airavata.registry.api.workflow.GFacJob.GFacJobStatus;
-import org.apache.airavata.registry.api.workflow.GFacJobExecutionError;
+import org.apache.airavata.registry.api.workflow.ApplicationJob;
+import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
+import org.apache.airavata.registry.api.workflow.ApplicationJobExecutionError;
 import org.apache.airavata.registry.api.workflow.NodeExecutionData;
 import org.apache.airavata.registry.api.workflow.NodeExecutionError;
 import org.apache.airavata.registry.api.workflow.NodeExecutionStatus;
@@ -1807,17 +1807,17 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         if (provenanceRegistry != null){
             provenanceRegistry.updateWorkflowNodeGramData(workflowNodeGramData);
         }else {
-        	GFacJob job = new GFacJob();
+        	ApplicationJob job = new ApplicationJob();
         	job.setJobId(workflowNodeGramData.getGramJobID());
         	job.setMetadata(workflowNodeGramData.getInvokedHost());
         	job.setExperimentId(workflowNodeGramData.getWorkflowInstanceId());
         	job.setWorkflowExecutionId(workflowNodeGramData.getWorkflowInstanceId());
         	job.setNodeId(workflowNodeGramData.getNodeID());
         	job.setJobData(workflowNodeGramData.getRsl());
-        	if (isGFacJobExists(job.getJobId())){
-        		updateGFacJob(job);
+        	if (isApplicationJobExists(job.getJobId())){
+        		updateApplicationJob(job);
         	}else{
-        		addGFacJob(job);
+        		addApplicationJob(job);
         	}
         }
 	}
@@ -2082,19 +2082,19 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 	@Override
-	public List<GFacJobExecutionError> getGFacJobErrors(String experimentId,
+	public List<ApplicationJobExecutionError> getApplicationJobErrors(String experimentId,
 			String workflowInstanceId, String nodeId, String gfacJobId)
 			throws RegistryException {
 		if (provenanceRegistry != null){
-            return provenanceRegistry.getGFacJobErrors(experimentId, workflowInstanceId, nodeId, gfacJobId);
+            return provenanceRegistry.getApplicationJobErrors(experimentId, workflowInstanceId, nodeId, gfacJobId);
         }
-		List<GFacJobExecutionError> result=new ArrayList<GFacJobExecutionError>();
-		List<ExecutionErrorResource> executionErrors = jpa.getWorker().getExperiment(experimentId).getData().getExecutionErrors(Source.GFAC.toString(), experimentId, workflowInstanceId, nodeId, gfacJobId);
+		List<ApplicationJobExecutionError> result=new ArrayList<ApplicationJobExecutionError>();
+		List<ExecutionErrorResource> executionErrors = jpa.getWorker().getExperiment(experimentId).getData().getExecutionErrors(Source.APPLICATION.toString(), experimentId, workflowInstanceId, nodeId, gfacJobId);
 		for (ExecutionErrorResource errorResource : executionErrors) {
-			GFacJobExecutionError error = new GFacJobExecutionError();
+			ApplicationJobExecutionError error = new ApplicationJobExecutionError();
 			setupValues(errorResource, error);
 			error.setExperimentId(errorResource.getExperimentDataResource().getExperimentID());
-			error.setGfacJobId(errorResource.getGfacJobID());
+			error.setJobId(errorResource.getGfacJobID());
 			error.setNodeId(errorResource.getNodeID());
 			error.setWorkflowInstanceId(errorResource.getWorkflowDataResource().getWorkflowInstanceID());
 			result.add(error);
@@ -2116,12 +2116,12 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 	@Override
-	public List<GFacJobExecutionError> getGFacJobErrors(String gfacJobId)
+	public List<ApplicationJobExecutionError> getApplicationJobErrors(String gfacJobId)
 			throws RegistryException {
 		if (provenanceRegistry != null){
-            return provenanceRegistry.getGFacJobErrors(gfacJobId);
+            return provenanceRegistry.getApplicationJobErrors(gfacJobId);
         }
-		return getGFacJobErrors(null, null, null, gfacJobId);
+		return getApplicationJobErrors(null, null, null, gfacJobId);
 	}
 
 	@Override
@@ -2137,7 +2137,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 				errors.addAll(getExperimentExecutionErrors(experimentId));
 				errors.addAll(getWorkflowExecutionErrors(experimentId, workflowInstanceId));
 				errors.addAll(getNodeExecutionErrors(experimentId, workflowInstanceId, nodeId));
-				errors.addAll(getGFacJobErrors(experimentId, workflowInstanceId, nodeId, gfacJobId));
+				errors.addAll(getApplicationJobErrors(experimentId, workflowInstanceId, nodeId, gfacJobId));
 				break;
 			} else if (sourceType==Source.EXPERIMENT){
 				errors.addAll(getExperimentExecutionErrors(experimentId));
@@ -2145,8 +2145,8 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 				errors.addAll(getWorkflowExecutionErrors(experimentId, workflowInstanceId));
 			} else if (sourceType==Source.NODE){
 				errors.addAll(getNodeExecutionErrors(experimentId, workflowInstanceId, nodeId));
-			} else if (sourceType==Source.GFAC){
-				errors.addAll(getGFacJobErrors(experimentId, workflowInstanceId, nodeId, gfacJobId));
+			} else if (sourceType==Source.APPLICATION){
+				errors.addAll(getApplicationJobErrors(experimentId, workflowInstanceId, nodeId, gfacJobId));
 			}
 		}
 		return errors;
@@ -2230,29 +2230,29 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 	@Override
-	public int addGFacJobExecutionError(GFacJobExecutionError error)
+	public int addApplicationJobExecutionError(ApplicationJobExecutionError error)
 			throws RegistryException {
 		if (provenanceRegistry != null){
-            return provenanceRegistry.addGFacJobExecutionError(error);
+            return provenanceRegistry.addApplicationJobExecutionError(error);
         }
-		ExecutionErrorResource executionError = createNewExecutionErrorResource(error.getExperimentId(),error, Source.GFAC);
+		ExecutionErrorResource executionError = createNewExecutionErrorResource(error.getExperimentId(),error, Source.APPLICATION);
 		executionError.setWorkflowDataResource(jpa.getWorker().getExperiment(error.getExperimentId()).getData().getWorkflowInstance(error.getWorkflowInstanceId()));
 		executionError.setNodeID(error.getNodeId());
-		executionError.setGfacJobID(error.getGfacJobId());
+		executionError.setGfacJobID(error.getJobId());
 		executionError.save();
 		return executionError.getErrorID();
 	}
 
 	@Override
-	public void addGFacJob(GFacJob job) throws RegistryException {
+	public void addApplicationJob(ApplicationJob job) throws RegistryException {
 		if (provenanceRegistry != null){
-            provenanceRegistry.addGFacJob(job);
+            provenanceRegistry.addApplicationJob(job);
         }
 		if (job.getJobId()==null || job.getJobId().equals("")){
-			throw new InvalidGFacJobIDException();
+			throw new InvalidApplicationJobIDException();
 		}
-		if (isGFacJobExists(job.getJobId())){
-			throw new GFacJobAlreadyExistsException(job.getJobId());
+		if (isApplicationJobExists(job.getJobId())){
+			throw new ApplicationJobAlreadyExistsException(job.getJobId());
 		}
 		if (!isWorkflowInstanceNodePresent(job.getWorkflowExecutionId(), job.getNodeId())){
 			throw new WorkflowInstanceNodeDoesNotExistsException(job.getWorkflowExecutionId(), job.getNodeId());
@@ -2266,7 +2266,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		gfacJob.save();
 	}
 
-	private void setupValues(GFacJob job, GFacJobDataResource gfacJob) {
+	private void setupValues(ApplicationJob job, GFacJobDataResource gfacJob) {
 		gfacJob.setApplicationDescID(job.getApplicationDescriptionId());
 		gfacJob.setCompletedTime(new Timestamp(job.getCompletedTime().getTime()));
 		gfacJob.setHostDescID(job.getHostDescriptionId());
@@ -2278,27 +2278,27 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 	@Override
-	public void updateGFacJob(GFacJob job) throws RegistryException {
+	public void updateApplicationJob(ApplicationJob job) throws RegistryException {
 		GFacJobDataResource gFacJob = validateAndGetGFacJob(job.getJobId());
 		setupValues(job, gFacJob);
 		gFacJob.save();
 	}
 
 	private GFacJobDataResource validateAndGetGFacJob(String jobId)
-			throws InvalidGFacJobIDException, RegistryException,
-			GFacJobDoesNotExistsException {
+			throws InvalidApplicationJobIDException, RegistryException,
+			ApplicationJobDoesNotExistsException {
 		if (jobId==null || jobId.equals("")){
-			throw new InvalidGFacJobIDException();
+			throw new InvalidApplicationJobIDException();
 		}
-		if (!isGFacJobExists(jobId)){
-			throw new GFacJobDoesNotExistsException(jobId);
+		if (!isApplicationJobExists(jobId)){
+			throw new ApplicationJobDoesNotExistsException(jobId);
 		}
 		GFacJobDataResource gFacJob = jpa.getWorker().getGFacJob(jobId);
 		return gFacJob;
 	}
 
 	@Override
-	public void updateGFacJobStatus(String gfacJobId, GFacJobStatus status)
+	public void updateApplicationJobStatus(String gfacJobId, ApplicationJobStatus status)
 			throws RegistryException {
 		GFacJobDataResource gFacJob = validateAndGetGFacJob(gfacJobId);
 		gFacJob.setStatus(status.toString());
@@ -2306,7 +2306,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 	@Override
-	public void updateGFacJobData(String gfacJobId, String jobdata)
+	public void updateApplicationJobData(String gfacJobId, String jobdata)
 			throws RegistryException {
 		GFacJobDataResource gFacJob = validateAndGetGFacJob(gfacJobId);
 		gFacJob.setJobData(jobdata);
@@ -2314,7 +2314,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 	@Override
-	public void updateGFacJobSubmittedTime(String gfacJobId, Date submitted)
+	public void updateApplicationJobSubmittedTime(String gfacJobId, Date submitted)
 			throws RegistryException {
 		GFacJobDataResource gFacJob = validateAndGetGFacJob(gfacJobId);
 		gFacJob.setSubmittedTime(new Timestamp(submitted.getTime()));
@@ -2322,7 +2322,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 	@Override
-	public void updateGFacJobCompletedTime(String gfacJobId, Date completed)
+	public void updateApplicationJobCompletedTime(String gfacJobId, Date completed)
 			throws RegistryException {
 		GFacJobDataResource gFacJob = validateAndGetGFacJob(gfacJobId);
 		gFacJob.setCompletedTime(new Timestamp(completed.getTime()));
@@ -2330,7 +2330,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 	@Override
-	public void updateGFacJobMetadata(String gfacJobId, String metadata)
+	public void updateApplicationJobMetadata(String gfacJobId, String metadata)
 			throws RegistryException {
 		GFacJobDataResource gFacJob = validateAndGetGFacJob(gfacJobId);
 		gFacJob.setMetadata(metadata);
@@ -2338,21 +2338,21 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 	@Override
-	public GFacJob getGFacJob(String gfacJobId) throws RegistryException {
+	public ApplicationJob getApplicationJob(String gfacJobId) throws RegistryException {
 		GFacJobDataResource gfacJob = validateAndGetGFacJob(gfacJobId);
-		GFacJob job = new GFacJob();
+		ApplicationJob job = new ApplicationJob();
 		setupValues(gfacJob, job);
 		return job;
 	}
 
-	private void setupValues(GFacJobDataResource gfacJob, GFacJob job) {
+	private void setupValues(GFacJobDataResource gfacJob, ApplicationJob job) {
 		job.setApplicationDescriptionId(gfacJob.getApplicationDescID());
 		job.setCompletedTime(gfacJob.getCompletedTime());
 		job.setExperimentId(gfacJob.getExperimentDataResource().getExperimentID());
 		job.setHostDescriptionId(gfacJob.getHostDescID());
 		job.setJobData(gfacJob.getJobData());
 		job.setJobId(gfacJob.getLocalJobID());
-		job.setJobStatus(GFacJobStatus.valueOf(gfacJob.getStatus()));
+		job.setJobStatus(ApplicationJobStatus.valueOf(gfacJob.getStatus()));
 		job.setMetadata(gfacJob.getMetadata());
 		job.setNodeId(gfacJob.getNodeID());
 		job.setServiceDescriptionId(gfacJob.getServiceDescID());
@@ -2361,13 +2361,13 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 	@Override
-	public List<GFacJob> getGFacJobsForDescriptors(String serviceDescriptionId,
+	public List<ApplicationJob> getApplicationJobsForDescriptors(String serviceDescriptionId,
 			String hostDescriptionId, String applicationDescriptionId)
 			throws RegistryException {
-		List<GFacJob> jobs=new ArrayList<GFacJob>();
+		List<ApplicationJob> jobs=new ArrayList<ApplicationJob>();
 		List<GFacJobDataResource> gFacJobs = jpa.getWorker().getGFacJobs(serviceDescriptionId,hostDescriptionId,applicationDescriptionId);
 		for (GFacJobDataResource resource : gFacJobs) {
-			GFacJob job = new GFacJob();
+			ApplicationJob job = new ApplicationJob();
 			setupValues(resource, job);
 			jobs.add(job);
 		}
@@ -2375,15 +2375,15 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 	@Override
-	public List<GFacJob> getGFacJobs(String experimentId,
+	public List<ApplicationJob> getApplicationJobs(String experimentId,
 			String workflowExecutionId, String nodeId) throws RegistryException {
 		if (!isWorkflowInstanceNodePresent(workflowExecutionId, nodeId)){
 			throw new WorkflowInstanceNodeDoesNotExistsException(workflowExecutionId, nodeId);
 		}
-		List<GFacJob> jobs=new ArrayList<GFacJob>();
+		List<ApplicationJob> jobs=new ArrayList<ApplicationJob>();
 		List<Resource> gFacJobs = jpa.getWorker().getExperiment(experimentId).getData().getWorkflowInstance(workflowExecutionId).getNodeData(nodeId).getGFacJobs();
 		for (Resource resource : gFacJobs) {
-			GFacJob job = new GFacJob();
+			ApplicationJob job = new ApplicationJob();
 			setupValues((GFacJobDataResource)resource, job);
 			jobs.add(job);
 		}
@@ -2391,7 +2391,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 	@Override
-	public boolean isGFacJobExists(String gfacJobId) throws RegistryException {
+	public boolean isApplicationJobExists(String gfacJobId) throws RegistryException {
 		return jpa.getWorker().isGFacJobExists(gfacJobId);
 	}
 

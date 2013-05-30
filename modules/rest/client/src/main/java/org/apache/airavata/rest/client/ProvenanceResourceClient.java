@@ -1949,7 +1949,7 @@ public class ProvenanceResourceClient {
         return nodeErrorsList.getNodeExecutionErrorList();
     }
 
-    public List<GFacJobExecutionError> getGFacJobErrors(String experimentId,
+    public List<ApplicationJobExecutionError> getGFacJobErrors(String experimentId,
                                                         String workflowInstanceId,
                                                         String nodeId,
                                                         String gfacJobId){
@@ -2002,7 +2002,7 @@ public class ProvenanceResourceClient {
         return gFacErrorsList.getgFacJobExecutionErrorList();
     }
 
-    public List<GFacJobExecutionError> getGFacJobErrors(String gfacJobId){
+    public List<ApplicationJobExecutionError> getGFacJobErrors(String gfacJobId){
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.GET_ALL_GFAC_ERRORS);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
@@ -2229,7 +2229,7 @@ public class ProvenanceResourceClient {
         return 0;
     }
 
-    public int addGFacJobExecutionError(GFacJobExecutionError error){
+    public int addGFacJobExecutionError(ApplicationJobExecutionError error){
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.ADD_GFAC_ERROR);
         builder = BasicAuthHeaderUtil.getBuilder(
@@ -2269,7 +2269,7 @@ public class ProvenanceResourceClient {
         return 0;
     }
 
-    public void addGFacJob(GFacJob job) {
+    public void addGFacJob(ApplicationJob job) {
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.ADD_GFAC_JOB);
         builder = BasicAuthHeaderUtil.getBuilder(
@@ -2306,7 +2306,7 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public void updateGFacJob(GFacJob job) {
+    public void updateGFacJob(ApplicationJob job) {
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB);
         builder = BasicAuthHeaderUtil.getBuilder(
@@ -2343,7 +2343,7 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public void updateGFacJobStatus(String gfacJobId, GFacJob.GFacJobStatus status) {
+    public void updateGFacJobStatus(String gfacJobId, ApplicationJob.ApplicationJobStatus status) {
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB_STATUS);
         MultivaluedMap formParams = new MultivaluedMapImpl();
@@ -2548,7 +2548,7 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public GFacJob getGFacJob(String gfacJobId){
+    public ApplicationJob getGFacJob(String gfacJobId){
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.GET_GFAC_JOB);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
@@ -2590,11 +2590,11 @@ public class ProvenanceResourceClient {
                     + status);
         }
 
-        GFacJob gFacJob = response.getEntity(GFacJob.class);
+        ApplicationJob gFacJob = response.getEntity(ApplicationJob.class);
         return gFacJob;
     }
 
-    public List<GFacJob> getGFacJobsForDescriptors(String serviceDescriptionId,
+    public List<ApplicationJob> getGFacJobsForDescriptors(String serviceDescriptionId,
                                                    String hostDescriptionId,
                                                    String applicationDescriptionId){
         webResource = getProvenanceRegistryBaseResource().path(
@@ -2644,7 +2644,7 @@ public class ProvenanceResourceClient {
         return gFacJobList.getJobList();
     }
 
-    public List<GFacJob> getGFacJobs(String experimentId,
+    public List<ApplicationJob> getGFacJobs(String experimentId,
                                      String workflowExecutionId,
                                      String nodeId) {
         webResource = getProvenanceRegistryBaseResource().path(
