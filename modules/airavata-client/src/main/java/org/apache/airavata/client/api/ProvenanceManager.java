@@ -393,9 +393,10 @@ public interface ProvenanceManager {
       * Update the status of the job
       * @param jobId
       * @param status
+      * @param statusUpdateTime
       * @throws AiravataAPIInvocationException
       */
-     public void updateApplicationJobStatus(String jobId, ApplicationJobStatus status) throws AiravataAPIInvocationException;
+     public void updateApplicationJobStatus(String jobId, ApplicationJobStatus status, Date statusUpdateTime) throws AiravataAPIInvocationException;
      
      /**
       * Update the job data. GFacProvider implementation should decide the job data. Typically it'll 
@@ -415,12 +416,12 @@ public interface ProvenanceManager {
      public void updateApplicationJobSubmittedTime(String jobId, Date submitted) throws AiravataAPIInvocationException;
      
      /**
-      * Update the time of job finished executing.
+      * Update the time of current job status is valid.
       * @param jobId
-      * @param completed
+      * @param statusUpdateTime
       * @throws AiravataAPIInvocationException
       */
-     public void updateApplicationJobCompletedTime(String jobId, Date completed) throws AiravataAPIInvocationException;
+     public void updateApplicationJobStatusUpdateTime(String jobId, Date statusUpdateTime) throws AiravataAPIInvocationException;
      
      /**
       * Custom data field for users

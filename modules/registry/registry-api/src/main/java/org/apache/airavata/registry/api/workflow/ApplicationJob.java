@@ -31,12 +31,15 @@ import java.util.Date;
 public class ApplicationJob {
 	public static enum ApplicationJobStatus{
 		SUBMITTED, //job is submitted, possibly waiting to start executing
+		INITIALIZE, //job is being initialized 
+		PENDING, //job is pending to be started
 		EXECUTING, //submitted job is being executed
-		CANCELLED, //job was cancelled
 		PAUSED, //job was paused
 		WAITING_FOR_DATA, // job is waiting for data to continue executing
-		FAILED, // error occurred while job was executing and the job stopped
+		FINALIZE, //job is being initialized 
 		FINISHED, // job completed successfully
+		FAILED, // error occurred while job was executing and the job stopped
+		CANCELLED, //job was cancelled
 		UNKNOWN // unknown status. lookup the metadata for more details.
 	}
 	
@@ -52,7 +55,7 @@ public class ApplicationJob {
 	private String jobData;
 	
 	private Date submittedTime;
-	private Date completedTime;
+	private Date statusUpdateTime;
 	private ApplicationJobStatus jobStatus;
 	
 	private String metadata;
@@ -129,12 +132,12 @@ public class ApplicationJob {
 		this.submittedTime = submittedTime;
 	}
 
-	public Date getCompletedTime() {
-		return completedTime;
+	public Date getStatusUpdateTime() {
+		return statusUpdateTime;
 	}
 
-	public void setCompletedTime(Date completedTime) {
-		this.completedTime = completedTime;
+	public void setStatusUpdateTime(Date statusUpdateTime) {
+		this.statusUpdateTime = statusUpdateTime;
 	}
 
 	public ApplicationJobStatus getJobStatus() {
