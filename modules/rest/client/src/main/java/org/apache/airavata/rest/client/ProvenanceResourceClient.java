@@ -2343,12 +2343,15 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public void updateGFacJobStatus(String gfacJobId, ApplicationJob.ApplicationJobStatus status) {
+    public void updateGFacJobStatus(String gfacJobId, ApplicationJob.ApplicationJobStatus status, Date statusUpdateTime) {
         webResource = getProvenanceRegistryBaseResource().path(
                 ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB_STATUS);
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String submittedDate = dateFormat.format(statusUpdateTime);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("gfacJobID", gfacJobId);
         formParams.add("gfacJobStatus", status.toString());
+        formParams.add("statusUpdateDate", submittedDate);
         builder = BasicAuthHeaderUtil.getBuilder(
                 webResource, null, userName, null, cookie, gateway);
         ClientResponse response = builder.accept(

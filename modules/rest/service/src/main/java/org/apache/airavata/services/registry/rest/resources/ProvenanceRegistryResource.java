@@ -1664,11 +1664,14 @@ public class ProvenanceRegistryResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces(MediaType.TEXT_PLAIN)
     public Response updateGFacJobStatus(@FormParam("gfacJobID") String gfacJobID,
-                                        @FormParam("gfacJobStatus") String gfacJobStatus ) {
+                                        @FormParam("gfacJobStatus") String gfacJobStatus,
+                                        @FormParam("statusUpdateDate") String statusUpdatedDate ) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             ApplicationJob.ApplicationJobStatus status = ApplicationJob.ApplicationJobStatus.valueOf(gfacJobStatus);
-            airavataRegistry.updateApplicationJobStatus(gfacJobID, status);
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date formattedDate = dateFormat.parse(statusUpdatedDate);
+            airavataRegistry.updateApplicationJobStatus(gfacJobID, status, formattedDate);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("GFac Job status updated successfully");
             return builder.build();
@@ -1735,7 +1738,7 @@ public class ProvenanceRegistryResource {
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date formattedDate = dateFormat.parse(completedDate);
-            airavataRegistry.updateApplicationJobCompletedTime(gfacJobID, formattedDate);
+            airavataRegistry.updateApplicationJobStatusUpdateTime(gfacJobID, formattedDate);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity("GFac Job data completed date updated successfully");
             return builder.build();

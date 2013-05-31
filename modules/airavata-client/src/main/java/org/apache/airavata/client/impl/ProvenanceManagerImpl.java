@@ -521,10 +521,10 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	}
 
 	@Override
-	public void updateApplicationJobStatus(String gfacJobId, ApplicationJobStatus status)
+	public void updateApplicationJobStatus(String gfacJobId, ApplicationJobStatus status, Date statusUpdateTime)
 			throws AiravataAPIInvocationException {
 		try {
-			client.getRegistryClient().updateApplicationJobStatus(gfacJobId, status);
+			client.getRegistryClient().updateApplicationJobStatus(gfacJobId, status, statusUpdateTime);
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
@@ -551,10 +551,10 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	}
 
 	@Override
-	public void updateApplicationJobCompletedTime(String gfacJobId, Date completed)
+	public void updateApplicationJobStatusUpdateTime(String gfacJobId, Date completed)
 			throws AiravataAPIInvocationException {
 		try {
-			client.getRegistryClient().updateApplicationJobCompletedTime(gfacJobId, completed);
+			client.getRegistryClient().updateApplicationJobStatusUpdateTime(gfacJobId, completed);
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}

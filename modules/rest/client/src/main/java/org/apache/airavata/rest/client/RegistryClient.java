@@ -914,9 +914,9 @@ public class RegistryClient extends AiravataRegistry2 {
 	}
 
 	@Override
-	public void updateApplicationJobStatus(String gfacJobId, ApplicationJobStatus status)
+	public void updateApplicationJobStatus(String gfacJobId, ApplicationJobStatus status, Date statusUpdateTime)
 			throws RegistryException {
-        getProvenanceResourceClient().updateGFacJobStatus(gfacJobId, status);
+        getProvenanceResourceClient().updateGFacJobStatus(gfacJobId, status, statusUpdateTime);
 		
 	}
 
@@ -935,7 +935,7 @@ public class RegistryClient extends AiravataRegistry2 {
 	}
 
 	@Override
-	public void updateApplicationJobCompletedTime(String gfacJobId, Date completed)
+	public void updateApplicationJobStatusUpdateTime(String gfacJobId, Date completed)
 			throws RegistryException {
         getProvenanceResourceClient().updateGFacJobCompletedTime(gfacJobId, completed);
 		
