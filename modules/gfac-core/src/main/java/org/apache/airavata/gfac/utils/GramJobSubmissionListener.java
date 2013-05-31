@@ -20,10 +20,14 @@
 */
 package org.apache.airavata.gfac.utils;
 
+import java.util.Calendar;
+
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.notification.events.StatusChangeEvent;
+import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
 import org.globus.gram.GramException;
 import org.globus.gram.GramJob;
 import org.globus.gram.GramJobListener;
@@ -79,6 +83,13 @@ public class GramJobSubmissionListener implements GramJobListener{
                             break;
                         }
                     } else {
+                    	try {
+                			if (context.getGFacConfiguration().getAiravataAPI()!=null){
+                				context.getGFacConfiguration().getAiravataAPI().getProvenanceManager().updateApplicationJobStatusUpdateTime(job.getIDAsString(), Calendar.getInstance().getTime());
+                			}
+                		} catch (AiravataAPIInvocationException e) {
+                			e.printStackTrace();
+                		}
                         log.info("job " + job.getIDAsString() + " have same status: "
                                 + GramJob.getStatusAsString(status));
                     }
@@ -91,11 +102,39 @@ public class GramJobSubmissionListener implements GramJobListener{
         }
     }
 
+    private ApplicationJobStatus getApplicationJobStatus(int gramStatus){
+    	switch(gramStatus){
+    	case GramJob.STATUS_ACTIVE:
+    		return ApplicationJobStatus.EXECUTING;
+    	case GramJob.STATUS_DONE:
+    		return ApplicationJobStatus.FINISHED;
+    	case GramJob.STATUS_FAILED:
+    		return ApplicationJobStatus.FAILED;
+    	case GramJob.STATUS_PENDING:
+    		return ApplicationJobStatus.PENDING;
+    	case GramJob.STATUS_STAGE_IN:
+    		return ApplicationJobStatus.INITIALIZE;
+    	case GramJob.STATUS_STAGE_OUT:
+    		return ApplicationJobStatus.FINALIZE;
+    	case GramJob.STATUS_SUSPENDED:
+    		return ApplicationJobStatus.PAUSED;
+    	default:
+    		return ApplicationJobStatus.UNKNOWN;
+    	}
+    }
+    
     private synchronized boolean isFinished() {
         return this.finished;
     }
 
     private synchronized boolean setStatus(int status, int error) {
+    	try {
+			if (context.getGFacConfiguration().getAiravataAPI()!=null){
+				context.getGFacConfiguration().getAiravataAPI().getProvenanceManager().updateApplicationJobStatus(job.getIDAsString(), getApplicationJobStatus(status), Calendar.getInstance().getTime());
+			}
+		} catch (AiravataAPIInvocationException e) {
+			e.printStackTrace();
+		}
         this.status = status;
         this.error = error;
 
