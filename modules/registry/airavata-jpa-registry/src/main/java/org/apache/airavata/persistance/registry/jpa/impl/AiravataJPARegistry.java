@@ -2268,7 +2268,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
 	private void setupValues(ApplicationJob job, GFacJobDataResource gfacJob) {
 		gfacJob.setApplicationDescID(job.getApplicationDescriptionId());
-		gfacJob.setCompletedTime(new Timestamp(job.getStatusUpdateTime().getTime()));
+		gfacJob.setStatusUpdateTime(new Timestamp(job.getStatusUpdateTime().getTime()));
 		gfacJob.setHostDescID(job.getHostDescriptionId());
 		gfacJob.setJobData(job.getJobData());
 		gfacJob.setMetadata(job.getMetadata());
@@ -2302,7 +2302,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 			throws RegistryException {
 		GFacJobDataResource gFacJob = validateAndGetGFacJob(gfacJobId);
 		gFacJob.setStatus(status.toString());
-		gFacJob.setCompletedTime(new Timestamp(statusUpdateTime.getTime()));
+		gFacJob.setStatusUpdateTime(new Timestamp(statusUpdateTime.getTime()));
 		gFacJob.save();
 	}
 
@@ -2326,7 +2326,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	public void updateApplicationJobStatusUpdateTime(String gfacJobId, Date completed)
 			throws RegistryException {
 		GFacJobDataResource gFacJob = validateAndGetGFacJob(gfacJobId);
-		gFacJob.setCompletedTime(new Timestamp(completed.getTime()));
+		gFacJob.setStatusUpdateTime(new Timestamp(completed.getTime()));
 		gFacJob.save();
 	}
 
@@ -2348,7 +2348,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
 	private void setupValues(GFacJobDataResource gfacJob, ApplicationJob job) {
 		job.setApplicationDescriptionId(gfacJob.getApplicationDescID());
-		job.setStatusUpdateTime(gfacJob.getCompletedTime());
+		job.setStatusUpdateTime(gfacJob.getStatusUpdateTime());
 		job.setExperimentId(gfacJob.getExperimentDataResource().getExperimentID());
 		job.setHostDescriptionId(gfacJob.getHostDescID());
 		job.setJobData(gfacJob.getJobData());
