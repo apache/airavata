@@ -622,7 +622,7 @@ public class Utils {
         gFacJobDataResource.setJobData(o.getJob_data());
         gFacJobDataResource.setLocalJobID(o.getLocal_Job_ID());
         gFacJobDataResource.setSubmittedTime(o.getSubmitted_time());
-        gFacJobDataResource.setCompletedTime(o.getCompleted_time());
+        gFacJobDataResource.setStatusUpdateTime(o.getStatus_update_time());
         gFacJobDataResource.setStatus(o.getStatus());
         gFacJobDataResource.setMetadata(o.getMetadata());
         return gFacJobDataResource;

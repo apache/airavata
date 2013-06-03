@@ -28,7 +28,6 @@ import org.apache.airavata.persistance.registry.jpa.model.GFac_Job_Data;
 import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.security.timestamp.TimestampToken;
 
 import javax.persistence.EntityManager;
 import java.sql.Timestamp;
@@ -45,7 +44,7 @@ public class GFacJobDataResource extends AbstractResource {
     private String jobData;
     private String localJobID;
     private Timestamp submittedTime;
-    private Timestamp completedTime;
+    private Timestamp statusUpdateTime;
     private String status;
     private String metadata;
 
@@ -85,8 +84,8 @@ public class GFacJobDataResource extends AbstractResource {
         return submittedTime;
     }
 
-    public Timestamp getCompletedTime() {
-        return completedTime;
+    public Timestamp getStatusUpdateTime() {
+        return statusUpdateTime;
     }
 
     public String getStatus() {
@@ -133,8 +132,8 @@ public class GFacJobDataResource extends AbstractResource {
         this.submittedTime = submittedTime;
     }
 
-    public void setCompletedTime(Timestamp completedTime) {
-        this.completedTime = completedTime;
+    public void setStatusUpdateTime(Timestamp statusUpdateTime) {
+        this.statusUpdateTime = statusUpdateTime;
     }
 
     public void setStatus(String status) {
@@ -191,7 +190,7 @@ public class GFacJobDataResource extends AbstractResource {
         gFacJobData.setHost_descriptor_ID(hostDescID);
         gFacJobData.setJob_data(jobData);
         gFacJobData.setSubmitted_time(submittedTime);
-        gFacJobData.setCompleted_time(completedTime);
+        gFacJobData.setStatus_update_time(statusUpdateTime);
         gFacJobData.setStatus(status);
         gFacJobData.setMetadata(metadata);
         if(existingGfacJobData != null){
@@ -208,7 +207,7 @@ public class GFacJobDataResource extends AbstractResource {
             existingGfacJobData.setHost_descriptor_ID(hostDescID);
             existingGfacJobData.setJob_data(jobData);
             existingGfacJobData.setSubmitted_time(submittedTime);
-            existingGfacJobData.setCompleted_time(completedTime);
+            existingGfacJobData.setStatus_update_time(statusUpdateTime);
             existingGfacJobData.setStatus(status);
             existingGfacJobData.setMetadata(metadata);
             gFacJobData = em.merge(existingGfacJobData);
