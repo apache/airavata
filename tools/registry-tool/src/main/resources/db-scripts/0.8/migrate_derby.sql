@@ -51,7 +51,7 @@ create table GFac_Job_Data
        job_data CLOB,
        local_Job_ID varchar(255),
        submitted_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
-       completed_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
+       status_update_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
        status INT,
        metadata CLOB,
        PRIMARY KEY(local_Job_ID),
@@ -60,5 +60,5 @@ create table GFac_Job_Data
 );
 
 INSERT INTO GFac_Job_Data(experiment_ID, workflow_instanceID, node_id, application_descriptor_ID, host_descriptor_ID, service_descriptor_ID,
-job_data, local_Job_ID, submitted_time, completed_time, status, metadata) SELECT null, workflow_instanceID, node_id, null, invoked_host,
+job_data, local_Job_ID, submitted_time, statusUpdateTime, status, metadata) SELECT null, workflow_instanceID, node_id, null, invoked_host,
 null, null, local_Job_ID, null, null, null, null FROM Gram_Data;

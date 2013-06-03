@@ -207,7 +207,7 @@ create table GFac_Job_Data
        job_data CLOB,
        local_Job_ID varchar(255),
        submitted_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
-       completed_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
+       status_update_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
        status varchar(255),
        metadata CLOB,
        PRIMARY KEY(local_Job_ID),
