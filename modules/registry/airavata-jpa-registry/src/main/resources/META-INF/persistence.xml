@@ -40,6 +40,7 @@
 		<class>org.apache.airavata.persistance.registry.jpa.model.Node_Data</class>
 		<class>org.apache.airavata.persistance.registry.jpa.model.Gram_Data</class>
 		<class>org.apache.airavata.persistance.registry.jpa.model.Execution_Error</class>
+		<class>org.apache.airavata.persistance.registry.jpa.model.GFac_Job_Data</class>
         <!--properties>
             <property name="openjpa.ConnectionURL"
                       value="jdbc:mysql://localhost:3306/persitant_data" />
