@@ -2382,7 +2382,14 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 			throw new WorkflowInstanceNodeDoesNotExistsException(workflowExecutionId, nodeId);
 		}
 		List<ApplicationJob> jobs=new ArrayList<ApplicationJob>();
-		List<Resource> gFacJobs = jpa.getWorker().getExperiment(experimentId).getData().getWorkflowInstance(workflowExecutionId).getNodeData(nodeId).getGFacJobs();
+		List<Resource> gFacJobs;
+		if (workflowExecutionId==null){
+			gFacJobs = jpa.getWorker().getExperiment(experimentId).getData().getGFacJobs();
+		}else if (nodeId==null){
+			gFacJobs = jpa.getWorker().getExperiment(experimentId).getData().getWorkflowInstance(workflowExecutionId).getGFacJobs();
+		}else{
+			gFacJobs = jpa.getWorker().getExperiment(experimentId).getData().getWorkflowInstance(workflowExecutionId).getNodeData(nodeId).getGFacJobs();
+		}
 		for (Resource resource : gFacJobs) {
 			ApplicationJob job = new ApplicationJob();
 			setupValues((GFacJobDataResource)resource, job);
