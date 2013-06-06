@@ -25,6 +25,7 @@ import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
+import org.apache.airavata.persistance.registry.jpa.resources.AbstractResource.GFacJobDataConstants;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -261,6 +262,7 @@ public class WorkflowDataResource extends AbstractResource{
                 break;
             case GFAC_JOB_DATA:
                 generator = new QueryGenerator(GFAC_JOB_DATA);
+                generator.setParameter(GFacJobDataConstants.EXPERIMENT_ID, experimentID);
                 generator.setParameter(GFacJobDataConstants.WORKFLOW_INSTANCE_ID, workflowInstanceID);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
@@ -283,6 +285,10 @@ public class WorkflowDataResource extends AbstractResource{
         return resourceList;
     }
 
+    public List<Resource> getGFacJobs(){
+    	return get(ResourceType.GFAC_JOB_DATA);
+    }
+    
     public void save() {
         if(lastUpdatedTime == null){
             java.util.Date date= new java.util.Date();

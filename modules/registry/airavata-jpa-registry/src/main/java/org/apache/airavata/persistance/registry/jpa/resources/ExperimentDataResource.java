@@ -276,6 +276,10 @@ public class ExperimentDataResource extends AbstractResource{
     	return (WorkflowDataResource)get(ResourceType.WORKFLOW_DATA, workflowInstanceId);
     }
     
+    public List<Resource> getGFacJobs(){
+    	return get(ResourceType.GFAC_JOB_DATA);
+    }
+    
     public ExperimentMetadataResource getExperimentMetadata(){
     	return (ExperimentMetadataResource)get(ResourceType.EXPERIMENT_METADATA,getExperimentID());
     }
