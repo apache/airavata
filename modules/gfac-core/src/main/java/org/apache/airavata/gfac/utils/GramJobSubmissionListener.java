@@ -117,7 +117,7 @@ public class GramJobSubmissionListener implements GramJobListener{
     	case GramJob.STATUS_STAGE_OUT:
     		return ApplicationJobStatus.FINALIZE;
     	case GramJob.STATUS_SUSPENDED:
-    		return ApplicationJobStatus.PAUSED;
+    		return ApplicationJobStatus.SUSPENDED;
     	default:
     		return ApplicationJobStatus.UNKNOWN;
     	}

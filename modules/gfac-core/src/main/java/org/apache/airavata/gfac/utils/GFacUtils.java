@@ -22,7 +22,9 @@ package org.apache.airavata.gfac.utils;
 
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.gfac.Constants;
+import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.deployment.classloaders.JarFileClassLoader;
+import org.apache.airavata.registry.api.workflow.ApplicationJob;
 import org.apache.airavata.schemas.gfac.*;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.deployment.DeploymentException;
@@ -400,4 +402,17 @@ public class GFacUtils {
         }
         return actualParameter;
     }
+    
+
+	public static ApplicationJob createApplicationJob(
+			JobExecutionContext jobExecutionContext) {
+		ApplicationJob appJob = new ApplicationJob();
+		appJob.setExperimentId((String) jobExecutionContext.getProperty(Constants.PROP_TOPIC));
+		appJob.setWorkflowExecutionId(appJob.getExperimentId());
+		appJob.setNodeId((String)jobExecutionContext.getProperty(Constants.PROP_WORKFLOW_NODE_ID));
+		appJob.setServiceDescriptionId(jobExecutionContext.getApplicationContext().getServiceDescription().getType().getName());
+		appJob.setHostDescriptionId(jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostName());
+		appJob.setApplicationDescriptionId(jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType().getApplicationName().getStringValue());
+		return appJob;
+	}
 }

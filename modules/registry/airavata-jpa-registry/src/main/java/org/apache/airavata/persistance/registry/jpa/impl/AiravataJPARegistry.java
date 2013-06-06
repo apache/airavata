@@ -1809,7 +1809,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }else {
         	ApplicationJob job = new ApplicationJob();
         	job.setJobId(workflowNodeGramData.getGramJobID());
-        	job.setMetadata(workflowNodeGramData.getInvokedHost());
+        	job.setHostDescriptionId(workflowNodeGramData.getInvokedHost());
         	job.setExperimentId(workflowNodeGramData.getWorkflowInstanceId());
         	job.setWorkflowExecutionId(workflowNodeGramData.getWorkflowInstanceId());
         	job.setNodeId(workflowNodeGramData.getNodeID());

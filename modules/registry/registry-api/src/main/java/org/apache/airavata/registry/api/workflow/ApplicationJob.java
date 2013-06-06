@@ -30,11 +30,12 @@ import java.util.Date;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ApplicationJob {
 	public static enum ApplicationJobStatus{
+		AUTHENTICATE, //authenticating
 		SUBMITTED, //job is submitted, possibly waiting to start executing
 		INITIALIZE, //job is being initialized 
 		PENDING, //job is pending to be started
 		EXECUTING, //submitted job is being executed
-		PAUSED, //job was paused
+		SUSPENDED, //job was paused
 		WAITING_FOR_DATA, // job is waiting for data to continue executing
 		FINALIZE, //job is being initialized 
 		FINISHED, // job completed successfully
