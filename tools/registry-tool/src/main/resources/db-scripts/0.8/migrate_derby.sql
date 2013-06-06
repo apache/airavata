@@ -52,7 +52,7 @@ create table GFac_Job_Data
        local_Job_ID varchar(255),
        submitted_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
        status_update_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
-       status INT,
+       status varchar(255),
        metadata CLOB,
        PRIMARY KEY(local_Job_ID),
        FOREIGN KEY (experiment_ID) REFERENCES Experiment_Data(experiment_ID),
