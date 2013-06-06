@@ -24,7 +24,6 @@ import java.util.Calendar;
 import java.util.Map;
 
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.JobSubmissionFault;
 import org.apache.airavata.gfac.context.JobExecutionContext;
@@ -33,6 +32,7 @@ import org.apache.airavata.gfac.notification.events.GramJobIDEvent;
 import org.apache.airavata.gfac.notification.events.StartExecutionEvent;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
+import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.GramJobSubmissionListener;
 import org.apache.airavata.gfac.utils.GramProviderUtils;
 import org.apache.airavata.registry.api.workflow.ApplicationJob;
@@ -52,7 +52,7 @@ public class GramProvider implements GFacProvider {
     private GramJob job;
     private GramJobSubmissionListener listener;
 
-    // This method precpare the environment before the application invocation.
+    // This method prepare the environment before the application invocation.
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException {
         job = GramProviderUtils.setupEnvironment(jobExecutionContext);
         listener = new GramJobSubmissionListener(job, jobExecutionContext);
@@ -90,23 +90,14 @@ public class GramProvider implements GFacProvider {
             log.info(jobID);
             jobExecutionContext.getNotifier().publish(new GramJobIDEvent(jobID));
            
-            String experimentID = (String) jobExecutionContext.getProperty(Constants.PROP_TOPIC);
-            String nodeID = (String)jobExecutionContext.getProperty(Constants.PROP_WORKFLOW_NODE_ID);
-            
             //WorkflowNodeGramData workflowNodeGramData = new WorkflowNodeGramData(experimentID, nodeID, job.getRSL(),hostName , job.getIDAsString());;
             
             try {
             	// for provider test
             	if(jobExecutionContext.getGFacConfiguration().getAiravataAPI() != null){
-            		ApplicationJob appJob = new ApplicationJob();
+            		ApplicationJob appJob = GFacUtils.createApplicationJob(jobExecutionContext);
                     appJob.setJobId(job.getIDAsString());
                     appJob.setJobData(job.getRSL());
-                    appJob.setExperimentId(experimentID);
-                    appJob.setWorkflowExecutionId(experimentID);
-                    appJob.setNodeId(nodeID);
-                    appJob.setServiceDescriptionId(jobExecutionContext.getApplicationContext().getServiceDescription().getType().getName());
-                    appJob.setHostDescriptionId(jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostName());
-                    appJob.setApplicationDescriptionId(jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType().getApplicationName().getStringValue());
                     appJob.setSubmittedTime(Calendar.getInstance().getTime());
                     appJob.setJobStatus(ApplicationJobStatus.SUBMITTED);
                     appJob.setStatusUpdateTime(appJob.getSubmittedTime());
