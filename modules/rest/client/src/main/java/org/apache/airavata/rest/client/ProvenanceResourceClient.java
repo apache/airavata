@@ -2601,7 +2601,7 @@ public class ProvenanceResourceClient {
                                                    String hostDescriptionId,
                                                    String applicationDescriptionId){
         webResource = getProvenanceRegistryBaseResource().path(
-                ResourcePathConstants.ProvenanceResourcePathConstants.GET_GFAC_JOB);
+                ResourcePathConstants.ProvenanceResourcePathConstants.GET_GFAC_JOBS_FOR_DESCRIPTORS);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("serviceDescriptionId", serviceDescriptionId);
         queryParams.add("hostDescriptionId", hostDescriptionId);
@@ -2651,7 +2651,7 @@ public class ProvenanceResourceClient {
                                      String workflowExecutionId,
                                      String nodeId) {
         webResource = getProvenanceRegistryBaseResource().path(
-                ResourcePathConstants.ProvenanceResourcePathConstants.GET_GFAC_JOB);
+                ResourcePathConstants.ProvenanceResourcePathConstants.GET_GFAC_JOBS);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("experimentId", experimentId);
         queryParams.add("workflowExecutionId", workflowExecutionId);
