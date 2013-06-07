@@ -127,7 +127,7 @@ public class LocalProvider implements GFacProvider {
         try {
             // running cmd
             Process process = builder.start();
-            jobId="Local_"+Calendar.getInstance().getTimeInMillis()+"_";
+            jobId="Local_"+Calendar.getInstance().getTimeInMillis();
             if(jobExecutionContext.getGFacConfiguration().getAiravataAPI() != null){
         		ApplicationJob appJob = GFacUtils.createApplicationJob(jobExecutionContext);
                 appJob.setJobId(jobId);
@@ -149,6 +149,13 @@ public class LocalProvider implements GFacProvider {
 					e.printStackTrace();
 				}
         	}
+            if(jobExecutionContext.getGFacConfiguration().getAiravataAPI() != null){
+                try {
+					jobExecutionContext.getGFacConfiguration().getAiravataAPI().getProvenanceManager().updateApplicationJobStatus(jobId, ApplicationJobStatus.INITIALIZE, Calendar.getInstance().getTime());
+				} catch (AiravataAPIInvocationException e) {
+					e.printStackTrace();
+				}
+        	}
             Thread standardOutWriter = new InputStreamToFileWriter(process.getInputStream(), app.getStandardOutput());
             Thread standardErrorWriter = new InputStreamToFileWriter(process.getErrorStream(), app.getStandardError());
 
@@ -157,7 +164,13 @@ public class LocalProvider implements GFacProvider {
             standardErrorWriter.setDaemon(true);
             standardOutWriter.start();
             standardErrorWriter.start();
-
+            if(jobExecutionContext.getGFacConfiguration().getAiravataAPI() != null){
+                try {
+					jobExecutionContext.getGFacConfiguration().getAiravataAPI().getProvenanceManager().updateApplicationJobStatus(jobId, ApplicationJobStatus.EXECUTING, Calendar.getInstance().getTime());
+				} catch (AiravataAPIInvocationException e) {
+					e.printStackTrace();
+				}
+        	}
             // wait for the process (application) to finish executing
             int returnValue = process.waitFor();
 
