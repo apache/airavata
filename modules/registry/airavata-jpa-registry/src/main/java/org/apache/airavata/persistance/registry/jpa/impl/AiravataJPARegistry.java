@@ -2254,9 +2254,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		if (isApplicationJobExists(job.getJobId())){
 			throw new ApplicationJobAlreadyExistsException(job.getJobId());
 		}
-		if (!isWorkflowInstanceNodePresent(job.getWorkflowExecutionId(), job.getNodeId())){
-			throw new WorkflowInstanceNodeDoesNotExistsException(job.getWorkflowExecutionId(), job.getNodeId());
-		}
+//		if (!isWorkflowInstanceNodePresent(job.getWorkflowExecutionId(), job.getNodeId())){
+//			throw new WorkflowInstanceNodeDoesNotExistsException(job.getWorkflowExecutionId(), job.getNodeId());
+//		}
 		ExperimentDataResource expData = jpa.getWorker().getExperiment(job.getExperimentId()).getData();
 		GFacJobDataResource gfacJob = expData.createGFacJob(job.getJobId());
 		gfacJob.setExperimentDataResource(expData);
