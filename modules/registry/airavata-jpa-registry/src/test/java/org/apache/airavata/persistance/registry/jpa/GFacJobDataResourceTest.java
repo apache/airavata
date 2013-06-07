@@ -78,5 +78,6 @@ public class GFacJobDataResourceTest extends AbstractResourceTest {
         resource.setJobData("testJobData");
         resource.save();
         assertTrue("GFac job data saved successfully", workerResource.isGFacJobExists("testJobID"));
+        workflowDataResource.remove(ResourceType.GFAC_JOB_DATA, "testJobID");
     }
 }
