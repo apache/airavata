@@ -903,71 +903,71 @@ public class RegistryClient extends AiravataRegistry2 {
 
 	@Override
 	public void addApplicationJob(ApplicationJob job) throws RegistryException {
-		getProvenanceResourceClient().addGFacJob(job);
+		getProvenanceResourceClient().addApplicationJob(job);
 		
 	}
 
 	@Override
 	public void updateApplicationJob(ApplicationJob job) throws RegistryException {
-        getProvenanceResourceClient().updateGFacJob(job);
+        getProvenanceResourceClient().updateApplicationJob(job);
 		
 	}
 
 	@Override
 	public void updateApplicationJobStatus(String gfacJobId, ApplicationJobStatus status, Date statusUpdateTime)
 			throws RegistryException {
-        getProvenanceResourceClient().updateGFacJobStatus(gfacJobId, status, statusUpdateTime);
+        getProvenanceResourceClient().updateApplicationJobStatus(gfacJobId, status, statusUpdateTime);
 		
 	}
 
 	@Override
 	public void updateApplicationJobData(String gfacJobId, String jobdata)
 			throws RegistryException {
-        getProvenanceResourceClient().updateGFacJobData(gfacJobId, jobdata);
+        getProvenanceResourceClient().updateApplicationJobData(gfacJobId, jobdata);
 		
 	}
 
 	@Override
 	public void updateApplicationJobSubmittedTime(String gfacJobId, Date submitted)
 			throws RegistryException {
-        getProvenanceResourceClient().updateGFacJobSubmittedTime(gfacJobId, submitted);
+        getProvenanceResourceClient().updateApplicationJobSubmittedTime(gfacJobId, submitted);
 		
 	}
 
 	@Override
 	public void updateApplicationJobStatusUpdateTime(String gfacJobId, Date completed)
 			throws RegistryException {
-        getProvenanceResourceClient().updateGFacJobCompletedTime(gfacJobId, completed);
+        getProvenanceResourceClient().updateApplicationJobCompletedTime(gfacJobId, completed);
 		
 	}
 
 	@Override
 	public void updateApplicationJobMetadata(String gfacJobId, String metadata)
 			throws RegistryException {
-        getProvenanceResourceClient().updateGFacJobMetadata(gfacJobId, metadata);
+        getProvenanceResourceClient().updateApplicationJobMetadata(gfacJobId, metadata);
 		
 	}
 
 	@Override
 	public ApplicationJob getApplicationJob(String gfacJobId) throws RegistryException {
-		return getProvenanceResourceClient().getGFacJob(gfacJobId);
+		return getProvenanceResourceClient().getApplicationJob(gfacJobId);
 	}
 
 	@Override
 	public List<ApplicationJob> getApplicationJobsForDescriptors(String serviceDescriptionId,
 			String hostDescriptionId, String applicationDescriptionId)
 			throws RegistryException {
-		return getProvenanceResourceClient().getGFacJobsForDescriptors(serviceDescriptionId, hostDescriptionId, applicationDescriptionId);
+		return getProvenanceResourceClient().getApplicationJobsForDescriptors(serviceDescriptionId, hostDescriptionId, applicationDescriptionId);
 	}
 
 	@Override
 	public List<ApplicationJob> getApplicationJobs(String experimentId,
 			String workflowExecutionId, String nodeId) throws RegistryException {
-		return getProvenanceResourceClient().getGFacJobs(experimentId, workflowExecutionId, nodeId);
+		return getProvenanceResourceClient().getApplicationJobs(experimentId, workflowExecutionId, nodeId);
 	}
 
 	@Override
 	public boolean isApplicationJobExists(String gfacJobId) throws RegistryException {
-		return getProvenanceResourceClient().isGFacJobExists(gfacJobId);
+		return getProvenanceResourceClient().isApplicationJobExists(gfacJobId);
 	}
 }
