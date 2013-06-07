@@ -45,6 +45,7 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
+import org.apache.airavata.registry.api.workflow.ApplicationJob;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
 import org.apache.airavata.registry.api.workflow.InputData;
 import org.apache.airavata.registry.api.workflow.NodeExecutionData;
@@ -424,9 +425,12 @@ public class BaseCaseIT {
         airavataAPI.getExecutionManager().waitForExperimentTermination(experimentId);
 
         log.info("Run workflow completed ....");
-        log.info("Starting monitoring ....");
 
         verifyOutput(experimentId, "echo_output=Airavata_Test");
+
+        log.info("Verifying application jobs ....");
+        List<ApplicationJob> applicationJobs = airavataAPI.getProvenanceManager().getApplicationJobs(experimentId, null, null);
+        Assert.assertEquals(applicationJobs.size(), 1);
     }
 
     protected void verifyOutput(String experimentId, String outputVerifyingString) throws Exception {
