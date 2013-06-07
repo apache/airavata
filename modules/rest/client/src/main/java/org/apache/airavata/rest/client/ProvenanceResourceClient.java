@@ -2269,9 +2269,9 @@ public class ProvenanceResourceClient {
         return 0;
     }
 
-    public void addGFacJob(ApplicationJob job) {
+    public void addApplicationJob(ApplicationJob job) {
         webResource = getProvenanceRegistryBaseResource().path(
-                ResourcePathConstants.ProvenanceResourcePathConstants.ADD_GFAC_JOB);
+                ResourcePathConstants.ProvenanceResourcePathConstants.ADD_APPLICATION_JOB);
         builder = BasicAuthHeaderUtil.getBuilder(
                 webResource, null, userName, null, cookie, gateway);
         ClientResponse response = builder.accept(
@@ -2306,9 +2306,9 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public void updateGFacJob(ApplicationJob job) {
+    public void updateApplicationJob(ApplicationJob job) {
         webResource = getProvenanceRegistryBaseResource().path(
-                ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB);
+                ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_APPLICATION_JOB);
         builder = BasicAuthHeaderUtil.getBuilder(
                 webResource, null, userName, null, cookie, gateway);
         ClientResponse response = builder.accept(
@@ -2343,9 +2343,9 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public void updateGFacJobStatus(String gfacJobId, ApplicationJob.ApplicationJobStatus status, Date statusUpdateTime) {
+    public void updateApplicationJobStatus(String gfacJobId, ApplicationJob.ApplicationJobStatus status, Date statusUpdateTime) {
         webResource = getProvenanceRegistryBaseResource().path(
-                ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB_STATUS);
+                ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_APPLICATION_JOB_STATUS);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String submittedDate = dateFormat.format(statusUpdateTime);
         MultivaluedMap formParams = new MultivaluedMapImpl();
@@ -2386,9 +2386,9 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public void updateGFacJobData(String gfacJobId, String jobdata){
+    public void updateApplicationJobData(String gfacJobId, String jobdata){
         webResource = getProvenanceRegistryBaseResource().path(
-                ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB_DATA);
+                ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_APPLICATION_JOB_DATA);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("gfacJobID", gfacJobId);
         formParams.add("jobdata", jobdata);
@@ -2426,11 +2426,11 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public void updateGFacJobSubmittedTime(String gfacJobId, Date submitted){
+    public void updateApplicationJobSubmittedTime(String gfacJobId, Date submitted){
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String submittedDate = dateFormat.format(submitted);
         webResource = getProvenanceRegistryBaseResource().path(
-                ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB_SUBMITTED_TIME);
+                ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_APPLICATION_JOB_SUBMITTED_TIME);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("gfacJobID", gfacJobId);
         formParams.add("submittedDate", submittedDate);
@@ -2469,11 +2469,11 @@ public class ProvenanceResourceClient {
 
     }
 
-    public void updateGFacJobCompletedTime(String gfacJobId, Date completed){
+    public void updateApplicationJobCompletedTime(String gfacJobId, Date completed){
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String completedDate = dateFormat.format(completed);
         webResource = getProvenanceRegistryBaseResource().path(
-                ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB_COMPLETED_TIME);
+                ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_APPLICATION_JOB_COMPLETED_TIME);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("gfacJobID", gfacJobId);
         formParams.add("completedDate", completedDate);
@@ -2511,9 +2511,9 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public void updateGFacJobMetadata(String gfacJobId, String metadata){
+    public void updateApplicationJobMetadata(String gfacJobId, String metadata){
         webResource = getProvenanceRegistryBaseResource().path(
-                ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_GFAC_JOB_METADATA);
+                ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_APPLICATION_JOB_METADATA);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("gfacJobID", gfacJobId);
         formParams.add("metadata", metadata);
@@ -2551,9 +2551,9 @@ public class ProvenanceResourceClient {
         }
     }
 
-    public ApplicationJob getGFacJob(String gfacJobId){
+    public ApplicationJob getApplicationJob(String gfacJobId){
         webResource = getProvenanceRegistryBaseResource().path(
-                ResourcePathConstants.ProvenanceResourcePathConstants.GET_GFAC_JOB);
+                ResourcePathConstants.ProvenanceResourcePathConstants.GET_APPLICATION_JOB);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("gfacJobId", gfacJobId);
         builder = BasicAuthHeaderUtil.getBuilder(
@@ -2597,11 +2597,11 @@ public class ProvenanceResourceClient {
         return gFacJob;
     }
 
-    public List<ApplicationJob> getGFacJobsForDescriptors(String serviceDescriptionId,
-                                                   String hostDescriptionId,
-                                                   String applicationDescriptionId){
+    public List<ApplicationJob> getApplicationJobsForDescriptors(String serviceDescriptionId,
+                                                                 String hostDescriptionId,
+                                                                 String applicationDescriptionId){
         webResource = getProvenanceRegistryBaseResource().path(
-                ResourcePathConstants.ProvenanceResourcePathConstants.GET_GFAC_JOBS_FOR_DESCRIPTORS);
+                ResourcePathConstants.ProvenanceResourcePathConstants.GET_APPLICATION_JOBS_FOR_DESCRIPTORS);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("serviceDescriptionId", serviceDescriptionId);
         queryParams.add("hostDescriptionId", hostDescriptionId);
@@ -2647,11 +2647,11 @@ public class ProvenanceResourceClient {
         return gFacJobList.getJobList();
     }
 
-    public List<ApplicationJob> getGFacJobs(String experimentId,
-                                     String workflowExecutionId,
-                                     String nodeId) {
+    public List<ApplicationJob> getApplicationJobs(String experimentId,
+                                                   String workflowExecutionId,
+                                                   String nodeId) {
         webResource = getProvenanceRegistryBaseResource().path(
-                ResourcePathConstants.ProvenanceResourcePathConstants.GET_GFAC_JOBS);
+                ResourcePathConstants.ProvenanceResourcePathConstants.GET_APPLICATION_JOBS);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("experimentId", experimentId);
         queryParams.add("workflowExecutionId", workflowExecutionId);
@@ -2696,9 +2696,9 @@ public class ProvenanceResourceClient {
         return gFacJobList.getJobList();
     }
 
-    public boolean isGFacJobExists(String gfacJobId){
+    public boolean isApplicationJobExists(String gfacJobId){
         webResource = getProvenanceRegistryBaseResource().path(
-                ResourcePathConstants.ProvenanceResourcePathConstants.GFAC_JOB_EXIST);
+                ResourcePathConstants.ProvenanceResourcePathConstants.APPLICATION_JOB_EXIST);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("gfacJobId", gfacJobId);
         builder = BasicAuthHeaderUtil.getBuilder(

@@ -152,17 +152,17 @@ public class ResourcePathConstants {
         public static final String ADD_WORKFLOW_ERROR = "add/workflow/errors";
         public static final String ADD_NODE_ERROR = "add/node/errors";
         public static final String ADD_GFAC_ERROR = "add/gfac/errors";
-        public static final String ADD_GFAC_JOB = "add/gfac/job";
-        public static final String UPDATE_GFAC_JOB = "update/gfac/job";
-        public static final String UPDATE_GFAC_JOB_STATUS = "update/gfac/jobstatus";
-        public static final String UPDATE_GFAC_JOB_DATA = "update/gfac/jobdata";
-        public static final String UPDATE_GFAC_JOB_SUBMITTED_TIME = "update/gfac/job/submit";
-        public static final String UPDATE_GFAC_JOB_COMPLETED_TIME = "update/gfac/job/complete";
-        public static final String UPDATE_GFAC_JOB_METADATA = "update/gfac/job/metadata";
-        public static final String GET_GFAC_JOB = "get/gfac/job";
-        public static final String GET_GFAC_JOBS_FOR_DESCRIPTORS = "get/gfac/jobs/descriptors";
-        public static final String GET_GFAC_JOBS = "get/gfac/jobs";
-        public static final String GFAC_JOB_EXIST = "gfac/job/exists";
+        public static final String ADD_APPLICATION_JOB = "add/application/job";
+        public static final String UPDATE_APPLICATION_JOB = "update/application/job";
+        public static final String UPDATE_APPLICATION_JOB_STATUS = "update/application/jobstatus";
+        public static final String UPDATE_APPLICATION_JOB_DATA = "update/application/jobdata";
+        public static final String UPDATE_APPLICATION_JOB_SUBMITTED_TIME = "update/application/job/submit";
+        public static final String UPDATE_APPLICATION_JOB_COMPLETED_TIME = "update/application/job/complete";
+        public static final String UPDATE_APPLICATION_JOB_METADATA = "update/application/job/metadata";
+        public static final String GET_APPLICATION_JOB = "get/application/job";
+        public static final String GET_APPLICATION_JOBS_FOR_DESCRIPTORS = "get/application/jobs/descriptors";
+        public static final String GET_APPLICATION_JOBS = "get/application/jobs";
+        public static final String APPLICATION_JOB_EXIST = "application/job/exists";
     }
 
     public final class PublishedWFConstants {
