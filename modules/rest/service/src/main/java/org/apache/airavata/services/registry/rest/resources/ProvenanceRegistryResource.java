@@ -1828,8 +1828,8 @@ public class ProvenanceRegistryResource {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             GFacJobList gFacJobList = new GFacJobList();
-            List<ApplicationJob> gFacJobsForDescriptors = airavataRegistry.getApplicationJobsForDescriptors(experimentID, workflowInstanceID, nodeID);
-            gFacJobList.setJobList(gFacJobsForDescriptors);
+            List<ApplicationJob> gFacJobs = airavataRegistry.getApplicationJobs(experimentID, workflowInstanceID, nodeID);
+            gFacJobList.setJobList(gFacJobs);
             Response.ResponseBuilder builder = Response.status(Response.Status.OK);
             builder.entity(gFacJobList);
             return builder.build();
