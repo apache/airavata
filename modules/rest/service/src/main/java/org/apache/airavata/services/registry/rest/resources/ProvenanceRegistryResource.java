@@ -1807,14 +1807,9 @@ public class ProvenanceRegistryResource {
             GFacJobList gFacJobList = new GFacJobList();
             List<ApplicationJob> gFacJobsForDescriptors = airavataRegistry.getApplicationJobsForDescriptors(serviceDescriptionId, hostDescriptionId, applicationDescriptionId);
             gFacJobList.setJobList(gFacJobsForDescriptors);
-            if (gFacJobsForDescriptors.size() != 0) {
-                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
-                builder.entity(gFacJobList);
-                return builder.build();
-            } else {
-                Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                return builder.build();
-            }
+            Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+            builder.entity(gFacJobList);
+            return builder.build();
         } catch (Throwable e) {
             return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.GET_APPLICATION_JOBS_FOR_DESCRIPTORS, e);
         } finally {
@@ -1835,14 +1830,9 @@ public class ProvenanceRegistryResource {
             GFacJobList gFacJobList = new GFacJobList();
             List<ApplicationJob> gFacJobsForDescriptors = airavataRegistry.getApplicationJobsForDescriptors(experimentID, workflowInstanceID, nodeID);
             gFacJobList.setJobList(gFacJobsForDescriptors);
-            if (gFacJobsForDescriptors.size() != 0) {
-                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
-                builder.entity(gFacJobList);
-                return builder.build();
-            } else {
-                Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
-                return builder.build();
-            }
+            Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+            builder.entity(gFacJobList);
+            return builder.build();
         } catch (Throwable e) {
             return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.GET_APPLICATION_JOBS_FOR_DESCRIPTORS, e);
         } finally {

@@ -2609,7 +2609,7 @@ public class ProvenanceResourceClient {
         builder = BasicAuthHeaderUtil.getBuilder(
                 webResource, queryParams, userName, null, cookie, gateway);
         ClientResponse response = builder.accept(
-                MediaType.TEXT_PLAIN).get(ClientResponse.class);
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
 
         if (status == ClientConstant.HTTP_OK) {
@@ -2620,7 +2620,7 @@ public class ProvenanceResourceClient {
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
-            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
             if (status == ClientConstant.HTTP_NO_CONTENT) {
                 return null;
@@ -2659,7 +2659,7 @@ public class ProvenanceResourceClient {
         builder = BasicAuthHeaderUtil.getBuilder(
                 webResource, queryParams, userName, null, cookie, gateway);
         ClientResponse response = builder.accept(
-                MediaType.TEXT_PLAIN).get(ClientResponse.class);
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
 
         if (status == ClientConstant.HTTP_OK) {
@@ -2670,7 +2670,7 @@ public class ProvenanceResourceClient {
         } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
             builder = BasicAuthHeaderUtil.getBuilder(
                     webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
-            response = builder.accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             status = response.getStatus();
             if (status == ClientConstant.HTTP_NO_CONTENT) {
                 return null;
