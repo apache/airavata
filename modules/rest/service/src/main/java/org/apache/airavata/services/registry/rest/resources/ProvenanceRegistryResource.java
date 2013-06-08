@@ -1804,6 +1804,15 @@ public class ProvenanceRegistryResource {
                                                      @QueryParam("applicationDescriptionId") String applicationDescriptionId){
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
+        	if (serviceDescriptionId.equals("")){
+        		serviceDescriptionId=null;
+        	}
+        	if (hostDescriptionId.equals("")){
+        		hostDescriptionId=null;
+        	}
+        	if (applicationDescriptionId.equals("")){
+        		applicationDescriptionId=null;
+        	}
             GFacJobList gFacJobList = new GFacJobList();
             List<ApplicationJob> gFacJobsForDescriptors = airavataRegistry.getApplicationJobsForDescriptors(serviceDescriptionId, hostDescriptionId, applicationDescriptionId);
             gFacJobList.setJobList(gFacJobsForDescriptors);
@@ -1827,6 +1836,15 @@ public class ProvenanceRegistryResource {
                                        @QueryParam("nodeId") String nodeID){
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
+        	if (experimentID.equals("")){
+        		experimentID=null;
+        	}
+        	if (workflowInstanceID.equals("")){
+        		workflowInstanceID=null;
+        	}
+        	if (nodeID.equals("")){
+        		nodeID=null;
+        	}
             GFacJobList gFacJobList = new GFacJobList();
             List<ApplicationJob> gFacJobs = airavataRegistry.getApplicationJobs(experimentID, workflowInstanceID, nodeID);
             gFacJobList.setJobList(gFacJobs);
