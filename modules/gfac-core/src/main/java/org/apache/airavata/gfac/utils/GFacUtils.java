@@ -20,11 +20,14 @@
 */
 package org.apache.airavata.gfac.utils;
 
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.deployment.classloaders.JarFileClassLoader;
 import org.apache.airavata.registry.api.workflow.ApplicationJob;
+import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
 import org.apache.airavata.schemas.gfac.*;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.deployment.DeploymentException;
@@ -414,5 +417,42 @@ public class GFacUtils {
 		appJob.setHostDescriptionId(jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostName());
 		appJob.setApplicationDescriptionId(jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType().getApplicationName().getStringValue());
 		return appJob;
+	}
+	
+	public static void updateApplicationJobStatusUpdateTime(JobExecutionContext context, String jobId, Date statusUpdateTime){
+        AiravataAPI airavataAPI = context.getGFacConfiguration().getAiravataAPI();
+		if(airavataAPI != null){
+			try {
+				airavataAPI.getProvenanceManager().updateApplicationJobStatusUpdateTime(jobId, statusUpdateTime);
+			} catch (AiravataAPIInvocationException e) {
+				log.error("Error in updating application job status time "+statusUpdateTime.toString()+" for job Id "+jobId+"!!!", e);
+			}
+        }
+	}
+	
+	public static void updateApplicationJobStatus(JobExecutionContext context, String jobId, ApplicationJobStatus status, Date statusUpdateTime){
+        AiravataAPI airavataAPI = context.getGFacConfiguration().getAiravataAPI();
+		if(airavataAPI != null){
+			try {
+				airavataAPI.getProvenanceManager().updateApplicationJobStatus(jobId, status, statusUpdateTime);
+			} catch (AiravataAPIInvocationException e) {
+				log.error("Error in updating application job status "+status.toString()+" for job Id "+jobId+"!!!", e);
+			}
+        }
+	}
+	
+	public static void recordApplicationJob(JobExecutionContext context, ApplicationJob job){
+        AiravataAPI airavataAPI = context.getGFacConfiguration().getAiravataAPI();
+		if(airavataAPI != null){
+			try {
+				airavataAPI.getProvenanceManager().addApplicationJob(job);
+			} catch (AiravataAPIInvocationException e) {
+				log.error("Error in persisting application job data for application job "+job.getJobId()+"!!!", e);
+			}
+        }
+	}
+	
+	public static void updateApplicationJobStatus(JobExecutionContext context, String jobId, ApplicationJobStatus status){
+		updateApplicationJobStatus(context, jobId, status, Calendar.getInstance().getTime());
 	}
 }

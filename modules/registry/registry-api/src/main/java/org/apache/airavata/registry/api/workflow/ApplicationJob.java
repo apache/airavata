@@ -29,19 +29,75 @@ import java.util.Date;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ApplicationJob {
+	/**
+	 * Represents the status of the application job execution life cycle.<br /> 
+	 * <em><strong>Note</strong> : The applicable <code>ApplicationJobStatus</code> values and the 
+	 * particular actions that define or lead to those <code>ApplicationJobStatus</code> values is 
+	 * based on type of application (eg: GRAM, EC2) being executed</em>.   
+	 */
 	public static enum ApplicationJobStatus{
-		AUTHENTICATE, //authenticating
-		SUBMITTED, //job is submitted, possibly waiting to start executing
-		INITIALIZE, //job is being initialized 
-		PENDING, //job is pending to be started
-		EXECUTING, //submitted job is being executed
-		SUSPENDED, //job was paused
-		WAITING_FOR_DATA, // job is waiting for data to continue executing
-		FINALIZE, //job is being initialized 
-		FINISHED, // job completed successfully
-		FAILED, // error occurred while job was executing and the job stopped
-		CANCELLED, //job was cancelled
-		UNKNOWN // unknown status. lookup the metadata for more details.
+		/**
+		 * Input data/files is being staged for the application job.
+		 */
+		STAGING,
+		/**
+		 * Authenticating
+		 */
+		AUTHENTICATE,
+		/**
+		 * Application job is submitted, possibly waiting to start executing.
+		 */
+		SUBMITTED,
+		/**
+		 * Application job is being initialized.
+		 */
+		INITIALIZE, 
+		/**
+		 * Application job is waiting to start/continue its executing.
+		 */
+		PENDING,
+		/**
+		 * Application job is being executed.
+		 */
+		EXECUTING, 
+		/**
+		 * Application job is paused/suspended
+		 */
+		SUSPENDED,
+		/**
+		 * Application job is waiting for data or a trigger to continue its execution.
+		 */
+		WAITING_FOR_DATA,
+		/**
+		 * Finalizing the execution of the application job.
+		 */
+		FINALIZE,
+		/**
+		 * Results of the application job execution are being generated.
+		 */
+		RESULTS_GEN,
+		/**
+		 * Generated results from the application job execution is being retrieved.
+		 */
+		RESULTS_RETRIEVE,
+		/**
+		 * Application job completed successfully.
+		 */
+		FINISHED,
+		/**
+		 * Error occurred during the application job execution and the job was terminated.
+		 */
+		FAILED, 
+		/**
+		 * Execution of the application job was cancelled.
+		 */
+		CANCELLED,
+		/**
+		 * Unable to determine the current status of the application job. <br />
+		 * <em><strong>Note: </strong>More information may be available on the application job 
+		 * </em><code>metadata</code>.
+		 */
+		UNKNOWN 
 	}
 	
 	private String experimentId;
@@ -61,6 +117,10 @@ public class ApplicationJob {
 	
 	private String metadata;
 
+	/**
+	 * The id of the experiment which this application job corresponds to
+	 * @return
+	 */
 	public String getExperimentId() {
 		return experimentId;
 	}
@@ -69,6 +129,9 @@ public class ApplicationJob {
 		this.experimentId = experimentId;
 	}
 
+	/**
+	 * The id of the workflow instance execution which this application job corresponds to
+	 */
 	public String getWorkflowExecutionId() {
 		return workflowExecutionId;
 	}
@@ -77,6 +140,9 @@ public class ApplicationJob {
 		this.workflowExecutionId = workflowExecutionId;
 	}
 
+	/**
+	 * The id of the node which this application job corresponds to
+	 */
 	public String getNodeId() {
 		return nodeId;
 	}
@@ -85,6 +151,9 @@ public class ApplicationJob {
 		this.nodeId = nodeId;
 	}
 
+	/**
+	 * The id of the service description which this application job corresponds to
+	 */
 	public String getServiceDescriptionId() {
 		return serviceDescriptionId;
 	}
@@ -92,7 +161,12 @@ public class ApplicationJob {
 	public void setServiceDescriptionId(String serviceDescriptionId) {
 		this.serviceDescriptionId = serviceDescriptionId;
 	}
-
+	
+	/**
+	 * The id of the host description which this application job corresponds to <br />
+	 * <em><strong>Note: </strong>For data saved using the deprecated API function 
+	 * {@code updateWorkflowNodeGramData(...)} this will be the address of the host</em>
+	 */
 	public String getHostDescriptionId() {
 		return hostDescriptionId;
 	}
@@ -101,6 +175,9 @@ public class ApplicationJob {
 		this.hostDescriptionId = hostDescriptionId;
 	}
 
+	/**
+	 * The id of the application description which this application job corresponds to 
+	 */
 	public String getApplicationDescriptionId() {
 		return applicationDescriptionId;
 	}
@@ -109,22 +186,47 @@ public class ApplicationJob {
 		this.applicationDescriptionId = applicationDescriptionId;
 	}
 
+	/**
+	 * id representing the application job uniquely identified in the Airavata system <br />
+	 * <em><strong>Note: </strong>This id may or may not correspond to an id that can identify a 
+	 * resource execution in the computational middleware</em>
+	 */
 	public String getJobId() {
 		return jobId;
 	}
 
+	/**
+	 * Set a unique id which represents this job in the Airavata system. 
+	 */
 	public void setJobId(String jobId) {
 		this.jobId = jobId;
 	}
 
+	/**
+	 * Configuration, execution and input data relating to the execution of the application job. <br /> 
+	 * <em><strong>Note: </strong>The structure of the data is determined by the type of application 
+	 * <code>(eg: GRAM, EC2) being executed.</code></em> 
+	 */
 	public String getJobData() {
 		return jobData;
 	}
 
+	/**
+	 * Set the configuration, execution and input data relating to the execution of the application. 
+	 * job. <br /> 
+	 * <em><strong>Note: </strong>The structure of the data is up to the Provider implementation 
+	 * <code>(eg: GRAMProvider, EC2Provider)</code>. It is strongly encouraged to include in this 
+	 * field all the information (excluding descriptor data & any sensitive data such as password 
+	 * credentials) necessary for a 3rd party to repeat the execution of application job if 
+	 * necessary.</em> 
+	 */
 	public void setJobData(String jobData) {
 		this.jobData = jobData;
 	}
 
+	/**
+	 * When was this application job was submitted.
+	 */
 	public Date getSubmittedTime() {
 		return submittedTime;
 	}
@@ -133,6 +235,10 @@ public class ApplicationJob {
 		this.submittedTime = submittedTime;
 	}
 
+	/**
+	 * When was the status of this application job was last updated.
+	 * @return
+	 */
 	public Date getStatusUpdateTime() {
 		return statusUpdateTime;
 	}
@@ -141,6 +247,10 @@ public class ApplicationJob {
 		this.statusUpdateTime = statusUpdateTime;
 	}
 
+	/**
+	 * Get the currently recorded status of the application job. 
+	 * @return
+	 */
 	public ApplicationJobStatus getJobStatus() {
 		return jobStatus;
 	}
@@ -149,6 +259,11 @@ public class ApplicationJob {
 		this.jobStatus = jobStatus;
 	}
 
+	/**
+	 * Custom metadata maintained for the application job containing that may contain any additional 
+	 * information relating to the execution.
+	 * @return
+	 */
 	public String getMetadata() {
 		return metadata;
 	}

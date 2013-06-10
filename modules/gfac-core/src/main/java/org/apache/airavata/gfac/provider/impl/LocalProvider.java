@@ -30,7 +30,6 @@ import java.util.Map;
 
 import javax.xml.bind.JAXB;
 
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
@@ -129,33 +128,9 @@ public class LocalProvider implements GFacProvider {
             Process process = builder.start();
             jobId="Local_"+Calendar.getInstance().getTimeInMillis();
             if(jobExecutionContext.getGFacConfiguration().getAiravataAPI() != null){
-        		ApplicationJob appJob = GFacUtils.createApplicationJob(jobExecutionContext);
-                appJob.setJobId(jobId);
-                LocalProviderJobData data = new LocalProviderJobData();
-                data.setApplicationName(app.getExecutableLocation());
-                data.setInputDir(app.getInputDataDirectory());
-                data.setOutputDir(app.getOutputDataDirectory());
-                data.setWorkingDir(builder.directory().toString());
-                data.setInputParameters(ProviderUtils.getInputParameters(jobExecutionContext));
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                JAXB.marshal(data, stream);
-                appJob.setJobData(stream.toString());
-                appJob.setSubmittedTime(Calendar.getInstance().getTime());
-                appJob.setJobStatus(ApplicationJobStatus.SUBMITTED);
-                appJob.setStatusUpdateTime(appJob.getSubmittedTime());
-                try {
-					jobExecutionContext.getGFacConfiguration().getAiravataAPI().getProvenanceManager().addApplicationJob(appJob);
-				} catch (AiravataAPIInvocationException e) {
-					e.printStackTrace();
-				}
+        		saveApplicationJob(jobExecutionContext);
         	}
-            if(jobExecutionContext.getGFacConfiguration().getAiravataAPI() != null){
-                try {
-					jobExecutionContext.getGFacConfiguration().getAiravataAPI().getProvenanceManager().updateApplicationJobStatus(jobId, ApplicationJobStatus.INITIALIZE, Calendar.getInstance().getTime());
-				} catch (AiravataAPIInvocationException e) {
-					e.printStackTrace();
-				}
-        	}
+            GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId, ApplicationJobStatus.INITIALIZE);
             Thread standardOutWriter = new InputStreamToFileWriter(process.getInputStream(), app.getStandardOutput());
             Thread standardErrorWriter = new InputStreamToFileWriter(process.getErrorStream(), app.getStandardError());
 
@@ -164,23 +139,10 @@ public class LocalProvider implements GFacProvider {
             standardErrorWriter.setDaemon(true);
             standardOutWriter.start();
             standardErrorWriter.start();
-            if(jobExecutionContext.getGFacConfiguration().getAiravataAPI() != null){
-                try {
-					jobExecutionContext.getGFacConfiguration().getAiravataAPI().getProvenanceManager().updateApplicationJobStatus(jobId, ApplicationJobStatus.EXECUTING, Calendar.getInstance().getTime());
-				} catch (AiravataAPIInvocationException e) {
-					e.printStackTrace();
-				}
-        	}
+            GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId, ApplicationJobStatus.EXECUTING);
             // wait for the process (application) to finish executing
             int returnValue = process.waitFor();
-
-        	if(jobExecutionContext.getGFacConfiguration().getAiravataAPI() != null){
-                try {
-					jobExecutionContext.getGFacConfiguration().getAiravataAPI().getProvenanceManager().updateApplicationJobStatus(jobId, ApplicationJobStatus.FINALIZE, Calendar.getInstance().getTime());
-				} catch (AiravataAPIInvocationException e) {
-					e.printStackTrace();
-				}
-        	}
+            GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId, ApplicationJobStatus.FINALIZE);
 
             // make sure other two threads are done
             standardOutWriter.join();
@@ -191,22 +153,10 @@ public class LocalProvider implements GFacProvider {
              * just provide warning in the log messages
              */
             if (returnValue != 0) {
-            	if(jobExecutionContext.getGFacConfiguration().getAiravataAPI() != null){
-                    try {
-    					jobExecutionContext.getGFacConfiguration().getAiravataAPI().getProvenanceManager().updateApplicationJobStatus(jobId, ApplicationJobStatus.FAILED, Calendar.getInstance().getTime());
-    				} catch (AiravataAPIInvocationException e) {
-    					e.printStackTrace();
-    				}
-            	}
+            	GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId, ApplicationJobStatus.FAILED);
                 log.error("Process finished with non zero return value. Process may have failed");
             } else {
-            	if(jobExecutionContext.getGFacConfiguration().getAiravataAPI() != null){
-                    try {
-    					jobExecutionContext.getGFacConfiguration().getAiravataAPI().getProvenanceManager().updateApplicationJobStatus(jobId, ApplicationJobStatus.FINISHED, Calendar.getInstance().getTime());
-    				} catch (AiravataAPIInvocationException e) {
-    					e.printStackTrace();
-    				}
-            	}
+            	GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId, ApplicationJobStatus.FINISHED);
                 log.info("Process finished with return value of zero.");
             }
 
@@ -224,6 +174,27 @@ public class LocalProvider implements GFacProvider {
             throw new GFacProviderException(e.getMessage(), e, jobExecutionContext);
         }
     }
+
+	private void saveApplicationJob(JobExecutionContext jobExecutionContext)
+			throws GFacProviderException {
+		ApplicationDeploymentDescriptionType app = jobExecutionContext.
+                getApplicationContext().getApplicationDeploymentDescription().getType();
+		ApplicationJob appJob = GFacUtils.createApplicationJob(jobExecutionContext);
+		appJob.setJobId(jobId);
+		LocalProviderJobData data = new LocalProviderJobData();
+		data.setApplicationName(app.getExecutableLocation());
+		data.setInputDir(app.getInputDataDirectory());
+		data.setOutputDir(app.getOutputDataDirectory());
+		data.setWorkingDir(builder.directory().toString());
+		data.setInputParameters(ProviderUtils.getInputParameters(jobExecutionContext));
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		JAXB.marshal(data, stream);
+		appJob.setJobData(stream.toString());
+		appJob.setSubmittedTime(Calendar.getInstance().getTime());
+		appJob.setJobStatus(ApplicationJobStatus.SUBMITTED);
+		appJob.setStatusUpdateTime(appJob.getSubmittedTime());
+		GFacUtils.recordApplicationJob(jobExecutionContext, appJob);
+	}
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
