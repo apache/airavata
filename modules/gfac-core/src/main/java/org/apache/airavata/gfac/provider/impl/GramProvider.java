@@ -23,7 +23,6 @@ package org.apache.airavata.gfac.provider.impl;
 import java.util.Calendar;
 import java.util.Map;
 
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.JobSubmissionFault;
 import org.apache.airavata.gfac.context.JobExecutionContext;
@@ -92,21 +91,9 @@ public class GramProvider implements GFacProvider {
            
             //WorkflowNodeGramData workflowNodeGramData = new WorkflowNodeGramData(experimentID, nodeID, job.getRSL(),hostName , job.getIDAsString());;
             
-            try {
-            	// for provider test
-            	if(jobExecutionContext.getGFacConfiguration().getAiravataAPI() != null){
-            		ApplicationJob appJob = GFacUtils.createApplicationJob(jobExecutionContext);
-                    appJob.setJobId(job.getIDAsString());
-                    appJob.setJobData(job.getRSL());
-                    appJob.setSubmittedTime(Calendar.getInstance().getTime());
-                    appJob.setJobStatus(ApplicationJobStatus.SUBMITTED);
-                    appJob.setStatusUpdateTime(appJob.getSubmittedTime());
-                    jobExecutionContext.getGFacConfiguration().getAiravataAPI().getProvenanceManager().addApplicationJob(appJob);
-            	}
-                //jobExecutionContext.getGFacConfiguration().getAiravataAPI().getProvenanceManager().updateWorkflowNodeGramData(workflowNodeGramData);
-            } catch (AiravataAPIInvocationException e) {
-                throw new GFacProviderException(e.getMessage(), e, jobExecutionContext);
-            }
+        	// for provider test
+    		saveApplicationJob(jobExecutionContext);
+    		
             /*
             * Wait until job is done
             */
@@ -145,6 +132,16 @@ public class GramProvider implements GFacProvider {
         }
 
     }
+
+	private void saveApplicationJob(JobExecutionContext jobExecutionContext) {
+		ApplicationJob appJob = GFacUtils.createApplicationJob(jobExecutionContext);
+		appJob.setJobId(job.getIDAsString());
+		appJob.setJobData(job.getRSL());
+		appJob.setSubmittedTime(Calendar.getInstance().getTime());
+		appJob.setJobStatus(ApplicationJobStatus.SUBMITTED);
+		appJob.setStatusUpdateTime(appJob.getSubmittedTime());
+		GFacUtils.recordApplicationJob(jobExecutionContext, appJob);
+	}
 	
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
     }

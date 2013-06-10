@@ -398,6 +398,14 @@ public interface ProvenanceManager {
       */
      public void updateApplicationJobStatus(String jobId, ApplicationJobStatus status, Date statusUpdateTime) throws AiravataAPIInvocationException;
      
+	 /**
+	 * Update the status of the job for the current server time
+	 * @param jobId
+	 * @param status
+	 * @throws RegistryException
+	 */
+     public void updateApplicationJobStatus(String jobId, ApplicationJobStatus status) throws AiravataAPIInvocationException;
+     
      /**
       * Update the job data. GFacProvider implementation should decide the job data. Typically it'll 
       * be a serialization of the submitted job query (eg: rsl for a GRAM job) 

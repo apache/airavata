@@ -21,6 +21,7 @@
 
 package org.apache.airavata.client.impl;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -521,60 +522,60 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	}
 
 	@Override
-	public void updateApplicationJobStatus(String gfacJobId, ApplicationJobStatus status, Date statusUpdateTime)
+	public void updateApplicationJobStatus(String jobId, ApplicationJobStatus status, Date statusUpdateTime)
 			throws AiravataAPIInvocationException {
 		try {
-			client.getRegistryClient().updateApplicationJobStatus(gfacJobId, status, statusUpdateTime);
+			client.getRegistryClient().updateApplicationJobStatus(jobId, status, statusUpdateTime);
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
 
 	@Override
-	public void updateApplicationJobData(String gfacJobId, String jobdata)
+	public void updateApplicationJobData(String jobId, String jobdata)
 			throws AiravataAPIInvocationException {
 		try {
-			client.getRegistryClient().updateApplicationJobData(gfacJobId, jobdata);
+			client.getRegistryClient().updateApplicationJobData(jobId, jobdata);
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
 
 	@Override
-	public void updateApplicationJobSubmittedTime(String gfacJobId, Date submitted)
+	public void updateApplicationJobSubmittedTime(String jobId, Date submitted)
 			throws AiravataAPIInvocationException {
 		try {
-			client.getRegistryClient().updateApplicationJobSubmittedTime(gfacJobId, submitted);
+			client.getRegistryClient().updateApplicationJobSubmittedTime(jobId, submitted);
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
 
 	@Override
-	public void updateApplicationJobStatusUpdateTime(String gfacJobId, Date completed)
+	public void updateApplicationJobStatusUpdateTime(String jobId, Date completed)
 			throws AiravataAPIInvocationException {
 		try {
-			client.getRegistryClient().updateApplicationJobStatusUpdateTime(gfacJobId, completed);
+			client.getRegistryClient().updateApplicationJobStatusUpdateTime(jobId, completed);
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
 
 	@Override
-	public void updateApplicationJobMetadata(String gfacJobId, String metadata)
+	public void updateApplicationJobMetadata(String jobId, String metadata)
 			throws AiravataAPIInvocationException {
 		try {
-			client.getRegistryClient().updateApplicationJobMetadata(gfacJobId, metadata);
+			client.getRegistryClient().updateApplicationJobMetadata(jobId, metadata);
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
 
 	@Override
-	public ApplicationJob getApplicationJob(String gfacJobId)
+	public ApplicationJob getApplicationJob(String jobId)
 			throws AiravataAPIInvocationException {
 		try {
-			return client.getRegistryClient().getApplicationJob(gfacJobId);
+			return client.getRegistryClient().getApplicationJob(jobId);
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
@@ -600,6 +601,12 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
+	}
+
+	@Override
+	public void updateApplicationJobStatus(String jobId,
+			ApplicationJobStatus status) throws AiravataAPIInvocationException {
+		updateApplicationJobStatus(jobId, status, Calendar.getInstance().getTime());
 	}
 
 }

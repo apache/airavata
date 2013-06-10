@@ -453,7 +453,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @throws RegistryException
      */
     public void updateApplicationJobStatus(String jobId, ApplicationJobStatus status, Date statusUpdateTime) throws RegistryException;
-    
+   
     /**
      * Update the job data. GFacProvider implementation should decide the job data. Typically it'll 
      * be a serialization of the submitted job query (eg: rsl for a GRAM job) 

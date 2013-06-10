@@ -22,7 +22,6 @@ package org.apache.airavata.gfac.utils;
 
 import java.util.Calendar;
 
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
@@ -83,13 +82,7 @@ public class GramJobSubmissionListener implements GramJobListener{
                             break;
                         }
                     } else {
-                    	try {
-                			if (context.getGFacConfiguration().getAiravataAPI()!=null){
-                				context.getGFacConfiguration().getAiravataAPI().getProvenanceManager().updateApplicationJobStatusUpdateTime(job.getIDAsString(), Calendar.getInstance().getTime());
-                			}
-                		} catch (AiravataAPIInvocationException e) {
-                			e.printStackTrace();
-                		}
+                    	GFacUtils.updateApplicationJobStatusUpdateTime(context, job.getIDAsString(), Calendar.getInstance().getTime());
                         log.info("job " + job.getIDAsString() + " have same status: "
                                 + GramJob.getStatusAsString(status));
                     }
@@ -128,13 +121,7 @@ public class GramJobSubmissionListener implements GramJobListener{
     }
 
     private synchronized boolean setStatus(int status, int error) {
-    	try {
-			if (context.getGFacConfiguration().getAiravataAPI()!=null){
-				context.getGFacConfiguration().getAiravataAPI().getProvenanceManager().updateApplicationJobStatus(job.getIDAsString(), getApplicationJobStatus(status), Calendar.getInstance().getTime());
-			}
-		} catch (AiravataAPIInvocationException e) {
-			e.printStackTrace();
-		}
+		GFacUtils.updateApplicationJobStatus(context,job.getIDAsString(), getApplicationJobStatus(status));
         this.status = status;
         this.error = error;
 

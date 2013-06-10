@@ -25,21 +25,32 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
+import org.apache.airavata.gfac.utils.GFacUtils;
+import org.apache.airavata.registry.api.workflow.ApplicationJob;
+import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
 import org.apache.airavata.schemas.gfac.UnicoreHostType;
 import org.apache.xmlbeans.XmlCursor;
 import org.ggf.schemas.bes.x2006.x08.besFactory.ActivityStateEnumeration;
+import org.ggf.schemas.bes.x2006.x08.besFactory.ActivityStateEnumeration.Enum;
 import org.ggf.schemas.bes.x2006.x08.besFactory.ActivityStatusType;
 import org.ggf.schemas.bes.x2006.x08.besFactory.CreateActivityDocument;
 import org.ggf.schemas.bes.x2006.x08.besFactory.CreateActivityResponseDocument;
 import org.ggf.schemas.bes.x2006.x08.besFactory.GetActivityStatusesDocument;
 import org.ggf.schemas.bes.x2006.x08.besFactory.GetActivityStatusesResponseDocument;
+import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
 import org.globus.gsi.gssapi.GlobusGSSCredentialImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,10 +97,11 @@ public class BESProvider implements GFacProvider {
         CreateActivityDocument cad = CreateActivityDocument.Factory
                 .newInstance();
         
+		JobDefinitionType jobDefinition = null;
         try {
             //FIXME: Replace by a native client
-//			cad.addNewCreateActivity().addNewActivityDocument()
-//			        .setJobDefinition(JSDLGenerator.buildJSDLInstance(jobExecutionContext).getJobDefinition());
+//			jobDefinition = JSDLGenerator.buildJSDLInstance(jobExecutionContext).getJobDefinition();
+//			cad.addNewCreateActivity().addNewActivityDocument().setJobDefinition(jobDefinition);
 			System.out.println("REMOVE ME");
 		} catch (Exception e1) {
 			throw new GFacProviderException("Cannot generate JSDL instance from the JobExecutionContext.",e1);
@@ -123,7 +135,7 @@ public class BESProvider implements GFacProvider {
             jobId = new Long(Calendar.getInstance().getTimeInMillis())
                     .toString();
         }
-        
+		saveApplicationJob(jobExecutionContext, jobDefinition);
         log.info(formatStatusMessage(activityEpr.getAddress().getStringValue(), factory.getActivityStatus(activityEpr)
                 .toString()));
         
@@ -135,6 +147,7 @@ public class BESProvider implements GFacProvider {
             ActivityStatusType activityStatus = null;
     		try {
     			activityStatus = getStatus(factory, activityEpr);
+    			GFacUtils.updateApplicationJobStatus(jobExecutionContext, jobId, getApplicationJobStatus(activityStatus));
     			log.info (subStatusAsString(activityStatus));
     		} catch (UnknownActivityIdentifierFault e) {
     			throw new GFacProviderException(e.getMessage(), e.getCause());
@@ -162,6 +175,36 @@ public class BESProvider implements GFacProvider {
 						+ "\n" + activityStatus.getFault().getFaultstring());
 				log.info("EXITCODE: "+activityStatus.getExitCode());
 		} 
+	}
+
+	private ApplicationJobStatus getApplicationJobStatus(ActivityStatusType activityStatus){
+		if (activityStatus==null){
+			return ApplicationJobStatus.UNKNOWN;
+		}
+		Enum state = activityStatus.getState();
+		if (ActivityStateEnumeration.PENDING.equals(state)){
+			return ApplicationJobStatus.PENDING;
+		} else if (ActivityStateEnumeration.CANCELLED.equals(state)){
+			return ApplicationJobStatus.CANCELLED;
+		} else if (ActivityStateEnumeration.FAILED.equals(state)){
+			return ApplicationJobStatus.FAILED;
+		} else if (ActivityStateEnumeration.FINISHED.equals(state)){
+			return ApplicationJobStatus.FINISHED;
+		} else if (ActivityStateEnumeration.RUNNING.equals(state)){
+			return ApplicationJobStatus.EXECUTING;
+		}
+		return ApplicationJobStatus.UNKNOWN;
+	}
+	
+	private void saveApplicationJob(JobExecutionContext jobExecutionContext,
+			JobDefinitionType jobDefinition) {
+		ApplicationJob appJob = GFacUtils.createApplicationJob(jobExecutionContext);
+        appJob.setJobId(jobId);
+        appJob.setJobData(jobDefinition.toString());
+        appJob.setSubmittedTime(Calendar.getInstance().getTime());
+        appJob.setJobStatus(ApplicationJobStatus.SUBMITTED);
+        appJob.setStatusUpdateTime(appJob.getSubmittedTime());
+        GFacUtils.recordApplicationJob(jobExecutionContext, appJob);
 	}
 
 	public void dispose(JobExecutionContext jobExecutionContext)
