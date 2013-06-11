@@ -37,6 +37,10 @@ public class ApplicationJob {
 	 */
 	public static enum ApplicationJobStatus{
 		/**
+		 * Validating the application job input data and configurations
+		 */
+		VALIDATE_INPUT,
+		/**
 		 * Input data/files is being staged for the application job.
 		 */
 		STAGING,
@@ -45,13 +49,13 @@ public class ApplicationJob {
 		 */
 		AUTHENTICATE,
 		/**
-		 * Application job is submitted, possibly waiting to start executing.
-		 */
-		SUBMITTED,
-		/**
 		 * Application job is being initialized.
 		 */
 		INITIALIZE, 
+		/**
+		 * Application job is submitted, possibly waiting to start executing.
+		 */
+		SUBMITTED,
 		/**
 		 * Application job is waiting to start/continue its executing.
 		 */
@@ -67,7 +71,7 @@ public class ApplicationJob {
 		/**
 		 * Application job is waiting for data or a trigger to continue its execution.
 		 */
-		WAITING_FOR_DATA,
+		WAIT_FOR_DATA,
 		/**
 		 * Finalizing the execution of the application job.
 		 */
@@ -80,6 +84,10 @@ public class ApplicationJob {
 		 * Generated results from the application job execution is being retrieved.
 		 */
 		RESULTS_RETRIEVE,
+		/**
+		 * Validating the application job execution results
+		 */
+		VALIDATE_OUTPUT,
 		/**
 		 * Application job completed successfully.
 		 */
@@ -113,7 +121,7 @@ public class ApplicationJob {
 	
 	private Date submittedTime;
 	private Date statusUpdateTime;
-	private ApplicationJobStatus jobStatus;
+	private ApplicationJobStatus status;
 	
 	private String metadata;
 
@@ -251,12 +259,12 @@ public class ApplicationJob {
 	 * Get the currently recorded status of the application job. 
 	 * @return
 	 */
-	public ApplicationJobStatus getJobStatus() {
-		return jobStatus;
+	public ApplicationJobStatus getStatus() {
+		return status;
 	}
 
-	public void setJobStatus(ApplicationJobStatus jobStatus) {
-		this.jobStatus = jobStatus;
+	public void setStatus(ApplicationJobStatus status) {
+		this.status = status;
 	}
 
 	/**

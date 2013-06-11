@@ -37,6 +37,9 @@ import com.sshtools.j2ssh.transport.publickey.InvalidSshKeyException;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFile;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
+
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.gfac.GFacException;
@@ -48,6 +51,9 @@ import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.provider.utils.AmazonEC2Util;
 import org.apache.airavata.gfac.provider.utils.EC2ProviderUtil;
 import org.apache.airavata.gfac.provider.utils.ProviderUtils;
+import org.apache.airavata.gfac.utils.GFacUtils;
+import org.apache.airavata.registry.api.workflow.ApplicationJob;
+import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.Ec2ApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
@@ -58,6 +64,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -74,9 +81,12 @@ public class EC2Provider implements GFacProvider {
     private Instance instance = null;
 
     private AmazonSecurityContext amazonSecurityContext;
+    
+    private String jobId;
 
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException,GFacException{
         if (jobExecutionContext != null) {
+    		jobId="EC2_"+jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress()+"_"+Calendar.getInstance().getTimeInMillis();
             if (jobExecutionContext.getSecurityContext(AmazonSecurityContext.AMAZON_SECURITY_CONTEXT)
                     instanceof AmazonSecurityContext) {
                 this.amazonSecurityContext = (AmazonSecurityContext) jobExecutionContext.
@@ -96,7 +106,8 @@ public class EC2Provider implements GFacProvider {
             log.debug("INS_TYPE:" + amazonSecurityContext.getInstanceType());
             log.debug("USERNAME:" + amazonSecurityContext.getUserName());
         }
-
+        saveApplicationJob(jobExecutionContext);
+//        job
         /* Validation */
         if (amazonSecurityContext.getAccessKey() == null || amazonSecurityContext.getAccessKey().isEmpty())
             throw new GFacProviderException("EC2 Access Key is empty", jobExecutionContext);
@@ -113,13 +124,31 @@ public class EC2Provider implements GFacProvider {
         AWSCredentials credential =
                 new BasicAWSCredentials(amazonSecurityContext.getAccessKey(), amazonSecurityContext.getSecretKey());
         AmazonEC2Client ec2client = new AmazonEC2Client(credential);
-
+        GFacUtils.updateApplicationJobStatus(jobExecutionContext, jobId, ApplicationJobStatus.AUTHENTICATE);
         initEc2Environment(jobExecutionContext, ec2client);
         checkConnection(instance, ec2client);
     }
 
+	private void saveApplicationJob(JobExecutionContext jobExecutionContext) {
+		ApplicationJob job = GFacUtils.createApplicationJob(jobExecutionContext);
+        job.setJobId(jobId);
+        job.setStatus(ApplicationJobStatus.VALIDATE_INPUT);
+        job.setSubmittedTime(Calendar.getInstance().getTime());
+        job.setStatusUpdateTime(job.getSubmittedTime());
+        GFacUtils.recordApplicationJob(jobExecutionContext, job);
+	}
+
     public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+    	GFacUtils.updateApplicationJobStatus(jobExecutionContext, jobId, ApplicationJobStatus.INITIALIZE);
         String shellCmd = createShellCmd(jobExecutionContext);
+        AiravataAPI airavataAPI = jobExecutionContext.getGFacConfiguration().getAiravataAPI();
+        if (airavataAPI!=null){
+        	try {
+				airavataAPI.getProvenanceManager().updateApplicationJobData(jobId, shellCmd);
+			} catch (AiravataAPIInvocationException e) {
+				log.error("Error in saving EC2 shell command!!!", e);
+			}
+        }
         SshClient sshClient = new SshClient();
         sshClient.setSocketTimeout(SOCKET_TIMEOUT);
         SshConnectionProperties properties = new SshConnectionProperties();
@@ -145,7 +174,7 @@ public class EC2Provider implements GFacProvider {
                     return true;
                 }
             });
-
+            GFacUtils.updateApplicationJobStatus(jobExecutionContext, jobId, ApplicationJobStatus.AUTHENTICATE);
             // Initialize the authentication data.
             PublicKeyAuthenticationClient publicKeyAuth = new PublicKeyAuthenticationClient();
             publicKeyAuth.setUsername(amazonSecurityContext.getUserName());
@@ -164,11 +193,13 @@ public class EC2Provider implements GFacProvider {
             } else if(result==AuthenticationProtocolState.COMPLETE) {
                 log.info("ssh client authentication is complete...");
             }
-
+            GFacUtils.updateApplicationJobStatus(jobExecutionContext, jobId, ApplicationJobStatus.SUBMITTED);
             SessionChannelClient session = sshClient.openSessionChannel();
             log.info("ssh session successfully opened...");
             session.requestPseudoTerminal("vt100", 80, 25, 0, 0, "");
             session.startShell();
+            
+            GFacUtils.updateApplicationJobStatus(jobExecutionContext, jobId, ApplicationJobStatus.EXECUTING);
             session.getOutputStream().write(shellCmd.getBytes());
 
             InputStream in = session.getInputStream();
@@ -185,6 +216,7 @@ public class EC2Provider implements GFacProvider {
                     break;
                 }
             }
+            GFacUtils.updateApplicationJobStatus(jobExecutionContext, jobId, ApplicationJobStatus.RESULTS_RETRIEVE);
 
             executionResult = executionResult.replace("\r","").replace("\n","");
             log.info("Result of the job : " + executionResult);
@@ -198,7 +230,7 @@ public class EC2Provider implements GFacProvider {
                 ((StringParameterType) outParam.getType()).setValue(executionResult);
                 jobExecutionContext.getOutMessageContext().addParameter(paramName, outParam);
             }
-
+            GFacUtils.updateApplicationJobStatus(jobExecutionContext, jobId, ApplicationJobStatus.FINISHED);
         } catch (InvalidSshKeyException e) {
             throw new GFacProviderException("Invalid SSH key", e);
         } catch (IOException e) {

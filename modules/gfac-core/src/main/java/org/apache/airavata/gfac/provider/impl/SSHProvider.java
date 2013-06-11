@@ -86,7 +86,7 @@ public class SSHProvider implements GFacProvider {
 	private void saveApplicationJob(JobExecutionContext jobExecutionContext, String executableName) {
 		ApplicationJob job = GFacUtils.createApplicationJob(jobExecutionContext);
 		job.setJobId(jobID);
-		job.setJobStatus(ApplicationJobStatus.INITIALIZE);
+		job.setStatus(ApplicationJobStatus.INITIALIZE);
 		job.setSubmittedTime(Calendar.getInstance().getTime());
 		job.setStatusUpdateTime(job.getSubmittedTime());
 		job.setJobData(executableName);

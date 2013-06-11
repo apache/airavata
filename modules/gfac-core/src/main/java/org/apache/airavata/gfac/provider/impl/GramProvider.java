@@ -138,7 +138,7 @@ public class GramProvider implements GFacProvider {
 		appJob.setJobId(job.getIDAsString());
 		appJob.setJobData(job.getRSL());
 		appJob.setSubmittedTime(Calendar.getInstance().getTime());
-		appJob.setJobStatus(ApplicationJobStatus.SUBMITTED);
+		appJob.setStatus(ApplicationJobStatus.SUBMITTED);
 		appJob.setStatusUpdateTime(appJob.getSubmittedTime());
 		GFacUtils.recordApplicationJob(jobExecutionContext, appJob);
 	}

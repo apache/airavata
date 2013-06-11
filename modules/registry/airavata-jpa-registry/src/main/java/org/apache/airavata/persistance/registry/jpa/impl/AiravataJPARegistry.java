@@ -2273,7 +2273,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		gfacJob.setJobData(job.getJobData());
 		gfacJob.setMetadata(job.getMetadata());
 		gfacJob.setServiceDescID(job.getServiceDescriptionId());
-		gfacJob.setStatus(job.getJobStatus().toString());
+		gfacJob.setStatus(job.getStatus().toString());
 		gfacJob.setSubmittedTime(new Timestamp(job.getSubmittedTime().getTime()));
 	}
 
@@ -2353,7 +2353,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		job.setHostDescriptionId(gfacJob.getHostDescID());
 		job.setJobData(gfacJob.getJobData());
 		job.setJobId(gfacJob.getLocalJobID());
-		job.setJobStatus(ApplicationJobStatus.valueOf(gfacJob.getStatus()));
+		job.setStatus(ApplicationJobStatus.valueOf(gfacJob.getStatus()));
 		job.setMetadata(gfacJob.getMetadata());
 		job.setNodeId(gfacJob.getNodeID());
 		job.setServiceDescriptionId(gfacJob.getServiceDescID());

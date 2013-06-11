@@ -191,7 +191,7 @@ public class LocalProvider implements GFacProvider {
 		JAXB.marshal(data, stream);
 		appJob.setJobData(stream.toString());
 		appJob.setSubmittedTime(Calendar.getInstance().getTime());
-		appJob.setJobStatus(ApplicationJobStatus.SUBMITTED);
+		appJob.setStatus(ApplicationJobStatus.SUBMITTED);
 		appJob.setStatusUpdateTime(appJob.getSubmittedTime());
 		GFacUtils.recordApplicationJob(jobExecutionContext, appJob);
 	}
