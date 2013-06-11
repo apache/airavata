@@ -202,7 +202,7 @@ public class BESProvider implements GFacProvider {
         appJob.setJobId(jobId);
         appJob.setJobData(jobDefinition.toString());
         appJob.setSubmittedTime(Calendar.getInstance().getTime());
-        appJob.setJobStatus(ApplicationJobStatus.SUBMITTED);
+        appJob.setStatus(ApplicationJobStatus.SUBMITTED);
         appJob.setStatusUpdateTime(appJob.getSubmittedTime());
         GFacUtils.recordApplicationJob(jobExecutionContext, appJob);
 	}
