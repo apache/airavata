@@ -59,6 +59,14 @@ create table GFac_Job_Data
        FOREIGN KEY (workflow_instanceID) REFERENCES Workflow_Data(workflow_instanceID)
 );
 
+create table GFac_Job_Status
+(
+       local_Job_ID varchar(255),
+       status_update_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
+       status varchar(255),
+       FOREIGN KEY (local_Job_ID) REFERENCES GFac_Job_Data(local_Job_ID)
+);
+
 INSERT INTO GFac_Job_Data(experiment_ID, workflow_instanceID, node_id, application_descriptor_ID, host_descriptor_ID, service_descriptor_ID,
 job_data, local_Job_ID, submitted_time, statusUpdateTime, status, metadata) SELECT null, workflow_instanceID, node_id, null, invoked_host,
 null, null, local_Job_ID, null, null, 'UNKNOWN', null FROM Gram_Data;
