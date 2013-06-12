@@ -30,14 +30,13 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 
 public class UserWorkflowResourceTest extends AbstractResourceTest {
-    private GatewayResource gatewayResource;
     private WorkerResource workerResource;
     private UserWorkflowResource userWorkflowResource;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        gatewayResource = super.getGatewayResource();
+        GatewayResource gatewayResource = super.getGatewayResource();
         workerResource = super.getWorkerResource();
 
         userWorkflowResource = workerResource.createWorkflowTemplate("workflow1");

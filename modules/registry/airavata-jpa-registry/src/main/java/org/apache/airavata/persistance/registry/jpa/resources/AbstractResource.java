@@ -44,6 +44,7 @@ public abstract class AbstractResource implements Resource {
     public static final String EXPERIMENT_METADATA = "Experiment_Metadata";
     public static final String EXECUTION_ERROR = "Execution_Error";
     public static final String GFAC_JOB_DATA = "GFac_Job_Data";
+    public static final String GFAC_JOB_STATUS = "GFac_Job_Status";
 
     //Gateway Table
     public final class GatewayConstants {
@@ -200,9 +201,15 @@ public abstract class AbstractResource implements Resource {
         public static final String JOB_DATA = "job_data";
         public static final String LOCAL_JOB_ID = "local_Job_ID";
         public static final String SUBMITTED_TIME = "submitted_time";
-        public static final String COMPLETED_TIME = "completed_time";
+        public static final String STATUS_UPDATE_TIME = "status_update_time";
         public static final String STATUS = "status";
         public static final String METADATA = "metadata";
+    }
+
+    public final class GFacJobStatusConstants {
+        public static final String LOCAL_JOB_ID = "local_Job_ID";
+        public static final String STATUS = "status";
+        public static final String STATUS_UPDATE_TIME = "status_update_time";
     }
 
     protected AbstractResource() {

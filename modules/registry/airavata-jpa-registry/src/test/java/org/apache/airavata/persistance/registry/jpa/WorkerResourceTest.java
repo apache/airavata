@@ -23,14 +23,12 @@ package org.apache.airavata.persistance.registry.jpa;
 
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
 public class WorkerResourceTest extends AbstractResourceTest {
     private GatewayResource gatewayResource;
     private WorkerResource workerResource;
-    private UserResource userResource;
     private ProjectResource testProject;
     private UserWorkflowResource userWorkflowResource;
     private ExperimentResource experimentResource;
@@ -40,7 +38,6 @@ public class WorkerResourceTest extends AbstractResourceTest {
         super.setUp();
         gatewayResource = super.getGatewayResource();
         workerResource = super.getWorkerResource();
-        userResource = super.getUserResource();
 
         testProject = workerResource.createProject("testProject");
         userWorkflowResource = workerResource.createWorkflowTemplate("workflow1");

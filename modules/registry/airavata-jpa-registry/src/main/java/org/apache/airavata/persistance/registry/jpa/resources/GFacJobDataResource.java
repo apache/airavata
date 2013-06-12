@@ -25,12 +25,16 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Experiment_Data;
 import org.apache.airavata.persistance.registry.jpa.model.GFac_Job_Data;
+import org.apache.airavata.persistance.registry.jpa.model.GFac_Job_Status;
 import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
+import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GFacJobDataResource extends AbstractResource {
@@ -146,8 +150,16 @@ public class GFacJobDataResource extends AbstractResource {
 
     @Override
     public Resource create(ResourceType type) {
-        logger.error("Unsupported resource type for GFac Job data resource" ,new UnsupportedOperationException() );
-        throw new UnsupportedOperationException();
+        switch (type){
+            case GFAC_JOB_STATUS:
+                GFacJobStatusResource gFacJobStatusResource = new GFacJobStatusResource();
+                gFacJobStatusResource.setLocalJobID(localJobID);
+                gFacJobStatusResource.setgFacJobDataResource(this);
+                return gFacJobStatusResource;
+            default:
+                logger.error("Unsupported resource type for GFac Job status resource" ,new UnsupportedOperationException() );
+                throw new UnsupportedOperationException();
+        }
     }
 
     @Override
@@ -164,8 +176,36 @@ public class GFacJobDataResource extends AbstractResource {
 
     @Override
     public List<Resource> get(ResourceType type) {
-        logger.error("Unsupported resource type for GFac Job data resource" ,new UnsupportedOperationException() );
-        throw new UnsupportedOperationException();
+        List<Resource> resourceList = new ArrayList<Resource>();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        Query q;
+        QueryGenerator generator;
+        List results;
+        switch (type){
+            case GFAC_JOB_STATUS:
+                generator = new QueryGenerator(GFAC_JOB_STATUS);
+                generator.setParameter(GFacJobStatusConstants.LOCAL_JOB_ID, localJobID);
+                q = generator.selectQuery(em);
+                results = q.getResultList();
+                if (results.size() != 0) {
+                    for (Object result : results) {
+                        GFac_Job_Status gFacJobStatus = (GFac_Job_Status) result;
+                        GFacJobStatusResource gFacJobStatusResource =
+                                (GFacJobStatusResource)Utils.getResource(ResourceType.GFAC_JOB_STATUS, gFacJobStatus);
+                        resourceList.add(gFacJobStatusResource);
+                    }
+                }
+                break;
+            default:
+                em.getTransaction().commit();
+                em.close();
+                logger.error("Unsupported resource type for gfac job data resource.", new IllegalArgumentException());
+                throw new IllegalArgumentException("Unsupported resource type for gfac job data resource.");
+        }
+        em.getTransaction().commit();
+        em.close();
+        return resourceList;
     }
 
     @Override
@@ -217,4 +257,5 @@ public class GFacJobDataResource extends AbstractResource {
         em.getTransaction().commit();
         em.close();
     }
+
 }

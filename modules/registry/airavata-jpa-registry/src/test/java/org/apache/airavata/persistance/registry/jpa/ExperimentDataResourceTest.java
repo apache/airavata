@@ -28,17 +28,15 @@ import java.util.Calendar;
 
 public class ExperimentDataResourceTest extends AbstractResourceTest {
     private ExperimentDataResource experimentDataResource;
-    private GatewayResource gatewayResource;
     private ExperimentResource experimentResource;
-    private WorkerResource workerResource;
     private WorkflowDataResource workflowDataResource;
     private ExperimentMetadataResource experimentMetadataResource;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        gatewayResource = super.getGatewayResource();
-        workerResource = super.getWorkerResource();
+        GatewayResource gatewayResource = super.getGatewayResource();
+        WorkerResource workerResource = super.getWorkerResource();
 
         experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
         experimentResource.setExpID("testExpID");
