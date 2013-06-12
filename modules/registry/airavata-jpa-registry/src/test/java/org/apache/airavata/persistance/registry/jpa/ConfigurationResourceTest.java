@@ -22,15 +22,11 @@
 package org.apache.airavata.persistance.registry.jpa;
 
 import org.apache.airavata.persistance.registry.jpa.resources.ConfigurationResource;
-import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
 public class ConfigurationResourceTest extends AbstractResourceTest {
-
-    private Initialize initialize;
 
     @Override
     public void setUp() throws Exception {

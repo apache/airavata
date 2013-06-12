@@ -214,6 +214,14 @@ create table GFac_Job_Data
        FOREIGN KEY (workflow_instanceID) REFERENCES Workflow_Data(workflow_instanceID)
 );
 
+create table GFac_Job_Status
+(
+       local_Job_ID varchar(255),
+       status_update_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
+       status varchar(255),
+       FOREIGN KEY (local_Job_ID) REFERENCES GFac_Job_Data(local_Job_ID)
+);
+
 CREATE TABLE COMMUNITY_USER
 (
         GATEWAY_NAME VARCHAR(256) NOT NULL,

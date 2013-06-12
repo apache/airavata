@@ -324,6 +324,13 @@ public class Utils {
                     logger.error("Object should be a GFac Job Data type.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a GFac Job Data.");
                 }
+            case GFAC_JOB_STATUS:
+                if (o instanceof GFac_Job_Status){
+                    return createGfacJobStatus((GFac_Job_Status) o);
+                }else {
+                    logger.error("Object should be a GFac Job Status type.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a GFac Job Status.");
+                }
             default:
         }
         return null;
@@ -626,6 +633,16 @@ public class Utils {
         gFacJobDataResource.setStatus(o.getStatus());
         gFacJobDataResource.setMetadata(o.getMetadata());
         return gFacJobDataResource;
+    }
+
+    private static Resource createGfacJobStatus(GFac_Job_Status o) {
+        GFacJobStatusResource gFacJobStatusResource = new GFacJobStatusResource();
+        gFacJobStatusResource.setLocalJobID(o.getLocal_Job_ID());
+        gFacJobStatusResource.setStatus(o.getStatus());
+        gFacJobStatusResource.setStatusUpdateTime(o.getStatus_update_time());
+        GFacJobDataResource gFacJobDataResource = (GFacJobDataResource)createGfacJobData(o.getgFac_job_data());
+        gFacJobStatusResource.setgFacJobDataResource(gFacJobDataResource);
+        return gFacJobStatusResource;
     }
 
 //    public static byte[] getByteArray(String content){

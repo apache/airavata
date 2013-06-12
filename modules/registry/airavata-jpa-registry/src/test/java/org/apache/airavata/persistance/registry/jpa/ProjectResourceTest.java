@@ -26,7 +26,6 @@ import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
 

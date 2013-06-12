@@ -22,27 +22,22 @@
 package org.apache.airavata.persistance.registry.jpa;
 
 import org.apache.airavata.persistance.registry.jpa.resources.*;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
 
 public class ExecutionErrorResourceTest extends AbstractResourceTest {
-    private GatewayResource gatewayResource;
-    private ExperimentResource experimentResource;
-    private WorkerResource workerResource;
     private ExperimentDataResource experimentDataResource;
     private WorkflowDataResource workflowDataResource;
     private NodeDataResource nodeDataResource;
 
-    @BeforeClass
+    @Override
     public void setUp() throws Exception {
         super.setUp();
-        gatewayResource = super.getGatewayResource();
-        workerResource = super.getWorkerResource();
+        GatewayResource gatewayResource = super.getGatewayResource();
+        WorkerResource workerResource = super.getWorkerResource();
 
-        experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
+        ExperimentResource experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
         experimentResource.setExpID("testExpID");
         experimentResource.setWorker(workerResource);
         experimentResource.setProject(new ProjectResource(workerResource, gatewayResource, "testProject"));
@@ -71,7 +66,6 @@ public class ExecutionErrorResourceTest extends AbstractResourceTest {
         nodeDataResource.save();
     }
 
-    @Test
     public void testSave() throws Exception {
         ExecutionErrorResource executionErrorResource = (ExecutionErrorResource) workflowDataResource.create(ResourceType.EXECUTION_ERROR);
         executionErrorResource.setErrorCode("testErrorCode");

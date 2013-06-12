@@ -25,9 +25,10 @@ import org.apache.airavata.persistance.registry.jpa.resources.*;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.List;
 
-public class GramDataResourceTest extends AbstractResourceTest {
-    private WorkflowDataResource workflowDataResource;
+public class GFacJobStatusResourceTest extends AbstractResourceTest {
+    private GFacJobDataResource gFacJobDataResource;
 
     @Override
     public void setUp() throws Exception {
@@ -46,7 +47,7 @@ public class GramDataResourceTest extends AbstractResourceTest {
         experimentDataResource.setUserName(workerResource.getUser());
         experimentDataResource.save();
 
-        workflowDataResource = (WorkflowDataResource) experimentDataResource.create(ResourceType.WORKFLOW_DATA);
+        WorkflowDataResource workflowDataResource = (WorkflowDataResource) experimentDataResource.create(ResourceType.WORKFLOW_DATA);
         workflowDataResource.setWorkflowInstanceID("testWFInstance");
         workflowDataResource.setTemplateName("testTemplate");
         workflowDataResource.setExperimentID("testExpID");
@@ -55,19 +56,18 @@ public class GramDataResourceTest extends AbstractResourceTest {
         Timestamp timestamp = new Timestamp(d.getTime());
         workflowDataResource.setLastUpdatedTime(timestamp);
         workflowDataResource.save();
-    }
 
-    public void testSave() throws Exception {
-        GramDataResource gramDataResource = workflowDataResource.createGramData("testNode");
-        gramDataResource.setWorkflowDataResource(workflowDataResource);
-        gramDataResource.setInvokedHost("testhost");
-        gramDataResource.setRsl("testRSL");
-        gramDataResource.save();
+        gFacJobDataResource = (GFacJobDataResource) workflowDataResource.create(ResourceType.GFAC_JOB_DATA);
+        gFacJobDataResource.setLocalJobID("testJobID");
+        gFacJobDataResource.setApplicationDescID("testApplication");
+        gFacJobDataResource.setExperimentDataResource(experimentDataResource);
+        gFacJobDataResource.setNodeID("testNode");
+        gFacJobDataResource.setHostDescID("testHost");
+        gFacJobDataResource.setServiceDescID("testService");
+        gFacJobDataResource.setStatus("testStatus");
+        gFacJobDataResource.setJobData("testJobData");
+        gFacJobDataResource.save();
 
-        assertTrue("gram data saved successfully", workflowDataResource.isGramDataExists("testNode"));
-
-        //remove the gram data
-        workflowDataResource.removeGramData("testNodeID");
     }
 
     @Override
@@ -75,4 +75,16 @@ public class GramDataResourceTest extends AbstractResourceTest {
         super.tearDown();
     }
 
+    public void testSave() throws Exception {
+        GFacJobStatusResource resource = (GFacJobStatusResource)gFacJobDataResource.create(ResourceType.GFAC_JOB_STATUS);
+        resource.setStatus("testStatus");
+        resource.setgFacJobDataResource(gFacJobDataResource);
+        Calendar calender = Calendar.getInstance();
+        java.util.Date d = calender.getTime();
+        Timestamp timestamp = new Timestamp(d.getTime());
+        resource.setStatusUpdateTime(timestamp);
+        resource.save();
+        List<Resource> resources = gFacJobDataResource.get(ResourceType.GFAC_JOB_STATUS);
+        assertTrue("GFac job status saved successfully", resources.size() != 0);
+    }
 }

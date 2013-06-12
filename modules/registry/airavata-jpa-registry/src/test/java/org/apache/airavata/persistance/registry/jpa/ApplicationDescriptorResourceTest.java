@@ -23,18 +23,16 @@ package org.apache.airavata.persistance.registry.jpa;
 
 import org.apache.airavata.persistance.registry.jpa.resources.ApplicationDescriptorResource;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
-import org.junit.*;
 
 public class ApplicationDescriptorResourceTest extends AbstractResourceTest {
     private GatewayResource gatewayResource;
 
-    @BeforeClass
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         gatewayResource = super.getGatewayResource();
     }
 
-    @org.junit.Test
     public void testSave() throws Exception {
         ApplicationDescriptorResource applicationDescriptorResouce = (ApplicationDescriptorResource) gatewayResource.create(ResourceType.APPLICATION_DESCRIPTOR);
         applicationDescriptorResouce.setHostDescName("testHostDesc");

@@ -27,9 +27,6 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 
 public class WorkflowDataResourceTest extends AbstractResourceTest {
-    private GatewayResource gatewayResource;
-    private ExperimentResource experimentResource;
-    private WorkerResource workerResource;
     private ExperimentDataResource experimentDataResource;
     private WorkflowDataResource workflowDataResource;
     private NodeDataResource nodeDataResource;
@@ -38,10 +35,10 @@ public class WorkflowDataResourceTest extends AbstractResourceTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        gatewayResource = super.getGatewayResource();
-        workerResource = super.getWorkerResource();
+        GatewayResource gatewayResource = super.getGatewayResource();
+        WorkerResource workerResource = super.getWorkerResource();
 
-        experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
+        ExperimentResource experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
         experimentResource.setExpID("testExpID");
         experimentResource.setWorker(workerResource);
         experimentResource.setProject(new ProjectResource(workerResource, gatewayResource, "testProject"));

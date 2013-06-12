@@ -38,6 +38,7 @@ public enum ResourceType {
     NODE_DATA,
     GRAM_DATA,
     EXECUTION_ERROR,
-    GFAC_JOB_DATA
+    GFAC_JOB_DATA,
+    GFAC_JOB_STATUS
 
 }

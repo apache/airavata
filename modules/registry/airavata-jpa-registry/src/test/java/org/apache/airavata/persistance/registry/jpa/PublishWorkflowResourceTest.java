@@ -24,7 +24,6 @@ package org.apache.airavata.persistance.registry.jpa;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.PublishWorkflowResource;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
 

@@ -23,7 +23,6 @@ package org.apache.airavata.persistance.registry.jpa;
 
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
@@ -104,7 +103,6 @@ public class GatewayResourceTest extends AbstractResourceTest {
         experimentResource.save();
     }
 
-    @org.junit.Test
     public void testSave() throws Exception {
         gatewayResource.setOwner("owner1");
         gatewayResource.save();
@@ -114,7 +112,6 @@ public class GatewayResourceTest extends AbstractResourceTest {
 
     }
 
-    @org.junit.Test
     public void testCreate() throws Exception {
         assertNotNull("project resource cannot be null", projectResource);
         assertNotNull("user resource cannot be null", userResource);
@@ -127,7 +124,6 @@ public class GatewayResourceTest extends AbstractResourceTest {
         assertNotNull("experiment resource cannot be null", experimentResource);
     }
 
-    @org.junit.Test
     public void testIsExists() throws Exception {
         assertTrue(gatewayResource.isExists(ResourceType.USER, "admin"));
         assertTrue(gatewayResource.isExists(ResourceType.PUBLISHED_WORKFLOW, "pubworkflow1"));
@@ -137,7 +133,6 @@ public class GatewayResourceTest extends AbstractResourceTest {
         assertTrue(gatewayResource.isExists(ResourceType.EXPERIMENT, "testExpID"));
     }
 
-    @org.junit.Test
     public void testGet() throws Exception {
         assertNotNull(gatewayResource.get(ResourceType.USER, "admin"));
         assertNotNull(gatewayResource.get(ResourceType.PUBLISHED_WORKFLOW, "pubworkflow1"));
@@ -157,7 +152,6 @@ public class GatewayResourceTest extends AbstractResourceTest {
         assertNotNull(gatewayResource.get(ResourceType.EXPERIMENT));
     }
 
-    @org.junit.Test
     public void testRemove() throws Exception {
 
         gatewayResource.remove(ResourceType.PUBLISHED_WORKFLOW, "pubworkflow1");
