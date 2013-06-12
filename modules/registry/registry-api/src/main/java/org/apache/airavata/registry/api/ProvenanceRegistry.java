@@ -514,4 +514,12 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @throws RegistryException
      */
     public List<ApplicationJob> getApplicationJobs(String experimentId, String workflowExecutionId, String nodeId) throws RegistryException;
+    
+    /**
+     * Retrieve the list all the status updates for an application job.
+     * @param jobId - Application job id
+     * @return
+     * @throws RegistryException
+     */
+    public List<ApplicationJobStatusData> getApplicationJobStatusHistory(String jobId) throws RegistryException;
 }

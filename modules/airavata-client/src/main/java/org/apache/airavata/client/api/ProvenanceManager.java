@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.workflow.ApplicationJobStatusData;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
 import org.apache.airavata.registry.api.workflow.ExperimentMetadata;
 import org.apache.airavata.registry.api.workflow.ExperimentName;
@@ -466,4 +467,12 @@ public interface ProvenanceManager {
       * @throws AiravataAPIInvocationException
       */
      public List<ApplicationJob> getApplicationJobs(String experimentId, String workflowExecutionId, String nodeId) throws AiravataAPIInvocationException;
+     
+     /**
+      * Retrieve the list all the status updates for an application job.
+      * @param jobId - Application job id
+      * @return
+      * @throws AiravataAPIInvocationException
+      */
+     public List<ApplicationJobStatusData> getApplicationJobStatusHistory(String jobId) throws AiravataAPIInvocationException;
 }

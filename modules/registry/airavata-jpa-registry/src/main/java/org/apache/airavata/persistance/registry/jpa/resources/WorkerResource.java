@@ -31,6 +31,7 @@ import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
+import org.apache.airavata.persistance.registry.jpa.resources.AbstractResource.GFacJobStatusConstants;
 import org.apache.airavata.persistance.registry.jpa.resources.AbstractResource.WorkflowDataConstants;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 import org.slf4j.Logger;
@@ -217,6 +218,24 @@ public class WorkerResource extends AbstractResource {
         em.getTransaction().commit();
         em.close();
 		return result;
+	}
+	
+	public List<GFacJobStatusResource> getGFacJobStatuses(String jobId){
+		List<GFacJobStatusResource> resourceList = new ArrayList<GFacJobStatusResource>();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        QueryGenerator generator;
+        Query q;
+        generator = new QueryGenerator(GFAC_JOB_STATUS);
+        generator.setParameter(GFacJobStatusConstants.LOCAL_JOB_ID, jobId);
+        q = generator.selectQuery(em);
+        for (Object result : q.getResultList()) {
+            GFac_Job_Status gFacJobStatus = (GFac_Job_Status) result;
+            GFacJobStatusResource gFacJobStatusResource =
+                    (GFacJobStatusResource)Utils.getResource(ResourceType.GFAC_JOB_STATUS, gFacJobStatus);
+            resourceList.add(gFacJobStatusResource);
+        }
+        return resourceList;
 	}
 
     /**

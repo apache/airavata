@@ -39,6 +39,7 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.persistance.registry.jpa.JPAResourceAccessor;
 import org.apache.airavata.persistance.registry.jpa.Resource;
+import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.ApplicationDescriptorResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ConfigurationResource;
@@ -48,6 +49,7 @@ import org.apache.airavata.persistance.registry.jpa.resources.ExperimentDataRetr
 import org.apache.airavata.persistance.registry.jpa.resources.ExperimentMetadataResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ExperimentResource;
 import org.apache.airavata.persistance.registry.jpa.resources.GFacJobDataResource;
+import org.apache.airavata.persistance.registry.jpa.resources.GFacJobStatusResource;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.HostDescriptorResource;
 import org.apache.airavata.persistance.registry.jpa.resources.NodeDataResource;
@@ -101,6 +103,8 @@ import org.apache.airavata.registry.api.exception.worker.WorkspaceProjectAlready
 import org.apache.airavata.registry.api.exception.worker.WorkspaceProjectDoesNotExistsException;
 import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
 import org.apache.airavata.registry.api.util.RegistryConstants;
+import org.apache.airavata.registry.api.util.RegistrySettings;
+import org.apache.airavata.registry.api.workflow.ApplicationJobStatusData;
 import org.apache.airavata.registry.api.workflow.ExecutionError;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
 import org.apache.airavata.registry.api.workflow.ExperimentExecutionError;
@@ -2264,6 +2268,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		gfacJob.setNodeID(job.getNodeId());
 		setupValues(job, gfacJob);
 		gfacJob.save();
+		addApplicationJobStatusData(job.getJobId(), job.getStatus(), job.getStatusUpdateTime(),gfacJob);
 	}
 
 	private void setupValues(ApplicationJob job, GFacJobDataResource gfacJob) {
@@ -2304,6 +2309,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		gFacJob.setStatus(status.toString());
 		gFacJob.setStatusUpdateTime(new Timestamp(statusUpdateTime.getTime()));
 		gFacJob.save();
+		addApplicationJobStatusData(gfacJobId, status, statusUpdateTime, null);
 	}
 
 	@Override
@@ -2407,6 +2413,29 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public boolean isApplicationJobExists(String gfacJobId) throws RegistryException {
 		return jpa.getWorker().isGFacJobExists(gfacJobId);
+	}
+
+	@Override
+	public List<ApplicationJobStatusData> getApplicationJobStatusHistory(
+			String jobId) throws RegistryException {
+		List<ApplicationJobStatusData> statusData=new ArrayList<ApplicationJobStatusData>();
+		List<GFacJobStatusResource> statuses = jpa.getWorker().getGFacJobStatuses(jobId);
+		for (GFacJobStatusResource resource : statuses) {
+			statusData.add(new ApplicationJobStatusData(resource.getLocalJobID(),ApplicationJobStatus.valueOf(resource.getStatus()),resource.getStatusUpdateTime()));	
+		}
+		return statusData;
+	}
+	
+	private void addApplicationJobStatusData(String jobId, ApplicationJobStatus status, Date updatedTime, GFacJobDataResource dataResource) throws RegistryException {
+		if (RegistrySettings.isApplicationJobStatusHistoryEnabled()){
+			if (dataResource==null){
+				dataResource = jpa.getWorker().getGFacJob(jobId);
+			}
+			GFacJobStatusResource s = (GFacJobStatusResource)dataResource.create(ResourceType.GFAC_JOB_STATUS);
+			s.setStatus(status.toString());
+			s.setStatusUpdateTime(new Timestamp(updatedTime.getTime()));
+			s.save();
+		}
 	}
 
 }
