@@ -970,4 +970,11 @@ public class RegistryClient extends AiravataRegistry2 {
 	public boolean isApplicationJobExists(String gfacJobId) throws RegistryException {
 		return getProvenanceResourceClient().isApplicationJobExists(gfacJobId);
 	}
+
+	@Override
+	public List<ApplicationJobStatusData> getApplicationJobStatusHistory(
+			String jobId) throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

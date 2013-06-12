@@ -33,9 +33,22 @@ import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.registry.api.AiravataExperiment;
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.workflow.*;
+import org.apache.airavata.registry.api.workflow.ApplicationJob;
 import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
+import org.apache.airavata.registry.api.workflow.ApplicationJobStatusData;
+import org.apache.airavata.registry.api.workflow.ExperimentData;
+import org.apache.airavata.registry.api.workflow.ExperimentMetadata;
+import org.apache.airavata.registry.api.workflow.ExperimentName;
+import org.apache.airavata.registry.api.workflow.ExperimentUser;
+import org.apache.airavata.registry.api.workflow.NodeExecutionStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowExecution;
+import org.apache.airavata.registry.api.workflow.WorkflowExecutionData;
+import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeGramData;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeType;
 
 public class ProvenanceManagerImpl implements ProvenanceManager {
 	private AiravataClient client;
@@ -607,6 +620,16 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	public void updateApplicationJobStatus(String jobId,
 			ApplicationJobStatus status) throws AiravataAPIInvocationException {
 		updateApplicationJobStatus(jobId, status, Calendar.getInstance().getTime());
+	}
+
+	@Override
+	public List<ApplicationJobStatusData> getApplicationJobStatusHistory(
+			String jobId) throws AiravataAPIInvocationException {
+		try {
+			return client.getRegistryClient().getApplicationJobStatusHistory(jobId);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
 	}
 
 }

@@ -34,6 +34,7 @@ public class RegistrySettings {
     private static Properties properties = new Properties();
     private static Exception propertyLoadException;
     private static final String REGISTRY_ACCESSOR_CLASS = "class.registry.accessor";
+    private static final String SAVE_APPLICATION_JOB_STATUS_HISTORY="enable.application.job.status.history";
     
     static{
     	URL url = RegistrySettings.class.getClassLoader()
@@ -87,5 +88,9 @@ public class RegistrySettings {
     
     public static String getRegistryAccessorClass() throws RegistrySettingsException{
     	return getSetting(REGISTRY_ACCESSOR_CLASS);
+    }
+    
+    public static boolean isApplicationJobStatusHistoryEnabled(){
+    	return "true".equalsIgnoreCase(getSetting(SAVE_APPLICATION_JOB_STATUS_HISTORY, "false"));
     }
 }
