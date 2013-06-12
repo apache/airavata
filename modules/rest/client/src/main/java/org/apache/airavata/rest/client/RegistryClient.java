@@ -974,7 +974,6 @@ public class RegistryClient extends AiravataRegistry2 {
 	@Override
 	public List<ApplicationJobStatusData> getApplicationJobStatusHistory(
 			String jobId) throws RegistryException {
-		// TODO Auto-generated method stub
-		return null;
+		return getProvenanceResourceClient().getApplicationJobStatusHistory(jobId);
 	}
 }
