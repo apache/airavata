@@ -163,6 +163,8 @@ public class ResourcePathConstants {
         public static final String GET_APPLICATION_JOBS_FOR_DESCRIPTORS = "get/application/jobs/descriptors";
         public static final String GET_APPLICATION_JOBS = "get/application/jobs";
         public static final String APPLICATION_JOB_EXIST = "application/job/exists";
+        public static final String GET_APPLICATION_JOBS_STATUS_HISTORY = "get/application/status/history";
+
     }
 
     public final class PublishedWFConstants {

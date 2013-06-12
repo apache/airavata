@@ -2745,6 +2745,51 @@ public class ProvenanceResourceClient {
         }
     }
 
+    public List<ApplicationJobStatusData> getApplicationJobStatusHistory(String jobId){
+        webResource = getProvenanceRegistryBaseResource().path(
+                ResourcePathConstants.ProvenanceResourcePathConstants.GET_APPLICATION_JOBS_STATUS_HISTORY);
+        MultivaluedMap queryParams = new MultivaluedMapImpl();
+        queryParams.add("jobID", jobId);
+        builder = BasicAuthHeaderUtil.getBuilder(
+                webResource, queryParams, userName, null, cookie, gateway);
+        ClientResponse response = builder.accept(
+                MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        int status = response.getStatus();
+
+        if (status == ClientConstant.HTTP_OK) {
+            if (response.getCookies().size() > 0) {
+                cookie = response.getCookies().get(0).toCookie();
+                CookieManager.setCookie(cookie);
+            }
+        } else if (status == ClientConstant.HTTP_UNAUTHORIZED) {
+            builder = BasicAuthHeaderUtil.getBuilder(
+                    webResource, queryParams, userName, callback.getPassword(userName), null, gateway);
+            response = builder.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            status = response.getStatus();
+            if (status == ClientConstant.HTTP_NO_CONTENT) {
+                return null;
+            }
+            if (status != ClientConstant.HTTP_OK) {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+            } else {
+                if (response.getCookies().size() > 0) {
+                    cookie = response.getCookies().get(0).toCookie();
+                    CookieManager.setCookie(cookie);
+                }
+            }
+        } else if (status == ClientConstant.HTTP_NO_CONTENT) {
+            return null;
+        } else {
+            logger.error(response.getEntity(String.class));
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + status);
+        }
+        ApplicationStatusDataList gFacJobList = response.getEntity(ApplicationStatusDataList.class);
+        return gFacJobList.getApplicationJobStatusDataList();
+    }
+
     public List<WorkflowNodeIOData> searchWorkflowInstanceNodeInput(String experimentIdRegEx,
                                                                     String workflowNameRegEx,
                                                                     String nodeNameRegEx) {

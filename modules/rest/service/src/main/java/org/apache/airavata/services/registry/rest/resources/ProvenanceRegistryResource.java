@@ -1884,4 +1884,30 @@ public class ProvenanceRegistryResource {
             }
         }
     }
+
+    @GET
+    @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_APPLICATION_JOBS_STATUS_HISTORY)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getApplicationJobStatusHistory(@QueryParam("jobID") String jobID) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
+        try {
+            ApplicationStatusDataList statusDataList = new ApplicationStatusDataList();
+            List<ApplicationJobStatusData> jobStatusHistory = airavataRegistry.getApplicationJobStatusHistory(jobID);
+            statusDataList.setApplicationJobStatusDataList(jobStatusHistory);
+            if (jobStatusHistory.size() != 0){
+                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+                builder.entity(statusDataList);
+                return builder.build();
+            } else {
+                Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
+                return builder.build();
+            }
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.GET_APPLICATION_JOBS_STATUS_HISTORY, e);
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
+            }
+        }
+    }
 }
