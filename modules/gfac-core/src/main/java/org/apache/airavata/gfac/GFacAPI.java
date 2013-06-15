@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 public class GFacAPI {
     private static final Logger log = LoggerFactory.getLogger(GFacAPI.class);
+    public static final String ERROR_SENT = "ErrorSent";
 
 
     public void submitJob(JobExecutionContext jobExecutionContext) throws GFacException {
@@ -72,10 +73,20 @@ public class GFacAPI {
                 disposeProvider(provider, jobExecutionContext);
             }
 
-            invokeOutFlowHandlers(jobExecutionContext);
         } catch (GFacException e) {
+            jobExecutionContext.setProperty(ERROR_SENT,"true");
             jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
             throw e;
+        } finally {
+            try{
+            invokeOutFlowHandlers(jobExecutionContext);
+            }catch(GFacException e){
+                // This will avoid getting two error notification messages if there's already an error in provider
+                if(!Boolean.getBoolean((String)jobExecutionContext.getProperty(ERROR_SENT))){
+                  jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
+            }
+               throw e;
+            }
         }
     }
 
@@ -158,7 +169,7 @@ public class GFacAPI {
             }
             try {
                 handler.invoke(jobExecutionContext);
-            } catch (GFacHandlerException e) {
+            } catch (Exception e) {
                 // TODO: Better error reporting.
                 throw new GFacException("Error Executing a OutFlow Handler" , e.getCause());
             }
