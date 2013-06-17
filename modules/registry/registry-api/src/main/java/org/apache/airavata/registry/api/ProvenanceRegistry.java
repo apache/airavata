@@ -39,9 +39,9 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return
      * @throws RegistryException
      */
-	public abstract boolean isExperimentExists(String experimentId) throws RegistryException;
+	public boolean isExperimentExists(String experimentId) throws RegistryException;
 	
-	public abstract boolean isExperimentExists(String experimentId, boolean createIfNotPresent) throws RegistryException;
+	public boolean isExperimentExists(String experimentId, boolean createIfNotPresent) throws RegistryException;
 	
     /**
      * Save the username of the user who runs this experiment 
@@ -50,7 +50,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return
      * @throws RegistryException
      */
-	public abstract void updateExperimentExecutionUser(String experimentId, String user) throws RegistryException;
+	public void updateExperimentExecutionUser(String experimentId, String user) throws RegistryException;
     
     /**
      * Retrieve the user who is runing the experiment
@@ -58,7 +58,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return
      * @throws RegistryException
      */
-	public abstract String getExperimentExecutionUser(String experimentId) throws RegistryException;
+	public String getExperimentExecutionUser(String experimentId) throws RegistryException;
 
     /**
      * check whether the experiment name exists
@@ -73,7 +73,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return
      * @throws RegistryException
      */
-	public abstract String getExperimentName(String experimentId) throws RegistryException;
+	public String getExperimentName(String experimentId) throws RegistryException;
     
     /**
      * Save a name for this workflow execution
@@ -82,7 +82,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return
      * @throws RegistryException
      */
-	public abstract void updateExperimentName(String experimentId,String experimentName)throws RegistryException;
+	public void updateExperimentName(String experimentId,String experimentName)throws RegistryException;
     
 	/**
      * Return the metadata information saved for the experiment
@@ -90,7 +90,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return
      * @throws RegistryException
      */
-    public abstract String getExperimentMetadata(String experimentId) throws RegistryException;
+    public String getExperimentMetadata(String experimentId) throws RegistryException;
     
     /**
      * Save the metadata for the experiment
@@ -99,7 +99,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return
      * @throws RegistryException
      */
-    public abstract void updateExperimentMetadata(String experimentId, String metadata) throws RegistryException;
+    public void updateExperimentMetadata(String experimentId, String metadata) throws RegistryException;
     
     /**
      * Return the template name of the workflow that this intance was created from
@@ -107,7 +107,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return
      * @throws RegistryException
      */
-    public abstract String getWorkflowExecutionTemplateName(String workflowInstanceId) throws RegistryException;
+    public String getWorkflowExecutionTemplateName(String workflowInstanceId) throws RegistryException;
     
     /**
      * Save the template name of the workflow that this intance was created from
@@ -115,7 +115,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @param templateName
      * @throws RegistryException
      */
-    public abstract void setWorkflowInstanceTemplateName(String workflowInstanceId, String templateName) throws RegistryException;
+    public void setWorkflowInstanceTemplateName(String workflowInstanceId, String templateName) throws RegistryException;
     
     public List<WorkflowExecution> getExperimentWorkflowInstances(String experimentId) throws RegistryException;
     
@@ -132,7 +132,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return
      * @throws RegistryException
      */
-	public abstract void updateWorkflowInstanceStatus(String instanceId,State status)throws RegistryException;
+	public void updateWorkflowInstanceStatus(String instanceId,State status)throws RegistryException;
 
     /**
      * Save a status for this workflow execution
@@ -140,7 +140,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return
      * @throws RegistryException
      */
-	public abstract void updateWorkflowInstanceStatus(WorkflowExecutionStatus status)throws RegistryException;
+	public void updateWorkflowInstanceStatus(WorkflowExecutionStatus status)throws RegistryException;
 
 	
     /**
@@ -149,7 +149,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return
      * @throws RegistryException
      */
-	public abstract WorkflowExecutionStatus getWorkflowInstanceStatus(String instanceId)throws RegistryException;
+	public WorkflowExecutionStatus getWorkflowInstanceStatus(String instanceId)throws RegistryException;
 
     /**
 	 * Save the input data of a node in the workflow instance of an experiment
@@ -158,7 +158,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
 	 * @return true if successfully saved
 	 * @throws RegistryException
 	 */
-	public abstract void updateWorkflowNodeInput(WorkflowInstanceNode node, String data) throws RegistryException;
+	public void updateWorkflowNodeInput(WorkflowInstanceNode node, String data) throws RegistryException;
 
     /**
      * Save the output data of a node in the workflow instance of an experiment
@@ -166,7 +166,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return true if successfully saved
      * @throws RegistryException
      */
-	public abstract void updateWorkflowNodeOutput(WorkflowInstanceNode node, String data)throws RegistryException;
+	public void updateWorkflowNodeOutput(WorkflowInstanceNode node, String data)throws RegistryException;
     
     /**
      * Return a list of data passed as input for service node which regex matched nodeId, workflow template id & experiment id 
@@ -176,7 +176,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return
      * @throws RegistryException
      */
-	public abstract List<WorkflowNodeIOData> searchWorkflowInstanceNodeInput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx)throws RegistryException;
+	public List<WorkflowNodeIOData> searchWorkflowInstanceNodeInput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx)throws RegistryException;
 
 	/**
      * Return a list of data returned as output from service node which regex matched nodeId, workflow template id & experiment id 
@@ -186,11 +186,11 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
 	 * @return
 	 * @throws RegistryException
 	 */
-	public abstract List<WorkflowNodeIOData> searchWorkflowInstanceNodeOutput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx)throws RegistryException;
+	public List<WorkflowNodeIOData> searchWorkflowInstanceNodeOutput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx)throws RegistryException;
 	
-	public abstract List<WorkflowNodeIOData> getWorkflowInstanceNodeInput(String workflowInstanceId, String nodeType)throws RegistryException;
+	public List<WorkflowNodeIOData> getWorkflowInstanceNodeInput(String workflowInstanceId, String nodeType)throws RegistryException;
 	
-	public abstract List<WorkflowNodeIOData> getWorkflowInstanceNodeOutput(String workflowInstanceId, String nodeType)throws RegistryException;
+	public List<WorkflowNodeIOData> getWorkflowInstanceNodeOutput(String workflowInstanceId, String nodeType)throws RegistryException;
 
     /**
      * Saves the results of output nodes in a workflow
@@ -201,7 +201,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return
      * @throws RegistryException
      */
-	public abstract void saveWorkflowExecutionOutput(String experimentId,String outputNodeName,String output) throws RegistryException;
+	public void saveWorkflowExecutionOutput(String experimentId,String outputNodeName,String output) throws RegistryException;
     
     /**
      * Saves the results of output nodes in a workflow
@@ -211,7 +211,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return
      * @throws RegistryException
      */
-	public abstract void saveWorkflowExecutionOutput(String experimentId, WorkflowIOData data) throws RegistryException;
+	public void saveWorkflowExecutionOutput(String experimentId, WorkflowIOData data) throws RegistryException;
 
     /**
      * Get the output results of a output node of an experiment
@@ -221,7 +221,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return
      * @throws RegistryException
      */
-	public abstract WorkflowIOData getWorkflowExecutionOutput(String experimentId,String outputNodeName) throws RegistryException;
+	public WorkflowIOData getWorkflowExecutionOutput(String experimentId,String outputNodeName) throws RegistryException;
     
     /**
      * Get the list of output node results of an experiment 
@@ -230,7 +230,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return
      * @throws RegistryException
      */
-	public abstract List<WorkflowIOData> getWorkflowExecutionOutput(String experimentId) throws RegistryException;
+	public List<WorkflowIOData> getWorkflowExecutionOutput(String experimentId) throws RegistryException;
 
     /**
      * Get the names of the output nodes of a workflow instance run
@@ -239,7 +239,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return
      * @throws RegistryException
      */
-	public abstract String[] getWorkflowExecutionOutputNames(String exeperimentId) throws RegistryException;
+	public String[] getWorkflowExecutionOutputNames(String exeperimentId) throws RegistryException;
 
 	/*---------------------------------------  Retrieving Experiment ------------------------------------------*/
     /**
@@ -248,7 +248,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return
      * @throws RegistryException
      */
-	public abstract ExperimentData getExperiment(String experimentId) throws RegistryException;
+	public ExperimentData getExperiment(String experimentId) throws RegistryException;
 	
 	public ExperimentData getExperimentMetaInformation(String experimentId)throws RegistryException;
 	
@@ -269,7 +269,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return - experiment id list
      * @throws RegistryException
      */
-	public abstract List<String> getExperimentIdByUser(String user) throws RegistryException;
+	public List<String> getExperimentIdByUser(String user) throws RegistryException;
 
 	/**
 	 * Return experiments launched by the given user
@@ -277,7 +277,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
 	 * @return experiment object list each populated by current data of that experiment
 	 * @throws RegistryException
 	 */
-    public abstract List<ExperimentData> getExperimentByUser(String user) throws RegistryException;
+    public List<ExperimentData> getExperimentByUser(String user) throws RegistryException;
     
     /**
      * Return the pageNo set of experiments launched by the given user if grouped in to pages of size pageSize
@@ -287,18 +287,18 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return
      * @throws RegistryException
      */
-    public abstract List<ExperimentData> getExperimentByUser(String user, int pageSize, int pageNo) throws RegistryException;
+    public List<ExperimentData> getExperimentByUser(String user, int pageSize, int pageNo) throws RegistryException;
 
     /**
      * This will update the workflowStatus for given experimentID,workflowInstanceID combination.
      * @param workflowStatusNode
      * @return
      */
-    public abstract void updateWorkflowNodeStatus(NodeExecutionStatus workflowStatusNode)throws RegistryException;
+    public void updateWorkflowNodeStatus(NodeExecutionStatus workflowStatusNode)throws RegistryException;
 
-    public abstract void updateWorkflowNodeStatus(String workflowInstanceId, String nodeId, State status)throws RegistryException;
+    public void updateWorkflowNodeStatus(String workflowInstanceId, String nodeId, State status)throws RegistryException;
     
-    public abstract void updateWorkflowNodeStatus(WorkflowInstanceNode workflowNode, State status)throws RegistryException;
+    public void updateWorkflowNodeStatus(WorkflowInstanceNode workflowNode, State status)throws RegistryException;
 
     public NodeExecutionStatus getWorkflowNodeStatus(WorkflowInstanceNode workflowNode)throws RegistryException;
     
@@ -312,7 +312,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @param workflowNodeGramData
      * @return
      */
-    public abstract void updateWorkflowNodeGramData(WorkflowNodeGramData workflowNodeGramData)throws RegistryException;
+    public void updateWorkflowNodeGramData(WorkflowNodeGramData workflowNodeGramData)throws RegistryException;
     
     public WorkflowExecutionData getWorkflowInstanceData(String workflowInstanceId)throws RegistryException;
     
