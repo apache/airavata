@@ -108,14 +108,12 @@ public class WseMsgBrokerClient extends CommonMsgBrokerClient implements Message
             long expireTime) throws MsgBrokerClientException {
 
         String subscriptionId = null;
-
+        ServiceClient serviceClient = null;
         try {
             OMElement subscriptionMsg = WSEProtocolClient.createSubscription(eventSinkLocation, topicExpression,
                     xpathExpression, expireTime);
-            ServiceClient serviceClient = configureServiceClientForSubscription(subscriptionMsg);
+            serviceClient = configureServiceClientForSubscription(subscriptionMsg);
             OMElement responseMessage = serviceClient.sendReceive(subscriptionMsg);
-            serviceClient.cleanup();
-            serviceClient.cleanupTransport();
 
             if (responseMessage == null) {
                 throw new MsgBrokerClientException("no response recieved for subscription message");
@@ -128,6 +126,13 @@ public class WseMsgBrokerClient extends CommonMsgBrokerClient implements Message
 
         } catch (AxisFault e) {
             throw new MsgBrokerClientException("unable to send the subscription", e);
+        } finally {
+            try {
+                serviceClient.cleanup();
+                serviceClient.cleanupTransport();
+            } catch (AxisFault e) {
+                throw new MsgBrokerClientException("unable to send the subscription", e);
+            }
         }
 
         return subscriptionId;
@@ -136,7 +141,7 @@ public class WseMsgBrokerClient extends CommonMsgBrokerClient implements Message
     public boolean unSubscribe(String subscriptionId) throws MsgBrokerClientException {
         OMFactory factory = OMAbstractFactory.getOMFactory();
         OMElement message = WSEProtocolClient.createUnsubscribeMsg();
-
+        ServiceClient client = null;
         OMElement identifierEl = factory.createOMElement("Identifier", message.getNamespace());
 
         identifierEl.setText(subscriptionId);
@@ -145,18 +150,20 @@ public class WseMsgBrokerClient extends CommonMsgBrokerClient implements Message
         Options opts = CommonRoutines.getOptions(soapAction, getTimeoutInMilliSeconds(), brokerEndpointRef);
 
         try {
-            ServiceClient client = new ServiceClient();
+            client = new ServiceClient();
             client.setOptions(opts);
             CommonRoutines.setHeaders(soapAction, brokerEndpointRef.getAddress(), client, identifierEl);
-
             client.sendReceive(message);
-            client.cleanup();
-            client.cleanupTransport();
-
         } catch (AxisFault e) {
-            throw new MsgBrokerClientException("unable to send subscribe msg", e);
+            throw new MsgBrokerClientException("unable to send unsubscribe msg", e);
+        } finally {
+            try {
+                client.cleanup();
+                client.cleanupTransport();
+            } catch (AxisFault e) {
+                throw new MsgBrokerClientException("unable to send unsubscribe msg", e);
+            }
         }
-
         return true;
     }
 
