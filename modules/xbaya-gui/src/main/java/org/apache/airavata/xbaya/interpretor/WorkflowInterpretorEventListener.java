@@ -55,6 +55,7 @@ import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.provenance.WorkflowNodeStatusUpdater;
 import org.apache.airavata.xbaya.provenance.WorkflowStatusUpdater;
 import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,10 +134,16 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
         try {
             if (this.pullMode) {
                 this.messagePuller.stopPulling();
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    throw new MonitorException("Error during stop message puller", e);
+                }
 //            } else {
 //                this.wseClient.unSubscribe(this.subscriptionID);
             }
             this.wseClient.unSubscribe(this.subscriptionID);
+
         } catch (MsgBrokerClientException e) {
             throw new MonitorException("Failed to unsubscribe.", e);
         }
@@ -210,6 +217,7 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
         } else if (type == EventType.RECEIVED_FAULT
                 || type == EventType.SENDING_FAULT || type == EventType.SENDING_RESPONSE_FAILED) {
             //Constructing NodeExecutionError with required data...
+            logger.error(event.getMessage());
             NodeExecutionError nodeExecutionError = new NodeExecutionError();
             nodeExecutionError.setExperimentId(event.getExperimentID());
             nodeExecutionError.setNodeId(event.getNodeID());
