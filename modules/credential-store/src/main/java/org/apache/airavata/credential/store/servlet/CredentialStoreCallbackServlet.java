@@ -45,9 +45,8 @@ import java.util.Map;
 import static edu.uiuc.ncsa.myproxy.oa4mp.client.ClientEnvironment.CALLBACK_URI_KEY;
 
 /**
- * Callback from the portal will come here. In this class we will store incomming
- * certificate to the database.
- * Partly taken from OA4MP code base.
+ * Callback from the portal will come here. In this class we will store incomming certificate to the database. Partly
+ * taken from OA4MP code base.
  */
 public class CredentialStoreCallbackServlet extends ClientServlet {
 
@@ -100,8 +99,8 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
         String contactEmail = request.getParameter(PORTAL_USER_EMAIL_QUERY_PARAMETER);
         String portalTokenId = request.getParameter(PORTAL_TOKEN_ID_ASSIGNED);
 
-        //TODO remove hard coded values, once passing query parameters is
-        //fixed in OA4MP client api
+        // TODO remove hard coded values, once passing query parameters is
+        // fixed in OA4MP client api
         long duration = 800;
 
         if (durationParameter != null) {
@@ -125,8 +124,10 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
         String token = request.getParameter(TOKEN_KEY);
         String verifier = request.getParameter(VERIFIER_KEY);
         if (token == null || verifier == null) {
-            warn("2.a. The token is " + (token == null ? "null" : token) + " and the verifier is " + (verifier == null ? "null" : verifier));
-            GeneralException ge = new GeneralException("Error: This servlet requires parameters for the token and verifier. It cannot be called directly.");
+            warn("2.a. The token is " + (token == null ? "null" : token) + " and the verifier is "
+                    + (verifier == null ? "null" : verifier));
+            GeneralException ge = new GeneralException(
+                    "Error: This servlet requires parameters for the token and verifier. It cannot be called directly.");
             request.setAttribute("exception", ge);
             JSPUtil.fwd(request, response, ERROR_PAGE);
             return;
@@ -136,13 +137,12 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
         AssetResponse assetResponse = null;
         OA4MPResponse oa4MPResponse = null;
 
-        Map<String, String> parameters = createQueryParameters(gatewayName, portalUserName,
-                                                     contactEmail, portalTokenId);
+        Map<String, String> parameters = createQueryParameters(gatewayName, portalUserName, contactEmail, portalTokenId);
 
         try {
             info("Requesting private key ...");
             oa4MPResponse = getOA4MPService().requestCert(parameters);
-            //oa4MPResponse = getOA4MPService().requestCert();
+            // oa4MPResponse = getOA4MPService().requestCert();
 
             info("2.a. Getting the cert(s) from the service");
             assetResponse = getOA4MPService().getCert(token, verifier);
@@ -164,8 +164,8 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
         certificateCredential.setNotAfter(Utility.convertDateToString(cert.getNotAfter()));
         certificateCredential.setCertificate(cert);
         certificateCredential.setPrivateKey(oa4MPResponse.getPrivateKey());
-        certificateCredential.setCommunityUser(new CommunityUser(gatewayName, assetResponse.getUsername(),
-                contactEmail));
+        certificateCredential
+                .setCommunityUser(new CommunityUser(gatewayName, assetResponse.getUsername(), contactEmail));
         certificateCredential.setPortalUserName(portalUserName);
         certificateCredential.setLifeTime(duration);
         certificateCredential.setToken(portalTokenId);
@@ -188,10 +188,8 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
 
     }
 
-    private Map<String, String> createQueryParameters (String gatewayName,
-                                                            String portalUserName,
-                                                            String portalEmail,
-                                                            String tokenId) {
+    private Map<String, String> createQueryParameters(String gatewayName, String portalUserName, String portalEmail,
+            String tokenId) {
 
         String callbackUriKey = getEnvironment().getConstants().get(CALLBACK_URI_KEY);
         ClientEnvironment clientEnvironment = (ClientEnvironment) getEnvironment();
@@ -200,11 +198,9 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
 
         StringBuilder stringBuilder = new StringBuilder(callbackUri);
 
-        stringBuilder.append("?").append(GATEWAY_NAME_QUERY_PARAMETER).append("=").append(gatewayName)
-                .append("&").append(PORTAL_USER_QUERY_PARAMETER).append("=").append(portalUserName)
-                .append("&")
-                .append(PORTAL_USER_EMAIL_QUERY_PARAMETER).append("=").append(portalEmail)
-                .append("&")
+        stringBuilder.append("?").append(GATEWAY_NAME_QUERY_PARAMETER).append("=").append(gatewayName).append("&")
+                .append(PORTAL_USER_QUERY_PARAMETER).append("=").append(portalUserName).append("&")
+                .append(PORTAL_USER_EMAIL_QUERY_PARAMETER).append("=").append(portalEmail).append("&")
                 .append(PORTAL_TOKEN_ID_ASSIGNED).append("=").append(tokenId);
 
         info("Callback URI is set to - " + stringBuilder.toString());
@@ -216,4 +212,3 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
 
     }
 }
-

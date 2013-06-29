@@ -26,12 +26,6 @@ import org.apache.airavata.credential.store.credential.Credential;
 import java.util.Date;
 
 /**
- * User: AmilaJ (amilaj@apache.org)
- * Date: 3/22/13
- * Time: 11:41 AM
- */
-
-/**
  * User name password credentials.
  */
 public class PasswordCredential extends Credential {
@@ -54,6 +48,5 @@ public class PasswordCredential extends Credential {
     public void setPassword(String password) {
         this.password = password;
     }
-
 
 }

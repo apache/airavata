@@ -1,3 +1,24 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
 package org.apache.airavata.credential.store.store.impl.db;
 
 import org.apache.airavata.common.utils.DBUtil;
@@ -19,19 +40,15 @@ public class CredentialsDAO extends ParentDAO {
     }
 
     /**
-     * String createTable = "CREATE TABLE CREDENTIALS\n" +
-     "(\n" +
-     "        GATEWAY_ID VARCHAR(256) NOT NULL,\n" +
-     "        TOKEN_ID VARCHAR(256) NOT NULL,\n" +       // Actual token used to identify the credential
-     "        CREDENTIAL BLOB NOT NULL,\n" +
-     "        PORTAL_USER_ID VARCHAR(256) NOT NULL,\n" +
-     "        TIME_PERSISTED TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n" +
-     "        PRIMARY KEY (GATEWAY_ID, TOKEN_ID)\n" +
-     ")";
+     * String createTable = "CREATE TABLE CREDENTIALS\n" + "(\n" + "        GATEWAY_ID VARCHAR(256) NOT NULL,\n" +
+     * "        TOKEN_ID VARCHAR(256) NOT NULL,\n" + // Actual token used to identify the credential
+     * "        CREDENTIAL BLOB NOT NULL,\n" + "        PORTAL_USER_ID VARCHAR(256) NOT NULL,\n" +
+     * "        TIME_PERSISTED TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n" + "        PRIMARY KEY (GATEWAY_ID, TOKEN_ID)\n"
+     * + ")";
      */
 
-    public void addCredentials(String gatewayId, Credential credential,
-                               Connection connection) throws CredentialStoreException {
+    public void addCredentials(String gatewayId, Credential credential, Connection connection)
+            throws CredentialStoreException {
 
         String sql = "insert into credentials values (?, ?, ?, ?, ?)";
 
@@ -43,13 +60,12 @@ public class CredentialsDAO extends ParentDAO {
             preparedStatement.setString(1, gatewayId);
             preparedStatement.setString(2, credential.getToken());
 
-            InputStream isCert = new ByteArrayInputStream(
-                    convertObjectToByteArray(credential));
+            InputStream isCert = new ByteArrayInputStream(convertObjectToByteArray(credential));
             preparedStatement.setBinaryStream(3, isCert);
 
             preparedStatement.setString(4, credential.getPortalUserName());
 
-            java.util.Date date= new java.util.Date();
+            java.util.Date date = new java.util.Date();
             Timestamp timestamp = new Timestamp(date.getTime());
 
             preparedStatement.setTimestamp(5, timestamp);
@@ -65,7 +81,8 @@ public class CredentialsDAO extends ParentDAO {
 
             throw new CredentialStoreException(stringBuilder.toString(), e);
         } catch (UnsupportedEncodingException e) {
-            StringBuilder stringBuilder = new StringBuilder("Error persisting community credentials. Unsupported encoding.");
+            StringBuilder stringBuilder = new StringBuilder(
+                    "Error persisting community credentials. Unsupported encoding.");
             stringBuilder.append(" gateway - ").append(gatewayId);
             stringBuilder.append(" token id - ").append(credential.getToken());
 
@@ -73,8 +90,8 @@ public class CredentialsDAO extends ParentDAO {
 
             throw new CredentialStoreException(stringBuilder.toString(), e);
         } catch (IOException e) {
-            StringBuilder stringBuilder = new StringBuilder("Error persisting community credentials. Error serializing " +
-                    "credentials.");
+            StringBuilder stringBuilder = new StringBuilder(
+                    "Error persisting community credentials. Error serializing " + "credentials.");
             stringBuilder.append(" gateway - ").append(gatewayId);
             stringBuilder.append(" community user name - ").append(credential.getToken());
 
@@ -86,7 +103,6 @@ public class CredentialsDAO extends ParentDAO {
             DBUtil.cleanup(preparedStatement);
         }
     }
-
 
     public void deleteCredentials(String gatewayName, String tokenId, Connection connection)
             throws CredentialStoreException {
@@ -117,18 +133,14 @@ public class CredentialsDAO extends ParentDAO {
     }
 
     /**
-     * String createTable = "CREATE TABLE CREDENTIALS\n" +
-     "(\n" +
-     "        GATEWAY_ID VARCHAR(256) NOT NULL,\n" +
-     "        TOKEN_ID VARCHAR(256) NOT NULL,\n" +       // Actual token used to identify the credential
-     "        CREDENTIAL BLOB NOT NULL,\n" +
-     "        PORTAL_USER_ID VARCHAR(256) NOT NULL,\n" +
-     "        TIME_PERSISTED TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n" +
-     "        PRIMARY KEY (GATEWAY_ID, TOKEN_ID)\n" +
-     ")";
+     * String createTable = "CREATE TABLE CREDENTIALS\n" + "(\n" + "        GATEWAY_ID VARCHAR(256) NOT NULL,\n" +
+     * "        TOKEN_ID VARCHAR(256) NOT NULL,\n" + // Actual token used to identify the credential
+     * "        CREDENTIAL BLOB NOT NULL,\n" + "        PORTAL_USER_ID VARCHAR(256) NOT NULL,\n" +
+     * "        TIME_PERSISTED TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n" + "        PRIMARY KEY (GATEWAY_ID, TOKEN_ID)\n"
+     * + ")";
      */
-    public void updateCredentials(String gatewayId, Credential credential,
-                                  Connection connection) throws CredentialStoreException {
+    public void updateCredentials(String gatewayId, Credential credential, Connection connection)
+            throws CredentialStoreException {
 
         String sql = "update CREDENTIALS set CREDENTIAL = ?, PORTAL_USER_ID = ?, TIME_PERSISTED = ? where GATEWAY_ID = ? and TOKEN_ID = ?";
 
@@ -137,8 +149,7 @@ public class CredentialsDAO extends ParentDAO {
         try {
             preparedStatement = connection.prepareStatement(sql);
 
-            InputStream isCert = new ByteArrayInputStream(
-                    convertObjectToByteArray(credential));
+            InputStream isCert = new ByteArrayInputStream(convertObjectToByteArray(credential));
             preparedStatement.setBinaryStream(1, isCert);
 
             preparedStatement.setString(2, credential.getPortalUserName());
@@ -146,7 +157,6 @@ public class CredentialsDAO extends ParentDAO {
             preparedStatement.setTimestamp(3, new Timestamp(new java.util.Date().getTime()));
             preparedStatement.setString(4, gatewayId);
             preparedStatement.setString(5, credential.getToken());
-
 
             preparedStatement.executeUpdate();
 
@@ -182,15 +192,11 @@ public class CredentialsDAO extends ParentDAO {
     }
 
     /**
-     * String createTable = "CREATE TABLE CREDENTIALS\n" +
-     "(\n" +
-     "        GATEWAY_ID VARCHAR(256) NOT NULL,\n" +
-     "        TOKEN_ID VARCHAR(256) NOT NULL,\n" +       // Actual token used to identify the credential
-     "        CREDENTIAL BLOB NOT NULL,\n" +
-     "        PORTAL_USER_ID VARCHAR(256) NOT NULL,\n" +
-     "        TIME_PERSISTED TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n" +
-     "        PRIMARY KEY (GATEWAY_ID, TOKEN_ID)\n" +
-     ")";
+     * String createTable = "CREATE TABLE CREDENTIALS\n" + "(\n" + "        GATEWAY_ID VARCHAR(256) NOT NULL,\n" +
+     * "        TOKEN_ID VARCHAR(256) NOT NULL,\n" + // Actual token used to identify the credential
+     * "        CREDENTIAL BLOB NOT NULL,\n" + "        PORTAL_USER_ID VARCHAR(256) NOT NULL,\n" +
+     * "        TIME_PERSISTED TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n" + "        PRIMARY KEY (GATEWAY_ID, TOKEN_ID)\n"
+     * + ")";
      */
     public Credential getCredential(String gatewayName, String tokenId, Connection connection)
             throws CredentialStoreException {
@@ -207,9 +213,8 @@ public class CredentialsDAO extends ParentDAO {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
-
             if (resultSet.next()) {
-                //CertificateCredential certificateCredential = new CertificateCredential();
+                // CertificateCredential certificateCredential = new CertificateCredential();
 
                 Blob blobCredentials = resultSet.getBlob("CREDENTIAL");
                 byte[] certificate = blobCredentials.getBytes(1, (int) blobCredentials.length());
@@ -231,8 +236,8 @@ public class CredentialsDAO extends ParentDAO {
 
             throw new CredentialStoreException(stringBuilder.toString(), e);
         } catch (ClassNotFoundException e) {
-            StringBuilder stringBuilder = new StringBuilder("Error retrieving credentials for community user. Error " +
-                    "de-serializing credential objects.");
+            StringBuilder stringBuilder = new StringBuilder("Error retrieving credentials for community user. Error "
+                    + "de-serializing credential objects.");
             stringBuilder.append("gateway - ").append(gatewayName);
             stringBuilder.append("token id - ").append(tokenId);
 
@@ -240,8 +245,8 @@ public class CredentialsDAO extends ParentDAO {
 
             throw new CredentialStoreException(stringBuilder.toString(), e);
         } catch (IOException e) {
-            StringBuilder stringBuilder = new StringBuilder("Error retrieving credentials for community user. Error " +
-                    "de-serializing credential objects. An IO Error.");
+            StringBuilder stringBuilder = new StringBuilder("Error retrieving credentials for community user. Error "
+                    + "de-serializing credential objects. An IO Error.");
             stringBuilder.append("gateway - ").append(gatewayName);
             stringBuilder.append("tokenId - ").append(tokenId);
 
@@ -255,20 +260,14 @@ public class CredentialsDAO extends ParentDAO {
         return null;
     }
 
-
     /**
-     * String createTable = "CREATE TABLE CREDENTIALS\n" +
-     "(\n" +
-     "        GATEWAY_ID VARCHAR(256) NOT NULL,\n" +
-     "        TOKEN_ID VARCHAR(256) NOT NULL,\n" +       // Actual token used to identify the credential
-     "        CREDENTIAL BLOB NOT NULL,\n" +
-     "        PORTAL_USER_ID VARCHAR(256) NOT NULL,\n" +
-     "        TIME_PERSISTED TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n" +
-     "        PRIMARY KEY (GATEWAY_ID, TOKEN_ID)\n" +
-     ")";
+     * String createTable = "CREATE TABLE CREDENTIALS\n" + "(\n" + "        GATEWAY_ID VARCHAR(256) NOT NULL,\n" +
+     * "        TOKEN_ID VARCHAR(256) NOT NULL,\n" + // Actual token used to identify the credential
+     * "        CREDENTIAL BLOB NOT NULL,\n" + "        PORTAL_USER_ID VARCHAR(256) NOT NULL,\n" +
+     * "        TIME_PERSISTED TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n" + "        PRIMARY KEY (GATEWAY_ID, TOKEN_ID)\n"
+     * + ")";
      */
-    public List<Credential> getCredentials(String gatewayName, Connection connection)
-            throws CredentialStoreException {
+    public List<Credential> getCredentials(String gatewayName, Connection connection) throws CredentialStoreException {
 
         List<Credential> credentialList = new ArrayList<Credential>();
 
@@ -326,10 +325,8 @@ public class CredentialsDAO extends ParentDAO {
         return credentialList;
     }
 
-    public static Object convertByteArrayToObject(byte[] data) throws IOException,
-            ClassNotFoundException {
-        ObjectInputStream objectInputStream = new ObjectInputStream(
-                new ByteArrayInputStream(data));
+    public static Object convertByteArrayToObject(byte[] data) throws IOException, ClassNotFoundException {
+        ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(data));
         Object o = null;
         try {
             o = objectInputStream.readObject();

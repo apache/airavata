@@ -76,8 +76,7 @@ public class CredentialStoreStartServlet extends ClientServlet {
     }
 
     @Override
-    protected void doIt(HttpServletRequest request, HttpServletResponse response)
-            throws Throwable {
+    protected void doIt(HttpServletRequest request, HttpServletResponse response) throws Throwable {
 
         String gatewayName = request.getParameter("gatewayName");
         String portalUserName = request.getParameter("portalUserName");
@@ -85,21 +84,20 @@ public class CredentialStoreStartServlet extends ClientServlet {
         String associatedToken = request.getParameter("associatedToken");
 
         if (gatewayName == null) {
-            JSPUtil.handleException(new RuntimeException("Please specify a gateway name."), request,
-                    response, "/credential-store/error.jsp");
+            JSPUtil.handleException(new RuntimeException("Please specify a gateway name."), request, response,
+                    "/credential-store/error.jsp");
             return;
         }
 
         if (portalUserName == null) {
-            JSPUtil.handleException(new RuntimeException("Please specify a portal user name."), request,
-                    response, "/credential-store/error.jsp");
+            JSPUtil.handleException(new RuntimeException("Please specify a portal user name."), request, response,
+                    "/credential-store/error.jsp");
             return;
         }
 
         if (contactEmail == null) {
-            JSPUtil.handleException(new RuntimeException("Please specify a contact email address for community" +
-                    " user account."), request,
-                    response, "/credential-store/error.jsp");
+            JSPUtil.handleException(new RuntimeException("Please specify a contact email address for community"
+                    + " user account."), request, response, "/credential-store/error.jsp");
             return;
         }
 
@@ -119,7 +117,6 @@ public class CredentialStoreStartServlet extends ClientServlet {
         info("The modified callback URI - " + modifiedCallbackUri);
 
         additionalParameters.put(getEnvironment().getConstants().get(CALLBACK_URI_KEY), modifiedCallbackUri);
-
 
         // Drumroll please: here is the work for this call.
         try {
