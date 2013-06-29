@@ -24,12 +24,6 @@ package org.apache.airavata.client.impl;
 import org.apache.airavata.client.api.CredentialStoreSecuritySettings;
 
 /**
- * User: AmilaJ (amilaj@apache.org)
- * Date: 5/7/13
- * Time: 2:44 PM
- */
-
-/**
  * Implementation of credential store security settings class.
  */
 public class CredentialStoreSecuritySettingsImpl implements CredentialStoreSecuritySettings {
@@ -46,7 +40,6 @@ public class CredentialStoreSecuritySettingsImpl implements CredentialStoreSecur
     public void setTokenId(String tokenId) {
         this.tokenId = tokenId;
     }
-
 
     public String getTokenId() {
         return tokenId;

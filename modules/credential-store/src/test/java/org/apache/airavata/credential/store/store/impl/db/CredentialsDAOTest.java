@@ -1,3 +1,24 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
 package org.apache.airavata.credential.store.store.impl.db;
 
 import junit.framework.Assert;
@@ -40,36 +61,30 @@ public class CredentialsDAOTest extends DatabaseTestCases {
 
         waitTillServerStarts();
 
-        /*String createTable = "CREATE TABLE CREDENTIALS\n" +
-                "(\n" +
-                "        GATEWAY_NAME VARCHAR(256) NOT NULL,\n" +
-                "        COMMUNITY_USER_NAME VARCHAR(256) NOT NULL,\n" +
-                "        CREDENTIAL BLOB NOT NULL,\n" +
-                "        PRIVATE_KEY BLOB NOT NULL,\n" +
-                "        NOT_BEFORE VARCHAR(256) NOT NULL,\n" +
-                "        NOT_AFTER VARCHAR(256) NOT NULL,\n" +
-                "        LIFETIME INTEGER NOT NULL,\n" +
-                "        REQUESTING_PORTAL_USER_NAME VARCHAR(256) NOT NULL,\n" +
-                "        REQUESTED_TIME TIMESTAMP DEFAULT '0000-00-00 00:00:00',\n" +
-                "        PRIMARY KEY (GATEWAY_NAME, COMMUNITY_USER_NAME)\n" +
-                ")"; */
+        /*
+         * String createTable = "CREATE TABLE CREDENTIALS\n" + "(\n" + "        GATEWAY_NAME VARCHAR(256) NOT NULL,\n" +
+         * "        COMMUNITY_USER_NAME VARCHAR(256) NOT NULL,\n" + "        CREDENTIAL BLOB NOT NULL,\n" +
+         * "        PRIVATE_KEY BLOB NOT NULL,\n" + "        NOT_BEFORE VARCHAR(256) NOT NULL,\n" +
+         * "        NOT_AFTER VARCHAR(256) NOT NULL,\n" + "        LIFETIME INTEGER NOT NULL,\n" +
+         * "        REQUESTING_PORTAL_USER_NAME VARCHAR(256) NOT NULL,\n" +
+         * "        REQUESTED_TIME TIMESTAMP DEFAULT '0000-00-00 00:00:00',\n" +
+         * "        PRIMARY KEY (GATEWAY_NAME, COMMUNITY_USER_NAME)\n" + ")";
+         */
 
-        String createTable = "CREATE TABLE CREDENTIALS\n" +
-                "(\n" +
-                "        GATEWAY_ID VARCHAR(256) NOT NULL,\n" +
-                "        TOKEN_ID VARCHAR(256) NOT NULL,\n" +       // Actual token used to identify the credential
-                "        CREDENTIAL BLOB NOT NULL,\n" +
-                "        PORTAL_USER_ID VARCHAR(256) NOT NULL,\n" +
-                "        TIME_PERSISTED TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n" +
-                "        PRIMARY KEY (GATEWAY_ID, TOKEN_ID)\n" +
-                ")";
-
+        String createTable = "CREATE TABLE CREDENTIALS\n" + "(\n"
+                + "        GATEWAY_ID VARCHAR(256) NOT NULL,\n"
+                + "        TOKEN_ID VARCHAR(256) NOT NULL,\n"
+                + // Actual token used to identify the credential
+                "        CREDENTIAL BLOB NOT NULL,\n" + "        PORTAL_USER_ID VARCHAR(256) NOT NULL,\n"
+                + "        TIME_PERSISTED TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n"
+                + "        PRIMARY KEY (GATEWAY_ID, TOKEN_ID)\n" + ")";
 
         String dropTable = "drop table CREDENTIALS";
 
         try {
             executeSQL(dropTable);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
         executeSQL(createTable);
 
@@ -96,7 +111,6 @@ public class CredentialsDAOTest extends DatabaseTestCases {
 
         initializeKeys();
     }
-
 
     private void initializeKeys() throws Exception {
         KeyStore ks = KeyStore.getInstance("JKS");
@@ -136,7 +150,6 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         x509Certificate = (X509Certificate) ks.getCertificate("selfsigned");
 
     }
-
 
     @Test
     public void testKeyReading() throws Exception {
@@ -188,13 +201,18 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         CertificateCredential certificateCredential = getTestCredentialObject();
 
         byte[] array = CredentialsDAO.convertObjectToByteArray(certificateCredential);
-        CertificateCredential readCertificateCredential = (CertificateCredential) CredentialsDAO.convertByteArrayToObject(array);
+        CertificateCredential readCertificateCredential = (CertificateCredential) CredentialsDAO
+                .convertByteArrayToObject(array);
 
         Assert.assertEquals(certificateCredential.getCertificate(), readCertificateCredential.getCertificate());
-        Assert.assertEquals(certificateCredential.getCertificateRequestedTime(), readCertificateCredential.getCertificateRequestedTime());
-        Assert.assertEquals(certificateCredential.getCommunityUser().getGatewayName(), readCertificateCredential.getCommunityUser().getGatewayName());
-        Assert.assertEquals(certificateCredential.getCommunityUser().getUserEmail(), readCertificateCredential.getCommunityUser().getUserEmail());
-        Assert.assertEquals(certificateCredential.getCommunityUser().getUserName(), readCertificateCredential.getCommunityUser().getUserName());
+        Assert.assertEquals(certificateCredential.getCertificateRequestedTime(),
+                readCertificateCredential.getCertificateRequestedTime());
+        Assert.assertEquals(certificateCredential.getCommunityUser().getGatewayName(), readCertificateCredential
+                .getCommunityUser().getGatewayName());
+        Assert.assertEquals(certificateCredential.getCommunityUser().getUserEmail(), readCertificateCredential
+                .getCommunityUser().getUserEmail());
+        Assert.assertEquals(certificateCredential.getCommunityUser().getUserName(), readCertificateCredential
+                .getCommunityUser().getUserName());
         Assert.assertEquals(certificateCredential.getLifeTime(), readCertificateCredential.getLifeTime());
         Assert.assertEquals(certificateCredential.getNotAfter(), readCertificateCredential.getNotAfter());
         Assert.assertEquals(certificateCredential.getNotBefore(), readCertificateCredential.getNotBefore());
@@ -218,8 +236,8 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         Connection connection = getConnection();
 
         try {
-            CertificateCredential certificateCredential
-                    = (CertificateCredential)credentialsDAO.getCredential("gw1", "tom", connection);
+            CertificateCredential certificateCredential = (CertificateCredential) credentialsDAO.getCredential("gw1",
+                    "tom", connection);
             Assert.assertNotNull(certificateCredential);
             Assert.assertEquals("jerry", certificateCredential.getPortalUserName());
             Assert.assertEquals(x509Certificate, certificateCredential.getCertificate());
@@ -237,13 +255,13 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         Connection connection = getConnection();
 
         try {
-            CertificateCredential certificateCredential
-                    = (CertificateCredential)credentialsDAO.getCredential("gw1", "tom", connection);
+            CertificateCredential certificateCredential = (CertificateCredential) credentialsDAO.getCredential("gw1",
+                    "tom", connection);
             Assert.assertNotNull(certificateCredential);
 
             credentialsDAO.deleteCredentials("gw1", "tom", connection);
 
-            certificateCredential = (CertificateCredential)credentialsDAO.getCredential("gw1", "tom", connection);
+            certificateCredential = (CertificateCredential) credentialsDAO.getCredential("gw1", "tom", connection);
             Assert.assertNull(certificateCredential);
 
         } finally {
@@ -264,7 +282,7 @@ public class CredentialsDAOTest extends DatabaseTestCases {
             certificateCredential.setToken("tom");
             certificateCredential.setCommunityUser(communityUser);
             certificateCredential.setCertificate(x509Certificate);
-            //certificateCredential.setPrivateKey(privateKey);
+            // certificateCredential.setPrivateKey(privateKey);
             certificateCredential.setPortalUserName("test2");
             certificateCredential.setLifeTime(50);
             certificateCredential.setNotBefore("15 OCT 2012 5:34:23");
@@ -272,11 +290,11 @@ public class CredentialsDAOTest extends DatabaseTestCases {
 
             credentialsDAO.updateCredentials(communityUser.getGatewayName(), certificateCredential, connection);
 
-            certificateCredential = (CertificateCredential)credentialsDAO.getCredential("gw1", "tom", connection);
+            certificateCredential = (CertificateCredential) credentialsDAO.getCredential("gw1", "tom", connection);
 
             Assert.assertEquals("CN=Airavata Project, OU=IU, O=Indiana University, L=Bloomington, ST=IN, C=US",
                     certificateCredential.getCertificate().getIssuerDN().toString());
-            //Assert.assertNotNull(certificateCredential.getPrivateKey());
+            // Assert.assertNotNull(certificateCredential.getPrivateKey());
             Assert.assertEquals("test2", certificateCredential.getPortalUserName());
 
         } finally {
@@ -294,10 +312,11 @@ public class CredentialsDAOTest extends DatabaseTestCases {
 
         try {
 
-            CertificateCredential certificateCredential = (CertificateCredential)credentialsDAO.getCredential("gw1", "tom", connection);
+            CertificateCredential certificateCredential = (CertificateCredential) credentialsDAO.getCredential("gw1",
+                    "tom", connection);
             Assert.assertEquals("CN=Airavata Project, OU=IU, O=Indiana University, L=Bloomington, ST=IN, C=US",
                     certificateCredential.getCertificate().getIssuerDN().toString());
-           // Assert.assertNotNull(certificateCredential.getPrivateKey());
+            // Assert.assertNotNull(certificateCredential.getPrivateKey());
 
         } finally {
             connection.close();

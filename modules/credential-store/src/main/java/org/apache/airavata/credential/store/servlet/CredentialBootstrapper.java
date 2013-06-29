@@ -36,9 +36,7 @@ public class CredentialBootstrapper extends ClientBootstrapper {
 
     protected static Logger log = LoggerFactory.getLogger(CredentialBootstrapper.class);
 
-
-    public ConfigurationLoader getConfigurationLoader(ServletContext servletContext)
-            throws Exception {
+    public ConfigurationLoader getConfigurationLoader(ServletContext servletContext) throws Exception {
 
         File currentDirectory = new File(".");
 
@@ -46,8 +44,6 @@ public class CredentialBootstrapper extends ClientBootstrapper {
 
         return super.getConfigurationLoader(servletContext);
 
-
     }
-
 
 }

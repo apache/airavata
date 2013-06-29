@@ -39,8 +39,7 @@ import static edu.uiuc.ncsa.security.util.pkcs.CertUtil.createCertRequest;
 import static edu.uiuc.ncsa.security.util.pkcs.KeyUtil.generateKeyPair;
 
 /**
- * Credential store specific OA4MPService.
- * Only change is add support to include get parameters.
+ * Credential store specific OA4MPService. Only change is add support to include get parameters.
  */
 public class CredentialStoreOA4MPServer extends OA4MPService {
     public CredentialStoreOA4MPServer(ClientEnvironment environment) {
@@ -58,11 +57,12 @@ public class CredentialStoreOA4MPServer extends OA4MPService {
             PKCS10CertificationRequest certReq = createCertRequest(keyPair);
             OA4MPResponse mpdsResponse = new OA4MPResponse();
             mpdsResponse.setPrivateKey(keyPair.getPrivate());
-            additionalParameters.put(ClientEnvironment.CERT_REQUEST_KEY, Base64.encodeBase64String(certReq.getDEREncoded()));
+            additionalParameters.put(ClientEnvironment.CERT_REQUEST_KEY,
+                    Base64.encodeBase64String(certReq.getDEREncoded()));
 
             if (additionalParameters.get(getEnvironment().getConstants().get(CALLBACK_URI_KEY)) == null) {
-                additionalParameters.put(getEnvironment().getConstants().get(CALLBACK_URI_KEY), getEnvironment().
-                        getCallback().toString());
+                additionalParameters.put(getEnvironment().getConstants().get(CALLBACK_URI_KEY), getEnvironment()
+                        .getCallback().toString());
             }
 
             DelegationRequest daReq = new DelegationRequest();

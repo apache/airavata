@@ -471,6 +471,9 @@
 								<exclude>**/.project</exclude>
 								<exclude>**/.classpath</exclude>
 								<exclude>**/logo.txt</exclude>
+								<exclude>**/*.jks</exclude>
+								<exclude>**/*.pem</exclude>
+								<exclude>**/*.pk8</exclude>
 							</excludes>
 						</configuration>
 						<executions>

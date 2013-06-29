@@ -1,3 +1,24 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
 package org.apache.airavata.credential.store.store.impl.db;
 
 import org.apache.airavata.common.utils.DBUtil;
@@ -20,7 +41,8 @@ public class CommunityUserDAO extends ParentDAO {
         super();
     }
 
-    public void addCommunityUser(CommunityUser user, String token, Connection connection) throws CredentialStoreException {
+    public void addCommunityUser(CommunityUser user, String token, Connection connection)
+            throws CredentialStoreException {
 
         String sql = "insert into community_user values (?, ?, ?, ?)";
 
@@ -54,7 +76,6 @@ public class CommunityUserDAO extends ParentDAO {
         }
     }
 
-
     public void deleteCommunityUser(CommunityUser user, Connection connection) throws CredentialStoreException {
 
         String sql = "delete from community_user where gateway_name=? and community_user_name=?";
@@ -84,7 +105,8 @@ public class CommunityUserDAO extends ParentDAO {
         }
     }
 
-    public void deleteCommunityUserByToken(CommunityUser user, String token, Connection connection) throws CredentialStoreException {
+    public void deleteCommunityUserByToken(CommunityUser user, String token, Connection connection)
+            throws CredentialStoreException {
 
         String sql = "delete from community_user where gateway_name=? and community_user_name=? and token_id=?";
 
@@ -116,11 +138,11 @@ public class CommunityUserDAO extends ParentDAO {
 
     public void updateCommunityUser(CommunityUser user) throws CredentialStoreException {
 
-        //TODO
+        // TODO
     }
 
     public CommunityUser getCommunityUser(String gatewayName, String communityUserName, Connection connection)
-            throws CredentialStoreException{
+            throws CredentialStoreException {
 
         String sql = "select * from community_user where gateway_name=? and community_user_name=?";
 
@@ -135,7 +157,7 @@ public class CommunityUserDAO extends ParentDAO {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                String email = resultSet.getString("COMMUNITY_USER_EMAIL");  //TODO fix typo
+                String email = resultSet.getString("COMMUNITY_USER_EMAIL"); // TODO fix typo
 
                 return new CommunityUser(gatewayName, communityUserName, email);
 
@@ -157,7 +179,7 @@ public class CommunityUserDAO extends ParentDAO {
     }
 
     public CommunityUser getCommunityUserByToken(String gatewayName, String tokenId, Connection connection)
-            throws CredentialStoreException{
+            throws CredentialStoreException {
 
         String sql = "select * from community_user where gateway_name=? and token_id=?";
 
@@ -173,7 +195,7 @@ public class CommunityUserDAO extends ParentDAO {
 
             if (resultSet.next()) {
                 String communityUserName = resultSet.getString("community_user_name");
-                String email = resultSet.getString("COMMUNITY_USER_EMAIL");  //TODO fix typo
+                String email = resultSet.getString("COMMUNITY_USER_EMAIL"); // TODO fix typo
 
                 return new CommunityUser(gatewayName, communityUserName, email);
 
@@ -194,9 +216,8 @@ public class CommunityUserDAO extends ParentDAO {
         return null;
     }
 
-
     public List<CommunityUser> getCommunityUsers(String gatewayName, Connection connection)
-            throws CredentialStoreException{
+            throws CredentialStoreException {
 
         List<CommunityUser> userList = new ArrayList<CommunityUser>();
 
@@ -213,7 +234,7 @@ public class CommunityUserDAO extends ParentDAO {
 
             while (resultSet.next()) {
                 String userName = resultSet.getString("COMMUNITY_USER_NAME");
-                String email = resultSet.getString("COMMUNITY_USER_EMAIL");  //TODO fix typo
+                String email = resultSet.getString("COMMUNITY_USER_EMAIL"); // TODO fix typo
 
                 userList.add(new CommunityUser(gatewayName, userName, email));
 
@@ -232,6 +253,5 @@ public class CommunityUserDAO extends ParentDAO {
 
         return userList;
     }
-
 
 }

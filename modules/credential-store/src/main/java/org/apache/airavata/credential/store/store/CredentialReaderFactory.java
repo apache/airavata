@@ -21,12 +21,6 @@
 
 package org.apache.airavata.credential.store.store;
 
-/**
- * User: AmilaJ (amilaj@apache.org)
- * Date: 5/8/13
- * Time: 3:44 PM
- */
-
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 
