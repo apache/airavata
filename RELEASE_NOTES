@@ -2,6 +2,48 @@ Apache Airavata Release Notes
 
 See http://issues.apache.org/jira/browse/AIRAVATA-* (where * is the number of the issue below)
 
+Apache Airavata Version 0.8 Released on 2013-07-04
+==================================================
+Key focus of this release is to build upon the 0.7 release changes of GFac Architecture. The EC2 provider now confers to
+the new GFac extensible architecture. The EC2 provider is now an advertised feature and users can use the provider in 
+production-like deployements. The RC of this release was applied to targeted usage by PMC members and significant 
+improvements have been made from errors reported. The Airavata GFac handler configurations have been well tested and 
+customization of handlers is facilitated through a configuration file. 
+
+** New Feature
+    * [AIRAVATA-862] - Introducing a HostScheduler interface and allow users to write their own HostSchedulers and register them with Airavata
+
+** Task
+    * [AIRAVATA-93] - Review gfac-core code 
+    
+** Improvement
+    * [AIRAVATA-450] - Delay in JobSubmissionListener after getting status from Gram
+    * [AIRAVATA-827] - Extending Gram RSL parameters to provide Job Name, email options 
+    * [AIRAVATA-832] - Provide support to configure a new provider in gfac-config.xml
+    * [AIRAVATA-850] - Add a UI component to EC2 menu which allows a user to generate a key for EC2 communication
+
+** Bug
+    * [AIRAVATA-304] - WorkflowInterpreter had some memory leak which can be seen when send requests continuously upto 4000 
+    * [AIRAVATA-721] - Xbaya attempt connection at a down Airavata Server
+    * [AIRAVATA-745] - Levenshtein Distance Sample Needs to be updated
+    * [AIRAVATA-746] - Airavata server populates incorrect URLs (GFac, interpretter ...) when HTTPS is enabled in tomcat
+    * [AIRAVATA-818] - Set host dynamically per service request
+    * [AIRAVATA-824] - EmbeddedGFacInvoker is not reading hostname from application scheduling context
+    * [AIRAVATA-826] - Tar data uploading using gridftp cient in GFAC is not complete 
+    * [AIRAVATA-829] - In Airavata API, HPCSettings the maxWallTime is not working
+    * [AIRAVATA-833] - GridFTPOutputHandler is not able to download outputs from outputData folder incase of URI data type.
+    * [AIRAVATA-834] - Add support for GridFTP output file staging
+    * [AIRAVATA-836] - In GramRSLGenerator setOutputDataDirectory to context output path is not correct
+    * [AIRAVATA-837] - Not able to load property incase of provider properties defined in gfac-config.xml
+    * [AIRAVATA-849] - Error messages from Airavata API
+    * [AIRAVATA-851] - Use the username specifed in the workflow graph when sshing to the AMI instances
+    * [AIRAVATA-856] - Make credential-store specific table scripts lower case
+    * [AIRAVATA-857] - Error while trying to query the experiment data after few hours
+    * [AIRAVATA-861] - Integration tests are failing
+    * [AIRAVATA-865] - Renaming GFac Job related functions in the rest service and the rest client
+    * [AIRAVATA-869] - When the application aborts with return value of minus Status of failure is not reported in to registry
+    * [AIRAVATA-872] - ws-messenger services come to inconsistent state with a failure scenario
+
 Apache Airavata Version 0.7 Released on 2013-04-13
 ==================================================
 Key focus on this release is to improve the Airavata Application Factory (GFac) to facilitate integration of new handlers and ease the development of new providers. The following JIRA issues provide details of the changes made. 
