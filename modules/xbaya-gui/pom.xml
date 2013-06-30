@@ -154,8 +154,8 @@
             <version>2.10.5_d</version>
         </dependency>
         <dependency>
-            <groupId>xmlbeans</groupId>
-            <artifactId>xbean</artifactId>
+            <groupId>org.apache.xmlbeans</groupId>
+            <artifactId>xmlbeans</artifactId>
             <version>${xmlbeans.version}</version>
         </dependency>
         <dependency>

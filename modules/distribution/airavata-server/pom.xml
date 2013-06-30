@@ -316,9 +316,9 @@
             <version>2.10.5_d</version>
         </dependency>
         <dependency>
-            <groupId>xmlbeans</groupId>
-            <artifactId>xbean</artifactId>
-            <version>2.5.0</version>
+            <groupId>org.apache.xmlbeans</groupId>
+            <artifactId>xmlbeans</artifactId>
+            <version>2.6.0</version>
         </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
