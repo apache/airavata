@@ -96,7 +96,7 @@
 				<include>xsul5-ogce:xsul5-2007-02-27:jar</include>
 				<include>xutil:xutil</include>
 				<include>jython:jython</include>
-				<include>xmlbeans:xbean</include>
+				<include>org.apache.xmlbeans:xmlbeans</include>
 				<!--<include>com.amazonaws:aws-java-sdk</include>-->
 				<!--<include>amazon:MapReduce.Service.Client</include>-->
 				<include>net.java.dev.jets3t:jets3t</include>

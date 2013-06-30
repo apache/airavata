@@ -228,7 +228,7 @@
                 <include>lead-security:puretls</include>
                 <include>lead-security:cryptix32</include>
                 <include>lead-security:cryptix-asn1</include>
-                <include>xmlbeans:xbean</include>
+                <include>org.apache.xmlbeans:xmlbeans</include>
                 <include>com.amazonaws:aws-java-sdk</include>
                 <include>amazon:MapReduce.Service.Client</include>
                 <include>net.java.dev.jets3t:jets3t</include>
