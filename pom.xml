@@ -500,6 +500,8 @@
                 <configuration>
                     <aggregate>true</aggregate>
                     <quiet>true</quiet>
+                    <minmemory>256m</minmemory>
+                    <maxmemory>2g</maxmemory>
                 </configuration>
             </plugin>
         </plugins>
