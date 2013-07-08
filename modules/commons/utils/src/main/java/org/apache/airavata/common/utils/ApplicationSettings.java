@@ -47,7 +47,7 @@ public abstract class ApplicationSettings {
     protected static final String TRUST_STORE_PATH="trust.store";
     protected static final String TRUST_STORE_PASSWORD="trust.store.password";
 
-    private static final String REGULAR_EXPRESSION = "\\$\\{[a-zA-Z]*\\}";
+    private static final String REGULAR_EXPRESSION = "\\$\\{[a-zA-Z.-]*\\}";
 
     private final static Logger logger = LoggerFactory.getLogger(ApplicationSettings.class);
 

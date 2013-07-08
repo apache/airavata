@@ -45,5 +45,13 @@ public class ApplicationSettingsTest extends TestCase {
 
     }
 
+    public void testGetAbsoluteSettingWithSpecialCharacters() throws Exception {
+
+        System.setProperty(AiravataUtils.EXECUTION_MODE, "SERVER");
+        String url = ApplicationSettings.getAbsoluteSetting("registry.service.wsdl2");
+        Assert.assertEquals("http://localhost:8080/axis2/services/RegistryService?wsdl", url);
+
+    }
+
 
 }
