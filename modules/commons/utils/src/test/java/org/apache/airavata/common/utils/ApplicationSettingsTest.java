@@ -21,33 +21,29 @@
 
 package org.apache.airavata.common.utils;
 
-public class AiravataUtils {
-	public static final String EXECUTION_MODE="application.execution.mode";
-	public static void setExecutionMode(ExecutionMode mode){
-		System.setProperty(EXECUTION_MODE, mode.name());
-	}
-	
-	public static ExecutionMode getExecutionMode(){
-		if (System.getProperties().containsKey(EXECUTION_MODE)) {
-			return ExecutionMode.valueOf(System.getProperty(EXECUTION_MODE));
-		}else{
-			return null;
-		}
-	}
-	
-	public static boolean isServer(){
-		return getExecutionMode()==ExecutionMode.SERVER;
-	}
-	
-	public static boolean isClient(){
-		return getExecutionMode()==ExecutionMode.CLIENT;
-	}
-	
-	public static void setExecutionAsServer(){
-		setExecutionMode(ExecutionMode.SERVER);
-	}
-	
-	public static void setExecutionAsClient(){
-		setExecutionMode(ExecutionMode.CLIENT);
-	}
+import junit.framework.Assert;
+import junit.framework.TestCase;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * User: AmilaJ (amilaj@apache.org)
+ * Date: 7/5/13
+ * Time: 4:39 PM
+ */
+
+public class ApplicationSettingsTest extends TestCase {
+    public void testGetAbsoluteSetting() throws Exception {
+
+        System.setProperty(AiravataUtils.EXECUTION_MODE, "SERVER");
+        String url = ApplicationSettings.getAbsoluteSetting("registry.service.wsdl");
+        Assert.assertEquals("http://192.2.33.12:8080/axis2/services/RegistryService?wsdl", url);
+
+    }
+
+
 }

@@ -92,6 +92,16 @@ public class AiravataClientTest {
 //        }
     }
 
+    //@Test
+    public void testRegistryServiceInvocation() throws Exception {
+        org.apache.airavata.registry.stub.RegistryServiceStub stub =
+                new org.apache.airavata.registry.stub.RegistryServiceStub("http://localhost:8080/axis2/services/RegistryService?wsdl");
+        boolean registryServiceStarted = stub.isRegistryServiceStarted().getIsRegistryServiceStartedResponse().
+                getReturn();
+
+        System.out.println(registryServiceStarted);
+    }
+
 
 
 }
