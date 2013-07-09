@@ -184,6 +184,7 @@
             <outputDirectory>samples</outputDirectory>
             <includes>
                 <include>*.sh</include>
+				<include>*.bat</include>
             </includes>
         </fileSet>
         <fileSet>
