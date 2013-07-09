@@ -47,6 +47,9 @@ import org.apache.airavata.client.impl.ProvenanceManagerImpl;
 import org.apache.airavata.client.impl.UserManagerImpl;
 import org.apache.airavata.client.impl.WorkflowManagerImpl;
 import org.apache.airavata.common.exception.AiravataConfigurationException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.registry.api.AiravataRegistry2;
@@ -55,7 +58,6 @@ import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.Gateway;
 import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.ws.monitor.MonitorConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,6 +96,11 @@ public class AiravataClient extends Observable implements AiravataAPI {
 	private ExecutionManagerImpl executionManagerImpl;
 	private String gateway;
 	private boolean configCreated = false;
+
+    private static volatile boolean registryServiceStarted = false;
+
+    private static int WAIT_TIME_PERIOD = 4 * 1000;
+    private static int WAIT_ITERATIONS = 15;
 
 	private static final Version API_VERSION = new Version("Airavata", 0, 8,
 			null, null, null);
@@ -139,7 +146,12 @@ public class AiravataClient extends Observable implements AiravataAPI {
 
 	@Override
 	public void initialize() throws AiravataAPIInvocationException {
-		try {
+
+        if (AiravataUtils.isServer()) {
+            waitTillRegistryServiceStarts();
+        }
+
+        try {
 			if (!configCreated) {
 				configuration = createConfig(getRegitryURI(), getCurrentUser(),
 						getPassword());
@@ -164,6 +176,94 @@ public class AiravataClient extends Observable implements AiravataAPI {
 					"Error while initializing the Airavata API", e);
 		}
 	}
+
+    private void waitTillRegistryServiceStarts() throws AiravataAPIInvocationException{
+
+        synchronized (API_VERSION) {
+            if (!registryServiceStarted) {
+                waitForRegistryServiceToStart(getRegistryWebServiceWSDLUrl());
+                registryServiceStarted = true;
+            }
+        }
+    }
+
+    private String getRegistryWebServiceWSDLUrl() throws AiravataAPIInvocationException {
+        String registryUrl = null;
+        try {
+            registryUrl = ApplicationSettings.getAbsoluteSetting("registry.service.wsdl");
+        } catch (ApplicationSettingsException e) {
+            String msg = "Configuration registry.service.wsdl is not specified in the configuration file";
+            log.warn(msg);
+            log.debug(msg, e);
+        }
+
+        if (registryUrl == null) {
+            String hostName = getRegitryURI().getHost();
+            int port = getRegitryURI().getPort();
+            String protocol = null;
+            try {
+                protocol = getRegitryURI().toURL().getProtocol();
+            } catch (MalformedURLException e) {
+                String msg = "Error retrieving protocol from registry URI - "
+                        + getRegitryURI().toString();
+                log.error(msg, e);
+                throw new AiravataAPIInvocationException(msg, e);
+            }
+
+            StringBuilder registryServiceUrlString = new StringBuilder(protocol);
+            registryServiceUrlString.append("://").append(hostName).append(":").append(port);
+            registryServiceUrlString.append("/axis2/services/RegistryService?wsdl");
+
+            registryUrl = registryServiceUrlString.toString();
+        }
+
+        return registryUrl;
+    }
+
+    private void waitForRegistryServiceToStart(String url) throws AiravataAPIInvocationException {
+
+        log.info("Registry service URL - " + url);
+
+        int iterations = 0;
+        Exception exception = null;
+
+        while (!registryServiceStarted) {
+            try {
+                org.apache.airavata.registry.stub.RegistryServiceStub stub =
+                        new org.apache.airavata.registry.stub.RegistryServiceStub(url);
+                registryServiceStarted = stub.isRegistryServiceStarted().getIsRegistryServiceStartedResponse().
+                        getReturn();
+            } catch (Exception e) {
+                exception = e;
+            }
+
+            if (!registryServiceStarted) {
+                try {
+                    if (iterations == WAIT_ITERATIONS) {
+                        if (exception != null) {
+                            throw new AiravataAPIInvocationException("Unable to connect to RegistryService. " +
+                                    "RegistryService may not have started", exception);
+                        } else {
+                            throw new AiravataAPIInvocationException("Unable to connect to RegistryService. " +
+                                    "RegistryService may not have started");
+                        }
+
+                    } else {
+                        Thread.sleep(WAIT_TIME_PERIOD);
+                    }
+                } catch (InterruptedException e1) {
+                    log.info("Received an interrupted exception.");
+                }
+
+                log.info("Attempting to contact registry service, iteration - " + iterations);
+
+                ++iterations;
+            }
+
+        }
+
+
+    }
 
 	private void updateClientConfiguration(Map<String, String> configuration)
 			throws MalformedURLException {

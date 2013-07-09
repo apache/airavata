@@ -22,7 +22,7 @@
 package org.apache.airavata.common.utils;
 
 public class AiravataUtils {
-	private static final String EXECUTION_MODE="application.execution.mode";
+	public static final String EXECUTION_MODE="application.execution.mode";
 	public static void setExecutionMode(ExecutionMode mode){
 		System.setProperty(EXECUTION_MODE, mode.name());
 	}

@@ -160,7 +160,7 @@
 									</fileset>
                                 </copy>
 								<replace file="${airavata.webapp.dir}/WEB-INF/classes/airavata-server.properties">
-                                    <replacetoken>#server.context-root=axis2</replacetoken>
+                                    <replacetoken>server.context-root=axis2</replacetoken>
                                     <replacevalue>server.context-root=airavata-server</replacevalue>
                                 </replace>
 								<zip destfile="${airavata.war.dir}/airavata-server.war" basedir="${airavata.webapp.dir}" />

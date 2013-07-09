@@ -60,10 +60,13 @@ public class RegistryService implements ServiceLifeCycle {
     private JdbcStorage db;
     private NetworkServerControl server;
 
+    private static volatile boolean serverStarted = false;
+
     @Override
     public void startUp(ConfigurationContext configurationContext, AxisService axisService) {
         //todo have to read these properties from some configuration
         initializeDB();
+        serverStarted = true;
     }
 
     private void startDerbyInServerMode() {
@@ -87,12 +90,14 @@ public class RegistryService implements ServiceLifeCycle {
     private void stopDerbyServer() {
         try {
             server.shutdown();
+            serverStarted = false;
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void initializeDB() {
+
         String jdbcUrl = null;
         String jdbcDriver = null;
         try{
@@ -150,6 +155,10 @@ public class RegistryService implements ServiceLifeCycle {
             logger.error("Unable to read properties", e);
         }
 
+    }
+
+    public boolean isRegistryServiceStarted() {
+        return serverStarted;
     }
 
     @Override
