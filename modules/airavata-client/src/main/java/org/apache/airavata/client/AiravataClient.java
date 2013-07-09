@@ -100,7 +100,7 @@ public class AiravataClient extends Observable implements AiravataAPI {
     private static volatile boolean registryServiceStarted = false;
 
     private static int WAIT_TIME_PERIOD = 4 * 1000;
-    private static int WAIT_ITERATIONS = 10;
+    private static int WAIT_ITERATIONS = 15;
 
 	private static final Version API_VERSION = new Version("Airavata", 0, 8,
 			null, null, null);
