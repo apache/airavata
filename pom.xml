@@ -27,15 +27,15 @@
     <artifactId>airavata</artifactId>
     <packaging>pom</packaging>
     <name>Airavata</name>
-    <version>0.8-SNAPSHOT</version>
+    <version>0.8</version>
 
     <url>http://airavata.apache.org/</url>
     <inceptionYear>2011</inceptionYear>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/airavata/trunk/</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/airavata/trunk/</developerConnection>
-        <url>http://svn.apache.org/viewvc/airavata/trunk/</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/airavata/tags/airavata-0.8</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/airavata/tags/airavata-0.8</developerConnection>
+        <url>http://svn.apache.org/viewvc/airavata/tags/airavata-0.8</url>
     </scm>
 
     <mailingLists>
