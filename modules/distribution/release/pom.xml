@@ -96,20 +96,6 @@
 									<type>tar.gz</type>
 									<classifier>bin</classifier>
 								</artifactItem>
-								<artifactItem>
-									<groupId>org.apache.airavata</groupId>
-									<artifactId>apache-airavata-xbaya-gui</artifactId>
-						            <version>${project.version}</version>
-									<type>zip</type>
-									<classifier>jnlp</classifier>
-								</artifactItem>
-								<artifactItem>
-									<groupId>org.apache.airavata</groupId>
-									<artifactId>apache-airavata-xbaya-gui</artifactId>
-						            <version>${project.version}</version>
-									<type>tar.gz</type>
-									<classifier>jnlp</classifier>
-								</artifactItem>
 							</artifactItems>
 							<outputDirectory>${project.build.directory}/release-artifacts</outputDirectory>
 						</configuration>
