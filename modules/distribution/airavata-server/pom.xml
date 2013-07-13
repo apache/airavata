@@ -303,14 +303,6 @@
             <version>2.5.1</version>
         </dependency>
         <dependency>
-            <groupId>cog-jglobus</groupId>
-            <artifactId>cog-jglobus</artifactId>
-            <version>1.8.0_1</version>
-        </dependency>
-        <!-- <dependency> <groupId>cog-jglobus</groupId> <artifactId>cog-jglobus</artifactId>
-              <version>1.8.0-mod</version> </dependency> <dependency> <groupId>edu.iub.soic.damsl</groupId>
-              <artifactId>jXSP</artifactId> <version>0.0.1-SNAPSHOT</version> </dependency> -->
-        <dependency>
             <groupId>xsul</groupId>
             <artifactId>xsul</artifactId>
             <version>2.10.5_d</version>
@@ -457,14 +449,13 @@
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15</artifactId>
-            <version>1.45</version>
+            <artifactId>bcprov-jdk16</artifactId>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcmail-jdk15</artifactId>
             <version>1.45</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-all</artifactId>

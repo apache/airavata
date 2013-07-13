@@ -1,0 +1,5 @@
+# @(#)$Id: 9dd23746.signing_policy,v 1.2 2006/03/02 11:40:46 pmacvsdg Exp $
+#
+ access_id_CA      X509         '/DC=es/DC=irisgrid/CN=IRISGridCA'
+ pos_rights        globus        CA:sign
+ cond_subjects     globus       '"/DC=es/DC=irisgrid/*"'

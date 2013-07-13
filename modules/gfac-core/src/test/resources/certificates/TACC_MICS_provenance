@@ -1,0 +1,23 @@
+[ New TACC MICS CA, May 2009 (mccreary) ]
+
+Obtained CA files from Margaret Murray <marg@tacc.utexas.edu> on 13May09
+Tar file and detached signature both obtained via email
+Signature made with this key:
+
+pub   2048R/7373DBE8 2008-11-08
+      Key fingerprint = 8D4F 371E 8E17 8DA8 8FD4  2DB9 B639 1A0C 7373 DBE8
+uid                  Margaret Murray <marg@tacc.utexas.edu>
+sub   2048R/407CB31E 2008-11-08
+
+Verified the fingerprint of this key via telephone.
+
+Extracted these files from the tar file:
+2ac09305.0
+2ac09305.crl_url
+2ac09305.signing_policy
+
+New MICS cert:
+openssl x509 -subject -fingerprint -sha1 -noout -in 2ac09305.0 
+subject= /DC=EDU/DC=UTEXAS/DC=TACC/O=UT-AUSTIN/CN=TACC MICS CA
+SHA1 Fingerprint=E0:45:7E:E9:FD:E5:08:D9:CA:E0:E6:06:42:97:A0:25:0C:E9:B0:A1
+MD5 Fingerprint=5D:6D:10:ED:FC:F2:FF:24:D6:00:DA:1B:9C:D8:13:80

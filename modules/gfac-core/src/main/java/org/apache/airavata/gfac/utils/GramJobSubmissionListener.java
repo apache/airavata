@@ -20,30 +20,25 @@
 */
 package org.apache.airavata.gfac.utils;
 
-import java.util.Calendar;
-
-import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.notification.events.StatusChangeEvent;
-import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
-import org.globus.gram.GramException;
 import org.globus.gram.GramJob;
 import org.globus.gram.GramJobListener;
 import org.ietf.jgss.GSSCredential;
-import org.ietf.jgss.GSSException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GramJobSubmissionListener implements GramJobListener{
     private final Logger log = LoggerFactory.getLogger(GramJobSubmissionListener.class);
-    public static final String MYPROXY_SECURITY_CONTEXT = "myproxy";
-    private static final int JOB_PROXY_REMAINING_TIME_LIMIT = 900;
 
-    private static final long JOB_FINISH_WAIT_TIME = 60 * 1000l;
-    private boolean finished;
-    private int error;
-    private int status;
+    public static final int NO_ERROR = -42;
+    public static final int INITIAL_STATUS = -43;
+
+    private volatile boolean jobDone = false;
+    private volatile int error = NO_ERROR;
+    private int currentStatus = INITIAL_STATUS;
+
     private JobExecutionContext context;
     private GramJob job;
 
@@ -53,109 +48,91 @@ public class GramJobSubmissionListener implements GramJobListener{
     }
 
     /**
-     * This method is used to block the process until the status of the job is DONE or FAILED
-     *
-     * @throws InterruptedException
-     * @throws GSSException
-     * @throws GramException
-     * @throws SecurityException
+     * This method is used to block the process until the currentStatus of the job is DONE or FAILED
      */
-    public void waitFor() throws InterruptedException, GSSException, GramException, SecurityException,GFacException {
-        while (!isFinished()) {
-            int proxyExpTime = job.getCredentials().getRemainingLifetime();
-            if (proxyExpTime < JOB_PROXY_REMAINING_TIME_LIMIT) {
-                log.info("Job proxy expired. Trying to renew proxy");
-                GSSCredential gssCred = ((GSISecurityContext)context.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getGssCredentials();
-                job.renew(gssCred);
-                log.info("Myproxy renewed");
-            }
+    public void waitFor()  {
+        while (!isJobDone()) {
 
             synchronized (this) {
 
-                /*
-                 * job status is changed but method isn't invoked
-                 */
-                if (status != 0) {
-                    if (job.getStatus() != status) {
-                        log.info("Change job status manually");
-                        if (setStatus(job.getStatus(), job.getError())) {
-                            break;
-                        }
-                    } else {
-                    	GFacUtils.updateApplicationJobStatusUpdateTime(context, job.getIDAsString(), Calendar.getInstance().getTime());
-                        log.info("job " + job.getIDAsString() + " have same status: "
-                                + GramJob.getStatusAsString(status));
-                    }
-                } else {
-                    log.info("Status is zero");
-                }
-
-                wait(JOB_FINISH_WAIT_TIME);
+                try {
+                    wait();
+                } catch (InterruptedException e) {}
             }
         }
     }
 
-    private ApplicationJobStatus getApplicationJobStatus(int gramStatus){
-    	switch(gramStatus){
-    	case GramJob.STATUS_ACTIVE:
-    		return ApplicationJobStatus.EXECUTING;
-    	case GramJob.STATUS_DONE:
-    		return ApplicationJobStatus.FINISHED;
-    	case GramJob.STATUS_FAILED:
-    		return ApplicationJobStatus.FAILED;
-    	case GramJob.STATUS_PENDING:
-    		return ApplicationJobStatus.PENDING;
-    	case GramJob.STATUS_STAGE_IN:
-    		return ApplicationJobStatus.INITIALIZE;
-    	case GramJob.STATUS_STAGE_OUT:
-    		return ApplicationJobStatus.FINALIZE;
-    	case GramJob.STATUS_SUSPENDED:
-    		return ApplicationJobStatus.SUSPENDED;
-    	default:
-    		return ApplicationJobStatus.UNKNOWN;
-    	}
-    }
+
     
-    private synchronized boolean isFinished() {
-        return this.finished;
+    private synchronized boolean isJobDone() {
+        return this.jobDone;
     }
 
-    private synchronized boolean setStatus(int status, int error) {
-		GFacUtils.updateApplicationJobStatus(context,job.getIDAsString(), getApplicationJobStatus(status));
-        this.status = status;
+    private void setStatus(int status, int error) {
+		GFacUtils.updateApplicationJobStatus(context,job.getIDAsString(),
+                GFacUtils.getApplicationJobStatus(status));
+        this.currentStatus = status;
         this.error = error;
 
-        switch (this.status) {
+        switch (this.currentStatus) {
         case GramJob.STATUS_FAILED:
             log.info("Job Error Code: " + error);
-            this.finished = true;
+            this.jobDone = true;
+            notifyAll();
         case GramJob.STATUS_DONE:
-            this.finished = true;
+            this.jobDone = true;
+            notifyAll();
         }
 
-        return this.finished;
     }
 
     public synchronized void statusChanged(GramJob job) {
+
+        int jobStatus = job.getStatus();
         String jobStatusMessage = "Status of job " + job.getIDAsString() + "is " + job.getStatusAsString();
         /*
-         * Notify status change
+         * Notify currentStatus change
          */
         this.context.getNotifier().publish(new StatusChangeEvent(jobStatusMessage));
 
         /*
-         * Set new status if it is finished, notify all wait object
+         * Set new currentStatus if it is jobDone, notify all wait object
          */
-        if (setStatus(job.getStatus(), job.getError())) {
-            notifyAll();
+        if (currentStatus != jobStatus) {
+            currentStatus = jobStatus;
+
+            setStatus(job.getStatus(), job.getError());
+
+            // Test to see whether we need to renew credentials
+            renewCredentials(job);
         }
+    }
+
+    private void renewCredentials(GramJob job) {
+
+        try {
+
+            int proxyExpTime = job.getCredentials().getRemainingLifetime();
+            if (proxyExpTime < GSISecurityContext.CREDENTIAL_RENEWING_THRESH_HOLD) {
+                log.info("Job proxy expired. Trying to renew proxy");
+                GSSCredential gssCred = ((GSISecurityContext)context.
+                        getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).renewCredentials();
+                job.renew(gssCred);
+                log.info("MyProxy credentials are renewed .");
+            }
+
+        } catch (Exception e) {
+            log.error("An error occurred while trying to renew credentials. Job id " + job.getIDAsString());
+        }
+
+
     }
 
     public synchronized int getError() {
         return error;
     }
 
-    public synchronized int getStatus() {
-        return status;
+    public synchronized int getCurrentStatus() {
+        return currentStatus;
     }
 }

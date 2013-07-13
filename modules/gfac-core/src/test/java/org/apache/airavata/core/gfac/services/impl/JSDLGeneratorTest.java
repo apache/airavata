@@ -58,7 +58,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.ogf.schemas.jsdl.JobDefinitionDocument;
 
-public class JSDLGeneratorTest {
+public class JSDLGeneratorTest extends GFacBaseTestCase {
 
     public static final String[] hostArray = new String[] { "https://zam1161v01.zam.kfa-juelich.de:8002/INTEROP1/services/BESFactory?res=default_bes_factory" };
     public static final String gridftpAddress = "gsiftp://gridftp.blacklight.psc.teragrid.org:2811";
@@ -267,12 +267,6 @@ public class JSDLGeneratorTest {
         om1.addParameter("o2", o2);
 
         return om1;
-    }
-
-    private GSISecurityContext getSecurityContext() {
-        GSISecurityContext context = new GSISecurityContext("myproxy.teragrid.org", "******", "*********", 3600,
-                "**********");
-        return context;
     }
 
     @Before

@@ -53,7 +53,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class GramProviderTest {
+public class GramProviderTest extends GFacBaseTestCase {
     private JobExecutionContext jobExecutionContext;
 
 
@@ -71,6 +71,7 @@ public class GramProviderTest {
     @Before
     public void setUp() throws Exception {
         URL resource = GramProviderTest.class.getClassLoader().getResource("gfac-config.xml");
+        assert resource != null;
         System.out.println(resource.getFile());
         GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()),null,null);
 //        gFacConfiguration.setMyProxyLifeCycle(3600);
@@ -208,11 +209,6 @@ public class GramProviderTest {
         jobExecutionContext.setOutMessageContext(outMessage);
 
     }
-
-	private GSISecurityContext getSecurityContext() {
-		GSISecurityContext context = new GSISecurityContext("myproxy.teragrid.org", "xxxx", "xxxxxx", 3600, "~/.globus/certificates");
-		return context;
-	}
 
     @Test
     public void testGramProvider() throws GFacException {

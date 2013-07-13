@@ -26,14 +26,14 @@ import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
 
-import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.gfac.SecurityContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Handle SSH security
  */
-public class SSHSecurityContext extends SecurityContext {
+public class SSHSecurityContext implements SecurityContext {
 	private static final Logger log = LoggerFactory.getLogger(SSHSecurityContext.class);
 
 	public static final String SSH_SECURITY_CONTEXT = "ssh";

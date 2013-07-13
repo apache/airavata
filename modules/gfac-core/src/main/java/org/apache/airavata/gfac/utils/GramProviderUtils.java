@@ -31,11 +31,15 @@ import org.slf4j.LoggerFactory;
 public class GramProviderUtils {
     private static final Logger log = LoggerFactory.getLogger(GramJobSubmissionListener.class);
 
-    public static GramJob setupEnvironment(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+    public static GramJob setupEnvironment(JobExecutionContext jobExecutionContext, boolean enableTwoPhase) throws GFacProviderException {
         log.debug("Searching for Gate Keeper");
         try {
             GramAttributes jobAttr = GramRSLGenerator.configureRemoteJob(jobExecutionContext);
             String rsl = jobAttr.toRSL();
+
+            if (enableTwoPhase) {
+                rsl = rsl + "(twoPhase=yes)";
+            }
 
             log.debug("RSL = " + rsl);
             GramJob job = new GramJob(rsl);

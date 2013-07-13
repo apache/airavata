@@ -49,6 +49,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Executes hadoop job using the cluster configuration provided by handlers in
@@ -138,6 +139,21 @@ public class HadoopProvider implements GFacProvider{
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
         // TODO: How to handle cluster shutdown. Best way is to introduce inPath/outPath to handler.
+    }
+
+    @Override
+    public void cancelJob(String experimentId, JobExecutionContext jobExecutionContext) throws GFacException {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void cancelJob(String experimentId, String workflowId, JobExecutionContext jobExecutionContext) throws GFacException {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void cancelJob(String experimentId, String workflowId, String nodeId, JobExecutionContext jobExecutionContext) throws GFacException {
+        throw new NotImplementedException();
     }
 
     public void initProperties(Map<String, String> properties) throws GFacProviderException, GFacException {

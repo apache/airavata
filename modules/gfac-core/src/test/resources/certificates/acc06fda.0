@@ -1,0 +1,88 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 2 (0x2)
+        Signature Algorithm: sha1WithRSAEncryption
+        Issuer: C=US, O=Pittsburgh Supercomputing Center, CN=PSC Root CA
+        Validity
+            Not Before: Aug 17 16:47:28 2006 GMT
+            Not After : Mar 17 05:00:00 2016 GMT
+        Subject: C=US, O=Pittsburgh Supercomputing Center, CN=PSC Hosts CA
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (2048 bit)
+                Modulus (2048 bit):
+                    00:a7:a1:f7:36:09:a1:de:df:e7:0e:2a:f1:e9:d8:
+                    b1:02:13:9d:bc:9f:a6:77:3b:ab:7a:6f:44:df:23:
+                    f4:6a:67:a8:8a:54:9c:b4:46:44:7f:20:77:ac:1b:
+                    6c:c3:c4:2c:62:e5:92:b9:fb:f6:af:02:40:d7:6b:
+                    98:69:5e:12:e5:21:44:9c:22:04:9b:f8:35:6d:57:
+                    e0:bd:29:09:07:ea:f3:f0:e1:f6:4a:12:89:83:6c:
+                    cf:e6:28:84:7e:8a:c0:84:ac:73:cf:f0:20:06:e7:
+                    3a:be:23:23:ed:8c:4c:84:de:63:67:49:10:d1:e7:
+                    44:89:b4:af:1c:69:cb:36:3d:b2:7f:57:1a:01:c1:
+                    08:db:4f:6f:b6:ea:74:35:25:f4:ae:3c:70:96:e2:
+                    6b:ee:a7:67:37:6d:f0:85:d1:bb:cb:13:8a:d9:52:
+                    0c:ef:67:10:75:e4:e3:6a:92:fd:51:fb:04:ee:35:
+                    4a:10:b1:a2:7d:d7:c2:de:8f:ca:db:c2:bc:b9:aa:
+                    c4:45:7e:8c:ac:79:3b:02:67:56:f2:a6:03:12:32:
+                    ad:80:b5:cd:e9:5a:c0:32:c7:92:6a:34:df:6b:9c:
+                    cf:0e:ba:38:f7:25:70:93:d6:7b:ba:c1:96:45:40:
+                    85:1d:8a:e8:04:ab:ed:91:d2:d8:9d:99:4c:73:f2:
+                    9b:73
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Subject Key Identifier: 
+                E6:E6:02:BC:18:94:7E:E7:62:1E:74:60:9A:34:42:8F:56:16:CF:92
+            X509v3 Authority Key Identifier: 
+                keyid:08:4A:92:96:A5:B0:0B:1D:9F:D9:2F:E9:52:7D:19:97:CF:80:6A:41
+                DirName:/C=US/O=Pittsburgh Supercomputing Center/CN=PSC Root CA
+                serial:01
+
+            X509v3 Basic Constraints: critical
+                CA:TRUE
+            X509v3 Key Usage: critical
+                Digital Signature, Certificate Sign, CRL Sign
+            X509v3 CRL Distribution Points: 
+                URI://www.psc.edu/ca/crl/9b88e95b.r0
+
+    Signature Algorithm: sha1WithRSAEncryption
+        7c:02:2d:4a:e3:9f:2e:48:92:c8:0d:06:84:d8:fa:7e:13:e7:
+        89:f2:e1:92:7c:3d:46:d6:65:9a:24:29:a3:e1:41:9a:1b:e6:
+        4b:0a:04:6d:49:d6:99:80:a4:b8:da:44:48:c2:b5:eb:ef:67:
+        9d:0e:b1:43:e1:0b:f0:6f:d3:49:04:ae:3d:b7:c3:1a:26:5f:
+        1d:5f:a9:fe:7c:27:d3:ee:de:02:ec:f8:59:27:70:dc:47:aa:
+        99:93:84:31:6b:eb:b9:73:59:12:07:d3:77:6c:e2:d5:2a:05:
+        96:76:87:79:a3:28:ca:21:35:2f:31:02:86:ca:ba:fb:8b:16:
+        6a:d3:64:1a:28:0c:64:e8:57:09:46:34:a6:57:05:80:74:91:
+        9e:02:40:b4:3b:ac:75:42:ed:a9:93:d2:fc:3d:ba:19:8f:79:
+        c6:44:1c:95:b4:e1:72:64:10:4a:b7:fa:71:64:2b:1e:23:fb:
+        5d:0e:92:57:c8:e5:81:ae:c1:5e:68:65:91:75:ba:3c:3b:7b:
+        6e:93:44:b6:c2:17:00:ea:d4:e2:0a:72:8c:f7:f4:83:2f:49:
+        90:47:79:01:b3:d9:78:d8:97:74:4d:b8:3a:b4:dc:dc:1f:b3:
+        4e:f0:4d:3b:4f:cc:39:ec:52:33:54:21:23:e0:7f:8b:3c:6c:
+        e2:79:f7:f9
+-----BEGIN CERTIFICATE-----
+MIIEBzCCAu+gAwIBAgIBAjANBgkqhkiG9w0BAQUFADBOMQswCQYDVQQGEwJVUzEp
+MCcGA1UEChMgUGl0dHNidXJnaCBTdXBlcmNvbXB1dGluZyBDZW50ZXIxFDASBgNV
+BAMTC1BTQyBSb290IENBMB4XDTA2MDgxNzE2NDcyOFoXDTE2MDMxNzA1MDAwMFow
+TzELMAkGA1UEBhMCVVMxKTAnBgNVBAoTIFBpdHRzYnVyZ2ggU3VwZXJjb21wdXRp
+bmcgQ2VudGVyMRUwEwYDVQQDEwxQU0MgSG9zdHMgQ0EwggEiMA0GCSqGSIb3DQEB
+AQUAA4IBDwAwggEKAoIBAQCnofc2CaHe3+cOKvHp2LECE528n6Z3O6t6b0TfI/Rq
+Z6iKVJy0RkR/IHesG2zDxCxi5ZK5+/avAkDXa5hpXhLlIUScIgSb+DVtV+C9KQkH
+6vPw4fZKEomDbM/mKIR+isCErHPP8CAG5zq+IyPtjEyE3mNnSRDR50SJtK8cacs2
+PbJ/VxoBwQjbT2+26nQ1JfSuPHCW4mvup2c3bfCF0bvLE4rZUgzvZxB15ONqkv1R
++wTuNUoQsaJ918Lej8rbwry5qsRFfoyseTsCZ1bypgMSMq2Atc3pWsAyx5JqNN9r
+nM8Oujj3JXCT1nu6wZZFQIUdiugEq+2R0tidmUxz8ptzAgMBAAGjge4wgeswHQYD
+VR0OBBYEFObmArwYlH7nYh50YJo0Qo9WFs+SMHYGA1UdIwRvMG2AFAhKkpalsAsd
+n9kv6VJ9GZfPgGpBoVKkUDBOMQswCQYDVQQGEwJVUzEpMCcGA1UEChMgUGl0dHNi
+dXJnaCBTdXBlcmNvbXB1dGluZyBDZW50ZXIxFDASBgNVBAMTC1BTQyBSb290IENB
+ggEBMA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0PAQH/BAQDAgGGMDEGA1UdHwQqMCgw
+JqAkoCKGIC8vd3d3LnBzYy5lZHUvY2EvY3JsLzliODhlOTViLnIwMA0GCSqGSIb3
+DQEBBQUAA4IBAQB8Ai1K458uSJLIDQaE2Pp+E+eJ8uGSfD1G1mWaJCmj4UGaG+ZL
+CgRtSdaZgKS42kRIwrXr72edDrFD4Qvwb9NJBK49t8MaJl8dX6n+fCfT7t4C7PhZ
+J3DcR6qZk4Qxa+u5c1kSB9N3bOLVKgWWdod5oyjKITUvMQKGyrr7ixZq02QaKAxk
+6FcJRjSmVwWAdJGeAkC0O6x1Qu2pk9L8PboZj3nGRByVtOFyZBBKt/pxZCseI/td
+DpJXyOWBrsFeaGWRdbo8O3tuk0S2whcA6tTiCnKM9/SDL0mQR3kBs9l42Jd0Tbg6
+tNzcH7NO8E07T8w57FIzVCEj4H+LPGzieff5
+-----END CERTIFICATE-----

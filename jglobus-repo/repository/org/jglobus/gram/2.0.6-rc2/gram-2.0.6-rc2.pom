@@ -1,0 +1,35 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>jglobus-all</artifactId>
+		<groupId>org.jglobus</groupId>
+		<version>2.0.6-rc2</version>
+	</parent>
+	<artifactId>gram</artifactId>
+
+
+	<name>"Grid Resource Allocation and Management(GRAM)"</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>gss</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ssl-proxies</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>

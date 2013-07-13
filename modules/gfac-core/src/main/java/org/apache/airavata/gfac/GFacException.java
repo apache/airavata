@@ -30,6 +30,11 @@ public class GFacException extends Exception {
 	public GFacException(String s) {
         super(s);
     }
+
+    public GFacException(Exception e) {
+        super(e);
+    }
+
 	public GFacException(String s, Throwable throwable) {
         super(s, throwable);
     }

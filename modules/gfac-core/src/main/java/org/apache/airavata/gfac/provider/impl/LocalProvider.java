@@ -48,6 +48,7 @@ import org.apache.airavata.schemas.gfac.NameValuePairType;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class LocalProvider implements GFacProvider {
     private static final Logger log = LoggerFactory.getLogger(LocalProvider.class);
@@ -211,6 +212,21 @@ public class LocalProvider implements GFacProvider {
         } catch (Exception e){
         	throw new GFacProviderException("Error in retrieving results",e,jobExecutionContext);
         }
+    }
+
+    @Override
+    public void cancelJob(String experimentId, JobExecutionContext jobExecutionContext) throws GFacException {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void cancelJob(String experimentId, String workflowId, JobExecutionContext jobExecutionContext) throws GFacException {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void cancelJob(String experimentId, String workflowId, String nodeId, JobExecutionContext jobExecutionContext) throws GFacException {
+        throw new NotImplementedException();
     }
 
     private void buildCommand(String executable, List<String> inputParameterList){

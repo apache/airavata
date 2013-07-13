@@ -21,6 +21,7 @@
 
 package org.apache.airavata.credential.store.store;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 
@@ -29,7 +30,25 @@ import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
  */
 public class CredentialReaderFactory {
 
+    /**
+     * Creates a credential reader using supplied database configurations.
+     * @param dbUti The database configurations.
+     * @return CredentialReader object.
+     */
     public static CredentialReader createCredentialStoreReader(DBUtil dbUti) {
         return new CredentialReaderImpl(dbUti);
+    }
+
+    /**
+     * Creates credential reader using default configurations for credential store database.
+     * @return The credential reader.
+     * @throws ClassNotFoundException If an error occurred while instantiating jdbc driver
+     * @throws ApplicationSettingsException If an error occurred while reading database configurations.
+     * @throws InstantiationException If an error occurred while instantiating jdbc driver
+     * @throws IllegalAccessException A security exception accessing jdbc driver.
+     */
+    public static CredentialReader createCredentialStoreReader() throws ClassNotFoundException,
+            ApplicationSettingsException, InstantiationException, IllegalAccessException {
+        return new CredentialReaderImpl(DBUtil.getCredentialStoreDBUtil());
     }
 }

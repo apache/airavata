@@ -1,0 +1,11 @@
+# Information for /C=US/O=Pittsburgh Supercomputing Center/CN=PSC MyProxy CA
+# 2010-04-22 ca-admin@psc.edu
+#
+alias = PSC-Myproxy-CA
+url = http://www.psc.edu/ca/
+ca_url = http://www.psc.edu/ca/cert/4b2783ac.0
+crl_url = http://www.psc.edu/ca/crl/4b2783ac.crl
+email = ca-admin@psc.edu
+sha1fp.0 = F8:13:D4:7B:44:9C:4A:83:CF:E3:A5:59:37:5C:9F:F7:FA:0A:1D:66
+status = accredited:slcs
+version = @VERSION@

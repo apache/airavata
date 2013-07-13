@@ -1,0 +1,14 @@
+CA_NAME             NERSC Online SLCS CA
+HOMEPAGE            http://certs.nersc.gov/
+CONTACT             certs@nersc.gov
+HASH                b93d6240
+SIGNED_BY           /DC=net/DC=ES/O=ESnet/OU=Certificate Authorities/CN=ESnet Root CA 1
+SUBJECT             /DC=net/DC=ES/OU=Certificate Authorities/CN=NERSC Online CA
+MAY_SIGN            /DC=gov/DC=nersc/*
+CERTIFICATE_MD5     92:33:71:0A:4A:0A:72:F2:87:F2:CF:00:6A:65:C7:D1
+CERTIFICATE_SHA1    AC:1E:80:F7:C6:2F:37:B8:21:56:D8:F2:D3:2C:0A:A3:68:D7:6E:8A
+CERTIFICATE_URL     http://certs.nersc.gov/certificates/b93d6240.0
+SIGNING_POLICY_URL  http://certs.nersc.gov/certificates/b93d6240.signing_policy
+CRL_URL             http://certs.nersc.gov/certificates/b93d6240.r0
+# CERT_BEGINS         Mon 2008-06-16 21:13:33 UTC
+CERT_EXPIRES        Sun 2013-06-16 21:13:33 UTC

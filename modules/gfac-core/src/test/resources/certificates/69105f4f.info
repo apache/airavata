@@ -1,0 +1,11 @@
+#
+# Information for:/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert Assured ID Root CA
+#
+alias = DigiCertAssuredIDRootCA-Root
+ca_url = http://www.DigiCert-Grid.com/DigiCertAssuredIDRootCA_text.txt
+crl_url = http://crl3.digicert.com/DigiCertAssuredIDRootCA.crl;http://crl4.digicert.com/DigiCertAssuredIDRootCA.crl
+email = support@DigiCert.com
+status = accredited:classic
+url = http://www.digicert-grid.com/
+version = 1.44
+sha1fp.0 = 05:63:B8:63:0D:62:D7:5A:BB:C8:AB:1E:4B:DF:B5:A8:99:B2:4D:43

@@ -24,17 +24,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>cog-jglobus</groupId>
-            <artifactId>cog-jglobus</artifactId>
-            <version>1.8.0_1</version>
-        </dependency>
-        <dependency>
-            <groupId>cog-4_1_6_rc2</groupId>
-            <artifactId>puretls</artifactId>
-            <type>jar</type>
-            <version>cog-4_1_6</version>
-        </dependency>
-        <dependency>
             <groupId>commons-configuration</groupId>
             <artifactId>commons-configuration</artifactId>
             <version>1.6</version>

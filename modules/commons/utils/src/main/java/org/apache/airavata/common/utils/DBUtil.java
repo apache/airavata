@@ -21,6 +21,7 @@
 
 package org.apache.airavata.common.utils;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -292,7 +293,8 @@ public class DBUtil {
      * @throws Exception
      *             If an error occurred while reading configurations or while creating database object.
      */
-    public static DBUtil getDBUtil() throws Exception{
+    public static DBUtil getCredentialStoreDBUtil() throws ApplicationSettingsException, IllegalAccessException,
+            ClassNotFoundException, InstantiationException {
 
         String jdbcUrl = ServerSettings.getCredentialStoreDBURL();
         String userName = ServerSettings.getCredentialStoreDBUser();
@@ -306,12 +308,7 @@ public class DBUtil {
         log.debug(stringBuilder.toString());
 
         DBUtil dbUtil = new DBUtil(jdbcUrl, userName, password, driverName);
-        try {
-            dbUtil.init();
-        } catch (Exception e) {
-            log.error("Error initializing database operations.", e);
-            throw e;
-        }
+        dbUtil.init();
 
         return dbUtil;
     }

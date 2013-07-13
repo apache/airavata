@@ -44,10 +44,8 @@ import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.gfac.Constants;
-import org.apache.airavata.gfac.GFacAPI;
-import org.apache.airavata.gfac.GFacConfiguration;
-import org.apache.airavata.gfac.Scheduler;
+import org.apache.airavata.credential.store.store.CredentialReaderFactory;
+import org.apache.airavata.gfac.*;
 import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
@@ -419,31 +417,36 @@ public class EmbeddedGFacInvoker implements Invoker {
     }
 
 	private void addSecurityContext(HostDescription registeredHost, Properties configurationProperties,
-			JobExecutionContext jobExecutionContext, ContextHeaderDocument.ContextHeader contextHeader) {
+			JobExecutionContext jobExecutionContext, ContextHeaderDocument.ContextHeader contextHeader) throws WorkflowException {
 		if (registeredHost.getType() instanceof GlobusHostType || registeredHost.getType() instanceof UnicoreHostType) {
 
             SecurityContextDocument.SecurityContext.CredentialManagementService credentialManagementService
                     = getCredentialManagementService(contextHeader);
 
             GSISecurityContext context;
+            RequestData requestData;
+
+            String gatewayId = jobExecutionContext.getGFacConfiguration().getAiravataAPI().getGateway();
 
             if (credentialManagementService != null) {
                 String tokenId
                         = credentialManagementService.getTokenId();
-                String gatewayUser = credentialManagementService.getPortalUser();
+                String portalUser = credentialManagementService.getPortalUser();
 
-                String gatewayId = jobExecutionContext.getGFacConfiguration().getAiravataAPI().getGateway();
-
-                context = new GSISecurityContext(configurationProperties, tokenId, gatewayId,
-                        gatewayUser);
-
+                requestData = new RequestData(tokenId, portalUser, gatewayId);
             } else {
 
-                context = new GSISecurityContext(configurationProperties);
+                requestData = new RequestData(gatewayId);
+            }
+
+            try {
+                context = new GSISecurityContext(CredentialReaderFactory.createCredentialStoreReader(), requestData);
+            } catch (Exception e) {
+                throw new WorkflowException("An error occurred while creating GSI security context", e);
             }
 
 
-			jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT, context);
+            jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT, context);
 
 		} else if (registeredHost.getType() instanceof Ec2HostType) {
 			if (this.configuration.getAmazonSecurityContext() != null) {

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>org.jglobus</groupId>
+  <artifactId>axisg</artifactId>
+  <versioning>
+    <release>2.0.6-rc2</release>
+    <versions>
+      <version>2.0.6-rc2</version>
+      <version>2.0.6-rc3-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20130619202624</lastUpdated>
+  </versioning>
+</metadata>

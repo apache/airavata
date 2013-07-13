@@ -1,0 +1,7 @@
+Hash: 617ff41b
+subject: /C=JP/O=KEK/OU=CRC/CN=KEK GRID Certificate Authority
+crl_url = http://gridca.kek.jp/repository/617ff41b.r0
+email = Takashi.Sasaki@kek.jp
+status = accredited:classic
+url = https://gridca.kek.jp/
+sha1fp.0 = 20:F9:69:38:DA:E3:A4:D8:41:FB:00:F0:3F:60:94:B1:2F:7F:C9:E2

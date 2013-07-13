@@ -51,4 +51,34 @@ public interface GFacProvider {
      * @throws GFacProviderException in case of a error cleaning resources.
      */
     void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException,GFacException;
+
+    /**
+     * Cancels all jobs relevant to an experiment.
+     * @param experimentId The experiment id
+     * @param jobExecutionContext The job execution context, contains runtime information.
+     * @throws GFacException If an error occurred while cancelling the job.
+     */
+    void cancelJob(String experimentId, JobExecutionContext jobExecutionContext) throws GFacException;
+
+    /**
+     * Cancels all jobs relevant to a workflow in an experiment.
+     * @param experimentId The experiment id
+     * @param workflowId The workflow id.
+     * @param jobExecutionContext The job execution context, contains runtime information.
+     * @throws GFacException If an error occurred while cancelling the job.
+     */
+    void cancelJob(String experimentId, String workflowId,
+                   JobExecutionContext jobExecutionContext) throws GFacException;
+
+    /**
+     * Cancels the job for a given a workflow id and node id in an experiment.
+     * @param experimentId The experiment id.
+     * @param workflowId The workflow id.
+     * @param nodeId The node id.
+     * @param jobExecutionContext The job execution context relevant to cancel job operation.
+     * @throws GFacException If an error occurred while cancelling the job.
+     */
+    void cancelJob(String experimentId, String workflowId, String nodeId,
+                   JobExecutionContext jobExecutionContext) throws GFacException;
+
 }

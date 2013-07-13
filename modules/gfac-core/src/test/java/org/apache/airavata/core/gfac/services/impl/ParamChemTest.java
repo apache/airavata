@@ -53,14 +53,14 @@ import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ParamChemTest {
+public class ParamChemTest extends GFacBaseTestCase {
     private JobExecutionContext jobExecutionContext;
 
     @Before
     public void setUp() throws Exception {
 
         GFacConfiguration gFacConfiguration = new GFacConfiguration(null);
-        GSISecurityContext context = new GSISecurityContext("myproxy.teragrid.org", "*****", "*****", 3600, "./certificates");
+        GSISecurityContext context = getSecurityContext();
 
         //have to set InFlwo Handlers and outFlowHandlers
         gFacConfiguration.setInHandlers(Arrays.asList(new GFacHandlerConfig[]{new GFacHandlerConfig(null,"org.apache.airavata.gfac.handler.GramDirectorySetupHandler"), new GFacHandlerConfig(null,"org.apache.airavata.gfac.handler.GridFTPInputHandler")}));
