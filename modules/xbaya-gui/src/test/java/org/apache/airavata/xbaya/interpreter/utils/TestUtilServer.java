@@ -130,7 +130,7 @@ public class TestUtilServer {
                 new org.apache.airavata.wsmg.broker.wseventing.WSEventingMsgReceiver(),
                 "http://schemas.xmlsoap.org/ws/2004/08/eventing/Renew",
                 "http://schemas.xmlsoap.org/ws/2004/08/eventing/RenewResponse");
-        createOperation(eventingService, "getStatus",
+        createOperation(eventingService, "getCurrentStatus",
                 new org.apache.airavata.wsmg.broker.wseventing.WSEventingMsgReceiver(),
                 "http://schemas.xmlsoap.org/ws/2004/08/eventing/GetStatus",
                 "http://schemas.xmlsoap.org/ws/2004/08/eventing/GetStatusResponse");

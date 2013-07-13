@@ -21,6 +21,9 @@
 
 package org.apache.airavata.credential.store.util;
 
+import java.io.FileInputStream;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -36,6 +39,33 @@ public class Utility {
 
         DateFormat df = new SimpleDateFormat(DATE_FORMAT);
         return df.format(date);
+    }
+
+    public static String encrypt(String stringToEncrypt) {
+        return null;
+
+    }
+
+    public static KeyStore loadKeyStore(String keyStoreFile) throws Exception {
+        KeyStore ks = KeyStore.getInstance("JKS");
+        // get user password and file input stream
+        char[] password = getPassword();
+
+        java.io.FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(keyStoreFile);
+            ks.load(fis, password);
+
+            return ks;
+        } finally {
+            if (fis != null) {
+                fis.close();
+            }
+        }
+    }
+
+    public static char[] getPassword() {
+        return new char[0];
     }
 
 }

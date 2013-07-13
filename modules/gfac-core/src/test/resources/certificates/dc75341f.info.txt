@@ -1,0 +1,11 @@
+# Information for /DC=EDU/DC=TENNESSEE/DC=NICS/O-National Institute for Computational Sciences/CN=MyProxy
+# 2011-06-15 security@nics.tennessee.edu
+#
+alias = MyProxy
+url = http://www.nics.tennessee.edu/ca
+ca_url = http://www.nics.tennessee.edu/sites/www.nics.tennessee.edu/files/ca/dc75341f.0
+crl_url = http://www.nics.tennessee.edu/sites/www.nics.tennessee.edu/files/ca/dc75341f.crl
+email = security@nics.tennessee.edu
+sha1fp.0 = 86:60:78:60:20:7A:EF:B7:A1:21:9C:91:B2:75:26:32:8B:05:70:4D
+status = nonaccredited:slcs
+version = @VERSION@

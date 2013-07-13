@@ -1,0 +1,8 @@
+alias = NCSA-tfca
+url = https://security.ncsa.illinois.edu/CA/
+ca_url =  https://security.ncsa.illinois.edu/CA/679cff61.0
+crl_url = http://ca.ncsa.illinois.edu/679cff61.r0
+email = security@ncsa.illinois.edu
+status =  accredited:slcs
+version = @VERSION@
+sha1fp.0 = @SHA1FP.0@

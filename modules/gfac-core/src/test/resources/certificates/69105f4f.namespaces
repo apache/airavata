@@ -1,0 +1,13 @@
+##############################################################################
+#NAMESPACES-VERSION: 1.0
+#
+# @(#)69105f4f.namespaces
+# CA alias    : DigiCertAssuredIDRootCA-Root
+#    subord_of: 
+#    subjectDN: /C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert Assured ID Root CA
+#    hash     : 69105f4f
+#    (generated automatically from 69105f4f.signing_policy)
+#
+TO Issuer "/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert Assured ID Root CA" \
+  PERMIT Subject "/C=US/O=DigiCert Grid/OU=www.digicert.com/CN=DigiCert Grid Trust CA"
+

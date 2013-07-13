@@ -25,10 +25,15 @@ import java.net.URL;
 import java.util.Date;
 import java.util.UUID;
 
+import org.apache.airavata.common.utils.DatabaseTestCases;
+import org.apache.airavata.common.utils.DerbyUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.credential.store.store.CredentialReader;
+import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 import org.apache.airavata.gfac.GFacConfiguration;
+import org.apache.airavata.gfac.RequestData;
 import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
@@ -36,12 +41,14 @@ import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.schemas.gfac.JobTypeType;
 import org.apache.airavata.schemas.gfac.UnicoreHostType;
 import org.apache.log4j.PropertyConfigurator;
+import org.junit.BeforeClass;
 
-public abstract class AbstractBESTest {
+public abstract class AbstractBESTest extends GFacBaseTestCase {
 
 	protected JobExecutionContext jobExecutionContext;
 
 	public static final String[] hostArray = new String[] { "https://zam1161v01.zam.kfa-juelich.de:8002/INTEROP1/services/BESFactory?res=default_bes_factory" };
+
 
 	// public static final String[] hostArray = new String[] {
 	// "https://deisa-unic.fz-juelich.de:9111/FZJ_JUROPA/services/BESFactory?res=default_bes_factory"
@@ -123,11 +130,5 @@ public abstract class AbstractBESTest {
 	protected abstract MessageContext getInMessageContext();
 
 	protected abstract MessageContext getOutMessageContext();
-
-	private GSISecurityContext getSecurityContext() {
-		GSISecurityContext context = new GSISecurityContext("myproxy.teragrid.org", "******", "*******", 3600,
-                "/Users/raminder/.globus/certificates");
-		return context;
-	}
 
 }

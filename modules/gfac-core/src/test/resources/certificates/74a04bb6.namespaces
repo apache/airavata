@@ -1,0 +1,13 @@
+##############################################################################
+#NAMESPACES-VERSION: 1.0
+#
+# @(#)2694e4f2.namespaces
+# CA alias    : DigiCertGridRootCA-Root
+#    subord_of: 
+#    subjectDN: /DC=com/DC=DigiCert-Grid/O=DigiCert Grid/CN=DigiCert Grid Root CA
+#    hash     : 2694e4f2
+#    (generated automatically from 2694e4f2.signing_policy)
+#
+TO Issuer "/DC=com/DC=DigiCert-Grid/O=DigiCert Grid/CN=DigiCert Grid Root CA" \
+  PERMIT Subject "/DC=com/DC=DigiCert-Grid/O=DigiCert Grid/CN=DigiCert Grid CA-1"
+

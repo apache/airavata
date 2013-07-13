@@ -56,6 +56,7 @@ import org.apache.airavata.schemas.gfac.NameValuePairType;
 import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Execute application using remote SSH
@@ -135,7 +136,22 @@ public class SSHProvider implements GFacProvider {
 	public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
 	}
 
-	private File createShellScript(JobExecutionContext context) throws IOException {
+    @Override
+    public void cancelJob(String experimentId, JobExecutionContext jobExecutionContext) throws GFacException {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void cancelJob(String experimentId, String workflowId, JobExecutionContext jobExecutionContext) throws GFacException {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void cancelJob(String experimentId, String workflowId, String nodeId, JobExecutionContext jobExecutionContext) throws GFacException {
+        throw new NotImplementedException();
+    }
+
+    private File createShellScript(JobExecutionContext context) throws IOException {
 		ApplicationDeploymentDescriptionType app = context.getApplicationContext()
 				.getApplicationDeploymentDescription().getType();
 		String uniqueDir = app.getApplicationName().getStringValue() + System.currentTimeMillis()

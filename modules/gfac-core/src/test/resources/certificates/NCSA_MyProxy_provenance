@@ -1,0 +1,57 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+[ Verify NCSA MyProxy CA, Oct 2009 (mccreary) ]
+
+MyProxy CA cert obtained from on 07Oct09 from
+<https://dist.eugridpma.info/distribution/igtf/current/igtf-policy-installation-bundle-1.31.tar.gz>
+Web server presented certificate w/ subject:
+
+	CN = dist.eugridpma.info
+	O  = NIKHEF
+	OU = PDP
+Serial Num = 01:00:00:00:00:01:10:E4:53:B7:A5
+
+from authority:
+
+	CN = Cybertrust Educational CA
+	O  = Cybertrust
+	OU = Educational CA
+
+Valid from 21Feb07 until 21Feb2010
+
+Fingerprints:
+	SHA1	7D:EF:99:28:66:AB:46:91:AE:0C:05:59:8A:F8:69:60:0F:E0:E0:24
+	MD5	5D:AE:44:D1:14:F6:E8:8A:BB:EE:AD:3F:7A:1F:13:6D
+
+Good PGP signature for this tar file was also obtained from
+<https://dist.eugridpma.info/distribution/igtf/current/igtf-policy-installation-bundle-1.31.tar.gz.asc>
+Signature made with this key:
+
+pub   1024D/3CDBBC71 2005-07-12
+      Key fingerprint = D12E 9228 22BE 64D5 0146  188B C32D 99C8 3CDB BC71
+uid                  EUGridPMA Distribution Signing Key 3 <info@eugridpma.org>
+
+Unfortunately this key has no signatures, and is not part of the TG security
+working group web of trust.
+
+Extracted the following files from the tar file:
+igtf-policy-installation-bundle-1.31/src/accredited/f2e89fe3.0
+igtf-policy-installation-bundle-1.31/src/accredited/f2e89fe3.signing_policy
+
+Verified that these files match the current files in the TG CA tarball.  Also
+added the following file to the tarball:
+
+igtf-policy-installation-bundle-1.31/src/accredited/f2e89fe3.crl_url
+
+openssl x509 -subject -fingerprint -sha1 -noout -in f2e89fe3.0 
+subject= /C=US/O=National Center for Supercomputing Applications/OU=Certificate Authorities/CN=MyProxy
+SHA1 Fingerprint=59:99:70:9C:C8:23:C4:0D:7F:3F:C0:80:AB:52:EC:D1:62:F1:5F:3B
+MD5 Fingerprint=C5:8B:4C:8C:FA:CB:57:6C:35:E7:96:55:1C:B6:F3:24
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (Darwin)
+
+iD8DBQFKzQG2YjEf42hR7yYRAh+3AKC1ENwXPn0h+DWw/7uYh9Oy7J+8oQCgpkXW
+9w5nZQx9Yui4052Q+xTn2HU=
+=piqo
+-----END PGP SIGNATURE-----

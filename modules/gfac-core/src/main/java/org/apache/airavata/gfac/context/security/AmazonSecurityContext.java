@@ -21,7 +21,9 @@
 
 package org.apache.airavata.gfac.context.security;
 
-public class AmazonSecurityContext extends SecurityContext {
+import org.apache.airavata.gfac.SecurityContext;
+
+public class AmazonSecurityContext implements SecurityContext {
 
 	public static final String AMAZON_SECURITY_CONTEXT = "amazon";
     private String userName;

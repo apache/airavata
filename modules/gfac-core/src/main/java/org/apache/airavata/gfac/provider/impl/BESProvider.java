@@ -63,7 +63,7 @@ import eu.emi.security.authn.x509.impl.CertificateUtils.Encoding;
 import eu.emi.security.authn.x509.impl.DirectoryCertChainValidator;
 import eu.emi.security.authn.x509.impl.PEMCredential;
 import eu.unicore.util.httpclient.DefaultClientConfiguration;
-
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
 public class BESProvider implements GFacProvider {
@@ -211,9 +211,26 @@ public class BESProvider implements GFacProvider {
 			throws GFacProviderException {
 		secProperties = null;
 	}
-	
-	
-	protected void initSecurityProperties(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException{
+
+    @Override
+    public void cancelJob(String experimentId, JobExecutionContext jobExecutionContext) throws GFacException {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void cancelJob(String experimentId, String workflowId, JobExecutionContext jobExecutionContext)
+            throws GFacException {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void cancelJob(String experimentId, String workflowId, String nodeId,
+                          JobExecutionContext jobExecutionContext) throws GFacException {
+        throw new NotImplementedException();
+    }
+
+
+    protected void initSecurityProperties(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException{
 		
 		if (secProperties != null) return;
 		
@@ -231,15 +248,17 @@ public class BESProvider implements GFacProvider {
 		ByteArrayInputStream bis = null;
 		BufferedInputStream bufis = null;
 		try{
-			gss.getGlobusCredential().save(bufos);
+
+            // TODO verify whether this is correct
+			gss.getX509Credential().save(bufos);
 			bufos.flush();
 			
 			
 			
 			//TODO: to be supported by airavata gsscredential class
 			List<String> trustedCert = new ArrayList<String>();
-			trustedCert.add(gssContext.getMyProxyManager().getTrustedCertsLoc() + "/*.0");
-			trustedCert.add(gssContext.getMyProxyManager().getTrustedCertsLoc() + "/*.pem");
+			trustedCert.add(GSISecurityContext.getTrustedCertificatePath() + "/*.0");
+			trustedCert.add(GSISecurityContext.getTrustedCertificatePath() + "/*.pem");
 			
 			char[] c = null;
 			

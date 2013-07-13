@@ -36,6 +36,11 @@ public class ApplicationJob {
 	 * based on type of application (eg: GRAM, EC2) being executed</em>.   
 	 */
 	public static enum ApplicationJobStatus{
+
+        /**
+         * Job not yet submitted to Gram
+         */
+        UN_SUBMITTED,
 		/**
 		 * Validating the application job input data and configurations
 		 */

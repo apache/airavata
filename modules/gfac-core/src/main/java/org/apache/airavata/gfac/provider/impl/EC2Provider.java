@@ -60,6 +60,7 @@ import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.StringParameterType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
 import java.io.IOException;
@@ -243,6 +244,21 @@ public class EC2Provider implements GFacProvider {
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
         // Do nothing
+    }
+
+    @Override
+    public void cancelJob(String experimentId, JobExecutionContext jobExecutionContext) throws GFacException {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void cancelJob(String experimentId, String workflowId, JobExecutionContext jobExecutionContext) throws GFacException {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void cancelJob(String experimentId, String workflowId, String nodeId, JobExecutionContext jobExecutionContext) throws GFacException {
+        throw new NotImplementedException();
     }
 
     /**

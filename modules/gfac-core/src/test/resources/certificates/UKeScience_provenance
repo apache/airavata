@@ -1,0 +1,137 @@
+[ Removed (again?) expiring UK eScience CA certs 53729190.* 367b75c3.* 2013-01-28 dsimmel ]
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+[ Updated UK eScience CA certificate, validity extended to March 31, 2013 (jam,dsimmel 2012-11-01) ]
+
+$ openssl version
+OpenSSL 1.0.0-fips 29 Mar 2010
+
+$ openssl x509 -in 367b75c3.0 -serial -issuer -subject -dates -hash -subject_hash_old -noout
+serial=0121
+issuer= /C=UK/O=eScienceRoot/OU=Authority/CN=UK e-Science Root
+subject= /C=UK/O=eScienceCA/OU=Authority/CN=UK e-Science CA
+notBefore=Oct 30 09:00:00 2007 GMT
+notAfter=Mar 31 23:59:59 2013 GMT
+53729190
+367b75c3
+
+[ Replacement UK eScience certificates, May 2008 (mccreary) ]
+
+Retrieved from
+<https://dist.eugridpma.info/distribution/igtf/current/accredited/tgz/>
+	ca_UKeScienceRoot-2007-1.21.tar.gz
+	ca_UKeScienceCA-2007-1.21.tar.gz
+	ca_UKeScienceRoot-1.21.tar.gz
+	ca_UKeScienceCA-1.21.tar.gz
+
+on 22May08. Web server presented certificate w/ subject:
+
+	CN = dist.eugridpma.info
+	O  = NIKHEF
+	OU = PDP
+Serial Num = 01:00:00:00:00:01:10:E4:53:B7:A5
+
+from authority:
+
+	CN = Cybertrust Educational CA
+	O  = Cybertrust
+	OU = Educational CA
+
+Valid from 21Feb07 until 21Feb2010
+
+Fingerprints:
+	SHA1	7D:EF:99:28:66:AB:46:91:AE:0C:05:59:8A:F8:69:60:0F:E0:E0:24
+	MD5	5D:AE:44:D1:14:F6:E8:8A:BB:EE:AD:3F:7A:1F:13:6D
+
+Updated certs:
+openssl x509 -subject -fingerprint -sha1 -noout -in 367b75c3.0
+subject= /C=UK/O=eScienceCA/OU=Authority/CN=UK e-Science CA
+SHA1 Fingerprint=CA:1C:B6:6C:A9:E3:27:4D:F7:3E:A9:EB:6A:33:3F:C1:A2:B1:B8:D7
+MD5 Fingerprint=29:74:27:49:A9:9C:C2:BB:1A:FE:58:BB:02:BE:00:E9
+
+openssl x509 -subject -fingerprint -sha1 -noout -in 98ef0ee5.0
+subject= /C=UK/O=eScienceRoot/OU=Authority/CN=UK e-Science Root
+SHA1 Fingerprint=A1:39:B0:F3:04:6C:0B:F9:F5:0A:1B:33:00:06:4F:83:6B:7D:4F:3E
+MD5 Fingerprint=0E:4A:28:9B:BB:2C:A2:3E:90:8F:AF:11:A6:8B:BE:9E
+
+*.signing_policy files have cosmetic differences:
+
+diff ./367b75c3.signing_policy ../teragrid-certs/367b75c3.signing_policy
+1,4c1,14
+< # @(#)$Id: 367b75c3.signing_policy,v 1.1 2007/11/15 21:04:34 pmacvsdg Exp $
+<  access_id_CA     X509    '/C=UK/O=eScienceCA/OU=Authority/CN=UK e-Science CA'
+<  pos_rights       globus  CA:sign
+<  cond_subjects    globus  '"/C=UK/O=eScience/*"'
+- - ---
+>  # Signing policy for UK e-Science CA
+>  # This file should be installed in
+>  # /etc/grid-security/certificates
+>  # as <hash>.signing_policy along with
+>  # the CA certificate as <hash>.<digit>
+>  # -- here <hash> is the output of
+>  # openssl x509 -hash -noout -in <certificate>
+>  # and <digit> is the lowest single (decimal)
+>  # digit that makes the file unique (in case
+>  # you have other CA certificates that hash to
+>  # the same value)
+>  access_id_CA      X509         '/C=UK/O=eScienceCA/OU=Authority/CN=UK e-Science CA'
+>  pos_rights        globus        CA:sign
+>  cond_subjects     globus     '"/C=UK/O=eScience/*"'
+diff ./98ef0ee5.signing_policy ../teragrid-certs/98ef0ee5.signing_policy
+1,4c1,14
+< # @(#)$Id: 98ef0ee5.signing_policy,v 1.1 2007/11/15 21:04:34 pmacvsdg Exp $
+<  access_id_CA   X509    '/C=UK/O=eScienceRoot/OU=Authority/CN=UK e-Science Root'
+<  pos_rights     globus  CA:sign
+<  cond_subjects  globus  '"/C=UK/O=eScienceCA/OU=Authority/CN=UK e-Science CA"'
+- - ---
+>  # Signing policy for UK e-Science ROOT CA.
+>  # This file should be installed in
+>  # /etc/grid-security/certificates
+>  # as <hash>.signing_policy along with
+>  # the CA certificate as <hash>.<digit>
+>  # -- here <hash> is the output of
+>  # openssl x509 -hash -noout -in <certificate>
+>  # and <digit> is the lowest single (decimal)
+>  # digit that makes the file unique (in case
+>  # you have other CA certificates that hash to
+>  # the same value)
+>  access_id_CA      X509         '/C=UK/O=eScienceRoot/OU=Authority/CN=UK e-Science Root'
+>  pos_rights        globus        CA:sign
+>  cond_subjects     globus     '"/C=UK/O=eScienceCA/OU=Authority/CN=UK e-Science CA"'
+
+
+*.crl_url contain different extensions:
+
+1c1
+< http://ca.grid-support.ac.uk/pub/crl/ca-crl.der
+- - ---
+> http://ca.grid-support.ac.uk/pub/crl/ca-crl.pem
+
+Also verified old UKeScience CA and Root certs:
+
+openssl x509 -subject -fingerprint -sha1 -noout -in adcbc9ef.0
+subject= /C=UK/O=eScienceCA/OU=Authority/CN=CA
+SHA1 Fingerprint=0A:E0:5B:0C:64:99:18:2B:4F:FB:15:33:6F:77:33:F9:8E:F2:6D:C7
+MD5 Fingerprint=24:47:F1:F0:BD:1F:3E:E5:AE:4B:55:E9:E3:30:3A:0F
+
+openssl x509 -subject -fingerprint -sha1 -noout -in 8175c1cd.0
+subject= /C=UK/O=eScienceRoot/OU=Authority/L=Root/CN=CA
+SHA1 Fingerprint=88:BF:90:CB:03:C6:10:14:FA:BB:0D:0A:3C:76:DA:D6:6E:21:54:95
+MD5 Fingerprint=A7:AD:F4:F9:37:43:8D:88:B0:EA:50:F9:3F:1E:B0:91
+
+Note that *crl_url for these certs also differs in the extension
+
+1c1
+< http://ca.grid-support.ac.uk/pub/crl/escience-root-crl.crl
+- - ---
+> http://ca.grid-support.ac.uk/pub/crl/escience-root-crl.pem
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.8 (Darwin)
+Comment: GPGTools - http://gpgtools.org
+
+iEYEARECAAYFAlCS8voACgkQhXXPgPKIJgbvvgCfWJkk24m0qIcLmQU1795J22ya
+fh0AoK/7uerxMR1LhW6603A7CfCHKyuw
+=xdW1
+-----END PGP SIGNATURE-----

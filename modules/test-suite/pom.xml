@@ -24,39 +24,17 @@
 
     <dependencies>
         <dependency>
-            <groupId>cog-jglobus</groupId>
-            <artifactId>cog-jglobus</artifactId>
-            <version>1.8.0_1</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.axis2</groupId>
             <artifactId>axis2-transport-local</artifactId>
             <version>${axis2.version}</version>
             <scope>compile</scope>
         </dependency>
 
-        <dependency>
-            <groupId>cog-4_1_6_rc2</groupId>
-            <artifactId>puretls</artifactId>
-            <type>jar</type>
-            <version>cog-4_1_6</version>
-        </dependency>
-        <dependency>
-            <groupId>cog-4_1_6_rc2</groupId>
-            <artifactId>cryptix32</artifactId>
-            <version>cog-4_1_6</version>
-        </dependency>
-        <dependency>
-            <groupId>cog-4_1_6_rc2</groupId>
-            <artifactId>cryptix-asn1</artifactId>
-            <version>cog-4_1_6</version>
-        </dependency>
-        <dependency>
-            <groupId>bouncycastle</groupId>
-            <artifactId>bcprov-jdk15</artifactId>
-            <version>143</version>
-        </dependency>
 
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk16</artifactId>
+        </dependency>
         <dependency>
             <groupId>commons-configuration</groupId>
             <artifactId>commons-configuration</artifactId>

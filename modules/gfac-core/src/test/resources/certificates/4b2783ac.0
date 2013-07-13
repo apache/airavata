@@ -1,0 +1,89 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 139 (0x8b)
+        Signature Algorithm: sha1WithRSAEncryption
+        Issuer: C=US, O=Pittsburgh Supercomputing Center, CN=PSC MyProxy CA
+        Validity
+            Not Before: Apr  7 15:14:12 2010 GMT
+            Not After : Mar 17 05:00:00 2016 GMT
+        Subject: C=US, O=Pittsburgh Supercomputing Center, CN=PSC MyProxy CA
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (2048 bit)
+                Modulus (2048 bit):
+                    00:af:57:52:26:60:a3:ea:45:d1:f4:ad:1b:42:85:
+                    3b:d8:8b:8f:0b:a6:c3:d4:3c:28:03:76:f9:0c:97:
+                    03:a4:13:71:c4:aa:e0:0b:2f:4a:5b:70:97:93:8d:
+                    81:73:f4:a1:e0:78:3a:63:69:2d:09:aa:bb:5b:ec:
+                    f0:a1:13:30:07:59:66:25:d1:96:e0:4d:4c:ce:aa:
+                    1d:f1:fd:1d:a7:10:70:c6:92:21:d4:c9:3d:42:b6:
+                    eb:a6:a7:5f:3c:79:b3:80:78:38:9f:ba:2b:30:6e:
+                    37:fc:4b:e0:71:8b:97:10:d9:e0:79:87:75:c7:82:
+                    9c:07:da:a1:5a:25:95:57:a1:1c:8c:c8:4d:59:ec:
+                    9e:f9:a2:9b:13:0f:f9:7c:67:d7:8d:3f:ad:3e:88:
+                    a8:4d:95:24:7f:f4:28:72:10:81:2c:20:b6:67:59:
+                    e2:bf:58:b6:89:56:9a:5c:22:69:69:82:54:f1:d7:
+                    47:79:1e:50:82:4f:e8:4e:d9:67:14:f6:3f:d4:70:
+                    de:4c:d1:95:72:68:2d:83:e6:6c:88:83:48:57:4f:
+                    bf:be:a1:01:4a:fc:d7:72:a5:a3:60:90:e2:2d:87:
+                    f4:22:01:fd:05:3c:c1:d2:eb:b2:ae:79:be:4b:84:
+                    ee:3d:d6:15:12:8d:93:66:e8:e4:4f:50:fd:b4:7c:
+                    e4:27
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: critical
+                CA:TRUE
+            X509v3 Key Usage: critical
+                Digital Signature, Certificate Sign, CRL Sign
+            X509v3 Subject Key Identifier: 
+                23:92:D8:E7:79:6C:35:52:5F:50:12:17:09:B9:20:9B:F2:97:63:08
+            X509v3 Subject Alternative Name: 
+                email:ca-admin@psc.edu
+            X509v3 Authority Key Identifier: 
+                keyid:23:92:D8:E7:79:6C:35:52:5F:50:12:17:09:B9:20:9B:F2:97:63:08
+
+            X509v3 CRL Distribution Points: 
+                URI:http://www.psc.edu/ca/crl/4b2783ac.crl
+                URI:http://www.psc.edu/ca/crl/4b2783ac.r0
+
+    Signature Algorithm: sha1WithRSAEncryption
+        32:a0:b1:51:50:8b:56:9f:df:19:7d:19:37:ec:3f:55:74:29:
+        39:d3:85:82:7e:76:13:80:ac:6e:9c:6b:e4:7e:1a:51:9f:ca:
+        e3:ca:90:d2:69:ab:d4:1b:d1:30:87:ca:cd:90:49:97:fe:2f:
+        b1:6a:9f:65:a4:e4:ee:db:11:56:97:61:4b:77:67:ee:14:f9:
+        9c:ab:64:fe:b2:c3:37:63:a4:ec:b7:d7:52:fb:f9:22:27:a1:
+        72:93:64:52:dc:cf:86:34:7c:7c:57:bc:08:76:65:1a:e6:a5:
+        1d:57:f8:17:0b:c8:a1:63:cb:56:51:c6:8a:7e:da:9f:20:b3:
+        25:2c:12:ed:d6:60:b1:9e:aa:35:19:c9:45:63:36:c0:2e:ba:
+        3a:8a:80:a6:e0:56:b8:56:14:fc:60:73:30:0a:9f:a0:76:8c:
+        c1:a7:31:45:1d:41:f7:35:2b:fa:9b:18:91:6a:bf:f4:99:86:
+        54:0a:03:80:7c:a7:17:42:af:c9:01:06:c7:1c:c0:1b:c4:4b:
+        38:2e:07:b0:c0:da:d6:c4:af:3a:05:5d:9e:27:1f:3f:8f:73:
+        24:73:44:bb:de:f8:ec:14:52:bf:b7:a4:28:15:e8:ce:0a:9b:
+        86:c3:5c:ef:eb:f7:7c:d3:bc:0c:6c:c3:4f:75:4f:d6:54:23:
+        b8:9b:34:47
+-----BEGIN CERTIFICATE-----
+MIIEBjCCAu6gAwIBAgICAIswDQYJKoZIhvcNAQEFBQAwUTELMAkGA1UEBhMCVVMx
+KTAnBgNVBAoTIFBpdHRzYnVyZ2ggU3VwZXJjb21wdXRpbmcgQ2VudGVyMRcwFQYD
+VQQDEw5QU0MgTXlQcm94eSBDQTAeFw0xMDA0MDcxNTE0MTJaFw0xNjAzMTcwNTAw
+MDBaMFExCzAJBgNVBAYTAlVTMSkwJwYDVQQKEyBQaXR0c2J1cmdoIFN1cGVyY29t
+cHV0aW5nIENlbnRlcjEXMBUGA1UEAxMOUFNDIE15UHJveHkgQ0EwggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQCvV1ImYKPqRdH0rRtChTvYi48LpsPUPCgD
+dvkMlwOkE3HEquALL0pbcJeTjYFz9KHgeDpjaS0Jqrtb7PChEzAHWWYl0ZbgTUzO
+qh3x/R2nEHDGkiHUyT1Ctuump188ebOAeDifuiswbjf8S+Bxi5cQ2eB5h3XHgpwH
+2qFaJZVXoRyMyE1Z7J75opsTD/l8Z9eNP60+iKhNlSR/9ChyEIEsILZnWeK/WLaJ
+VppcImlpglTx10d5HlCCT+hO2WcU9j/UcN5M0ZVyaC2D5myIg0hXT7++oQFK/Ndy
+paNgkOIth/QiAf0FPMHS67Kueb5LhO491hUSjZNm6ORPUP20fOQnAgMBAAGjgecw
+geQwDwYDVR0TAQH/BAUwAwEB/zAOBgNVHQ8BAf8EBAMCAYYwHQYDVR0OBBYEFCOS
+2Od5bDVSX1ASFwm5IJvyl2MIMBsGA1UdEQQUMBKBEGNhLWFkbWluQHBzYy5lZHUw
+HwYDVR0jBBgwFoAUI5LY53lsNVJfUBIXCbkgm/KXYwgwZAYDVR0fBF0wWzAsoCqg
+KIYmaHR0cDovL3d3dy5wc2MuZWR1L2NhL2NybC80YjI3ODNhYy5jcmwwK6ApoCeG
+JWh0dHA6Ly93d3cucHNjLmVkdS9jYS9jcmwvNGIyNzgzYWMucjAwDQYJKoZIhvcN
+AQEFBQADggEBADKgsVFQi1af3xl9GTfsP1V0KTnThYJ+dhOArG6ca+R+GlGfyuPK
+kNJpq9Qb0TCHys2QSZf+L7Fqn2Wk5O7bEVaXYUt3Z+4U+ZyrZP6ywzdjpOy311L7
++SInoXKTZFLcz4Y0fHxXvAh2ZRrmpR1X+BcLyKFjy1ZRxop+2p8gsyUsEu3WYLGe
+qjUZyUVjNsAuujqKgKbgVrhWFPxgczAKn6B2jMGnMUUdQfc1K/qbGJFqv/SZhlQK
+A4B8pxdCr8kBBsccwBvESzguB7DA2tbErzoFXZ4nHz+PcyRzRLve+OwUUr+3pCgV
+6M4Km4bDXO/r93zTvAxsw091T9ZUI7ibNEc=
+-----END CERTIFICATE-----

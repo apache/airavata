@@ -1,0 +1,4 @@
+# DigiCert Assured ID Root CA Signing Policy (Public Trust Anchor)
+access_id_CA		X509	'/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert Assured ID Root CA'
+pos_rights		globus	CA:sign
+cond_subjects		globus	'"/C=US/O=DigiCert Grid/OU=www.digicert.com/CN=DigiCert Grid Trust CA"'

@@ -23,7 +23,7 @@ package org.apache.airavata.gfac.context;
 
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.context.security.SecurityContext;
+import org.apache.airavata.gfac.SecurityContext;
 import org.apache.airavata.gfac.notification.GFacNotifier;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;

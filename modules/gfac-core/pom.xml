@@ -23,29 +23,28 @@
     <url>http://airavata.apache.org/</url>
 
     <dependencies>
+
         <dependency>
-            <groupId>cog-jglobus</groupId>
-            <artifactId>cog-jglobus</artifactId>
-            <version>1.8.0_bc</version>
+            <groupId>org.jglobus</groupId>
+            <artifactId>gss</artifactId>
+            <version>${jglobus.version}</version>
         </dependency>
         <dependency>
-            <groupId>cog-globus</groupId>
-            <artifactId>puretls</artifactId>
-            <type>jar</type>
-            <version>1.0</version>
+            <groupId>org.jglobus</groupId>
+            <artifactId>gram</artifactId>
+            <version>${jglobus.version}</version>
         </dependency>
         <dependency>
-            <groupId>cog-globus</groupId>
-            <artifactId>cryptix32</artifactId>
-            <version>1.0</version>
+            <groupId>org.jglobus</groupId>
+            <artifactId>myproxy</artifactId>
+            <version>${jglobus.version}</version>
         </dependency>
-        <!-- <dependency> <groupId>org.bouncycastle</groupId> <artifactId>bcprov-jdk16</artifactId> <version>1.46</version> 
-            </dependency> -->
         <dependency>
-            <groupId>cog-globus</groupId>
-            <artifactId>cryptix-asn1</artifactId>
-            <version>1.0</version>
+            <groupId>org.jglobus</groupId>
+            <artifactId>gridftp</artifactId>
+            <version>${jglobus.version}</version>
         </dependency>
+
         <dependency>
             <groupId>commons-configuration</groupId>
             <artifactId>commons-configuration</artifactId>
@@ -129,6 +128,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>6.1.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
             <scope>test</scope>
@@ -209,13 +214,18 @@
                     <!--skip>true</skip -->
                     <excludes>
                         <exclude>**/services/**</exclude>
+                        <exclude>**/gfac/**</exclude>
                     </excludes>
                     <forkMode>always</forkMode>
-                    <useSystemClassloader>true</useSystemClassloader>
                     <failIfNoTests>false</failIfNoTests>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
+    <properties>
+        <jglobus.version>2.0.6-rc2</jglobus.version>
+    </properties>
+
 
 </project>
