@@ -66,7 +66,7 @@ public class DescriptorRegistryResource {
      */
     @GET
     @Path(ResourcePathConstants.DecResourcePathConstants.HOST_DESC_EXISTS)
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
     public Response isHostDescriptorExists(@QueryParam("hostDescriptorName") String hostDescriptorName) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         boolean state;
@@ -195,7 +195,7 @@ public class DescriptorRegistryResource {
      */
     @DELETE
     @Path(ResourcePathConstants.DecResourcePathConstants.HOST_DESC_DELETE)
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
     public Response removeHostDescriptor(@QueryParam("hostName") String hostName) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
@@ -296,7 +296,7 @@ public class DescriptorRegistryResource {
      */
     @GET
     @Path(ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC_EXISTS)
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
     public Response isServiceDescriptorExists(@QueryParam("serviceDescriptorName") String serviceDescriptorName) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         boolean state;
@@ -424,7 +424,7 @@ public class DescriptorRegistryResource {
      */
     @DELETE
     @Path(ResourcePathConstants.DecResourcePathConstants.SERVICE_DESC_DELETE)
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
     public Response removeServiceDescriptor(@QueryParam("serviceName") String serviceName) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
@@ -493,7 +493,7 @@ public class DescriptorRegistryResource {
      */
     @GET
     @Path(ResourcePathConstants.DecResourcePathConstants.APPL_DESC_EXIST)
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
     public Response isApplicationDescriptorExists(@QueryParam("serviceName") String serviceName,
                                                   @QueryParam("hostName") String hostName,
                                                   @QueryParam("appDescName") String appDescriptorName) {
