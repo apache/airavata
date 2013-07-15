@@ -58,7 +58,7 @@ public class ConfigurationRegistryResource {
      */
     @Path(ResourcePathConstants.ConfigResourcePathConstants.GET_CONFIGURATION)
     @GET
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
     public Response getConfiguration(@QueryParam("key") String key) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
@@ -129,7 +129,7 @@ public class ConfigurationRegistryResource {
     @POST
     @Path(ResourcePathConstants.ConfigResourcePathConstants.SAVE_CONFIGURATION)
     @Produces(MediaType.TEXT_PLAIN)
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON})
     public Response setConfiguration(@FormParam("key") String key,
                                      @FormParam("value") String value,
                                      @FormParam("date") String date) {

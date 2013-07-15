@@ -59,7 +59,7 @@ public class UserWorkflowRegistryResource {
      */
     @GET
     @Path(ResourcePathConstants.UserWFConstants.WORKFLOW_EXIST)
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON})
     @Produces(MediaType.TEXT_PLAIN)
     public Response isWorkflowExists(@QueryParam("workflowName") String workflowName) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
@@ -92,7 +92,7 @@ public class UserWorkflowRegistryResource {
      */
     @POST
     @Path(ResourcePathConstants.UserWFConstants.ADD_WORKFLOW)
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED,MediaType.APPLICATION_JSON})
     @Produces(MediaType.TEXT_PLAIN)
     public Response addWorkflow(@FormParam("workflowName") String workflowName,
                                 @FormParam("workflowGraphXml") String workflowGraphXml) {
@@ -124,7 +124,7 @@ public class UserWorkflowRegistryResource {
      */
     @POST
     @Path(ResourcePathConstants.UserWFConstants.UPDATE_WORKFLOW)
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON})
     @Produces(MediaType.TEXT_PLAIN)
     public Response updateWorkflow(@FormParam("workflowName") String workflowName,
                                    @FormParam("workflowGraphXml") String workflowGraphXml) {
@@ -155,7 +155,7 @@ public class UserWorkflowRegistryResource {
      */
     @GET
     @Path(ResourcePathConstants.UserWFConstants.GET_WORKFLOWGRAPH)
-    @Produces(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces({MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON})
     public Response getWorkflowGraphXML(@QueryParam("workflowName") String workflowName) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {

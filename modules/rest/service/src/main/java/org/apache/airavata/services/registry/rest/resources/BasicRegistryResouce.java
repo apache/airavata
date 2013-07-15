@@ -155,7 +155,7 @@ public class BasicRegistryResouce {
 
     @GET
     @Path(ResourcePathConstants.BasicRegistryConstants.GET_SERVICE_URL)
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces({MediaType.TEXT_PLAIN,MediaType.APPLICATION_JSON})
     public Response getConnectionURL (){
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try{
@@ -179,7 +179,7 @@ public class BasicRegistryResouce {
 
     @POST
     @Path(ResourcePathConstants.BasicRegistryConstants.SET_SERVICE_URL)
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces({MediaType.TEXT_PLAIN,MediaType.APPLICATION_JSON})
     public Response setConnectionURL (@FormParam("connectionurl") String connectionURL){
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try{

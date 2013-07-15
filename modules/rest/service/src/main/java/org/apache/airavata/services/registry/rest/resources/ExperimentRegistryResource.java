@@ -166,7 +166,7 @@ public class ExperimentRegistryResource {
      */
     @GET
     @Path(ResourcePathConstants.ExperimentResourcePathConstants.GET_EXPS_BY_DATE)
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getExperimentsByDate(@QueryParam("fromDate") String fromDate,
                                          @QueryParam("toDate") String toDate) {
@@ -213,7 +213,7 @@ public class ExperimentRegistryResource {
      */
     @GET
     @Path(ResourcePathConstants.ExperimentResourcePathConstants.GET_EXPS_PER_PROJECT_BY_DATE)
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getExperimentsByProjectDate(@QueryParam("projectName") String projectName,
                                                 @QueryParam("fromDate") String fromDate,
@@ -261,7 +261,7 @@ public class ExperimentRegistryResource {
      */
     @POST
     @Path(ResourcePathConstants.ExperimentResourcePathConstants.ADD_EXP)
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON})
     @Produces(MediaType.TEXT_PLAIN)
     public Response addExperiment(@FormParam("projectName") String projectName,
                                   @FormParam("experimentID") String experimentID,
