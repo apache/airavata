@@ -21,13 +21,12 @@
 
 package org.apache.airavata.wsmg.broker;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.airavata.wsmg.broker.amqp.AMQPNotificationProcessor;
 import org.apache.airavata.wsmg.broker.context.ContextParameters;
 import org.apache.airavata.wsmg.broker.context.ProcessingContext;
 import org.apache.airavata.wsmg.commons.NameSpaceConstants;
@@ -44,6 +43,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMException;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
+import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.apache.axis2.AxisFault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,8 +61,11 @@ public class NotificationProcessor {
 
     private OutGoingQueue outgoingQueue;
 
+    private AMQPNotificationProcessor amqpNotificationProcessor = new AMQPNotificationProcessor();
+
     public NotificationProcessor(WsmgConfigurationContext config) {
         init(config);
+        amqpNotificationProcessor.init();
     }
 
     private void init(WsmgConfigurationContext config) {
@@ -91,6 +94,8 @@ public class NotificationProcessor {
                 .getSoapAction(), ctx.getMessageContext().getMessageID());
         additionalMessageContent.setTrackId(trackId);
 
+        handleExtendedNotifications(ctx, protocolNs);
+
         if (NameSpaceConstants.WSNT_NS.equals(protocolNs)) {
 
             onWSNTMsg(ctx, additionalMessageContent);
@@ -98,9 +103,8 @@ public class NotificationProcessor {
         } else { // WSE Notifications No specific namespace
 
             onWSEMsg(ctx, trackId, additionalMessageContent);
-            setResponseMsg(ctx, trackId, protocolNs);
+           setResponseMsg(ctx, trackId, protocolNs);
         }
-
     }
 
     /**
@@ -302,4 +306,8 @@ public class NotificationProcessor {
             logger.info(additionalMessageContent.getTrackId() + ": putIn Outgoing queue.");
     }
 
+    private void handleExtendedNotifications(ProcessingContext ctx, OMNamespace protocolNs) throws OMException {
+        // AMQP
+        amqpNotificationProcessor.notify(ctx, protocolNs);
+    }
 }
