@@ -19,23 +19,14 @@
  *
  */
 
-package org.apache.airavata.workflow.model.utils;
+package org.apache.airavata.registry.api.exception;
 
-import org.apache.airavata.common.utils.Version;
+public class AiravataRegistryUninitializedException extends RegistryException {
 
-public class ApplicationVersion {
+	public AiravataRegistryUninitializedException(String message, Throwable e) {
+		super(message, e);
+	}
 
-    /**
-     * Version number
-     */
-    public final static Version VERSION = new Version("Airavata",0,9,null,null,null);
+	private static final long serialVersionUID = -6873054164386608256L;
 
-    /**
-     * Prints the version
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-        System.out.println(VERSION);
-    }
 }

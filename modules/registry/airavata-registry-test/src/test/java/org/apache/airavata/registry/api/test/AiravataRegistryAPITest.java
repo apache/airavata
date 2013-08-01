@@ -27,6 +27,7 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.registry.api.*;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.test.util.Initialize;
 import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.schemas.gfac.*;
@@ -90,7 +91,7 @@ public class AiravataRegistryAPITest extends TestCase {
         ResourceUtils.removeConfiguration("configkey2");
     }
 
-    public void testRemoveAllConfiguration() {
+    public void testRemoveAllConfiguration() throws RegistryException {
         Calendar calender = Calendar.getInstance();
         java.util.Date d = calender.getTime();
         Date currentTime = new Date(d.getTime());
@@ -103,7 +104,7 @@ public class AiravataRegistryAPITest extends TestCase {
     }
 
 
-    public void testRemoveConfiguration() {
+    public void testRemoveConfiguration() throws RegistryException {
         Calendar calender = Calendar.getInstance();
         java.util.Date d = calender.getTime();
         Date currentTime = new Date(d.getTime());
@@ -114,7 +115,7 @@ public class AiravataRegistryAPITest extends TestCase {
     }
 
 
-    public void testGetGFacURIs() {
+    public void testGetGFacURIs() throws RegistryException {
         Calendar calender = Calendar.getInstance();
         java.util.Date d = calender.getTime();
         Date currentTime = new Date(d.getTime());
@@ -125,7 +126,7 @@ public class AiravataRegistryAPITest extends TestCase {
     }
 
 
-    public void testGetWorkflowInterpreterURIs() {
+    public void testGetWorkflowInterpreterURIs() throws RegistryException {
         Calendar calender = Calendar.getInstance();
         java.util.Date d = calender.getTime();
         Date currentTime = new Date(d.getTime());
@@ -136,7 +137,7 @@ public class AiravataRegistryAPITest extends TestCase {
     }
 
 
-    public void testGetEventingServiceURI() {
+    public void testGetEventingServiceURI() throws RegistryException {
         Calendar calender = Calendar.getInstance();
         java.util.Date d = calender.getTime();
         Date currentTime = new Date(d.getTime());
@@ -146,7 +147,7 @@ public class AiravataRegistryAPITest extends TestCase {
         ResourceUtils.removeConfiguration("eventing.url");
     }
 
-    public void testGetMessageBoxURI() {
+    public void testGetMessageBoxURI() throws RegistryException {
         Calendar calender = Calendar.getInstance();
         java.util.Date d = calender.getTime();
         Date currentTime = new Date(d.getTime());
@@ -157,7 +158,7 @@ public class AiravataRegistryAPITest extends TestCase {
     }
 
 
-    public void testAddGFacURI() {
+    public void testAddGFacURI() throws RegistryException {
         URI uri = URI.create("http://192.168.17.1:8080/axis2/services/GFacService");
         registry.addGFacURI(uri);
         List<URI> gFacURIs = registry.getGFacURIs();
@@ -166,7 +167,7 @@ public class AiravataRegistryAPITest extends TestCase {
     }
 
 
-    public void testAddWorkflowInterpreterURI() {
+    public void testAddWorkflowInterpreterURI() throws RegistryException {
         URI uri = URI.create("http://192.168.17.1:8080/axis2/services/WorkflowInterpretor");
         registry.addWorkflowInterpreterURI(uri);
         List<URI> interpreterURIs = registry.getWorkflowInterpreterURIs();
@@ -175,7 +176,7 @@ public class AiravataRegistryAPITest extends TestCase {
     }
 
 
-    public void testSetEventingURI() {
+    public void testSetEventingURI() throws RegistryException {
         URI uri = URI.create("http://192.168.17.1:8080/axis2/services/EventingService");
         registry.setEventingURI(uri);
         URI eventingServiceURI = registry.getEventingServiceURI();
@@ -183,7 +184,7 @@ public class AiravataRegistryAPITest extends TestCase {
         registry.removeConfiguration("eventing.url", "http://192.168.17.1:8080/axis2/services/EventingService");
     }
 
-    public void testSetMessageBoxURI() {
+    public void testSetMessageBoxURI() throws RegistryException {
         URI uri = URI.create("http://192.168.17.1:8080/axis2/services/MsgBoxService");
         registry.setMessageBoxURI(uri);
         URI messageBoxURI = registry.getMessageBoxURI();
@@ -192,7 +193,7 @@ public class AiravataRegistryAPITest extends TestCase {
     }
 
 
-    public void testAddGFacURIWithExpireDate() {
+    public void testAddGFacURIWithExpireDate() throws RegistryException {
         Calendar calender = Calendar.getInstance();
         java.util.Date d = calender.getTime();
         Date currentTime = new Date(d.getTime());
@@ -204,7 +205,7 @@ public class AiravataRegistryAPITest extends TestCase {
     }
 
 
-    public void testAddWorkflowInterpreterURIWithExpireDate() {
+    public void testAddWorkflowInterpreterURIWithExpireDate() throws RegistryException {
         Calendar calender = Calendar.getInstance();
         java.util.Date d = calender.getTime();
         Date currentTime = new Date(d.getTime());
@@ -217,7 +218,7 @@ public class AiravataRegistryAPITest extends TestCase {
     }
 
 
-    public void testSetEventingURIWithExpireDate() {
+    public void testSetEventingURIWithExpireDate() throws RegistryException {
         Calendar calender = Calendar.getInstance();
         java.util.Date d = calender.getTime();
         Date currentTime = new Date(d.getTime());
@@ -229,7 +230,7 @@ public class AiravataRegistryAPITest extends TestCase {
     }
 
 
-    public void testSetMessageBoxURIWithExpireDate() {
+    public void testSetMessageBoxURIWithExpireDate() throws RegistryException {
         Calendar calender = Calendar.getInstance();
         java.util.Date d = calender.getTime();
         Date currentTime = new Date(d.getTime());
@@ -241,7 +242,7 @@ public class AiravataRegistryAPITest extends TestCase {
     }
 
 
-    public void testRemoveGFacURI() {
+    public void testRemoveGFacURI() throws RegistryException {
         URI uri = URI.create("http://192.168.17.1:8080/axis2/services/GFacService");
         registry.addGFacURI(uri);
         registry.removeGFacURI(uri);
@@ -249,35 +250,35 @@ public class AiravataRegistryAPITest extends TestCase {
     }
 
 
-    public void testRemoveAllGFacURI() {
+    public void testRemoveAllGFacURI() throws RegistryException {
         URI uri = URI.create("http://192.168.17.1:8080/axis2/services/GFacService");
         registry.addGFacURI(uri);
         registry.removeAllGFacURI();
         assertFalse("Gfac uri removed successfully", ResourceUtils.isConfigurationExist("gfac.url"));
     }
 
-    public void testRemoveWorkflowInterpreterURI() {
+    public void testRemoveWorkflowInterpreterURI() throws RegistryException {
         URI uri = URI.create("http://192.168.17.1:8080/axis2/services/WorkflowInterpretor");
         registry.addWorkflowInterpreterURI(uri);
         registry.removeWorkflowInterpreterURI(uri);
         assertFalse("workflow interpreter uri removed successfully", ResourceUtils.isConfigurationExist("interpreter.url"));
     }
 
-    public void testRemoveAllWorkflowInterpreterURI() {
+    public void testRemoveAllWorkflowInterpreterURI() throws RegistryException {
         URI uri = URI.create("http://192.168.17.1:8080/axis2/services/WorkflowInterpretor");
         registry.addWorkflowInterpreterURI(uri);
         registry.removeAllWorkflowInterpreterURI();
         assertFalse("workflow interpreter uri removed successfully", ResourceUtils.isConfigurationExist("interpreter.url"));
     }
 
-    public void testUnsetEventingURI() {
+    public void testUnsetEventingURI() throws RegistryException {
         URI uri = URI.create("http://192.168.17.1:8080/axis2/services/EventingService");
         registry.setEventingURI(uri);
         registry.unsetEventingURI();
         assertNotNull("eventing url removed successfully", ResourceUtils.isConfigurationExist("eventing.url"));
     }
 
-    public void testUnsetMessageBoxURI() {
+    public void testUnsetMessageBoxURI() throws RegistryException {
         URI uri = URI.create("http://192.168.17.1:8080/axis2/services/MsgBoxService");
         registry.setMessageBoxURI(uri);
         registry.unsetMessageBoxURI();

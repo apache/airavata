@@ -26,7 +26,7 @@ import org.apache.airavata.workflow.model.wf.WorkflowExecutionState;
 
 public class SSWorkflowInterpreterInteractorImpl implements
 		WorkflowInterpreterInteractor {
-
+	
 	@Override
 	public boolean notify(WorkflowExecutionMessage messageType, WorkflowInterpreterConfiguration config, Object data) {
 		switch (messageType) {
@@ -34,10 +34,13 @@ public class SSWorkflowInterpreterInteractorImpl implements
 			break;
 		case EXECUTION_STATE_CHANGED:
 			WorkflowExecutionState state = (WorkflowExecutionState) data;
-			if (state == WorkflowExecutionState.PAUSED
-					|| state == WorkflowExecutionState.STOPPED) {
-				config.getWorkflow().setExecutionState(WorkflowExecutionState.STOPPED);
-			}
+			config.getWorkflow().setExecutionState(state);
+//			if (state == WorkflowExecutionState.PAUSED
+//					|| state == WorkflowExecutionState.STOPPED) {
+//				config.getWorkflow().setExecutionState(WorkflowExecutionState.STOPPED);
+//			}else if (state == WorkflowExecutionState.RUNNING) {
+//				config.getWorkflow().setExecutionState(WorkflowExecutionState.RUNNING);
+//			}
 			break;
 		case EXECUTION_TASK_START:
 			break;
@@ -81,8 +84,35 @@ public class SSWorkflowInterpreterInteractorImpl implements
 //							config.getMessageBoxURL()), node.getID(),
 //					null);
 //			break;
+		default:
+			break;
 		}
 		return result;
+	}
+
+	@Override
+	public void pauseExecution(WorkflowInterpreterConfiguration config) {
+		notify(WorkflowExecutionMessage.EXECUTION_STATE_CHANGED,config, WorkflowExecutionState.PAUSED);
+	}
+
+	@Override
+	public void resumeExecution(WorkflowInterpreterConfiguration config) {
+		notify(WorkflowExecutionMessage.EXECUTION_STATE_CHANGED,config, WorkflowExecutionState.RUNNING);
+	}
+
+	@Override
+	public void terminateExecution(WorkflowInterpreterConfiguration config) {
+		notify(WorkflowExecutionMessage.EXECUTION_STATE_CHANGED,config, WorkflowExecutionState.STOPPED);
+	}
+
+	@Override
+	public boolean isExecutionPaused(WorkflowInterpreterConfiguration config) {
+		return config.getWorkflow().getExecutionState()==WorkflowExecutionState.PAUSED;
+	}
+
+	@Override
+	public boolean isExecutionTerminated(WorkflowInterpreterConfiguration config) {
+		return config.getWorkflow().getExecutionState()==WorkflowExecutionState.STOPPED;
 	}
 
 }

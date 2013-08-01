@@ -20,21 +20,36 @@
 */
 package org.apache.airavata.persistance.registry.jpa;
 
-import org.apache.airavata.persistance.registry.jpa.model.*;
-import org.apache.airavata.persistance.registry.jpa.resources.*;
-import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
-import org.apache.openjpa.jdbc.sql.Select;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.persistence.*;
-import javax.rmi.CORBA.Util;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
+
+import org.apache.airavata.persistance.registry.jpa.model.Configuration;
+import org.apache.airavata.persistance.registry.jpa.model.Configuration_PK;
+import org.apache.airavata.persistance.registry.jpa.model.Gateway;
+import org.apache.airavata.persistance.registry.jpa.model.Gateway_Worker;
+import org.apache.airavata.persistance.registry.jpa.model.Gateway_Worker_PK;
+import org.apache.airavata.persistance.registry.jpa.model.Users;
+import org.apache.airavata.persistance.registry.jpa.resources.AbstractResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ConfigurationResource;
+import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
+import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
+import org.apache.airavata.persistance.registry.jpa.resources.Utils;
+import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
+import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.apache.airavata.registry.api.exception.AiravataRegistryUninitializedException;
+import org.apache.airavata.registry.api.exception.RegistryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ResourceUtils {
     private final static Logger logger = LoggerFactory.getLogger(ResourceUtils.class);
@@ -43,6 +58,10 @@ public class ResourceUtils {
 
     private static Lock lock = new ReentrantLock();
 
+    public static void reset(){
+    	factory=null;
+    }
+    
     public static EntityManager getEntityManager(){
         if (factory == null) {
             String connectionProperties = "DriverClassName=" + Utils.getJDBCDriver() + "," + "Url=" + Utils.getJDBCURL() + "," +
@@ -65,15 +84,14 @@ public class ResourceUtils {
 			properties.put("openjpa.jdbc.QuerySQLCache", "false");
             factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
         }
-
-        return factory.createEntityManager();
+		return factory.createEntityManager();
     }
 
     /**
      * @param gatewayName
      * @return
      */
-    public static Resource createGateway(String gatewayName) {
+    public static Resource createGateway(String gatewayName){
         if (!isGatewayExist(gatewayName)) {
             GatewayResource gatewayResource = new GatewayResource();
             gatewayResource.setGatewayName(gatewayName);
@@ -83,7 +101,7 @@ public class ResourceUtils {
 
     }
 
-    public static Resource getGateway(String gatewayName) {
+    public static Resource getGateway(String gatewayName){
         if (isGatewayExist(gatewayName)) {
             EntityManager em = getEntityManager();
             Gateway gateway = em.find(Gateway.class, gatewayName);
@@ -95,7 +113,7 @@ public class ResourceUtils {
 
     }
 
-    public static Resource getWorker(String gatewayName, String userName) {
+    public static Resource getWorker(String gatewayName, String userName){
         EntityManager em = getEntityManager();
         Gateway_Worker gatewayWorker = em.find(Gateway_Worker.class, new Gateway_Worker_PK(gatewayName, userName));
         WorkerResource workerResource = (WorkerResource) Utils.getResource(ResourceType.GATEWAY_WORKER, gatewayWorker);
@@ -108,7 +126,7 @@ public class ResourceUtils {
      * @param gatewayName
      * @return
      */
-    public static boolean isGatewayExist(String gatewayName) {
+    public static boolean isGatewayExist(String gatewayName){
 
         EntityManager em = getEntityManager();
         em.getTransaction().begin();
@@ -197,7 +215,7 @@ public class ResourceUtils {
      * @param configKey
      * @return
      */
-    public static List<ConfigurationResource> getConfigurations(String configKey) {
+    public static List<ConfigurationResource> getConfigurations(String configKey){
         List<ConfigurationResource> list = new ArrayList<ConfigurationResource>();
         EntityManager em = getEntityManager();
         em.getTransaction().begin();
@@ -220,7 +238,7 @@ public class ResourceUtils {
      * @param configKey
      * @return
      */
-    public static ConfigurationResource getConfiguration(String configKey) {
+    public static ConfigurationResource getConfiguration(String configKey){
         List<ConfigurationResource> configurations = getConfigurations(configKey);
         return (configurations != null && configurations.size() > 0) ? configurations.get(0) : null;
     }
@@ -229,7 +247,7 @@ public class ResourceUtils {
      * @param configKey
      * @return
      */
-    public static boolean isConfigurationExist(String configKey) {
+    public static boolean isConfigurationExist(String configKey){
         List<ConfigurationResource> configurations = getConfigurations(configKey);
         return (configurations != null && configurations.size() > 0);
     }
@@ -260,7 +278,7 @@ public class ResourceUtils {
      * @param configkey
      * @param configValue
      */
-    public static void removeConfiguration(String configkey, String configValue) {
+    public static void removeConfiguration(String configkey, String configValue){
         QueryGenerator queryGenerator = new QueryGenerator(AbstractResource.CONFIGURATION);
         queryGenerator.setParameter(AbstractResource.ConfigurationConstants.CONFIG_KEY, configkey);
         queryGenerator.setParameter(AbstractResource.ConfigurationConstants.CONFIG_VAL, configValue);
@@ -277,7 +295,7 @@ public class ResourceUtils {
     /**
      * @param configkey
      */
-    public static void removeConfiguration(String configkey) {
+    public static void removeConfiguration(String configkey){
         QueryGenerator queryGenerator = new QueryGenerator(AbstractResource.CONFIGURATION);
         queryGenerator.setParameter(AbstractResource.ConfigurationConstants.CONFIG_KEY, configkey);
         if(isConfigurationExist(configkey)){

@@ -44,7 +44,7 @@ public class GUIWorkflowInterpreterInteractorImpl implements
 	private XBayaGUI xbayaGUI;
 	private Workflow workflow;
 	private XBayaEngine engine;
-
+	
 	private Map<String, WaitDialog> taskDialogs = new HashMap<String, WaitDialog>();
 
 	public GUIWorkflowInterpreterInteractorImpl(XBayaEngine engine,
@@ -169,6 +169,8 @@ public class GUIWorkflowInterpreterInteractorImpl implements
 //									.getMessageBoxURL()), node.getID(),
 //					null);
 //			break;
+		default:
+			break;
 		}
 		return result;
 	}
@@ -179,6 +181,31 @@ public class GUIWorkflowInterpreterInteractorImpl implements
 
 	public void setWorkflow(Workflow workflow) {
 		this.workflow = workflow;
+	}
+
+	@Override
+	public void pauseExecution(WorkflowInterpreterConfiguration config) {
+		notify(WorkflowExecutionMessage.EXECUTION_STATE_CHANGED,config, WorkflowExecutionState.PAUSED);
+	}
+
+	@Override
+	public void resumeExecution(WorkflowInterpreterConfiguration config) {
+		notify(WorkflowExecutionMessage.EXECUTION_STATE_CHANGED,config, WorkflowExecutionState.RUNNING);
+	}
+
+	@Override
+	public void terminateExecution(WorkflowInterpreterConfiguration config) {
+		notify(WorkflowExecutionMessage.EXECUTION_STATE_CHANGED,config, WorkflowExecutionState.STOPPED);
+	}
+
+	@Override
+	public boolean isExecutionPaused(WorkflowInterpreterConfiguration config) {
+		return config.getWorkflow().getExecutionState()==WorkflowExecutionState.PAUSED;
+	}
+
+	@Override
+	public boolean isExecutionTerminated(WorkflowInterpreterConfiguration config) {
+		return config.getWorkflow().getExecutionState()==WorkflowExecutionState.STOPPED;
 	}
 
 }

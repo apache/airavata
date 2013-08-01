@@ -924,18 +924,26 @@ public class Workflow implements Cloneable {
         return this.graph.equals(workflow.getGraph());
     }
 
+    private Object executionStateLock=new Object();
+    
     /**
      * @return
      */
     public synchronized WorkflowExecutionState getExecutionState() {
-        return this.executionState;
+    	WorkflowExecutionState result;
+    	synchronized (executionStateLock) {
+    		result=this.executionState;
+		}
+        return result;
     }
 
     /**
      * @param state
      */
     public synchronized void setExecutionState(WorkflowExecutionState state) {
-        this.executionState = state;
+    	synchronized (executionStateLock) {
+    		this.executionState = state;
+		}
     }
 
 	public boolean isEditable() {
