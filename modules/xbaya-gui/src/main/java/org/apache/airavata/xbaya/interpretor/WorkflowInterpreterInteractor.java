@@ -25,6 +25,13 @@ package org.apache.airavata.xbaya.interpretor;
 public interface WorkflowInterpreterInteractor {
 	public boolean notify(WorkflowExecutionMessage messageType, WorkflowInterpreterConfiguration config, Object data);
 	public Object retrieveData(WorkflowExecutionMessage messageType, WorkflowInterpreterConfiguration config, Object data) throws Exception;
+	public void pauseExecution(WorkflowInterpreterConfiguration config);
+	public void resumeExecution(WorkflowInterpreterConfiguration config);
+	public void terminateExecution(WorkflowInterpreterConfiguration config);
+	
+	public boolean isExecutionPaused(WorkflowInterpreterConfiguration config);
+	public boolean isExecutionTerminated(WorkflowInterpreterConfiguration config);
+	
 	public static class TaskNotification{
 		String messageTitle;
 		String message;

@@ -76,6 +76,7 @@ import org.apache.airavata.registry.api.PublishedWorkflowRegistry;
 import org.apache.airavata.registry.api.ResourceMetadata;
 import org.apache.airavata.registry.api.UserWorkflowRegistry;
 import org.apache.airavata.registry.api.WorkspaceProject;
+import org.apache.airavata.registry.api.exception.AiravataRegistryUninitializedException;
 import org.apache.airavata.registry.api.exception.RegistryAPIVersionIncompatibleException;
 import org.apache.airavata.registry.api.exception.RegistryAccessorInstantiateException;
 import org.apache.airavata.registry.api.exception.RegistryAccessorNotFoundException;
@@ -133,7 +134,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     private JPAResourceAccessor jpa;
     private boolean active=false;
     private static final String DEFAULT_PROJECT_NAME = "default";
-    private static final Version API_VERSION=new Version("Airavata Registry API",0,8,null,null,null);
+    private static final Version API_VERSION=new Version("Airavata Registry API",0,9,null,null,null);
     private URI registryConnectionURI;
     private ConfigurationRegistry configurationRegistry;
     private DescriptorRegistry descriptorRegistry;
@@ -153,20 +154,22 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     	//TODO check if the db connections are proper & accessible & the relevant db/tables are
     	//present
     	active=true;
-
+    	
         initializeCustomRegistries();
         String apiVersion = getVersion().toString();
-        String registryVersion = getConfiguration("registry.version").toString();
-        if (!apiVersion.equals(registryVersion)){
-           throw new RegistryAPIVersionIncompatibleException("Incompatible registry versions. Please check whether you updated the API and Registry " +
-                   "versions.");
-        }
+        String registryVersion;
+		try {
+			registryVersion = getConfiguration("registry.version").toString();
+		} catch (Exception e) {
+			if (e.getMessage().contains("does not exist")){
+				ResourceUtils.reset();
+				throw new AiravataRegistryUninitializedException("Airavata Registry has not yet initialized!!!", e);
+			} else {
+				throw new RegistryException(e);
+			}
+		}
         String[] list = compatibleVersionMap.get(apiVersion);
-        if (list == null){
-            throw new RegistryAPIVersionIncompatibleException("Incompatible registry versions. Please check whether you updated the API and Registry " +
-                    "versions.");
-        }
-        if (!Arrays.asList(list).contains(registryVersion)){
+        if (list == null || (!Arrays.asList(list).contains(registryVersion))){
             throw new RegistryAPIVersionIncompatibleException("Incompatible registry versions. Please check whether you updated the API and Registry " +
                     "versions.");
         }
@@ -177,6 +180,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         compatibleVersionMap.put("0.6", new String[]{"0.6"});
         compatibleVersionMap.put("0.7", new String[]{"0.6", "0.7"});
         compatibleVersionMap.put("0.8", new String[]{"0.8"});
+        compatibleVersionMap.put("0.9", new String[]{"0.9","0.8"});
     }
 
     /**
@@ -222,12 +226,12 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
     /**---------------------------------Configuration Registry----------------------------------**/
 
-    public Object getConfiguration(String key) {
+    public Object getConfiguration(String key) throws RegistryException{
 		ConfigurationResource configuration = ResourceUtils.getConfiguration(key);
 		return configuration==null? null: configuration.getConfigVal();
     }
     // Not sure about this.. need some description
-    public List<Object> getConfigurationList(String key) {
+    public List<Object> getConfigurationList(String key) throws RegistryException{
         if (configurationRegistry != null){
             return configurationRegistry.getConfigurationList(key);
         } else {
@@ -241,7 +245,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
     }
 
-    public void setConfiguration(String key, String value, Date expire) {
+    public void setConfiguration(String key, String value, Date expire) throws RegistryException{
         if (configurationRegistry != null){
             configurationRegistry.setConfiguration(key, value, expire);
         }else {
@@ -257,7 +261,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
     }
 
-    public void addConfiguration(String key, String value, Date expire) {
+    public void addConfiguration(String key, String value, Date expire) throws RegistryException{
         if (configurationRegistry != null){
             configurationRegistry.addConfiguration(key, value, expire);
         } else {
@@ -270,7 +274,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
     }
 
-    public void removeAllConfiguration(String key) {
+    public void removeAllConfiguration(String key) throws RegistryException{
         if (configurationRegistry  != null){
             configurationRegistry.removeAllConfiguration(key);
         } else {
@@ -279,7 +283,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
     }
 
-    public void removeConfiguration(String key, String value) {
+    public void removeConfiguration(String key, String value) throws RegistryException{
         if (configurationRegistry != null){
             configurationRegistry.removeConfiguration(key, value);
         } else {
@@ -292,7 +296,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     private static final String MESSAGE_BOX_URL="messagebox.url";
     private static final String EVENTING_URL="eventing.url";
 
-    public List<URI> getGFacURIs() {
+    public List<URI> getGFacURIs() throws RegistryException{
         if (configurationRegistry != null) {
             return configurationRegistry.getGFacURIs();
         } else {
@@ -300,7 +304,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
     }
 
-	private List<URI> retrieveURIsFromConfiguration(String urlType) {
+	private List<URI> retrieveURIsFromConfiguration(String urlType) throws RegistryException{
 		List<URI> urls=new ArrayList<URI>();
     	List<Object> configurationList = getConfigurationList(urlType);
     	for (Object o : configurationList) {
@@ -313,7 +317,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         return urls;
 	}
 
-    public List<URI> getWorkflowInterpreterURIs() {
+    public List<URI> getWorkflowInterpreterURIs() throws RegistryException{
         if (configurationRegistry != null) {
             return configurationRegistry.getWorkflowInterpreterURIs();
         }  else {
@@ -321,7 +325,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
     }
 
-    public URI getEventingServiceURI() {
+    public URI getEventingServiceURI() throws RegistryException{
         if (configurationRegistry != null) {
            return configurationRegistry.getEventingServiceURI();
         }else {
@@ -330,7 +334,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
     }
 
-    public URI getMessageBoxURI() {
+    public URI getMessageBoxURI() throws RegistryException{
         if (configurationRegistry != null) {
             return configurationRegistry.getMessageBoxURI();
         }
@@ -338,7 +342,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		return messageboxURLs.size()==0? null: messageboxURLs.get(0);
     }
 
-    public void addGFacURI(URI uri) {
+    public void addGFacURI(URI uri) throws RegistryException{
         if (configurationRegistry != null) {
             addGFacURI(uri);
         } else {
@@ -346,18 +350,18 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
     }
 
-	private void addConfigurationURL(String urlType,URI uri) {
+	private void addConfigurationURL(String urlType,URI uri) throws RegistryException{
 		Calendar instance = Calendar.getInstance();
         instance.add(Calendar.MINUTE, AiravataRegistry2.SERVICE_TTL);
 		Date expire = instance.getTime();
 		addConfigurationURL(urlType, uri, expire);
 	}
 
-	private void addConfigurationURL(String urlType, URI uri, Date expire) {
+	private void addConfigurationURL(String urlType, URI uri, Date expire) throws RegistryException{
 		addConfiguration(urlType, uri.toString(), expire);
 	}
 
-    public void addWorkflowInterpreterURI(URI uri) {
+    public void addWorkflowInterpreterURI(URI uri) throws RegistryException{
         if (configurationRegistry != null) {
             configurationRegistry.addWorkflowInterpreterURI(uri);
         }else {
@@ -365,7 +369,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
     }
 
-    public void setEventingURI(URI uri) {
+    public void setEventingURI(URI uri) throws RegistryException{
         if (configurationRegistry != null) {
             configurationRegistry.setEventingURI(uri);
         } else {
@@ -373,7 +377,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
     }
 
-    public void setMessageBoxURI(URI uri) {
+    public void setMessageBoxURI(URI uri) throws RegistryException{
         if (configurationRegistry != null) {
             configurationRegistry.setMessageBoxURI(uri);
         } else {
@@ -381,7 +385,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
     }
 
-    public void addGFacURI(URI uri, Date expire) {
+    public void addGFacURI(URI uri, Date expire) throws RegistryException{
         if (configurationRegistry != null) {
             configurationRegistry.addGFacURI(uri, expire);
         } else {
@@ -389,7 +393,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
     }
 
-    public void addWorkflowInterpreterURI(URI uri, Date expire) {
+    public void addWorkflowInterpreterURI(URI uri, Date expire) throws RegistryException{
         if (configurationRegistry != null) {
             configurationRegistry.addWorkflowInterpreterURI(uri, expire);
         } else {
@@ -397,7 +401,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
     }
 
-    public void setEventingURI(URI uri, Date expire) {
+    public void setEventingURI(URI uri, Date expire) throws RegistryException{
         if (configurationRegistry != null) {
             configurationRegistry.setEventingURI(uri, expire);
         } else {
@@ -405,7 +409,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
     }
 
-    public void setMessageBoxURI(URI uri, Date expire) {
+    public void setMessageBoxURI(URI uri, Date expire) throws RegistryException{
         if (configurationRegistry != null) {
             configurationRegistry.setMessageBoxURI(uri, expire);
         } else {
@@ -413,7 +417,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
     }
 
-    public void removeGFacURI(URI uri) {
+    public void removeGFacURI(URI uri) throws RegistryException{
         if (configurationRegistry != null) {
             configurationRegistry.removeGFacURI(uri);
         } else {
@@ -421,7 +425,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
     }
 
-    public void removeWorkflowInterpreterURI(URI uri) {
+    public void removeWorkflowInterpreterURI(URI uri) throws RegistryException{
         if (configurationRegistry != null) {
             configurationRegistry.removeWorkflowInterpreterURI(uri);
         } else {
@@ -429,7 +433,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
     }
 
-    public void removeAllGFacURI() {
+    public void removeAllGFacURI() throws RegistryException{
         if (configurationRegistry != null) {
             configurationRegistry.removeAllGFacURI();
         } else {
@@ -437,7 +441,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
     }
 
-    public void removeAllWorkflowInterpreterURI() {
+    public void removeAllWorkflowInterpreterURI() throws RegistryException{
         if (configurationRegistry != null) {
             configurationRegistry.removeAllWorkflowInterpreterURI();
         } else {
@@ -445,7 +449,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
     }
 
-    public void unsetEventingURI() {
+    public void unsetEventingURI() throws RegistryException{
         if (configurationRegistry != null) {
             configurationRegistry.unsetEventingURI();
         } else {
@@ -454,7 +458,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
     }
 
-    public void unsetMessageBoxURI() {
+    public void unsetMessageBoxURI() throws RegistryException{
         if (configurationRegistry != null) {
             configurationRegistry.unsetMessageBoxURI();
         } else {

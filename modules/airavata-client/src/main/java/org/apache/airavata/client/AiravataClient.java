@@ -102,7 +102,7 @@ public class AiravataClient extends Observable implements AiravataAPI {
     private static int WAIT_TIME_PERIOD = 4 * 1000;
     private static int WAIT_ITERATIONS = 15;
 
-	private static final Version API_VERSION = new Version("Airavata", 0, 8,
+	private static final Version API_VERSION = new Version("Airavata", 0, 9,
 			null, null, null);
 
 	// FIXME: Need a constructor to set registry URL

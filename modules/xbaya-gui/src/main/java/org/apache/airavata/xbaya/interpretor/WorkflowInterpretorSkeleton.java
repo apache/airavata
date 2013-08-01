@@ -21,6 +21,23 @@
 
 package org.apache.airavata.xbaya.interpretor;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.jcr.RepositoryException;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
@@ -43,6 +60,7 @@ import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.workflow.model.ode.ODEClient;
 import org.apache.airavata.workflow.model.wf.Workflow;
+import org.apache.airavata.workflow.model.wf.WorkflowExecutionState;
 import org.apache.airavata.ws.monitor.MonitorException;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
@@ -58,18 +76,6 @@ import org.apache.axis2.engine.ServiceLifeCycle;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.jcr.RepositoryException;
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.*;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
 
 /**
@@ -105,6 +111,8 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     public static  ConfigurationContext configurationContext;
     public static final String SERVICE_NAME="WorkflowInterpretor";
     public static boolean notInterrupted = true;
+    public Map<String, WorkflowInterpreterConfiguration> workflowConfigurations=new HashMap<String, WorkflowInterpreterConfiguration>();
+    private WorkflowInterpreterInteractor interactor;
     private String gateway;
 
 	protected static final String SERVICE_URL = "interpreter_service_url";
@@ -129,6 +137,13 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 		return airavataAPI;
     }
 
+    private WorkflowInterpreterInteractor getInteractor(){
+    	if (interactor==null){
+        	interactor=new SSWorkflowInterpreterInteractorImpl();
+    	}
+    	return interactor;
+    }
+    
     public void startUp(final ConfigurationContext configctx, AxisService service) {
     	AiravataUtils.setExecutionAsServer();
     	new Thread(){
@@ -194,7 +209,6 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 		        } catch (IOException e) {
 		            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 		        } catch (URISyntaxException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (ApplicationSettingsException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -205,6 +219,43 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 
     }
     
+    public void suspendWorkflow(String experimentId)throws Exception{
+    	if (workflowConfigurations.containsKey(experimentId)){
+    		if (getInteractor().isExecutionPaused(workflowConfigurations.get(experimentId))){
+    			throw new Exception("Experiment '"+experimentId+"' is already paused!!!");
+    		}else{
+    			log.info("Suspending workflow execution "+experimentId+"...");
+    			getInteractor().pauseExecution(workflowConfigurations.get(experimentId));
+    		}
+    	}else{
+    		throw new Exception("Invalid Experiment id: Experiment "+experimentId+" not running");
+    	}
+    }
+    
+    public void resumeWorkflow(String experimentId)throws Exception{
+    	if (workflowConfigurations.containsKey(experimentId)){
+    		if (getInteractor().isExecutionPaused(workflowConfigurations.get(experimentId)) || workflowConfigurations.get(experimentId).getWorkflow().getExecutionState()==WorkflowExecutionState.STOPPED){
+    			log.info("Resuming workflow execution "+experimentId+"...");
+    			getInteractor().resumeExecution(workflowConfigurations.get(experimentId));
+    			
+    		}else{
+    			throw new Exception("Experiment '"+experimentId+"' is not suspended!!!");
+    		}
+    	}else{
+    		//TODO chk to see if the experiment is present in registry if so reload it and resume execution else error
+    		throw new Exception("Invalid Experiment id: Experiment "+experimentId+" not running");
+    	}
+    }
+    
+    public void haltWorkflow(String experimentId)throws Exception{
+    	if (workflowConfigurations.containsKey(experimentId)){
+			log.info("Terminating workflow execution "+experimentId+"...");
+			getInteractor().terminateExecution(workflowConfigurations.get(experimentId));
+    	}else{
+    		throw new Exception("Invalid Experiment id: Experiment "+experimentId+" not running");
+    	}
+    }
+    
     /**
      *
      * @param workflowAsString
@@ -213,7 +264,6 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
      * @return
      * @throws XMLStreamException
      */
-
 	public java.lang.String launchWorkflow(java.lang.String workflowAsString, java.lang.String topic, NameValue[] inputs) throws XMLStreamException {
         OMElement workflowContext = getWorkflowContextHeader();
         if(workflowContext == null){
@@ -259,7 +309,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     private OMElement getWorkflowContextHeader() {
         MessageContext currentMessageContext = MessageContext.getCurrentMessageContext();
         SOAPHeader header = currentMessageContext.getEnvelope().getHeader();
-        Iterator childrenWithName = header.getChildrenWithName(new QName("http://airavata.apache.org/schemas/wec/2012/05", "context-header"));
+        Iterator<?> childrenWithName = header.getChildrenWithName(new QName("http://airavata.apache.org/schemas/wec/2012/05", "context-header"));
         if (childrenWithName.hasNext()) {
             return (OMElement) childrenWithName.next();
         } else {
@@ -344,7 +394,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
             workflowInterpreterConfiguration.setAwsAccessKey(builder.getSecurityContext().getAmazonWebservices().getAccessKeyId());
         }
         // WorkflowInterpreter object should create prior creation of Listener, because listener needs the threadlocal variable
-        interpreter = new WorkflowInterpreter(workflowInterpreterConfiguration, new SSWorkflowInterpreterInteractorImpl());
+        interpreter = new WorkflowInterpreter(workflowInterpreterConfiguration, getInteractor());
         listener = new WorkflowInterpretorEventListener(workflow, conf);
         try {
         	log.debug("start listener set");
@@ -384,11 +434,15 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 
     private void executeWorkflow(WorkflowInterpreter interpreter, WorkflowInterpretorEventListener listener,String experimentId) {
         try {
+        	workflowConfigurations.put(experimentId,interpreter.getConfig());
             interpreter.scheduleDynamically();
             log.debug("Interpreter invoked...");
         } catch (Exception e) {
             throw new WorkflowRuntimeException(e);
         } finally {
+        	if (workflowConfigurations.containsKey(experimentId)){
+        		workflowConfigurations.remove(experimentId);
+        	}
             /*
              * stop listener no matter what happens
              */
@@ -419,7 +473,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 		return configuration;
 	}
 
-	public String findValue(Map<String,String> vals, String key, String defaultVal) {
+	private String findValue(Map<String,String> vals, String key, String defaultVal) {
 		if(vals.get(key) != null) {
             return vals.get(key);
         }
@@ -467,7 +521,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         }
         StAXOMBuilder builder = new StAXOMBuilder(reader);
         OMElement documentElement = builder.getDocumentElement();
-        Iterator server = documentElement.getChildrenWithName(new QName("server"));
+        Iterator<?> server = documentElement.getChildrenWithName(new QName("server"));
         while (server.hasNext()) {
             OMElement next = (OMElement) server.next();
             HostDescription hostDescription;
