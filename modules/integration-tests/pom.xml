@@ -23,6 +23,31 @@
     
     <build>
         <plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+					<execution>
+						<id>unpack-artifacts</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.apache.tomcat</groupId>
+									<artifactId>tomcat</artifactId>
+						            <version>${tomcat.version}</version>
+									<type>zip</type>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>${project.build.directory}/tests</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
@@ -33,25 +58,8 @@
                         <configuration>
                             <target>
                                 <taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="maven.dependency.classpath" />
-                                <if>
-                                    <available file="${local.tomcat.distribution}" />
-                                    <then>
-                                        <echo message="Using Tomcat distribution in local repository ..." />
-                                        <copy file="${local.tomcat.distribution}" todir="${project.build.directory}" overwrite="true" />
-                                    </then>
-                                    <else>
-                                        <echo message="Downloading Tomcat distribution ..." />
-                                        <get dest="${project.build.directory}">
-                                            <url url="http://archive.apache.org/dist/tomcat/tomcat-${major.tomcat.version}/v${tomcat.version}/bin/apache-tomcat-${tomcat.version}.zip" />
-                                        </get>
-
-                                    </else>
-                                </if>
-
-
                                 <unzip src="../distribution/airavata-server/target/apache-airavata-server-${project.version}-bin.zip" dest="${project.build.directory}/tests" />
                                 <unzip src="../distribution/xbaya-gui/target/apache-airavata-xbaya-gui-${project.version}-bin.zip" dest="${project.build.directory}/tests" />
-                                <unzip src="${project.build.directory}/apache-tomcat-${tomcat.version}.zip" dest="${project.build.directory}/tests" />
                                 <copy todir="${tomcat.work.dir}/webapps/axis2/META-INF">
                                     <fileset dir="../distribution/airavata-server/target/axis2-${axis2.version}/META-INF" />
                                 </copy>
@@ -91,34 +99,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-dependency-plugin</artifactId>-->
-                <!--<version>2.4</version>-->
-                <!--<inherited>false</inherited>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>unpack-axis2</id>-->
-                        <!--<phase>package</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>unpack</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<artifactItems>-->
-                                <!--<artifactItem>-->
-                                    <!--<groupId>org.apache.axis2</groupId>-->
-                                    <!--<artifactId>axis2-webapp</artifactId>-->
-                                    <!--<version>${axis2.version}</version>-->
-                                    <!--<type>war</type>-->
-                                    <!--<overWrite>true</overWrite>-->
-                                    <!--<outputDirectory>${tomcat.work.dir}/webapps/axis2</outputDirectory>-->
-                                <!--</artifactItem>-->
-                                <!--<excludes>**/icu4j-2.6.1.jar</excludes>-->
-                            <!--</artifactItems>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
@@ -154,14 +134,6 @@
                                     <replacetoken>8080</replacetoken>
                                     <replacevalue>${test.running.port}</replacevalue>
                                 </replace>
-                                <!--replace file="${tomcat.work.dir}/webapps/airavata-registry/WEB-INF/classes/airavata-server.properties">
-                                    <replacetoken>8080</replacetoken>
-                                    <replacevalue>${test.running.port}</replacevalue>
-                                </replace>
-                                <replace file="${tomcat.work.dir}/webapps/axis2/WEB-INF/classes/airavata-server.properties">
-                                    <replacetoken>8080</replacetoken>
-                                    <replacevalue>${test.running.port}</replacevalue>
-                                </replace-->
                             </target>
                         </configuration>
                         <goals>
