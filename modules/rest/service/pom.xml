@@ -59,6 +59,16 @@
 			<artifactId>airavata-security</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>airavata-client-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>airavata-xbaya-gui</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<!--dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-jpa-registry</artifactId>
