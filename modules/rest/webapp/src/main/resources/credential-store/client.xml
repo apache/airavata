@@ -21,11 +21,11 @@
         <id>myproxy:oa4mp,2012:/client/24c45c2eb65d93231d02d423e94d0362</id>
         <serviceUri>https://portal.xsede.org/oauth</serviceUri>
         <!--callbackUri>https://156.56.179.104:8443/client/pages/client-success.jsp</callbackUri-->
-        <callbackUri>https://156.56.179.169:8443/airavata-registry/callback</callbackUri>
+        <callbackUri>https://156.56.179.169:8443/airavata-services/callback</callbackUri>
         <lifetime>864000</lifetime>
         <!--publicKeyFile>/Users/thejaka/manager-server/webapps/airavata-registry/WEB-INF/classes/credential-store/oauth-pubkey.pem</publicKeyFile-->
-        <publicKeyFile>../webapps/airavata-registry/WEB-INF/classes/credential-store/oauth-pubkey.pem</publicKeyFile>
+        <publicKeyFile>../webapps/airavata-services/WEB-INF/classes/credential-store/oauth-pubkey.pem</publicKeyFile>
         <!--privateKeyFile>/Users/thejaka/manager-server/webapps/airavata-registry/WEB-INF/classes/credential-store/oauth-privkey.pk8</privateKeyFile-->
-        <privateKeyFile>../webapps/airavata-registry/WEB-INF/classes/credential-store/oauth-privkey.pk8</privateKeyFile>
+        <privateKeyFile>../webapps/airavata-services/WEB-INF/classes/credential-store/oauth-privkey.pk8</privateKeyFile>
     </client>
 </config>
