@@ -30,21 +30,19 @@ import java.util.UUID;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.airavata.client.AiravataAPIUtils;
 import org.apache.airavata.client.AiravataClient;
 import org.apache.airavata.client.api.ExecutionManager;
 import org.apache.airavata.client.api.ExperimentAdvanceOptions;
-import org.apache.airavata.client.api.NodeSettings;
-import org.apache.airavata.client.api.OutputDataSettings;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.client.stub.interpretor.NameValue;
 import org.apache.airavata.client.stub.interpretor.WorkflowInterpretorStub;
-import org.apache.airavata.client.tools.NameValuePairType;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.registry.api.ExecutionErrors.Source;
+import org.apache.airavata.registry.api.workflow.ApplicationJobExecutionError;
 import org.apache.airavata.registry.api.workflow.ExecutionError;
 import org.apache.airavata.registry.api.workflow.ExperimentExecutionError;
-import org.apache.airavata.registry.api.workflow.ApplicationJobExecutionError;
 import org.apache.airavata.registry.api.workflow.NodeExecutionError;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionError;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus;
@@ -219,7 +217,7 @@ public class ExecutionManagerImpl implements ExecutionManager {
 			if (executionUser==null){
 				executionUser=submissionUser;
 			}
-			WorkflowContextHeaderBuilder builder = createWorkflowContextHeaderBuilder(options, submissionUser);
+			WorkflowContextHeaderBuilder builder = AiravataAPIUtils.createWorkflowContextHeaderBuilder(options, submissionUser);
 			runPreWorkflowExecutionTasks(experimentID, executionUser, options.getExperimentMetadata(), options.getExperimentName());
 			NameValue[] inputVals = inputValues.toArray(new NameValue[] {});
 			if (listener!=null){
@@ -234,40 +232,6 @@ public class ExecutionManagerImpl implements ExecutionManager {
 		} catch (Exception e) {
 	        throw new AiravataAPIInvocationException("Error working with Airavata Registry: " + e.getLocalizedMessage(), e);
 	    }
-	}
-
-	private WorkflowContextHeaderBuilder createWorkflowContextHeaderBuilder(
-			ExperimentAdvanceOptions options, String submissionUser)
-			throws AiravataAPIInvocationException {
-		WorkflowContextHeaderBuilder builder=createWorkflowContextHeader();
-		builder.setUserIdentifier(submissionUser);
-		NodeSettings[] nodeSettingsList = options.getCustomWorkflowSchedulingSettings().getNodeSettingsList();
-		for (NodeSettings nodeSettings : nodeSettingsList) {
-			List<NameValuePairType> nameValuePairTypes = nodeSettings.getNameValuePair();
-			for (NameValuePairType nameValuePairType : nameValuePairTypes) {
-				builder.addApplicationSchedulingKeyPair(nodeSettings.getNodeId(),nameValuePairType.getName(), nameValuePairType.getValue(), nameValuePairType.getDescription());
-			}
-			builder.addApplicationSchedulingContext(nodeSettings.getNodeId(), nodeSettings.getServiceId(), nodeSettings.getHostSettings().getHostId(), nodeSettings.getHostSettings().isWSGRAMPreffered(), nodeSettings.getHostSettings().getGatekeeperEPR(), nodeSettings.getHPCSettings().getJobManager(), nodeSettings.getHPCSettings().getCPUCount(), nodeSettings.getHPCSettings().getNodeCount(), nodeSettings.getHPCSettings().getQueueName(), nodeSettings.getHPCSettings().getMaxWallTime());
-		
-		}
-		OutputDataSettings[] outputDataSettingsList = options.getCustomWorkflowOutputDataSettings().getOutputDataSettingsList();
-		for (OutputDataSettings outputDataSettings : outputDataSettingsList) {
-			builder.addApplicationOutputDataHandling(outputDataSettings.getNodeId(),outputDataSettings.getOutputDataDirectory(), outputDataSettings.getDataRegistryUrl(), outputDataSettings.isDataPersistent());
-		}
-
-        if (options.getCustomSecuritySettings().getAmazonWSSettings().getAccessKeyId() != null) {
-            builder.setAmazonWebServices(options.getCustomSecuritySettings().getAmazonWSSettings().getAccessKeyId(),
-                    options.getCustomSecuritySettings().getAmazonWSSettings().getSecretAccessKey());
-        }
-
-        if (options.getCustomSecuritySettings().getCredentialStoreSecuritySettings() != null) {
-            builder.setCredentialManagementService(options.getCustomSecuritySettings().
-                    getCredentialStoreSecuritySettings().getTokenId(),
-                    submissionUser);
-        }
-
-
-		return builder;
 	}
 
     private Workflow extractWorkflow(String workflowName) throws AiravataAPIInvocationException {
@@ -334,27 +298,12 @@ public class ExecutionManagerImpl implements ExecutionManager {
 		getClient().getProvenanceManager().setExperimentName(experimentId, experimentName);
 	}
 
-	//------------------Deprecated Functions---------------------//
-	
-	private WorkflowContextHeaderBuilder createWorkflowContextHeader()
-			throws AiravataAPIInvocationException {
-		try {
-			return new WorkflowContextHeaderBuilder(null,
-					null,null,null,null,
-					null);
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
-	}
-	
-	//------------------End of Deprecated Functions---------------------//
-
 	public static void main(String[] args) {
 		ExecutionManagerImpl a = new ExecutionManagerImpl(null);
 		try {
 			ExperimentAdvanceOptions b = a.createExperimentAdvanceOptions();
 			b.getCustomWorkflowOutputDataSettings().addNewOutputDataSettings("la", "di", "da", false);
-			WorkflowContextHeaderBuilder c = a.createWorkflowContextHeaderBuilder(b, "meeee");
+			WorkflowContextHeaderBuilder c = AiravataAPIUtils.createWorkflowContextHeaderBuilder(b, "meeee");
 			System.out.println(XMLUtil.xmlElementToString(c.getXml()));
 		} catch (AiravataAPIInvocationException e) {
 			e.printStackTrace();

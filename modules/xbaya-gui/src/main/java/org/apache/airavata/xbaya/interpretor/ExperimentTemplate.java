@@ -19,9 +19,19 @@
  *
  */
 
-package org.apache.airavata.client;
+package org.apache.airavata.xbaya.interpretor;
 
-@Deprecated
-public class AiravataClientUtils extends AiravataAPIFactory {
+import java.util.List;
 
+public class ExperimentTemplate {
+	private List<WorkflowExecutionTemplate> workflowExecutionTemplates;
+
+	public List<WorkflowExecutionTemplate> getWorkflowExecutionTemplates() {
+		return workflowExecutionTemplates;
+	}
+
+	public void setWorkflowExecutionTemplates(
+			List<WorkflowExecutionTemplate> workflowExecutionTemplates) {
+		this.workflowExecutionTemplates = workflowExecutionTemplates;
+	}
 }

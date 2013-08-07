@@ -201,5 +201,14 @@ public class ResourcePathConstants {
         public static final String GET_SERVICE_URL = "get/serviceURL";
         public static final String SET_SERVICE_URL = "set/serviceURL";
     }
-
+    public final class ExperimentExecutionConstants {
+        public static final String EXP_EXEC_PATH  =  "/execution/";
+        public static final String GET_HI= "get/hi";
+        public static final String EXEC_EXPERIMENT= "workflow";
+        public static final String CANCEL_EXPERIMENT = "cancel/experiment";
+        public static final String CANCEL_WORKFLOW = "cancel/workflow";
+        public static final String CANCEL_NODE = "cancel/node";
+        public static final String SUSPEND_EXPERIMENT = "suspend/experiment";
+        public static final String RESUME_EXPERIMENT = "resume/experiment";
+    }
     }

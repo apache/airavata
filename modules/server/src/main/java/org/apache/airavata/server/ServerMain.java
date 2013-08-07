@@ -59,7 +59,7 @@ public class ServerMain {
 
         StandardContext context = (StandardContext)tomcat.getTomcat().addContext("/airavata-registry", System.getenv("AIRAVATA_HOME"));
         Wrapper registryServlet = tomcat.addServlet("/airavata-registry", "Airavata Web Application", "com.sun.jersey.spi.container.servlet.ServletContainer");
-        registryServlet.addInitParameter("com.sun.jersey.config.property.packages", "org.apache.airavata.services.registry.rest;org.codehaus.jackson.jaxrs");
+        registryServlet.addInitParameter("com.sun.jersey.config.property.packages", "org.apache.airavata.services.registry.rest;org.apache.airavata.services.experiment;org.codehaus.jackson.jaxrs");
         registryServlet.setLoadOnStartup(1);
 
         FilterDef filter1definition = new FilterDef();

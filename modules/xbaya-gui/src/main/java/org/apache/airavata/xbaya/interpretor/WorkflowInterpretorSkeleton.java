@@ -22,7 +22,6 @@
 package org.apache.airavata.xbaya.interpretor;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -32,7 +31,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.jcr.RepositoryException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -50,7 +48,6 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ServiceUtils;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
@@ -290,14 +287,6 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         try {
              s = setupAndLaunch(workflowAsString, topic, ServerSettings.getDefaultGatewayId(),
                     user,inputs, configuration, runInThread, workflowContextHeaderBuilder);
-        } catch (XMLStreamException e) {
-            log.error(e.getMessage());
-        } catch (RepositoryException e) {
-            log.error(e.getMessage());
-        } catch (MalformedURLException e) {
-            log.error(e.getMessage());
-        } catch (RegistryException e) {
-            log.error(e.getMessage());
         } catch (AiravataAPIInvocationException e) {
             log.error(e.getMessage());
         } catch (ApplicationSettingsException e) {
@@ -343,10 +332,24 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         }
         return new WorkflowContextHeaderBuilder(parse.getContextHeader());
     }
-
+    public String setupAndLaunch(String workflowAsString, String experimentId, String gatewayId, String username,
+            Map<String,String> inputs,boolean inNewThread,WorkflowContextHeaderBuilder builder) throws AiravataAPIInvocationException{
+    	List<NameValue> inputData=new ArrayList<NameValue>();
+    	for (String inputName : inputs.keySet()) {
+			NameValue input = new NameValue();
+			input.setName(inputName);
+			input.setValue(inputs.get(inputName));
+			inputData.add(input);
+		}
+    	Map<String, String> configuration = new HashMap<String, String>();
+    	configuration.put(BROKER, getAiravataAPI().getAiravataManager().getEventingServiceURL().toASCIIString());
+        configuration.put(MSGBOX, getAiravataAPI().getAiravataManager().getMessageBoxServiceURL().toASCIIString());
+        
+    	return setupAndLaunch(workflowAsString, experimentId, gatewayId, username, inputData.toArray(new NameValue[]{}), configuration, inNewThread, builder);
+    }
     private String setupAndLaunch(String workflowAsString, String topic, String gatewayId, String username,
                                   NameValue[] inputs,Map<String,String>configurations,boolean inNewThread,
-                                  WorkflowContextHeaderBuilder builder) throws XMLStreamException, MalformedURLException, RepositoryException, RegistryException, AiravataAPIInvocationException {
+                                  WorkflowContextHeaderBuilder builder) throws AiravataAPIInvocationException{
         log.debug("Launch is called for topic:"+topic);
 
         Workflow workflow = null;
