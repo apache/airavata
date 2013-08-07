@@ -43,7 +43,7 @@ public class GFacJobStatusResourceTest extends AbstractResourceTest {
         experimentResource.save();
 
         ExperimentDataResource experimentDataResource = (ExperimentDataResource) experimentResource.create(ResourceType.EXPERIMENT_DATA);
-        experimentDataResource.setExpName("testExp");
+        experimentDataResource.setExpName("testExpID");
         experimentDataResource.setUserName(workerResource.getUser());
         experimentDataResource.save();
 

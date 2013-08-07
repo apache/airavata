@@ -49,7 +49,7 @@ public class ExperimentResourceTest extends AbstractResourceTest {
         experimentResource.save();
 
         experimentDataResource = (ExperimentDataResource) experimentResource.create(ResourceType.EXPERIMENT_DATA);
-        experimentDataResource.setExpName("testExp");
+        experimentDataResource.setExpName("testExpID");
         experimentDataResource.setUserName(workerResource.getUser());
         experimentDataResource.save();
     }
@@ -65,18 +65,13 @@ public class ExperimentResourceTest extends AbstractResourceTest {
     public void testSave() throws Exception {
         experimentResource.save();
         assertTrue("experiment save successfully", gatewayResource.isExists(ResourceType.EXPERIMENT, "testExpID"));
-        //remove experiment
-        gatewayResource.remove(ResourceType.EXPERIMENT, "testExpID");
     }
 
     public void testRemove() throws Exception {
-        experimentResource.remove(ResourceType.EXPERIMENT_DATA, "testExpID");
-        assertTrue("experiment data removed successfully", !experimentResource.isExists(ResourceType.EXPERIMENT_DATA, "testExpID"));
-
-        experimentDataResource = (ExperimentDataResource) experimentResource.create(ResourceType.EXPERIMENT_DATA);
-        experimentDataResource.setExpName("testExp");
-        experimentDataResource.setUserName(workerResource.getUser());
-        experimentDataResource.save();
+        if (!experimentDataResource.isWorkflowInstancePresent("testWFInstance")){
+            experimentResource.remove(ResourceType.EXPERIMENT_DATA, "testExpID");
+            assertTrue("experiment data removed successfully", !experimentResource.isExists(ResourceType.EXPERIMENT_DATA, "testExpID"));
+        }
     }
 
     @Override

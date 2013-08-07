@@ -44,7 +44,7 @@ public class ExecutionErrorResourceTest extends AbstractResourceTest {
         experimentResource.save();
 
         experimentDataResource = (ExperimentDataResource) experimentResource.create(ResourceType.EXPERIMENT_DATA);
-        experimentDataResource.setExpName("testExp");
+        experimentDataResource.setExpName("testExpID");
         experimentDataResource.setUserName(workerResource.getUser());
         experimentDataResource.save();
 
@@ -84,7 +84,6 @@ public class ExecutionErrorResourceTest extends AbstractResourceTest {
 
         assertTrue("application descriptor saved successfully", workflowDataResource.isExists(ResourceType.EXECUTION_ERROR, executionErrorResource.getErrorID()));
 
-        workflowDataResource.remove(ResourceType.EXECUTION_ERROR, executionErrorResource.getErrorID());
     }
 
     @Override

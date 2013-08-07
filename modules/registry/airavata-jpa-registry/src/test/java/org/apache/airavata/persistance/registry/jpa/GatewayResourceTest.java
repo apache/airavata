@@ -170,48 +170,6 @@ public class GatewayResourceTest extends AbstractResourceTest {
         gatewayResource.remove(ResourceType.APPLICATION_DESCRIPTOR, "testAppDesc");
         assertFalse(gatewayResource.isExists(ResourceType.APPLICATION_DESCRIPTOR, "testAppDesc"));
 
-        publishWorkflowResource = (PublishWorkflowResource) gatewayResource.create(ResourceType.PUBLISHED_WORKFLOW);
-        hostDescriptorResource = (HostDescriptorResource) gatewayResource.create(ResourceType.HOST_DESCRIPTOR);
-        serviceDescriptorResource = (ServiceDescriptorResource) gatewayResource.create(ResourceType.SERVICE_DESCRIPTOR);
-        applicationDescriptorResource = (ApplicationDescriptorResource) gatewayResource.create(ResourceType.APPLICATION_DESCRIPTOR);
-        experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-
-        hostDescriptorResource.setUserName(workerResource.getUser());
-        hostDescriptorResource.setHostDescName("testHostDesc");
-        hostDescriptorResource.setContent("testContent");
-        hostDescriptorResource.save();
-
-        serviceDescriptorResource.setUserName(workerResource.getUser());
-        serviceDescriptorResource.setServiceDescName("testServiceDesc");
-        serviceDescriptorResource.setContent("testContent");
-        serviceDescriptorResource.save();
-
-        applicationDescriptorResource.setHostDescName(hostDescriptorResource.getHostDescName());
-        applicationDescriptorResource.setServiceDescName(serviceDescriptorResource.getServiceDescName());
-        applicationDescriptorResource.setUpdatedUser(workerResource.getUser());
-        applicationDescriptorResource.setName("testAppDesc");
-        applicationDescriptorResource.setContent("testContent");
-        applicationDescriptorResource.save();
-
-        Calendar calender = Calendar.getInstance();
-        java.util.Date d = calender.getTime();
-        Timestamp currentTime = new Timestamp(d.getTime());
-
-        publishWorkflowResource.setName("pubworkflow1");
-        publishWorkflowResource.setCreatedUser("admin");
-        publishWorkflowResource.setContent("testContent");
-        Calendar c = Calendar.getInstance();
-        java.util.Date da = c.getTime();
-        Timestamp time = new Timestamp(da.getTime());
-        publishWorkflowResource.setPublishedDate(time);
-        publishWorkflowResource.save();
-
-        experimentResource.setExpID("testExpID");
-        experimentResource.setProject(projectResource);
-        experimentResource.setWorker(workerResource);
-        experimentResource.setSubmittedDate(currentTime);
-        experimentResource.save();
-
     }
 
     @Override

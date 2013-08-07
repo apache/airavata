@@ -45,7 +45,7 @@ public class ExperimentDataResourceTest extends AbstractResourceTest {
         experimentResource.save();
 
         experimentDataResource = (ExperimentDataResource) experimentResource.create(ResourceType.EXPERIMENT_DATA);
-        experimentDataResource.setExpName("exp1");
+        experimentDataResource.setExpName("testExpID");
         experimentDataResource.setUserName(workerResource.getUser());
         experimentDataResource.save();
 
@@ -87,8 +87,6 @@ public class ExperimentDataResourceTest extends AbstractResourceTest {
     public void testSave() throws Exception {
         experimentDataResource.save();
         assertTrue("experiment data saved successfully", experimentResource.isExists(ResourceType.EXPERIMENT_DATA, "testExpID"));
-        //remove experiment data
-        experimentResource.remove(ResourceType.EXPERIMENT_DATA, "testExpID");
     }
 
     public void testRemove() throws Exception {
@@ -98,21 +96,6 @@ public class ExperimentDataResourceTest extends AbstractResourceTest {
         experimentDataResource.remove(ResourceType.EXPERIMENT_METADATA, "testExpID");
         assertTrue("experiment meta data resource removed successfully", !experimentDataResource.isExists(ResourceType.EXPERIMENT_METADATA, "testExpID"));
 
-        experimentMetadataResource.setExpID("testExpID");
-        experimentMetadataResource.setMetadata("testMetadata");
-        experimentMetadataResource.save();
-
-        workflowDataResource.setExperimentID("testExpID");
-        workflowDataResource.setStatus("testStatus");
-        workflowDataResource.setTemplateName("testWorkflowInstance");
-
-        Calendar calender = Calendar.getInstance();
-        java.util.Date d = calender.getTime();
-        Timestamp currentTime = new Timestamp(d.getTime());
-
-        workflowDataResource.setLastUpdatedTime(currentTime);
-        workflowDataResource.setStartTime(currentTime);
-        workflowDataResource.save();
     }
 
     @Override
