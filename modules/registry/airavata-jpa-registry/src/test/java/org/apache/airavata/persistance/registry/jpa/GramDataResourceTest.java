@@ -42,7 +42,7 @@ public class GramDataResourceTest extends AbstractResourceTest {
         experimentResource.save();
 
         ExperimentDataResource experimentDataResource = (ExperimentDataResource) experimentResource.create(ResourceType.EXPERIMENT_DATA);
-        experimentDataResource.setExpName("testExp");
+        experimentDataResource.setExpName("testExpID");
         experimentDataResource.setUserName(workerResource.getUser());
         experimentDataResource.save();
 
@@ -66,8 +66,6 @@ public class GramDataResourceTest extends AbstractResourceTest {
 
         assertTrue("gram data saved successfully", workflowDataResource.isGramDataExists("testNode"));
 
-        //remove the gram data
-        workflowDataResource.removeGramData("testNodeID");
     }
 
     @Override

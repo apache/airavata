@@ -42,7 +42,7 @@ public class NodeDataResourceTest extends AbstractResourceTest {
         experimentResource.save();
 
         ExperimentDataResource experimentDataResource = (ExperimentDataResource) experimentResource.create(ResourceType.EXPERIMENT_DATA);
-        experimentDataResource.setExpName("testExp");
+        experimentDataResource.setExpName("testExpID");
         experimentDataResource.setUserName(workerResource.getUser());
         experimentDataResource.save();
 
@@ -66,8 +66,6 @@ public class NodeDataResourceTest extends AbstractResourceTest {
         nodeDataResource.save();
 
         assertTrue("node data resource saved successfully", workflowDataResource.isNodeExists("testNodeID"));
-        //remove node data
-        workflowDataResource.removeNodeData("testNodeID");
     }
 
     @Override

@@ -70,6 +70,23 @@ public class Initialize {
         return true;
     }
 
+    private static boolean isServerStarted(NetworkServerControl server, int ntries)
+    {
+        for (int i = 1; i <= ntries; i ++)
+        {
+            try {
+                Thread.sleep(500);
+                server.ping();
+                return true;
+            }
+            catch (Exception e) {
+                if (i == ntries)
+                    return false;
+            }
+        }
+        return false;
+    }
+
     public void initializeDB() {
         String jdbcUrl = null;
         String jdbcDriver = null;
@@ -87,6 +104,9 @@ public class Initialize {
 
 
         startDerbyInServerMode();
+        if(!isServerStarted(server, 20)){
+           throw new RuntimeException("Derby server cound not started within five seconds...");
+        }
 //      startDerbyInEmbeddedMode();
 
         Connection conn = null;
@@ -104,10 +124,12 @@ public class Initialize {
             throw new RuntimeException("Database failure", e);
         } finally {
             try {
-                if (!conn.getAutoCommit()) {
-                    conn.commit();
+                if (conn != null){
+                    if (!conn.getAutoCommit()) {
+                        conn.commit();
+                    }
+                    conn.close();
                 }
-                conn.close();
             } catch (SQLException e) {
                 logger.error(e.getMessage(), e);
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -289,9 +311,9 @@ public class Initialize {
             Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
             DriverManager.getConnection("jdbc:derby:memory:unit-testing-jpa;create=true").close();
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (SQLException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
     }
 

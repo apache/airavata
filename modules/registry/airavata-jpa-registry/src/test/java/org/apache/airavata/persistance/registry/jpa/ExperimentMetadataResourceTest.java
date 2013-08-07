@@ -49,7 +49,7 @@ public class ExperimentMetadataResourceTest extends AbstractResourceTest {
         experimentResource.save();
 
         experimentDataResource = (ExperimentDataResource) experimentResource.create(ResourceType.EXPERIMENT_DATA);
-        experimentDataResource.setExpName("testExp");
+        experimentDataResource.setExpName("testExpID");
         experimentDataResource.setUserName(workerResource.getUser());
         experimentDataResource.save();
     }
@@ -62,8 +62,6 @@ public class ExperimentMetadataResourceTest extends AbstractResourceTest {
 
         assertTrue("experiment meta data saved successfully", experimentDataResource.isExists(ResourceType.EXPERIMENT_METADATA, "testExpID"));
 
-        //remove the metadata
-        experimentDataResource.remove(ResourceType.EXPERIMENT_METADATA, "testExpID");
     }
 
     @Override
