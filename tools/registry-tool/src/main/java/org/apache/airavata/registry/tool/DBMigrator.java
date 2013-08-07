@@ -60,7 +60,6 @@ public class DBMigrator {
                 "','SYSTEM')";
         UPDATE_QUERY = "UPDATE CONFIGURATION SET config_val='" + getIncrementedVersion(currentAiravataVersion) + "', expire_date='" + getCurrentDate() +
                         "' WHERE config_key='" + REGISTRY_VERSION + "' and category_id='SYSTEM'";
-
     }
 
     //we assume given database is up and running
@@ -102,26 +101,35 @@ public class DBMigrator {
                 updateConfigTable(connection);
             }
         } catch (ClassNotFoundException e) {
+            e.printStackTrace();
            logger.error("Unable to find SQL scripts..." , e);
         } catch (InstantiationException e) {
+            e.printStackTrace();
             logger.error("Error while updating the database..." , e);
         } catch (IllegalAccessException e) {
+            e.printStackTrace();
             logger.error("Error while updating the database..." , e);
         } catch (SQLException e) {
+            e.printStackTrace();
             logger.error("Error while updating the database..." , e);
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("Error while updating the database..." , e);
         }
     }
 
     private static boolean canUpdated (Connection conn){
-        String config = executeSelectQuery(conn);
-        if (config != null){
-            if (config.equals(getIncrementedVersion(currentAiravataVersion))) {
-                return false;
-            } else {
-                return true;
+        if (!currentAiravataVersion.equals("0.5")){
+            String config = executeSelectQuery(conn);
+            if (config != null){
+                if (config.equals(getIncrementedVersion(currentAiravataVersion))) {
+                    return false;
+                } else {
+                    return true;
+                }
             }
+        } else if (currentAiravataVersion.equals("0.5")){
+            return true;
         }
         return false;
     }
@@ -211,6 +219,7 @@ public class DBMigrator {
                     sql.replace(0, sql.length(), "");
                 }
             }
+            System.out.println(sql.toString());
             // Catch any statements not followed by ;
             if (sql.length() > 0) {
                 executeSQL(sql.toString(), conn);

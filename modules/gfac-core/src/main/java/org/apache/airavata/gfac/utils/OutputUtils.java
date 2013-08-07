@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
+import org.apache.airavata.gfac.handler.GFacHandlerException;
 import org.apache.airavata.schemas.gfac.StdErrParameterType;
 import org.apache.airavata.schemas.gfac.StdOutParameterType;
 import org.apache.airavata.schemas.gfac.URIParameterType;
@@ -36,6 +37,10 @@ public class OutputUtils {
     private static String regexPattern = "\\s*=\\s*([^\\[\\s'\"][^\\s]*|\"[^\"]*\"|'[^']*'|\\[[^\\[]*\\])";
 
     public static Map<String, ActualParameter> fillOutputFromStdout(Map<String, Object> output, String stdout, String stderr) throws Exception {
+
+        if (stdout == null || stdout.equals("")){
+            throw new GFacHandlerException("Standard output is empty.");
+        }
 
         Map<String, ActualParameter> result = new HashMap<String, ActualParameter>();
         Set<String> keys = output.keySet();
