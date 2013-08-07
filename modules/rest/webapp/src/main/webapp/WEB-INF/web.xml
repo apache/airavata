@@ -27,7 +27,7 @@
 
     <context-param>
         <param-name>oa4mp:client.config.file</param-name>
-        <param-value>${catalina.home}/webapps/airavata-registry/WEB-INF/classes/credential-store/client.xml</param-value>
+        <param-value>${catalina.home}/webapps/airavata-services/WEB-INF/classes/credential-store/client.xml</param-value>
         <!--param-value>
             /home/amila/development/tools/apache-tomcat-7.0.29/webapps/airavata-registry-rest-services/WEB-INF/classes/credential-store/client.xml
         </param-value-->
@@ -55,13 +55,22 @@
         <param-value>com.mysql.jdbc.Driver</param-value>
     </context-param>
 
-
     <servlet>
-        <servlet-name>Airavata Web Application</servlet-name>
+        <servlet-name>Airavata Registry Service</servlet-name>
         <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
         <init-param>
             <param-name>com.sun.jersey.config.property.packages</param-name>
             <param-value>org.apache.airavata.services.registry.rest;org.apache.airavata.services.experiment;org.codehaus.jackson.jaxrs</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    
+    <servlet>
+        <servlet-name>Airavata Execution Service</servlet-name>
+        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>com.sun.jersey.config.property.packages</param-name>
+            <param-value>org.apache.airavata.services.experiment;org.codehaus.jackson.jaxrs</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
@@ -79,14 +88,20 @@
     <filter-mapping>
         <filter-name>AuthenticationFilter</filter-name>
         <url-pattern>/user-store/*</url-pattern>
-        <url-pattern>/api/*</url-pattern>
+        <url-pattern>/registry-api/*</url-pattern>
+        <url-pattern>/execution-service/*</url-pattern>
     </filter-mapping>
 
     <!-- ================================ End Security Related Configurations =============================== -->
 
     <servlet-mapping>
-        <servlet-name>Airavata Web Application</servlet-name>
-        <url-pattern>/api/*</url-pattern>
+        <servlet-name>Airavata Registry Service</servlet-name>
+        <url-pattern>/registry-api/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>Airavata Execution Service</servlet-name>
+        <url-pattern>/execution-service/*</url-pattern>
     </servlet-mapping>
 
     <!-- Credential Store Configurations -->

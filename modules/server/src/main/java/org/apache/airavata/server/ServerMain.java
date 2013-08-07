@@ -57,9 +57,13 @@ public class ServerMain {
                 File.separator + "bin" + File.separator + "axis2.xml");
         axis2Servlet.setLoadOnStartup(1);
 
-        StandardContext context = (StandardContext)tomcat.getTomcat().addContext("/airavata-registry", System.getenv("AIRAVATA_HOME"));
-        Wrapper registryServlet = tomcat.addServlet("/airavata-registry", "Airavata Web Application", "com.sun.jersey.spi.container.servlet.ServletContainer");
-        registryServlet.addInitParameter("com.sun.jersey.config.property.packages", "org.apache.airavata.services.registry.rest;org.apache.airavata.services.experiment;org.codehaus.jackson.jaxrs");
+        StandardContext context = (StandardContext)tomcat.getTomcat().addContext("/airavata-services", System.getenv("AIRAVATA_HOME"));
+        Wrapper executionServlet = tomcat.addServlet("/airavata-services", "Airavata Execution Service", "com.sun.jersey.spi.container.servlet.ServletContainer");
+        executionServlet.addInitParameter("com.sun.jersey.config.property.packages", "org.apache.airavata.services.experiment;org.codehaus.jackson.jaxrs");
+        executionServlet.setLoadOnStartup(1);
+        
+        Wrapper registryServlet = tomcat.addServlet("/airavata-services", "Airavata Registry Service", "com.sun.jersey.spi.container.servlet.ServletContainer");
+        registryServlet.addInitParameter("com.sun.jersey.config.property.packages", "org.apache.airavata.services.registry.rest;org.codehaus.jackson.jaxrs");
         registryServlet.setLoadOnStartup(1);
 
         FilterDef filter1definition = new FilterDef();
@@ -71,9 +75,11 @@ public class ServerMain {
         FilterMap filter1mapping = new FilterMap();
         filter1mapping.setFilterName("AuthenticationFilter");
         filter1mapping.addURLPattern("/user-store/*");
-        filter1mapping.addURLPattern("/api/*");
+        filter1mapping.addURLPattern("/registry-api/*");
+        filter1mapping.addURLPattern("/execution-service/*");
         context.addFilterMap(filter1mapping);
-        registryServlet.addMapping("/api/*");
+        registryServlet.addMapping("/registry-api/*");
+        executionServlet.addMapping("/execution-service/*");
         context.addApplicationListener("org.apache.airavata.rest.mappings.utils.RegistryListener");
 
         tomcat.start();
