@@ -255,6 +255,7 @@
                 <include>org.apache.airavata:airavata-rest-mappings</include>
                 <include>org.apache.airavata:airavata-rest-services</include>
                 <include>org.apache.airavata:airavata-security</include>
+                <include>org.apache.airavata:json</include>
                 <include>org.apache.openjpa:openjpa-all:jar</include>
                 <include>com.sun.jersey:jersey-client:jar</include>
                 <include>com.sun.jersey:jersey-core:jar</include>
@@ -294,6 +295,8 @@
 				<include>j2ssh:j2ssh-common</include>
                 <include>org.apache.httpcomponents:httpcore:jar:4.1</include>
                 <include>org.apache.httpcomponents:httpclient:jar:4.1</include>
+                <include>de.odysseus.staxon:staxon:jar:1.2</include>
+                <include>de.odysseus.staxon:staxon-jackson:jar:1.2</include>
             </includes>
         </dependencySet>
         <dependencySet>

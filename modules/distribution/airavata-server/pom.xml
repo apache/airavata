@@ -364,6 +364,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
+            <artifactId>json</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-messenger-client</artifactId>
             <version>${project.version}</version>
         </dependency>

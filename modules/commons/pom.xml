@@ -22,7 +22,7 @@
     <packaging>pom</packaging>
     <name>Airavata Commons</name>
     <url>http://airavata.apache.org/</url>
-    
+
     <profiles>
         <profile>
             <id>default</id>
@@ -34,6 +34,7 @@
                 <module>gfac-schema</module>
                 <module>utils</module>
                 <module>workflow-execution-context</module>
+                <module>json</module>
             </modules>
         </profile>
     </profiles>
