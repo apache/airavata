@@ -90,11 +90,12 @@ public class ParameterNode extends AbstractAiravataTreeNode {
     }
     
 	public boolean triggerAction(JTree tree,String action) throws Exception{
+		String value = getParameter().getValue().toString();
 		if (action.equals(ViewAction.ID)) {
-			TextWindow textWindow = new TextWindow(getXBayaEngine(), getParameter().getName(), getParameter().getValue().toString(),"Parameter Content");
+			TextWindow textWindow = new TextWindow(getXBayaEngine(), getParameter().getName(), value,"Parameter Content");
 			textWindow.show();
 		} else if (action.equals(CopyAction.ID)) {
-        	Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(getParameter().getValue().toString()), null);
+        	Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(value), null);
         }
 		return super.triggerAction(tree, action);
 	}
@@ -117,3 +118,4 @@ public class ParameterNode extends AbstractAiravataTreeNode {
 		this.parameter = parameter;
 	}
 }
+
