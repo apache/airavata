@@ -226,4 +226,30 @@ public abstract class AbstractAiravataTreeNode implements TreeNode {
     	result+="</html>";
     	return result;
     }
+    
+    public String createHTMLUrlTaggedString(String value) {
+		String urledString = "";
+		int lastIndex=0,index=0;
+		while(index!=-1){
+			index=value.toLowerCase().indexOf("://",lastIndex);
+			if (index!=-1){
+				int beginIndex=value.lastIndexOf(" ",index);
+				urledString+=value.substring(lastIndex,beginIndex+1);
+				int endIndex=value.indexOf(" ",index);
+				if (beginIndex==-1){
+					beginIndex=0;
+				}else{
+					beginIndex++;
+				}
+				if (endIndex==-1){
+					endIndex=value.length();
+				}
+				String url=value.substring(beginIndex, endIndex);
+				urledString+="<a href='"+url+"'>"+url+"</a>";
+				lastIndex=endIndex;
+			}
+		}
+		urledString+=value.substring(lastIndex, value.length());
+		return urledString;
+	}
 }
