@@ -23,6 +23,8 @@ package org.apache.airavata.xbaya.registrybrowser.nodes;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,8 +32,10 @@ import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
+import org.apache.airavata.common.utils.BrowserLauncher;
 import org.apache.airavata.xbaya.model.registrybrowser.NodeParameter;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
+import org.apache.airavata.xbaya.ui.actions.registry.browser.BrowserAction;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.CopyAction;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.ViewAction;
 import org.apache.airavata.xbaya.ui.dialogs.TextWindow;
@@ -76,7 +80,14 @@ public class ParameterNode extends AbstractAiravataTreeNode {
 	
     @Override
     public List<String> getSupportedActions() {
-        return Arrays.asList(ViewAction.ID,CopyAction.ID);
+        List<String> list = Arrays.asList(ViewAction.ID,CopyAction.ID,BrowserAction.ID);
+        try {
+			new URI(getParameter().getValue().toString());
+			list.add(BrowserAction.ID);
+		} catch (URISyntaxException e) {
+			//the content is not a proper url
+		}
+		return list;
     }
 
     @Override
@@ -85,6 +96,8 @@ public class ParameterNode extends AbstractAiravataTreeNode {
     		return "View";
     	} else if (action.getID().equals(CopyAction.ID)) {
             return "Copy to clipboard";
+    	} else if (action.getID().equals(BrowserAction.ID)) {
+            return "Open in web browser...";
         }
     	return null;
     }
@@ -96,7 +109,9 @@ public class ParameterNode extends AbstractAiravataTreeNode {
 			textWindow.show();
 		} else if (action.equals(CopyAction.ID)) {
         	Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(value), null);
-        }
+		} else if (action.equals(BrowserAction.ID)) {
+			BrowserLauncher.openURL(getParameter().getValue().toString());
+        } 
 		return super.triggerAction(tree, action);
 	}
 
