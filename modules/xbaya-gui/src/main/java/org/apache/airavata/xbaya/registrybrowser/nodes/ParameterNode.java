@@ -80,14 +80,13 @@ public class ParameterNode extends AbstractAiravataTreeNode {
 	
     @Override
     public List<String> getSupportedActions() {
-        List<String> list = Arrays.asList(ViewAction.ID,CopyAction.ID,BrowserAction.ID);
         try {
 			new URI(getParameter().getValue().toString());
-			list.add(BrowserAction.ID);
+			return Arrays.asList(ViewAction.ID,CopyAction.ID,BrowserAction.ID);
 		} catch (URISyntaxException e) {
 			//the content is not a proper url
+			return Arrays.asList(ViewAction.ID,CopyAction.ID);
 		}
-		return list;
     }
 
     @Override
