@@ -23,8 +23,9 @@ package org.apache.airavata.xbaya.registrybrowser.nodes;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
-import java.net.URI;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
@@ -81,9 +82,9 @@ public class ParameterNode extends AbstractAiravataTreeNode {
     @Override
     public List<String> getSupportedActions() {
         try {
-			new URI(getParameter().getValue().toString());
+			new URL(getParameter().getValue().toString());
 			return Arrays.asList(ViewAction.ID,CopyAction.ID,BrowserAction.ID);
-		} catch (URISyntaxException e) {
+		} catch (MalformedURLException e) {
 			//the content is not a proper url
 			return Arrays.asList(ViewAction.ID,CopyAction.ID);
 		}
