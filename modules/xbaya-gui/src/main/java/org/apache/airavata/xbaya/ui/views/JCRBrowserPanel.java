@@ -42,7 +42,6 @@ import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultTreeModel;
 
-//import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.XBayaEngine;
@@ -51,12 +50,14 @@ import org.apache.airavata.xbaya.registrybrowser.nodes.AiravataTreeNodeFactory;
 import org.apache.airavata.xbaya.registrybrowser.nodes.RegistryTreeCellRenderer;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.AddAction;
+import org.apache.airavata.xbaya.ui.actions.registry.browser.BrowserAction;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.CopyAction;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.DeleteAction;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.EditAction;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.ImportAction;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.RefreshAction;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.ViewAction;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class JCRBrowserPanel extends JPanel implements Observer {
     private List<AbstractBrowserActionItem> browserActions = new ArrayList<AbstractBrowserActionItem>();
@@ -147,6 +148,12 @@ public class JCRBrowserPanel extends JPanel implements Observer {
                         triggerNodeAction(ViewAction.ID);
                     }
                 });
+                BrowserAction actionBrowser = new BrowserAction();
+                actionBrowser.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        triggerNodeAction(BrowserAction.ID);
+                    }
+                });
                 
                 tree.addMouseListener(new MouseAdapter(){
 					@Override
@@ -163,6 +170,7 @@ public class JCRBrowserPanel extends JPanel implements Observer {
                 browserActions.add(actionRefresh);
                 browserActions.add(actionDelete);
                 browserActions.add(actionCopy);
+                browserActions.add(actionBrowser);
 
 //                popupMenu.add(actionAdd.getMenuItem());
 //                popupMenu.add(actionDelete.getMenuItem());
