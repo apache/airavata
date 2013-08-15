@@ -222,8 +222,11 @@ public class NodeExecutionData {
 				if (i!=-1){
 					value=name.substring(i+1);
 					name=name.substring(0,i);
+					parameters.add(new NameValue(name,value));
+				}else{
+					parameters.get(parameters.size()-1).value=parameters.get(parameters.size()-1).value+","+name;
 				}
-				parameters.add(new NameValue(name,value));
+				
 			}
 		}
 		return parameters;
