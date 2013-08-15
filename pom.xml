@@ -354,7 +354,7 @@
             <id>ogce.m2.all</id>
             <url>http://community.ucs.indiana.edu:9090/archiva/repository/ogce.m2.all</url>
             <snapshots>
-                <!--updatePolicy>daily</updatePolicy -->
+                <updatePolicy>daily</updatePolicy>
                 <enabled>false</enabled>
             </snapshots>
         </repository>

@@ -8,7 +8,8 @@
     ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
     the License. -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.apache.airavata</groupId>
@@ -90,29 +91,19 @@
             <version>1.1.4c</version>
         </dependency>
         <dependency>
-            <groupId>xpp5</groupId>
+            <groupId>org.ogce</groupId>
             <artifactId>xpp5</artifactId>
-            <version>1.2.6</version>
+            <version>1.2.7</version>
         </dependency>
         <dependency>
-            <groupId>xpp5</groupId>
-            <artifactId>xpp5_xpath</artifactId>
-            <version>1.2.6</version>
-        </dependency>
-        <dependency>
-            <groupId>xsul</groupId>
+            <groupId>org.ogce</groupId>
             <artifactId>xsul</artifactId>
-            <version>2.10.5_b</version>
+            <version>2.10.6</version>
         </dependency>
         <dependency>
-            <groupId>xsul5-ogce</groupId>
-            <artifactId>xsul5-2007-02-27</artifactId>
-            <version>1</version>
-        </dependency>
-        <dependency>
-            <groupId>gpel</groupId>
-            <artifactId>gpel_client</artifactId>
-            <version>1.0.7-BETA</version>
+            <groupId>org.ogce</groupId>
+            <artifactId>gpel-client</artifactId>
+            <version>1.0.8</version>
         </dependency>
         <dependency>
             <groupId>atomixmiser</groupId>
@@ -142,11 +133,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>xsul</groupId>
-            <artifactId>xsul</artifactId>
-            <version>2.10.5_d</version>
         </dependency>
         <dependency>
             <groupId>org.apache.xmlbeans</groupId>
@@ -309,11 +295,8 @@
             <artifactId>airavata-workflow-execution-context</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-jpa-registry</artifactId>
-            <version>${project.version}</version>
-        </dependency-->
+        <!--dependency> <groupId>org.apache.airavata</groupId> <artifactId>airavata-jpa-registry</artifactId> <version>${project.version}</version> 
+            </dependency -->
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derbyclient</artifactId>

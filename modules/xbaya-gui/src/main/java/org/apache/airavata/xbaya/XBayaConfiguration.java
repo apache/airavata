@@ -38,7 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import xsul.lead.LeadDeploymentConfig;
-import xsul.lead.types.context.ContextDocument;
 
 public class XBayaConfiguration extends Observable implements Observer {
 
