@@ -211,19 +211,25 @@ public class ComponentSelector implements XBayaComponent {
 
         if (selectionPath.getPathCount() >= 2) {
             final ComponentTreeNode selectedNode = (ComponentTreeNode) selectionPath.getPath()[1];
-            ComponentRegistry registry = selectedNode.getComponentRegistry();
-            final ComponentTreeNode componentTree = ComponentController.getComponentTree(registry);
-
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    ComponentTreeNode root = ComponentSelector.this.treeModel.getRoot();
-                    int index = root.getIndex(selectedNode);
-                    ComponentSelector.this.treeModel.removeNodeFromParent(selectedNode);
-                    ComponentSelector.this.treeModel.insertNodeInto(componentTree, root, index);
-                }
-            });
+            reloadComponentRegistryNode(selectedNode);
         }
     }
+
+	private void reloadComponentRegistryNode(
+			final ComponentTreeNode selectedNode)
+			throws ComponentRegistryException {
+		ComponentRegistry registry = selectedNode.getComponentRegistry();
+		final ComponentTreeNode componentTree = ComponentController.getComponentTree(registry);
+
+		SwingUtilities.invokeLater(new Runnable() {
+		    public void run() {
+		        ComponentTreeNode root = ComponentSelector.this.treeModel.getRoot();
+		        int index = root.getIndex(selectedNode);
+		        ComponentSelector.this.treeModel.removeNodeFromParent(selectedNode);
+		        ComponentSelector.this.treeModel.insertNodeInto(componentTree, root, index);
+		    }
+		});
+	}
 
     /**
      * Updates all the registry entries.
@@ -518,6 +524,7 @@ public class ComponentSelector implements XBayaComponent {
         this.getSwingComponent().repaint();
 
         this.tree.repaint();
+        this.treeModel.reload();
     }
 
 }

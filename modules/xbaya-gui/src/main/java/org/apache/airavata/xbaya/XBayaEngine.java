@@ -67,6 +67,8 @@ public class XBayaEngine {
     private WorkflowInterpreter workflowInterpreter;
 
     private AiravataAPI airavataAPI;
+    
+    private ComponentSelector componentTreeViewer; 
 
     /**
      * Constructs a ApplicationClient.
@@ -168,7 +170,7 @@ public class XBayaEngine {
      */
     private void initRegistry() {
 
-        final ComponentSelector componentTreeViewer = this.gui.getComponentSelector();
+        componentTreeViewer = this.gui.getComponentSelector();
         try {
             this.componentRegistry = new SystemComponentRegistry();
             // This does not take time, so we can do it in the same thread.
@@ -200,7 +202,6 @@ public class XBayaEngine {
                 getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             }
         }
-
     }
 
     /**
@@ -278,5 +279,9 @@ public class XBayaEngine {
 
     public void setAiravataAPI(AiravataAPI airavataAPI) {
         this.airavataAPI = airavataAPI;
+    }
+    
+    public void reloadRegistry(){
+    	componentTreeViewer.refresh();
     }
 }
