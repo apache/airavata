@@ -74,7 +74,7 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
-				<version>${antrun.version}</version>
+				<version>${antrun.version}</version><!--$NO-MVN-MAN-VER$-->
 				<executions>
 					<execution>
 						<id>restore-persistence</id>

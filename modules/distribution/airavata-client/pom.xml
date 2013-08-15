@@ -8,7 +8,8 @@
     ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
     the License. -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>distribution</artifactId>
@@ -24,33 +25,11 @@
 
     <build>
         <plugins>
-            <!--plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.4</version>
-                <inherited>false</inherited>
-                <executions>
-                    <execution>
-                        <id>unpack-axis2</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.apache.axis2</groupId>
-                                    <artifactId>axis2-webapp</artifactId>
-                                    <version>${axis2.version}</version>
-                                    <type>war</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target/axis2-${axis2.version}</outputDirectory>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin-->
+            <!--plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-dependency-plugin</artifactId> <version>2.4</version> 
+                <inherited>false</inherited> <executions> <execution> <id>unpack-axis2</id> <phase>package</phase> <goals> <goal>unpack</goal> 
+                </goals> <configuration> <artifactItems> <artifactItem> <groupId>org.apache.axis2</groupId> <artifactId>axis2-webapp</artifactId> 
+                <version>${axis2.version}</version> <type>war</type> <overWrite>true</overWrite> <outputDirectory>target/axis2-${axis2.version}</outputDirectory> 
+                </artifactItem> </artifactItems> </configuration> </execution> </executions> </plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -72,67 +51,57 @@
                     </execution>
                 </executions>
             </plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>1.7</version>
-				<executions>
-				  <execution>
-				    <id>attach-artifacts</id>
-				    <phase>package</phase>
-				    <goals>
-				      <goal>attach-artifact</goal>
-				    </goals>
-				    <configuration>
-				      <artifacts>
-						<artifact>
-				          <file>${airavata.client-bin.zip}</file>
-				          <type>zip</type>
-						  <classifier>bin</classifier>
-				        </artifact>
-						<artifact>
-				          <file>${airavata.client-bin.tar.gz}</file>
-				          <type>tar.gz</type>
-						  <classifier>bin</classifier>
-				        </artifact>
-				      </artifacts>
-				    </configuration>
-				  </execution>
-				</executions>
-			  </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>attach-artifacts</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${airavata.client-bin.zip}</file>
+                                    <type>zip</type>
+                                    <classifier>bin</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>${airavata.client-bin.tar.gz}</file>
+                                    <type>tar.gz</type>
+                                    <classifier>bin</classifier>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
     <dependencies>
-          <dependency>
-            <groupId>xpp3</groupId>
-            <artifactId>xpp3_xpath</artifactId>
-            <version>1.1.4c</version>
-        </dependency>
         <dependency>
-            <groupId>xpp3</groupId>
+            <groupId>org.ogce</groupId>
             <artifactId>xpp3</artifactId>
-            <version>1.1.4c</version>
+            <version>1.1.5</version>
         </dependency>
         <dependency>
-            <groupId>xpp5</groupId>
+            <groupId>org.ogce</groupId>
             <artifactId>xpp5</artifactId>
-            <version>1.2.6</version>
+            <version>1.2.7</version>
         </dependency>
         <dependency>
-            <groupId>xpp5</groupId>
-            <artifactId>xpp5_xpath</artifactId>
-            <version>1.2.6</version>
+            <groupId>org.ogce</groupId>
+            <artifactId>xsul</artifactId>
+            <version>2.10.6</version>
         </dependency>
         <dependency>
-            <groupId>xsul5-ogce</groupId>
-            <artifactId>xsul5-2007-02-27</artifactId>
-            <version>1</version>
-        </dependency>
-        <dependency>
-            <groupId>gpel</groupId>
-            <artifactId>gpel_client</artifactId>
-            <version>1.0.7-BETA</version>
+            <groupId>org.ogce</groupId>
+            <artifactId>gpel-client</artifactId>
+            <version>1.0.8</version>
         </dependency>
         <dependency>
             <groupId>atomixmiser</groupId>
@@ -163,11 +132,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>xsul</groupId>
-            <artifactId>xsul</artifactId>
-            <version>2.10.5_d</version>
         </dependency>
         <dependency>
             <groupId>org.apache.xmlbeans</groupId>
@@ -238,7 +202,7 @@
         </dependency>
 
         <!-- AIRAVATA modules -->
-         <dependency>
+        <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-xbaya-gui</artifactId>
             <version>${project.version}</version>
@@ -335,11 +299,8 @@
             <artifactId>airavata-workflow-execution-context</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-jpa-registry</artifactId>
-            <version>${project.version}</version>
-        </dependency-->
+        <!--dependency> <groupId>org.apache.airavata</groupId> <artifactId>airavata-jpa-registry</artifactId> <version>${project.version}</version> 
+            </dependency -->
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derbyclient</artifactId>
@@ -378,8 +339,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <archieve.name>apache-airavata-client</archieve.name>
         <used.axis2.release>${axis2.version}</used.axis2.release>
-		<airavata.client-dist.name>${archieve.name}-${project.version}</airavata.client-dist.name>
-		<airavata.client-bin.zip>${project.build.directory}/${airavata.client-dist.name}-bin.zip</airavata.client-bin.zip>
-		<airavata.client-bin.tar.gz>${project.build.directory}/${airavata.client-dist.name}-bin.tar.gz</airavata.client-bin.tar.gz>
+        <airavata.client-dist.name>${archieve.name}-${project.version}</airavata.client-dist.name>
+        <airavata.client-bin.zip>${project.build.directory}/${airavata.client-dist.name}-bin.zip</airavata.client-bin.zip>
+        <airavata.client-bin.tar.gz>${project.build.directory}/${airavata.client-dist.name}-bin.tar.gz</airavata.client-bin.tar.gz>
     </properties>
 </project>
