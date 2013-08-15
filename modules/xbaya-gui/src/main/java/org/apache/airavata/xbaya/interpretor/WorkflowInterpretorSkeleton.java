@@ -281,7 +281,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         }
         Map<String, String> configuration = new HashMap<String, String>();
         WorkflowContextHeaderBuilder workflowContextHeaderBuilder = parseContextHeader(workflowContext, configuration);
-        String user = workflowContextHeaderBuilder.getUserIdentifier();
+        String user = workflowContextHeaderBuilder.getSubmissionUser();
 
         String s = null;
         try {
@@ -330,7 +330,10 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         } catch (AiravataAPIInvocationException e) {
             log.error(e.getMessage());
         }
-        return new WorkflowContextHeaderBuilder(parse.getContextHeader());
+    	String submissionUser = workflowContext.getAttributeValue(new QName(workflowContext.getNamespace().getNamespaceURI(), "submissionUser"));
+        WorkflowContextHeaderBuilder workflowContextHeaderBuilder = new WorkflowContextHeaderBuilder(parse.getContextHeader());
+        workflowContextHeaderBuilder.setSubmissionUser(submissionUser);
+		return workflowContextHeaderBuilder;
     }
     public String setupAndLaunch(String workflowAsString, String experimentId, String gatewayId, String username,
             Map<String,String> inputs,boolean inNewThread,WorkflowContextHeaderBuilder builder) throws AiravataAPIInvocationException{

@@ -20,13 +20,17 @@
  */
 package org.apache.airavata.common.workflow.execution.context;
 
-import java.lang.reflect.Array;
-import java.util.Map;
-
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.schemas.wec.*;
+import org.apache.airavata.schemas.wec.ApplicationOutputDataHandlingDocument;
+import org.apache.airavata.schemas.wec.ApplicationSchedulingContextDocument;
+import org.apache.airavata.schemas.wec.ContextHeaderDocument;
+import org.apache.airavata.schemas.wec.NameValuePairType;
+import org.apache.airavata.schemas.wec.SecurityContextDocument;
+import org.apache.airavata.schemas.wec.SoaServiceEprsDocument;
+import org.apache.airavata.schemas.wec.WorkflowMonitoringContextDocument;
+import org.apache.airavata.schemas.wec.WorkflowOutputDataHandlingDocument;
+import org.apache.airavata.schemas.wec.WorkflowSchedulingContextDocument;
 import org.apache.xmlbeans.XmlException;
-import org.omg.CORBA.NameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
@@ -42,6 +46,7 @@ public class WorkflowContextHeaderBuilder {
     private SoaServiceEprsDocument.SoaServiceEprs soaServiceEprs = null;
 
     private String userIdentifier = null;
+    private String submissionUser = null;
 
     private WorkflowOutputDataHandlingDocument.WorkflowOutputDataHandling workflowOutputDataHandling = null;
 
@@ -447,4 +452,12 @@ public class WorkflowContextHeaderBuilder {
         WorkflowContextHeaderBuilder.setCurrentContextHeader(parse.getContextHeader());
         return header;
     }
+
+	public String getSubmissionUser() {
+		return submissionUser;
+	}
+
+	public void setSubmissionUser(String submissionUser) {
+		this.submissionUser = submissionUser;
+	}
 }

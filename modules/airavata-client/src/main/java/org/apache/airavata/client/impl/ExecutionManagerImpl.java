@@ -59,6 +59,7 @@ import org.apache.airavata.ws.monitor.EventDataRepository;
 import org.apache.airavata.ws.monitor.Monitor;
 import org.apache.airavata.ws.monitor.MonitorConfiguration;
 import org.apache.airavata.ws.monitor.MonitorUtil.EventType;
+import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
 import org.apache.axis2.AxisFault;
 
@@ -217,7 +218,7 @@ public class ExecutionManagerImpl implements ExecutionManager {
 			if (executionUser==null){
 				executionUser=submissionUser;
 			}
-			WorkflowContextHeaderBuilder builder = AiravataAPIUtils.createWorkflowContextHeaderBuilder(options, submissionUser);
+			WorkflowContextHeaderBuilder builder = AiravataAPIUtils.createWorkflowContextHeaderBuilder(options, executionUser, submissionUser);
 			runPreWorkflowExecutionTasks(experimentID, executionUser, options.getExperimentMetadata(), options.getExperimentName());
 			NameValue[] inputVals = inputValues.toArray(new NameValue[] {});
 			if (listener!=null){
@@ -271,9 +272,11 @@ public class ExecutionManagerImpl implements ExecutionManager {
 		try {
 			builder.getWorkflowMonitoringContext().setExperimentId(experimentId);
 			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(getClient().getAiravataManager().getWorkflowInterpreterServiceURL().toString());
+			OMElement wchOMElement = AXIOMUtil.stringToOM(XMLUtil.xmlElementToString(builder
+					.getXml()));
+			wchOMElement.addAttribute("submissionUser", builder.getSubmissionUser(), wchOMElement.getNamespace());
 			stub._getServiceClient().addHeader(
-					AXIOMUtil.stringToOM(XMLUtil.xmlElementToString(builder
-							.getXml())));
+					wchOMElement);
 			stub.launchWorkflow(workflowGraph, experimentId, inputs);
 		} catch (AxisFault e) {
 			e.printStackTrace();
@@ -303,7 +306,7 @@ public class ExecutionManagerImpl implements ExecutionManager {
 		try {
 			ExperimentAdvanceOptions b = a.createExperimentAdvanceOptions();
 			b.getCustomWorkflowOutputDataSettings().addNewOutputDataSettings("la", "di", "da", false);
-			WorkflowContextHeaderBuilder c = AiravataAPIUtils.createWorkflowContextHeaderBuilder(b, "meeee");
+			WorkflowContextHeaderBuilder c = AiravataAPIUtils.createWorkflowContextHeaderBuilder(b, "sheeeeeeeeeeee","meeee");
 			System.out.println(XMLUtil.xmlElementToString(c.getXml()));
 		} catch (AiravataAPIInvocationException e) {
 			e.printStackTrace();

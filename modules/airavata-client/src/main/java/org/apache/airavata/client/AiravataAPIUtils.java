@@ -47,10 +47,11 @@ public class AiravataAPIUtils {
 	//------------------End of Deprecated Functions---------------------//
 
 	public static WorkflowContextHeaderBuilder createWorkflowContextHeaderBuilder(
-			ExperimentAdvanceOptions options, String submissionUser)
+			ExperimentAdvanceOptions options, String executionUser, String submissionUser)
 			throws AiravataAPIInvocationException {
 		WorkflowContextHeaderBuilder builder=createWorkflowContextHeader();
-		builder.setUserIdentifier(submissionUser);
+		builder.setUserIdentifier(executionUser);
+		builder.setSubmissionUser(submissionUser);
 		NodeSettings[] nodeSettingsList = options.getCustomWorkflowSchedulingSettings().getNodeSettingsList();
 		for (NodeSettings nodeSettings : nodeSettingsList) {
 			List<NameValuePairType> nameValuePairTypes = nodeSettings.getNameValuePair();
@@ -73,7 +74,7 @@ public class AiravataAPIUtils {
         if (options.getCustomSecuritySettings().getCredentialStoreSecuritySettings() != null) {
             builder.setCredentialManagementService(options.getCustomSecuritySettings().
                     getCredentialStoreSecuritySettings().getTokenId(),
-                    submissionUser);
+                    executionUser);
         }
 
 
