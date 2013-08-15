@@ -52,7 +52,7 @@ public class ExperimentExecutionService {
     	String user =  WorkflowContext.getRequestUser();
         String gatewayId = WorkflowContext.getGatewayId();
     	try {
-			String experimentId = getInterpreterService().setupAndLaunch(workflowTemplateName, advanceOptions.getCustomExperimentId(), gatewayId, user, workflowInputs, true, AiravataAPIUtils.createWorkflowContextHeaderBuilder(advanceOptions, user));
+			String experimentId = getInterpreterService().setupAndLaunch(workflowTemplateName, advanceOptions.getCustomExperimentId(), gatewayId, user, workflowInputs, true, AiravataAPIUtils.createWorkflowContextHeaderBuilder(advanceOptions, advanceOptions.getExperimentExecutionUser(),user));
 	    	Response.ResponseBuilder builder = Response.status(Response.Status.OK);
 	        builder.entity(experimentId);
 	        return builder.build();
