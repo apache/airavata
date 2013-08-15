@@ -199,7 +199,7 @@ public class WorkflowInterpreter {
                 ArrayList<Node> readyNodes = this.getReadyNodesDynamically();
                 ArrayList<Thread> threadList = new ArrayList<Thread>();
                 if (getRemainNodesDynamically() == 0) {
-                    notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_STATE_CHANGED, WorkflowExecutionState.PAUSED);
+                    notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_STATE_CHANGED, WorkflowExecutionState.STOPPED);
                 }
                 // ok we have paused sleep
                 if (this.getWorkflow().getExecutionState() == WorkflowExecutionState.PAUSED) {
