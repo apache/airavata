@@ -26,6 +26,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -50,9 +52,11 @@ import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.component.registry.ComponentRegistryLoader;
 import org.apache.airavata.xbaya.registrybrowser.nodes.JCRBrowserIcons;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
+import org.apache.airavata.xbaya.util.RegistryConstants;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class DescriptorEditorDialog extends JDialog {
@@ -73,6 +77,8 @@ public class DescriptorEditorDialog extends JDialog {
 
 	private AbstractButton removeButton;
 	
+	private boolean descriptorChanged=false;
+	
 	public enum DescriptorType{
 		HOST,
 		SERVICE,
@@ -84,12 +90,11 @@ public class DescriptorEditorDialog extends JDialog {
     /**
      * @param engine XBaya workflow engine
      */
-    public DescriptorEditorDialog(XBayaEngine engine,DescriptorType descriptorType) {
+    public DescriptorEditorDialog(XBayaEngine engine, DescriptorType descriptorType) {
         this.engine = engine;
-        setRegistry(engine.getConfiguration().getAiravataAPI());
         this.descriptorType=descriptorType;
+        setRegistry(engine.getConfiguration().getAiravataAPI());
         initGUI();
-        
     }
 
     /**
@@ -218,6 +223,7 @@ public class DescriptorEditorDialog extends JDialog {
 	    		hostDescriptionDialog.open();
 	    		if (hostDescriptionDialog.isHostCreated()) {
 					loadDescriptors();
+					setAsChanged();
 				}
 	    		break;
 	    	case SERVICE:
@@ -228,6 +234,7 @@ public class DescriptorEditorDialog extends JDialog {
 //	    		serviceDescriptionDialog.open();
 	    		if (serviceDescriptionDialog.isServiceCreated()) {
 					loadDescriptors();
+					setAsChanged();
 				}
 	    		break;
 	    	case APPLICATION:
@@ -238,9 +245,17 @@ public class DescriptorEditorDialog extends JDialog {
                 aDescriptionDialog.open();
                 if (aDescriptionDialog.isApplicationDescCreated()) {
                     loadDescriptors();
+					setAsChanged();
                 }
 			break;
     	}
+	}
+
+	private void setAsChanged() {
+		descriptorChanged=true;
+    	if (DescriptorEditorDialog.this.descriptorType==DescriptorType.SERVICE){
+			reloadComponentRegistry();
+		}
 	}
 
     private void newDescriptor() throws AiravataAPIInvocationException {
@@ -250,6 +265,7 @@ public class DescriptorEditorDialog extends JDialog {
 	    		hostDescriptionDialog.open();
 	    		if (hostDescriptionDialog.isHostCreated()){
 	    			loadDescriptors();
+					setAsChanged();
 	    		}
 	    		break;
 	    	case SERVICE:
@@ -259,6 +275,7 @@ public class DescriptorEditorDialog extends JDialog {
 //	    		serviceDescriptionDialog.open();
 	    		if (serviceDescriptionDialog.isServiceCreated()){
 	    			loadDescriptors();
+					setAsChanged();
 	    		}
 	    		break;
 	    	case APPLICATION:
@@ -267,6 +284,7 @@ public class DescriptorEditorDialog extends JDialog {
 	    		applicationDescriptionDialog.open();
 	    		if (applicationDescriptionDialog.isApplicationDescCreated()){
 	    			loadDescriptors();
+					setAsChanged();
 	    		}
 	    		break;
     	}
@@ -310,23 +328,31 @@ public class DescriptorEditorDialog extends JDialog {
 	    	    		HostDescription h = (HostDescription) getSelected();
 	    	        	getAPI().getApplicationManager().deleteHostDescription(h.getType().getHostName());
                         loadDescriptors();
+    					setAsChanged();
 	    	    		break;
 	    	    	case SERVICE:
 	    	        	ServiceDescription d = (ServiceDescription) getSelected();
 	    	        	getAPI().getApplicationManager().deleteServiceDescription(d.getType().getName());
                         loadDescriptors();
+    					setAsChanged();
 	    	    		break;
 	    	    	case APPLICATION:
 	    	    		ApplicationDescription a = (ApplicationDescription) getSelected();
 	    	    		String[] s = dlist.get(a).split("\\$");
 	    	        	getAPI().getApplicationManager().deleteApplicationDescription(s[0], s[1], a.getType().getApplicationName().getStringValue());
 	    	    		loadDescriptors();
+						setAsChanged();
                         break;
             	}
 //				loadDescriptors();
         }
         return true;
     }
+
+	private void reloadComponentRegistry() {
+		ComponentRegistryLoader loader = ComponentRegistryLoader.getLoader(engine, RegistryConstants.REGISTRY_TYPE_JCR);
+		loader.load(engine.getConfiguration().getJcrComponentRegistry());
+	}
     
     private void loadDescriptors() throws AiravataAPIInvocationException {
     	try {

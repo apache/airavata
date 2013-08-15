@@ -39,6 +39,7 @@ import javax.swing.event.MenuListener;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.component.registry.ComponentRegistryLoader;
 import org.apache.airavata.xbaya.core.generators.BPELFiler;
 import org.apache.airavata.xbaya.core.generators.ImageFiler;
 import org.apache.airavata.xbaya.core.generators.JythonFiler;
@@ -54,6 +55,7 @@ import org.apache.airavata.xbaya.ui.experiment.RegistryLoaderWindow;
 import org.apache.airavata.xbaya.ui.graph.GraphCanvas;
 import org.apache.airavata.xbaya.ui.widgets.ToolbarButton;
 import org.apache.airavata.xbaya.ui.widgets.XBayaToolBar;
+import org.apache.airavata.xbaya.util.RegistryConstants;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -318,6 +320,11 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
 //                                engine.getConfiguration().getJcrComponentRegistry()
 //                                        .getRegistry());
 //                        serviceDescriptionDialog.open();
+                    	if (serviceDescriptionDialog.isServiceCreated()){
+//                    		engine.reloadRegistry();
+                    		ComponentRegistryLoader loader = ComponentRegistryLoader.getLoader(engine, RegistryConstants.REGISTRY_TYPE_JCR);
+                    		loader.load(engine.getConfiguration().getJcrComponentRegistry());
+                    	}
                     } catch (Exception e1) {
                         engine.getGUI().getErrorWindow().error(e1);
                     }
