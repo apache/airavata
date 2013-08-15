@@ -47,9 +47,6 @@ import org.apache.airavata.registry.api.workflow.NodeExecutionError;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionError;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State;
-import org.apache.airavata.workflow.model.component.ComponentException;
-import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
-import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.apache.airavata.ws.monitor.EventData;
@@ -185,26 +182,32 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	}
 	private String runExperimentGeneral(Workflow workflowObj, List<WorkflowInput> inputs, ExperimentAdvanceOptions options, EventDataListener listener) throws AiravataAPIInvocationException {
 		try {
-			String workflowString = XMLUtil.xmlElementToString(workflowObj.toXML());
-			List<WSComponentPort> ports = getWSComponentPortInputs(workflowObj);
-			for (WorkflowInput input : inputs) {
-				WSComponentPort port = getWSComponentPort(input.getName(),
-						ports);
-				if (port != null) {
-					port.setValue(input.getValue());
-				}
-			}
 			List<NameValue> inputValues = new ArrayList<NameValue>();
-			for (WSComponentPort port : ports) {
+			for (WorkflowInput input : inputs) {
 				NameValue nameValue = new NameValue();
-				nameValue.setName(port.getName());
-				if (port.getValue() == null) {
-					nameValue.setValue(port.getDefaultValue());
-				} else {
-					nameValue.setValue(port.getValue().toString());
-				}
+				nameValue.setName(input.getName());
+				nameValue.setValue(String.valueOf(input.getValue()==null?input.getDefaultValue():input.getValue()));
 				inputValues.add(nameValue);
 			}
+			String workflowString = XMLUtil.xmlElementToString(workflowObj.toXML());
+//			List<WSComponentPort> ports = getWSComponentPortInputs(workflowObj);
+//			for (WorkflowInput input : inputs) {
+//				WSComponentPort port = getWSComponentPort(input.getName(),
+//						ports);
+//				if (port != null) {
+//					port.setValue(input.getValue());
+//				}
+//			}
+//			for (WSComponentPort port : ports) {
+//				NameValue nameValue = new NameValue();
+//				nameValue.setName(port.getName());
+//				if (port.getValue() == null) {
+//					nameValue.setValue(port.getDefaultValue());
+//				} else {
+//					nameValue.setValue(port.getValue().toString());
+//				}
+//				inputValues.add(nameValue);
+//			}
 			String experimentID=options.getCustomExperimentId();
 			String workflowTemplateName = workflowObj.getName();
 			if (experimentID == null || experimentID.isEmpty()) {
@@ -226,10 +229,10 @@ public class ExecutionManagerImpl implements ExecutionManager {
 			}
 			launchWorkflow(experimentID, workflowString, inputVals, builder);
 			return experimentID;	
-		}  catch (GraphException e) {
-			throw new AiravataAPIInvocationException(e);
-		} catch (ComponentException e) {
-			throw new AiravataAPIInvocationException(e);
+//		}  catch (GraphException e) {
+//			throw new AiravataAPIInvocationException(e);
+//		} catch (ComponentException e) {
+//			throw new AiravataAPIInvocationException(e);
 		} catch (Exception e) {
 	        throw new AiravataAPIInvocationException("Error working with Airavata Registry: " + e.getLocalizedMessage(), e);
 	    }
@@ -250,22 +253,22 @@ public class ExecutionManagerImpl implements ExecutionManager {
         return workflowObj;
     }
     
-	private List<WSComponentPort> getWSComponentPortInputs(Workflow workflow)
-			throws GraphException, ComponentException {
-		workflow.createScript();
-		List<WSComponentPort> inputs = workflow.getInputs();
-		return inputs;
-	}
-
-	private WSComponentPort getWSComponentPort(String name,
-			List<WSComponentPort> ports) {
-		for (WSComponentPort port : ports) {
-			if (port.getName().equals(name)) {
-				return port;
-			}
-		}
-		return null;
-	}
+//	private List<WSComponentPort> getWSComponentPortInputs(Workflow workflow)
+//			throws GraphException, ComponentException {
+//		workflow.createScript();
+//		List<WSComponentPort> inputs = workflow.getInputs();
+//		return inputs;
+//	}
+//
+//	private WSComponentPort getWSComponentPort(String name,
+//			List<WSComponentPort> ports) {
+//		for (WSComponentPort port : ports) {
+//			if (port.getName().equals(name)) {
+//				return port;
+//			}
+//		}
+//		return null;
+//	}
 	
 	private void launchWorkflow(String experimentId, String workflowGraph, NameValue[] inputs,
 			WorkflowContextHeaderBuilder builder) throws AiravataAPIInvocationException {
