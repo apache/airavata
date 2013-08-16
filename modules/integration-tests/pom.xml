@@ -452,7 +452,7 @@
         <airavata.work.dir>${project.build.directory}/tests/apache-airavata-server-${project.version}</airavata.work.dir>
         <xbaya.work.dir>${project.build.directory}/tests/apache-airavata-xbaya-gui-${project.version}</xbaya.work.dir>
         <airavata.tomcat.distribution>${project.build.directory}/apache-airavata-tomcat.zip</airavata.tomcat.distribution>
-        <rest.service.context>airavata-services</rest.service.context>
+        <rest.service.context>airavata</rest.service.context>
         <local.tomcat.distribution>${settings.localRepository}/org/apache/airavata/integration/tomcat/apache-tomcat/${tomcat.version}/apache-tomcat-${tomcat.version}.zip</local.tomcat.distribution>
     </properties>
 </project>
