@@ -107,7 +107,6 @@
 				<include>xpp3:xpp3_xpath</include>
 				<include>org.ogce:xsul:jar</include>
 				<include>org.ogce:xsul5:jar</include>
-				<include>xutil:xutil</include>
 				<include>jython:jython</include>
 				<include>org.apache.xmlbeans:xmlbeans</include>
 				<include>com.amazonaws:aws-java-sdk</include>
