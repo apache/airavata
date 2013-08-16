@@ -66,7 +66,7 @@
                                     <type>war</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${airavata.war.dir}</outputDirectory>
-                                    <destFileName>airavata-services.war</destFileName>
+                                    <destFileName>airavata.war</destFileName>
                                 </artifactItem>
                             </artifactItems>
                             <outputDirectory>${airavata.war.dir}</outputDirectory>

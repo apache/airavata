@@ -57,12 +57,16 @@ public class ServerMain {
                 File.separator + "bin" + File.separator + "axis2.xml");
         axis2Servlet.setLoadOnStartup(1);
 
-        StandardContext context = (StandardContext)tomcat.getTomcat().addContext("/airavata-services", System.getenv("AIRAVATA_HOME"));
-        Wrapper executionServlet = tomcat.addServlet("/airavata-services", "Airavata Execution Service", "com.sun.jersey.spi.container.servlet.ServletContainer");
-        executionServlet.addInitParameter("com.sun.jersey.config.property.packages", "org.apache.airavata.services.experiment;org.codehaus.jackson.jaxrs");
-        executionServlet.setLoadOnStartup(1);
+        StandardContext context = (StandardContext)tomcat.getTomcat().addContext("/airavata", System.getenv("AIRAVATA_HOME"));
+        Wrapper experimentServlet = tomcat.addServlet("/airavata", "Airavata Experiment Service", "com.sun.jersey.spi.container.servlet.ServletContainer");
+        experimentServlet.addInitParameter("com.sun.jersey.config.property.packages", "org.apache.airavata.services.experiment;org.codehaus.jackson.jaxrs");
+        experimentServlet.setLoadOnStartup(1);
         
-        Wrapper registryServlet = tomcat.addServlet("/airavata-services", "Airavata Registry Service", "com.sun.jersey.spi.container.servlet.ServletContainer");
+        Wrapper configurationServlet = tomcat.addServlet("/airavata", "Airavata Server Configuration Service", "com.sun.jersey.spi.container.servlet.ServletContainer");
+        configurationServlet.addInitParameter("com.sun.jersey.config.property.packages", "org.apache.airavata.services.server;org.codehaus.jackson.jaxrs");
+        configurationServlet.setLoadOnStartup(1);
+        
+        Wrapper registryServlet = tomcat.addServlet("/airavata", "Airavata Registry Service", "com.sun.jersey.spi.container.servlet.ServletContainer");
         registryServlet.addInitParameter("com.sun.jersey.config.property.packages", "org.apache.airavata.services.registry.rest;org.codehaus.jackson.jaxrs");
         registryServlet.setLoadOnStartup(1);
 
@@ -75,11 +79,13 @@ public class ServerMain {
         FilterMap filter1mapping = new FilterMap();
         filter1mapping.setFilterName("AuthenticationFilter");
         filter1mapping.addURLPattern("/user-store/*");
-        filter1mapping.addURLPattern("/registry-api/*");
-        filter1mapping.addURLPattern("/execution-service/*");
+        filter1mapping.addURLPattern("/services/registry/*");
+        filter1mapping.addURLPattern("/services/server/*");
+        filter1mapping.addURLPattern("/services/experiment/*");
         context.addFilterMap(filter1mapping);
-        registryServlet.addMapping("/registry-api/*");
-        executionServlet.addMapping("/execution-service/*");
+        registryServlet.addMapping("/services/registry/*");
+        configurationServlet.addMapping("/services/server/*");
+        experimentServlet.addMapping("/services/experiment/*");
         context.addApplicationListener("org.apache.airavata.rest.mappings.utils.RegistryListener");
 
         tomcat.start();

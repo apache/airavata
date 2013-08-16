@@ -155,7 +155,7 @@ public class BaseCaseIT {
         String strContext = System.getProperty("test.server.context");
 
         if (strContext == null) {
-            strContext = "airavata-services";
+            strContext = "airavata";
         }
 
         port = Integer.parseInt(strPort);
@@ -166,7 +166,7 @@ public class BaseCaseIT {
         log("Configurations - serverUrl : " + serverUrl);
         log("Configurations - serverContext : " + serverContextName);
 
-        registryURL = "http://" + serverUrl + ":" + port + "/" + serverContextName + "/registry-api";
+        registryURL = "http://" + serverUrl + ":" + port + "/" + serverContextName + "/services/registry";
 
         log("Configurations - Registry URL : " + registryURL);
 

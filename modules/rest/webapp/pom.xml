@@ -50,7 +50,7 @@
 								<artifactId>airavata-rest-service-webapp</artifactId>
 								<type>war</type>
 								<properties>
-									<context>/airavata-services</context>
+									<context>/airavata</context>
 								</properties>
 							</deployable>
 						</deployables>
