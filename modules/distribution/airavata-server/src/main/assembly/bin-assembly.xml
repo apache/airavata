@@ -222,7 +222,6 @@
                 <include>org.ogce:xpp5:jar</include>
                 <include>org.ogce:xsul:jar</include>
                 <include>org.ogce:xsul5:jar</include>
-                <include>xutil:xutil</include>
                 <include>jython:jython</include>
                 <include>org.jglobus:jglobus-all</include>
                 <include>lead-security:puretls</include>
