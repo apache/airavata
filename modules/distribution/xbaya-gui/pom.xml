@@ -216,24 +216,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>xpp3</groupId>
-            <artifactId>xpp3_xpath</artifactId>
-            <version>1.1.4c</version>
-        </dependency>
-        <dependency>
-            <groupId>xpp3</groupId>
-            <artifactId>xpp3</artifactId>
-            <version>1.1.4c</version>
-        </dependency>
-        <dependency>
-            <groupId>xpp5</groupId>
+            <groupId>org.ogce</groupId>
             <artifactId>xpp5</artifactId>
-            <version>1.2.6</version>
-        </dependency>
-        <dependency>
-            <groupId>xpp5</groupId>
-            <artifactId>xpp5_xpath</artifactId>
-            <version>1.2.6</version>
+            <version>1.2.7</version>
         </dependency>
         <dependency>
             <groupId>org.ogce</groupId>
@@ -244,6 +229,11 @@
             <groupId>org.ogce</groupId>
             <artifactId>gpel-client</artifactId>
             <version>1.0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ogce</groupId>
+            <artifactId>xpp3</artifactId>
+            <version>1.1.5</version>
         </dependency>
         <dependency>
             <groupId>atomixmiser</groupId>
