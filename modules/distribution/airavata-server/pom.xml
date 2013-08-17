@@ -265,34 +265,34 @@
             <artifactId>slf4j-log4j12</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.ogce</groupId>
-            <artifactId>gpel-client</artifactId>
-            <version>1.0.8</version>
-        </dependency>
-        <dependency>
             <groupId>javax.jcr</groupId>
             <artifactId>jcr</artifactId>
             <version>${jcr.version}</version>
         </dependency>
         <dependency>
             <groupId>org.ogce</groupId>
-            <artifactId>xpp5</artifactId>
-            <version>1.2.7</version>
+            <artifactId>xpp3</artifactId>
+            <version>${xpp3.version}</version>
         </dependency>
         <dependency>
             <groupId>org.ogce</groupId>
-            <artifactId>xpp3</artifactId>
-            <version>1.1.5</version>
+            <artifactId>xpp5</artifactId>
+            <version>${xpp5.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ogce</groupId>
+            <artifactId>xsul</artifactId>
+            <version>${xsul.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ogce</groupId>
+            <artifactId>gpel-client</artifactId>
+            <version>${gpel.version}</version>
         </dependency>
         <dependency>
             <groupId>org.python</groupId>
             <artifactId>jython</artifactId>
             <version>2.5.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.ogce</groupId>
-            <artifactId>xsul</artifactId>
-            <version>2.10.6</version>
         </dependency>
         <dependency>
             <groupId>org.apache.xmlbeans</groupId>

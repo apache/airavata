@@ -38,22 +38,22 @@
         <dependency>
             <groupId>org.ogce</groupId>
             <artifactId>xpp3</artifactId>
-            <version>1.1.5</version>
+            <version>${xpp3.version}</version>
         </dependency>
         <dependency>
             <groupId>org.ogce</groupId>
             <artifactId>xpp5</artifactId>
-            <version>1.2.7</version>
+            <version>${xpp5.version}</version>
         </dependency>
         <dependency>
             <groupId>org.ogce</groupId>
             <artifactId>xsul</artifactId>
-            <version>2.10.6</version>
+            <version>${xsul.version}</version>
         </dependency>
         <dependency>
             <groupId>org.ogce</groupId>
             <artifactId>xsul5</artifactId>
-            <version>1.2.6</version>
+            <version>${xsul5.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.axis2</groupId>
