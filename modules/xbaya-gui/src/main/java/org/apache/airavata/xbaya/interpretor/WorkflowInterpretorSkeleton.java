@@ -368,7 +368,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         List<InputNode> inputNodes = new ODEClient().getInputNodes(workflow);
         for (InputNode inputNode : inputNodes) {
             for (NameValue input : inputs) {
-                if (inputNode.getName().equals(input.getName())) {
+                if (inputNode.getID().equals(input.getName())) {
                     inputNode.setDefaultValue(input.getValue());
                     break;
                 }
