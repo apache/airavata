@@ -486,27 +486,12 @@ public class Workflow implements Cloneable {
     }
     
 	public List<WorkflowInput> getWorkflowInputs() throws Exception{
-		List<WSComponentPort> inputs = getInputs();
 		List<InputNode> inputNodes = GraphUtil.getInputNodes(getGraph());
 		List<WorkflowInput> results=new ArrayList<WorkflowInput>();
 		for (InputNode port : inputNodes) {
-			Object value=null;
-			WSComponentPort wsComponentPort = getWSComponentPort(port.getName(), inputs);
-			if (wsComponentPort!=null){
-				value=wsComponentPort.getValue();
-			}
-			results.add(new WorkflowInput(port.getName(), port.getParameterType().getLocalPart(), port.getDefaultValue(), value, !port.isVisibility()));
+			results.add(new WorkflowInput(port.getID(), port.getParameterType().getLocalPart(), port.getDefaultValue(), port.getDefaultValue(), !port.isVisibility()));
 		}
 		return results;
-	}
-
-	private WSComponentPort getWSComponentPort(String name,List<WSComponentPort> ports){
-		for (WSComponentPort port : ports) {
-			if (port.getName().equals(name)){
-				return port;
-			}
-		}
-		return null;
 	}
 	
     /**
