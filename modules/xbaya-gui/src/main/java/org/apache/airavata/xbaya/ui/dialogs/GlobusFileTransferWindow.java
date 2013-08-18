@@ -22,13 +22,13 @@
 package org.apache.airavata.xbaya.ui.dialogs;
 
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.globus.GridFTPFileTransferClient;
+//import org.apache.airavata.xbaya.globus.GridFTPFileTransferClient;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
-import org.globusonline.transfer.APIError;
-import org.globusonline.transfer.JSONTransferAPIClient;
-import org.json.JSONException;
+//import org.globusonline.transfer.APIError;
+//import org.globusonline.transfer.JSONTransferAPIClient;
+//import org.json.JSONException;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -90,33 +90,33 @@ public class GlobusFileTransferWindow {
         String destEndpoint = this.destEndpointTextField.getText();
         String destFilePath = this.destFilePathTextField.getText();
 
-        JSONTransferAPIClient c;
-        try {
-            c = new JSONTransferAPIClient(username, caFile, certFile, keyFile, GLOBUSONLINE_BASE_URL_V0_10);
-        } catch (KeyManagementException e) {
-            this.engine.getGUI().getErrorWindow().error("Key Management Error.", e);
-            return;
-        } catch (NoSuchAlgorithmException e) {
-            this.engine.getGUI().getErrorWindow().error("No Such Algorithm Error.", e);
-            return;
-        }
-        System.out.println("base url: " + c.getBaseUrl());
-        GridFTPFileTransferClient e = new GridFTPFileTransferClient(c);
-        try {
-            e.transfer(sourceEndpoint, sourceFilePath, destEndpoint, destFilePath);
-        } catch (IOException e1) {
-            this.engine.getGUI().getErrorWindow().error("IO Error.", e1);
-            return;
-        } catch (JSONException e1) {
-            this.engine.getGUI().getErrorWindow().error("JSON Error.", e1);
-            return;
-        } catch (GeneralSecurityException e1) {
-            this.engine.getGUI().getErrorWindow().error("Key Management Error.", e1);
-            return;
-        } catch (APIError apiError) {
-            this.engine.getGUI().getErrorWindow().error("Globus Transfer API Calling Error.", apiError);
-            return;
-        }
+//        JSONTransferAPIClient c;
+//        try {
+//            c = new JSONTransferAPIClient(username, caFile, certFile, keyFile, GLOBUSONLINE_BASE_URL_V0_10);
+//        } catch (KeyManagementException e) {
+//            this.engine.getGUI().getErrorWindow().error("Key Management Error.", e);
+//            return;
+//        } catch (NoSuchAlgorithmException e) {
+//            this.engine.getGUI().getErrorWindow().error("No Such Algorithm Error.", e);
+//            return;
+//        }
+//        System.out.println("base url: " + c.getBaseUrl());
+//        GridFTPFileTransferClient e = new GridFTPFileTransferClient(c);
+//        try {
+//            e.transfer(sourceEndpoint, sourceFilePath, destEndpoint, destFilePath);
+//        } catch (IOException e1) {
+//            this.engine.getGUI().getErrorWindow().error("IO Error.", e1);
+//            return;
+//        } catch (JSONException e1) {
+//            this.engine.getGUI().getErrorWindow().error("JSON Error.", e1);
+//            return;
+//        } catch (GeneralSecurityException e1) {
+//            this.engine.getGUI().getErrorWindow().error("Key Management Error.", e1);
+//            return;
+//        } catch (APIError apiError) {
+//            this.engine.getGUI().getErrorWindow().error("Globus Transfer API Calling Error.", apiError);
+//            return;
+//        }
 
         // TODO: should display a message whether the transfer was successful/unsuccessful
         hide();

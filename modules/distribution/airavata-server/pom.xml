@@ -340,11 +340,6 @@
             <version>2.4</version>
         </dependency>
         <dependency>
-            <groupId>globus</groupId>
-            <artifactId>transfer-api-client</artifactId>
-            <version>0.10</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>json</artifactId>
             <version>${project.version}</version>
