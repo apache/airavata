@@ -357,15 +357,6 @@
             <url>file:./jglobus-repo/repository</url>
         </repository>
         <repository>
-            <name>ogce.m2.all</name>
-            <id>ogce.m2.all</id>
-            <url>http://community.ucs.indiana.edu:9090/archiva/repository/ogce.m2.all</url>
-            <snapshots>
-                <updatePolicy>daily</updatePolicy>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
             <id>unicore.eu</id>
             <name>UNICORE repository</name>
             <url>http://unicore-dev.zam.kfa-juelich.de/maven</url>
