@@ -104,6 +104,7 @@
                 <include>org.ogce:xsul5:jar</include>
                 <include>org.ogce:gpel-client:jar</include>
                 <include>org.ogce:atomixmiser:jar</include>
+                <include>org.ogce:yfilter:jar</include>
                 <include>jython:jython</include>
                 <include>org.apache.xmlbeans:xmlbeans</include>
                 <include>com.amazonaws:aws-java-sdk</include>
@@ -130,7 +131,6 @@
                 <include>com.sun.jersey:jersey-client:jar</include>
                 <include>com.sun.jersey:jersey-core:jar</include>
                 <include>com.sun.jersey:jersey-json</include>
-                <include>edu.berkeley:yfilter</include>
                 <include>org.codehaus.jackson:jackson-jaxrs</include>
                 <include>org.codehaus.jackson:jackson-core-asl</include>
                 <include>org.codehaus.jackson:jackson-mapper-asl</include>
