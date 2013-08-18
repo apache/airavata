@@ -21,11 +21,11 @@
 
 package org.apache.airavata.xbaya.ui.dialogs.amazon;
 
-import edu.indiana.extreme.amazonec2webservice.AmazonEC2WebserviceCallbackHandler;
-import edu.indiana.extreme.amazonec2webservice.AmazonEC2WebserviceStub;
-import edu.indiana.extreme.amazonec2webservice.AmazonEC2WebserviceStub.JobStatusResponse;
-import edu.indiana.extreme.amazonec2webservice.AmazonEC2WebserviceStub.JobSubmissionReceipt;
-import edu.indiana.extreme.amazonec2webservice.AmazonEC2WebserviceStub.JobSubmitOperation;
+//import edu.indiana.extreme.amazonec2webservice.AmazonEC2WebserviceCallbackHandler;
+//import edu.indiana.extreme.amazonec2webservice.AmazonEC2WebserviceStub;
+//import edu.indiana.extreme.amazonec2webservice.AmazonEC2WebserviceStub.JobStatusResponse;
+//import edu.indiana.extreme.amazonec2webservice.AmazonEC2WebserviceStub.JobSubmissionReceipt;
+//import edu.indiana.extreme.amazonec2webservice.AmazonEC2WebserviceStub.JobSubmitOperation;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
@@ -159,26 +159,26 @@ public class AmazonEC2InvokerWindow {
      * Deploy Work Flow to Amazon EC2
      */
     protected void execute() {
-        try {
-            AmazonEC2WebserviceStub stub = new AmazonEC2WebserviceStub();
-            JobSubmitOperation jobInfo = new JobSubmitOperation();
-            jobInfo.setAccessKeyID(this.accessKeyIDTextField.getText());
-            jobInfo.setSecretAccessKey(this.secretAccessKeyTextField.getText());
-            jobInfo.setKeyPairName(this.keyPairNameTextField.getText());
-            jobInfo.setNumOfInstances(this.numOfInstancesTextField.getText());
-            jobInfo.setJobFlowName(this.jobFlowNameTextField.getText());
-            jobInfo.setLogLocationOnS3(this.logLocationOnS3TextField.getText());
-            jobInfo.setInputLocationOnS3(this.inputLocationOnS3TextField.getText());
-            jobInfo.setOutputLocationOnS3(this.outputLocationOnS3TextField.getText());
-            jobInfo.setJarFilePathOnS3(this.jarFilePathOnS3TextField.getText());
-            jobInfo.setMainClassName(this.mainClassNameTextField.getText());
-            stub.startjobSubmitOperation(jobInfo, new MyHandler());
-            this.hide();
-        } catch (AxisFault e) {
-            e.printStackTrace();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            AmazonEC2WebserviceStub stub = new AmazonEC2WebserviceStub();
+//            JobSubmitOperation jobInfo = new JobSubmitOperation();
+//            jobInfo.setAccessKeyID(this.accessKeyIDTextField.getText());
+//            jobInfo.setSecretAccessKey(this.secretAccessKeyTextField.getText());
+//            jobInfo.setKeyPairName(this.keyPairNameTextField.getText());
+//            jobInfo.setNumOfInstances(this.numOfInstancesTextField.getText());
+//            jobInfo.setJobFlowName(this.jobFlowNameTextField.getText());
+//            jobInfo.setLogLocationOnS3(this.logLocationOnS3TextField.getText());
+//            jobInfo.setInputLocationOnS3(this.inputLocationOnS3TextField.getText());
+//            jobInfo.setOutputLocationOnS3(this.outputLocationOnS3TextField.getText());
+//            jobInfo.setJarFilePathOnS3(this.jarFilePathOnS3TextField.getText());
+//            jobInfo.setMainClassName(this.mainClassNameTextField.getText());
+//            stub.startjobSubmitOperation(jobInfo, new MyHandler());
+//            this.hide();
+//        } catch (AxisFault e) {
+//            e.printStackTrace();
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//        }
     }
 
     /**
@@ -195,28 +195,28 @@ public class AmazonEC2InvokerWindow {
         this.dialog.show();
     }
 
-    class MyHandler extends AmazonEC2WebserviceCallbackHandler {
+//    class MyHandler extends AmazonEC2WebserviceCallbackHandler {
+//
+//        @Override
+//        public void receiveResultjobSubmitOperation(JobSubmissionReceipt result) {
+//            JOptionPane.showMessageDialog(null, "Job Submitted, ID: " + result.getJobFlowID(), "",
+//                    JOptionPane.INFORMATION_MESSAGE);
+//        }
+//
+//        @Override
+//        public void receiveErrorjobSubmitOperation(java.lang.Exception e) {
+//            JOptionPane.showMessageDialog(null, "Job Submit Failed!", "", JOptionPane.ERROR_MESSAGE);
+//        }
+//
+//        @Override
+//        public void receiveResultjobStatus(JobStatusResponse result) {
+//            System.out.println("In call back, response is: " + result.getStatus());
+//        }
+//
+//        @Override
+//        public void receiveErrorjobStatus(java.lang.Exception e) {
+//            throw new WorkflowRuntimeException(e);
+//        }
 
-        @Override
-        public void receiveResultjobSubmitOperation(JobSubmissionReceipt result) {
-            JOptionPane.showMessageDialog(null, "Job Submitted, ID: " + result.getJobFlowID(), "",
-                    JOptionPane.INFORMATION_MESSAGE);
-        }
-
-        @Override
-        public void receiveErrorjobSubmitOperation(java.lang.Exception e) {
-            JOptionPane.showMessageDialog(null, "Job Submit Failed!", "", JOptionPane.ERROR_MESSAGE);
-        }
-
-        @Override
-        public void receiveResultjobStatus(JobStatusResponse result) {
-            System.out.println("In call back, response is: " + result.getStatus());
-        }
-
-        @Override
-        public void receiveErrorjobStatus(java.lang.Exception e) {
-            throw new WorkflowRuntimeException(e);
-        }
-
-    }
+//    }
 }
