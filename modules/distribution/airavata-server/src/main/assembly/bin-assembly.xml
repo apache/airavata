@@ -221,9 +221,6 @@
                 <include>org.ogce:yfilter:jar</include>
                 <include>org.python:jython:jar</include>
                 <include>org.jglobus:jglobus-all</include>
-                <include>lead-security:puretls</include>
-                <include>lead-security:cryptix32</include>
-                <include>lead-security:cryptix-asn1</include>
                 <include>org.apache.xmlbeans:xmlbeans</include>
                 <include>com.amazonaws:aws-java-sdk</include>
                 <include>net.java.dev.jets3t:jets3t</include>

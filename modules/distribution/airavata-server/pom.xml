@@ -471,21 +471,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>lead-security</groupId>
-            <artifactId>puretls</artifactId>
-            <version>0.9b4-1</version>
-        </dependency>
-        <dependency>
-            <groupId>lead-security</groupId>
-            <artifactId>cryptix32</artifactId>
-            <version>versionless</version>
-        </dependency>
-        <dependency>
-            <groupId>lead-security</groupId>
-            <artifactId>cryptix-asn1</artifactId>
-            <version>versionless</version>
-        </dependency>
-        <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
             <version>${jersey.version}</version>
