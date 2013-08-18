@@ -325,6 +325,11 @@
             <version>${atomixmiser.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.ogce</groupId>
+            <artifactId>yfilter</artifactId>
+            <version>${yfilter.version}</version>
+        </dependency>
+        <dependency>
             <groupId>commons-configuration</groupId>
             <artifactId>commons-configuration</artifactId>
             <version>1.6</version>
@@ -343,11 +348,6 @@
             <groupId>globus</groupId>
             <artifactId>transfer-api-client</artifactId>
             <version>0.10</version>
-        </dependency>
-        <dependency>
-            <groupId>edu.berkeley</groupId>
-            <artifactId>yfilter</artifactId>
-            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>

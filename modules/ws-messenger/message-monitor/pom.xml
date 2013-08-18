@@ -40,19 +40,17 @@
             <artifactId>atomixmiser</artifactId>
             <version>${atomixmiser.version}</version>
         </dependency>
-        <!--dependency> <groupId>org.apache.airavata</groupId> <artifactId>airavata-registry-api</artifactId> <version>${project.version}</version> 
-            </dependency -->
+        <dependency>
+            <groupId>org.ogce</groupId>
+            <artifactId>yfilter</artifactId>
+            <version>${yfilter.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-common-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>edu.berkeley</groupId>
-            <artifactId>yfilter</artifactId>
-            <version>1.0</version>
-        </dependency>
         <dependency>
             <groupId>wsdl4j</groupId>
             <artifactId>wsdl4j</artifactId>

@@ -218,6 +218,7 @@
                 <include>org.ogce:xsul5:jar</include>
                 <include>org.ogce:gpel-client:jar</include>
                 <include>org.ogce:atomixmiser:jar</include>
+                <include>org.ogce:yfilter:jar</include>
                 <include>jython:jython</include>
                 <include>org.jglobus:jglobus-all</include>
                 <include>lead-security:puretls</include>
@@ -252,8 +253,6 @@
                 <include>org.apache.openjpa:openjpa-all:jar</include>
                 <include>com.sun.jersey:jersey-client:jar</include>
                 <include>com.sun.jersey:jersey-core:jar</include>
-                <include>edu.berkeley:yfilter</include>
-                <include>edu.berkeley:yfilter</include>
                 <include>org.bouncycastle:bcprov-jdk15</include>
                 <include>org.bouncycastle:bcmail-jdk15</include>
                 <include>org.apache.tomcat:tomcat-jasper</include>
