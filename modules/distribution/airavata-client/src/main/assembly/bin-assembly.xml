@@ -1,13 +1,10 @@
-<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor 
-	license agreements. See the NOTICE file distributed with this work for additional 
-	information regarding copyright ownership. The ASF licenses this file to 
-	you under the Apache License, Version 2.0 (theÏ "License"); you may not use 
-	this file except in compliance with the License. You may obtain a copy of 
-	the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required 
-	by applicable law or agreed to in writing, software distributed under the 
-	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
-	OF ANY ~ KIND, either express or implied. See the License for the specific 
-	language governing permissions and limitations under the License. -->
+<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE file 
+    distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to you under 
+    the Apache License, Version 2.0 (theÏ "License"); you may not use this file except in compliance with the License. You may 
+    obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to 
+    in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF 
+    ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
+    the License. -->
 	
 <!DOCTYPE assembly [
         <!ELEMENT assembly (id|includeBaseDirectory|baseDirectory|formats|fileSets|dependencySets)*>
@@ -26,94 +23,94 @@
         <!ELEMENT dependencySet (outputDirectory|includes)*>
         ]>
 <assembly>
-	<id>bin</id>
-	<includeBaseDirectory>true</includeBaseDirectory>
-	<baseDirectory>${archieve.name}-${version}</baseDirectory>
-	<formats>
-		<format>tar.gz</format>
-		<format>zip</format>
-	</formats>
-	<fileSets>
-		<!-- ********************** copy release notes files ********************** -->
-		<fileSet>
-			<directory>../../../</directory>
-			<outputDirectory>.</outputDirectory>
-			<includes>
-				<include>RELEASE_NOTES</include>
-			</includes>
-		</fileSet>
-		<!-- ********************** copy licenses, readme etc. ********************** -->
-		<fileSet>
-			<directory>src/main/resources/</directory>
-			<outputDirectory>.</outputDirectory>
-			<includes>
+    <id>bin</id>
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <baseDirectory>${archieve.name}-${version}</baseDirectory>
+    <formats>
+        <format>tar.gz</format>
+        <format>zip</format>
+    </formats>
+    <fileSets>
+        <!-- ********************** copy release notes files ********************** -->
+        <fileSet>
+            <directory>../../../</directory>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>RELEASE_NOTES</include>
+            </includes>
+        </fileSet>
+        <!-- ********************** copy licenses, readme etc. ********************** -->
+        <fileSet>
+            <directory>src/main/resources/</directory>
+            <outputDirectory>.</outputDirectory>
+            <includes>
                 <include>conf/*</include>
-				<include>LICENSE</include>
-				<include>NOTICE</include>
-				<include>README</include>
-				<include>INSTALL</include>
-			</includes>
-		</fileSet>
+                <include>LICENSE</include>
+                <include>NOTICE</include>
+                <include>README</include>
+                <include>INSTALL</include>
+            </includes>
+        </fileSet>
 
-		<fileSet>
-			<directory>../../../samples/airavata-client</directory>
-			<outputDirectory>samples</outputDirectory>
-			<excludes>
-				<exclude>**/*.iml</exclude>
-				<exclude>**/pom.xml</exclude>
-				<exclude>**/target/**</exclude>
-			</excludes>
+        <fileSet>
+            <directory>../../../samples/airavata-client</directory>
+            <outputDirectory>samples</outputDirectory>
+            <excludes>
+                <exclude>**/*.iml</exclude>
+                <exclude>**/pom.xml</exclude>
+                <exclude>**/target/**</exclude>
+            </excludes>
 
-		</fileSet>
-	</fileSets>
+        </fileSet>
+    </fileSets>
 
-	<dependencySets>
-		<dependencySet>
-			<outputDirectory>lib</outputDirectory>
-			<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
-			<includes>
-				<include>org.apache.derby:derby:jar</include>
-				<include>org.apache.derby:derbytools:jar</include>
-				<include>org.apache.derby:derbynet:jar</include>
-				<include>org.apache.derby:derbyclient:jar</include>
-			</includes>
-		</dependencySet>
-		<dependencySet>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>org.slf4j:slf4j-api:jar</include>
-				<include>org.slf4j:slf4j-jcl:jar</include>
-				<include>org.slf4j:slf4j-log4j12:jar</include>
-				<include>javax.jcr:jcr:jar</include>
-				<include>commons-collections:commons-collections</include>
-				<include>commons-configuration:commons-configuration</include>
-				<include>commons-lang:commons-lang</include>
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+            <includes>
+                <include>org.apache.derby:derby:jar</include>
+                <include>org.apache.derby:derbytools:jar</include>
+                <include>org.apache.derby:derbynet:jar</include>
+                <include>org.apache.derby:derbyclient:jar</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>org.slf4j:slf4j-api:jar</include>
+                <include>org.slf4j:slf4j-jcl:jar</include>
+                <include>org.slf4j:slf4j-log4j12:jar</include>
+                <include>javax.jcr:jcr:jar</include>
+                <include>commons-collections:commons-collections</include>
+                <include>commons-configuration:commons-configuration</include>
+                <include>commons-lang:commons-lang</include>
                 <include>org.ogce:xpp3:jar</include>
-                <include>org.ogce:gpel-client:jar</include>
                 <include>org.ogce:xpp5:jar</include>
                 <include>org.ogce:xsul:jar</include>
                 <include>org.ogce:xsul5:jar</include>
-				<include>jython:jython</include>
-				<include>org.apache.xmlbeans:xmlbeans</include>
-				<!--<include>com.amazonaws:aws-java-sdk</include>-->
-				<!--<include>amazon:MapReduce.Service.Client</include>-->
-				<include>net.java.dev.jets3t:jets3t</include>
-				<include>atomixmiser:atomixmiser</include>
-				<include>org.apache.airavata:airavata-registry-api</include>
-				<include>org.apache.airavata:airavata-workflow-execution-context</include>
-				<!--<include>org.apache.airavata:airavata-workflow-tracking</include>-->
-				<!--<include>org.apache.airavata:airavata-gfac-core</include>-->
-				<include>org.apache.airavata:airavata-messenger-client</include>
-				<include>org.apache.airavata:airavata-messenger-commons</include>
-				<include>org.apache.airavata:airavata-gfac-schema-utils</include>
-				<include>org.apache.airavata:airavata-common-utils</include>
-				<include>org.apache.airavata:airavata-workflow-model-core:jar</include>
-				<!--<include>org.apache.airavata:airavata-workflow-model-component:jar</include>-->
-				<include>org.apache.airavata:airavata-message-monitor:jar</include>
-				<include>org.apache.airavata:airavata-client-api:jar</include>
-				<include>org.apache.airavata:airavata-jpa-registry:jar</include>
+                <include>org.ogce:gpel-client:jar</include>
+                <include>org.ogce:atomixmiser:jar</include>
+                <include>jython:jython</include>
+                <include>org.apache.xmlbeans:xmlbeans</include>
+                <!--<include>com.amazonaws:aws-java-sdk</include> -->
+                <!--<include>amazon:MapReduce.Service.Client</include> -->
+                <include>net.java.dev.jets3t:jets3t</include>
+                <include>org.apache.airavata:airavata-registry-api</include>
+                <include>org.apache.airavata:airavata-workflow-execution-context</include>
+                <!--<include>org.apache.airavata:airavata-workflow-tracking</include> -->
+                <!--<include>org.apache.airavata:airavata-gfac-core</include> -->
+                <include>org.apache.airavata:airavata-messenger-client</include>
+                <include>org.apache.airavata:airavata-messenger-commons</include>
+                <include>org.apache.airavata:airavata-gfac-schema-utils</include>
+                <include>org.apache.airavata:airavata-common-utils</include>
+                <include>org.apache.airavata:airavata-workflow-model-core:jar</include>
+                <!--<include>org.apache.airavata:airavata-workflow-model-component:jar</include> -->
+                <include>org.apache.airavata:airavata-message-monitor:jar</include>
+                <include>org.apache.airavata:airavata-client-api:jar</include>
+                <include>org.apache.airavata:airavata-jpa-registry:jar</include>
                 <include>org.apache.airavata:airavata-rest-client:jar</include>
-				<include>org.apache.openjpa:openjpa-all:jar</include>
+                <include>org.apache.openjpa:openjpa-all:jar</include>
                 <include>xerces:xercesImpl:jar:2.9.1</include>
                 <include>com.sun.jersey:jersey-json</include>
                 <include>com.sun.jersey.contribs:jersey-multipart</include>
@@ -141,8 +138,8 @@
                 <include>org.apache.httpcomponents:httpcore:jar</include>
                 <include>org.apache.axis2:axis2-adb:jar</include>
                 <include>log4j:log4j:jar</include>
-			</includes>
-		</dependencySet>
-	</dependencySets>
+            </includes>
+        </dependencySet>
+    </dependencySets>
 
 </assembly>

@@ -99,16 +99,16 @@
                 <include>commons-configuration:commons-configuration</include>
                 <include>commons-lang:commons-lang</include>
                 <include>org.ogce:xpp3:jar</include>
-                <include>org.ogce:gpel-client:jar</include>
                 <include>org.ogce:xpp5:jar</include>
                 <include>org.ogce:xsul:jar</include>
                 <include>org.ogce:xsul5:jar</include>
+                <include>org.ogce:gpel-client:jar</include>
+                <include>org.ogce:atomixmiser:jar</include>
                 <include>jython:jython</include>
                 <include>org.apache.xmlbeans:xmlbeans</include>
                 <include>com.amazonaws:aws-java-sdk</include>
                 <include>amazon:MapReduce.Service.Client</include>
                 <include>net.java.dev.jets3t:jets3t</include>
-                <include>atomixmiser:atomixmiser</include>
                 <include>globus:transfer-api-client</include>
                 <include>org.apache.airavata:airavata-registry-api</include>
                 <include>org.apache.airavata:airavata-workflow-execution-context</include>

@@ -236,9 +236,9 @@
             <version>${gpel.version}</version>
         </dependency>
         <dependency>
-            <groupId>atomixmiser</groupId>
+            <groupId>org.ogce</groupId>
             <artifactId>atomixmiser</artifactId>
-            <version>0.9.4</version>
+            <version>${atomixmiser.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-httpclient</groupId>

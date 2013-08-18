@@ -1,13 +1,10 @@
-<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor
-	license agreements. See the NOTICE file distributed with this work for additional
-	information regarding copyright ownership. The ASF licenses this file to
-	you under the Apache License, Version 2.0 (theÏ "License"); you may not use
-	this file except in compliance with the License. You may obtain a copy of
-	the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required
-	by applicable law or agreed to in writing, software distributed under the
-	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
-	OF ANY ~ KIND, either express or implied. See the License for the specific
-	language governing permissions and limitations under the License. -->
+<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE file 
+    distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to you under 
+    the Apache License, Version 2.0 (theÏ "License"); you may not use this file except in compliance with the License. You may 
+    obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to 
+    in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF 
+    ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
+    the License. -->
 
 <!DOCTYPE assembly [
         <!ELEMENT assembly (id|includeBaseDirectory|baseDirectory|formats|fileSets|dependencySets)*>
@@ -140,8 +137,7 @@
             </includes>
         </fileSet>
 
-        <!-- ********************** Copy Axis2 startup scripts to stand alone server
-              ********************** -->
+        <!-- ********************** Copy Axis2 startup scripts to stand alone server ********************** -->
         <fileSet>
             <directory>src/main/resources/axis2-standalone-bin
             </directory>
@@ -153,9 +149,8 @@
             </includes>
         </fileSet>
 
-        <!--fileSet> <directory>../../samples/simple-math-service/target</directory>
-              <outputDirectory>standalone-server/repository/services</outputDirectory>
-              <includes> <include>*.aar</include> </includes> </fileSet -->
+        <!--fileSet> <directory>../../samples/simple-math-service/target</directory> <outputDirectory>standalone-server/repository/services</outputDirectory> 
+            <includes> <include>*.aar</include> </includes> </fileSet -->
         <fileSet>
             <directory>../../../samples/complex-math-service/target</directory>
             <outputDirectory>repository/services
@@ -184,7 +179,7 @@
             <outputDirectory>samples</outputDirectory>
             <includes>
                 <include>*.sh</include>
-				<include>*.bat</include>
+                <include>*.bat</include>
             </includes>
         </fileSet>
         <fileSet>
@@ -218,10 +213,11 @@
                 <include>commons-configuration:commons-configuration</include>
                 <include>commons-lang:commons-lang</include>
                 <include>org.ogce:xpp3:jar</include>
-                <include>org.ogce:gpel-client:jar</include>
                 <include>org.ogce:xpp5:jar</include>
                 <include>org.ogce:xsul:jar</include>
                 <include>org.ogce:xsul5:jar</include>
+                <include>org.ogce:gpel-client:jar</include>
+                <include>org.ogce:atomixmiser:jar</include>
                 <include>jython:jython</include>
                 <include>org.jglobus:jglobus-all</include>
                 <include>lead-security:puretls</include>
@@ -231,7 +227,6 @@
                 <include>com.amazonaws:aws-java-sdk</include>
                 <include>amazon:MapReduce.Service.Client</include>
                 <include>net.java.dev.jets3t:jets3t</include>
-                <include>atomixmiser:atomixmiser</include>
                 <include>globus:transfer-api-client</include>
                 <include>org.apache.airavata:airavata-registry-api</include>
                 <include>org.apache.airavata:airavata-workflow-execution-context</include>
@@ -288,9 +283,9 @@
                 <include>org.mockito:mockito-all</include>
                 <include>com.jcraft:jsch</include>
                 <include>net.sf.jopt-simple:jopt-simple</include>
-				<include>net.schmizz:sshj</include>
-				<include>j2ssh:j2ssh-core</include>
-				<include>j2ssh:j2ssh-common</include>
+                <include>net.schmizz:sshj</include>
+                <include>j2ssh:j2ssh-core</include>
+                <include>j2ssh:j2ssh-common</include>
                 <include>org.apache.httpcomponents:httpcore:jar:4.1</include>
                 <include>org.apache.httpcomponents:httpclient:jar:4.1</include>
                 <include>de.odysseus.staxon:staxon:jar:1.2</include>
