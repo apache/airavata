@@ -226,7 +226,6 @@
                 <include>lead-security:cryptix-asn1</include>
                 <include>org.apache.xmlbeans:xmlbeans</include>
                 <include>com.amazonaws:aws-java-sdk</include>
-                <include>amazon:MapReduce.Service.Client</include>
                 <include>net.java.dev.jets3t:jets3t</include>
                 <include>globus:transfer-api-client</include>
                 <include>org.apache.airavata:airavata-registry-api</include>
