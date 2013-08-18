@@ -9,7 +9,7 @@
     the License. -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -21,7 +21,7 @@
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
         <version>13</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <groupId>org.apache.airavata</groupId>
@@ -80,6 +80,7 @@
         <xsul.version>2.10.7</xsul.version>
         <xsul5.version>1.2.7</xsul5.version>
         <gpel.version>1.0.9</gpel.version>
+        <atomixmiser.version>0.9.4</atomixmiser.version>
         <jersey.version>1.13</jersey.version>
         <tomcat.version>7.0.41</tomcat.version>
         <cargo.version>1.3.1</cargo.version>
@@ -339,10 +340,6 @@
 
     <repositories>
         <repository>
-            <id>my-local-repo</id>
-            <url>file:./jglobus-repo/repository</url>
-        </repository>
-        <repository>
             <id>central</id>
             <name>Maven Central</name>
             <url>http://repo1.maven.org/maven2</url>
@@ -354,21 +351,15 @@
             </snapshots>
         </repository>
         <repository>
+            <id>my-local-repo</id>
+            <url>file:./jglobus-repo/repository</url>
+        </repository>
+        <repository>
             <name>ogce.m2.all</name>
             <id>ogce.m2.all</id>
             <url>http://community.ucs.indiana.edu:9090/archiva/repository/ogce.m2.all</url>
             <snapshots>
                 <updatePolicy>daily</updatePolicy>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-
-        <repository>
-            <id>m2-snapshot-repository</id>
-            <url>http://people.apache.org/repo/m2-snapshot-repository</url>
-            <releases>
-            </releases>
-            <snapshots>
                 <enabled>false</enabled>
             </snapshots>
         </repository>
