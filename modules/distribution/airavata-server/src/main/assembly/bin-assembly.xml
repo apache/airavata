@@ -219,7 +219,7 @@
                 <include>org.ogce:gpel-client:jar</include>
                 <include>org.ogce:atomixmiser:jar</include>
                 <include>org.ogce:yfilter:jar</include>
-                <include>jython:jython</include>
+                <include>org.python:jython:jar</include>
                 <include>org.jglobus:jglobus-all</include>
                 <include>lead-security:puretls</include>
                 <include>lead-security:cryptix32</include>

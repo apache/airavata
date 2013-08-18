@@ -91,7 +91,7 @@
                 <include>org.ogce:xsul5:jar</include>
                 <include>org.ogce:gpel-client:jar</include>
                 <include>org.ogce:atomixmiser:jar</include>
-                <include>jython:jython</include>
+                <include>org.python:jython:jar</include>
                 <include>org.apache.xmlbeans:xmlbeans</include>
                 <!--<include>com.amazonaws:aws-java-sdk</include> -->
                 <!--<include>amazon:MapReduce.Service.Client</include> -->
