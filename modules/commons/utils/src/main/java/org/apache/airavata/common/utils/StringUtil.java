@@ -27,28 +27,69 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StringUtil {
+	private static final String DELIMETER=",";
+	private static final String QUOTE="\"";
+	
+	private static boolean isQuoted(String s){
+		//chk if we need quotes
+		if (s.contains(DELIMETER)){
+			//chk if its already quoted
+			s=s.replaceAll("\"\"", "");
+			return (s.substring(0,1).equals(QUOTE) && s.subSequence(s.length()-1, s.length()).equals(QUOTE));
+		}
+		//no delimeters present, so already in proper form
+		return true;
+	}
+	
+	public static String createDelimeteredString(String[] list){
+		String s=null;
+		for (String ss : list) {
+			ss=quoteString(ss);
+			if (s==null){
+				s=ss;
+			}else{
+				s+=","+ss;
+			}
+		}
+		return s;
+	}
+	
+	public static String quoteString(String s){
+		if (isQuoted(s)){
+			return s;
+		}else{
+			return QUOTE+s+QUOTE;
+		}
+	}
 	
 	public static String[] getElementsFromString(String s) {
 		List<String> list=new ArrayList<String>();
 		String currentItem="";
 		String previousChar=null;
-		String delimeter=",";
-		String quote="\"";
 		boolean insideQuote=false;
 		for(int i=0;i<s.length();i++){
 			String c=s.substring(i,i+1);
-			if (c.equals(delimeter)){
+			if (c.equals(DELIMETER)){
 				if (!insideQuote) {
 					list.add(currentItem);
 					currentItem = "";
 				}else{
 					currentItem+=c;
 				}
-			}else if (c.equals(quote)){
-				if (insideQuote){
-					insideQuote=false;
-				}else{
-					insideQuote=true;
+			}else if (c.equals(QUOTE)){
+				if (QUOTE.equals(previousChar)){
+					if (insideQuote){
+						insideQuote=false;
+					}else{
+						currentItem+=QUOTE+QUOTE;
+						insideQuote=true;
+					}
+				} else{
+					if (insideQuote){
+						insideQuote=false;
+					}else{
+						insideQuote=true;
+					}
 				}
 			}else{
 				currentItem+=c;
