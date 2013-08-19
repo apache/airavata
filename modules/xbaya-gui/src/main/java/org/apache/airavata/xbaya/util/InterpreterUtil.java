@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.graph.DataPort;
@@ -81,14 +82,14 @@ public class InterpreterUtil {
             Node inputNode = inputPort.getFromNode();
             // if input node for for-each is WSNode
             if (inputNode instanceof InputNode) {
-                for (DataPort dataPort : forEachNode.getInputPorts()) {
-                    returnValForProvenance = InterpreterUtil.findInputFromPort(dataPort, invokerMap);
+//                for (DataPort dataPort : forEachNode.getInputPorts()) {
+                    returnValForProvenance = InterpreterUtil.findInputFromPort(inputPort, invokerMap);
                     if (null == returnValForProvenance) {
                         throw new WorkFlowInterpreterException("Unable to find input for the node:" + forEachNode.getID());
                     }
-                    String[] vals = returnValForProvenance.toString().split(",");
+                    String[] vals = StringUtil.getElementsFromString(returnValForProvenance.toString());
                     listOfValues.addAll(Arrays.asList(vals));
-                }
+//                }
             } else {
                 Invoker workflowInvoker = invokerMap.get(inputNode);
                 if (workflowInvoker != null) {
@@ -253,7 +254,7 @@ public class InterpreterUtil {
                 if (null == returnValForProvenance) {
                     throw new WorkFlowInterpreterException("Unable to find input for the node:" + forEachNode.getID());
                 }
-                String[] vals = returnValForProvenance.toString().split(",");
+                String[] vals = StringUtil.getElementsFromString(returnValForProvenance.toString());
                 inputNumbers[inputPorts.indexOf(forEachInputPort)] = vals.length;
             } else {
                 Invoker workflowInvoker = invokerMap.get(forEachInputNode);
