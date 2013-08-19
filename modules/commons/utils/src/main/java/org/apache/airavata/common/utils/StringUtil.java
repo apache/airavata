@@ -23,8 +23,41 @@ package org.apache.airavata.common.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class StringUtil {
+	
+	public static String[] getElementsFromString(String s) {
+		List<String> list=new ArrayList<String>();
+		String currentItem="";
+		String previousChar=null;
+		String delimeter=",";
+		String quote="\"";
+		boolean insideQuote=false;
+		for(int i=0;i<s.length();i++){
+			String c=s.substring(i,i+1);
+			if (c.equals(delimeter)){
+				if (!insideQuote) {
+					list.add(currentItem);
+					currentItem = "";
+				}else{
+					currentItem+=c;
+				}
+			}else if (c.equals(quote)){
+				if (insideQuote){
+					insideQuote=false;
+				}else{
+					insideQuote=true;
+				}
+			}else{
+				currentItem+=c;
+			}
+			previousChar=c;
+		}
+		list.add(currentItem);
+		return list.toArray(new String[]{});
+	}
 
     /**
      * Converts object to String without worrying about null check.
