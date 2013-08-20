@@ -41,6 +41,7 @@ import javax.swing.SwingConstants;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.exception.DescriptorAlreadyExistsException;
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.schemas.gfac.Ec2HostType;
@@ -310,31 +311,20 @@ public class HostDescriptionDialog extends JDialog {
         SwingUtil.layoutToGrid(globusPanel.getSwingComponent(), 2, 2, SwingUtil.WEIGHT_NONE, 1);
         return globusPanel;
 	}
-    private String arrayToString(String[] list) {
-    	String result="";
-		for (String s : list) {
-			if (result.equals("")){
-				result=s;
-			}else{
-				result+=","+s;
-			}
-		}
-		return result;
-	}
     private void loadData() {
     	HostDescriptionType t = getOriginalHostDescription().getType();
     	hostIdTextField.setText(t.getHostName());
 		hostAddressTextField.setText(t.getHostAddress());
 		if (t instanceof GlobusHostType){
 			cmbResourceProtocol.setSelectedItem(REMOTE_PROTOCOL_STR_GLOBUS);
-			gateKeeperTextField.setText(arrayToString(((GlobusHostType) t).getGlobusGateKeeperEndPointArray()));
-			gridFTPTextField.setText(arrayToString(((GlobusHostType) t).getGridFTPEndPointArray()));
+			gateKeeperTextField.setText(StringUtil.createDelimiteredString(((GlobusHostType) t).getGlobusGateKeeperEndPointArray()));
+			gridFTPTextField.setText(StringUtil.createDelimiteredString(((GlobusHostType) t).getGridFTPEndPointArray()));
 		}else if (t instanceof SSHHostType){
 			cmbResourceProtocol.setSelectedItem(REMOTE_PROTOCOL_STR_SSH);
 		}else if (t instanceof UnicoreHostType){
 			cmbResourceProtocol.setSelectedItem(REMOTE_PROTOCOL_STR_UNICORE);
-			gateKeeperTextField.setText(arrayToString(((UnicoreHostType) t).getUnicoreBESEndPointArray()));
-			gridFTPTextField.setText(arrayToString(((UnicoreHostType) t).getGridFTPEndPointArray()));
+			gateKeeperTextField.setText(StringUtil.createDelimiteredString(((UnicoreHostType) t).getUnicoreBESEndPointArray()));
+			gridFTPTextField.setText(StringUtil.createDelimiteredString(((UnicoreHostType) t).getGridFTPEndPointArray()));
 		}else if (t instanceof Ec2HostType){
 			cmbResourceProtocol.setSelectedItem(REMOTE_PROTOCOL_STR_AMAZON_EC2);
 		}

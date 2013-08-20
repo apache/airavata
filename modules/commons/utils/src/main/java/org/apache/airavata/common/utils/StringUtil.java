@@ -27,33 +27,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StringUtil {
-	private static final String DELIMETER=",";
-	private static final String QUOTE="\"";
+	public static final String DELIMETER=",";
+	public static final String QUOTE="\"";
 	
 	private static boolean isQuoted(String s){
-		//chk if we need quotes
+		//Check if we need quotes
 		if (s.contains(DELIMETER)){
-			//chk if its already quoted
+			//Check if its already quoted
 			s=s.replaceAll("\"\"", "");
 			return (s.substring(0,1).equals(QUOTE) && s.subSequence(s.length()-1, s.length()).equals(QUOTE));
 		}
-		//no delimeters present, so already in proper form
+		//no delimiters present, so already in proper form
 		return true;
 	}
 	
-	public static String createDelimeteredString(String[] list){
+	/**
+	 * Create a delimiter separated string out of a list
+	 * @param list
+	 * @return
+	 */
+	public static String createDelimiteredString(String[] list){
 		String s=null;
 		for (String ss : list) {
 			ss=quoteString(ss);
 			if (s==null){
 				s=ss;
 			}else{
-				s+=","+ss;
+				s+=DELIMETER +ss;
 			}
 		}
 		return s;
 	}
 	
+	/**
+	 * Return a proper quoted string if the string contains the delimiter character
+	 * @param s
+	 * @return
+	 */
 	public static String quoteString(String s){
 		if (isQuoted(s)){
 			return s;
@@ -62,6 +72,11 @@ public class StringUtil {
 		}
 	}
 	
+	/**
+	 * Parse the delimitered string and return elements as a string array 
+	 * @param s
+	 * @return
+	 */
 	public static String[] getElementsFromString(String s) {
 		List<String> list=new ArrayList<String>();
 		String currentItem="";
@@ -70,24 +85,30 @@ public class StringUtil {
 		for(int i=0;i<s.length();i++){
 			String c=s.substring(i,i+1);
 			if (c.equals(DELIMETER)){
-				if (!insideQuote) {
+				//if not inside a quoted string ignore the delimiter character
+				if (insideQuote) {
+					currentItem+=c;
+				}else{
 					list.add(currentItem);
 					currentItem = "";
-				}else{
-					currentItem+=c;
 				}
 			}else if (c.equals(QUOTE)){
 				if (QUOTE.equals(previousChar)){
+					//which means previousChar was an escape character, not a quote for the string
+					currentItem+=QUOTE+QUOTE;
 					if (insideQuote){
+						//mistakenly thought previous char was opening quote char, thus need to make this false
 						insideQuote=false;
 					}else{
-						currentItem+=QUOTE+QUOTE;
+						//mistakenly thought previous char was closing quote char, thus need to make this true
 						insideQuote=true;
 					}
 				} else{
 					if (insideQuote){
+						//quote ended
 						insideQuote=false;
 					}else{
+						//quote beginning
 						insideQuote=true;
 					}
 				}

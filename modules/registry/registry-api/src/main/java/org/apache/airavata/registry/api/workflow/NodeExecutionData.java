@@ -25,6 +25,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State;
 
 import java.util.ArrayList;
@@ -213,7 +214,7 @@ public class NodeExecutionData {
 	private static List<NameValue> getIOParameterData(String data){
 		List<NameValue> parameters=new ArrayList<NameValue>();
 		if (data!=null) {
-			String[] pairs = data.split(",");
+			String[] pairs = StringUtil.getElementsFromString(data);
 			for (String paras : pairs) {
 				String name=paras.trim();
 				String value="";
@@ -222,9 +223,9 @@ public class NodeExecutionData {
 				if (i!=-1){
 					value=name.substring(i+1);
 					name=name.substring(0,i);
-					parameters.add(new NameValue(name,value));
+					parameters.add(new NameValue(name,StringUtil.quoteString(value)));
 				}else{
-					parameters.get(parameters.size()-1).value=parameters.get(parameters.size()-1).value+","+name;
+					parameters.get(parameters.size()-1).value=parameters.get(parameters.size()-1).value+","+StringUtil.quoteString(name);
 				}
 				
 			}
