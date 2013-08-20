@@ -38,6 +38,7 @@ import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.airavata.client.stub.interpretor.NameValue;
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.graph.DataPort;
@@ -174,7 +175,7 @@ public class XBayaUtil {
 							"Unable to find input for the node:"
 									+ forEachNode.getID());
 				}
-				String[] vals = returnValForProvenance.toString().split(",");
+				String[] vals = StringUtil.getElementsFromString(returnValForProvenance.toString());
 				listOfValues.addAll(Arrays.asList(vals));
 			}
 		} else {
@@ -275,9 +276,9 @@ public class XBayaUtil {
 				Object object2 = valItr.next();
 				if (object2 instanceof XmlElement) {
 					outputVal = outputVal
-							+ ","
-							+ ((XmlElement) object2).children().iterator()
-									.next().toString();
+							+ StringUtil.DELIMETER 
+							+ StringUtil.quoteString(((XmlElement) object2).children().iterator()
+									.next().toString());
 				}
 			}
 			outputVal = ((String) outputVal).substring(1,

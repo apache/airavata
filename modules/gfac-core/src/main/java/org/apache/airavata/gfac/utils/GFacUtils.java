@@ -23,6 +23,7 @@ package org.apache.airavata.gfac.utils;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.DBUtil;
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.Constants;
@@ -217,7 +218,7 @@ public class GFacUtils {
             Iterator value = element.getChildrenWithLocalName("value");
             int i = 0;
             if (!"".equals(element.getText())) {
-                String[] list = element.getText().split(",");
+                String[] list = StringUtil.getElementsFromString(element.getText());
                 for (String arrayValue : list) {
                     ((StringArrayType) actualParameter.getType()).insertValue(i++, arrayValue);
                 }
@@ -232,7 +233,7 @@ public class GFacUtils {
             Iterator value = element.getChildrenWithLocalName("value");
             int i = 0;
             if (!"".equals(element.getText())) {
-                String[] list = element.getText().split(",");
+                String[] list = StringUtil.getElementsFromString(element.getText());
                 for (String arrayValue : list) {
                     ((DoubleArrayType) actualParameter.getType()).insertValue(i++, new Double(arrayValue));
                 }
@@ -248,7 +249,7 @@ public class GFacUtils {
             Iterator value = element.getChildrenWithLocalName("value");
             int i = 0;
             if (!"".equals(element.getText())) {
-                String[] list = element.getText().split(",");
+                String[] list = StringUtil.getElementsFromString(element.getText());
                 for (String arrayValue : list) {
                     ((IntegerArrayType) actualParameter.getType()).insertValue(i++, new Integer(arrayValue));
                 }
@@ -263,7 +264,7 @@ public class GFacUtils {
             Iterator value = element.getChildrenWithLocalName("value");
             int i = 0;
             if (!"".equals(element.getText())) {
-                String[] list = element.getText().split(",");
+                String[] list = StringUtil.getElementsFromString(element.getText());
                 for (String arrayValue : list) {
                     ((FloatArrayType) actualParameter.getType()).insertValue(i++, new Float(arrayValue));
                 }
@@ -279,7 +280,7 @@ public class GFacUtils {
             Iterator value = element.getChildrenWithLocalName("value");
             int i = 0;
             if (!"".equals(element.getText())) {
-                String[] list = element.getText().split(",");
+                String[] list = StringUtil.getElementsFromString(element.getText());
                 for (String arrayValue : list) {
                     ((BooleanArrayType) actualParameter.getType()).insertValue(i++, new Boolean(arrayValue));
                 }
@@ -295,7 +296,7 @@ public class GFacUtils {
             Iterator value = element.getChildrenWithLocalName("value");
             int i = 0;
             if (!"".equals(element.getText())) {
-                String[] list = element.getText().split(",");
+                String[] list = StringUtil.getElementsFromString(element.getText());
                 for (String arrayValue : list) {
                     ((FileArrayType) actualParameter.getType()).insertValue(i++, arrayValue);
                 }
@@ -311,7 +312,7 @@ public class GFacUtils {
             Iterator value = element.getChildrenWithLocalName("value");
             int i = 0;
             if (!"".equals(element.getText())) {
-                String[] list = element.getText().split(",");
+                String[] list = StringUtil.getElementsFromString(element.getText());
                 for (String arrayValue : list) {
                     ((URIArrayType) actualParameter.getType()).insertValue(i++, arrayValue);
                 }
@@ -352,7 +353,7 @@ public class GFacUtils {
             ((URIParameterType) actualParameter.getType()).setValue(inputVal);
         } else if ("StringArray".equals(parameter.getParameterType().getName())) {
             actualParameter = new ActualParameter(StringArrayType.type);
-            Iterator iterator = Arrays.asList(inputVal.split(",")).iterator();
+            Iterator iterator = Arrays.asList(StringUtil.getElementsFromString(inputVal)).iterator();
             int i = 0;
             while (iterator.hasNext()) {
                 innerelement = (OMElement) iterator.next();
@@ -360,7 +361,7 @@ public class GFacUtils {
             }
         } else if ("DoubleArray".equals(parameter.getParameterType().getName())) {
             actualParameter = new ActualParameter(DoubleArrayType.type);
-            Iterator value = Arrays.asList(inputVal.split(",")).iterator();
+            Iterator value = Arrays.asList(StringUtil.getElementsFromString(inputVal)).iterator();
             int i = 0;
             while (value.hasNext()) {
                 innerelement = (OMElement) value.next();
@@ -368,7 +369,7 @@ public class GFacUtils {
             }
         } else if ("IntegerArray".equals(parameter.getParameterType().getName())) {
             actualParameter = new ActualParameter(IntegerArrayType.type);
-            Iterator value = Arrays.asList(inputVal.split(",")).iterator();
+            Iterator value = Arrays.asList(StringUtil.getElementsFromString(inputVal)).iterator();
             int i = 0;
             while (value.hasNext()) {
                 innerelement = (OMElement) value.next();
@@ -376,7 +377,7 @@ public class GFacUtils {
             }
         } else if ("FloatArray".equals(parameter.getParameterType().getName())) {
             actualParameter = new ActualParameter(FloatArrayType.type);
-            Iterator value = Arrays.asList(inputVal.split(",")).iterator();
+            Iterator value = Arrays.asList(StringUtil.getElementsFromString(inputVal)).iterator();
             int i = 0;
             while (value.hasNext()) {
                 innerelement = (OMElement) value.next();
@@ -384,7 +385,7 @@ public class GFacUtils {
             }
         } else if ("BooleanArray".equals(parameter.getParameterType().getName())) {
             actualParameter = new ActualParameter(BooleanArrayType.type);
-            Iterator value = Arrays.asList(inputVal.split(",")).iterator();
+            Iterator value = Arrays.asList(StringUtil.getElementsFromString(inputVal)).iterator();
             int i = 0;
             while (value.hasNext()) {
                 innerelement = (OMElement) value.next();
@@ -392,7 +393,7 @@ public class GFacUtils {
             }
         } else if ("FileArray".equals(parameter.getParameterType().getName())) {
             actualParameter = new ActualParameter(FileArrayType.type);
-            Iterator value = Arrays.asList(inputVal.split(",")).iterator();
+            Iterator value = Arrays.asList(StringUtil.getElementsFromString(inputVal)).iterator();
             int i = 0;
             while (value.hasNext()) {
                 innerelement = (OMElement) value.next();
@@ -400,7 +401,7 @@ public class GFacUtils {
             }
         } else if ("URIArray".equals(parameter.getParameterType().getName())) {
             actualParameter = new ActualParameter(URIArrayType.type);
-            Iterator value = Arrays.asList(inputVal.split(",")).iterator();
+            Iterator value = Arrays.asList(StringUtil.getElementsFromString(inputVal)).iterator();
             int i = 0;
             while (value.hasNext()) {
                 innerelement = (OMElement) value.next();

@@ -28,6 +28,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.GFacException;
@@ -65,7 +66,7 @@ public class GridFTPInputHandler implements GFacHandler {
                 if ("URI".equals(actualParameter.getType().getType().toString())) {
                     ((URIParameterType) actualParameter.getType()).setValue(stageInputFiles(jobExecutionContext, paramValue));
                 } else if ("URIArray".equals(actualParameter.getType().getType().toString())) {
-                    List<String> split = Arrays.asList(paramValue.split(","));
+                    List<String> split = Arrays.asList(StringUtil.getElementsFromString(paramValue));
                     List<String> newFiles = new ArrayList<String>();
                     for (String paramValueEach : split) {
                         newFiles.add(stageInputFiles(jobExecutionContext, paramValueEach));

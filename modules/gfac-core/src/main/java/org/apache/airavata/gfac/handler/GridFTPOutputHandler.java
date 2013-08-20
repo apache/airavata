@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
@@ -281,7 +282,7 @@ public class GridFTPOutputHandler implements GFacHandler {
                                 MappingFactory.toString(actualParameter), ftp, gssCred, endpoint));
                     }
                 } else if ("URIArray".equals(actualParameter.getType().getType().toString())) {
-                    List<String> split = Arrays.asList(MappingFactory.toString(actualParameter).split(","));
+                    List<String> split = Arrays.asList(StringUtil.getElementsFromString(MappingFactory.toString(actualParameter)));
                     List<String> newFiles = new ArrayList<String>();
                     for (String endpoint : gridFTPEndpointArray) {
                         for (String paramValueEach : split) {

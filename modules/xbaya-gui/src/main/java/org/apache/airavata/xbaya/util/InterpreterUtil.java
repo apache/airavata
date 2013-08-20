@@ -189,7 +189,7 @@ public class InterpreterUtil {
                 if (object2 instanceof XmlElement) {
 
                     if (((XmlElement) object2).children().iterator().hasNext()) {
-                        outputVal = outputVal + "," + ((XmlElement) object2).children().iterator().next().toString();
+                        outputVal = outputVal + StringUtil.DELIMETER  + StringUtil.quoteString(((XmlElement) object2).children().iterator().next().toString());
                     }
                 }
             }

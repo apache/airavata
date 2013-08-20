@@ -21,11 +21,29 @@
 
 package org.apache.airavata.commons.gfac.type;
 
-import org.apache.airavata.schemas.gfac.*;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.apache.airavata.common.utils.StringUtil;
+import org.apache.airavata.schemas.gfac.BooleanArrayType;
+import org.apache.airavata.schemas.gfac.BooleanParameterType;
+import org.apache.airavata.schemas.gfac.DataType;
+import org.apache.airavata.schemas.gfac.DoubleArrayType;
+import org.apache.airavata.schemas.gfac.DoubleParameterType;
+import org.apache.airavata.schemas.gfac.FileArrayType;
+import org.apache.airavata.schemas.gfac.FileParameterType;
+import org.apache.airavata.schemas.gfac.FloatArrayType;
+import org.apache.airavata.schemas.gfac.FloatParameterType;
+import org.apache.airavata.schemas.gfac.IntegerArrayType;
+import org.apache.airavata.schemas.gfac.IntegerParameterType;
+import org.apache.airavata.schemas.gfac.StdErrParameterType;
+import org.apache.airavata.schemas.gfac.StdOutParameterType;
+import org.apache.airavata.schemas.gfac.StringArrayType;
+import org.apache.airavata.schemas.gfac.StringParameterType;
+import org.apache.airavata.schemas.gfac.URIArrayType;
+import org.apache.airavata.schemas.gfac.URIParameterType;
+
+import com.sun.org.apache.xpath.internal.operations.Quo;
 
 /*
  * TODO use XML meta data instead of static coding
@@ -101,7 +119,7 @@ public class MappingFactory {
         } else if (param.hasType(DataType.URI)) {
             return String.valueOf(((URIParameterType) param.getType()).getValue());
         } else if (param.hasType(DataType.STRING_ARRAY)) {
-            return join(Arrays.asList(((StringArrayType) param.getType()).getValueArray()), ",");
+            return join(Arrays.asList(((StringArrayType) param.getType()).getValueArray()), StringUtil.DELIMETER);
         } else if (param.hasType(DataType.STD_OUT)) {
             return String.valueOf(((StdOutParameterType) param.getType()).getValue());
         } else if (param.hasType(DataType.STD_ERR)) {
@@ -114,11 +132,11 @@ public class MappingFactory {
         } else if (param.hasType(DataType.BOOLEAN_ARRAY)) {
             return String.valueOf(((BooleanArrayType) param.getType()).getValueArray());
         } else if (param.hasType(DataType.FILE_ARRAY)) {
-            return join(Arrays.asList(((FileArrayType) param.getType()).getValueArray()), ",");
+            return join(Arrays.asList(((FileArrayType) param.getType()).getValueArray()), StringUtil.DELIMETER );
         } else if (param.hasType(DataType.FLOAT_ARRAY)) {
             return String.valueOf(((FloatArrayType) param.getType()).getValueArray());
         } else if (param.hasType(DataType.URI_ARRAY)) {
-            return join(Arrays.asList(((URIArrayType) param.getType()).getValueArray()), ",");
+            return join(Arrays.asList(((URIArrayType) param.getType()).getValueArray()), StringUtil.DELIMETER );
         }
         return null;
     }
@@ -156,7 +174,7 @@ public class MappingFactory {
         for (String s : list) {
 
             sb.append(loopDelim);
-            sb.append(s);
+            sb.append(StringUtil.quoteString(s));
 
             loopDelim = delim;
         }

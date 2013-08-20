@@ -42,6 +42,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.Pair;
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
@@ -1217,7 +1218,7 @@ public class WorkflowInterpreter {
 		if (inputNumber.length == 1) {
 			inputArray = listOfValues.toArray(new String[listOfValues.size()]);
 		} else {
-			inputArray = input.split(",");
+			inputArray = StringUtil.getElementsFromString(input);
 		}
 		int index = 0;
 		for (DataPort port : inputPorts) {
@@ -1265,7 +1266,7 @@ public class WorkflowInterpreter {
 			if (this.config.isRunWithCrossProduct()) {
 				for (int i = 0; i < inputNumbers[0]; i++) {
 					for (int j = 0; j < inputNumbers[1]; j++) {
-						inputValues.add(listOfValues.get(i) + "," + listOfValues.get(inputNumbers[0] + j));
+						inputValues.add(listOfValues.get(i) + StringUtil.DELIMETER + listOfValues.get(inputNumbers[0] + j));
 					}
 				}
 
@@ -1300,9 +1301,9 @@ public class WorkflowInterpreter {
 				for (int i = 0; i < inputSize; i++) {
 					String inputValue = "";
 					for (String[] array : finalInputList) {
-						inputValue = inputValue + "," + array[i];
+						inputValue = inputValue + StringUtil.DELIMETER + StringUtil.quoteString(array[i]);
 					}
-					inputValue = inputValue.replaceFirst(",", "");
+					inputValue = inputValue.replaceFirst(StringUtil.DELIMETER , "");
 					inputValues.add(inputValue);
 				}
 

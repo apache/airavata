@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.handler.GFacHandlerException;
@@ -94,10 +95,10 @@ public class OutputUtils {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(stdout);
         while (matcher.find()) {
-            match.append(matcher.group(1) + ",");
+            match.append(matcher.group(1) + StringUtil.DELIMETER);
         }
         if (match != null) {
-            return match.toString().split(",");
+            return StringUtil.getElementsFromString(match.toString());
         } else {
             throw new Exception("Data for the output parameter '" + outParam + "' was not found");
         }

@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.xbaya.invoker;
 
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
@@ -41,7 +42,7 @@ public class WorkflowInputUtil {
                     append(getValueElement(input)).append("</").append(port.getName()).append(">");
         }else if(paramType.endsWith("ArrayType")){
             inputString.append(port.getName()).append(">");
-            String[] valueList = input.split(",");
+            String[] valueList = StringUtil.getElementsFromString(input);
             for(String inputValue:valueList){
                 inputString.append(getValueElement(inputValue));
             }
