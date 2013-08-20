@@ -245,8 +245,10 @@ public class ForEachCaseIT {
                 serviceDescription.getType().getName()));
 
         // Deployment descriptor
-        ApplicationDescription applicationDeploymentDescription = descriptorBuilder
-                .buildApplicationDeploymentDescription("comma_app_localhost", getFile("src/test/resources/comma_data.sh").getAbsolutePath(), "/tmp");
+        File executable = getFile("src/test/resources/comma_data.sh");
+        Runtime.getRuntime().exec("chmod +x "+executable.getAbsolutePath());
+		ApplicationDescription applicationDeploymentDescription = descriptorBuilder
+                .buildApplicationDeploymentDescription("comma_app_localhost", executable.getAbsolutePath(), "/tmp");
 
         log("Adding deployment description ...");
         airavataAPI.getApplicationManager().addApplicationDescription(serviceDescription, hostDescription,
