@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import com.sun.tools.javac.util.Paths;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.ToolsException;
@@ -58,6 +59,8 @@ import org.globus.gsi.gssapi.auth.HostAuthorization;
 import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ws.rs.Path;
 
 /**
  * GridFTP tools
@@ -160,7 +163,6 @@ public class GridFtp {
                 ftpClient.setType(Session.TYPE_IMAGE);
             }
 
-
             ftpClient.put(remoteFile, new DataSourceStream(io), new MarkerListener() {
                 public void markerArrived(Marker marker) {
                 }
@@ -203,7 +205,6 @@ public class GridFtp {
             destClient.authenticate(gsCredential);
             destClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
             makeFileTransferExternalConfigurations(srcClient, destClient);
-            
             log.debug("Uploading file");
             if (checkBinaryExtensions(remoteFile)) {
                 log.debug("Transfer mode is set to Binary for a file upload");
@@ -619,4 +620,15 @@ public class GridFtp {
 		}
 
 	}
+
+    public String gridFTPFileExist(URI inputDirectory,String fileName,GSSCredential gssCred) throws ToolsException {
+        List<String> strings = listDir(inputDirectory, gssCred);
+        for(String fileExist:strings){
+            if(fileName.equals(fileExist)) {
+                fileName = "duplicate_" + fileName;
+                return fileName;
+            }
+        }
+        return fileName;
+    }
 }
