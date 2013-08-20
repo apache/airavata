@@ -57,6 +57,7 @@ public class WorkflowSchedulingSettingsImpl implements
 		NodeSettingsImpl nodeSettings = new NodeSettingsImpl(nodeId, serviceId);
 		nodeSettings.getHPCSettings().setCPUCount(cpuCount);
 		nodeSettings.getHPCSettings().setNodeCount(nodeCount);
+		addNewNodeSettings(nodeSettings);
 		return nodeSettings;
 	}
 

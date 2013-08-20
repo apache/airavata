@@ -21,6 +21,7 @@
 
 package org.apache.airavata.client.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.airavata.client.api.HPCSettings;
@@ -92,6 +93,9 @@ public class NodeSettingsImpl implements NodeSettings {
 
 	@Override
 	public List<NameValuePairType> getNameValuePair() {
+		if (nameValuePair==null){
+			nameValuePair=new ArrayList<NameValuePairType>();
+		}
 		return nameValuePair;
 	}
 
