@@ -61,6 +61,11 @@ public class WorkflowContextHeaderBuilder {
         this.contextHeader = document;
         if (contextHeader!=null) {
 			this.securityContext = contextHeader.getSecurityContext();
+			this.workflowSchedulingContext=contextHeader.getWorkflowSchedulingContext();
+			this.soaServiceEprs=contextHeader.getSoaServiceEprs();
+			this.workflowMonitoringContext=contextHeader.getWorkflowMonitoringContext();
+			this.workflowOutputDataHandling=contextHeader.getWorkflowOutputDataHandling();
+			this.userIdentifier=contextHeader.getUserIdentifier();
 		}
     }
     
