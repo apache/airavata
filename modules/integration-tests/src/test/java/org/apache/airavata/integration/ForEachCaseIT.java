@@ -36,22 +36,16 @@ import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.ExperimentAdvanceOptions;
 import org.apache.airavata.client.api.builder.DescriptorBuilder;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.client.api.exception.DescriptorAlreadyExistsException;
-import org.apache.airavata.client.api.exception.WorkflowAlreadyExistsException;
-import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
-import org.apache.airavata.registry.api.workflow.ApplicationJob;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
 import org.apache.airavata.registry.api.workflow.InputData;
 import org.apache.airavata.registry.api.workflow.NodeExecutionData;
-import org.apache.airavata.registry.api.workflow.OutputData;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeType.WorkflowNode;
 import org.apache.airavata.schemas.gfac.DataType;
-import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.workflow.model.wf.Workflow;
@@ -69,9 +63,9 @@ import org.testng.annotations.Test;
 /**
  * Integration test class.
  */
-public class BaseCaseIT {
+public class ForEachCaseIT {
 
-    private final Logger log = LoggerFactory.getLogger(BaseCaseIT.class);
+    private final Logger log = LoggerFactory.getLogger(ForEachCaseIT.class);
 
     private int port;
     private String serverUrl;
@@ -129,7 +123,7 @@ public class BaseCaseIT {
         return password;
     }
 
-    public BaseCaseIT() throws Exception {
+    public ForEachCaseIT() throws Exception {
         setUpEnvironment();
     }
 
@@ -226,47 +220,23 @@ public class BaseCaseIT {
                 passwordCallback);
     }
 
-    @Test(groups = { "setupTests" })
-    public void testSetup() {
-
-        Version version = this.airavataAPI.getVersion();
-
-        Assert.assertNotNull(version);
-
-        log("Airavata version - " + version.getFullVersion());
-
-    }
-
-    @Test(groups = { "setupTests" }, dependsOnMethods = { "testSetup" })
-    public void testURLs() throws AiravataAPIInvocationException {
-        URI eventingServiceURL = this.airavataAPI.getAiravataManager().getEventingServiceURL();
-        Assert.assertNotNull(eventingServiceURL);
-
-        URI messageBoxServiceURL = this.airavataAPI.getAiravataManager().getMessageBoxServiceURL();
-        Assert.assertNotNull(messageBoxServiceURL);
-    }
-
-    @Test(groups = { "echoGroup" }, dependsOnGroups = { "setupTests" })
+    @Test(groups = { "echoGroup" })
     public void testEchoService() throws Exception {
 
         DescriptorBuilder descriptorBuilder = airavataAPI.getDescriptorBuilder();
-
-        HostDescription hostDescription = descriptorBuilder.buildHostDescription(HostDescriptionType.type, "localhost",
-                "127.0.0.1");
-
-        log("Adding host description ....");
-        airavataAPI.getApplicationManager().addHostDescription(hostDescription);
-
-        Assert.assertTrue(airavataAPI.getApplicationManager().isHostDescriptorExists(
-                hostDescription.getType().getHostName()));
-
+        
+        log("Checking host description ....");
+        Assert.assertTrue(airavataAPI.getApplicationManager().isHostDescriptorExists("localhost"));
+        HostDescription hostDescription = airavataAPI.getApplicationManager().getHostDescription("localhost");
+        
         List<InputParameterType> inputParameters = new ArrayList<InputParameterType>();
-        inputParameters.add(descriptorBuilder.buildInputParameterType("echo_input", "echo input", DataType.STRING));
+        inputParameters.add(descriptorBuilder.buildInputParameterType("data1", "data1", DataType.STRING));
+        inputParameters.add(descriptorBuilder.buildInputParameterType("data2", "data2", DataType.STRING));
 
         List<OutputParameterType> outputParameters = new ArrayList<OutputParameterType>();
-        outputParameters.add(descriptorBuilder.buildOutputParameterType("echo_output", "Echo output", DataType.STRING));
+        outputParameters.add(descriptorBuilder.buildOutputParameterType("out", "out", DataType.STD_OUT));
 
-        ServiceDescription serviceDescription = descriptorBuilder.buildServiceDescription("Echo", "Echo service",
+        ServiceDescription serviceDescription = descriptorBuilder.buildServiceDescription("comma_app", "comma_app",
                 inputParameters, outputParameters);
 
         log("Adding service description ...");
@@ -276,7 +246,7 @@ public class BaseCaseIT {
 
         // Deployment descriptor
         ApplicationDescription applicationDeploymentDescription = descriptorBuilder
-                .buildApplicationDeploymentDescription("EchoApplication", "/bin/echo", "/tmp");
+                .buildApplicationDeploymentDescription("comma_app_localhost", getFile("src/test/resources/comma_data.sh").getAbsolutePath(), "/tmp");
 
         log("Adding deployment description ...");
         airavataAPI.getApplicationManager().addApplicationDescription(serviceDescription, hostDescription,
@@ -287,107 +257,14 @@ public class BaseCaseIT {
                 applicationDeploymentDescription.getType().getApplicationName().getStringValue()));
 
         log("Saving workflow ...");
-        Workflow workflow = new Workflow(getWorkflowComposeContent("src/test/resources/EchoWorkflow.xwf"));
+        Workflow workflow = new Workflow(getWorkflowComposeContent("src/test/resources/ForEachEchoWorkflow.xwf"));
         airavataAPI.getWorkflowManager().addWorkflow(workflow);
 
         Assert.assertTrue(airavataAPI.getWorkflowManager().isWorkflowExists(workflow.getName()));
 
         log("Workflow setting up completed ...");
 
-        runWorkFlow(workflow, Arrays.asList("echo_output=Airavata_Test"));
-    }
-
-    @Test(groups = { "performanceTesting" })
-    public void testExistsHostDescriptor() throws AiravataAPIInvocationException {
-
-        airavataAPI.getApplicationManager().isHostDescriptorExists("localhost");
-    }
-
-    @Test(groups = { "echoGroup" }/* , dependsOnMethods = { "testEchoService" } */)
-    public void testUpdateEchoService() throws Exception {
-
-        DescriptorBuilder descriptorBuilder = airavataAPI.getDescriptorBuilder();
-
-        HostDescription hostDescription = descriptorBuilder.buildHostDescription(HostDescriptionType.type, "localhost",
-                "127.0.0.1");
-
-        log("Trying to add host description ....");
-        try {
-            airavataAPI.getApplicationManager().addHostDescription(hostDescription);
-            Assert.fail("Host Descriptor should already exists and should go to update.");
-        } catch (DescriptorAlreadyExistsException e) {
-
-            log("Updating host description ....");
-            airavataAPI.getApplicationManager().updateHostDescription(hostDescription);
-        }
-
-        Assert.assertTrue(airavataAPI.getApplicationManager().isHostDescriptorExists(
-                hostDescription.getType().getHostName()));
-
-        List<InputParameterType> inputParameters = new ArrayList<InputParameterType>();
-        inputParameters.add(descriptorBuilder.buildInputParameterType("echo_input", "echo input", DataType.STRING));
-
-        List<OutputParameterType> outputParameters = new ArrayList<OutputParameterType>();
-        outputParameters.add(descriptorBuilder.buildOutputParameterType("echo_output", "Echo output", DataType.STRING));
-
-        ServiceDescription serviceDescription = descriptorBuilder.buildServiceDescription("Echo", "Echo service",
-                inputParameters, outputParameters);
-
-        log("Adding service description ...");
-        try {
-            airavataAPI.getApplicationManager().addServiceDescription(serviceDescription);
-            Assert.fail("Service Descriptor should already exists and should go to update.");
-        } catch (DescriptorAlreadyExistsException e) {
-
-            log("Updating service description ....");
-            airavataAPI.getApplicationManager().updateServiceDescription(serviceDescription);
-        }
-
-        Assert.assertTrue(airavataAPI.getApplicationManager().isServiceDescriptorExists(
-                serviceDescription.getType().getName()));
-
-        // Deployment descriptor
-        ApplicationDescription applicationDeploymentDescription = descriptorBuilder
-                .buildApplicationDeploymentDescription("EchoApplication", "/bin/echo", "/tmp");
-
-        log("Adding deployment description ...");
-        try {
-            airavataAPI.getApplicationManager().addApplicationDescription(serviceDescription, hostDescription,
-                    applicationDeploymentDescription);
-            Assert.fail("Application Descriptor should already exists and should go to update.");
-        } catch (DescriptorAlreadyExistsException e) {
-
-            log("Updating application description ....");
-            airavataAPI.getApplicationManager().updateApplicationDescription(serviceDescription, hostDescription,
-                    applicationDeploymentDescription);
-        }
-
-        Assert.assertTrue(airavataAPI.getApplicationManager().isApplicationDescriptorExists(
-                serviceDescription.getType().getName(), hostDescription.getType().getHostName(),
-                applicationDeploymentDescription.getType().getApplicationName().getStringValue()));
-
-        log("Saving workflow ...");
-        Workflow workflow = new Workflow(getWorkflowComposeContent("src/test/resources/EchoWorkflow.xwf"));
-
-        try {
-            airavataAPI.getWorkflowManager().addWorkflow(workflow);
-            Assert.fail("Workflow should already exists and should go to update.");
-        } catch (WorkflowAlreadyExistsException e) {
-
-            log("Updating workflow...");
-            airavataAPI.getWorkflowManager().updateWorkflow(workflow);
-        }
-
-        Assert.assertTrue(airavataAPI.getWorkflowManager().isWorkflowExists(workflow.getName()));
-
-        log("Workflow setting up completed ...");
-
-        try {
-            runWorkFlowWithoutMonitor(workflow, Arrays.asList("echo_output=Airavata_Test"));
-        } catch (Exception e) {
-            log.error("An error occurred while invoking workflow", e);
-            throw e;
-        }
+        runWorkFlow(workflow, Arrays.asList("10","20"));
     }
 
     protected void runWorkFlow(Workflow workflow, List<String> inputValues) throws Exception {
@@ -399,7 +276,7 @@ public class BaseCaseIT {
         ExperimentAdvanceOptions options = airavataAPI.getExecutionManager().createExperimentAdvanceOptions(
                 workflowName, getUserName(), null);
 
-        options.getCustomSecuritySettings().getCredentialStoreSecuritySettings().setTokenId("1234");
+//        options.getCustomSecuritySettings().getCredentialStoreSecuritySettings().setTokenId("1234");
 
         String experimentId = airavataAPI.getExecutionManager().runExperiment(workflowName, workflowInputs, options);
 
@@ -409,33 +286,6 @@ public class BaseCaseIT {
         log.info("Starting monitoring ....");
 
         monitor(experimentId);
-    }
-
-    protected void runWorkFlowWithoutMonitor(Workflow workflow, List<String> inputValues) throws Exception {
-
-        AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(new URI(getRegistryURL()), getGatewayName(), getUserName(),
-                new PasswordCallbackImpl());
-        List<WorkflowInput> workflowInputs = setupInputs(workflow, inputValues);
-        String workflowName = workflow.getName();
-        ExperimentAdvanceOptions options = airavataAPI.getExecutionManager().createExperimentAdvanceOptions(
-                workflowName, getUserName(), null);
-        String experimentId = airavataAPI.getExecutionManager().runExperiment(workflowName, workflowInputs, options,
-                new EventDataListenerAdapter() {
-                    public void notify(EventDataRepository eventDataRepo, EventData eventData) {
-                        // do nothing
-                    }
-                });
-
-        Assert.assertNotNull(experimentId);
-        airavataAPI.getExecutionManager().waitForExperimentTermination(experimentId);
-
-        log.info("Run workflow completed ....");
-
-        verifyOutput(experimentId, "echo_output=Airavata_Test");
-
-        log.info("Verifying application jobs ....");
-        List<ApplicationJob> applicationJobs = airavataAPI.getProvenanceManager().getApplicationJobs(experimentId, null, null);
-        Assert.assertEquals(applicationJobs.size(), 1);
     }
 
     protected void verifyOutput(String experimentId, String outputVerifyingString) throws Exception {
@@ -452,14 +302,10 @@ public class BaseCaseIT {
         Assert.assertFalse("Workflow instance data cannot be empty !", workflowInstanceData.isEmpty());
 
         for (WorkflowExecutionDataImpl data : workflowInstanceData) {
-            List<NodeExecutionData> nodeDataList = data.getNodeDataList();
+            List<NodeExecutionData> nodeDataList = data.getNodeDataList(WorkflowNode.OUTPUTNODE);
+            Assert.assertFalse("Node execution data list cannot be empty !", nodeDataList.isEmpty());
             for (NodeExecutionData nodeData : nodeDataList) {
 
-                Assert.assertFalse("Node execution data list cannot be empty !", nodeDataList.isEmpty());
-
-                for (OutputData outputData : nodeData.getOutputData()) {
-                    Assert.assertEquals("Airavata_Test", outputData.getValue());
-                }
                 for (InputData inputData : nodeData.getInputData()) {
                     Assert.assertEquals(outputVerifyingString, inputData.getValue());
                 }
@@ -483,15 +329,9 @@ public class BaseCaseIT {
     }
 
     protected String getWorkflowComposeContent(String fileName) throws IOException {
-        File f = new File(".");
-        log.debug(f.getAbsolutePath());
+        File file = getFile(fileName);
 
-        File echoWorkflow = new File(fileName);
-        if (!echoWorkflow.exists()) {
-            fileName = "modules/integration-tests/src/test/resources/EchoWorkflow.xwf";
-        }
-
-        BufferedReader reader = new BufferedReader(new FileReader(fileName));
+        BufferedReader reader = new BufferedReader(new FileReader(file));
         String line;
         StringBuilder buffer = new StringBuilder();
         while ((line = reader.readLine()) != null) {
@@ -501,6 +341,17 @@ public class BaseCaseIT {
         log.debug("Workflow compose - " + buffer.toString());
         return buffer.toString();
     }
+
+	private File getFile(String fileName) {
+		File f = new File(".");
+        log.debug(f.getAbsolutePath());
+
+        File file = new File(fileName);
+        if (!file.exists()) {
+        	file = new File("modules/integration-tests/src/test/resources/EchoWorkflow.xwf");
+        }
+		return file;
+	}
 
     public void monitor(final String experimentId) throws Exception {
         AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(new URI(getRegistryURL()), getGatewayName(), getUserName(),
@@ -513,7 +364,7 @@ public class BaseCaseIT {
                         Assert.assertNotNull(eventData);
                         if (MonitorUtil.EventType.WORKFLOW_TERMINATED.equals(eventData.getType())) {
                             try {
-                                BaseCaseIT.this.verifyOutput(experimentId, "echo_output=Airavata_Test");
+                                ForEachCaseIT.this.verifyOutput(experimentId, "\"10,20\"");
                             } catch (Exception e) {
                                 log.error("Error verifying output", e);
                                 Assert.fail("Error occurred while verifying output.");
