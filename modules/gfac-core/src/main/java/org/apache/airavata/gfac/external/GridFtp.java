@@ -36,11 +36,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import com.sun.tools.javac.util.Paths;
+import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.ToolsException;
-import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.GridConfigurationHandler;
 import org.apache.airavata.gfac.utils.GridFTPContactInfo;
@@ -59,8 +58,6 @@ import org.globus.gsi.gssapi.auth.HostAuthorization;
 import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.ws.rs.Path;
 
 /**
  * GridFTP tools
