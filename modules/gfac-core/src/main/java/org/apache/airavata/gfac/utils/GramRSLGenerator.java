@@ -184,10 +184,6 @@ public class GramRSLGenerator {
         if (app.getMaxWallTime() > 0) {
             log.debug("Setting max wall clock time to " + app.getMaxWallTime());
 
-            if (app.getMaxWallTime() > 30 && app.getQueue() != null && app.getQueue().getQueueName().equals("debug")) {
-                throw new ToolsException("NCSA debug Queue only support jobs < 30 minutes");
-            }
-
             jobAttr.setMaxWallTime(app.getMaxWallTime());
             jobAttr.set("proxy_timeout", "1");
         } else {
