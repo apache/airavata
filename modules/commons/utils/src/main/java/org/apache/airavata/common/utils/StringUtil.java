@@ -30,15 +30,19 @@ public class StringUtil {
 	public static final String DELIMETER=",";
 	public static final String QUOTE="\"";
 	
-	private static boolean isQuoted(String s){
+	private static boolean isQuoted(String s, String delimiter){
 		//Check if we need quotes
-		if (s.contains(DELIMETER)){
+		if (s.contains(delimiter)){
 			//Check if its already quoted
 			s=s.replaceAll("\"\"", "");
 			return (s.substring(0,1).equals(QUOTE) && s.subSequence(s.length()-1, s.length()).equals(QUOTE));
 		}
 		//no delimiters present, so already in proper form
 		return true;
+	}
+	
+	private static boolean isQuoted(String s){
+		return isQuoted(s, DELIMETER);
 	}
 	
 	/**
@@ -56,14 +60,14 @@ public class StringUtil {
 	 * @param list
 	 * @return
 	 */
-	public static String createDelimiteredString(String[] list,String delimeter){
+	public static String createDelimiteredString(String[] list,String delimiter){
 		String s=null;
 		for (String ss : list) {
-			ss=quoteString(ss);
+			ss=quoteString(ss, delimiter);
 			if (s==null){
 				s=ss;
 			}else{
-				s+=delimeter +ss;
+				s+=delimiter +ss;
 			}
 		}
 		return s;
@@ -84,11 +88,11 @@ public class StringUtil {
 	 * @param s
 	 * @return
 	 */
-	public static String quoteString(String s,String delimeter){
-		if (isQuoted(s)){
+	public static String quoteString(String s,String delimiter){
+		if (isQuoted(s,delimiter)){
 			return s;
 		}else{
-			return QUOTE+s+QUOTE;
+			return QUOTE+s.replaceAll(QUOTE, QUOTE+QUOTE)+QUOTE;
 		}
 	}
 
@@ -115,7 +119,7 @@ public class StringUtil {
 			}else if (c.equals(QUOTE)){
 				if (QUOTE.equals(previousChar)){
 					//which means previousChar was an escape character, not a quote for the string
-					currentItem+=QUOTE+QUOTE;
+					currentItem+=QUOTE;
 					if (insideQuote){
 						//mistakenly thought previous char was opening quote char, thus need to make this false
 						insideQuote=false;
