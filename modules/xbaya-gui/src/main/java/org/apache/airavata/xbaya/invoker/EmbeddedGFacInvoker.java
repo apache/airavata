@@ -23,12 +23,7 @@ package org.apache.airavata.xbaya.invoker;
 import java.io.File;
 import java.io.StringReader;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
@@ -304,7 +299,7 @@ public class EmbeddedGFacInvoker implements Invoker {
                 HostScheduler hostScheduler = aClass.newInstance();
                 registeredHost = hostScheduler.schedule(registeredHosts);
             } else {
-                // if user specify a host, no matter what we pick that host for all the nodes, todo: allow users to specifi node specific host
+                // if user specify a host, no matter what we pick that host for all the nodes, todo: allow users to specify node specific host
                 registeredHost = airavataAPI.getApplicationManager().getHostDescription(hostName);
             }
             ApplicationDescription applicationDescription =
@@ -510,7 +505,13 @@ public class EmbeddedGFacInvoker implements Invoker {
         try {
             waitToFinish();
             if (outPut instanceof XmlElement) {
-                return ((XmlElement) ((XmlElement) ((XmlElement) outPut).children().next()).children().next()).children().next();
+                Iterator children = ((XmlElement) outPut).children();
+                while (children.hasNext()) {
+                    Object next = children.next();
+                    if (((XmlElement) next).getName().equals(name)) {
+                        return ((XmlElement)((XmlElement) next).children().next()).children().next();
+                    }
+                }
             } else {
                 return outPut;
             }
@@ -532,6 +533,7 @@ public class EmbeddedGFacInvoker implements Invoker {
             this.notifier.invocationFailed(message, e);
             throw new WorkflowException(message, e);
         }
+        throw new WorkflowException("Output could not be found");
     }
 
     /**
