@@ -388,7 +388,7 @@ public class ForEachCaseIT {
 
         File file = new File(fileName);
         if (!file.exists()) {
-        	file = new File("modules/integration-tests/src/test/resources/EchoWorkflow.xwf");
+        	file = new File("modules/integration-tests/"+fileName);
         }
 		return file;
 	}
