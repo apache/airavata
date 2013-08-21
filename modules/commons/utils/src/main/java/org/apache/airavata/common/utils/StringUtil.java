@@ -46,32 +46,52 @@ public class StringUtil {
 	 * @param list
 	 * @return
 	 */
-	public static String createDelimiteredString(String[] list){
+	public static String createDelimiteredString(String[] list) {
+        return createDelimiteredString(list, DELIMETER);
+    }
+
+
+    /**
+	 * Create a delimiter separated string out of a list
+	 * @param list
+	 * @return
+	 */
+	public static String createDelimiteredString(String[] list,String delimeter){
 		String s=null;
 		for (String ss : list) {
 			ss=quoteString(ss);
 			if (s==null){
 				s=ss;
 			}else{
-				s+=DELIMETER +ss;
+				s+=delimeter +ss;
 			}
 		}
 		return s;
 	}
-	
+
 	/**
 	 * Return a proper quoted string if the string contains the delimiter character
 	 * @param s
 	 * @return
 	 */
-	public static String quoteString(String s){
+	public static String quoteString(String s) {
+        return quoteString(s, DELIMETER);
+    }
+
+
+    /**
+	 * Return a proper quoted string if the string contains the delimiter character
+	 * @param s
+	 * @return
+	 */
+	public static String quoteString(String s,String delimeter){
 		if (isQuoted(s)){
 			return s;
 		}else{
 			return QUOTE+s+QUOTE;
 		}
 	}
-	
+
 	/**
 	 * Parse the delimitered string and return elements as a string array 
 	 * @param s
