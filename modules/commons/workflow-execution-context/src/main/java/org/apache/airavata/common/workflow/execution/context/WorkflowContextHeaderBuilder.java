@@ -53,9 +53,22 @@ public class WorkflowContextHeaderBuilder {
 
 
     public WorkflowContextHeaderBuilder(ContextHeaderDocument.ContextHeader document){
-        this.contextHeader = document;
+    	ContextHeaderDocument parse = null;
+		try {
+			ContextHeaderDocument doc = ContextHeaderDocument.Factory.newInstance();
+			doc.setContextHeader(document);
+			parse = ContextHeaderDocument.Factory.parse(doc.xmlText());
+		} catch (XmlException e) {
+			e.printStackTrace();
+		}
+        this.contextHeader = parse.getContextHeader();
         if (contextHeader!=null) {
 			this.securityContext = contextHeader.getSecurityContext();
+			this.workflowSchedulingContext=contextHeader.getWorkflowSchedulingContext();
+			this.soaServiceEprs=contextHeader.getSoaServiceEprs();
+			this.workflowMonitoringContext=contextHeader.getWorkflowMonitoringContext();
+			this.workflowOutputDataHandling=contextHeader.getWorkflowOutputDataHandling();
+			this.userIdentifier=contextHeader.getUserIdentifier();
 		}
     }
     
@@ -164,7 +177,12 @@ public class WorkflowContextHeaderBuilder {
     }
 
     public XmlElement getXml() {
-        ContextHeaderDocument document = ContextHeaderDocument.Factory.newInstance();
+        ContextHeaderDocument document = getDocument();
+        return XMLUtil.stringToXmlElement3(document.xmlText());
+    }
+
+	private ContextHeaderDocument getDocument() {
+		ContextHeaderDocument document = ContextHeaderDocument.Factory.newInstance();
         if (this.workflowMonitoringContext != null) {
             this.contextHeader.setWorkflowMonitoringContext(this.workflowMonitoringContext);
         }
@@ -184,8 +202,8 @@ public class WorkflowContextHeaderBuilder {
             this.contextHeader.setWorkflowOutputDataHandling(this.workflowOutputDataHandling);
         }
         document.setContextHeader(this.contextHeader);
-        return XMLUtil.stringToXmlElement3(document.xmlText());
-    }
+		return document;
+	}
 
     public WorkflowContextHeaderBuilder setResourceSchedularUrl(String resourceSchedular) {
         this.soaServiceEprs.setResourceSchedulerUrl(resourceSchedular);
@@ -402,15 +420,16 @@ public class WorkflowContextHeaderBuilder {
     }
 
     public static ContextHeaderDocument.ContextHeader removeOtherSchedulingConfig(String nodeID, ContextHeaderDocument.ContextHeader header) {
-        String s = XMLUtil.xmlElementToString(new WorkflowContextHeaderBuilder(header).getXml());
+    	WorkflowContextHeaderBuilder.setCurrentContextHeader(header);
+    	header=new WorkflowContextHeaderBuilder(header).getContextHeader();
         try {
             ApplicationSchedulingContextDocument.ApplicationSchedulingContext[] applicationSchedulingContextArray =
                     header.getWorkflowSchedulingContext().getApplicationSchedulingContextArray();
-
+            
             int index = 0;
             if (applicationSchedulingContextArray != null) {
                 for (ApplicationSchedulingContextDocument.ApplicationSchedulingContext context : applicationSchedulingContextArray) {
-                    if (context.getServiceId().equals(nodeID)) {
+                    if (context.getWorkflowNodeId().equals(nodeID)) {
                         index++;
                         header.getWorkflowSchedulingContext().setApplicationSchedulingContextArray(new ApplicationSchedulingContextDocument.ApplicationSchedulingContext[]{context});
                         break;
@@ -437,14 +456,6 @@ public class WorkflowContextHeaderBuilder {
         } catch (NullPointerException e) {
             return header;
         }
-        ContextHeaderDocument parse = null;
-        try {
-            parse = ContextHeaderDocument.Factory.parse(s);
-        } catch (XmlException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        //Set Old Context Header in to currentContextHeader
-        WorkflowContextHeaderBuilder.setCurrentContextHeader(parse.getContextHeader());
         return header;
     }
 }
