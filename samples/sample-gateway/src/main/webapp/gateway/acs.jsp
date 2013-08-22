@@ -1,3 +1,12 @@
+<%@ page import="org.apache.airavata.sample.gateway.SampleGateway" %>
+<%--
+  Created by IntelliJ IDEA.
+  User: thejaka
+  Date: 8/5/13
+  Time: 4:48 PM
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements. See the NOTICE file
@@ -16,25 +25,26 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   --%>
-  
+
+
 <html>
 <body>
-<h2>Sample Portal</h2>
+<h2>Sample Gateway</h2>
 <p>This demonstrates how portal can use Credential Store to obtain community credentials ...</p>
-<form name="input" action="../credential-store" method="post">
+<form name="input" action="https://localhost:8443/airavata-registry/credential-store" method="post">
 
     <table border="0">
         <tr>
             <td>Gateway Name</td>
-            <td><input type="text" name="gatewayName"></td>
+            <td><input type="text" name="gatewayName" value="sampleGateway" disabled="true"></td>
         </tr>
         <tr>
             <td>Portal Username</td>
-            <td><input type="text" name="portalUserName"></td>
+            <td><input type="text" name="portalUserName" value="admin" disabled="true"></td>
         </tr>
         <tr>
             <td>Contact Email</td>
-            <td><input type="text" name="email"></td>
+            <td><input type="text" name="email" value="admin@samplegateway.org" disabled="true"></td>
         </tr>
     </table>
 

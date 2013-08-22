@@ -29,6 +29,7 @@ import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.credential.store.store.CredentialReaderFactory;
 import org.apache.airavata.gfac.RequestData;
 import org.apache.log4j.Logger;
+import org.ietf.jgss.GSSCredential;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -41,7 +42,6 @@ import java.io.File;
  * Time: 12:58 PM
  */
 
-@Test(enabled=false)
 public class GSISecurityContextTest extends DatabaseTestCases {
 
     private static String userName;
@@ -113,8 +113,14 @@ public class GSISecurityContextTest extends DatabaseTestCases {
         Assert.assertTrue(f.exists());
     }
 
-    @Test
-    public void testGetGssCredentials() throws Exception {
+    private GSSCredential getGSSCredentials() throws Exception {
+
+        GSISecurityContext gsiSecurityContext = getGSISecurityContext();
+
+        return gsiSecurityContext.getGssCredentials();
+    }
+
+    private GSISecurityContext getGSISecurityContext() throws Exception {
 
         RequestData requestData = new RequestData();
 
@@ -123,35 +129,46 @@ public class GSISecurityContextTest extends DatabaseTestCases {
 
         CredentialReader credentialReader = CredentialReaderFactory.createCredentialStoreReader(getDbUtil());
 
-        GSISecurityContext gsiSecurityContext = new GSISecurityContext(credentialReader, requestData);
+        return new GSISecurityContext(credentialReader, requestData);
+    }
 
-        Assert.assertNotNull(gsiSecurityContext.getGssCredentials());
+    @Test
+    public void testGetGssCredentials() throws Exception {
 
-
+        Assert.assertNotNull(getGSSCredentials());
     }
 
     @Test
     public void testRenewCredentials() throws Exception {
+        GSISecurityContext gsiSecurityContext = getGSISecurityContext();
+        Assert.assertNotNull(gsiSecurityContext.renewCredentials());
 
     }
 
     @Test
     public void testGetCredentialsFromStore() throws Exception {
+        GSISecurityContext gsiSecurityContext = getGSISecurityContext();
+        Assert.assertNotNull(gsiSecurityContext.getCredentialsFromStore());
 
     }
 
     @Test
     public void testGetDefaultCredentials() throws Exception {
+        GSISecurityContext gsiSecurityContext = getGSISecurityContext();
+        Assert.assertNotNull(gsiSecurityContext.getDefaultCredentials());
 
     }
 
     @Test
     public void testGetProxyCredentials() throws Exception {
+        GSISecurityContext gsiSecurityContext = getGSISecurityContext();
+        Assert.assertNotNull(gsiSecurityContext.getProxyCredentials());
 
     }
 
     @Test
     public void testRenewCredentialsAsATrustedHost() throws Exception {
-
+        GSISecurityContext gsiSecurityContext = getGSISecurityContext();
+        Assert.assertNotNull(gsiSecurityContext.renewCredentialsAsATrustedHost());
     }
 }

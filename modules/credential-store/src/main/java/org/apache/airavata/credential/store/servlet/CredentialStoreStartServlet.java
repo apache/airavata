@@ -25,6 +25,7 @@ import edu.uiuc.ncsa.myproxy.oa4mp.client.OA4MPResponse;
 import edu.uiuc.ncsa.myproxy.oa4mp.client.servlet.ClientServlet;
 import edu.uiuc.ncsa.security.servlet.JSPUtil;
 import edu.uiuc.ncsa.security.util.pkcs.KeyUtil;
+import org.apache.airavata.credential.store.util.TokenGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +82,7 @@ public class CredentialStoreStartServlet extends ClientServlet {
         String gatewayName = request.getParameter("gatewayName");
         String portalUserName = request.getParameter("portalUserName");
         String contactEmail = request.getParameter("email");
-        String associatedToken = request.getParameter("associatedToken");
+        String associatedToken = TokenGenerator.generateToken(gatewayName, portalUserName);
 
         if (gatewayName == null) {
             JSPUtil.handleException(new RuntimeException("Please specify a gateway name."), request, response,

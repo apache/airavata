@@ -19,45 +19,50 @@
  *
  */
 
-package org.apache.airavata.credential.store.util;
+package org.apache.airavata.sample.gateway.userstore;
 
 /**
  * User: AmilaJ (amilaj@apache.org)
- * Date: 5/21/13
- * Time: 3:07 PM
+ * Date: 8/2/13
+ * Time: 12:42 PM
  */
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public class User {
 
-import java.sql.Timestamp;
+    private String userName;
+    private String password;
+    private String email;
+    private String token;
 
-/**
- * Generates tokens for users.
- */
-public class TokenGenerator {
-
-    protected static Logger log = LoggerFactory.getLogger(TokenGenerator.class);
-
-
-    public TokenGenerator() {
-
+    public String getUserName() {
+        return userName;
     }
 
-    public static String generateToken(String gatewayId, String metadata) {
-        StringBuilder tokenBuilder = new StringBuilder("#token#");
-        tokenBuilder.append(gatewayId.trim()).append("#").append(metadata.trim()).append("#");
-
-
-        java.util.Date date= new java.util.Date();
-        Timestamp timestamp = new Timestamp(date.getTime());
-        tokenBuilder.append(Integer.toString(timestamp.getNanos()));
-
-        return tokenBuilder.toString();
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public String encryptToken(String token) {
-        return null;
+    public String getPassword() {
+        return password;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 }
