@@ -248,8 +248,8 @@
                 <include>org.apache.openjpa:openjpa-all:jar</include>
                 <include>com.sun.jersey:jersey-client:jar</include>
                 <include>com.sun.jersey:jersey-core:jar</include>
-                <include>org.bouncycastle:bcprov-jdk15</include>
-                <include>org.bouncycastle:bcmail-jdk15</include>
+                <include>org.bouncycastle:bcprov-jdk16</include>
+                <include>org.bouncycastle:bcmail-jdk16</include>
                 <include>org.apache.tomcat:tomcat-jasper</include>
                 <include>org.apache.tomcat:tomcat-jasper-el</include>
                 <include>org.apache.tomcat:tomcat-jsp-api</include>
