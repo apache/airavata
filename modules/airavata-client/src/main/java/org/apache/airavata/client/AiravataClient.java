@@ -22,6 +22,7 @@ package org.apache.airavata.client;
 
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +35,7 @@ import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataManager;
 import org.apache.airavata.client.api.ApplicationManager;
 import org.apache.airavata.client.api.ExecutionManager;
+import org.apache.airavata.client.api.ExperimentAdvanceOptions;
 import org.apache.airavata.client.api.ProvenanceManager;
 import org.apache.airavata.client.api.UserManager;
 import org.apache.airavata.client.api.WorkflowManager;
@@ -58,6 +60,7 @@ import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.Gateway;
 import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -392,7 +395,6 @@ public class AiravataClient extends Observable implements AiravataAPI {
 			return getCallBack().getPassword(getCurrentUser());
 		}
 		return null;
-
 	}
 
 	public URI getRegitryURI() {
@@ -413,5 +415,14 @@ public class AiravataClient extends Observable implements AiravataAPI {
 
 	public void setGateway(String gateway) {
 		this.gateway = gateway;
+	}
+	
+	public static void main(String[] args) throws Exception {
+		AiravataAPI api = AiravataAPIFactory.getAPI(new URI("http://localhost:8080/airavata/services/registry"), "default", "admin", new PasswordCallBackImpl("admin", "admin"));
+		ExperimentAdvanceOptions options = api.getExecutionManager().createExperimentAdvanceOptions();
+		options.getCustomWorkflowSchedulingSettings().addNewNodeSettings("data1", "comma_app", 1, 1);
+		String workflow = "Workflow3";
+		List<WorkflowInput> inputs = api.getWorkflowManager().getWorkflowInputs(workflow);
+		System.out.println(api.getExecutionManager().runExperiment(workflow, inputs,options));
 	}
 }

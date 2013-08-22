@@ -47,8 +47,8 @@ public class ServerMain {
         AiravataUtils.setExecutionAsServer();
         String protocol = ServerSettings.isEnableHttps() ? "https" : "http";
         BetterTomcat tomcat = new BetterTomcat(Integer.parseInt(ServerSettings.getTomcatPort(protocol)));
-        tomcat.addContext("/axis2", System.getenv("AIRAVATA_HOME"));
-        Wrapper axis2Servlet = tomcat.addServlet("/axis2", "AxisServlet", "org.apache.axis2.transport.http.AxisServlet");
+        tomcat.addContext("/airavata-server", System.getenv("AIRAVATA_HOME"));
+        Wrapper axis2Servlet = tomcat.addServlet("/airavata-server", "AxisServlet", "org.apache.axis2.transport.http.AxisServlet");
         axis2Servlet.addMapping("/servlet/AxisServlet");
         axis2Servlet.addMapping("*.jws");
         axis2Servlet.addMapping("/services/*");

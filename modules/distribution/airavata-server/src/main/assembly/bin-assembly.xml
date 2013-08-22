@@ -167,6 +167,14 @@
                 <include>*.aar</include>
             </includes>
         </fileSet>
+		<fileSet>
+            <directory>../../../samples/echo-service/target
+            </directory>
+            <outputDirectory>repository/services</outputDirectory>
+            <includes>
+                <include>*.aar</include>
+            </includes>
+        </fileSet>
         <fileSet>
             <directory>../../xbaya-gui/src/test/resources/</directory>
             <outputDirectory>samples/workflows</outputDirectory>
