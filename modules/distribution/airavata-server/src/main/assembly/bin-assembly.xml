@@ -220,7 +220,10 @@
                 <include>org.ogce:atomixmiser:jar</include>
                 <include>org.ogce:yfilter:jar</include>
                 <include>org.python:jython:jar</include>
-                <include>org.jglobus:jglobus-all</include>
+                <include>org.jglobus:gss</include>
+                <include>org.jglobus:gram</include>
+                <include>org.jglobus:myproxy</include>
+                <include>org.jglobus:gridftp</include>
                 <include>org.apache.xmlbeans:xmlbeans</include>
                 <include>com.amazonaws:aws-java-sdk</include>
                 <include>net.java.dev.jets3t:jets3t</include>
