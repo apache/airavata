@@ -414,7 +414,8 @@ public class ExperimentDataRetriever {
                     "ON e.experiment_ID = ed.experiment_ID " +
                     "LEFT JOIN Experiment_Metadata em " +
                     "ON ed.experiment_ID = em.experiment_ID  " +
-                    "WHERE ed.username ='" + user + "'";
+                    "WHERE ed.username ='" + user + "'" +
+                    " ORDER BY e.submitted_date ASC";
 
             rs = statement.executeQuery(queryString);
             if (rs != null){
