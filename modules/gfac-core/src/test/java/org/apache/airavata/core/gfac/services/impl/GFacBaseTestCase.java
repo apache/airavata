@@ -21,12 +21,15 @@
 
 package org.apache.airavata.core.gfac.services.impl;
 
+import junit.framework.Assert;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.DatabaseTestCases;
 import org.apache.airavata.common.utils.DerbyUtil;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 import org.apache.airavata.gfac.RequestData;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
+import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
 
 /**
@@ -37,7 +40,33 @@ import org.junit.BeforeClass;
 
 public class GFacBaseTestCase extends DatabaseTestCases {
 
+    private static String myProxyUserName;
+    private static String myProxyPassword;
+
+    private static final Logger log = Logger.getLogger(GFacBaseTestCase.class);
+
+
     @BeforeClass
+    public static void setUpClass() throws Exception {
+        AiravataUtils.setExecutionAsServer();
+
+        myProxyUserName = System.getProperty("myproxy.user");
+        myProxyPassword = System.getProperty("myproxy.password");
+
+        if (userName == null || password == null || userName.trim().equals("") || password.trim().equals("")) {
+            log.error("===== Please set myproxy.user and myproxy.password system properties. =======");
+            Assert.fail("Please set myproxy.user and myproxy.password system properties.");
+        }
+
+        log.info("Using my proxy user name - " + userName);
+
+        setUpDatabase();
+
+    }
+
+
+
+
     public static void setUpDatabase() throws Exception {
         DerbyUtil.startDerbyInServerMode(getHostAddress(), getPort(), getUserName(), getPassword());
 

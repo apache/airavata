@@ -217,4 +217,9 @@ public class GramProviderTest extends GFacBaseTestCase {
         MessageContext outMessageContext = jobExecutionContext.getOutMessageContext();
         Assert.assertEquals(MappingFactory.toString((ActualParameter)outMessageContext.getParameter("echo_output")), "hello");
     }
+
+    @Test
+    public void testGetJdbcUrl()  {
+        System.out.println(getJDBCUrl());
+    }
 }

@@ -331,33 +331,8 @@ public class GramProvider implements GFacProvider {
     }
 
     @Override
-    public void cancelJob(String experimentId, JobExecutionContext jobExecutionContext) throws GFacException {
-
-        List<ApplicationJob> jobs = GFacUtils.getJobIds(jobExecutionContext, experimentId);
-
-        for (ApplicationJob job : jobs) {
-            cancelSingleJob(job.getJobId(), jobExecutionContext);
-        }
-    }
-
-    @Override
-    public void cancelJob(String experimentId, String workflowId,
-                          JobExecutionContext jobExecutionContext) throws GFacException {
-        List<ApplicationJob> jobs = GFacUtils.getJobIds(jobExecutionContext, experimentId, workflowId);
-
-        for (ApplicationJob job : jobs) {
-            cancelSingleJob(job.getJobId(), jobExecutionContext);
-        }
-    }
-
-    @Override
-    public void cancelJob(String experimentId, String workflowId, String nodeId,
-                          JobExecutionContext jobExecutionContext) throws GFacException {
-        List<ApplicationJob> jobs = GFacUtils.getJobIds(jobExecutionContext, experimentId, workflowId, nodeId);
-
-        for (ApplicationJob job : jobs) {
-            cancelSingleJob(job.getJobId(), jobExecutionContext);
-        }
+    public void cancelJob(String jobId, JobExecutionContext jobExecutionContext) throws GFacException {
+        cancelSingleJob(jobId, jobExecutionContext);
     }
 
 

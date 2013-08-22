@@ -247,17 +247,7 @@ public class EC2Provider implements GFacProvider {
     }
 
     @Override
-    public void cancelJob(String experimentId, JobExecutionContext jobExecutionContext) throws GFacException {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public void cancelJob(String experimentId, String workflowId, JobExecutionContext jobExecutionContext) throws GFacException {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public void cancelJob(String experimentId, String workflowId, String nodeId, JobExecutionContext jobExecutionContext) throws GFacException {
+    public void cancelJob(String jobId, JobExecutionContext jobExecutionContext) throws GFacException {
         throw new NotImplementedException();
     }
 

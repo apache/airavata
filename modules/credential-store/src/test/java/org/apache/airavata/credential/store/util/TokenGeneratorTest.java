@@ -21,43 +21,22 @@
 
 package org.apache.airavata.credential.store.util;
 
+import junit.framework.Assert;
+import junit.framework.TestCase;
+
 /**
  * User: AmilaJ (amilaj@apache.org)
- * Date: 5/21/13
- * Time: 3:07 PM
+ * Date: 8/5/13
+ * Time: 4:20 PM
  */
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public class TokenGeneratorTest extends TestCase {
 
-import java.sql.Timestamp;
+    public void testGenerateToken() throws Exception {
 
-/**
- * Generates tokens for users.
- */
-public class TokenGenerator {
-
-    protected static Logger log = LoggerFactory.getLogger(TokenGenerator.class);
-
-
-    public TokenGenerator() {
+        String token = TokenGenerator.generateToken("gw1", "admin");
+        Assert.assertNotNull(token);
+        System.out.println(token);
 
     }
-
-    public static String generateToken(String gatewayId, String metadata) {
-        StringBuilder tokenBuilder = new StringBuilder("#token#");
-        tokenBuilder.append(gatewayId.trim()).append("#").append(metadata.trim()).append("#");
-
-
-        java.util.Date date= new java.util.Date();
-        Timestamp timestamp = new Timestamp(date.getTime());
-        tokenBuilder.append(Integer.toString(timestamp.getNanos()));
-
-        return tokenBuilder.toString();
-    }
-
-    public String encryptToken(String token) {
-        return null;
-    }
-
 }
