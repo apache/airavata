@@ -211,4 +211,25 @@ public class ResourcePathConstants {
         public static final String SUSPEND_EXPERIMENT = "suspend/experiment";
         public static final String RESUME_EXPERIMENT = "resume/experiment";
     }
+    
+    public final class ServerManagerConstants{
+    	public static final String PATH="/configuration/";
     }
+    
+    public final class ExperimentDataConstants{
+    	public static final String PATH="/data/";
+    }
+    
+    public final class ApplicationDataConstants{
+    	public static final String PATH="/application/";
+    }
+    
+    public final class WorkflowDataConstants{
+    	public static final String PATH="/workflows/";
+    }
+    
+    public final class PublishedWorkflowDataConstants{
+    	public static final String PATH="/workflows/published/";
+    }
+    
+}
