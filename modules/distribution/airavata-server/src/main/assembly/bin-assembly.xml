@@ -224,6 +224,10 @@
                 <include>org.jglobus:gram</include>
                 <include>org.jglobus:myproxy</include>
                 <include>org.jglobus:gridftp</include>
+                <include>org.jglobus:ssl-proxies</include>
+                <include>org.jglobus:jsse</include>
+                <include>org.jglobus:io</include>
+                <include>org.jglobus:axis</include>
                 <include>org.apache.xmlbeans:xmlbeans</include>
                 <include>com.amazonaws:aws-java-sdk</include>
                 <include>net.java.dev.jets3t:jets3t</include>
