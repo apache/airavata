@@ -26,7 +26,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,24 +35,15 @@ import junit.framework.Assert;
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.ExperimentAdvanceOptions;
-import org.apache.airavata.client.api.builder.DescriptorBuilder;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.client.api.exception.DescriptorAlreadyExistsException;
 import org.apache.airavata.client.api.exception.WorkflowAlreadyExistsException;
 import org.apache.airavata.common.utils.StringUtil;
-import org.apache.airavata.commons.gfac.type.ApplicationDescription;
-import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
 import org.apache.airavata.registry.api.workflow.InputData;
 import org.apache.airavata.registry.api.workflow.NodeExecutionData;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeType.WorkflowNode;
-import org.apache.airavata.schemas.gfac.DataType;
-import org.apache.airavata.schemas.gfac.HostDescriptionType;
-import org.apache.airavata.schemas.gfac.InputParameterType;
-import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.wf.Workflow;
@@ -65,9 +56,9 @@ import org.testng.annotations.Test;
 /**
  * Integration test class.
  */
-public class ForEachCaseIT {
+public class WorkflowSamplesCaseIT {
 
-    private final Logger log = LoggerFactory.getLogger(ForEachCaseIT.class);
+    private final Logger log = LoggerFactory.getLogger(WorkflowSamplesCaseIT.class);
 
     private int port;
     private String serverUrl;
@@ -125,7 +116,7 @@ public class ForEachCaseIT {
         return password;
     }
 
-    public ForEachCaseIT() throws Exception {
+    public WorkflowSamplesCaseIT() throws Exception {
         setUpEnvironment();
     }
 
@@ -145,7 +136,6 @@ public class ForEachCaseIT {
         checkServerStartup(airavataAPI);
 
         log("Server successfully started .............................");
-        log("Running tests .............................");
     }
 
 	private String createRegistryURL() {
@@ -220,22 +210,21 @@ public class ForEachCaseIT {
         PasswordCallback passwordCallback = new PasswordCallbackImpl();
         this.airavataAPI = AiravataAPIFactory.getAPI(new URI(getRegistryURL()), getGatewayName(), getUserName(),
                 passwordCallback);
-        setupDescriptors();
     }
 
-    @Test(groups = { "forEachGroup" }, dependsOnGroups = { "echoGroup" })
-    public void testForEachUsecases() throws Exception {
-		executeExperiment("src/test/resources/ForEachBasicWorkflow.xwf", Arrays.asList("10","20"), Arrays.asList("10 20"));
-		executeExperiment("src/test/resources/ForEachBasicWorkflow.xwf", Arrays.asList("10","20,30"), Arrays.asList("10 20","10 30"));
-		executeExperiment("src/test/resources/ForEachBasicWorkflow.xwf", Arrays.asList("10,20","30,40"), Arrays.asList("10 30","20 40"));
-		
-		executeExperiment("src/test/resources/ForEachEchoWorkflow.xwf", Arrays.asList("10","20"), Arrays.asList("10,20"));
-		executeExperiment("src/test/resources/ForEachEchoWorkflow.xwf", Arrays.asList("10","20,30"), Arrays.asList("10,20","10,30"));
-		executeExperiment("src/test/resources/ForEachEchoWorkflow.xwf", Arrays.asList("10,20","30,40"), Arrays.asList("10,30","20,40"));
+    @Test(groups = { "workflowSamplesGroup" }/*, dependsOnGroups = { "forEachGroup" }*/)
+    public void testWorkflowSamples() throws Exception {
+        log("Running tests .............................");
+        executeExperiment("target/samples/workflows/SimpleEcho.xwf", Arrays.asList("Test_Value"), "Test_Value");
+        executeExperiment("target/samples/workflows/LevenshteinDistance.xwf", Arrays.asList("abc","def"), Arrays.asList("3"));
+        executeExperiment("target/samples/workflows/SimpleForEach.xwf", Arrays.asList("1,2","3,4"), Arrays.asList("4","6"));
+        executeExperiment("target/samples/workflows/ComplexMath.xwf", Arrays.asList("15","16","18","21","25","30","36","43"), "5554");
+//		executeExperiment("target/samples/workflows/SimpleMath.xwf", Arrays.asList("15","16","18","21","25","30","36","43"), "204");
+//		executeExperiment("target/samples/workflows/ComplexForEach.xwf", Arrays.asList("1,2","3,4","5,6","7,8","9,10","11,12","13,14","15,16"), Arrays.asList("2027025","10321920"));
     }
 
 	private void executeExperiment(String workflowFilePath,
-			List<String> inputs, List<String> outputs) throws GraphException,
+			List<String> inputs, Object outputs) throws GraphException,
 			ComponentException, IOException, WorkflowAlreadyExistsException,
 			AiravataAPIInvocationException, Exception {
         log("Saving workflow ...");
@@ -251,63 +240,7 @@ public class ForEachCaseIT {
 		runWorkFlow(workflow, inputs,outputs);
 	}
 
-	private void setupDescriptors() throws AiravataAPIInvocationException,
-			DescriptorAlreadyExistsException, IOException {
-		DescriptorBuilder descriptorBuilder = airavataAPI.getDescriptorBuilder();
-		HostDescription hostDescription = descriptorBuilder.buildHostDescription(HostDescriptionType.type, "localhost2",
-                "127.0.0.1");
-
-        log("Adding host description ....");
-        airavataAPI.getApplicationManager().addHostDescription(hostDescription);
-        Assert.assertTrue(airavataAPI.getApplicationManager().isHostDescriptorExists(hostDescription.getType().getHostName()));
-        
-        List<InputParameterType> inputParameters = new ArrayList<InputParameterType>();
-        inputParameters.add(descriptorBuilder.buildInputParameterType("data1", "data1", DataType.STRING));
-        inputParameters.add(descriptorBuilder.buildInputParameterType("data2", "data2", DataType.STRING));
-
-        List<OutputParameterType> outputParameters = new ArrayList<OutputParameterType>();
-        outputParameters.add(descriptorBuilder.buildOutputParameterType("out", "out", DataType.STD_OUT));
-
-        ServiceDescription serviceDescription = descriptorBuilder.buildServiceDescription("comma_app", "comma_app",
-                inputParameters, outputParameters);
-        
-        ServiceDescription serviceDescription2 = descriptorBuilder.buildServiceDescription("echo_app", "echo_app",
-                inputParameters, outputParameters);
-
-        log("Adding service description ...");
-        airavataAPI.getApplicationManager().addServiceDescription(serviceDescription);
-        Assert.assertTrue(airavataAPI.getApplicationManager().isServiceDescriptorExists(
-                serviceDescription.getType().getName()));
-        
-        airavataAPI.getApplicationManager().addServiceDescription(serviceDescription2);
-        Assert.assertTrue(airavataAPI.getApplicationManager().isServiceDescriptorExists(
-                serviceDescription2.getType().getName()));
-
-        // Deployment descriptor
-        File executable = getFile("src/test/resources/comma_data.sh");
-        Runtime.getRuntime().exec("chmod +x "+executable.getAbsolutePath());
-		ApplicationDescription applicationDeploymentDescription = descriptorBuilder
-                .buildApplicationDeploymentDescription("comma_app_localhost", executable.getAbsolutePath(), "/tmp");
-		ApplicationDescription applicationDeploymentDescription2 = descriptorBuilder
-                .buildApplicationDeploymentDescription("echo_app_localhost", "/bin/echo", "/tmp");
-
-        log("Adding deployment description ...");
-        airavataAPI.getApplicationManager().addApplicationDescription(serviceDescription, hostDescription,
-                applicationDeploymentDescription);
-
-        Assert.assertTrue(airavataAPI.getApplicationManager().isApplicationDescriptorExists(
-                serviceDescription.getType().getName(), hostDescription.getType().getHostName(),
-                applicationDeploymentDescription.getType().getApplicationName().getStringValue()));
-        
-        airavataAPI.getApplicationManager().addApplicationDescription(serviceDescription2, hostDescription,
-                applicationDeploymentDescription2);
-
-        Assert.assertTrue(airavataAPI.getApplicationManager().isApplicationDescriptorExists(
-                serviceDescription2.getType().getName(), hostDescription.getType().getHostName(),
-                applicationDeploymentDescription2.getType().getApplicationName().getStringValue()));
-	}
-
-    protected void runWorkFlow(Workflow workflow, List<String> inputValues, List<String> outputValue) throws Exception {
+    protected void runWorkFlow(Workflow workflow, List<String> inputValues, Object outputValue) throws Exception {
         AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(new URI(getRegistryURL()), getGatewayName(), getUserName(),
                 new PasswordCallbackImpl());
         List<WorkflowInput> workflowInputs = setupInputs(workflow, inputValues);
@@ -325,7 +258,7 @@ public class ForEachCaseIT {
         verifyOutput(experimentId, outputValue);
     }
 
-    protected void verifyOutput(String experimentId, List<String> outputVerifyingString) throws Exception {
+    protected void verifyOutput(String experimentId, Object outputVerifyingString) throws Exception {
         AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(new URI(getRegistryURL()), getGatewayName(), getUserName(),
                 new PasswordCallbackImpl());
         log.info("Experiment ID Returned : " + experimentId);
@@ -343,11 +276,18 @@ public class ForEachCaseIT {
             Assert.assertFalse("Node execution data list cannot be empty !", nodeDataList.isEmpty());
             for (NodeExecutionData nodeData : nodeDataList) {
                 for (InputData inputData : nodeData.getInputData()) {
-                	String[] outputValues = StringUtil.getElementsFromString(inputData.getValue());
-                	Assert.assertEquals(outputVerifyingString.size(), outputValues.length);
-                	for(int i=0;i<outputValues.length;i++){
-                		Assert.assertEquals(outputVerifyingString.get(i), outputValues[i]);	
+                	if (outputVerifyingString instanceof List){
+                		@SuppressWarnings("unchecked")
+						List<String> outputs=(List<String>)outputVerifyingString;
+                		String[] outputValues = StringUtil.getElementsFromString(inputData.getValue());
+                    	Assert.assertEquals(outputs.size(), outputValues.length);
+                    	for(int i=0;i<outputValues.length;i++){
+                    		Assert.assertEquals(outputs.get(i), outputValues[i]);	
+                    	}	
+                	}else{
+                		Assert.assertEquals(outputVerifyingString.toString(), inputData.getValue());
                 	}
+                	
                 }
             }
         }
@@ -368,7 +308,7 @@ public class ForEachCaseIT {
         return workflowInputs;
     }
 
-    protected String getWorkflowComposeContent(String fileName) throws IOException {
+    protected String getWorkflowComposeContent(String fileName) throws IOException, URISyntaxException {
         File file = getFile(fileName);
 
         BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -382,14 +322,14 @@ public class ForEachCaseIT {
         return buffer.toString();
     }
 
-	private File getFile(String fileName) {
+	private File getFile(String fileName) throws URISyntaxException {
 		File f = new File(".");
-        log.debug(f.getAbsolutePath());
-
-        File file = new File(fileName);
-        if (!file.exists()) {
-        	file = new File("modules/integration-tests/"+fileName);
-        }
+		log.debug(f.getAbsolutePath());
+		
+		File file = new File(fileName);
+		if (!file.exists()) {
+			file = new File("modules/integration-tests/"+fileName);
+		}
 		return file;
 	}
 
