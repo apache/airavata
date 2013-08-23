@@ -217,8 +217,8 @@ public class WorkflowSamplesCaseIT {
         log("Running tests .............................");
         executeExperiment("target/samples/workflows/SimpleEcho.xwf", Arrays.asList("Test_Value"), "Test_Value");
         executeExperiment("target/samples/workflows/LevenshteinDistance.xwf", Arrays.asList("abc","def"), Arrays.asList("3"));
-        executeExperiment("target/samples/workflows/SimpleForEach.xwf", Arrays.asList("1,2","3,4"), Arrays.asList("4","6"));
-        executeExperiment("target/samples/workflows/ComplexMath.xwf", Arrays.asList("15","16","18","21","25","30","36","43"), "5554");
+//        executeExperiment("target/samples/workflows/SimpleForEach.xwf", Arrays.asList("1,2","3,4"), Arrays.asList("4","6"));
+//        executeExperiment("target/samples/workflows/ComplexMath.xwf", Arrays.asList("15","16","18","21","25","30","36","43"), "5554");
 //		executeExperiment("target/samples/workflows/SimpleMath.xwf", Arrays.asList("15","16","18","21","25","30","36","43"), "204");
 //		executeExperiment("target/samples/workflows/ComplexForEach.xwf", Arrays.asList("1,2","3,4","5,6","7,8","9,10","11,12","13,14","15,16"), Arrays.asList("2027025","10321920"));
     }
