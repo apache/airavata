@@ -44,6 +44,11 @@ public class GramProviderTest {
 
     @Test
     public void testExecute() throws Exception {
+
+        GramProvider gramProvider = new GramProvider();
+
+        System.out.println(gramProvider.getGramErrorString(1));
+
         System.out.println("======================================================================================");
         System.out.println("Executing test .......................................................................");
 

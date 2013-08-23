@@ -20,6 +20,9 @@
 */
 package org.apache.airavata.gfac.provider.impl;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -78,14 +81,27 @@ public class GramProvider implements GFacProvider {
     private static final Map<String, GramJob> currentlyExecutingJobCache
             = new ConcurrentHashMap<String, GramJob>();
 
-    private static ResourceBundle resources;
+    private static Properties resources;
 
     static {
         try {
-            resources = ResourceBundle.getBundle("org.globus.gram.internal.errors",
-                    Locale.getDefault());
-        } catch (MissingResourceException mre) {
-            log.error("org.globus.gram.internal.gram.errors.properties not found", mre);
+
+            String propFileName = "errors.properties";
+            resources = new Properties();
+            InputStream inputStream = GramProvider.class.getClassLoader()
+                    .getResourceAsStream(propFileName);
+
+            if (inputStream == null) {
+                throw new FileNotFoundException("property file '" + propFileName
+                        + "' not found in the classpath");
+            }
+
+            resources.load(inputStream);
+
+        } catch (FileNotFoundException mre) {
+            log.error("errors.properties not found", mre);
+        } catch (IOException e) {
+            log.error("Error reading errors.properties file", e);
         }
     }
 
@@ -472,11 +488,11 @@ public class GramProvider implements GFacProvider {
         }
     }
 
-    private String getGramErrorString(int errorCode) {
+    public String getGramErrorString(int errorCode) {
 
         if (resources != null) {
             try {
-                return resources.getString(String.valueOf(errorCode));
+                return resources.getProperty(String.valueOf(errorCode));
             } catch (MissingResourceException mre) {
                 log.warn("Error reading globus error descriptions.", mre);
                 return "Error code: " + errorCode;
