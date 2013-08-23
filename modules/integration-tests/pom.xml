@@ -76,26 +76,6 @@
 					</executions>	
 			</plugin>
             <plugin>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>2.3.1</version>
-                <executions>
-                    <execution>
-                        <id>install-tomcat-distribution</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <groupId>org.apache.airavata.integration.tomcat</groupId>
-                            <artifactId>apache-tomcat</artifactId>
-                            <version>${tomcat.version}</version>
-                            <packaging>zip</packaging>
-                            <file>${project.build.directory}/apache-tomcat-${tomcat.version}.zip</file>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.codehaus.cargo</groupId>
                 <artifactId>cargo-maven2-plugin</artifactId>
                 <version>1.3.1</version>
@@ -182,25 +162,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>tomcat-zip</id>
-                        <phase>install</phase>
-                        <configuration>
-                            <target>
-                                <echo message="Creating airavata tomcat distribution. This may take a while ..." />
-                                <sleep seconds="20" />
-                                <zip destfile="${airavata.tomcat.distribution}" basedir="${tomcat.work.dir}" />
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
@@ -226,30 +187,6 @@
             <artifactId>distribution</artifactId>
             <type>pom</type>
             <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-rest-service-webapp</artifactId>
-            <type>war</type>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.axis2</groupId>
-            <artifactId>axis2-webapp</artifactId>
-            <version>${axis2.version}</version>
-            <type>war</type>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>

@@ -17,7 +17,7 @@
   ~  specific language governing permissions and limitations
   ~  under the License.
   -->
-    <project name="samples" default="help" basedir=".">
+<project name="samples" default="help" basedir=".">
     <property name="airavata.home" value="../.."/>
     <property name="lib.dir" value="${airavata.home}/lib"/>
     <target name="help">
