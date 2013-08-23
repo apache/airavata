@@ -22,7 +22,7 @@
 package org.apache.airavata.samples;
 
 public class EchoService {
-    public String echo(String message) {
-        return message;
+    public String echo(String input) {
+        return input;
     }
 }
