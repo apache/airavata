@@ -149,47 +149,6 @@
             </includes>
         </fileSet>
 
-        <!--fileSet> <directory>../../samples/simple-math-service/target</directory> <outputDirectory>standalone-server/repository/services</outputDirectory> 
-            <includes> <include>*.aar</include> </includes> </fileSet -->
-        <fileSet>
-            <directory>../../../samples/complex-math-service/target</directory>
-            <outputDirectory>repository/services
-            </outputDirectory>
-            <includes>
-                <include>*.aar</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>../../../samples/levenshtein-distance-service/target
-            </directory>
-            <outputDirectory>repository/services</outputDirectory>
-            <includes>
-                <include>*.aar</include>
-            </includes>
-        </fileSet>
-		<fileSet>
-            <directory>../../../samples/echo-service/target
-            </directory>
-            <outputDirectory>repository/services</outputDirectory>
-            <includes>
-                <include>*.aar</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>../../xbaya-gui/src/test/resources/</directory>
-            <outputDirectory>samples/workflows</outputDirectory>
-            <includes>
-                <include>*.xwf</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>../../../samples</directory>
-            <outputDirectory>samples</outputDirectory>
-            <includes>
-                <include>*.sh</include>
-                <include>*.bat</include>
-            </includes>
-        </fileSet>
         <fileSet>
             <directory>src/main/resources/conf</directory>
             <outputDirectory>bin</outputDirectory>
@@ -197,6 +156,32 @@
                 <include>**/*</include>
             </includes>
         </fileSet>
+
+        <!-- ********************** Copy samples ********************** -->
+        <fileSet>
+            <directory>${project.build.directory}/samples/services</directory>
+            <outputDirectory>repository/services
+            </outputDirectory>
+            <includes>
+                <include>*.aar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.build.directory}/samples/workflows</directory>
+            <outputDirectory>samples/workflows</outputDirectory>
+            <includes>
+                <include>*.xwf</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.build.directory}/samples/applications</directory>
+            <outputDirectory>samples</outputDirectory>
+            <includes>
+                <include>*.sh</include>
+                <include>*.bat</include>
+            </includes>
+        </fileSet>
+
     </fileSets>
 
     <dependencySets>
