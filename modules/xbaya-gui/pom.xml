@@ -109,6 +109,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>apache-airavata-samples</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.ogce</groupId>
             <artifactId>xpp3</artifactId>
             <version>${xpp3.version}</version>
