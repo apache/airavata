@@ -112,6 +112,7 @@
             <groupId>org.apache.airavata</groupId>
             <artifactId>apache-airavata-samples</artifactId>
             <version>${project.version}</version>
+			<type>zip</type>
         </dependency>
 
         <dependency>
