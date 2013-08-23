@@ -9,15 +9,14 @@
 </appinfo>
     </xgr:metadata>
     <xgr:node xgr:type="input">
-      <xgr:id>message</xgr:id>
-      <xgr:name>message</xgr:name>
+      <xgr:id>input</xgr:id>
+      <xgr:name>input</xgr:name>
       <xgr:outputPort>input_out_0</xgr:outputPort>
       <xgr:x>59</xgr:x>
       <xgr:y>67</xgr:y>
       <xgr:config>
         <xgr:description></xgr:description>
         <xgr:dataType>{http://www.w3.org/2001/XMLSchema}string</xgr:dataType>
-        <xgr:value>Peace</xgr:value>
         <xgr:visibility>true</xgr:visibility>
       </xgr:config>
     </xgr:node>
@@ -39,8 +38,8 @@
       <xgr:inputPort>EchoServicePortType_echo_in_0</xgr:inputPort>
       <xgr:controlInPort>EchoServicePortType_echo_ctrl_in_0</xgr:controlInPort>
       <xgr:controlOutPort>EchoServicePortType_echo_ctrl_out_0</xgr:controlOutPort>
-      <xgr:x>194</xgr:x>
-      <xgr:y>130</xgr:y>
+      <xgr:x>200</xgr:x>
+      <xgr:y>112</xgr:y>
       <xgr:wsdl>_</xgr:wsdl>
       <xgr:portType>{http://samples.airavata.apache.org}EchoServicePortType</xgr:portType>
       <xgr:operation>echo</xgr:operation>
@@ -48,7 +47,7 @@
     <xgr:port xgr:type="systemData">
       <xgr:id>input_out_0</xgr:id>
       <xgr:name>Parameter</xgr:name>
-      <xgr:node>message</xgr:node>
+      <xgr:node>input</xgr:node>
     </xgr:port>
     <xgr:port xgr:type="systemData">
       <xgr:id>return_in_0</xgr:id>
@@ -57,7 +56,7 @@
     </xgr:port>
     <xgr:port xgr:type="ws">
       <xgr:id>EchoServicePortType_echo_in_0</xgr:id>
-      <xgr:name>message</xgr:name>
+      <xgr:name>input</xgr:name>
       <xgr:node>EchoServicePortType_echo</xgr:node>
     </xgr:port>
     <xgr:port xgr:type="ws">
@@ -76,12 +75,12 @@
       <xgr:node>EchoServicePortType_echo</xgr:node>
     </xgr:port>
     <xgr:edge xgr:type="data">
-      <xgr:fromPort>input_out_0</xgr:fromPort>
-      <xgr:toPort>EchoServicePortType_echo_in_0</xgr:toPort>
-    </xgr:edge>
-    <xgr:edge xgr:type="data">
       <xgr:fromPort>EchoServicePortType_echo_out_0</xgr:fromPort>
       <xgr:toPort>return_in_0</xgr:toPort>
+    </xgr:edge>
+    <xgr:edge xgr:type="data">
+      <xgr:fromPort>input_out_0</xgr:fromPort>
+      <xgr:toPort>EchoServicePortType_echo_in_0</xgr:toPort>
     </xgr:edge>
   </xgr:graph>
   <xwf:wsdls>
@@ -95,7 +94,7 @@
             &lt;xs:element name="echo">
                 &lt;xs:complexType>
                     &lt;xs:sequence>
-                        &lt;xs:element minOccurs="0" name="message" nillable="true" type="xs:string" />
+                        &lt;xs:element minOccurs="0" name="input" nillable="true" type="xs:string" />
                     &lt;/xs:sequence>
                 &lt;/xs:complexType>
             &lt;/xs:element>
@@ -158,13 +157,13 @@
     &lt;/wsdl:binding>
     &lt;wsdl:service name="EchoService">
         &lt;wsdl:port name="EchoServiceHttpSoap11Endpoint" binding="ns:EchoServiceSoap11Binding">
-            &lt;soap:address location="http://localhost:8080/airavata-server/services/EchoService/" />
+            &lt;soap:address location="http://localhost:8080/airavata-server/services/EchoService.EchoServiceHttpSoap11Endpoint/" />
         &lt;/wsdl:port>
         &lt;wsdl:port name="EchoServiceHttpSoap12Endpoint" binding="ns:EchoServiceSoap12Binding">
-            &lt;soap12:address location="http://localhost:8080/airavata-server/services/EchoService/" />
+            &lt;soap12:address location="http://localhost:8080/airavata-server/services/EchoService.EchoServiceHttpSoap12Endpoint/" />
         &lt;/wsdl:port>
         &lt;wsdl:port name="EchoServiceHttpEndpoint" binding="ns:EchoServiceHttpBinding">
-            &lt;http:address location="http://localhost:8080/airavata-server/services/EchoService/" />
+            &lt;http:address location="http://localhost:8080/airavata-server/services/EchoService.EchoServiceHttpEndpoint/" />
         &lt;/wsdl:port>
     &lt;/wsdl:service>
 &lt;/wsdl:definitions></xwf:wsdl>
