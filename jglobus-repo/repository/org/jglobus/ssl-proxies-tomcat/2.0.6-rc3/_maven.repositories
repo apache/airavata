@@ -1,0 +1,5 @@
+#NOTE: This is an internal implementation file, its format can be changed without prior notice.
+#Sun Aug 25 19:40:25 EDT 2013
+ssl-proxies-tomcat-2.0.6-rc3.pom>=
+ssl-proxies-tomcat-2.0.6-rc3-sources.jar>=
+ssl-proxies-tomcat-2.0.6-rc3.jar>=
