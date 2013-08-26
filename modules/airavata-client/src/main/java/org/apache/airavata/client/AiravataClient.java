@@ -22,7 +22,6 @@ package org.apache.airavata.client;
 
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -50,10 +49,8 @@ import org.apache.airavata.client.impl.UserManagerImpl;
 import org.apache.airavata.client.impl.WorkflowManagerImpl;
 import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.Version;
-import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataRegistryFactory;
 import org.apache.airavata.registry.api.AiravataUser;
@@ -83,7 +80,6 @@ public class AiravataClient extends Observable implements AiravataAPI {
 	public static final String WORKFLOWSERVICEURL = "xbaya.service.url";
 	public static final String TRUSTED_CERT_LOCATION = "trusted.cert.location";
 	private AiravataClientConfiguration clientConfiguration;
-	private static WorkflowContextHeaderBuilder builder;
 	private String currentUser;
 	private URI regitryURI;
 	private PasswordCallback callBack;
@@ -150,9 +146,9 @@ public class AiravataClient extends Observable implements AiravataAPI {
 	@Override
 	public void initialize() throws AiravataAPIInvocationException {
 
-        if (AiravataUtils.isServer()) {
-            waitTillRegistryServiceStarts();
-        }
+//        if (AiravataUtils.isServer()) {
+//            waitTillRegistryServiceStarts();
+//        }
 
         try {
 			if (!configCreated) {
@@ -161,13 +157,6 @@ public class AiravataClient extends Observable implements AiravataAPI {
 				configCreated = true;
 			}
 			updateClientConfiguration(configuration);
-
-			// At this point we do not know the workflowExperimentId
-			// FIXME: Registry URL is set null as its not used. Set this when we
-			// have rest services
-			builder = new WorkflowContextHeaderBuilder(
-					configuration.get(BROKER), configuration.get(GFAC), null,
-					null, null, configuration.get(MSGBOX));
 
 			// TODO: At some point this should contain the current user the
 			// airavata

@@ -51,7 +51,6 @@
                                 <artifactItem>
                                     <groupId>org.apache.airavata</groupId>
                                     <artifactId>apache-airavata-samples</artifactId>
-                                    <version>${project.version}</version>
                                     <type>zip</type>
                                     <outputDirectory>${project.build.directory}/samples</outputDirectory>
                                 </artifactItem>
