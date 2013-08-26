@@ -261,6 +261,7 @@ public class WorkflowInterpreterLaunchWindow {
         this.workflow.setGPELInstanceID(workfowInstanceID);
 
         MonitorConfiguration notifConfig = this.engine.getMonitor().getConfiguration();
+        engine.getMonitor().resetEventData();
         notifConfig.setTopic(topic);
         arguments.add("-" + JythonScript.TOPIC_VARIABLE);
         arguments.add(topic);

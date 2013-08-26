@@ -111,12 +111,13 @@ public class EventDataRepository implements TableModel, BoundedRangeModel {
         this.tableModelChangeEvent = new ChangeEvent(this); // We only need one.
         this.events = new ArrayList<EventData>();
     }
-
+    public void addEvent(XmlElement message) {
+    	addEvent(new EventData(message));
+    }
     /**
      * @param message
      */
-    public void addEvent(XmlElement message) {
-        EventData event = new EventData(message);
+    public void addEvent(EventData event) {
         // no need the check for not null because second clause is evaluated only if
         // not null
         if (this.filter == null || this.filter.isAcceptable(event)) {

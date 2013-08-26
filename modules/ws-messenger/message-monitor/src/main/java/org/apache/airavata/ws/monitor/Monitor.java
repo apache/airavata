@@ -29,6 +29,7 @@ import java.util.Set;
 
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
+import org.apache.airavata.ws.monitor.MonitorUtil.EventType;
 import org.apache.airavata.ws.monitor.event.Event;
 import org.apache.airavata.ws.monitor.event.EventProducer;
 import org.apache.airavata.ws.monitor.event.Event.Type;
@@ -57,6 +58,8 @@ public class Monitor extends EventProducer {
     private boolean monitoringCompleted=false;
     
     private boolean monitoringFailed=false;
+
+    private String lastTerminatedWorkflowExecutionId=null;
     
     public Monitor(MonitorConfiguration configuration) {
         this.configuration = configuration;
@@ -199,13 +202,17 @@ public class Monitor extends EventProducer {
      * @param event
      */
     protected synchronized void handleNotification(XmlElement event) {
+    	EventData eventData = new EventData(event);
+    	if (eventData.getType()==EventType.WORKFLOW_TERMINATED){
+    		lastTerminatedWorkflowExecutionId=eventData.getExperimentID();
+    	}
         Set<String> keys = this.eventDataMap.keySet();
         // Remove everthing leaving only the last one
         if(printRawMessages){
             System.out.println(XMLUtil.xmlElementToString(event));
         }
         for (String key : keys) {
-            this.eventDataMap.get(key).addEvent(event);
+            this.eventDataMap.get(key).addEvent(eventData);
         }
     }
 
@@ -278,8 +285,12 @@ public class Monitor extends EventProducer {
      * @return
      */
     public boolean isMonitoring() {
-        return monitoring;
+		return monitoring;
     }
+
+	public boolean hasCurrentExecutionTerminatedNotificationReceived() {
+		return getConfiguration().getTopic()!=null && getConfiguration().getTopic().equals(lastTerminatedWorkflowExecutionId);
+	}
 
     private void setMonitoring(boolean monitoring) {
         this.monitoring = monitoring;

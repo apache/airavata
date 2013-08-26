@@ -312,13 +312,10 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
         AbstractAction action = new AbstractAction() {
             private WorkflowInterpreterLaunchWindow window;
             public void actionPerformed(ActionEvent e) {
-                if(engine.getMonitor().isMonitoring()){
+                if(!engine.getMonitor().hasCurrentExecutionTerminatedNotificationReceived() && engine.getMonitor().isMonitoring()){
                     if (JOptionPane.showConfirmDialog(null,
                             "A previous workflow execution data needs to be cleared before launching another workflow. Do you wish to continue?",
-                            "Run Workflow", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION){
-                        //TODO: add clean up workflow interpretter - AIRAVATA-609
-//                        cleanup();
-                    }else{
+                            "Run Workflow", JOptionPane.YES_NO_OPTION)!=JOptionPane.YES_OPTION){
                         return;
                     }
                 }
