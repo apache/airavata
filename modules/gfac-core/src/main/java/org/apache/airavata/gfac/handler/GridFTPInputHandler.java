@@ -53,8 +53,6 @@ public class GridFTPInputHandler implements GFacHandler {
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         log.info("Invoking GridFTPInputHandler ...");
-
-
         MessageContext inputNew = new MessageContext();
         try {
             MessageContext input = jobExecutionContext.getInMessageContext();
