@@ -84,6 +84,7 @@ public class WorkflowFiler {
 
         this.graphFileChooser = new JFileChooser(XBayaPathConstants.WORKFLOW_DIRECTORY);
         this.graphFileChooser.addChoosableFileFilter(this.graphFileFilter);
+        this.graphFileChooser.setFileFilter(this.graphFileFilter);
 
     }
 
