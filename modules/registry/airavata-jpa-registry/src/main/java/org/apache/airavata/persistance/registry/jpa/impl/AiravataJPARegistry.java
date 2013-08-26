@@ -131,10 +131,14 @@ import org.slf4j.LoggerFactory;
 
 public class AiravataJPARegistry extends AiravataRegistry2{
     private final static Logger logger = LoggerFactory.getLogger(AiravataJPARegistry.class);
-    private JPAResourceAccessor jpa;
-    private boolean active=false;
+    private static Map<String, String[]> compatibleVersionMap;
+    private static int CONNECT_FAIL_WAIT_TIME=1000;
+    private static int MAX_TRIES=15;
     private static final String DEFAULT_PROJECT_NAME = "default";
     private static final Version API_VERSION=new Version("Airavata Registry API",0,9,null,null,null);
+
+    private JPAResourceAccessor jpa;
+    private boolean active=false;
     private URI registryConnectionURI;
     private ConfigurationRegistry configurationRegistry;
     private DescriptorRegistry descriptorRegistry;
@@ -142,12 +146,8 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     private ProvenanceRegistry provenanceRegistry;
     private UserWorkflowRegistry userWorkflowRegistry;
     private PublishedWorkflowRegistry publishedWorkflowRegistry;
-    private static Map<String, String[]> compatibleVersionMap;
-
-
-
     private PasswordCallback callback;
-
+    
     @Override
     protected void initialize() throws RegistryException {
     	jpa = new JPAResourceAccessor(this);
@@ -158,16 +158,25 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         initializeCustomRegistries();
         String apiVersion = getVersion().toString();
         String registryVersion;
-		try {
-			registryVersion = getConfiguration("registry.version").toString();
-		} catch (Exception e) {
-			if (e.getMessage().contains("does not exist")){
+        int tries=0;
+        while(true){
+			try {
+				tries++;
+				registryVersion = getConfiguration("registry.version").toString();
+				break;
+			} catch (Exception e) {
 				ResourceUtils.reset();
-				throw new AiravataRegistryUninitializedException("Airavata Registry has not yet initialized!!!", e);
-			} else {
-				throw new RegistryException(e);
+				if (tries<MAX_TRIES){
+					try {
+						Thread.sleep(CONNECT_FAIL_WAIT_TIME);
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+				}else{
+					throw new AiravataRegistryUninitializedException("Airavata Registry has not yet initialized properly!!!", e);
+				}
 			}
-		}
+        }
         String[] list = compatibleVersionMap.get(apiVersion);
         if (list == null || (!Arrays.asList(list).contains(registryVersion))){
             throw new RegistryAPIVersionIncompatibleException("Incompatible registry versions. Please check whether you updated the API and Registry " +
