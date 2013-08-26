@@ -20,28 +20,50 @@
 */
 package org.apache.airavata.gfac.utils;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
+
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.Constants;
-import org.apache.airavata.gfac.RequestData;
 import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.deployment.classloaders.JarFileClassLoader;
 import org.apache.airavata.registry.api.workflow.ApplicationJob;
 import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
-import org.apache.airavata.schemas.gfac.*;
+import org.apache.airavata.schemas.gfac.BooleanArrayType;
+import org.apache.airavata.schemas.gfac.BooleanParameterType;
+import org.apache.airavata.schemas.gfac.DoubleArrayType;
+import org.apache.airavata.schemas.gfac.DoubleParameterType;
+import org.apache.airavata.schemas.gfac.FileArrayType;
+import org.apache.airavata.schemas.gfac.FileParameterType;
+import org.apache.airavata.schemas.gfac.FloatArrayType;
+import org.apache.airavata.schemas.gfac.FloatParameterType;
+import org.apache.airavata.schemas.gfac.IntegerArrayType;
+import org.apache.airavata.schemas.gfac.IntegerParameterType;
+import org.apache.airavata.schemas.gfac.Parameter;
+import org.apache.airavata.schemas.gfac.StringArrayType;
+import org.apache.airavata.schemas.gfac.StringParameterType;
+import org.apache.airavata.schemas.gfac.URIArrayType;
+import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.apache.axiom.om.OMElement;
-import org.apache.axis2.deployment.DeploymentException;
 import org.globus.gram.GramJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.*;
-import java.net.*;
-import java.util.*;
 
 public class GFacUtils {
     private final static Logger log = LoggerFactory.getLogger(GFacUtils.class);

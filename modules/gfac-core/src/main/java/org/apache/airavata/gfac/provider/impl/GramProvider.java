@@ -157,7 +157,7 @@ public class GramProvider implements GFacProvider {
     private void submitJobs(String gateKeeper,
                             JobExecutionContext jobExecutionContext,
                             GlobusHostType globusHostType) throws GFacException, GFacProviderException {
-
+    	boolean applicationSaved=false;
         if (twoPhase) {
             try {
                 /*
@@ -175,7 +175,7 @@ public class GramProvider implements GFacProvider {
             } catch (WaitingForCommitException e) {
 
                 saveApplicationJob(jobExecutionContext, ApplicationJobStatus.UN_SUBMITTED);
-
+                applicationSaved=true;
                 String jobStatusMessage = "Un-submitted JobID= " + job.getIDAsString();
                 log.info(jobStatusMessage);
                 jobExecutionContext.getNotifier().publish(new GramJobIDEvent(jobStatusMessage));
@@ -250,9 +250,14 @@ public class GramProvider implements GFacProvider {
         }
 
         currentlyExecutingJobCache.put(job.getIDAsString(), job);
-
+        
         // for provider test
-        saveApplicationJob(jobExecutionContext, ApplicationJobStatus.SUBMITTED);
+        if (applicationSaved){
+        	GFacUtils.updateApplicationJobStatus(jobExecutionContext, job.getIDAsString(), ApplicationJobStatus.SUBMITTED);
+        }else{
+	        saveApplicationJob(jobExecutionContext, ApplicationJobStatus.SUBMITTED);
+	        applicationSaved=true;
+        }
 
         /*
         * Wait until job is done
