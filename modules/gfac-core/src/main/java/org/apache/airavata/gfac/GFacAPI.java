@@ -77,7 +77,12 @@ public class GFacAPI {
             jobExecutionContext.setProperty(ERROR_SENT,"true");
             jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
             throw e;
-        } finally {
+        } catch (Exception e){
+            jobExecutionContext.setProperty(ERROR_SENT,"true");
+            jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
+            throw new GFacException(e);
+        }
+        finally {
             try{
             invokeOutFlowHandlers(jobExecutionContext);
             }catch(GFacException e){

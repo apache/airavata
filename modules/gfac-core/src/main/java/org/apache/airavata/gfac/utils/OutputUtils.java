@@ -59,9 +59,6 @@ public class OutputUtils {
                 ((StdErrParameterType) actual.getType()).setValue(stderr);
                 result.put(paramName, actual);
             } else {
-            	if ("URI".equals(actual.getType().getType().toString()) &&  !((URIParameterType) actual.getType()).getValue().isEmpty()){
-            		continue;
-            	}
                 String parseStdout = parseStdout(stdout, paramName);
                 if (parseStdout != null) {
                     MappingFactory.fromString(actual, parseStdout);

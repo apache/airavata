@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.gfac.utils;
 
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.Constants;
@@ -27,10 +28,7 @@ import org.apache.airavata.gfac.ToolsException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.provider.GFacProviderException;
-import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
-import org.apache.airavata.schemas.gfac.NameValuePairType;
-import org.apache.airavata.schemas.gfac.QueueType;
-import org.apache.airavata.schemas.gfac.URIArrayType;
+import org.apache.airavata.schemas.gfac.*;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.globus.gram.GramAttributes;
 import org.slf4j.Logger;
@@ -49,7 +47,7 @@ public class GramRSLGenerator {
 
     ;
 
-    public static GramAttributes configureRemoteJob(JobExecutionContext context) throws ToolsException {
+    public static GramAttributes  configureRemoteJob(JobExecutionContext context) throws ToolsException {
         HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) context.getApplicationContext().getApplicationDeploymentDescription().getType();
         GramAttributes jobAttr = new GramAttributes();
         jobAttr.setExecutable(app.getExecutableLocation());
@@ -86,11 +84,18 @@ public class GramRSLGenerator {
             Set<String> keys = inputs.keySet();
             for (String paramName : keys ) {
              	ActualParameter actualParameter = (ActualParameter) inputs.get(paramName);
-                if ("URIArray".equals(actualParameter.getType().getType().toString())) {
-                    String[] values = ((URIArrayType) actualParameter.getType()).getValueArray();
-                    for (String value : values) {
-                        jobAttr.addArgument(value);
+                if ("URIArray".equals(actualParameter.getType().getType().toString()) || "StringArray".equals(actualParameter.getType().getType().toString())
+                        || "FileArray".equals(actualParameter.getType().getType().toString())) {
+                    String[] values = null;
+                    if (actualParameter.getType() instanceof URIArrayType) {
+                        values = ((URIArrayType) actualParameter.getType()).getValueArray();
+                    } else if (actualParameter.getType() instanceof StringArrayType) {
+                        values = ((StringArrayType) actualParameter.getType()).getValueArray();
+                    } else if (actualParameter.getType() instanceof FileArrayType) {
+                        values = ((FileArrayType) actualParameter.getType()).getValueArray();
                     }
+                    String value = StringUtil.createDelimiteredString(values, " ");
+                    jobAttr.addArgument(value);
                 } else {
                     String paramValue = MappingFactory.toString(actualParameter);
                     jobAttr.addArgument(paramValue);
