@@ -121,7 +121,7 @@
                 <include>com.sun.jersey:jersey-core:jar</include>
                 <include>com.sun.jersey:jersey-client:jar</include>
                 <include>org.apache.airavata:airavata-rest-mappings:jar</include>
-
+                <include>org.apache.airavata:json</include>
                 <include>commons-codec:commons-codec:jar</include>
                 <include>wsdl4j:wsdl4j:jar</include>
                 <include>org.apache.axis2:axis2-kernel:jar</include>
@@ -138,6 +138,8 @@
                 <include>org.apache.httpcomponents:httpcore:jar</include>
                 <include>org.apache.axis2:axis2-adb:jar</include>
                 <include>log4j:log4j:jar</include>
+                <include>de.odysseus.staxon:staxon:jar:1.2</include>
+                <include>de.odysseus.staxon:staxon-jackson:jar:1.2</include>
             </includes>
         </dependencySet>
     </dependencySets>
