@@ -61,13 +61,13 @@ public class CreateApplication {
         // creating airavata client object //
         port = Integer.parseInt("8080");
         serverUrl = "localhost";
-        serverContextName = "airavata-registry";
+        serverContextName = "airavata/services";
 
         log.info("Configurations - port : " + port);
         log.info("Configurations - serverUrl : " + serverUrl);
         log.info("Configurations - serverContext : " + serverContextName);
 
-        registryURL = "http://" + serverUrl + ":" + port + "/" + serverContextName + "/api";
+        registryURL = "http://" + serverUrl + ":" + port + "/" + serverContextName + "/registry";
 
         log.info("Configurations - Registry URL : " + registryURL);
 

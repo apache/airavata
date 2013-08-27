@@ -67,25 +67,28 @@ public class RunWorkflow {
         // creating airavata client object //
         port = Integer.parseInt("8080");
         serverUrl = "localhost";
-        serverContextName = "airavata-registry";
+        serverContextName = "airavata/services";
         System.out.println((new File(".")).getAbsolutePath());
         log.info("Configurations - port : " + port);
         log.info("Configurations - serverUrl : " + serverUrl);
         log.info("Configurations - serverContext : " + serverContextName);
 
-        registryURL = "http://" + serverUrl + ":" + port + "/" + serverContextName + "/api";
+        registryURL = "http://" + serverUrl + ":" + port + "/" + serverContextName + "/registry";
 
         log.info("Configurations - Registry URL : " + registryURL);
 
         PasswordCallback passwordCallback = new PasswordCallbackImpl(getUserName(), getPassword());
         airavataAPI = AiravataAPIFactory.getAPI(new URI(getRegistryURL()), getGatewayName(), getUserName(),
                 passwordCallback);
+        airavataAPI.setCurrentUser(getUserName());
 
         String workflowName = "EchoSample";
         // Saving workflow method, workflow file has the workflow Name set to EchoSample, so when we use saveWorkflow
         // method it will
         // save the workflow with that name.
-        airavataAPI.getWorkflowManager().addWorkflow(getWorkflowComposeContent());
+        if (!airavataAPI.getWorkflowManager().isWorkflowExists(workflowName)){
+            airavataAPI.getWorkflowManager().addWorkflow(getWorkflowComposeContent());
+        }
 
         // Now workflow has saved, Now we have to set inputs
         List<WorkflowInput> workflowInputs = new ArrayList<WorkflowInput>();
