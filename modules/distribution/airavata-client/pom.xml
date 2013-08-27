@@ -247,7 +247,11 @@
             <artifactId>airavata-rest-client</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>json</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- JCR Support -->
         <!-- TODO need clean up -->
         <dependency>
