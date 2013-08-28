@@ -20,8 +20,11 @@
 */
 package org.apache.airavata.registry.services;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.sql.Connection;
+import java.sql.SQLException;
+
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
@@ -37,13 +40,6 @@ import org.apache.axis2.engine.ServiceLifeCycle;
 import org.apache.derby.drda.NetworkServerControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Properties;
 
 public class RegistryService implements ServiceLifeCycle {
     private static final Logger logger = LoggerFactory.getLogger(RegistryService.class);
@@ -120,6 +116,21 @@ public class RegistryService implements ServiceLifeCycle {
             conn = db.connect();
             if (!DatabaseCreator.isDatabaseStructureCreated(PERSISTANT_DATA, conn)) {
                 DatabaseCreator.createRegistryDatabase(conn);
+                try{
+                    GatewayResource gatewayResource = new GatewayResource();
+                    gatewayResource.setGatewayName(RegistrySettings.getSetting(REGISTRY_DEFAULT_GATEWAY_ID));
+                    gatewayResource.setOwner(RegistrySettings.getSetting(REGISTRY_DEFAULT_GATEWAY_ID));
+                    gatewayResource.save();
+                    UserResource userResource = (UserResource) gatewayResource.create(ResourceType.USER);
+                    userResource.setUserName(RegistrySettings.getSetting(REGISTRY_DEFAULT_USER));
+                    userResource.setPassword(RegistrySettings.getSetting(REGISTRY_DEFAULT_USER_PASSWORD));
+                    userResource.save();
+                    WorkerResource workerResource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
+                    workerResource.setUser(userResource.getUserName());
+                    workerResource.save();
+                } catch (RegistrySettingsException e) {
+                    logger.error("Unable to read properties", e);
+                }
                 logger.info("New Database created for Registry");
             } else {
                 logger.info("Database already created for Registry!");
@@ -139,22 +150,7 @@ public class RegistryService implements ServiceLifeCycle {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
         }
-        try{
-            GatewayResource gatewayResource = new GatewayResource();
-            gatewayResource.setGatewayName(RegistrySettings.getSetting(REGISTRY_DEFAULT_GATEWAY_ID));
-            gatewayResource.setOwner(RegistrySettings.getSetting(REGISTRY_DEFAULT_GATEWAY_ID));
-            gatewayResource.save();
-            UserResource userResource = (UserResource) gatewayResource.create(ResourceType.USER);
-            userResource.setUserName(RegistrySettings.getSetting(REGISTRY_DEFAULT_USER));
-            userResource.setPassword(RegistrySettings.getSetting(REGISTRY_DEFAULT_USER_PASSWORD));
-            userResource.save();
-            WorkerResource workerResource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
-            workerResource.setUser(userResource.getUserName());
-            workerResource.save();
-        } catch (RegistrySettingsException e) {
-            logger.error("Unable to read properties", e);
-        }
-
+        System.setProperty("registry.initialized", "1");
     }
 
     public boolean isRegistryServiceStarted() {

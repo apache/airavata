@@ -163,6 +163,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 			try {
 				tries++;
 				registryVersion = getConfiguration("registry.version").toString();
+				if (System.getProperty("registry.initialized")==null){
+					//lets wait a few seconds for the initialization to complete
+					Thread.sleep(CONNECT_FAIL_WAIT_TIME*3);	
+				}
 				break;
 			} catch (Exception e) {
 				ResourceUtils.reset();
