@@ -121,22 +121,22 @@ public class AiravataClient extends Observable implements AiravataAPI {
 			URI uri = registryObject.getEventingServiceURI();
 			config.put(
 					AiravataClient.BROKER,
-					uri == null ? "http://localhost:8080/axis2/services/EventingService"
+					uri == null ? "http://localhost:8080/airavata-server/services/EventingService"
 							: uri.toString());
 			uri = registryObject.getMessageBoxURI();
 			config.put(
 					AiravataClient.MSGBOX,
-					uri == null ? "http://localhost:8080/axis2/services/MsgBoxService"
+					uri == null ? "http://localhost:8080/airavata-server/services/MsgBoxService"
 							: uri.toString());
 			List<URI> URLList = registryObject.getWorkflowInterpreterURIs();
 			config.put(
 					AiravataClient.WORKFLOWSERVICEURL,
-					URLList == null || URLList.size() == 0 ? "http://localhost:8080/axis2/services/WorkflowInterpretor?wsdl"
+					URLList == null || URLList.size() == 0 ? "http://localhost:8080/airavata-server/services/WorkflowInterpretor?wsdl"
 							: URLList.get(0).toString());
 			List<URI> urlList = registryObject.getGFacURIs();
 			config.put(
 					AiravataClient.GFAC,
-					urlList == null || urlList.size() == 0 ? "http://localhost:8080/axis2/services/GFacService"
+					urlList == null || urlList.size() == 0 ? "http://localhost:8080/airavata-server/services/GFacService"
 							: urlList.get(0).toString());
 			config.put(AiravataClient.WITHLISTENER, "true");
 		}
