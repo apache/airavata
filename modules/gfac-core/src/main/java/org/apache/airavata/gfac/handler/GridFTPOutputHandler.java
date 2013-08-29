@@ -168,13 +168,6 @@ public class GridFTPOutputHandler implements GFacHandler {
 								stringMap.put(paramName, actualParameter);
 							}
                         }
-                        else if ("String".equals(actualParameter.getType().getType().toString())) {
-                        	String path = app.getOutputDataDirectory()+"/"+((StringParameterType) actualParameter.getType()).getValue();
-                            URI outputURI = GFacUtils.createGsiftpURI(endpoint, path);
-                            ((StringParameterType) actualParameter.getType()).setValue(outputURI.toString());
-//                            stringMap = new HashMap<String, ActualParameter>();
-                            stringMap.put(paramName, actualParameter);
-                        }
                         else {
                             // This is to handle exception during the output parsing.
                             stringMap = OutputUtils.fillOutputFromStdout(output, stdout, stderr);
