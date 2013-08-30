@@ -262,7 +262,10 @@ public class RegistryWindow {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }catch (AiravataAPIInvocationException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
+            engine.getGUI().getErrorWindow().error("Some error has occurred while initialize. Please check whether you " +
+                    "entered correct credentials...", e);
+
         }
         return null;
 

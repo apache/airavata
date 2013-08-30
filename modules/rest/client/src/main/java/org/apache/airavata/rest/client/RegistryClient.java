@@ -43,6 +43,9 @@ import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
 import org.apache.airavata.rest.utils.CookieManager;
 
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.NewCookie;
+
 public class RegistryClient extends AiravataRegistry2 {
 
     private PasswordCallback callback;
@@ -98,6 +101,7 @@ public class RegistryClient extends AiravataRegistry2 {
 
     @Override
     protected void initialize() {
+        CookieManager.setCookie(new NewCookie("", ""));
         String userName = getUser().getUserName();
         callback = getCallback();
         String serviceURI = getConnectionURI().toString();
