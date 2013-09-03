@@ -108,14 +108,14 @@ public class AiravataClient extends Observable implements AiravataAPI {
 	protected AiravataClient() {
 	}
 
-	private static HashMap<String, String> createConfig(URI registryUrl,
+	private static HashMap<String, String> createConfig(URI registryUrl, String gateway,
 			String username, String password) throws RepositoryException,
 			RegistryException, AiravataConfigurationException {
 		HashMap<String, String> config = new HashMap<String, String>();
 		if (registryUrl != null) {
 			config.put(AiravataClient.REGISTRY, registryUrl.toString());
 		}
-		AiravataRegistry2 registryObject = getRegistry(registryUrl, "default",
+		AiravataRegistry2 registryObject = getRegistry(registryUrl, gateway,
 				username, new PasswordCallBackImpl(username, password));
 		if (registryObject != null) {
 			URI uri = registryObject.getEventingServiceURI();
@@ -152,7 +152,7 @@ public class AiravataClient extends Observable implements AiravataAPI {
 
         try {
 			if (!configCreated) {
-				configuration = createConfig(getRegitryURI(), getCurrentUser(),
+				configuration = createConfig(getRegitryURI(), getGateway(), getCurrentUser(),
 						getPassword());
 				configCreated = true;
 			}
