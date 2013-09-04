@@ -133,10 +133,10 @@ public class ResourceUtils {
         QueryGenerator generator = new QueryGenerator(AbstractResource.GATEWAY);
         generator.setParameter(AbstractResource.GatewayConstants.GATEWAY_NAME, gatewayName);
         Query q = generator.selectQuery(em);
-        Gateway gateway = (Gateway) q.getSingleResult();
+        int size = q.getResultList().size();
         em.getTransaction().commit();
         em.close();
-        return gateway != null;
+		return size>0;
     }
 
     /**
