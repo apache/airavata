@@ -77,6 +77,7 @@ import org.apache.airavata.registry.api.ResourceMetadata;
 import org.apache.airavata.registry.api.UserWorkflowRegistry;
 import org.apache.airavata.registry.api.WorkspaceProject;
 import org.apache.airavata.registry.api.exception.AiravataRegistryUninitializedException;
+import org.apache.airavata.registry.api.exception.GatewayNotRegisteredException;
 import org.apache.airavata.registry.api.exception.RegistryAPIVersionIncompatibleException;
 import org.apache.airavata.registry.api.exception.RegistryAccessorInstantiateException;
 import org.apache.airavata.registry.api.exception.RegistryAccessorNotFoundException;
@@ -150,6 +151,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     
     @Override
     protected void initialize() throws RegistryException {
+    	if (!ResourceUtils.isGatewayExist(getGateway().getGatewayName())){
+    		throw new GatewayNotRegisteredException(getGateway().getGatewayName());
+    	}
     	jpa = new JPAResourceAccessor(this);
     	//TODO check if the db connections are proper & accessible & the relevant db/tables are
     	//present
