@@ -1,8 +1,0 @@
-#NOTE: This is an internal implementation file, its format can be changed without prior notice.
-#Sun Aug 25 19:30:20 EDT 2013
-file\:./jglobus-repo/repository/.error=
-file\:./jglobus-repo/repository/.lastUpdated=1377473420072
-http\://repo1.maven.org/maven2/.error=
-http\://unicore-dev.zam.kfa-juelich.de/maven/.error=
-http\://repo1.maven.org/maven2/.lastUpdated=1377473420071
-http\://unicore-dev.zam.kfa-juelich.de/maven/.lastUpdated=1377473420406
