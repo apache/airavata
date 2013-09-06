@@ -126,6 +126,39 @@ public class GatewayUserStore {
 
     }
 
+    public void updateTokens (String token) {
+
+        String sql = "update Users set token_id = ?";
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            connection = dbUtil.getConnection();
+            preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setString(1, token);
+
+            preparedStatement.executeUpdate();
+
+            connection.commit();
+
+            log.debug("Users successfully updated to use token - " + token);
+
+        } catch (SQLException e) {
+            StringBuilder stringBuilder = new StringBuilder("Error updating token data.");
+            stringBuilder.append(" token - ").append(token);
+
+            log.error(stringBuilder.toString(), e);
+
+            throw new RuntimeException(stringBuilder.toString(), e);
+        } finally {
+
+            dbUtil.cleanup(preparedStatement, connection);
+        }
+
+    }
+
     public String getPassword(String userName, Connection connection) {
 
         String sql = "select password from Users where user_name = ?";

@@ -40,7 +40,7 @@ public class CertificateCredential extends Credential {
 
     private String notAfter;
 
-    private X509Certificate certificate;
+    private X509Certificate[] certificates;
 
     private PrivateKey privateKey;
 
@@ -75,12 +75,12 @@ public class CertificateCredential extends Credential {
         this.privateKey = privateKey;
     }
 
-    public X509Certificate getCertificate() {
-        return certificate;
+    public X509Certificate[] getCertificates() {
+        return certificates;
     }
 
-    public void setCertificate(X509Certificate certificate) {
-        this.certificate = certificate;
+    public void setCertificates(X509Certificate[] certificate) {
+        this.certificates = certificate;
     }
 
     public long getLifeTime() {

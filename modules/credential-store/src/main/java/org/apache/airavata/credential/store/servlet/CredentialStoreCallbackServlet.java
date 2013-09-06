@@ -23,7 +23,6 @@ package org.apache.airavata.credential.store.servlet;
 
 import edu.uiuc.ncsa.myproxy.oa4mp.client.AssetResponse;
 import edu.uiuc.ncsa.myproxy.oa4mp.client.ClientEnvironment;
-import edu.uiuc.ncsa.myproxy.oa4mp.client.OA4MPResponse;
 import edu.uiuc.ncsa.myproxy.oa4mp.client.OA4MPService;
 import edu.uiuc.ncsa.myproxy.oa4mp.client.servlet.ClientServlet;
 import edu.uiuc.ncsa.security.core.exceptions.GeneralException;
@@ -32,12 +31,15 @@ import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.credential.store.credential.CommunityUser;
 import org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;
 import org.apache.airavata.credential.store.store.impl.CertificateCredentialWriter;
+import org.apache.airavata.credential.store.util.ConfigurationReader;
+import org.apache.airavata.credential.store.util.CredentialStoreConstants;
+import org.apache.airavata.credential.store.util.PrivateKeyStore;
 import org.apache.airavata.credential.store.util.Utility;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,18 +52,11 @@ import static edu.uiuc.ncsa.myproxy.oa4mp.client.ClientEnvironment.CALLBACK_URI_
  */
 public class CredentialStoreCallbackServlet extends ClientServlet {
 
-    private static final String ERROR_PAGE = "/credential-store/error.jsp";
-    private static final String SUCCESS_PAGE = "/credential-store/success.jsp";
-
-    private static final String GATEWAY_NAME_QUERY_PARAMETER = "gatewayName";
-    private static final String PORTAL_USER_QUERY_PARAMETER = "portalUserName";
-    private static final String PORTAL_USER_EMAIL_QUERY_PARAMETER = "email";
-    private static final String PORTAL_TOKEN_ID_ASSIGNED = "associatedToken";
-    private static final String DURATION_QUERY_PARAMETER = "duration";
-
     private OA4MPService oa4mpService;
 
     private CertificateCredentialWriter certificateCredentialWriter;
+
+    private static ConfigurationReader configurationReader;
 
     public void init() throws ServletException {
 
@@ -71,6 +66,12 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
             dbUtil = DBUtil.getCredentialStoreDBUtil();
         } catch (Exception e) {
             throw new ServletException("Error initializing database operations.", e);
+        }
+
+        try {
+            configurationReader = new ConfigurationReader();
+        } catch (Exception e) {
+            throw new ServletException("Error initializing configuration reader.", e);
         }
 
         super.init();
@@ -87,17 +88,17 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
     @Override
     public void loadEnvironment() throws IOException {
         environment = getConfigurationLoader().load();
-        oa4mpService = new CredentialStoreOA4MPServer((ClientEnvironment) environment);
+        oa4mpService = new OA4MPService((ClientEnvironment) environment);
     }
 
     @Override
     protected void doIt(HttpServletRequest request, HttpServletResponse response) throws Throwable {
 
-        String gatewayName = request.getParameter(GATEWAY_NAME_QUERY_PARAMETER);
-        String portalUserName = request.getParameter(PORTAL_USER_QUERY_PARAMETER);
-        String durationParameter = request.getParameter(DURATION_QUERY_PARAMETER);
-        String contactEmail = request.getParameter(PORTAL_USER_EMAIL_QUERY_PARAMETER);
-        String portalTokenId = request.getParameter(PORTAL_TOKEN_ID_ASSIGNED);
+        String gatewayName = request.getParameter(CredentialStoreConstants.GATEWAY_NAME_QUERY_PARAMETER);
+        String portalUserName = request.getParameter(CredentialStoreConstants.PORTAL_USER_QUERY_PARAMETER);
+        String durationParameter = request.getParameter(CredentialStoreConstants.DURATION_QUERY_PARAMETER);
+        String contactEmail = request.getParameter(CredentialStoreConstants.PORTAL_USER_EMAIL_QUERY_PARAMETER);
+        String portalTokenId = request.getParameter(CredentialStoreConstants.PORTAL_TOKEN_ID_ASSIGNED);
 
         // TODO remove hard coded values, once passing query parameters is
         // fixed in OA4MP client api
@@ -111,7 +112,7 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
             error("Token given by portal is invalid.");
             GeneralException ge = new GeneralException("Error: The token presented by portal is null.");
             request.setAttribute("exception", ge);
-            JSPUtil.fwd(request, response, ERROR_PAGE);
+            JSPUtil.fwd(request, response, configurationReader.getErrorUrl());
             return;
         }
 
@@ -129,63 +130,95 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
             GeneralException ge = new GeneralException(
                     "Error: This servlet requires parameters for the token and verifier. It cannot be called directly.");
             request.setAttribute("exception", ge);
-            JSPUtil.fwd(request, response, ERROR_PAGE);
+            JSPUtil.fwd(request, response, configurationReader.getErrorUrl());
             return;
         }
         info("2.a Token and verifier found.");
-        X509Certificate cert = null;
+        X509Certificate[] certificates;
         AssetResponse assetResponse = null;
-        OA4MPResponse oa4MPResponse = null;
 
-        Map<String, String> parameters = createQueryParameters(gatewayName, portalUserName, contactEmail, portalTokenId);
+        PrivateKey privateKey;
 
         try {
-            info("Requesting private key ...");
-            oa4MPResponse = getOA4MPService().requestCert(parameters);
-            // oa4MPResponse = getOA4MPService().requestCert();
+
+            PrivateKeyStore privateKeyStore = PrivateKeyStore.getPrivateKeyStore();
+            privateKey = privateKeyStore.getKey(portalTokenId);
+
+            if (privateKey != null) {
+                info("Found private key for token " + portalTokenId);
+            } else {
+                info("Could not find private key for token " + portalTokenId);
+            }
 
             info("2.a. Getting the cert(s) from the service");
             assetResponse = getOA4MPService().getCert(token, verifier);
-            cert = assetResponse.getX509Certificates()[0];
 
-            // The work in this call
+            certificates = assetResponse.getX509Certificates();
+
         } catch (Throwable t) {
             warn("2.a. Exception from the server: " + t.getCause().getMessage());
             error("Exception while trying to get cert. message:" + t.getMessage());
             request.setAttribute("exception", t);
-            JSPUtil.fwd(request, response, ERROR_PAGE);
+            JSPUtil.fwd(request, response, configurationReader.getErrorUrl());
             return;
         }
+
         info("2.b. Done! Displaying success page.");
 
         CertificateCredential certificateCredential = new CertificateCredential();
 
-        certificateCredential.setNotBefore(Utility.convertDateToString(cert.getNotBefore()));
-        certificateCredential.setNotAfter(Utility.convertDateToString(cert.getNotAfter()));
-        certificateCredential.setCertificate(cert);
-        certificateCredential.setPrivateKey(oa4MPResponse.getPrivateKey());
+        certificateCredential.setNotBefore(Utility.convertDateToString(certificates[0].getNotBefore())); //TODO check this is correct
+        certificateCredential.setNotAfter(Utility.convertDateToString(certificates[0].getNotAfter()));
+        certificateCredential.setCertificates(certificates);
+        certificateCredential.setPrivateKey(privateKey);
         certificateCredential
                 .setCommunityUser(new CommunityUser(gatewayName, assetResponse.getUsername(), contactEmail));
         certificateCredential.setPortalUserName(portalUserName);
         certificateCredential.setLifeTime(duration);
         certificateCredential.setToken(portalTokenId);
 
+
         certificateCredentialWriter.writeCredentials(certificateCredential);
 
         StringBuilder stringBuilder = new StringBuilder("Certificate for community user ");
         stringBuilder.append(assetResponse.getUsername()).append(" successfully persisted.");
-        stringBuilder.append(" Certificate DN - ").append(cert.getSubjectDN());
+        stringBuilder.append(" Certificate DN - ").append(certificates[0].getSubjectDN());
 
         info(stringBuilder.toString());
 
-        String contextPath = request.getContextPath();
-        if (!contextPath.endsWith("/")) {
-            contextPath = contextPath + "/";
+        if (isUrlInSameServer(configurationReader.getSuccessUrl())) {
+
+            String contextPath = request.getContextPath();
+            if (!contextPath.endsWith("/")) {
+                contextPath = contextPath + "/";
+            }
+            request.setAttribute("action", contextPath);
+            request.setAttribute("tokenId", portalTokenId);
+            JSPUtil.fwd(request, response, configurationReader.getSuccessUrl());
+        } else {
+
+            String urlToRedirect = decorateUrlWithToken(configurationReader.getSuccessUrl(), portalTokenId);
+
+            info("Redirecting to url - " + urlToRedirect);
+
+            response.sendRedirect(urlToRedirect);
         }
-        request.setAttribute("action", contextPath);
-        JSPUtil.fwd(request, response, SUCCESS_PAGE);
+
         info("2.a. Completely finished with delegation.");
 
+    }
+
+    private boolean isUrlInSameServer(String url) {
+
+        return !(url.toLowerCase().startsWith("http") || url.toLowerCase().startsWith("https"));
+
+    }
+
+    private String decorateUrlWithToken(String url, String tokenId) {
+
+        StringBuilder stringBuilder = new StringBuilder(url);
+        stringBuilder.append("?tokenId=").append(tokenId);
+        return stringBuilder.toString();
     }
 
     private Map<String, String> createQueryParameters(String gatewayName, String portalUserName, String portalEmail,
@@ -198,10 +231,10 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
 
         StringBuilder stringBuilder = new StringBuilder(callbackUri);
 
-        stringBuilder.append("?").append(GATEWAY_NAME_QUERY_PARAMETER).append("=").append(gatewayName).append("&")
-                .append(PORTAL_USER_QUERY_PARAMETER).append("=").append(portalUserName).append("&")
-                .append(PORTAL_USER_EMAIL_QUERY_PARAMETER).append("=").append(portalEmail).append("&")
-                .append(PORTAL_TOKEN_ID_ASSIGNED).append("=").append(tokenId);
+        stringBuilder.append("?").append(CredentialStoreConstants.GATEWAY_NAME_QUERY_PARAMETER).append("=").append(gatewayName).append("&")
+                .append(CredentialStoreConstants.PORTAL_USER_QUERY_PARAMETER).append("=").append(portalUserName).append("&")
+                .append(CredentialStoreConstants.PORTAL_USER_EMAIL_QUERY_PARAMETER).append("=").append(portalEmail).append("&")
+                .append(CredentialStoreConstants.PORTAL_TOKEN_ID_ASSIGNED).append("=").append(tokenId);
 
         info("Callback URI is set to - " + stringBuilder.toString());
 

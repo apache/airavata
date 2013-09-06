@@ -288,7 +288,8 @@ public class WorkflowContextHeaderBuilder {
         return this;
     }
 
-    public WorkflowContextHeaderBuilder setCredentialManagementService(String tokenId, String portalUser) {
+    public WorkflowContextHeaderBuilder setCredentialManagementService(String tokenId, String portalUser,
+                                                                       String gatewayId) {
         if (this.securityContext == null) {
             this.securityContext = SecurityContextDocument.SecurityContext.Factory.newInstance();
         }
@@ -296,6 +297,7 @@ public class WorkflowContextHeaderBuilder {
                 .addNewCredentialManagementService();
         credentialManagementService.setTokenId(tokenId);
         credentialManagementService.setPortalUser(portalUser);
+        credentialManagementService.setGatewayId(gatewayId);
         return this;
     }
 

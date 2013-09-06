@@ -27,6 +27,8 @@ import java.net.MalformedURLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.JobSubmissionFault;
 import org.apache.airavata.gfac.context.JobExecutionContext;
@@ -108,6 +110,17 @@ public class GramProvider implements GFacProvider {
 
     // This method prepare the environment before the application invocation.
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+
+        try {
+            String strTwoPhase = ServerSettings.getSetting("TwoPhase");
+            if (strTwoPhase != null) {
+                twoPhase = Boolean.parseBoolean(strTwoPhase);
+                log.info("Two phase commit is set to " + twoPhase);
+            }
+        } catch (ApplicationSettingsException e) {
+            log.warn("Error reading TwoPhase property from configurations.", e);
+        }
+
         job = GramProviderUtils.setupEnvironment(jobExecutionContext, twoPhase);
         listener = new GramJobSubmissionListener(job, jobExecutionContext);
         job.addListener(listener);

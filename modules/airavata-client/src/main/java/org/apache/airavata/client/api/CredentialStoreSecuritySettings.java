@@ -32,12 +32,38 @@ public interface CredentialStoreSecuritySettings {
      * Returns the token id to get the credentials.
      * @return The token id.
      */
-    public String getTokenId();
+    String getTokenId();
 
     /**
      * Sets the token to be used when accessing the credential store.
      * @param token The token.
      */
-    public void setTokenId(String token);
+    void setTokenId(String token);
+
+    /**
+     * Sets the portal user name.
+     * @param portalUserName The name of the portal user.
+     */
+    void setPortalUser(String portalUserName);
+
+    /**
+     * Gets the portal user name.
+     * @return portal user name.
+     */
+    String getPortalUser();
+
+    /**
+     * Sets the gateway id.
+     * @param gatewayId The gateway id.
+     */
+    void setGatewayId(String gatewayId);
+
+    /**
+     * Gets the gateway id.
+     * @return name of the gateway.
+     */
+    String getGatewayId();
+
+
 
 }

@@ -74,7 +74,10 @@ public class AiravataAPIUtils {
         if (options.getCustomSecuritySettings().getCredentialStoreSecuritySettings() != null) {
             builder.setCredentialManagementService(options.getCustomSecuritySettings().
                     getCredentialStoreSecuritySettings().getTokenId(),
-                    executionUser);
+                    options.getCustomSecuritySettings().
+                            getCredentialStoreSecuritySettings().getPortalUser(),
+                    options.getCustomSecuritySettings().
+                            getCredentialStoreSecuritySettings().getGatewayId());
         }
 
 

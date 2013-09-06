@@ -29,6 +29,8 @@ import org.apache.airavata.credential.store.store.impl.db.CommunityUserDAO;
 import org.apache.airavata.credential.store.store.impl.db.CredentialsDAO;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.credential.store.store.CredentialWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -40,6 +42,8 @@ public class CertificateCredentialWriter implements CredentialWriter {
 
     private CredentialsDAO credentialsDAO;
     private CommunityUserDAO communityUserDAO;
+
+    protected static Logger log = LoggerFactory.getLogger(CertificateCredentialWriter.class);
 
     private DBUtil dbUtil;
 
@@ -69,7 +73,18 @@ public class CertificateCredentialWriter implements CredentialWriter {
             credentialsDAO.addCredentials(certificateCredential.getCommunityUser().getGatewayName(), credential,
                     connection);
 
+            if (!connection.getAutoCommit()) {
+                connection.commit();
+            }
+
         } catch (SQLException e) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException e1) {
+                    log.error("Unable to rollback transaction", e1);
+                }
+            }
             throw new CredentialStoreException("Unable to retrieve database connection.", e);
         } finally {
             DBUtil.cleanup(connection);

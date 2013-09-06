@@ -176,7 +176,7 @@ public class GFacAPI {
                 handler.invoke(jobExecutionContext);
             } catch (Exception e) {
                 // TODO: Better error reporting.
-                throw new GFacException("Error Executing a OutFlow Handler" , e.getCause());
+                throw new GFacException("Error Executing a OutFlow Handler" , e);
             }
         }
     }

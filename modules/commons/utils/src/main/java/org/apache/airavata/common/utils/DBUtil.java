@@ -254,6 +254,24 @@ public class DBUtil {
     }
 
     /**
+     * Utility method to close statements and connections.
+     *
+     * @param preparedStatement
+     *            The prepared statement to close.
+     */
+    public static void cleanup(PreparedStatement preparedStatement, ResultSet resultSet) {
+        if (resultSet != null) {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                log.error("Error closing prepared statement.", e);
+            }
+        }
+
+        cleanup(preparedStatement);
+    }
+
+    /**
      * Cleanup the connection.
      * @param connection The connection to close.
      */
@@ -262,7 +280,8 @@ public class DBUtil {
             try {
                 connection.close();
             } catch (SQLException e) {
-                log.error("Error closing prepared statement.", e);
+                log.debug("Error closing connection.", e);
+                log.warn("Error closing connection.");
             }
         }
     }
