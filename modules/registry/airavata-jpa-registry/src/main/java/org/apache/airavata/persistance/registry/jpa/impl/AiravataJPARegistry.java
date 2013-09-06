@@ -151,9 +151,6 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     
     @Override
     protected void initialize() throws RegistryException {
-    	if (!ResourceUtils.isGatewayExist(getGateway().getGatewayName())){
-    		throw new GatewayNotRegisteredException(getGateway().getGatewayName());
-    	}
     	jpa = new JPAResourceAccessor(this);
     	//TODO check if the db connections are proper & accessible & the relevant db/tables are
     	//present
@@ -190,6 +187,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             throw new RegistryAPIVersionIncompatibleException("Incompatible registry versions. Please check whether you updated the API and Registry " +
                     "versions.");
         }
+        if (!ResourceUtils.isGatewayExist(getGateway().getGatewayName())){
+    		throw new GatewayNotRegisteredException(getGateway().getGatewayName());
+    	}
     }
 
     static {
