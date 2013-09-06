@@ -21,7 +21,7 @@
 <body>
 <h2>Sample Portal</h2>
 <p>This demonstrates how portal can use Credential Store to obtain community credentials ...</p>
-<form name="input" action="../credential-store" method="post">
+<form name="input" action="../acs-start-servlet" method="post">
 
     <table border="0">
         <tr>

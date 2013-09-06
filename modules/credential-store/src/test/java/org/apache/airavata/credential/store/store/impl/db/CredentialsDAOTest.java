@@ -52,7 +52,7 @@ public class CredentialsDAOTest extends DatabaseTestCases {
 
     private CredentialsDAO credentialsDAO;
 
-    private X509Certificate x509Certificate;
+    private X509Certificate[] x509Certificates;
     private PrivateKey privateKey;
 
     @BeforeClass
@@ -99,6 +99,8 @@ public class CredentialsDAOTest extends DatabaseTestCases {
     public void setUp() throws Exception {
 
         credentialsDAO = new CredentialsDAO();
+
+        x509Certificates = new X509Certificate[1];
 
         // Cleanup tables;
         Connection connection = getConnection();
@@ -147,7 +149,7 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         fis.close();
 
         privateKey = (PrivateKey) ks.getKey("selfsigned", password);
-        x509Certificate = (X509Certificate) ks.getCertificate("selfsigned");
+        x509Certificates[0] = (X509Certificate) ks.getCertificate("selfsigned");
 
     }
 
@@ -155,10 +157,10 @@ public class CredentialsDAOTest extends DatabaseTestCases {
     public void testKeyReading() throws Exception {
         initializeKeys();
         System.out.println(privateKey.getAlgorithm());
-        System.out.println(x509Certificate.getIssuerDN());
+        System.out.println(x509Certificates[0].getIssuerDN());
 
         Assert.assertNotNull(privateKey);
-        Assert.assertNotNull(x509Certificate);
+        Assert.assertNotNull(x509Certificates);
     }
 
     private CommunityUser getCommunityUser(String gateway, String name) {
@@ -183,7 +185,7 @@ public class CredentialsDAOTest extends DatabaseTestCases {
 
         CertificateCredential certificateCredential = new CertificateCredential();
         certificateCredential.setToken("tom");
-        certificateCredential.setCertificate(x509Certificate);
+        certificateCredential.setCertificates(x509Certificates);
         certificateCredential.setPrivateKey(privateKey);
         certificateCredential.setCommunityUser(getCommunityUser("gw1", "tom"));
         certificateCredential.setLifeTime(1000);
@@ -204,7 +206,7 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         CertificateCredential readCertificateCredential = (CertificateCredential) CredentialsDAO
                 .convertByteArrayToObject(array);
 
-        Assert.assertEquals(certificateCredential.getCertificate(), readCertificateCredential.getCertificate());
+        checkEquality(certificateCredential.getCertificates(), readCertificateCredential.getCertificates());
         Assert.assertEquals(certificateCredential.getCertificateRequestedTime(),
                 readCertificateCredential.getCertificateRequestedTime());
         Assert.assertEquals(certificateCredential.getCommunityUser().getGatewayName(), readCertificateCredential
@@ -228,6 +230,18 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         Assert.assertTrue(Arrays.equals(privateKey.getEncoded(), newKey.getEncoded()));
     }
 
+    private void checkEquality(X509Certificate[] certificates1, X509Certificate[] certificates2) {
+
+        int i = 0;
+
+        for (X509Certificate certificate : certificates1) {
+            Assert.assertEquals(certificate, certificates2[i]);
+        }
+
+        Assert.assertEquals(certificates1.length, certificates2.length);
+
+    }
+
     @Test
     public void testAddCredentials() throws Exception {
 
@@ -240,7 +254,7 @@ public class CredentialsDAOTest extends DatabaseTestCases {
                     "tom", connection);
             Assert.assertNotNull(certificateCredential);
             Assert.assertEquals("jerry", certificateCredential.getPortalUserName());
-            Assert.assertEquals(x509Certificate, certificateCredential.getCertificate());
+            checkEquality(x509Certificates, certificateCredential.getCertificates());
             Assert.assertEquals(privateKey.getFormat(), certificateCredential.getPrivateKey().getFormat());
         } finally {
             connection.close();
@@ -281,7 +295,7 @@ public class CredentialsDAOTest extends DatabaseTestCases {
             CertificateCredential certificateCredential = new CertificateCredential();
             certificateCredential.setToken("tom");
             certificateCredential.setCommunityUser(communityUser);
-            certificateCredential.setCertificate(x509Certificate);
+            certificateCredential.setCertificates(x509Certificates);
             // certificateCredential.setPrivateKey(privateKey);
             certificateCredential.setPortalUserName("test2");
             certificateCredential.setLifeTime(50);
@@ -293,7 +307,7 @@ public class CredentialsDAOTest extends DatabaseTestCases {
             certificateCredential = (CertificateCredential) credentialsDAO.getCredential("gw1", "tom", connection);
 
             Assert.assertEquals("CN=Airavata Project, OU=IU, O=Indiana University, L=Bloomington, ST=IN, C=US",
-                    certificateCredential.getCertificate().getIssuerDN().toString());
+                    certificateCredential.getCertificates()[0].getIssuerDN().toString());
             // Assert.assertNotNull(certificateCredential.getPrivateKey());
             Assert.assertEquals("test2", certificateCredential.getPortalUserName());
 
@@ -315,7 +329,7 @@ public class CredentialsDAOTest extends DatabaseTestCases {
             CertificateCredential certificateCredential = (CertificateCredential) credentialsDAO.getCredential("gw1",
                     "tom", connection);
             Assert.assertEquals("CN=Airavata Project, OU=IU, O=Indiana University, L=Bloomington, ST=IN, C=US",
-                    certificateCredential.getCertificate().getIssuerDN().toString());
+                    certificateCredential.getCertificates()[0].getIssuerDN().toString());
             // Assert.assertNotNull(certificateCredential.getPrivateKey());
 
         } finally {

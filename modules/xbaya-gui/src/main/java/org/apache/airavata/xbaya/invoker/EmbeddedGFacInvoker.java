@@ -421,7 +421,7 @@ public class EmbeddedGFacInvoker implements Invoker {
             GSISecurityContext context;
             RequestData requestData;
 
-            String gatewayId = jobExecutionContext.getGFacConfiguration().getAiravataAPI().getGateway();
+            String gatewayId = contextHeader.getSecurityContext().getCredentialManagementService().getGatewayId();
 
             if (credentialManagementService != null) {
                 String tokenId

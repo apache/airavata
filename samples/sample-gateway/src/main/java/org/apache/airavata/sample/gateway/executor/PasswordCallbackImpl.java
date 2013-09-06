@@ -19,39 +19,36 @@
  *
  */
 
-package org.apache.airavata.credential.store.util;
+package org.apache.airavata.sample.gateway.executor;
+
+import org.apache.airavata.registry.api.PasswordCallback;
+
+import java.util.Properties;
 
 /**
  * User: AmilaJ (amilaj@apache.org)
- * Date: 5/21/13
- * Time: 3:07 PM
+ * Date: 8/26/13
+ * Time: 9:47 AM
  */
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public class PasswordCallbackImpl implements PasswordCallback {
 
-import java.sql.Timestamp;
-import java.util.UUID;
+    private Properties properties;
 
-/**
- * Generates tokens for users.
- */
-public class TokenGenerator {
-
-    protected static Logger log = LoggerFactory.getLogger(TokenGenerator.class);
-
-
-    public TokenGenerator() {
-
+    public PasswordCallbackImpl(Properties prop) {
+        this.properties = prop;
     }
 
-    public static String generateToken(String gatewayId, String metadata) {
+    @Override
+    public String getPassword(String username) {
 
-        return UUID.randomUUID().toString();
-    }
+        String airavataServerUser = properties.getProperty("airavata.server.user");
+        String airavataServerPassword = properties.getProperty("airavata.server.password");
 
-    public String encryptToken(String token) {
+        if (username.equals(airavataServerUser)) {
+            return airavataServerPassword;
+        }
+
         return null;
     }
-
 }

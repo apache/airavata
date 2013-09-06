@@ -204,6 +204,7 @@ public class CredentialsDAO extends ParentDAO {
         String sql = "select * from credentials where GATEWAY_ID=? and TOKEN_ID=?";
 
         PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
         try {
             preparedStatement = connection.prepareStatement(sql);
@@ -211,7 +212,7 @@ public class CredentialsDAO extends ParentDAO {
             preparedStatement.setString(1, gatewayName);
             preparedStatement.setString(2, tokenId);
 
-            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
                 // CertificateCredential certificateCredential = new CertificateCredential();
@@ -254,7 +255,7 @@ public class CredentialsDAO extends ParentDAO {
 
             throw new CredentialStoreException(stringBuilder.toString(), e);
         } finally {
-            DBUtil.cleanup(preparedStatement);
+            DBUtil.cleanup(preparedStatement, resultSet);
         }
 
         return null;
@@ -274,13 +275,14 @@ public class CredentialsDAO extends ParentDAO {
         String sql = "select * from credentials where GATEWAY_ID=?";
 
         PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
         try {
             preparedStatement = connection.prepareStatement(sql);
 
             preparedStatement.setString(1, gatewayName);
 
-            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet = preparedStatement.executeQuery();
 
             Credential certificateCredential;
 
@@ -319,7 +321,7 @@ public class CredentialsDAO extends ParentDAO {
 
             throw new CredentialStoreException(stringBuilder.toString(), e);
         } finally {
-            DBUtil.cleanup(preparedStatement);
+            DBUtil.cleanup(preparedStatement, resultSet);
         }
 
         return credentialList;

@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE file
+	distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to you under
+	the Apache License, Version 2.0 (theÏ "License"); you may not use this file except in compliance with the License. You may
+	obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to
+	in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
+	ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under
+	the License. -->
+
+<xwf:workflow xwf:version="0.5" xmlns:xwf="http://airavata.apache.org/xbaya/xwf">
+  <xgr:graph xgr:version="0.5" xgr:type="ws" xmlns:xgr="http://airavata.apache.org/xbaya/graph">
+    <xgr:id>Echo</xgr:id>
+    <xgr:name>Echo</xgr:name>
+    <xgr:description></xgr:description>
+    <xgr:metadata>
+      <appinfo xmlns="http://www.w3.org/2001/XMLSchema">
+
+</appinfo>
+    </xgr:metadata>
+    <xgr:node xgr:type="ws">
+      <xgr:id>Echo_invoke</xgr:id>
+      <xgr:name>Echo:invoke</xgr:name>
+      <xgr:outputPort>Echo_invoke_out_0</xgr:outputPort>
+      <xgr:inputPort>Echo_invoke_in_0</xgr:inputPort>
+      <xgr:controlInPort>Echo_invoke_ctrl_in_0</xgr:controlInPort>
+      <xgr:controlOutPort>Echo_invoke_ctrl_out_0</xgr:controlOutPort>
+      <xgr:x>278</xgr:x>
+      <xgr:y>123</xgr:y>
+      <xgr:wsdl>Echo</xgr:wsdl>
+      <xgr:portType>{http://airavata.apache.org/schemas/gfac/2012/12}Echo</xgr:portType>
+      <xgr:operation>invoke</xgr:operation>
+    </xgr:node>
+    <xgr:node xgr:type="input">
+      <xgr:id>echo_input</xgr:id>
+      <xgr:name>echo_input</xgr:name>
+      <xgr:outputPort>Input_out_2</xgr:outputPort>
+      <xgr:x>151</xgr:x>
+      <xgr:y>103</xgr:y>
+      <xgr:config>
+        <xgr:description></xgr:description>
+        <xgr:dataType>{http://airavata.apache.org/schemas/gfac/2012/12}StringParameterType</xgr:dataType>
+        <xgr:visibility>true</xgr:visibility>
+      </xgr:config>
+    </xgr:node>
+    <xgr:node xgr:type="output">
+      <xgr:id>echo_output</xgr:id>
+      <xgr:name>echo_output</xgr:name>
+      <xgr:inputPort>Output_in_2</xgr:inputPort>
+      <xgr:x>510</xgr:x>
+      <xgr:y>125</xgr:y>
+      <xgr:config>
+        <xgr:description></xgr:description>
+        <xgr:dataType>{http://airavata.apache.org/schemas/gfac/2012/12}StringParameterType</xgr:dataType>
+      </xgr:config>
+    </xgr:node>
+    <xgr:port xgr:type="ws">
+      <xgr:id>Echo_invoke_in_0</xgr:id>
+      <xgr:name>echo_input</xgr:name>
+      <xgr:node>Echo_invoke</xgr:node>
+    </xgr:port>
+    <xgr:port xgr:type="ws">
+      <xgr:id>Echo_invoke_out_0</xgr:id>
+      <xgr:name>echo_output</xgr:name>
+      <xgr:node>Echo_invoke</xgr:node>
+    </xgr:port>
+    <xgr:port xgr:type="control">
+      <xgr:id>Echo_invoke_ctrl_in_0</xgr:id>
+      <xgr:name>control</xgr:name>
+      <xgr:node>Echo_invoke</xgr:node>
+    </xgr:port>
+    <xgr:port xgr:type="control">
+      <xgr:id>Echo_invoke_ctrl_out_0</xgr:id>
+      <xgr:name>control</xgr:name>
+      <xgr:node>Echo_invoke</xgr:node>
+    </xgr:port>
+    <xgr:port xgr:type="systemData">
+      <xgr:id>Input_out_2</xgr:id>
+      <xgr:name>Parameter</xgr:name>
+      <xgr:node>echo_input</xgr:node>
+    </xgr:port>
+    <xgr:port xgr:type="systemData">
+      <xgr:id>Output_in_2</xgr:id>
+      <xgr:name>Parameter</xgr:name>
+      <xgr:node>echo_output</xgr:node>
+    </xgr:port>
+    <xgr:edge xgr:type="data">
+      <xgr:fromPort>Input_out_2</xgr:fromPort>
+      <xgr:toPort>Echo_invoke_in_0</xgr:toPort>
+    </xgr:edge>
+    <xgr:edge xgr:type="data">
+      <xgr:fromPort>Echo_invoke_out_0</xgr:fromPort>
+      <xgr:toPort>Output_in_2</xgr:toPort>
+    </xgr:edge>
+  </xgr:graph>
+  <xwf:wsdls>
+    <xwf:wsdl xwf:id="Echo">&lt;wsdl:definitions name="Echo" targetNamespace="http://airavata.apache.org/schemas/gfac/2012/12"
+  xmlns:typens="http://airavata.apache.org/schemas/gfac/2012/12/Echo/xsd" xmlns:wsa="http://www.w3.org/2005/08/addressing" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:globalTypens="http://airavata.apache.org/schemas/gfac/2012/12/xsd"
+  xmlns:wsdlns="http://airavata.apache.org/schemas/gfac/2012/12" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:gfac="http://airavata.apache.org/schemas/gfac/2012/12" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  &lt;wsdl:types>
+    &lt;schema elementFormDefault="unqualified" targetNamespace="http://airavata.apache.org/schemas/gfac/2012/12/Echo/xsd" xmlns="http://www.w3.org/2001/XMLSchema">
+      &lt;import namespace="http://airavata.apache.org/schemas/gfac/2012/12" schemaLocation="http://airavata.apache.org/schemas/gfac/2012/12/GFacParameterTypes.xsd" />
+      &lt;element name="invoke_InputParams" type="typens:invoke_InputParamsType" />
+      &lt;complexType name="invoke_InputParamsType">
+        &lt;sequence>
+          &lt;element name="echo_input" type="gfac:StringParameterType">
+            &lt;annotation>
+              &lt;documentation />
+            &lt;/annotation>
+          &lt;/element>
+        &lt;/sequence>
+      &lt;/complexType>
+      &lt;element name="invoke_OutputParams" type="typens:invoke_OutputParamsType" />
+      &lt;complexType name="invoke_OutputParamsType">
+        &lt;sequence>
+          &lt;element name="echo_output" type="gfac:StringParameterType">
+            &lt;annotation>
+              &lt;documentation />
+            &lt;/annotation>
+          &lt;/element>
+        &lt;/sequence>
+      &lt;/complexType>
+    &lt;/schema>
+  &lt;/wsdl:types>
+  &lt;wsdl:message name="invoke_ResponseMessage_504bca7e-4bb2-4432-84bc-f5f21f77ac76">
+    &lt;wsdl:part name="parameters" element="typens:invoke_OutputParams">
+    &lt;/wsdl:part>
+  &lt;/wsdl:message>
+  &lt;wsdl:message name="invoke_RequestMessage_ebe74610-34d1-4a31-8e00-84c2b2219843">
+    &lt;wsdl:part name="parameters" element="typens:invoke_InputParams">
+    &lt;/wsdl:part>
+  &lt;/wsdl:message>
+  &lt;wsdl:portType name="Echo">
+&lt;wsdl:documentation />
+    &lt;wsdl:operation name="invoke">
+&lt;wsdl:documentation />
+      &lt;wsdl:input name="invoke_RequestMessage_ebe74610-34d1-4a31-8e00-84c2b2219843" message="wsdlns:invoke_RequestMessage_ebe74610-34d1-4a31-8e00-84c2b2219843">
+    &lt;/wsdl:input>
+      &lt;wsdl:output name="invoke_ResponseMessage_504bca7e-4bb2-4432-84bc-f5f21f77ac76" message="wsdlns:invoke_ResponseMessage_504bca7e-4bb2-4432-84bc-f5f21f77ac76">
+    &lt;/wsdl:output>
+    &lt;/wsdl:operation>
+  &lt;/wsdl:portType>
+&lt;/wsdl:definitions></xwf:wsdl>
+  </xwf:wsdls>
+  <xwf:image>iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFUlEQVR42mN49Ojef2Iww6hC+ioE
+AJr2avQ9sXYrAAAAAElFTkSuQmCC
+</xwf:image>
+</xwf:workflow>

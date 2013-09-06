@@ -26,29 +26,48 @@
   ~ under the License.
   --%>
 
+<%
+    SampleGateway sampleGateway = (SampleGateway)session.getAttribute(SampleGateway.GATEWAY_SESSION);
+
+    boolean success = false;
+
+    String tokenId = request.getParameter("tokenId");
+
+    if (tokenId != null) {
+        sampleGateway.updateTokenId(tokenId);
+        success = true;
+    }
+%>
 
 <html>
 <body>
 <h2>Sample Gateway</h2>
-<p>This demonstrates how portal can use Credential Store to obtain community credentials ...</p>
-<form name="input" action="https://localhost:8443/airavata/acs-start-servlet" method="post">
+<%
+    out.println("The received token id - ");
+    out.println(tokenId);
 
-    <table border="0">
-        <tr>
-            <td>Gateway Name</td>
-            <td><input type="text" name="gatewayName"></td>
-        </tr>
-        <tr>
-            <td>Portal Username</td>
-            <td><input type="text" name="portalUserName"></td>
-        </tr>
-        <tr>
-            <td>Contact Email</td>
-            <td><input type="text" name="email"></td>
-        </tr>
-    </table>
+    if (success) {
+%>
+<p>Token id successfully updated.</p>
 
-    <input type="submit" value="Submit">
-</form>
+<p>
+    View users who obtained token id.
+<ol>
+    <li><a href="list_users.jsp">List Users</a></li>
+</ol>
+</p>
+
+<%
+    } else {
+
+%>
+<p> Error updating token id.</p>
+<%
+
+    }
+
+%>
+
+
 </body>
 </html>

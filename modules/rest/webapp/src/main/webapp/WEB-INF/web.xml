@@ -120,7 +120,7 @@
 
     <!-- Credential Store Configurations -->
     <servlet>
-        <servlet-name>credential-store</servlet-name>
+        <servlet-name>credential-store-start</servlet-name>
         <!--internal name of the servlet-->
         <servlet-class>org.apache.airavata.credential.store.servlet.CredentialStoreStartServlet</servlet-class>
 
@@ -129,9 +129,9 @@
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>credential-store</servlet-name>
+        <servlet-name>credential-store-start</servlet-name>
         <!--the servlet-name above-->
-        <url-pattern>/credential-store</url-pattern>
+        <url-pattern>/acs-start-servlet</url-pattern>
         <!--what needs to be in the url, so http://foo.org/client/simple-->
     </servlet-mapping>
 

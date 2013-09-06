@@ -24,18 +24,19 @@ package org.apache.airavata.credential.store.servlet;
 import edu.uiuc.ncsa.myproxy.oa4mp.client.OA4MPResponse;
 import edu.uiuc.ncsa.myproxy.oa4mp.client.servlet.ClientServlet;
 import edu.uiuc.ncsa.security.servlet.JSPUtil;
-import edu.uiuc.ncsa.security.util.pkcs.KeyUtil;
+import org.apache.airavata.credential.store.store.CredentialStoreException;
+import org.apache.airavata.credential.store.util.ConfigurationReader;
+import org.apache.airavata.credential.store.util.CredentialStoreConstants;
+import org.apache.airavata.credential.store.util.PrivateKeyStore;
 import org.apache.airavata.credential.store.util.TokenGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import static edu.uiuc.ncsa.myproxy.oa4mp.client.ClientEnvironment.CALLBACK_URI_KEY;
@@ -45,8 +46,7 @@ import static edu.uiuc.ncsa.myproxy.oa4mp.client.ClientEnvironment.CALLBACK_URI_
  */
 public class CredentialStoreStartServlet extends ClientServlet {
 
-    private String errorUrl;
-    private String redirectUrl;
+    private static ConfigurationReader configurationReader = null;
 
     private static Logger log = LoggerFactory.getLogger(CredentialStoreStartServlet.class);
 
@@ -76,40 +76,57 @@ public class CredentialStoreStartServlet extends ClientServlet {
 
     }
 
+    public void init() throws ServletException {
+
+        super.init();
+
+        try {
+            if (configurationReader == null) {
+                configurationReader = new ConfigurationReader();
+            }
+        } catch (CredentialStoreException e) {
+            throw new ServletException(e);
+        }
+
+    }
+
     @Override
     protected void doIt(HttpServletRequest request, HttpServletResponse response) throws Throwable {
 
-        String gatewayName = request.getParameter("gatewayName");
-        String portalUserName = request.getParameter("portalUserName");
-        String contactEmail = request.getParameter("email");
+        String gatewayName
+                = request.getParameter(CredentialStoreConstants.GATEWAY_NAME_QUERY_PARAMETER);
+        String portalUserName
+                = request.getParameter(CredentialStoreConstants.PORTAL_USER_QUERY_PARAMETER);
+        String contactEmail
+                = request.getParameter(CredentialStoreConstants.PORTAL_USER_EMAIL_QUERY_PARAMETER);
         String associatedToken = TokenGenerator.generateToken(gatewayName, portalUserName);
 
         if (gatewayName == null) {
             JSPUtil.handleException(new RuntimeException("Please specify a gateway name."), request, response,
-                    "/credential-store/error.jsp");
+                    configurationReader.getErrorUrl());
             return;
         }
 
         if (portalUserName == null) {
             JSPUtil.handleException(new RuntimeException("Please specify a portal user name."), request, response,
-                    "/credential-store/error.jsp");
+                    configurationReader.getErrorUrl());
             return;
         }
 
         if (contactEmail == null) {
             JSPUtil.handleException(new RuntimeException("Please specify a contact email address for community"
-                    + " user account."), request, response, "/credential-store/error.jsp");
+                    + " user account."), request, response, configurationReader.getErrorUrl());
             return;
         }
 
         log.info("1.a. Starting transaction");
-        OA4MPResponse gtwResp = null;
+        OA4MPResponse gtwResp;
 
         Map<String, String> queryParameters = new HashMap<String, String>();
-        queryParameters.put("gatewayName", gatewayName);
-        queryParameters.put("portalUserName", portalUserName);
-        queryParameters.put("email", contactEmail);
-        queryParameters.put("associatedToken", associatedToken);
+        queryParameters.put(CredentialStoreConstants.GATEWAY_NAME_QUERY_PARAMETER, gatewayName);
+        queryParameters.put(CredentialStoreConstants.PORTAL_USER_QUERY_PARAMETER, portalUserName);
+        queryParameters.put(CredentialStoreConstants.PORTAL_USER_EMAIL_QUERY_PARAMETER, contactEmail);
+        queryParameters.put(CredentialStoreConstants.PORTAL_TOKEN_ID_ASSIGNED, associatedToken);
 
         Map<String, String> additionalParameters = new HashMap<String, String>();
 
@@ -119,11 +136,15 @@ public class CredentialStoreStartServlet extends ClientServlet {
 
         additionalParameters.put(getEnvironment().getConstants().get(CALLBACK_URI_KEY), modifiedCallbackUri);
 
-        // Drumroll please: here is the work for this call.
         try {
             gtwResp = getOA4MPService().requestCert(additionalParameters);
+
+            // Private key in store
+            PrivateKeyStore privateKeyStore = PrivateKeyStore.getPrivateKeyStore();
+            privateKeyStore.addKey(associatedToken, gtwResp.getPrivateKey());
+
         } catch (Throwable t) {
-            JSPUtil.handleException(t, request, response, "/credential-store/error.jsp");
+            JSPUtil.handleException(t, request, response, configurationReader.getErrorUrl());
             return;
         }
         log.info("1.b. Got response. Creating page with redirect for " + gtwResp.getRedirect().getHost());
@@ -137,7 +158,7 @@ public class CredentialStoreStartServlet extends ClientServlet {
         request.setAttribute(ACTION_KEY, ACTION_KEY);
         request.setAttribute("action", ACTION_REDIRECT_VALUE);
         log.info("1.b. Showing redirect page.");
-        JSPUtil.fwd(request, response, "/credential-store/show-redirect.jsp");
+        JSPUtil.fwd(request, response, configurationReader.getPortalRedirectUrl());
 
     }
 }

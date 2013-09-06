@@ -163,18 +163,19 @@ public class DescriptorResourceClient {
                     MediaType.APPLICATION_JSON).post(ClientResponse.class, hostDescriptor);
             status = response.getStatus();
 
-            if (status != ClientConstant.HTTP_OK) {
-                logger.error(response.getEntity(String.class));
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + status);
-            }else if (status == ClientConstant.HTTP_BAD_REQUEST){
-                logger.debug("Descriptor already exists...");
-                throw new DescriptorAlreadyExistsException(hostDescription.getType().getHostName());
-            } else {
+            if (status == ClientConstant.HTTP_OK) {
                 if (response.getCookies().size() > 0) {
                     cookie = response.getCookies().get(0).toCookie();
                     CookieManager.setCookie(cookie);
                 }
+            }else if (status == ClientConstant.HTTP_BAD_REQUEST){
+                logger.debug("Descriptor already exists...");
+                throw new DescriptorAlreadyExistsException(hostDescription.getType().getHostName());
+            } else {
+                logger.error(response.getEntity(String.class));
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + status);
+
             }
         }else if (status == ClientConstant.HTTP_BAD_REQUEST){
             logger.debug("Descriptor already exists...");

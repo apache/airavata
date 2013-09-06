@@ -21,37 +21,50 @@
 
 package org.apache.airavata.credential.store.util;
 
+import java.security.PrivateKey;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * User: AmilaJ (amilaj@apache.org)
- * Date: 5/21/13
- * Time: 3:07 PM
+ * Date: 9/5/13
+ * Time: 6:47 PM
  */
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public class PrivateKeyStore {
 
-import java.sql.Timestamp;
-import java.util.UUID;
+    private Map<String, PrivateKey> privateKeyMap;
 
-/**
- * Generates tokens for users.
- */
-public class TokenGenerator {
+    private static PrivateKeyStore privateKeyStore = null;
 
-    protected static Logger log = LoggerFactory.getLogger(TokenGenerator.class);
-
-
-    public TokenGenerator() {
-
+    private PrivateKeyStore() {
+        privateKeyMap = new HashMap<String, PrivateKey>();
     }
 
-    public static String generateToken(String gatewayId, String metadata) {
+    public static PrivateKeyStore getPrivateKeyStore() {
 
-        return UUID.randomUUID().toString();
+        if (privateKeyStore == null) {
+            privateKeyStore = new PrivateKeyStore();
+        }
+
+        return privateKeyStore;
     }
 
-    public String encryptToken(String token) {
-        return null;
+    public synchronized void addKey(String tokenId, PrivateKey privateKey) {
+
+        privateKeyMap.put(tokenId, privateKey);
     }
+
+    public synchronized PrivateKey getKey(String tokenId) {
+
+        PrivateKey privateKey = privateKeyMap.get(tokenId);
+
+        if (privateKey != null) {
+            privateKeyMap.remove(tokenId);
+        }
+
+        return privateKey;
+    }
+
 
 }

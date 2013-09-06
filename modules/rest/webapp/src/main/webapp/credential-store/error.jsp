@@ -1,3 +1,4 @@
+<%@ page import="org.apache.airavata.credential.store.util.CredentialStoreConstants" %>
 <%--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements. See the NOTICE file
@@ -17,28 +18,36 @@
   ~ under the License.
   --%>
   
-<script type="text/javascript">
-    function getUrlVars() {
-        var vars = {};
-        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-            vars[key] = value;
-        });
-        return vars;
-    }
 
-    var gatewayName = getUrlVars()["gatewayName"];
-    var portalUserName = getUrlVars()["portalUserName"];
-    var lifetime = getUrlVars()["lifetime"];
+<%
+    String gatewayName = request.getParameter(CredentialStoreConstants.GATEWAY_NAME_QUERY_PARAMETER);
+    String portalUserName = request.getParameter(CredentialStoreConstants.PORTAL_USER_QUERY_PARAMETER);
+    Throwable exception = (Throwable) request.getAttribute("exception");
 
-    alert(gatewayName);
-    alert(portalUserName);
-    alert(lifetime);
+%>
 
-
-</script>
 <html>
 <body>
 <h1>Credential Store</h1>
 <p>An error occurred while processing</p>
+<p>
+    Gateway Name - <%=gatewayName%>. Portal user name - <%=portalUserName%>.
+    Exception -
+
+</p>
+
+<p>
+    <%
+
+        out.println("Exception - " + exception.getMessage());
+        out.println();
+        StackTraceElement[] elements = exception.getStackTrace();
+        for (StackTraceElement element : elements) {
+            out.print("         ");
+            out.println(element.toString());
+        }
+
+    %>
+</p>
 </body>
 </html>

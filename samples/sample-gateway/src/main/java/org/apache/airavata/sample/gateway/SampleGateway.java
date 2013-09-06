@@ -126,6 +126,10 @@ public class SampleGateway {
         return user.equals("admin");
     }
 
+    public void updateTokenId(String tokenId) {
+        this.gatewayUserStore.updateTokens(tokenId);
+    }
+
 
     public boolean authenticate(String userName, String password) {
 

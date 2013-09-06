@@ -39,6 +39,7 @@ import org.globus.gsi.provider.GlobusProvider;
 import org.globus.myproxy.GetParams;
 import org.globus.myproxy.MyProxy;
 import org.globus.myproxy.MyProxyException;
+import org.gridforum.jgss.ExtendedGSSCredential;
 import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
 import org.slf4j.Logger;
@@ -184,13 +185,14 @@ public class GSISecurityContext extends AbstractSecurityContext {
 
                 CertificateCredential certificateCredential = (CertificateCredential) credential;
 
-                X509Certificate[] certificates = new X509Certificate[1];
-                certificates[0] = certificateCredential.getCertificate();
-
+                X509Certificate[] certificates = certificateCredential.getCertificates();
                 X509Credential newCredential = new X509Credential(certificateCredential.getPrivateKey(), certificates);
 
-                return new GlobusGSSCredentialImpl(newCredential,
-                        GSSCredential.INITIATE_AND_ACCEPT);
+                GlobusGSSCredentialImpl cred = new GlobusGSSCredentialImpl(newCredential, GSSCredential.INITIATE_AND_ACCEPT);
+                System.out.print(cred.export(ExtendedGSSCredential.IMPEXP_OPAQUE));
+                return cred;
+                //return new GlobusGSSCredentialImpl(newCredential,
+                //        GSSCredential.INITIATE_AND_ACCEPT);
             } else {
                 log.info("Credential type is not CertificateCredential. Cannot create mapping globus credentials. " +
                         "Credential type - " + credential.getClass().getName());

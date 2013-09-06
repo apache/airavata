@@ -29,6 +29,8 @@ import org.apache.airavata.client.api.CredentialStoreSecuritySettings;
 public class CredentialStoreSecuritySettingsImpl implements CredentialStoreSecuritySettings {
 
     private String tokenId;
+    private String portalUserId;
+    private String gatewayId;
 
     public CredentialStoreSecuritySettingsImpl(String tokenId) {
         this.tokenId = tokenId;
@@ -39,6 +41,26 @@ public class CredentialStoreSecuritySettingsImpl implements CredentialStoreSecur
 
     public void setTokenId(String tokenId) {
         this.tokenId = tokenId;
+    }
+
+    @Override
+    public void setPortalUser(String portalUserName) {
+        this.portalUserId = portalUserName;
+    }
+
+    @Override
+    public String getPortalUser() {
+        return this.portalUserId;
+    }
+
+    @Override
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
+
+    @Override
+    public String getGatewayId() {
+        return this.gatewayId;
     }
 
     public String getTokenId() {

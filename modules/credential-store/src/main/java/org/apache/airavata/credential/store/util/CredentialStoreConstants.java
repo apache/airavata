@@ -23,35 +23,15 @@ package org.apache.airavata.credential.store.util;
 
 /**
  * User: AmilaJ (amilaj@apache.org)
- * Date: 5/21/13
- * Time: 3:07 PM
+ * Date: 8/25/13
+ * Time: 4:34 PM
  */
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public class CredentialStoreConstants {
 
-import java.sql.Timestamp;
-import java.util.UUID;
-
-/**
- * Generates tokens for users.
- */
-public class TokenGenerator {
-
-    protected static Logger log = LoggerFactory.getLogger(TokenGenerator.class);
-
-
-    public TokenGenerator() {
-
-    }
-
-    public static String generateToken(String gatewayId, String metadata) {
-
-        return UUID.randomUUID().toString();
-    }
-
-    public String encryptToken(String token) {
-        return null;
-    }
-
+    public static final String GATEWAY_NAME_QUERY_PARAMETER = "gatewayName";
+    public static final String PORTAL_USER_QUERY_PARAMETER = "portalUserName";
+    public static final String PORTAL_USER_EMAIL_QUERY_PARAMETER = "email";
+    public static final String PORTAL_TOKEN_ID_ASSIGNED = "associatedToken";
+    public static final String DURATION_QUERY_PARAMETER = "duration";
 }
