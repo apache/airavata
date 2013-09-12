@@ -24,9 +24,6 @@
 	<artifactId>airavata-rest-client</artifactId>
 	<packaging>jar</packaging>
 	<name>airavata-rest-client</name>
-	<!--build>
-		<finalName>airavata-rest-client</finalName>
-	</build-->
 	<dependencies>
 
 		<dependency>
