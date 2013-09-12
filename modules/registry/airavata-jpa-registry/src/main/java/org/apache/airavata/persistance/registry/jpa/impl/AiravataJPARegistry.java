@@ -164,9 +164,13 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 			try {
 				tries++;
 				registryVersion = getConfiguration("registry.version").toString();
-				if (System.getProperty("registry.initialized")==null){
+				if (System.getProperty("registry.initialize.state")==null){
 					//lets wait a few seconds for the initialization to complete
-					Thread.sleep(CONNECT_FAIL_WAIT_TIME*3);	
+					Thread.sleep(CONNECT_FAIL_WAIT_TIME*5);	
+				} else {
+					while(System.getProperty("registry.initialize.state").equals("0")){
+						Thread.sleep(CONNECT_FAIL_WAIT_TIME);
+					}
 				}
 				break;
 			} catch (Exception e) {
