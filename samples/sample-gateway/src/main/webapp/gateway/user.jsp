@@ -8,30 +8,47 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
-    SampleGateway sampleGateway = null;
-    sampleGateway = (SampleGateway)session.getAttribute(SampleGateway.GATEWAY_SESSION);
+    String loginScreen = request.getParameter("loginScreen");
 
-    if (sampleGateway == null) {
-        sampleGateway = new SampleGateway(session.getServletContext());
+    String user = (String)session.getAttribute("userName");
+    boolean authenticate = false;
+
+    if (loginScreen != null && loginScreen.equals("true")) {
+        SampleGateway sampleGateway = null;
+        sampleGateway = (SampleGateway) session.getAttribute(SampleGateway.GATEWAY_SESSION);
+
+        if (sampleGateway == null) {
+            sampleGateway = new SampleGateway(session.getServletContext());
+        }
+
+        session.setAttribute(SampleGateway.GATEWAY_SESSION, sampleGateway);
+
+        user = request.getParameter("username");
+        String password = request.getParameter("password");
+
+        authenticate = sampleGateway.authenticate(user, password);
+    } else {
+        authenticate = true;
     }
-
-    session.setAttribute(SampleGateway.GATEWAY_SESSION, sampleGateway);
-
-    String user = request.getParameter("username");
-    String password = request.getParameter("password");
-
-    boolean authenticate = sampleGateway.authenticate(user, password);
 
 %>
 <html>
+
 <head>
     <title>Manage</title>
 </head>
 <body>
+
+<table width="100%" border="0">
+    <tr bgcolor="#999999"><td align="right"><a href="user.jsp"><font color="#f5f5f5">Home</font> </a> <a href="logout.jsp"><font color="#f5f5f5">Logout</font></a></td></tr>
+</table>
+
 <h1>Sample Gateway</h1>
 
 <%
     if (authenticate) {
+
+        session.setAttribute("userName", user);
 
         if (SampleGateway.isAdmin(user)) {
 %>
@@ -49,7 +66,7 @@
      } else {
 %>
 
-<p> You are a normal user. You are not allowed to operate on this page.</p>
+<p> You are a normal user. Click <a href="job.jsp">here</a> to configure and run "Echo" workflow on a GRID machine.</p>
 
 <%
      }

@@ -7,6 +7,8 @@
 <h2>Welcome to Sample Gateway</h2>
 
 <form name="input" action="gateway/user.jsp" method="post">
+    <input type="hidden" name="loginScreen" value="true">
+
     <table border="0" width="100%">
         <tr bgcolor="#999999">
             <td><font color="#f5f5f5">Login ...</font></td>

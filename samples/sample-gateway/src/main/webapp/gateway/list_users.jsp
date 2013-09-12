@@ -18,7 +18,13 @@
     <title>List Users</title>
 </head>
 <body>
+
+<table width="100%" border="0">
+    <tr bgcolor="#999999"><td align="right"><a href="user.jsp"><font color="#f5f5f5">Home</font> </a> <a href="logout.jsp"><font color="#f5f5f5">Logout</font></a></td></tr>
+</table>
+
 <h1>Sample Gateway</h1>
+
 
 <p> This page lists all users and their attributes. </p>
 

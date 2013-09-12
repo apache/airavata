@@ -41,6 +41,11 @@
 
 <html>
 <body>
+
+<table width="100%" border="0">
+    <tr bgcolor="#999999"><td align="right"><a href="user.jsp"><font color="#f5f5f5">Home</font> </a> <a href="logout.jsp"><font color="#f5f5f5">Logout</font></a></td></tr>
+</table>
+
 <h2>Sample Gateway</h2>
 <%
     out.println("The received token id - ");

@@ -382,6 +382,65 @@ public class GatewayUserStore {
 
     }
 
+
+
+    public String getUserToken(String userName) {
+
+        String sql = "select token_id from Users where user_name=?";
+
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        Connection connection = null;
+
+        try {
+
+            connection = dbUtil.getConnection();
+            preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setString(1, userName);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getString("token_id");
+            }
+
+        } catch (SQLException e) {
+            String errorString = "Error retrieving token for user " + userName;
+            log.error(errorString, e);
+
+            throw new RuntimeException(errorString, e);
+        } finally {
+
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    log.error("Error closing result set", e);
+                }
+            }
+
+            if (preparedStatement != null) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    log.error("Error closing prepared statement", e);
+                }
+            }
+
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    log.error("Error closing connection", e);
+                }
+            }
+        }
+
+        return null;
+
+    }
+
     public static String getPasswordRegularExpression() {
         return "'^[a-zA-Z0-9_-]{6,15}$'";
     }
