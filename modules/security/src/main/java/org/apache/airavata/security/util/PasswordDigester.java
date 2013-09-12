@@ -26,6 +26,7 @@ import org.apache.airavata.security.UserStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -69,7 +70,11 @@ public class PasswordDigester {
             } catch (NoSuchAlgorithmException e) {
                 throw new UserStoreException("Error creating message digest with hash algorithm - " + hashMethod, e);
             }
-            return new String(messageDigest.digest(password.getBytes()));
+            try {
+                return new String(messageDigest.digest(password.getBytes("UTF-8")));
+            } catch (UnsupportedEncodingException e) {
+                throw new UserStoreException("Unable to create password digest", e);
+            }
         }
 
     }

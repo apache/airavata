@@ -47,6 +47,8 @@ public class SampleGateway {
 
     public static final String GATEWAY_SESSION = "Gateway";
 
+    private static boolean databaseStarted = false;
+
     protected static Logger log = LoggerFactory.getLogger(GatewayUserStore.class);
 
     public SampleGateway(ServletContext servletContext) throws Exception {
@@ -58,10 +60,13 @@ public class SampleGateway {
         String host = servletContext.getInitParameter("jdbc.host");
         String driver = servletContext.getInitParameter("jdbc.driver");
 
-        // Start the database
-        DerbyUtil.startDerbyInServerMode(host,
-                port, userName,
-                password);
+        if (!databaseStarted) {
+            // Start the database
+            DerbyUtil.startDerbyInServerMode(host,
+                    port, userName,
+                    password);
+        }
+
 
         String jdbcUrl = getJDBCUrl(host, port, userName, password);
 
@@ -71,7 +76,10 @@ public class SampleGateway {
                 password,
                 driver);
 
-        GatewayUserStore.initializeData(dbUtil);
+        if (!databaseStarted) {
+            GatewayUserStore.initializeData(dbUtil);
+            databaseStarted = true;
+        }
 
         gatewayUserStore = new GatewayUserStore(dbUtil);
 
@@ -128,6 +136,10 @@ public class SampleGateway {
 
     public void updateTokenId(String tokenId) {
         this.gatewayUserStore.updateTokens(tokenId);
+    }
+
+    public String getTokenIdForUser(String user) {
+        return this.gatewayUserStore.getUserToken(user);
     }
 
 

@@ -47,8 +47,6 @@ public class WorkflowExecutorTest {
         Workflow workflow = workflowExecutor.setupExperiment(executionParameters);
         workflowExecutor.runWorkflow(workflow, Arrays.asList("echo_output=Hello World"));
 
-        System.out.println("sadsd");
-
     }
 
     //@Test
@@ -75,7 +73,7 @@ public class WorkflowExecutorTest {
 
     }
 
-    //@Test
+    @Test
     public void testRunWorkflowStampedeUS3WithToken() throws Exception {
 
         WorkflowExecutor workflowExecutor = getSampleGatewayExecutor();
@@ -83,7 +81,7 @@ public class WorkflowExecutorTest {
 
         Workflow workflow = workflowExecutor.setupExperiment(executionParameters);
         workflowExecutor.runWorkflow(workflow, Arrays.asList("echo_output=Hello World"),
-                "a70b5c63-48d8-4a34-9b9a-d77f74894fb8X", "bunny");
+                "9964c023-7d30-4247-a6eb-b0c9cd7be138", "bunny");
 
     }
 

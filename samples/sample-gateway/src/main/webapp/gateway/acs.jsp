@@ -29,7 +29,15 @@
 
 <html>
 <body>
+
+<table width="100%" border="0">
+    <tr bgcolor="#999999"><td align="right"><a href="user.jsp"><font color="#f5f5f5">Home</font> </a> <a href="logout.jsp"><font color="#f5f5f5">Logout</font></a></td></tr>
+</table>
+
 <h2>Sample Gateway</h2>
+
+
+
 <p>This demonstrates how portal can use Credential Store to obtain community credentials ...</p>
 <form name="input" action="https://localhost:8443/airavata/acs-start-servlet" method="post">
 

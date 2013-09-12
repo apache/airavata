@@ -24,11 +24,18 @@ package org.apache.airavata.rest.utils;
 import com.sun.jersey.api.client.WebResource;
 import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.commons.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MultivaluedMap;
+import java.io.UnsupportedEncodingException;
 
 public class BasicAuthHeaderUtil {
+
+    protected static Logger log = LoggerFactory.getLogger(BasicAuthHeaderUtil.class);
+
+
     /**
      * A method to use by clients in the case of Basic Access authentication.
      * Creates Basic Auth header structure.
@@ -40,7 +47,14 @@ public class BasicAuthHeaderUtil {
     public static String getBasicAuthHeader(String userName, String password) {
 
         String credentials = userName + ":" + password;
-        String encodedString = new String(Base64.encodeBase64(credentials.getBytes()));
+        String encodedString = null;
+        try {
+            encodedString = new String(Base64.encodeBase64(credentials.getBytes("UTF-8")));
+        } catch (UnsupportedEncodingException e) {
+            // TODO we need to do proper exception handling
+            log.error("Error encoding credentials. ", e);
+            throw new RuntimeException("Error encoding credentials. ", e);
+        }
         return "Basic " + encodedString;
     }
 
