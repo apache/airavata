@@ -73,7 +73,7 @@ public class WorkflowExecutorTest {
 
     }
 
-    @Test
+    //@Test
     public void testRunWorkflowStampedeUS3WithToken() throws Exception {
 
         WorkflowExecutor workflowExecutor = getSampleGatewayExecutor();
