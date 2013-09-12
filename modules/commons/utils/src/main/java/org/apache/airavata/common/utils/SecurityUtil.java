@@ -24,6 +24,7 @@ package org.apache.airavata.common.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -54,7 +55,12 @@ public class SecurityUtil {
         }
 
         MessageDigest messageDigest = MessageDigest.getInstance(digestingAlgorithm);
-        return new String(messageDigest.digest(stringToDigest.getBytes()));
+        try {
+            return new String(messageDigest.digest(stringToDigest.getBytes("UTF-8")));
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Error encoding password string when creating digest", e);
+            throw new RuntimeException("Error encoding password string when creating digest", e);
+        }
     }
 
     /**
