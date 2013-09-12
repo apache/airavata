@@ -213,7 +213,7 @@ public class NodeExecutionData {
 	
 	private static List<NameValue> getIOParameterData(String data){
 		List<NameValue> parameters=new ArrayList<NameValue>();
-		if (data!=null) {
+		if (data!=null && !data.trim().equals("")) {
 			String[] pairs = StringUtil.getElementsFromString(data);
 			for (String paras : pairs) {
 				String name=paras.trim();
