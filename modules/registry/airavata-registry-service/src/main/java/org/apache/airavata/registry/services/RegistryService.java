@@ -93,7 +93,7 @@ public class RegistryService implements ServiceLifeCycle {
     }
 
     private void initializeDB() {
-
+    	System.setProperty("registry.initialize.state", "0");
         String jdbcUrl = null;
         String jdbcDriver = null;
         try{
@@ -150,7 +150,7 @@ public class RegistryService implements ServiceLifeCycle {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
         }
-        System.setProperty("registry.initialized", "1");
+        System.setProperty("registry.initialize.state", "1");
     }
 
     public boolean isRegistryServiceStarted() {
