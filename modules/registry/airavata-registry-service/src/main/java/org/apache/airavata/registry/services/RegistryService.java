@@ -116,24 +116,24 @@ public class RegistryService implements ServiceLifeCycle {
             conn = db.connect();
             if (!DatabaseCreator.isDatabaseStructureCreated(PERSISTANT_DATA, conn)) {
                 DatabaseCreator.createRegistryDatabase(conn);
-                try{
-                    GatewayResource gatewayResource = new GatewayResource();
-                    gatewayResource.setGatewayName(RegistrySettings.getSetting(REGISTRY_DEFAULT_GATEWAY_ID));
-                    gatewayResource.setOwner(RegistrySettings.getSetting(REGISTRY_DEFAULT_GATEWAY_ID));
-                    gatewayResource.save();
-                    UserResource userResource = (UserResource) gatewayResource.create(ResourceType.USER);
-                    userResource.setUserName(RegistrySettings.getSetting(REGISTRY_DEFAULT_USER));
-                    userResource.setPassword(RegistrySettings.getSetting(REGISTRY_DEFAULT_USER_PASSWORD));
-                    userResource.save();
-                    WorkerResource workerResource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
-                    workerResource.setUser(userResource.getUserName());
-                    workerResource.save();
-                } catch (RegistrySettingsException e) {
-                    logger.error("Unable to read properties", e);
-                }
                 logger.info("New Database created for Registry");
             } else {
                 logger.info("Database already created for Registry!");
+            }
+            try{
+                GatewayResource gatewayResource = new GatewayResource();
+                gatewayResource.setGatewayName(RegistrySettings.getSetting(REGISTRY_DEFAULT_GATEWAY_ID));
+                gatewayResource.setOwner(RegistrySettings.getSetting(REGISTRY_DEFAULT_GATEWAY_ID));
+                gatewayResource.save();
+                UserResource userResource = (UserResource) gatewayResource.create(ResourceType.USER);
+                userResource.setUserName(RegistrySettings.getSetting(REGISTRY_DEFAULT_USER));
+                userResource.setPassword(RegistrySettings.getSetting(REGISTRY_DEFAULT_USER_PASSWORD));
+                userResource.save();
+                WorkerResource workerResource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
+                workerResource.setUser(userResource.getUserName());
+                workerResource.save();
+            } catch (RegistrySettingsException e) {
+                logger.error("Unable to read properties", e);
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
