@@ -50,7 +50,7 @@
         <name>trestles</name>
         <host>trestles.sdsc.edu</host>
         <gram.endpoint>trestles-login2.sdsc.edu:2119/jobmanager-pbstest2</gram.endpoint>
-        <gridftp.endpoint>gsiftp://trestles.sdsc.edu:2811/</gridftp.endpoint>
+        <gridftp.endpoint>gsiftp://trestles-dm1.sdsc.edu:2811/</gridftp.endpoint>
     </server>
     
 <!--     
