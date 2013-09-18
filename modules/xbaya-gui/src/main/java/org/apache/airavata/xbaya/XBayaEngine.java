@@ -22,10 +22,13 @@
 package org.apache.airavata.xbaya;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
+import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataManager;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;
 import org.apache.airavata.workflow.model.component.amazon.AmazonComponentRegistry;
 import org.apache.airavata.workflow.model.component.local.LocalComponentRegistry;
@@ -36,6 +39,7 @@ import org.apache.airavata.ws.monitor.Monitor;
 import org.apache.airavata.ws.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.component.registry.ComponentController;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpreter;
+import org.apache.airavata.xbaya.registry.PasswordCallbackImpl;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.monitor.MonitorStarter;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
@@ -81,6 +85,18 @@ public class XBayaEngine {
         MonitorConfiguration monitorConfiguration = new MonitorConfiguration(configuration.getBrokerURL(),
                 configuration.getTopic(), configuration.isPullMode(), configuration.getMessageBoxURL());
         this.monitor = new Monitor(monitorConfiguration);
+
+        if (configuration.getAiravataAPI() == null && airavataAPI == null) {
+            try {
+                airavataAPI =  AiravataAPIFactory.getAPI(configuration.getRegistryURL(),
+                        configuration.getDefaultGateway(), configuration.getRegistryUserName(),
+                        new PasswordCallbackImpl(configuration.getRegistryUserName(), configuration.getRegistryPassphrase()));
+                configuration.setAiravataAPI(airavataAPI);
+            } catch (AiravataAPIInvocationException e) {
+                logger.error("Unable to instantiate airavata api instance", e);
+            }
+
+        }
 
         // MyProxy
         // this.myProxyClient = new MyProxyClient(this.configuration.getMyProxyServer(),
@@ -238,8 +254,8 @@ public class XBayaEngine {
 	
 	public void updateXBayaConfigurationServiceURLs() {
 		try {
-			if (this.getConfiguration().getAiravataAPI()!=null && this.getConfiguration().getAiravataAPI()!=null){
-                AiravataAPI airavataAPI = getConfiguration().getAiravataAPI();
+			if (this.getConfiguration().getAiravataAPI()!=null){
+                airavataAPI = getConfiguration().getAiravataAPI();
                 AiravataManager airavataManager = airavataAPI.getAiravataManager();
 //                AiravataRegistry2 registry=this.getConfiguration().getJcrComponentRegistry().getRegistry();
 	        	URI eventingServiceURL = airavataManager.getEventingServiceURL();
