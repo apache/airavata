@@ -2,6 +2,45 @@ Apache Airavata Release Notes
 
 See http://issues.apache.org/jira/browse/AIRAVATA-* (where * is the number of the issue below)
 
+Apache Airavata Version 0.9 Released on 2013-09-18
+==================================================
+This release mainly focused on "Credential Store" functionality within Airavata. This release includes initial version of "Credential Store" and a sample-gateway (within samples) to demonstrate the functionality of "Credential Store". In addition we upgrade JGlobus version to 2.0.6. With the JGlobus upgrade we introduced functionalities such as "Two phase commit", "Job cancellation" etc ... In addition we introduced a new workflow interpreter and also introduced a REST API for workflow execution. JGlobus upgrade is well tested and some of the use cases we tested can be found in https://svn.apache.org/repos/asf/airavata/sandbox/grd-tools. Below you will find detail list of Jira tasks/issue resolutions incoporated in 0.9.
+
+
+** New Feature
+    * [AIRAVATA-828] - Integrate Credential Management service to Airavata Server
+
+** Task
+    * [AIRAVATA-919] - Negotiate with Apache Infra and increase the distribution size to 200 MB
+    * [AIRAVATA-918] - Prepare release
+    
+** Improvement
+    * [AIRAVATA-252] - Remove invoker caching from Workflow interpreter
+    * [AIRAVATA-835] - Airavata API to get JOBID of GramJob based on workflow service node name
+    * [AIRAVATA-878] - Upgrade tomcat version used in integration-tests
+    * [AIRAVATA-883] - Upgrade JGlobus version to 2.0.6-RC2
+    * [AIRAVATA-900] - Handling of URI and URIArray containing different files with the same name should be handled correctly
+
+** Bug
+    * [AIRAVATA-620] - Confirming the airavata shutdown is completely graceful
+    * [AIRAVATA-659] - Airavata Client Exception handling
+    * [AIRAVATA-720] - Error message when I try to delete Application Service from Xbaya dashboard
+    * [AIRAVATA-731] - When registering urls in registry, we need to register based on transport protocol
+    * [AIRAVATA-738] - Xbaya does not give error messages when connecting to database with wrong credentials
+    * [AIRAVATA-753] - Fixing the provided samples
+    * [AIRAVATA-754] - Levenshtein distance sample is not working
+    * [AIRAVATA-852] - Fix the context root specified in the airavata-server.properties file for Airavata webapp
+    * [AIRAVATA-886] - Exception in jpa-registry when building in ubuntu with java 64 bit
+    * [AIRAVATA-888] - SSHProvider not working in trunk
+    * [AIRAVATA-902] - Scheduling info set from advanced options in client-side is not recovered properly at server-side
+    * [AIRAVATA-903] - Erroneous output is set as the input to the next node from the workflow interpreter
+    * [AIRAVATA-904] - EmbeddedInvoker is not parsing previous node output to the next node input correctly
+    * [AIRAVATA-907] - Experiment Data list return from getAllExperimentMetaInformation() method of provenance manager not sorted according to experiment submitted date
+
+Known Issues in This Release
+============================
+    * [AIRAVATA-914] - Failed to authenticate when connecting to an existing database.
+
 Apache Airavata Version 0.8 Released on 2013-07-04
 ==================================================
 Key focus of this release is to build upon the 0.7 release changes of GFac Architecture. The EC2 provider now confers to
@@ -42,7 +81,8 @@ customization of handlers is facilitated through a configuration file.
     * [AIRAVATA-861] - Integration tests are failing
     * [AIRAVATA-865] - Renaming GFac Job related functions in the rest service and the rest client
     * [AIRAVATA-869] - When the application aborts with return value of minus Status of failure is not reported in to registry
-    * [AIRAVATA-872] - ws-messenger services come to inconsistent state with a failure scenario
+    * [AIRAVATA-872] - ws-messenger services come to inconsistent state with a failure scenario    
+
 
 Apache Airavata Version 0.7 Released on 2013-04-13
 ==================================================
