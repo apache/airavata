@@ -461,6 +461,9 @@
                         <configuration>
                             <excludes>
                                 <exclude>**/target/**/*</exclude>
+                                <exclude>**/certificates/**/*</exclude>
+                                <exclude>**/*.iml</exclude>
+                                <exclude>**/*.ipr</exclude>
                                 <exclude>**/.settings/**/*</exclude>
                                 <exclude>**/.project</exclude>
                                 <exclude>**/.classpath</exclude>
