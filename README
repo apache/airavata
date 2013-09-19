@@ -67,6 +67,7 @@ Airavata Source Distribution Directory Structure
 		│   │   ├── service
 		│   │   └── webapp
 		│   ├── security
+		│   ├── credential-store
 		│   ├── server
 		│   ├── test-suite
 		│   ├── workflow-interpreter
@@ -110,11 +111,6 @@ Client Distributions
 * Airavata XBaya
   The Airavata XBaya distribution is a client GUI application with features to register applications as web services, construct workflows,
   execute and monitor workflows and browse the generated results from the airavata registry.
-
-* Airavata XBaya JNLP
-  The Airavata XBaya JNLP distribution is the simular GUI distribution but prepackeged to be ready to be deployed to 
-   a web server as a web start application. The GUI provides features to register applications as web services, construct workflows,
-  execute and monitor workflows and browse the generated results from the airavata registry. 
 
 * Airavata Client
   The Airavata Client distribution is a set of libraries and configurations files that allow a 3rd party application to programatically 
