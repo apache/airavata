@@ -21,6 +21,9 @@
 
 package org.apache.airavata.services.registry.rest.resources;
 
+import de.odysseus.staxon.json.JsonXMLConfig;
+import de.odysseus.staxon.json.JsonXMLConfigBuilder;
+import de.odysseus.staxon.json.JsonXMLOutputFactory;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.exception.worker.UserWorkflowAlreadyExistsException;
 import org.apache.airavata.registry.api.exception.worker.UserWorkflowDoesNotExistsException;
@@ -35,6 +38,11 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLEventWriter;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -156,11 +164,15 @@ public class UserWorkflowRegistryResource {
     @GET
     @Path(ResourcePathConstants.UserWFConstants.GET_WORKFLOWGRAPH)
     @Produces({MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON})
-    public Response getWorkflowGraphXML(@QueryParam("workflowName") String workflowName) {
+    public Response getWorkflowGraphXML(@DefaultValue("false") @QueryParam("isJson") boolean isJson,
+                                        @QueryParam("workflowName") String workflowName) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             String workflowGraphXML = airavataRegistry.getWorkflowGraphXML(workflowName);
             if (workflowGraphXML != null) {
+                if (isJson && workflowGraphXML.startsWith("<")) {
+                    workflowGraphXML = getJSONWorkflowGraph(workflowGraphXML);
+                }
                 Response.ResponseBuilder builder = Response.status(Response.Status.OK);
                 builder.entity(workflowGraphXML);
                 return builder.build();
@@ -189,7 +201,7 @@ public class UserWorkflowRegistryResource {
     @GET
     @Path(ResourcePathConstants.UserWFConstants.GET_WORKFLOWS)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getWorkflows() {
+    public Response getWorkflows(@DefaultValue("false") @QueryParam("isJson") boolean isJson) {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
         try {
             Map<String, String> workflows = airavataRegistry.getWorkflows();
@@ -198,7 +210,11 @@ public class UserWorkflowRegistryResource {
             for (String workflowName : workflows.keySet()) {
                 Workflow workflow = new Workflow();
                 workflow.setWorkflowName(workflowName);
-                workflow.setWorkflowGraph(workflows.get(workflowName));
+                String workflowGraph = workflows.get(workflowName);
+                if (isJson && workflowGraph.startsWith("<")) {
+                    workflowGraph = getJSONWorkflowGraph(workflowGraph);
+                }
+                workflow.setWorkflowGraph(workflowGraph);
                 workflowsModels.add(workflow);
             }
             workflowList.setWorkflowList(workflowsModels);
@@ -241,5 +257,35 @@ public class UserWorkflowRegistryResource {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);
             }
         }
+    }
+
+
+    private String getJSONWorkflowGraph(String workflowGraphXML) throws XMLStreamException, IOException {
+        String workflowGraphJSON;
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        ByteArrayInputStream input = new ByteArrayInputStream(workflowGraphXML.getBytes());
+        try {
+            JsonXMLConfig config = new JsonXMLConfigBuilder()
+                    .autoArray(true)
+                    .autoPrimitive(true)
+                    .prettyPrint(true)
+                    .build();
+            XMLEventReader reader = XMLInputFactory.newInstance().
+                    createXMLEventReader(input);
+
+            XMLEventWriter writer = new JsonXMLOutputFactory(config).createXMLEventWriter(output);
+            writer.add(reader);
+            reader.close();
+            workflowGraphJSON = output.toString("UTF-8");
+            writer.close();
+        } finally {
+            /*
+			 * As per StAX specification, XMLEventReader/Writer.close() doesn't close
+			 * the underlying stream.
+			 */
+            output.close();
+            input.close();
+        }
+        return workflowGraphJSON;
     }
 }
