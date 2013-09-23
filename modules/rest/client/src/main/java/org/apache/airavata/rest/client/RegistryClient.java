@@ -39,6 +39,7 @@ import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.registry.api.ResourceMetadata;
 import org.apache.airavata.registry.api.WorkspaceProject;
 import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.UnimplementedRegistryOperationException;
 import org.apache.airavata.registry.api.exception.worker.ExperimentDoesNotExistsException;
 import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
@@ -984,5 +985,10 @@ public class RegistryClient extends AiravataRegistry2 {
 	public List<ApplicationJobStatusData> getApplicationJobStatusHistory(
 			String jobId) throws RegistryException {
 		return getProvenanceResourceClient().getApplicationJobStatusHistory(jobId);
+	}
+
+	@Override
+	public List<AiravataUser> getUsers() throws RegistryException {
+        throw new UnimplementedRegistryOperationException();
 	}
 }

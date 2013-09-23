@@ -31,5 +31,6 @@ public class RegistryConstants {
     public static final String PROVENANCE_REGISTRY_ACCESSOR_CLASS = "class.provenance.registry.accessor";
     public static final String USER_WF_REGISTRY_ACCESSOR_CLASS = "class.user.workflow.registry.accessor";
     public static final String PUBLISHED_WF_REGISTRY_ACCESSOR_CLASS = "class.published.workflow.registry.accessor";
+    public static final String USER_REGISTRY_ACCESSOR_CLASS = "class.user.registry.accessor";
 
 }

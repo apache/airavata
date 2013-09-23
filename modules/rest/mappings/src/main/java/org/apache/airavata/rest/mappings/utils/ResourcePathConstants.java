@@ -190,6 +190,12 @@ public class ResourcePathConstants {
         public static final String GET_WORKFLOWS = "get/workflows";
         public static final String REMOVE_WORKFLOW = "remove/workflow";
     }
+    
+    public final class UserRegistryConstants {
+
+        public static final String REGISTRY_API_USERREGISTRY = "/userregistry/";
+        public static final String GET_ALL_USERS = "get/user/all";
+    }
 
     public final class BasicRegistryConstants {
 

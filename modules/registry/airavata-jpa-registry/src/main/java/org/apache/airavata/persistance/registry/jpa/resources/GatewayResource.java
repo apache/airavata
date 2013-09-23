@@ -399,6 +399,16 @@ public class GatewayResource extends AbstractResource {
                     }
                 }
                 break;
+            case USER:
+		        generator = new QueryGenerator(USERS);
+		        q = generator.selectQuery(em);
+		        for (Object o : q.getResultList()) {
+		        	Users user = (Users) o;
+		        	UserResource userResource =
+	                        (UserResource)Utils.getResource(ResourceType.USER, user);
+		        	resourceList.add(userResource);
+		        }
+		        break;
             default:
                 em.getTransaction().commit();
                 em.close();

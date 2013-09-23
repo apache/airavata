@@ -27,7 +27,7 @@ import java.net.URI;
 import java.util.Observable;
 
 
-public abstract class AiravataRegistry2 extends Observable implements DescriptorRegistry, ProjectsRegistry, PublishedWorkflowRegistry, UserWorkflowRegistry, ConfigurationRegistry, ProvenanceRegistry{
+public abstract class AiravataRegistry2 extends Observable implements DescriptorRegistry, ProjectsRegistry, PublishedWorkflowRegistry, UserWorkflowRegistry, ConfigurationRegistry, ProvenanceRegistry, UserRegistry{
 	private Gateway gateway;
 	private AiravataUser user;
 	
