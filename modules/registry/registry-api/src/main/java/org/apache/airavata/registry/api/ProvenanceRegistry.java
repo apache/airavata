@@ -22,6 +22,7 @@
 package org.apache.airavata.registry.api;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.airavata.registry.api.exception.RegistryException;
@@ -278,6 +279,8 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
 	 * @throws RegistryException
 	 */
     public List<ExperimentData> getExperimentByUser(String user) throws RegistryException;
+    
+	public List<ExperimentData> getExperiments(HashMap<String, String> params) throws RegistryException;
     
     /**
      * Return the pageNo set of experiments launched by the given user if grouped in to pages of size pageSize

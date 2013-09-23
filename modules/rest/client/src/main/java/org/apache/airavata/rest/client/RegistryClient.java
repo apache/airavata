@@ -23,6 +23,7 @@ package org.apache.airavata.rest.client;
 
 import java.net.URI;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -639,6 +640,10 @@ public class RegistryClient extends AiravataRegistry2 {
 
     public List<ExperimentData> getExperimentByUser(String user) throws RegistryException {
         return getProvenanceResourceClient().getExperimentByUser(user);
+    }
+    
+    public List<ExperimentData> getExperiments(HashMap<String,String> params) throws RegistryException {
+        return null;
     }
 
 

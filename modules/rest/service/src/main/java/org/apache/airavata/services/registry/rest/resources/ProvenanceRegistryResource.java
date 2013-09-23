@@ -36,11 +36,13 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -811,11 +813,45 @@ public class ProvenanceRegistryResource {
             }
         }
     }
+    
+    @GET
+    @Path(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENTS)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Response getExperiments(@QueryParam("username") String username, @QueryParam("fromDate") String from, @QueryParam("toDate") String to) {
+        AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
+        try {
+            HashMap<String, String> params = new HashMap<String, String>();
+            if(username!=null && !username.isEmpty()) params.put("username", username);
+            if(from!=null && !from.isEmpty()) params.put("fromDate", from);
+            if(to!=null && !to.isEmpty()) params.put("toDate", to);
+            List<ExperimentData> experiments = airavataRegistry.getExperiments(params);
+            ExperimentDataList experimentData = new ExperimentDataList();
+            List<ExperimentDataImpl> experimentDatas = new ArrayList<ExperimentDataImpl>();
+            for (ExperimentData anExperimentDataList : experiments) {
+                experimentDatas.add((ExperimentDataImpl)anExperimentDataList);
+            }
+            experimentData.setExperimentDataList(experimentDatas);
+            if (experiments.size() != 0) {
+                Response.ResponseBuilder builder = Response.status(Response.Status.OK);
+                builder.entity(experimentData);
+                return builder.build();
+            } else {
+                Response.ResponseBuilder builder = Response.status(Response.Status.NO_CONTENT);
+                return builder.build();
+            }
+        } catch (Throwable e) {
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.ProvenanceResourcePathConstants.GET_EXPERIMENT_USER, e);
+        } finally {
+            if (airavataRegistry != null) {
+                RegPoolUtils.releaseRegistry(context, airavataRegistry);
+            }
+        }
+    }
+
 
     /**
      * This method will update the workflow node status
-     *
-     * @param workflowInstanceId workflow instance ID
+     *     * @param workflowInstanceId workflow instance ID
      * @param nodeId             node ID
      * @param executionStatus    node execution status
      * @return HTTP response
