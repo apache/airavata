@@ -1721,6 +1721,15 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
         return (new ExperimentDataRetriever()).getExperiments(user);
 	}
+	
+	@Override
+	public List<ExperimentData> getExperiments(HashMap<String,String> params)
+			throws RegistryException {
+        if (provenanceRegistry != null){
+            return provenanceRegistry.getExperiments(params);
+        }
+        return (new ExperimentDataRetriever()).getExperiments(params);
+	}
 
 
 	@Override

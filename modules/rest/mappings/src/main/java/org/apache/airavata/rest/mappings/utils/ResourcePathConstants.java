@@ -124,6 +124,7 @@ public class ResourcePathConstants {
         public static final String GET_EXPERIMENT = "get/experiment";
         public static final String GET_EXPERIMENT_ID_USER = "get/experimentId/user";
         public static final String GET_EXPERIMENT_USER = "get/experiment/user";
+        public static final String GET_EXPERIMENTS = "get/experiments";
         public static final String UPDATE_WORKFLOWNODE_STATUS = "update/workflownode/status";
         public static final String GET_WORKFLOWNODE_STATUS = "get/workflownode/status";
         public static final String GET_WORKFLOWNODE_STARTTIME = "get/workflownode/starttime";

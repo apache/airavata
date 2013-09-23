@@ -21,6 +21,11 @@
 
 package org.apache.airavata.persistance.registry.jpa.resources;
 
+import org.apache.airavata.persistance.registry.jpa.Resource;
+import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
+import org.apache.airavata.persistance.registry.jpa.model.Users;
+import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
 import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
 import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
@@ -35,6 +40,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 public class ExperimentDataRetriever {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentDataRetriever.class);
@@ -304,6 +312,101 @@ public class ExperimentDataRetriever {
        return experimentDataList;
 
     }
+    
+    public List<ExperimentData> getExperiments(HashMap<String, String> params) {
+    	String connectionURL = Utils.getJDBCURL();
+        Connection connection = null;
+        ResultSet rs = null;
+        Statement statement;
+        Map<String, ExperimentData> experimentDataMap = new HashMap<String, ExperimentData>();
+        List<ExperimentData> experimentDataList = new ArrayList<ExperimentData>();
+        List<WorkflowExecution> experimentWorkflowInstances = new ArrayList<WorkflowExecution>();
+
+        try {
+            Class.forName(Utils.getJDBCDriver()).newInstance();
+            connection = DriverManager.getConnection(connectionURL, Utils.getJDBCUser(),
+                    Utils.getJDBCPassword());
+            statement = connection.createStatement();
+            String queryString = "SELECT e.experiment_ID, ed.name, ed.username, em.metadata, " +
+                    "wd.workflow_instanceID, wd.template_name, wd.status, wd.start_time," +
+                    "wd.last_update_time, nd.node_id, nd.inputs, nd.outputs, " +
+                    "e.project_name, e.submitted_date, nd.node_type, nd.status," +
+                    "nd.start_time, nd.last_update_time" +
+                    " FROM Experiment e INNER JOIN Experiment_Data ed " +
+                    "ON e.experiment_ID = ed.experiment_ID " +
+                    "LEFT JOIN Experiment_Metadata em " +
+                    "ON ed.experiment_ID = em.experiment_ID  " +
+                    "LEFT JOIN Workflow_Data wd " +
+                    "ON e.experiment_ID = wd.experiment_ID " +
+                    "LEFT JOIN Node_Data nd " +
+                    "ON wd.workflow_instanceID = nd.workflow_instanceID ";
+            
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            if(params.keySet().size()>0) {
+            	queryString += "WHERE ";
+            	String username = params.get("username");
+            	String from = params.get("fromDate");
+            	String to = params.get("toDate");
+            	
+            	if(username!=null && !username.isEmpty()) {
+            		queryString += "ed.username='" + username + "'";
+            		if((from!=null && !from.isEmpty()) || (to!=null && !to.isEmpty())) {
+            			queryString += " AND ";
+            		}
+            	}
+            	if(from!=null && !from.isEmpty()) {
+            		Date fromDate = dateFormat.parse(from);
+            		Timestamp fromTime = new Timestamp(fromDate.getTime());
+            		queryString += "e.submitted_date>='" + fromTime + "'";
+            		if(to!=null && to!="") {
+            			queryString += " AND ";
+            		}
+            	}
+            	if(to!=null && !to.isEmpty()) {
+            		Date toDate = dateFormat.parse(to);
+            		Timestamp toTime = new Timestamp(toDate.getTime());
+            		queryString += "e.submitted_date<='" + toTime + "'";
+            	}
+            }
+            rs = statement.executeQuery(queryString);
+            if (rs != null) {
+                while (rs.next()) {
+                    ExperimentData experimentData = null;
+                    if (experimentDataMap.containsKey(rs.getString(1))) {
+                        experimentData = experimentDataMap.get(rs.getString(1));
+                    }else{
+                        experimentData = new ExperimentDataImpl();
+                        experimentData.setExperimentId(rs.getString(1));
+                        experimentData.setExperimentName(rs.getString(2));
+                        experimentData.setUser(rs.getString(3));
+                        experimentData.setMetadata(rs.getString(4));
+                        experimentData.setTopic(rs.getString(1));
+                        experimentDataMap.put(experimentData.getExperimentId(),experimentData);
+                        experimentDataList.add(experimentData);
+                    }
+                    fillWorkflowInstanceData(experimentData, rs, experimentWorkflowInstances);
+                }
+            }
+            if (rs != null) {
+                rs.close();
+            }
+            statement.close();
+            connection.close();
+        } catch (InstantiationException e) {
+            logger.error(e.getMessage(), e);
+        } catch (IllegalAccessException e) {
+            logger.error(e.getMessage(), e);
+        } catch (ClassNotFoundException e) {
+            logger.error(e.getMessage(), e);
+        } catch (SQLException e) {
+            logger.error(e.getMessage(), e);
+        } catch (ExperimentLazyLoadedException e) {
+            logger.error(e.getMessage(), e);
+        } catch (ParseException e) {
+            logger.error(e.getMessage(), e);
+        }
+       return experimentDataList;
+	}
 
 
     public ExperimentData getExperimentMetaInformation(String experimentId){
@@ -451,4 +554,6 @@ public class ExperimentDataRetriever {
         }
         return experimentDataList;
     }
+
+	
 }
