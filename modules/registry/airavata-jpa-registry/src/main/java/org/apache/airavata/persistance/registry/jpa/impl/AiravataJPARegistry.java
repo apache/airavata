@@ -56,6 +56,7 @@ import org.apache.airavata.persistance.registry.jpa.resources.NodeDataResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
 import org.apache.airavata.persistance.registry.jpa.resources.PublishWorkflowResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ServiceDescriptorResource;
+import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserWorkflowResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkflowDataResource;
@@ -74,6 +75,7 @@ import org.apache.airavata.registry.api.ProjectsRegistry;
 import org.apache.airavata.registry.api.ProvenanceRegistry;
 import org.apache.airavata.registry.api.PublishedWorkflowRegistry;
 import org.apache.airavata.registry.api.ResourceMetadata;
+import org.apache.airavata.registry.api.UserRegistry;
 import org.apache.airavata.registry.api.UserWorkflowRegistry;
 import org.apache.airavata.registry.api.WorkspaceProject;
 import org.apache.airavata.registry.api.exception.AiravataRegistryUninitializedException;
@@ -147,6 +149,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     private ProvenanceRegistry provenanceRegistry;
     private UserWorkflowRegistry userWorkflowRegistry;
     private PublishedWorkflowRegistry publishedWorkflowRegistry;
+    private UserRegistry userRegistry;
     private PasswordCallback callback;
     
     @Override
@@ -217,6 +220,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             provenanceRegistry = (ProvenanceRegistry)getClassInstance(ConfigurationRegistry.class,RegistryConstants.PROVENANCE_REGISTRY_ACCESSOR_CLASS);
             userWorkflowRegistry = (UserWorkflowRegistry)getClassInstance(ConfigurationRegistry.class,RegistryConstants.USER_WF_REGISTRY_ACCESSOR_CLASS);
             publishedWorkflowRegistry = (PublishedWorkflowRegistry)getClassInstance(ConfigurationRegistry.class,RegistryConstants.PUBLISHED_WF_REGISTRY_ACCESSOR_CLASS);
+            userRegistry = (UserRegistry)getClassInstance(ConfigurationRegistry.class,RegistryConstants.USER_REGISTRY_ACCESSOR_CLASS);
         } catch (AiravataConfigurationException e) {
             throw new RegistryException("An error occured when attempting to determine any custom implementations of the registries!!!", e);
         }
@@ -2458,6 +2462,21 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 			statusData.add(new ApplicationJobStatusData(resource.getLocalJobID(),ApplicationJobStatus.valueOf(resource.getStatus()),resource.getStatusUpdateTime()));	
 		}
 		return statusData;
+	}
+	
+	@Override
+	public List<AiravataUser> getUsers() throws RegistryException {
+		if (userRegistry != null){
+			return userRegistry.getUsers();
+		}
+		List<AiravataUser> result=new ArrayList<AiravataUser>();
+	   	List<Resource> users = jpa.getGateway().get(ResourceType.USER);
+	   	for (Resource resource : users) {
+	  		UserResource userRes = (UserResource) resource;
+	  		AiravataUser user = new AiravataUser(userRes.getUserName());
+			result.add(user);
+		}
+	   	return result;
 	}
 	
 	private void addApplicationJobStatusData(String jobId, ApplicationJobStatus status, Date updatedTime, GFacJobDataResource dataResource) throws RegistryException {
