@@ -82,8 +82,48 @@
             <param-value>org.apache.airavata.services.server;org.codehaus.jackson.jaxrs</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
-    </servlet>
+    </servlet>	
+	
     <!-- ========================= Security Related Configurations go here ================================== -->
+    
+    <filter>
+		<filter-name>CORS Filter</filter-name>
+		<filter-class>org.ebaysf.web.cors.CORSFilter</filter-class>
+		<init-param>
+			<description>A comma separated list of allowed origins. Note: An '*' cannot be used for an allowed origin when using credentials.</description>
+			<param-name>cors.allowed.origins</param-name>
+			<param-value>*</param-value>
+		</init-param>
+		<init-param>
+			<param-name>cors.allowed.methods</param-name>
+			<param-value>GET,POST,HEAD,OPTIONS,PUT</param-value>
+		</init-param>
+		<init-param>
+			<param-name>cors.allowed.headers</param-name>
+			<param-value>Content-Type,X-Requested-With,accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Authorization</param-value>
+		</init-param>
+		<init-param>
+			<param-name>cors.exposed.headers</param-name>
+			<param-value></param-value>
+		</init-param>
+		<init-param>
+			<param-name>cors.support.credentials</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>cors.logging.enabled</param-name>
+			<param-value>false</param-value>
+		</init-param>
+		<init-param>
+			<param-name>cors.preflight.maxage</param-name>
+			<param-value>1800</param-value>
+		</init-param>
+		<init-param>
+			<param-name>cors.request.decorate</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	
     <filter>
         <filter-name>AuthenticationFilter</filter-name>
         <filter-class>org.apache.airavata.services.registry.rest.security.HttpAuthenticatorFilter</filter-class>
@@ -92,14 +132,22 @@
             <param-value>authenticators.xml</param-value>
         </init-param>
     </filter>
-
-    <filter-mapping>
-        <filter-name>AuthenticationFilter</filter-name>
-        <url-pattern>/user-store/*</url-pattern>
-        <url-pattern>/services/registry/*</url-pattern>
-        <url-pattern>/services/experiment/*</url-pattern>
-        <url-pattern>/services/server/*</url-pattern>
-    </filter-mapping>
+    
+	<filter-mapping>
+		<filter-name>CORS Filter</filter-name>
+		<url-pattern>/user-store/*</url-pattern>
+		<url-pattern>/services/registry/*</url-pattern>
+		<url-pattern>/services/experiment/*</url-pattern>
+		<url-pattern>/services/server/*</url-pattern>
+	</filter-mapping>
+	
+	<filter-mapping>
+		<filter-name>AuthenticationFilter</filter-name>
+		<url-pattern>/user-store/*</url-pattern>
+		<url-pattern>/services/registry/*</url-pattern>
+		<url-pattern>/services/experiment/*</url-pattern>
+		<url-pattern>/services/server/*</url-pattern>
+	</filter-mapping>
 
     <!-- ================================ End Security Related Configurations =============================== -->
 

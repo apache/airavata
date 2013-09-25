@@ -284,6 +284,7 @@
                 <include>org.apache.httpcomponents:httpclient:jar:4.1</include>
                 <include>de.odysseus.staxon:staxon:jar:1.2</include>
                 <include>de.odysseus.staxon:staxon-jackson:jar:1.2</include>
+                <include>org.ebaysf.web:cors-filter:jar:1.0.0</include>
             </includes>
         </dependencySet>
         <dependencySet>
