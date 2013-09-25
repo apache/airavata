@@ -150,6 +150,11 @@
             <artifactId>jackson-core-asl</artifactId>
             <version>1.9.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.ebaysf.web</groupId>
+            <artifactId>cors-filter</artifactId>
+            <version>${ebay.cors.filter}</version>
+        </dependency>
 
         <!-- Airavata -->
 		<!--dependency>

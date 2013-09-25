@@ -69,12 +69,33 @@ public class ServerMain {
         Wrapper registryServlet = tomcat.addServlet("/airavata", "Airavata Registry Service", "com.sun.jersey.spi.container.servlet.ServletContainer");
         registryServlet.addInitParameter("com.sun.jersey.config.property.packages", "org.apache.airavata.services.registry.rest;org.codehaus.jackson.jaxrs");
         registryServlet.setLoadOnStartup(1);
+        
+        FilterDef corsFilter = new FilterDef();
+        corsFilter.setFilterName("CORS Filter");
+        corsFilter.setFilterClass("org.ebaysf.web.cors.CORSFilter");
+        corsFilter.addInitParameter("cors.allowed.origins","*");
+        corsFilter.addInitParameter("cors.allowed.methods","GET,POST,HEAD,PUT,OPTIONS");
+        corsFilter.addInitParameter("cors.allowed.headers","Origin,Accept,X-Requested-With,Content-Type,Access-Control-Request-Method,Access-Control-Request-Headers,Authorization");
+        corsFilter.addInitParameter("cors.exposed.headers","");
+        corsFilter.addInitParameter("cors.preflight.maxage","1800");
+        corsFilter.addInitParameter("cors.support.credentials","true");
+        corsFilter.addInitParameter("cors.logging.enabled","false");
+        corsFilter.addInitParameter("cors.request.decorate","true");
+        context.addFilterDef(corsFilter);
 
         FilterDef filter1definition = new FilterDef();
         filter1definition.setFilterName("AuthenticationFilter");
         filter1definition.setFilterClass("org.apache.airavata.services.registry.rest.security.HttpAuthenticatorFilter");
         filter1definition.addInitParameter("authenticatorConfigurations","authenticators.xml");
         context.addFilterDef(filter1definition);
+        
+        FilterMap corsFilterMapping = new FilterMap();
+        corsFilterMapping.setFilterName("CORS Filter");
+        corsFilterMapping.addURLPattern("/user-store/*");
+        corsFilterMapping.addURLPattern("/services/registry/*");
+        corsFilterMapping.addURLPattern("/services/server/*");
+        corsFilterMapping.addURLPattern("/services/experiment/*");
+        context.addFilterMap(corsFilterMapping);
 
         FilterMap filter1mapping = new FilterMap();
         filter1mapping.setFilterName("AuthenticationFilter");
