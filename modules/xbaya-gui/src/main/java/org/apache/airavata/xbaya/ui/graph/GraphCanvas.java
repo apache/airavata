@@ -62,6 +62,8 @@ import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.ComponentReference;
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;
+import org.apache.airavata.workflow.model.component.system.InputComponent;
+import org.apache.airavata.workflow.model.component.system.OutputComponent;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.graph.DataPort;
 import org.apache.airavata.workflow.model.graph.Edge;
@@ -283,9 +285,9 @@ public class GraphCanvas implements XBayaExecutionModeListener{
      * @param component
      *            The Component to add.
      */
-    public void addNode(Component component) {
+    public Node addNode(Component component) {
         Point location = getRandomPosition();
-        addNode(component, location);
+        return addNode(component, location);
     }
 
     /**
@@ -467,6 +469,29 @@ public class GraphCanvas implements XBayaExecutionModeListener{
                 selectNode(node);
             }
             return;
+        }else if ((clicked instanceof Port) && event.getClickCount()==2){
+        	//double click to add Input/Output nodes and connect with them when a DataPort is double clicked
+        	Port port=(Port)clicked;
+        	Point pos = port.getNode().getPosition();
+        	Node node=null;
+        	int xgap = (int)(1.5 * NodeGUI.MINIMUM_WIDTH);
+        	int ygap = (int)(NodeGUI.MINIMUM_HEIGHT/2);
+        	Point nodePos = null;
+			switch (port.getKind()){
+        	case DATA_IN:
+        		if (port.getFromNode()==null) {
+					nodePos = new Point(Math.max(0, pos.x - xgap), Math.max(0, pos.y - ygap));
+					node = addNode(new InputComponent(), nodePos);
+					connect(node.getOutputPorts().get(0), port);
+				}
+				break;
+        	case DATA_OUT:
+				nodePos = new Point(pos.x + NodeGUI.MINIMUM_WIDTH + xgap, pos.y + ygap);
+				node = addNode(new OutputComponent(), nodePos);
+				connect(port, node.getInputPorts().get(0));
+				break;
+        		default:
+        	}
         }
 
         // delegate the event.
