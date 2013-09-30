@@ -52,9 +52,7 @@ public class GramJobSubmissionListener implements GramJobListener{
      */
     public void waitFor()  {
         while (!isJobDone()) {
-
             synchronized (this) {
-
                 try {
                     wait();
                 } catch (InterruptedException e) {}
