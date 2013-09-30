@@ -73,14 +73,10 @@ public class GFacAPI {
                 disposeProvider(provider, jobExecutionContext);
             }
 
-        } catch (GFacException e) {
+        }catch (Exception e){
             jobExecutionContext.setProperty(ERROR_SENT,"true");
             jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
-            throw e;
-        } catch (Exception e){
-            jobExecutionContext.setProperty(ERROR_SENT,"true");
-            jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
-            throw new GFacException(e);
+            throw new GFacException(e.getMessage(),e);
         }
         finally {
             try{
@@ -98,7 +94,7 @@ public class GFacAPI {
     private void initProvider(GFacProvider provider, JobExecutionContext jobExecutionContext) throws GFacException {
         try {
             provider.initialize(jobExecutionContext);
-        } catch (GFacProviderException e) {
+        } catch (Exception e) {
             throw new GFacException("Error while initializing provider " + provider.getClass().getName() + ".", e);
         }
     }
@@ -106,7 +102,7 @@ public class GFacAPI {
     private void executeProvider(GFacProvider provider, JobExecutionContext jobExecutionContext) throws GFacException {
         try {
             provider.execute(jobExecutionContext);
-        } catch (GFacProviderException e) {
+        } catch (Exception e) {
             throw new GFacException("Error while executing provider " + provider.getClass().getName() + " functionality.", e);
         }
     }
@@ -114,7 +110,7 @@ public class GFacAPI {
     private void disposeProvider(GFacProvider provider, JobExecutionContext jobExecutionContext) throws GFacException {
         try {
             provider.dispose(jobExecutionContext);
-        } catch (GFacProviderException e) {
+        } catch (Exception e) {
             throw new GFacException("Error while invoking provider " + provider.getClass().getName() + " dispose method.", e);
         }
     }
