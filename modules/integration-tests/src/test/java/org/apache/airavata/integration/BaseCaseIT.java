@@ -276,7 +276,7 @@ public class BaseCaseIT {
 
         // Deployment descriptor
         ApplicationDescription applicationDeploymentDescription = descriptorBuilder
-                .buildApplicationDeploymentDescription("EchoApplication", "/bin/echo", "/tmp");
+                .buildApplicationDeploymentDescription("EchoApplication", OsUtils.getEchoExecutable(), OsUtils.getTempFolderPath());
 
         log("Adding deployment description ...");
         airavataAPI.getApplicationManager().addApplicationDescription(serviceDescription, hostDescription,
@@ -348,7 +348,7 @@ public class BaseCaseIT {
 
         // Deployment descriptor
         ApplicationDescription applicationDeploymentDescription = descriptorBuilder
-                .buildApplicationDeploymentDescription("EchoApplication", "/bin/echo", "/tmp");
+                .buildApplicationDeploymentDescription("EchoApplication", OsUtils.getEchoExecutable(), OsUtils.getTempFolderPath());
 
         log("Adding deployment description ...");
         try {
