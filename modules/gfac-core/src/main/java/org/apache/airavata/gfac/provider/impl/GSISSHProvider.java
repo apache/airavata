@@ -118,8 +118,7 @@ public class GSISSHProvider implements GFacProvider {
             }
             jobDescriptor.setInputValues(inputValues);
 
-            JobSubmissionListener listener = new DefaultJobSubmissionListener();
-            cluster.submitAsyncJob(jobDescriptor, listener);
+            cluster.submitBatchJob(jobDescriptor);
         } catch (SSHApiException e) {
             String error = "Error submitting the job to host " + host.getHostAddress() + e.getMessage();
             log.error(error);
