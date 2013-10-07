@@ -33,6 +33,8 @@ import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
+import org.apache.airavata.gsi.ssh.api.Cluster;
+import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,31 +52,13 @@ public class SCPDirectorySetupHandler implements GFacHandler{
 		ApplicationDeploymentDescriptionType app = context.getApplicationContext().getApplicationDeploymentDescription().getType();
 		Session session = null;
 		try {
-			session = securityContext.getSession(context.getApplicationContext().getHostDescription().getType().getHostAddress());
-
-			StringBuilder commandString = new StringBuilder();
-
-			commandString.append("mkdir -p ");
-			commandString.append(app.getScratchWorkingDirectory());
-			commandString.append(" ; ");
-			commandString.append("mkdir -p ");
-			commandString.append(app.getStaticWorkingDirectory());
-			commandString.append(" ; ");
-			commandString.append("mkdir -p ");
-			commandString.append(app.getInputDataDirectory());
-			commandString.append(" ; ");
-			commandString.append("mkdir -p ");
-			commandString.append(app.getOutputDataDirectory());
-
-			Command cmd = session.exec(commandString.toString());
-			cmd.join(Constants.COMMAND_EXECUTION_TIMEOUT, TimeUnit.SECONDS);
-		} catch (ConnectionException e) {
-			throw new GFacHandlerException(e.getMessage(), e, context);
-		} catch (TransportException e) {
-			throw new GFacHandlerException(e.getMessage(), e, context);
-		} catch (IOException e) {
-			throw new GFacHandlerException(e.getMessage(), e, context);
-		} finally {
+            Cluster pbsCluster = securityContext.getPbsCluster();
+            pbsCluster.makeDirectory(app.getScratchWorkingDirectory());
+            pbsCluster.makeDirectory(app.getInputDataDirectory());
+            pbsCluster.makeDirectory(app.getOutputDataDirectory());
+		} catch (SSHApiException e) {
+            throw new GFacHandlerException("Error executing the Handler: " + SCPDirectorySetupHandler.class,e);  //To change body of catch statement use File | Settings | File Templates.
+        } finally {
 			securityContext.closeSession(session);
 		}
 	}

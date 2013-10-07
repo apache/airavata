@@ -78,4 +78,13 @@
             <Handler class="org.apache.airavata.gfac.handler.SCPOutputHandler"/>
         </OutHandlers>
     </Provider>
+     <Provider class="org.apache.airavata.gfac.provider.impl.GSISSHProvider" host="org.apache.airavata.schemas.gfac.impl.GsisshHostTypeImpl">
+         <InHandlers>
+            <Handler class="org.apache.airavata.gfac.handler.SCPDirectorySetupHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.SCPInputHandler"/>
+        </InHandlers>
+        <OutHandlers>
+            <!--Handler class="org.apache.airavata.gfac.handler.SCPOutputHandler"/-->
+        </OutHandlers>
+    </Provider>
 </GFac>

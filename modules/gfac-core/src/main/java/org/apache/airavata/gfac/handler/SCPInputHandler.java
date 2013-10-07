@@ -33,6 +33,8 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
+import org.apache.airavata.gsi.ssh.api.Cluster;
+import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.apache.airavata.schemas.gfac.URIParameterType;
@@ -75,17 +77,21 @@ public class SCPInputHandler implements GFacHandler{
 	        }
 	        jobExecutionContext.setInMessageContext(inputNew);
 	}
-	 private static String stageInputFiles(JobExecutionContext context,String paramValue) throws IOException,GFacException{
-		 ApplicationDeploymentDescriptionType app = context.getApplicationContext().getApplicationDeploymentDescription().getType();
 
-		 SSHSecurityContext securityContext = (SSHSecurityContext)context.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT);
-		 SCPFileTransfer fileTransfer = securityContext.getSSHClient().newSCPFileTransfer();
-		 String remoteFile = app.getInputDataDirectory() + File.separatorChar + paramValue;
+    private static String stageInputFiles(JobExecutionContext context, String paramValue) throws IOException, GFacException {
+        SSHSecurityContext securityContext = (SSHSecurityContext)context.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT);
+        Cluster pbsCluster = securityContext.getPbsCluster();
+        ApplicationDeploymentDescriptionType app = context.getApplicationContext().getApplicationDeploymentDescription().getType();
+        String remoteFile = app.getInputDataDirectory() + File.separatorChar + paramValue;
 
-		 File inputFile = new File(paramValue);
-		 fileTransfer.upload(inputFile.getAbsolutePath(), remoteFile);
-		 return remoteFile;
-	 }
+        try {
+            return pbsCluster.scpTo(app.getInputDataDirectory(), remoteFile);
+        } catch (SSHApiException e) {
+            throw new GFacHandlerException("Error while input File Staging", context, e, e.getLocalizedMessage());
+        } finally {
+            return null;
+        }
+    }
 
     public void initProperties(Map<String, String> properties) throws GFacHandlerException, GFacException {
 
