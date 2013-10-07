@@ -23,24 +23,17 @@ package org.apache.airavata.gfac.provider.impl;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
-import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.RequestData;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
-import org.apache.airavata.gfac.context.security.GSISecurityContext;
+import org.apache.airavata.gfac.context.security.SSHSecurityContext;
 import org.apache.airavata.gfac.notification.events.StartExecutionEvent;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
-import org.apache.airavata.gsi.ssh.api.AuthenticationInfo;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
-import org.apache.airavata.gsi.ssh.api.ServerInfo;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
-import org.apache.airavata.gsi.ssh.impl.DefaultJobSubmissionListener;
-import org.apache.airavata.gsi.ssh.impl.MyProxyAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
-import org.apache.airavata.gsi.ssh.listener.JobSubmissionListener;
 import org.apache.airavata.schemas.gfac.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,17 +58,9 @@ public class GSISSHProvider implements GFacProvider {
         HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) jobExecutionContext.getApplicationContext().
                 getApplicationDeploymentDescription().getType();
         try {
-
-            GSISecurityContext gssCred = ((GSISecurityContext) jobExecutionContext.
-                    getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT));
-            RequestData requestData = gssCred.getRequestData();
-            ServerInfo serverInfo = new ServerInfo(requestData.getMyProxyUserName(), host.getHostAddress(), 22);
-            AuthenticationInfo authenticationInfo
-                    = new MyProxyAuthenticationInfo(requestData.getMyProxyUserName(), requestData.getMyProxyPassword(), requestData.getMyProxyServerUrl(),
-                    7512, 17280000, System.getProperty(Constants.TRUSTED_CERTIFICATE_SYSTEM_PROPERTY));
-
+            SSHSecurityContext securityContext = (SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT);
+            Cluster cluster = securityContext.getPbsCluster();
             // This installed path is a mandetory field, because this could change based on the computing resource
-            Cluster cluster = new PBSCluster(serverInfo, authenticationInfo,host.getInstalledParentPath());
             JobDescriptor jobDescriptor = new JobDescriptor();
             jobDescriptor.setWorkingDirectory(app.getScratchWorkingDirectory());
             jobDescriptor.setShellName("/bin/bash");
@@ -89,10 +74,15 @@ public class GSISSHProvider implements GFacProvider {
             jobDescriptor.setStandardErrorFile(app.getStandardError());
             jobDescriptor.setNodes(app.getNodeCount());
             jobDescriptor.setProcessesPerNode(app.getProcessorsPerNode());
-            jobDescriptor.setMaxWallTime(maxWallTimeCalculator(app.getMaxWallTime()));
-            jobDescriptor.setAcountString(app.getProjectAccount().getProjectAccountNumber());
-            jobDescriptor.setQueueName(app.getQueue().getQueueName());
-            jobDescriptor.setOwner(requestData.getMyProxyUserName());
+            jobDescriptor.setMaxWallTime(String.valueOf(app.getMaxWallTime()));
+            jobDescriptor.setJobSubmitter(app.getJobSubmitterCommand());
+            if (app.getProjectAccount() != null) {
+                jobDescriptor.setAcountString(app.getProjectAccount().getProjectAccountNumber());
+            }
+            if (app.getQueue() != null) {
+                jobDescriptor.setQueueName(app.getQueue().getQueueName());
+            }
+            jobDescriptor.setOwner(((PBSCluster) cluster).getServerInfo().getUserName());
             List<String> inputValues = new ArrayList<String>();
             MessageContext input = jobExecutionContext.getInMessageContext();
             Map<String, Object> inputs = input.getParameters();
@@ -118,6 +108,7 @@ public class GSISSHProvider implements GFacProvider {
             }
             jobDescriptor.setInputValues(inputValues);
 
+            System.out.println(jobDescriptor.toXML());
             cluster.submitBatchJob(jobDescriptor);
         } catch (SSHApiException e) {
             String error = "Error submitting the job to host " + host.getHostAddress() + e.getMessage();

@@ -60,8 +60,8 @@ public class SSHProviderTest {
         //have to set InFlwo Handlers and outFlowHandlers
         ApplicationContext applicationContext = new ApplicationContext();
         HostDescription host = new HostDescription(SSHHostType.type);
-        host.getType().setHostName("gw85.iu.xsede.org");
-        host.getType().setHostAddress("gw85.iu.xsede.org");
+        host.getType().setHostName("bigred");
+        host.getType().setHostAddress("bigred2.uits.iu.edu");
         applicationContext.setHostDescription(host);
         /*
            * App
@@ -156,9 +156,9 @@ public class SSHProviderTest {
 
 	private SSHSecurityContext getSecurityContext() {
 		SSHSecurityContext context = new SSHSecurityContext();
-        context.setUsername("*****");
+        context.setUsername("lginnali");
         context.setPrivateKeyLoc("~/.ssh/id_dsa");
-        context.setKeyPass("*****");
+        context.setKeyPass("i want to be free");
 		return context;
 	}
 
