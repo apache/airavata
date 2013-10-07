@@ -67,6 +67,7 @@
 					<element name="minMemory" type="xsd:int" minOccurs="0" maxOccurs="1" />
 					<element name="maxMemory" type="xsd:int" minOccurs="0" maxOccurs="1" />
 					<element name="keyValuePairs" type="gfac:extendedKeyValueType" minOccurs="0" maxOccurs="unbounded" />
+                    <element name="jobSubmitterCommand" type="xsd:string" minOccurs="0" maxOccurs="1" />
 				</sequence>
 			</extension>
 		</complexContent>
