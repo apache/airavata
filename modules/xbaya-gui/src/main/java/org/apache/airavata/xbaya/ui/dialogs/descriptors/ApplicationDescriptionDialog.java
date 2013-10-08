@@ -56,7 +56,9 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.SSHHostType;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.ui.menues.MenuIcons;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
@@ -707,11 +709,17 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 				if (hostDescription.getType() instanceof GlobusHostType) {
 					getShellApplicationDescription().getType().changeType(
 					        HpcApplicationDeploymentType.type);
+				} else if (hostDescription.getType() instanceof GsisshHostType) {
+						getShellApplicationDescription().getType().changeType(
+						        HpcApplicationDeploymentType.type);
+				} else if (hostDescription.getType() instanceof SSHHostType && ((SSHHostType)hostDescription.getType()).getHpcResource()) {
+					getShellApplicationDescription().getType().changeType(
+					        HpcApplicationDeploymentType.type);
 				} else {
 					getShellApplicationDescription().getType().changeType(
 							ApplicationDeploymentDescriptionType.type);
 				}
-				btnHostAdvanceOptions.setVisible(hostDescription.getType() instanceof GlobusHostType);
+				btnHostAdvanceOptions.setVisible(getShellApplicationDescription().getType() instanceof HpcApplicationDeploymentType);
 				String hostAddress = hostDescription.getType().getHostAddress();
 				boolean isLocal = isLocalAddress(hostAddress);
 				btnExecBrowse.setVisible(isLocal);

@@ -66,6 +66,8 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 	private XBayaLabel lblCpuCount;
 	private XBayaLabel lblProcessorPerNode;
     private XBayaLabel lbNodeCount;
+	private XBayaTextField txtjobSubmitterCommand;
+	private XBayaTextField txtinstalledParentPath;
 
     /**
      * Create the dialog.
@@ -132,6 +134,9 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
         txtCpuCount = new XBayaTextField();
         txtProcessorsPerNode = new XBayaTextField();
         txtNodeCount = new XBayaTextField();
+        txtjobSubmitterCommand = new XBayaTextField();
+        txtinstalledParentPath = new XBayaTextField();
+        
 
         DefaultComboBoxModel cmbModelJobType = new DefaultComboBoxModel(getJobTypesAsStrings());
 		cmbJobType = new XBayaComboBox(cmbModelJobType);
@@ -158,7 +163,9 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		XBayaLabel lblMinMemory = new XBayaLabel("Min Memory",txtMinMemory);
 		XBayaLabel lblMaxMemory = new XBayaLabel("Max Memory",txtMaxMemory);
         lbNodeCount = new XBayaLabel("Node Count", txtNodeCount);
-
+        XBayaLabel lbljobSubmitterCommand = new XBayaLabel("Job Submitter Command",txtjobSubmitterCommand);
+        XBayaLabel lblinstalledParentPath = new XBayaLabel("Installed Parent Path",txtinstalledParentPath);
+        
 		panel.add(lbljobType);
 		panel.add(cmbJobType);
 		panel.add(lblProjectAccountNumber);
@@ -179,10 +186,14 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		panel.add(txtMinMemory);
         panel.add(lblMaxMemory);
         panel.add(txtMaxMemory);
+        panel.add(lbljobSubmitterCommand);
+        panel.add(txtjobSubmitterCommand);
+        panel.add(lblinstalledParentPath);
+        panel.add(txtinstalledParentPath);
 		panel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
         buttonPane.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
 
-        SwingUtil.layoutToGrid(panel.getSwingComponent(), 10, 2, SwingUtil.WEIGHT_NONE, 1);
+        SwingUtil.layoutToGrid(panel.getSwingComponent(), 12, 2, SwingUtil.WEIGHT_NONE, 1);
         
         buttonPane.add(okButton);
         buttonPane.add(cancelButton);
@@ -302,6 +313,28 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 			showError("Maximum memory must be a number", "Invalid value");
 			return false;
 		}
+	    try {
+			if (isValueNotEmpty(txtjobSubmitterCommand.getText())) {
+			    getHPCApplicationDescriptionType().setJobSubmitterCommand(
+		                txtjobSubmitterCommand.getText());
+		    }else{
+		    	getHPCApplicationDescriptionType().setJobSubmitterCommand(null);
+		    }
+		} catch (NumberFormatException e) {
+			showError("Maximum memory must be a number", "Invalid value");
+			return false;
+		}
+	    try {
+			if (isValueNotEmpty(txtinstalledParentPath.getText())) {
+			    getHPCApplicationDescriptionType().setInstalledParentPath(
+			    		txtinstalledParentPath.getText());
+		    }else{
+		    	getHPCApplicationDescriptionType().setInstalledParentPath(null);
+		    }
+		} catch (NumberFormatException e) {
+			showError("Maximum memory must be a number", "Invalid value");
+			return false;
+		}	    
 		ProjectAccountType projectAccount = getProjectAccountType();
 		if (isValueNotEmpty(txtProjectAccountNumber.getText())) {
 			projectAccount.setProjectAccountNumber(txtProjectAccountNumber
@@ -354,6 +387,8 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
         txtMinMemory.setText(getPropValue(hpcAppType.getMinMemory()));
         txtMaxMemory.setText(getPropValue(hpcAppType.getMaxMemory()));
         txtNodeCount.setText(getPropValue(hpcAppType.getNodeCount()));
+        txtjobSubmitterCommand.setText(hpcAppType.getJobSubmitterCommand()==null?"":hpcAppType.getJobSubmitterCommand());
+        txtinstalledParentPath.setText(hpcAppType.getInstalledParentPath()==null?"":hpcAppType.getInstalledParentPath());
 		ProjectAccountType projectAccount = getProjectAccountType();
 
 		txtProjectAccountNumber.setText(projectAccount.getProjectAccountNumber()==null? "":projectAccount.getProjectAccountNumber());
