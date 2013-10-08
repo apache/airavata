@@ -128,14 +128,4 @@ public class GSISSHProvider implements GFacProvider {
     public void cancelJob(String jobId, JobExecutionContext jobExecutionContext) throws GFacException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
-
-    private String maxWallTimeCalculator(int maxWalltime) {
-        if (maxWalltime < 60) {
-            return "00:" + maxWalltime + ":00";
-        } else {
-            int minutes = maxWalltime % 60;
-            int hours = maxWalltime / 60;
-            return hours + ":" + minutes + ":00";
-        }
-    }
 }

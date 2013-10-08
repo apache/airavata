@@ -79,7 +79,6 @@ public class BigRed2Test {
         HostDescription host = new HostDescription(GsisshHostType.type);
         host.getType().setHostAddress(hostAddress);
         host.getType().setHostName(hostName);
-        ((GsisshHostType) host.getType()).setInstalledParentPath("/opt/torque/torque-4.2.3.1/bin/");
         /*
         * App
         */
@@ -119,7 +118,7 @@ public class BigRed2Test {
         app.setStandardError(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stderr");
         app.setMaxWallTime(5);
         app.setJobSubmitterCommand("aprun -n 1");
-
+        app.setInstalledParentPath("/opt/torque/torque-4.2.3.1/bin/");
 
         /*
         * Service
@@ -151,7 +150,7 @@ public class BigRed2Test {
 
         jobExecutionContext = new JobExecutionContext(gFacConfiguration, serv.getType().getName());
         // Adding security context
-        jobExecutionContext.addSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT, getSecurityContext(host));
+        jobExecutionContext.addSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT, getSecurityContext(app));
         ApplicationContext applicationContext = new ApplicationContext();
         jobExecutionContext.setApplicationContext(applicationContext);
         applicationContext.setServiceDescription(serv);
@@ -171,11 +170,11 @@ public class BigRed2Test {
 //		((StringParameterType)echo_input.getType()).setValue("echo_output=hello");
         outMessage.addParameter("echo_output", echo_out);
 
-        jobExecutionContext.setOutMessageContext(outMessage);
+        jobExecutionContext.setOutMessageContext(   outMessage);
 
     }
 
-    private SecurityContext getSecurityContext(HostDescription host) {
+    private SecurityContext getSecurityContext(HpcApplicationDeploymentType app) {
         AuthenticationInfo authenticationInfo = new DefaultPasswordAuthenticationInfo(this.password);
         // Server info
         ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
@@ -183,7 +182,7 @@ public class BigRed2Test {
         Cluster pbsCluster = null;
         try {
              pbsCluster = new PBSCluster(serverInfo, authenticationInfo,
-                     ((GsisshHostType)host.getType()).getInstalledParentPath());
+                     (app.getInstalledParentPath()));
         } catch (SSHApiException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }

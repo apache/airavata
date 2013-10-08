@@ -53,6 +53,7 @@ import org.apache.airavata.registry.api.workflow.ApplicationJob;
 import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.NameValuePairType;
+import org.apache.airavata.schemas.gfac.SSHHostType;
 import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +68,7 @@ public class SSHProvider implements GFacProvider {
 	private String jobID=null;
 
 	public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException,GFacException {
+        if(!((SSHHostType)jobExecutionContext.getApplicationContext().getHostDescription()).getHpcResource()){
 		jobID="SSH_"+jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress()+"_"+Calendar.getInstance().getTimeInMillis();
 		
 		securityContext = (SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT);
@@ -82,6 +84,7 @@ public class SSHProvider implements GFacProvider {
 		} catch (IOException e) {
 			throw new GFacProviderException(e.getLocalizedMessage(), e);
 		}
+        }
 	}
 
 	private void saveApplicationJob(JobExecutionContext jobExecutionContext, String executableName) {
@@ -95,6 +98,7 @@ public class SSHProvider implements GFacProvider {
 	}
 
 	public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+        if(((SSHHostType)jobExecutionContext.getApplicationContext().getHostDescription()).getHpcResource()){
 		ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
 		Session session = null;
 		try {
@@ -130,6 +134,14 @@ public class SSHProvider implements GFacProvider {
 		}finally{
 			securityContext.closeSession(session);
 		}
+        }else {
+            GSISSHProvider gsisshProvider = new GSISSHProvider();
+            try {
+                gsisshProvider.execute(jobExecutionContext);
+            } catch (GFacException e) {
+                throw new GFacProviderException(e.getMessage(), e);
+            }
+        }
 
 	}
 

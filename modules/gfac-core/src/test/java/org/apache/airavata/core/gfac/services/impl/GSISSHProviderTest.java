@@ -81,7 +81,7 @@ public class GSISSHProviderTest {
         HostDescription host = new HostDescription(GsisshHostType.type);
         host.getType().setHostAddress(hostAddress);
         host.getType().setHostName(hostName);
-        ((GsisshHostType) host.getType()).setInstalledParentPath("/opt/torque/bin/");
+
         /*
         * App
         */
@@ -125,7 +125,7 @@ public class GSISSHProviderTest {
         app.setStandardOutput(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stdout");
         app.setStandardError(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stderr");
         app.setMaxWallTime(5);
-
+        app.setInstalledParentPath("/opt/torque/bin/");
 
         /*
         * Service
@@ -157,7 +157,7 @@ public class GSISSHProviderTest {
 
         jobExecutionContext = new JobExecutionContext(gFacConfiguration, serv.getType().getName());
         // Adding security context
-        jobExecutionContext.addSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT, getSecurityContext());
+        jobExecutionContext.addSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT, getSecurityContext(app));
         ApplicationContext applicationContext = new ApplicationContext();
         jobExecutionContext.setApplicationContext(applicationContext);
         applicationContext.setServiceDescription(serv);
@@ -181,7 +181,7 @@ public class GSISSHProviderTest {
 
     }
 
-    private SecurityContext getSecurityContext() {
+    private SecurityContext getSecurityContext(HpcApplicationDeploymentType app) {
         GSIAuthenticationInfo authenticationInfo
                 = new MyProxyAuthenticationInfo(myProxyUserName, myProxyPassword, "myproxy.teragrid.org",
                 7512, 17280000, certificateLocation);
@@ -190,7 +190,7 @@ public class GSISSHProviderTest {
         ServerInfo serverInfo = new ServerInfo("ogce", "trestles.sdsc.edu");
         Cluster pbsCluster = null;
         try {
-            pbsCluster = new PBSCluster(serverInfo, authenticationInfo, "/opt/torque/bin/");
+            pbsCluster = new PBSCluster(serverInfo, authenticationInfo, app.getInstalledParentPath());
         } catch (SSHApiException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }

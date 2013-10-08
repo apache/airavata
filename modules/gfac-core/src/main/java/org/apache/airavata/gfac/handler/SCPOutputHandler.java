@@ -27,7 +27,6 @@ import java.util.Map;
 
 import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.transport.TransportException;
-import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.gfac.GFacException;
@@ -35,6 +34,7 @@ import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.OutputUtils;
+import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.xmlbeans.XmlException;
 
@@ -45,17 +45,17 @@ public class SCPOutputHandler implements GFacHandler{
 		ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext()
 				.getApplicationDeploymentDescription().getType();
 		try {
-			SSHSecurityContext securityContext = (SSHSecurityContext) jobExecutionContext
+            SSHSecurityContext securityContext = (SSHSecurityContext) jobExecutionContext
 					.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT);
+            Cluster pbsCluster = securityContext.getPbsCluster();
 
 			// Get the Stdouts and StdErrs
 			String timeStampedServiceName = GFacUtils.createUniqueNameForService(jobExecutionContext.getServiceName());
 			File localStdOutFile = File.createTempFile(timeStampedServiceName, "stdout");
 			File localStdErrFile = File.createTempFile(timeStampedServiceName, "stderr");
 
-			SCPFileTransfer fileTransfer = securityContext.getSSHClient().newSCPFileTransfer();
-			fileTransfer.download(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
-			fileTransfer.download(app.getStandardError(), localStdErrFile.getAbsolutePath());
+			pbsCluster.scpFrom(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
+			pbsCluster.scpFrom(app.getStandardError(), localStdErrFile.getAbsolutePath());
 
 			String stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
 			String stdErrStr = GFacUtils.readFileToString(localStdErrFile.getAbsolutePath());
