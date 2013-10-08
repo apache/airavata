@@ -49,30 +49,17 @@ import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
 import org.apache.airavata.gfac.scheduler.HostScheduler;
 import org.apache.airavata.gfac.utils.GFacUtils;
+import org.apache.airavata.gsi.ssh.api.Cluster;
+import org.apache.airavata.gsi.ssh.api.SSHApiException;
+import org.apache.airavata.gsi.ssh.api.ServerInfo;
+import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
+import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
+import org.apache.airavata.gsi.ssh.impl.PBSCluster;
+import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
+import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
+import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.schemas.gfac.BooleanArrayType;
-import org.apache.airavata.schemas.gfac.BooleanParameterType;
-import org.apache.airavata.schemas.gfac.DoubleArrayType;
-import org.apache.airavata.schemas.gfac.DoubleParameterType;
-import org.apache.airavata.schemas.gfac.Ec2HostType;
-import org.apache.airavata.schemas.gfac.FileArrayType;
-import org.apache.airavata.schemas.gfac.FileParameterType;
-import org.apache.airavata.schemas.gfac.FloatArrayType;
-import org.apache.airavata.schemas.gfac.FloatParameterType;
-import org.apache.airavata.schemas.gfac.GlobusHostType;
-import org.apache.airavata.schemas.gfac.InputParameterType;
-import org.apache.airavata.schemas.gfac.IntegerArrayType;
-import org.apache.airavata.schemas.gfac.IntegerParameterType;
-import org.apache.airavata.schemas.gfac.OutputParameterType;
-import org.apache.airavata.schemas.gfac.SSHHostType;
-import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
-import org.apache.airavata.schemas.gfac.StdErrParameterType;
-import org.apache.airavata.schemas.gfac.StdOutParameterType;
-import org.apache.airavata.schemas.gfac.StringArrayType;
-import org.apache.airavata.schemas.gfac.StringParameterType;
-import org.apache.airavata.schemas.gfac.URIArrayType;
-import org.apache.airavata.schemas.gfac.URIParameterType;
-import org.apache.airavata.schemas.gfac.UnicoreHostType;
+import org.apache.airavata.schemas.gfac.*;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.schemas.wec.SecurityContextDocument;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
@@ -85,6 +72,7 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
+import org.jets3t.service.impl.rest.httpclient.GoogleStorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
@@ -276,18 +264,18 @@ public class EmbeddedGFacInvoker implements Invoker {
      */
     public synchronized boolean invoke() throws WorkflowException {
         try {
-        	 ContextHeaderDocument.ContextHeader contextHeader =
-                     WorkflowContextHeaderBuilder.removeOtherSchedulingConfig(nodeID,this.configuration.getContextHeader());
-             String hostName = null;
+            ContextHeaderDocument.ContextHeader contextHeader =
+                    WorkflowContextHeaderBuilder.removeOtherSchedulingConfig(nodeID, this.configuration.getContextHeader());
+            String hostName = null;
             HostDescription registeredHost;
-             if(contextHeader != null){
-            	 if(contextHeader.getWorkflowSchedulingContext() != null &&
-                         contextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray().length > 0 &&
-                         contextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray(0).getHostName() != null){
-                 hostName = contextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray(0).getHostName();
-                 }
-             }
-        	//todo This is the basic scheduling, have to do proper scheduling implementation by implementing HostScheduler interface
+            if (contextHeader != null) {
+                if (contextHeader.getWorkflowSchedulingContext() != null &&
+                        contextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray().length > 0 &&
+                        contextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray(0).getHostName() != null) {
+                    hostName = contextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray(0).getHostName();
+                }
+            }
+            //todo This is the basic scheduling, have to do proper scheduling implementation by implementing HostScheduler interface
             ServiceDescription serviceDescription = airavataAPI.getApplicationManager().getServiceDescription(serviceName);
             if (hostName == null) {
                 List<HostDescription> registeredHosts = new ArrayList<HostDescription>();
@@ -311,21 +299,21 @@ public class EmbeddedGFacInvoker implements Invoker {
             Object wsifMessageElement = new WSIFMessageElement(XMLUtil.stringToXmlElement3(inputMessage.toStringWithConsume()));
             this.notifier.invokingService(new WSIFMessageElement((XmlElement) wsifMessageElement));
             Properties configurationProperties = ServerSettings.getProperties();
-			GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, configurationProperties);
+            GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, configurationProperties);
 
             JobExecutionContext jobExecutionContext = new JobExecutionContext(gFacConfiguration, serviceName);
             //Here we get only the contextheader information sent specific for this node
             //Add security context
-            addSecurityContext(registeredHost,configurationProperties,jobExecutionContext,
+            addSecurityContext(registeredHost, configurationProperties, jobExecutionContext,
                     configuration.getContextHeader());
 
-            jobExecutionContext.setContextHeader(WorkflowContextHeaderBuilder.removeOtherSchedulingConfig(nodeID,configuration.getContextHeader()));
+            jobExecutionContext.setContextHeader(WorkflowContextHeaderBuilder.removeOtherSchedulingConfig(nodeID, configuration.getContextHeader()));
 
 
-            jobExecutionContext.setProperty(Constants.PROP_WORKFLOW_NODE_ID,this.nodeID);
-            jobExecutionContext.setProperty(Constants.PROP_TOPIC,this.configuration.getTopic());
-            jobExecutionContext.setProperty(Constants.PROP_BROKER_URL,this.configuration.getBrokerURL().toASCIIString());
-            jobExecutionContext.setProperty(Constants.PROP_WORKFLOW_INSTANCE_ID,this.configuration.getTopic());
+            jobExecutionContext.setProperty(Constants.PROP_WORKFLOW_NODE_ID, this.nodeID);
+            jobExecutionContext.setProperty(Constants.PROP_TOPIC, this.configuration.getTopic());
+            jobExecutionContext.setProperty(Constants.PROP_BROKER_URL, this.configuration.getBrokerURL().toASCIIString());
+            jobExecutionContext.setProperty(Constants.PROP_WORKFLOW_INSTANCE_ID, this.configuration.getTopic());
 
 
             ApplicationContext applicationContext = new ApplicationContext();
@@ -411,15 +399,16 @@ public class EmbeddedGFacInvoker implements Invoker {
         return null;
     }
 
-	private void addSecurityContext(HostDescription registeredHost, Properties configurationProperties,
-			JobExecutionContext jobExecutionContext, ContextHeaderDocument.ContextHeader contextHeader) throws WorkflowException {
-		if (registeredHost.getType() instanceof GlobusHostType || registeredHost.getType() instanceof UnicoreHostType) {
+    private void addSecurityContext(HostDescription registeredHost, Properties configurationProperties,
+                                    JobExecutionContext jobExecutionContext, ContextHeaderDocument.ContextHeader contextHeader) throws WorkflowException {
+        RequestData requestData;
+        if (registeredHost.getType() instanceof GlobusHostType || registeredHost.getType() instanceof UnicoreHostType
+                || registeredHost.getType() instanceof GsisshHostType) {
 
             SecurityContextDocument.SecurityContext.CredentialManagementService credentialManagementService
                     = getCredentialManagementService(contextHeader);
 
             GSISecurityContext context;
-            RequestData requestData;
 
             String gatewayId = contextHeader.getSecurityContext().getCredentialManagementService().getGatewayId();
 
@@ -439,24 +428,68 @@ public class EmbeddedGFacInvoker implements Invoker {
             } catch (Exception e) {
                 throw new WorkflowException("An error occurred while creating GSI security context", e);
             }
+            if (registeredHost.getType() instanceof GsisshHostType) {
+                GSIAuthenticationInfo authenticationInfo
+                        = new MyProxyAuthenticationInfo(requestData.getMyProxyUserName(), requestData.getMyProxyPassword(), requestData.getMyProxyServerUrl(),
+                        requestData.getMyProxyPort(), requestData.getMyProxyLifeTime(), System.getProperty(Constants.TRUSTED_CERTIFICATE_SYSTEM_PROPERTY));
+                ServerInfo serverInfo = new ServerInfo(configurationProperties.getProperty("gsissh.user"), registeredHost.getType().getHostName());
+
+                Cluster pbsCluster = null;
+                try {
+                    pbsCluster = new PBSCluster(serverInfo, authenticationInfo,
+                            (((HpcApplicationDeploymentType) jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription()).getInstalledParentPath()));
+                } catch (SSHApiException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
 
 
-            jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT, context);
+                SSHSecurityContext sshSecurityContext = new SSHSecurityContext();
+                sshSecurityContext.setPbsCluster(pbsCluster);
+                sshSecurityContext.setUsername(requestData.getMyProxyUserName());
+                jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT, context);
+            }
+        } else if (registeredHost.getType() instanceof Ec2HostType) {
+            if (this.configuration.getAmazonSecurityContext() != null) {
+                jobExecutionContext.addSecurityContext(AmazonSecurityContext.AMAZON_SECURITY_CONTEXT,
+                        this.configuration.getAmazonSecurityContext());
+            }
+        } else if (registeredHost.getType() instanceof SSHHostType) {
+            String sshUserName = configurationProperties.getProperty(Constants.SSH_USER_NAME);
+            String sshPrivateKey = configurationProperties.getProperty(Constants.SSH_PRIVATE_KEY);
+            String sshPrivateKeyPass = configurationProperties.getProperty(Constants.SSH_PRIVATE_KEY_PASS);
+            String sshPassword = configurationProperties.getProperty(Constants.SSH_PASSWORD);
+            String sshPublicKey = configurationProperties.getProperty(Constants.SSH_PUBLIC_KEY);
+            if (((SSHHostType) registeredHost.getType()).getHpcResource()) {
+                AuthenticationInfo authenticationInfo = null;
+                if(sshPassword != null){
+                    authenticationInfo = new DefaultPasswordAuthenticationInfo(sshPassword);
+                }else{
+                    authenticationInfo = new DefaultPublicKeyFileAuthentication(sshPublicKey, sshPrivateKey,sshPrivateKeyPass);
+                }
+                ServerInfo serverInfo = new ServerInfo(sshUserName, registeredHost.getType().getHostName());
 
-		} else if (registeredHost.getType() instanceof Ec2HostType) {
-			if (this.configuration.getAmazonSecurityContext() != null) {
-				jobExecutionContext.addSecurityContext(AmazonSecurityContext.AMAZON_SECURITY_CONTEXT,
-						this.configuration.getAmazonSecurityContext());
-			}
-		} else if (registeredHost.getType() instanceof SSHHostType) {
-			SSHSecurityContext context = new SSHSecurityContext();
-			context.setUsername(configurationProperties.getProperty(Constants.SSH_USER_NAME));
-			context.setPrivateKeyLoc(configurationProperties.getProperty(Constants.SSH_PRIVATE_KEY));
-			context.setKeyPass(configurationProperties.getProperty(Constants.SSH_PRIVATE_KEY_PASS));
-			jobExecutionContext.addSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT, context);
+                Cluster pbsCluster = null;
+                try {
+                    pbsCluster = new PBSCluster(serverInfo, authenticationInfo,
+                            (((HpcApplicationDeploymentType) jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription()).getInstalledParentPath()));
+                } catch (SSHApiException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
 
-		}
-	}
+
+                SSHSecurityContext sshSecurityContext = new SSHSecurityContext();
+                sshSecurityContext.setPbsCluster(pbsCluster);
+                sshSecurityContext.setUsername(sshUserName);
+            } else {
+                SSHSecurityContext context = new SSHSecurityContext();
+                context.setUsername(sshUserName);
+                context.setPrivateKeyLoc(sshPrivateKey);
+                context.setKeyPass(sshPrivateKeyPass);
+                jobExecutionContext.addSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT, context);
+            }
+
+        }
+    }
 
     /**
      * @throws WorkflowException
@@ -509,7 +542,7 @@ public class EmbeddedGFacInvoker implements Invoker {
                 while (children.hasNext()) {
                     Object next = children.next();
                     if (((XmlElement) next).getName().equals(name)) {
-                        return ((XmlElement)((XmlElement) next).children().next()).children().next();
+                        return ((XmlElement) ((XmlElement) next).children().next()).children().next();
                     }
                 }
             } else {
