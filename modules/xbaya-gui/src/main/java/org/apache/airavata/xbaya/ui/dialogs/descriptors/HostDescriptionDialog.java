@@ -29,9 +29,12 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -45,7 +48,10 @@ import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.schemas.gfac.Ec2HostType;
+import org.apache.airavata.schemas.gfac.ExportProperties;
+import org.apache.airavata.schemas.gfac.ExportProperties.Name;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.schemas.gfac.SSHHostType;
 import org.apache.airavata.schemas.gfac.UnicoreHostType;
@@ -91,12 +97,31 @@ public class HostDescriptionDialog extends JDialog {
 
 	private GridPanel infoPanel2;
 
+	private XBayaTextField exportsTextField;
+
+	private XBayaTextField preJobCommandsTextField;
+
+	private XBayaTextField postJobCommandsTextField;
+
+	private XBayaLabel postJobCommandsTextFieldLabel;
+
+	private XBayaLabel preJobCommandsLabel;
+
+	private XBayaLabel exportsLabel;
+
+	private XBayaTextField fileEndPointPrefixTextField;
+
+	private XBayaLabel fileEndPointPrefixLabel;
+
+	private JCheckBox hpcResourceCheckBoxField;
+
 	private static final String REMOTE_PROTOCOL_STR_LOCAL="Local";
 	private static final String REMOTE_PROTOCOL_STR_SSH="SSH";
 	private static final String REMOTE_PROTOCOL_STR_GLOBUS="Globus";
 	private static final String REMOTE_PROTOCOL_STR_UNICORE="Unicore";
 	private static final String REMOTE_PROTOCOL_STR_AMAZON_EC2="Amazon EC2";
 	private static final String REMOTE_PROTOCOL_STR_HADOOP="Hadoop";
+	private static final String REMOTE_PROTOCOL_GSI_SSH="GSI-SSH";
 
 
     public HostDescriptionDialog(AiravataAPI registry, JFrame parent) {
@@ -162,6 +187,30 @@ public class HostDescriptionDialog extends JDialog {
         }else if (host instanceof UnicoreHostType){
         	((UnicoreHostType)hostDescription.getType()).addUnicoreBESEndPoint(this.gateKeeperTextField.getText());
             ((UnicoreHostType)hostDescription.getType()).addGridFTPEndPoint(this.gridFTPTextField.getText());
+        }else if (host instanceof SSHHostType){
+        	while(((SSHHostType)hostDescription.getType()).getFileEndPointPrefixArray().length>0){
+        		((SSHHostType)hostDescription.getType()).removeFileEndPointPrefix(0);
+        	}
+        	String[] prefixes = StringUtil.getElementsFromString(this.fileEndPointPrefixTextField.getText());
+        	for (String prefix : prefixes) {
+        		((SSHHostType)hostDescription.getType()).addNewFileEndPointPrefix().setStringValue(prefix);
+			}
+            ((SSHHostType)hostDescription.getType()).setHpcResource(hpcResourceCheckBoxField.isSelected());
+        }else if (host instanceof GsisshHostType){
+        	String[] exports = StringUtil.getElementsFromString(exportsTextField.getText());
+        	ExportProperties exportsElement = ((GsisshHostType)hostDescription.getType()).addNewExports();
+        	for (String export : exports) {
+        		String[] nameVal = StringUtil.getElementsFromString(export,"=",StringUtil.QUOTE);
+        		if (nameVal.length>0){
+            		Name name = exportsElement.addNewName();
+        			name.setStringValue(nameVal[0]);
+        			if (nameVal.length>1){
+        				name.setValue(nameVal[1]);
+        			}
+        		}
+			}
+            ((GsisshHostType)hostDescription.getType()).addNewPreJobCommands().setCommandArray(StringUtil.getElementsFromString(this.preJobCommandsTextField.getText()));
+            ((GsisshHostType)hostDescription.getType()).addNewPostJobCommands().setCommandArray(StringUtil.getElementsFromString(this.postJobCommandsTextField.getText()));
         }
         saveHostDescription();
         close();
@@ -193,7 +242,7 @@ public class HostDescriptionDialog extends JDialog {
 
         XBayaLabel hostIdLabel = new XBayaLabel("Host ID", this.hostIdTextField);
         XBayaLabel hostAddressLabel = new XBayaLabel("Host Address", this.hostAddressTextField);
-        cmbResourceProtocol = new JComboBox(new String[]{REMOTE_PROTOCOL_STR_LOCAL,REMOTE_PROTOCOL_STR_SSH,REMOTE_PROTOCOL_STR_GLOBUS,REMOTE_PROTOCOL_STR_UNICORE,REMOTE_PROTOCOL_STR_AMAZON_EC2, REMOTE_PROTOCOL_STR_HADOOP});
+        cmbResourceProtocol = new JComboBox(new String[]{REMOTE_PROTOCOL_STR_LOCAL,REMOTE_PROTOCOL_STR_SSH,REMOTE_PROTOCOL_STR_GLOBUS,REMOTE_PROTOCOL_STR_UNICORE,REMOTE_PROTOCOL_STR_AMAZON_EC2, REMOTE_PROTOCOL_STR_HADOOP, REMOTE_PROTOCOL_GSI_SSH});
         JLabel lblResourceProtocol = new JLabel("Resource Protocol");
         GridPanel pnlResourceProtocolSelection=new GridPanel();
         pnlResourceProtocolSelection.add(lblResourceProtocol);
@@ -295,6 +344,40 @@ public class HostDescriptionDialog extends JDialog {
         SwingUtil.layoutToGrid(globusPanel.getSwingComponent(), 2, 2, SwingUtil.WEIGHT_NONE, 1);
         return globusPanel;
 	}
+	
+	private GridPanel createSSHRemoteProtocolPanel() {
+		GridPanel globusPanel = new GridPanel();
+        if (exportsTextField==null) {
+			this.fileEndPointPrefixTextField = new XBayaTextField();
+			this.hpcResourceCheckBoxField = new JCheckBox("HPC Resource");
+			fileEndPointPrefixLabel = new XBayaLabel("File Endpoint Prefix", this.exportsTextField);
+		}
+        globusPanel.add(fileEndPointPrefixLabel);
+        globusPanel.add(fileEndPointPrefixTextField);
+        globusPanel.add(hpcResourceCheckBoxField);
+        SwingUtil.layoutToGrid(globusPanel.getSwingComponent(), 2, 2, SwingUtil.WEIGHT_NONE, 1);
+        return globusPanel;
+	}
+	
+	private GridPanel createGSISSHRemoteProtocolPanel() {
+		GridPanel globusPanel = new GridPanel();
+        if (exportsTextField==null) {
+			this.exportsTextField = new XBayaTextField();
+			this.preJobCommandsTextField = new XBayaTextField();
+			this.postJobCommandsTextField = new XBayaTextField();
+			exportsLabel = new XBayaLabel("Exports", this.exportsTextField);
+			preJobCommandsLabel = new XBayaLabel("Pre-job Commands", this.preJobCommandsTextField);
+			postJobCommandsTextFieldLabel = new XBayaLabel("Post-job Commands", this.postJobCommandsTextField);
+		}
+        globusPanel.add(exportsLabel);
+        globusPanel.add(exportsTextField);
+        globusPanel.add(preJobCommandsLabel);
+        globusPanel.add(preJobCommandsTextField);
+        globusPanel.add(postJobCommandsTextFieldLabel);
+        globusPanel.add(postJobCommandsTextField);
+        SwingUtil.layoutToGrid(globusPanel.getSwingComponent(), 3, 2, SwingUtil.WEIGHT_NONE, 1);
+        return globusPanel;
+	}
 
 	private GridPanel createUnicoreRemoteProtocolPanel() {
 		GridPanel globusPanel = new GridPanel();
@@ -321,12 +404,24 @@ public class HostDescriptionDialog extends JDialog {
 			gridFTPTextField.setText(StringUtil.createDelimiteredString(((GlobusHostType) t).getGridFTPEndPointArray()));
 		}else if (t instanceof SSHHostType){
 			cmbResourceProtocol.setSelectedItem(REMOTE_PROTOCOL_STR_SSH);
+			fileEndPointPrefixTextField.setText(StringUtil.createDelimiteredString(((SSHHostType)t).getFileEndPointPrefixArray()));
+			hpcResourceCheckBoxField.setSelected(((SSHHostType)t).getHpcResource());
 		}else if (t instanceof UnicoreHostType){
 			cmbResourceProtocol.setSelectedItem(REMOTE_PROTOCOL_STR_UNICORE);
 			gateKeeperTextField.setText(StringUtil.createDelimiteredString(((UnicoreHostType) t).getUnicoreBESEndPointArray()));
 			gridFTPTextField.setText(StringUtil.createDelimiteredString(((UnicoreHostType) t).getGridFTPEndPointArray()));
 		}else if (t instanceof Ec2HostType){
 			cmbResourceProtocol.setSelectedItem(REMOTE_PROTOCOL_STR_AMAZON_EC2);
+		}else if (t instanceof GsisshHostType){
+			cmbResourceProtocol.setSelectedItem(REMOTE_PROTOCOL_GSI_SSH);
+			Name[] nameArray = ((GsisshHostType) t).getExports().getNameArray();
+			List<String> arr=new ArrayList<String>();
+			for (Name name : nameArray) {
+				arr.add(name.getStringValue()+"="+StringUtil.quoteString(name.getValue(),"="));
+			}
+			exportsTextField.setText(StringUtil.createDelimiteredString(arr.toArray(new String[]{})));
+			preJobCommandsTextField.setText(StringUtil.createDelimiteredString(((GsisshHostType) t).getPreJobCommands().getCommandArray()));
+			postJobCommandsTextField.setText(StringUtil.createDelimiteredString(((GsisshHostType) t).getPostJobCommands().getCommandArray()));
 		}
 		hostIdTextField.setEditable(isNewHost());
 		updateRemoteProtocolTypeAndControls();
@@ -441,7 +536,7 @@ public class HostDescriptionDialog extends JDialog {
 				infoPanel2.add(createPanelWithMessage("No configurations needed."));
 			}else if (selectedProtocol.equals(REMOTE_PROTOCOL_STR_SSH)){
 				getHostDescription().getType().changeType(SSHHostType.type);
-				infoPanel2.add(createPanelWithMessage("No configurations needed."));
+				infoPanel2.add(createSSHRemoteProtocolPanel());
 			}else if (selectedProtocol.equals(REMOTE_PROTOCOL_STR_GLOBUS)){
 				getHostDescription().getType().changeType(GlobusHostType.type);
 				infoPanel2.add(createGlobusRemoteProtocolPanel());
@@ -451,6 +546,9 @@ public class HostDescriptionDialog extends JDialog {
 			}else if (selectedProtocol.equals(REMOTE_PROTOCOL_STR_AMAZON_EC2)){
 				getHostDescription().getType().changeType(Ec2HostType.type);
 				infoPanel2.add(createPanelWithMessage("No configurations needed."));
+			}else if (selectedProtocol.equals(REMOTE_PROTOCOL_GSI_SSH)){
+				getHostDescription().getType().changeType(GsisshHostType.type);
+				infoPanel2.add(createGSISSHRemoteProtocolPanel());
 			}else{
 				infoPanel2.add(createPanelWithMessage("Not supported."));
 			}

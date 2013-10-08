@@ -101,14 +101,14 @@ public class StringUtil {
 	 * @param s
 	 * @return
 	 */
-	public static String[] getElementsFromString(String s) {
+	public static String[] getElementsFromString(String s, String delimeter, String quote) {
 		List<String> list=new ArrayList<String>();
 		String currentItem="";
 		String previousChar=null;
 		boolean insideQuote=false;
 		for(int i=0;i<s.length();i++){
 			String c=s.substring(i,i+1);
-			if (c.equals(DELIMETER)){
+			if (c.equals(delimeter)){
 				//if not inside a quoted string ignore the delimiter character
 				if (insideQuote) {
 					currentItem+=c;
@@ -116,10 +116,10 @@ public class StringUtil {
 					list.add(currentItem);
 					currentItem = "";
 				}
-			}else if (c.equals(QUOTE)){
-				if (QUOTE.equals(previousChar)){
+			}else if (c.equals(quote)){
+				if (quote.equals(previousChar)){
 					//which means previousChar was an escape character, not a quote for the string
-					currentItem+=QUOTE;
+					currentItem+=quote;
 					if (insideQuote){
 						//mistakenly thought previous char was opening quote char, thus need to make this false
 						insideQuote=false;
@@ -143,6 +143,15 @@ public class StringUtil {
 		}
 		list.add(currentItem);
 		return list.toArray(new String[]{});
+	}
+	
+	/**
+	 * Parse the delimitered string and return elements as a string array 
+	 * @param s
+	 * @return
+	 */
+	public static String[] getElementsFromString(String s) {
+		return getElementsFromString(s, DELIMETER, QUOTE);
 	}
 
     /**
