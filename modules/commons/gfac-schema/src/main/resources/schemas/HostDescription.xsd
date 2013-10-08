@@ -106,7 +106,6 @@
         <complexContent>
             <extension base="gfac:hostDescriptionType">
                 <sequence>
-                    <element name="installedParentPath" type="xsd:string" minOccurs="1" maxOccurs="1"/>
                     <element name="exports" type="gfac:exportProperties" minOccurs="0" maxOccurs="1"/>
                     <element name="preJobCommands" type="gfac:exportProperties" minOccurs="0" maxOccurs="1"/>
                     <element name="postJobCommands" type="gfac:exportProperties" minOccurs="0" maxOccurs="1"/>
@@ -120,6 +119,7 @@
             <extension base="gfac:hostDescriptionType">
                 <sequence>
                     <element name="fileEndPointPrefix" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                    <element name="hpcResource" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
                 </sequence>
             </extension>
         </complexContent>
