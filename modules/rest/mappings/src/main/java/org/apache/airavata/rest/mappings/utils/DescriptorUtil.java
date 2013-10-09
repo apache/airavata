@@ -21,6 +21,10 @@
 
 package org.apache.airavata.rest.mappings.utils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
@@ -28,11 +32,23 @@ import org.apache.airavata.rest.mappings.resourcemappings.ApplicationDescriptor;
 import org.apache.airavata.rest.mappings.resourcemappings.HostDescriptor;
 import org.apache.airavata.rest.mappings.resourcemappings.ServiceDescriptor;
 import org.apache.airavata.rest.mappings.resourcemappings.ServiceParameters;
-import org.apache.airavata.schemas.gfac.*;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.airavata.schemas.gfac.DataType;
+import org.apache.airavata.schemas.gfac.Ec2ApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.Ec2HostType;
+import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.GsisshHostType;
+import org.apache.airavata.schemas.gfac.HostDescriptionType;
+import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.InputParameterType;
+import org.apache.airavata.schemas.gfac.JobTypeType;
+import org.apache.airavata.schemas.gfac.NameValuePairType;
+import org.apache.airavata.schemas.gfac.OutputParameterType;
+import org.apache.airavata.schemas.gfac.ParameterType;
+import org.apache.airavata.schemas.gfac.ProjectAccountType;
+import org.apache.airavata.schemas.gfac.QueueType;
+import org.apache.airavata.schemas.gfac.SSHHostType;
+import org.apache.airavata.schemas.gfac.UnicoreHostType;
 
 public class DescriptorUtil {
 
@@ -139,7 +155,7 @@ public class DescriptorUtil {
         } else if (hostDescriptionType instanceof SSHHostType) {
             hostType.add(HostTypes.SSH_HOST_TYPE);
             SSHHostType sshHostType = (SSHHostType) hostDescriptionType;
-            hostDescriptor.setHpcDescriptor(sshHostType.getHpcResource());
+            hostDescriptor.setHpcResource(sshHostType.getHpcResource());
         } else if (hostDescriptionType instanceof UnicoreHostType) {
             UnicoreHostType unicoreHostType = (UnicoreHostType) hostDescriptionType;
             hostType.add(HostTypes.UNICORE_HOST_TYPE);
@@ -193,7 +209,7 @@ public class DescriptorUtil {
 
             }else if (hostDescriptor.getHostType().get(0).equals(HostTypes.SSH_HOST_TYPE)) {
             	hostDescription.getType().changeType(SSHHostType.type);
-                ((SSHHostType)hostDescription.getType()).setHpcResource(hostDescriptor.isHpcDescriptor());
+                ((SSHHostType)hostDescription.getType()).setHpcResource(hostDescriptor.isHpcResource());
             } else if (hostDescriptor.getHostType().get(0).equals(HostTypes.UNICORE_HOST_TYPE)) {
                  hostDescription.getType().changeType(UnicoreHostType.type);
                  if (!hostDescriptor.getGateKeeperEndPoint().isEmpty() && hostDescriptor.getGateKeeperEndPoint() != null){
