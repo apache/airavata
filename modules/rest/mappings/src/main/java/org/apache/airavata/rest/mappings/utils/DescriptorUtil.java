@@ -133,23 +133,26 @@ public class DescriptorUtil {
             for (int i = 0; i < gridFTPEndPointArray.length ; i++){
                 gridFTPEndPoint.add(gridFTPEndPointArray[i]);
             }
-        }else if (hostDescriptionType instanceof GsisshHostType){
+        }else if (hostDescriptionType instanceof GsisshHostType) {
             hostType.add(HostTypes.GSISSH_HOST_TYPE);
-        }  else if (hostDescriptionType instanceof  SSHHostType) {
+            GlobusHostType globusHostType = (GlobusHostType) hostDescriptionType;
+        } else if (hostDescriptionType instanceof SSHHostType) {
             hostType.add(HostTypes.SSH_HOST_TYPE);
-        } else if (hostDescriptionType instanceof  UnicoreHostType) {
-        	UnicoreHostType unicoreHostType = (UnicoreHostType) hostDescriptionType;
-             hostType.add(HostTypes.UNICORE_HOST_TYPE);
-             String[] unicoreGateKeeperEndPointArray = unicoreHostType.getUnicoreBESEndPointArray();
-             for (int i = 0; i < unicoreGateKeeperEndPointArray.length ; i++){
-                 gateKeeperEndPoint.add(unicoreGateKeeperEndPointArray[i]);
-             }
+            SSHHostType sshHostType = (SSHHostType) hostDescriptionType;
+            hostDescriptor.setHpcDescriptor(sshHostType.getHpcResource());
+        } else if (hostDescriptionType instanceof UnicoreHostType) {
+            UnicoreHostType unicoreHostType = (UnicoreHostType) hostDescriptionType;
+            hostType.add(HostTypes.UNICORE_HOST_TYPE);
+            String[] unicoreGateKeeperEndPointArray = unicoreHostType.getUnicoreBESEndPointArray();
+            for (int i = 0; i < unicoreGateKeeperEndPointArray.length; i++) {
+                gateKeeperEndPoint.add(unicoreGateKeeperEndPointArray[i]);
+            }
 
-             String[] gridFTPEndPointArray = unicoreHostType.getGridFTPEndPointArray();
-             for (int i = 0; i < gridFTPEndPointArray.length ; i++){
-                 gridFTPEndPoint.add(gridFTPEndPointArray[i]);
-             }
-        }  else if (hostDescriptionType instanceof  Ec2HostType) {
+            String[] gridFTPEndPointArray = unicoreHostType.getGridFTPEndPointArray();
+            for (int i = 0; i < gridFTPEndPointArray.length; i++) {
+                gridFTPEndPoint.add(gridFTPEndPointArray[i]);
+            }
+        } else if (hostDescriptionType instanceof Ec2HostType) {
             hostType.add(HostTypes.EC2_HOST_TYPE);
         } else {
             hostType.add(HostTypes.HOST_DESCRIPTION_TYPE);
@@ -190,6 +193,7 @@ public class DescriptorUtil {
 
             }else if (hostDescriptor.getHostType().get(0).equals(HostTypes.SSH_HOST_TYPE)) {
             	hostDescription.getType().changeType(SSHHostType.type);
+                ((SSHHostType)hostDescription.getType()).setHpcResource(hostDescriptor.isHpcDescriptor());
             } else if (hostDescriptor.getHostType().get(0).equals(HostTypes.UNICORE_HOST_TYPE)) {
                  hostDescription.getType().changeType(UnicoreHostType.type);
                  if (!hostDescriptor.getGateKeeperEndPoint().isEmpty() && hostDescriptor.getGateKeeperEndPoint() != null){
