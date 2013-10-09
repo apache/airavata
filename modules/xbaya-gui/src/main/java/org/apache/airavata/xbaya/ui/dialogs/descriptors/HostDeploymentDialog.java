@@ -53,7 +53,9 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.SSHHostType;
 import org.apache.airavata.xbaya.ui.menues.MenuIcons;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
@@ -502,10 +504,14 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
                 hostDescription = registry.getApplicationManager().getHostDescription(hostName);
                 if (hostDescription.getType() instanceof GlobusHostType) {
                     getShellApplicationDescription().getType().changeType(HpcApplicationDeploymentType.type);
+                }else if (hostDescription.getType() instanceof GsisshHostType) {
+                        getShellApplicationDescription().getType().changeType(HpcApplicationDeploymentType.type);
+                }else if (hostDescription.getType() instanceof SSHHostType && ((SSHHostType)hostDescription.getType()).getHpcResource()) {
+                    getShellApplicationDescription().getType().changeType(HpcApplicationDeploymentType.type);
                 } else {
                     getShellApplicationDescription().getType().changeType(ApplicationDeploymentDescriptionType.type);
                 }
-                btnHostAdvanceOptions.setVisible(hostDescription.getType() instanceof GlobusHostType);
+                btnHostAdvanceOptions.setVisible(getShellApplicationDescription().getType() instanceof HpcApplicationDeploymentType);
                 String hostAddress = hostDescription.getType().getHostAddress();
                 boolean isLocal = isLocalAddress(hostAddress);
                 btnExecBrowse.setVisible(isLocal);
