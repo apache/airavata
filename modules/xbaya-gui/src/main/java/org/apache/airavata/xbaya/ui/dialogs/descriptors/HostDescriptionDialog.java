@@ -209,8 +209,8 @@ public class HostDescriptionDialog extends JDialog {
         			}
         		}
 			}
-            ((GsisshHostType)hostDescription.getType()).addNewPreJobCommands().setCommandArray(StringUtil.getElementsFromString(this.preJobCommandsTextField.getText()));
-            ((GsisshHostType)hostDescription.getType()).addNewPostJobCommands().setCommandArray(StringUtil.getElementsFromString(this.postJobCommandsTextField.getText()));
+            ((GsisshHostType)hostDescription.getType()).setPreJobCommandsArray(StringUtil.getElementsFromString(this.preJobCommandsTextField.getText()));
+            ((GsisshHostType)hostDescription.getType()).setPostJobCommandsArray(StringUtil.getElementsFromString(this.postJobCommandsTextField.getText()));
         }
         saveHostDescription();
         close();
@@ -420,8 +420,8 @@ public class HostDescriptionDialog extends JDialog {
 				arr.add(name.getStringValue()+"="+StringUtil.quoteString(name.getValue(),"="));
 			}
 			exportsTextField.setText(StringUtil.createDelimiteredString(arr.toArray(new String[]{})));
-			preJobCommandsTextField.setText(StringUtil.createDelimiteredString(((GsisshHostType) t).getPreJobCommands().getCommandArray()));
-			postJobCommandsTextField.setText(StringUtil.createDelimiteredString(((GsisshHostType) t).getPostJobCommands().getCommandArray()));
+			preJobCommandsTextField.setText(StringUtil.createDelimiteredString(((GsisshHostType) t).getPreJobCommandsArray()));
+			postJobCommandsTextField.setText(StringUtil.createDelimiteredString(((GsisshHostType) t).getPostJobCommandsArray()));
 		}
 		hostIdTextField.setEditable(isNewHost());
 		updateRemoteProtocolTypeAndControls();
