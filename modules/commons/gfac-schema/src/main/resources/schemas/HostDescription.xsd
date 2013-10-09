@@ -107,8 +107,8 @@
             <extension base="gfac:hostDescriptionType">
                 <sequence>
                     <element name="exports" type="gfac:exportProperties" minOccurs="0" maxOccurs="1"/>
-                    <element name="preJobCommands" type="gfac:exportProperties" minOccurs="0" maxOccurs="1"/>
-                    <element name="postJobCommands" type="gfac:exportProperties" minOccurs="0" maxOccurs="1"/>
+                    <element name="preJobCommands" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                    <element name="postJobCommands" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
                 </sequence>
             </extension>
         </complexContent>

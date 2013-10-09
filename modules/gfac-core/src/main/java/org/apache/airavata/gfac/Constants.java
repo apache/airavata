@@ -63,9 +63,11 @@ public class Constants {
     /*
      * SSH properties
      */
-    public static final String SSH_PRIVATE_KEY = "ssh.key";
+    public static final String SSH_PRIVATE_KEY = "private.ssh.key";
+    public static final String SSH_PUBLIC_KEY = "public.ssh.key";
     public static final String SSH_PRIVATE_KEY_PASS = "ssh.keypass";
     public static final String SSH_USER_NAME = "ssh.username";
+    public static final String SSH_PASSWORD = "ssh.password";
     public static final String PROPERTY = "property";
     public static final String NAME = "name";
     public static final String VALUE = "value";
