@@ -358,6 +358,7 @@ public class DescriptorUtil {
                 if (applicationDescriptor.getStaticWorkigDir() != null){
                     appDesc.getType().setStaticWorkingDirectory(applicationDescriptor.getStaticWorkigDir());
                 }
+
                 HashMap<String,String> envVariables = applicationDescriptor.getEnvironmentVariables();
                 if (envVariables != null && !envVariables.isEmpty()){
                     NameValuePairType[] appEnviVariablesArray = new NameValuePairType[envVariables.size()];
@@ -387,7 +388,8 @@ public class DescriptorUtil {
                 if (applicationDescriptor.getJobType() != null){
                     app.setJobType(JobTypeType.Enum.forString(applicationDescriptor.getJobType()));
                 }
-
+                app.setInstalledParentPath(applicationDescriptor.getInstalledPath());
+                app.setJobSubmitterCommand(applicationDescriptor.getJobSubmitterCommand());
                 app.setMaxMemory(applicationDescriptor.getMaxMemory());
                 app.setMinMemory(applicationDescriptor.getMinMemory());
                 app.setMaxWallTime(applicationDescriptor.getMaxWallTime());
@@ -449,6 +451,8 @@ public class DescriptorUtil {
                     applicationDescriptor.setMaxMemory(gramApplicationDeploymentType.getMaxMemory());
                     applicationDescriptor.setMinMemory(gramApplicationDeploymentType.getMinMemory());
                     applicationDescriptor.setMaxWallTime(gramApplicationDeploymentType.getMaxWallTime());
+                    applicationDescriptor.setJobSubmitterCommand(gramApplicationDeploymentType.getJobSubmitterCommand());
+                    applicationDescriptor.setInstalledPath(gramApplicationDeploymentType.getInstalledParentPath());
                     if (gramApplicationDeploymentType.getJobType() != null)  {
                         applicationDescriptor.setJobType(gramApplicationDeploymentType.getJobType().toString());
                     }

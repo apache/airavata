@@ -50,6 +50,8 @@ public class ApplicationDescriptor {
     private String stdError;
     private String staticWorkigDir;
     private HashMap<String, String> environmentVariables;
+    private String installedPath;
+    private String jobSubmitterCommand;
 
 
     public String getName() {
@@ -242,5 +244,21 @@ public class ApplicationDescriptor {
 
     public void setStaticWorkigDir(String staticWorkigDir) {
         this.staticWorkigDir = staticWorkigDir;
+    }
+
+    public String getInstalledPath() {
+        return installedPath;
+    }
+
+    public String getJobSubmitterCommand() {
+        return jobSubmitterCommand;
+    }
+
+    public void setInstalledPath(String installedPath) {
+        this.installedPath = installedPath;
+    }
+
+    public void setJobSubmitterCommand(String jobSubmitterCommand) {
+        this.jobSubmitterCommand = jobSubmitterCommand;
     }
 }
