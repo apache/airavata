@@ -115,6 +115,8 @@ public class HostDescriptionDialog extends JDialog {
 
 	private JCheckBox hpcResourceCheckBoxField;
 
+	private JLabel emptyLabel;
+
 	private static final String REMOTE_PROTOCOL_STR_LOCAL="Local";
 	private static final String REMOTE_PROTOCOL_STR_SSH="SSH";
 	private static final String REMOTE_PROTOCOL_STR_GLOBUS="Globus";
@@ -347,14 +349,16 @@ public class HostDescriptionDialog extends JDialog {
 	
 	private GridPanel createSSHRemoteProtocolPanel() {
 		GridPanel globusPanel = new GridPanel();
-        if (exportsTextField==null) {
+        if (fileEndPointPrefixTextField==null) {
 			this.fileEndPointPrefixTextField = new XBayaTextField();
 			this.hpcResourceCheckBoxField = new JCheckBox("HPC Resource");
-			fileEndPointPrefixLabel = new XBayaLabel("File Endpoint Prefix", this.exportsTextField);
+			fileEndPointPrefixLabel = new XBayaLabel("File Endpoint Prefix", this.fileEndPointPrefixTextField);
+			this.emptyLabel=new JLabel();
 		}
+        globusPanel.add(hpcResourceCheckBoxField);
+        globusPanel.add(emptyLabel);
         globusPanel.add(fileEndPointPrefixLabel);
         globusPanel.add(fileEndPointPrefixTextField);
-        globusPanel.add(hpcResourceCheckBoxField);
         SwingUtil.layoutToGrid(globusPanel.getSwingComponent(), 2, 2, SwingUtil.WEIGHT_NONE, 1);
         return globusPanel;
 	}
