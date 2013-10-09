@@ -21,6 +21,23 @@
 
 package org.apache.airavata.xbaya.ui.experiment;
 
+import java.awt.event.ActionEvent;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
+
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.border.EtchedBorder;
+import javax.xml.namespace.QName;
+
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.ExperimentAdvanceOptions;
 import org.apache.airavata.common.utils.StringUtil;
@@ -33,8 +50,6 @@ import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.apache.airavata.ws.monitor.MonitorConfiguration;
 import org.apache.airavata.ws.monitor.MonitorException;
-import org.apache.airavata.xbaya.XBayaConfiguration;
-import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.core.amazon.AmazonCredential;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
@@ -50,18 +65,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.v1.builder.XmlInfosetBuilder;
-import xsul.XmlConstants;
 
-import javax.swing.*;
-import javax.xml.namespace.QName;
-import java.awt.event.ActionEvent;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
-//import org.apache.airavata.registry.api.AiravataRegistry2;
+import xsul.XmlConstants;
 
 public class WorkflowInterpreterLaunchWindow {
 
@@ -75,15 +80,15 @@ public class WorkflowInterpreterLaunchWindow {
 
     private GridPanel parameterPanel;
 
-    private XBayaTextField topicTextField;
+//    private XBayaTextField topicTextField;
 
     private List<XBayaTextField> parameterTextFields = new ArrayList<XBayaTextField>();
 
-    private XBayaTextField workflowInterpreterTextField;
+//    private XBayaTextField workflowInterpreterTextField;
 
-    private XBayaTextField RegistryTextField;
+//    private XBayaTextField RegistryTextField;
 
-    private XBayaTextField gfacTextField;
+//    private XBayaTextField gfacTextField;
 
 	private XBayaTextField instanceNameTextField;
 
@@ -144,23 +149,23 @@ public class WorkflowInterpreterLaunchWindow {
         }
         this.parameterPanel.layout(inputNodes.size(), 3, GridPanel.WEIGHT_NONE, 2);
 //        this.instanceNameTextField.setText(workflow.getName()+"_"+Calendar.getInstance().getTime().toString());
-        this.topicTextField.setText(UUID.randomUUID().toString());
+//        this.topicTextField.setText(UUID.randomUUID().toString());
 
-        XBayaConfiguration config = this.engine.getConfiguration();
-        this.gfacTextField.setText(config.getGFacURL().toString());
-        URI workflowInterpreterURL = config.getWorkflowInterpreterURL();
-        if (null != workflowInterpreterURL) {
-            this.workflowInterpreterTextField.setText(workflowInterpreterURL.toString());
-        } else {
-            this.workflowInterpreterTextField.setText(XBayaConstants.DEFAULT_WORKFLOW_INTERPRETER_URL);
-        }
+//        XBayaConfiguration config = this.engine.getConfiguration();
+//        this.gfacTextField.setText(config.getGFacURL().toString());
+//        URI workflowInterpreterURL = config.getWorkflowInterpreterURL();
+//        if (null != workflowInterpreterURL) {
+//            this.workflowInterpreterTextField.setText(workflowInterpreterURL.toString());
+//        } else {
+//            this.workflowInterpreterTextField.setText(XBayaConstants.DEFAULT_WORKFLOW_INTERPRETER_URL);
+//        }
 
-        AiravataAPI airavataAPI = config.getAiravataAPI();
-        if (null != airavataAPI) {
-            this.RegistryTextField.setText(config.getRegistryURL());
-        } else {
-            this.RegistryTextField.setText(XBayaConstants.REGISTRY_URL.toASCIIString());
-        }
+//        AiravataAPI airavataAPI = config.getAiravataAPI();
+//        if (null != airavataAPI) {
+//            this.RegistryTextField.setText(config.getRegistryURL());
+//        } else {
+//            this.RegistryTextField.setText(XBayaConstants.REGISTRY_URL.toASCIIString());
+//        }
 
         this.dialog.show();
     }
@@ -181,33 +186,34 @@ public class WorkflowInterpreterLaunchWindow {
         this.instanceNameTextField = new XBayaTextField();
         XBayaLabel instanceNameLabel = new XBayaLabel("Experiment name", this.instanceNameTextField);
         
-        this.topicTextField = new XBayaTextField();
-        XBayaLabel topicLabel = new XBayaLabel("Notification topic", this.topicTextField);
-        this.workflowInterpreterTextField = new XBayaTextField();
-        XBayaLabel workflowInterpreterLabel = new XBayaLabel("Workflow Interpreter URL",
-                this.workflowInterpreterTextField);
-        this.RegistryTextField = new XBayaTextField();
-        XBayaLabel RegistryLabel = new XBayaLabel("Registry URL", this.RegistryTextField);
-        this.gfacTextField = new XBayaTextField();
-        XBayaLabel gfacLabel = new XBayaLabel("GFac URL", this.gfacTextField);
+//        this.topicTextField = new XBayaTextField();
+//        XBayaLabel topicLabel = new XBayaLabel("Notification topic", this.topicTextField);
+//        this.workflowInterpreterTextField = new XBayaTextField();
+//        XBayaLabel workflowInterpreterLabel = new XBayaLabel("Workflow Interpreter URL",
+//                this.workflowInterpreterTextField);
+//        this.RegistryTextField = new XBayaTextField();
+//        XBayaLabel RegistryLabel = new XBayaLabel("Registry URL", this.RegistryTextField);
+//        this.gfacTextField = new XBayaTextField();
+//        XBayaLabel gfacLabel = new XBayaLabel("GFac URL", this.gfacTextField);
 
         GridPanel infoPanel = new GridPanel();
         infoPanel.add(instanceNameLabel);
         infoPanel.add(this.instanceNameTextField);
 //        infoPanel.add(topicLabel);
 //        infoPanel.add(this.topicTextField);
-        infoPanel.add(workflowInterpreterLabel);
-        infoPanel.add(this.workflowInterpreterTextField);
-        infoPanel.add(gfacLabel);
-        infoPanel.add(this.gfacTextField);
+//        infoPanel.add(workflowInterpreterLabel);
+//        infoPanel.add(this.workflowInterpreterTextField);
+//        infoPanel.add(gfacLabel);
+//        infoPanel.add(this.gfacTextField);
 //        infoPanel.add(RegistryLabel);
 //        infoPanel.add(this.RegistryTextField);
 
-        infoPanel.layout(3, 2, GridPanel.WEIGHT_NONE, 1);
+        infoPanel.layout(1, 2, GridPanel.WEIGHT_NONE, 1);
 
         GridPanel mainPanel = new GridPanel();
-        mainPanel.add(this.parameterPanel);
+        mainPanel.getContentPanel().setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
         mainPanel.add(infoPanel);
+        mainPanel.add(this.parameterPanel);
         mainPanel.layout(2, 1, 0, 0);
 
         JButton okButton = new JButton("Run");
@@ -227,7 +233,7 @@ public class WorkflowInterpreterLaunchWindow {
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
-
+        buttonPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
         this.dialog = new XBayaDialog(this.engine.getGUI(), "Launch  workflow", mainPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
@@ -235,7 +241,7 @@ public class WorkflowInterpreterLaunchWindow {
     private void execute() {
         final List<String> arguments = new ArrayList<String>();
 
-        String topic = this.topicTextField.getText();
+        String topic = UUID.randomUUID().toString();//this.topicTextField.getText();
         String instanceName = this.instanceNameTextField.getText();
         if (instanceName.trim().equals("")){
         	JOptionPane.showMessageDialog(engine.getGUI().getFrame(),
@@ -283,23 +289,23 @@ public class WorkflowInterpreterLaunchWindow {
             inputNode.setDefaultValue(value);
         }
 
-        final String workflowInterpreterUrl = this.workflowInterpreterTextField.getText();
-        if (null != workflowInterpreterUrl && !"".equals(workflowInterpreterUrl)) {
-            try {
-                this.engine.getConfiguration().setWorkflowInterpreterURL(new URI(workflowInterpreterUrl));
-            } catch (URISyntaxException e) {
-                this.engine.getGUI().getErrorWindow().error(e);
-            }
-        }
+//        final String workflowInterpreterUrl = this.workflowInterpreterTextField.getText();
+//        if (null != workflowInterpreterUrl && !"".equals(workflowInterpreterUrl)) {
+//            try {
+//                this.engine.getConfiguration().setWorkflowInterpreterURL(new URI(workflowInterpreterUrl));
+//            } catch (URISyntaxException e) {
+//                this.engine.getGUI().getErrorWindow().error(e);
+//            }
+//        }
 
-        final String gFacUrl = this.gfacTextField.getText();
-        if (null != gFacUrl && !"".equals(gFacUrl)) {
-            try {
-                this.engine.getConfiguration().setGFacURL(new URI(gFacUrl));
-            } catch (URISyntaxException e) {
-                this.engine.getGUI().getErrorWindow().error(e);
-            }
-        }
+//        final String gFacUrl = this.gfacTextField.getText();
+//        if (null != gFacUrl && !"".equals(gFacUrl)) {
+//            try {
+//                this.engine.getConfiguration().setGFacURL(new URI(gFacUrl));
+//            } catch (URISyntaxException e) {
+//                this.engine.getGUI().getErrorWindow().error(e);
+//            }
+//        }
         this.engine.getConfiguration().setTopic(topic);
 
         new Thread() {
