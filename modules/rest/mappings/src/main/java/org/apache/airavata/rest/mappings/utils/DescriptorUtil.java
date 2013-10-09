@@ -134,13 +134,7 @@ public class DescriptorUtil {
                 gridFTPEndPoint.add(gridFTPEndPointArray[i]);
             }
         }else if (hostDescriptionType instanceof GsisshHostType){
-            GsisshHostType gsisshHostType = (GsisshHostType) hostDescriptionType;
             hostType.add(HostTypes.GSISSH_HOST_TYPE);
-
-            String[] gridFTPEndPointArray = gsisshHostType.getGridFTPEndPointArray();
-            for (int i = 0; i < gridFTPEndPointArray.length ; i++){
-                gridFTPEndPoint.add(gridFTPEndPointArray[i]);
-            }
         }  else if (hostDescriptionType instanceof  SSHHostType) {
             hostType.add(HostTypes.SSH_HOST_TYPE);
         } else if (hostDescriptionType instanceof  UnicoreHostType) {
@@ -185,10 +179,6 @@ public class DescriptorUtil {
 
             } else if (hostDescriptor.getHostType().get(0).equals(HostTypes.GSISSH_HOST_TYPE)) {
                 hostDescription.getType().changeType(GsisshHostType.type);
-                if (!hostDescriptor.getGridFTPEndPoint().isEmpty() && hostDescriptor.getGridFTPEndPoint() != null){
-                    ((GsisshHostType) hostDescription).addGridFTPEndPoint(hostDescriptor.getGridFTPEndPoint().get(0));
-                }
-
             } else if (hostDescriptor.getHostType().get(0).equals(HostTypes.EC2_HOST_TYPE)) {
                 hostDescription.getType().changeType(Ec2HostType.type);
                 if (!hostDescriptor.getImageID().isEmpty() && hostDescriptor.getImageID() != null ){
