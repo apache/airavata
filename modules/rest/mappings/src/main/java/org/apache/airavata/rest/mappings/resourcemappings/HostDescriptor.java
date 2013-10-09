@@ -40,7 +40,8 @@ public class HostDescriptor {
     private List<String> gateKeeperEndPoint = new ArrayList<String>();
     private List<String> imageID = new ArrayList<String>();
     private List<String> instanceID = new ArrayList<String>();
-
+    private boolean hpcResource = false;
+    
     public String getHostname() {
         return hostname;
     }
@@ -96,5 +97,13 @@ public class HostDescriptor {
     public void setInstanceID(List<String> instanceID) {
         this.instanceID = instanceID;
     }
+
+	public boolean isHpcResource() {
+		return hpcResource;
+	}
+
+	public void setHpcResource(boolean hpcResource) {
+		this.hpcResource = hpcResource;
+	}
 
 }
