@@ -22,10 +22,13 @@
 package org.apache.airavata.credential.store.store.impl.db;
 
 import org.apache.airavata.common.utils.DBUtil;
+import org.apache.airavata.common.utils.KeyStorePasswordCallback;
+import org.apache.airavata.common.utils.SecurityUtil;
 import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 
 import java.io.*;
+import java.security.GeneralSecurityException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,8 +38,43 @@ import java.util.List;
  */
 public class CredentialsDAO extends ParentDAO {
 
+    private String keyStorePath = null;
+    private String secretKeyAlias = null;
+    private KeyStorePasswordCallback keyStorePasswordCallback = null;
+
+
     public CredentialsDAO() {
         super();
+    }
+
+    public CredentialsDAO(String keyStore, String alias, KeyStorePasswordCallback passwordCallback) {
+        this.keyStorePath = keyStore;
+        this.secretKeyAlias = alias;
+        this.keyStorePasswordCallback = passwordCallback;
+    }
+
+    public String getKeyStorePath() {
+        return keyStorePath;
+    }
+
+    public void setKeyStorePath(String keyStorePath) {
+        this.keyStorePath = keyStorePath;
+    }
+
+    public String getSecretKeyAlias() {
+        return secretKeyAlias;
+    }
+
+    public void setSecretKeyAlias(String secretKeyAlias) {
+        this.secretKeyAlias = secretKeyAlias;
+    }
+
+    public KeyStorePasswordCallback getKeyStorePasswordCallback() {
+        return keyStorePasswordCallback;
+    }
+
+    public void setKeyStorePasswordCallback(KeyStorePasswordCallback keyStorePasswordCallback) {
+        this.keyStorePasswordCallback = keyStorePasswordCallback;
     }
 
     /**
@@ -76,24 +114,6 @@ public class CredentialsDAO extends ParentDAO {
             StringBuilder stringBuilder = new StringBuilder("Error persisting community credentials.");
             stringBuilder.append(" gateway - ").append(gatewayId);
             stringBuilder.append(" token id - ").append(credential.getToken());
-
-            log.error(stringBuilder.toString(), e);
-
-            throw new CredentialStoreException(stringBuilder.toString(), e);
-        } catch (UnsupportedEncodingException e) {
-            StringBuilder stringBuilder = new StringBuilder(
-                    "Error persisting community credentials. Unsupported encoding.");
-            stringBuilder.append(" gateway - ").append(gatewayId);
-            stringBuilder.append(" token id - ").append(credential.getToken());
-
-            log.error(stringBuilder.toString(), e);
-
-            throw new CredentialStoreException(stringBuilder.toString(), e);
-        } catch (IOException e) {
-            StringBuilder stringBuilder = new StringBuilder(
-                    "Error persisting community credentials. Error serializing " + "credentials.");
-            stringBuilder.append(" gateway - ").append(gatewayId);
-            stringBuilder.append(" community user name - ").append(credential.getToken());
 
             log.error(stringBuilder.toString(), e);
 
@@ -168,22 +188,6 @@ public class CredentialsDAO extends ParentDAO {
             log.error(stringBuilder.toString(), e);
 
             throw new CredentialStoreException(stringBuilder.toString(), e);
-        } catch (UnsupportedEncodingException e) {
-            StringBuilder stringBuilder = new StringBuilder("Error updating credentials. Invalid encoding for keys.");
-            stringBuilder.append(" gateway - ").append(gatewayId);
-            stringBuilder.append(" token id - ").append(credential.getToken());
-
-            log.error(stringBuilder.toString(), e);
-
-            throw new CredentialStoreException(stringBuilder.toString(), e);
-        } catch (IOException e) {
-            StringBuilder stringBuilder = new StringBuilder("Error updating credentials. Error serializing objects.");
-            stringBuilder.append(" gateway - ").append(gatewayId);
-            stringBuilder.append(" token - ").append(credential.getToken());
-
-            log.error(stringBuilder.toString(), e);
-
-            throw new CredentialStoreException(stringBuilder.toString(), e);
         } finally {
 
             DBUtil.cleanup(preparedStatement);
@@ -232,24 +236,6 @@ public class CredentialsDAO extends ParentDAO {
             StringBuilder stringBuilder = new StringBuilder("Error retrieving credentials for community user.");
             stringBuilder.append("gateway - ").append(gatewayName);
             stringBuilder.append("token id - ").append(tokenId);
-
-            log.debug(stringBuilder.toString(), e);
-
-            throw new CredentialStoreException(stringBuilder.toString(), e);
-        } catch (ClassNotFoundException e) {
-            StringBuilder stringBuilder = new StringBuilder("Error retrieving credentials for community user. Error "
-                    + "de-serializing credential objects.");
-            stringBuilder.append("gateway - ").append(gatewayName);
-            stringBuilder.append("token id - ").append(tokenId);
-
-            log.debug(stringBuilder.toString(), e);
-
-            throw new CredentialStoreException(stringBuilder.toString(), e);
-        } catch (IOException e) {
-            StringBuilder stringBuilder = new StringBuilder("Error retrieving credentials for community user. Error "
-                    + "de-serializing credential objects. An IO Error.");
-            stringBuilder.append("gateway - ").append(gatewayName);
-            stringBuilder.append("tokenId - ").append(tokenId);
 
             log.debug(stringBuilder.toString(), e);
 
@@ -306,20 +292,6 @@ public class CredentialsDAO extends ParentDAO {
             log.debug(stringBuilder.toString(), e);
 
             throw new CredentialStoreException(stringBuilder.toString(), e);
-        } catch (ClassNotFoundException e) {
-            StringBuilder stringBuilder = new StringBuilder("Error retrieving credential list for ");
-            stringBuilder.append("gateway - ").append(gatewayName);
-            stringBuilder.append("Error de-serializing objects.");
-            log.debug(stringBuilder.toString(), e);
-
-            throw new CredentialStoreException(stringBuilder.toString(), e);
-        } catch (IOException e) {
-            StringBuilder stringBuilder = new StringBuilder("Error retrieving credential list for ");
-            stringBuilder.append("gateway - ").append(gatewayName);
-            stringBuilder.append("Error de-serializing objects.");
-            log.debug(stringBuilder.toString(), e);
-
-            throw new CredentialStoreException(stringBuilder.toString(), e);
         } finally {
             DBUtil.cleanup(preparedStatement, resultSet);
         }
@@ -327,18 +299,39 @@ public class CredentialsDAO extends ParentDAO {
         return credentialList;
     }
 
-    public static Object convertByteArrayToObject(byte[] data) throws IOException, ClassNotFoundException {
-        ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(data));
+    public Object convertByteArrayToObject(byte[] data) throws CredentialStoreException {
+        ObjectInputStream objectInputStream = null;
         Object o = null;
         try {
-            o = objectInputStream.readObject();
+            try {
+                //decrypt the data first
+                if (encrypt()) {
+                    data = SecurityUtil.decrypt(this.keyStorePath, this.secretKeyAlias, this.keyStorePasswordCallback, data);
+                }
+
+                objectInputStream = new ObjectInputStream(new ByteArrayInputStream(data));
+                o = objectInputStream.readObject();
+
+            } catch (IOException e) {
+                throw new CredentialStoreException("Error de-serializing object.", e);
+            } catch (ClassNotFoundException e) {
+                throw new CredentialStoreException("Error de-serializing object.", e);
+            } catch (GeneralSecurityException e) {
+                throw new CredentialStoreException("Error decrypting data.", e);
+            }
         } finally {
-            objectInputStream.close();
+            if (objectInputStream != null) {
+                try {
+                    objectInputStream.close();
+                } catch (IOException e) {
+                    log.error("Error occurred while closing the stream", e);
+                }
+            }
         }
         return o;
     }
 
-    public static byte[] convertObjectToByteArray(Serializable o) throws IOException {
+    public byte[] convertObjectToByteArray(Serializable o) throws CredentialStoreException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
         ObjectOutputStream objectOutputStream = null;
@@ -346,13 +339,40 @@ public class CredentialsDAO extends ParentDAO {
             objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
             objectOutputStream.writeObject(o);
             objectOutputStream.flush();
+        } catch (IOException e) {
+            throw new CredentialStoreException("Error serializing object.", e);
         } finally {
             if (objectOutputStream != null) {
-                objectOutputStream.close();
+                try {
+                    objectOutputStream.close();
+                } catch (IOException e) {
+                    log.error("Error occurred while closing object output stream", e);
+                }
             }
         }
 
-        return byteArrayOutputStream.toByteArray();
+        // encrypt the byte array
+        if (encrypt()) {
+            byte[] array = byteArrayOutputStream.toByteArray();
+            try {
+                return SecurityUtil.encrypt(this.keyStorePath, this.secretKeyAlias, this.keyStorePasswordCallback, array);
+            } catch (GeneralSecurityException e) {
+                throw new CredentialStoreException("Error encrypting data", e);
+            } catch (IOException e) {
+                throw new CredentialStoreException("Error encrypting data. IO exception.", e);
+            }
+        } else {
+            return byteArrayOutputStream.toByteArray();
+        }
+    }
+
+    /**
+     * Says whether to encrypt data or not. if alias, keystore is set
+     * we treat encryption true.
+     * @return true if data should encrypt else false.
+     */
+    private boolean encrypt() {
+        return this.keyStorePath != null;
     }
 
 }
