@@ -25,9 +25,11 @@ import junit.framework.Assert;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.DatabaseTestCases;
 import org.apache.airavata.common.utils.DerbyUtil;
+import org.apache.airavata.common.utils.KeyStorePasswordCallback;
 import org.apache.airavata.credential.store.credential.CommunityUser;
 import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;
+import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -36,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
+import java.net.URL;
 import java.security.*;
 import java.security.cert.X509Certificate;
 import java.sql.Connection;
@@ -198,12 +200,14 @@ public class CredentialsDAOTest extends DatabaseTestCases {
     }
 
     @Test
-    public void testSerialization() throws IOException, ClassNotFoundException {
+    public void testSerialization() throws CredentialStoreException {
 
         CertificateCredential certificateCredential = getTestCredentialObject();
 
-        byte[] array = CredentialsDAO.convertObjectToByteArray(certificateCredential);
-        CertificateCredential readCertificateCredential = (CertificateCredential) CredentialsDAO
+        CredentialsDAO credentialsDAO1 = new CredentialsDAO();
+
+        byte[] array = credentialsDAO1.convertObjectToByteArray(certificateCredential);
+        CertificateCredential readCertificateCredential = (CertificateCredential) credentialsDAO1
                 .convertByteArrayToObject(array);
 
         checkEquality(certificateCredential.getCertificates(), readCertificateCredential.getCertificates());
@@ -228,6 +232,64 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         Assert.assertEquals(privateKey.getFormat(), newKey.getFormat());
         Assert.assertEquals(privateKey.getAlgorithm(), newKey.getAlgorithm());
         Assert.assertTrue(Arrays.equals(privateKey.getEncoded(), newKey.getEncoded()));
+    }
+
+    @Test
+    public void testSerializationWithEncryption() throws CredentialStoreException {
+
+        URL url = this.getClass().getClassLoader().getResource("mykeystore.jks");
+        String secretKeyAlias = "mykey";
+
+        assert url != null;
+
+        CertificateCredential certificateCredential = getTestCredentialObject();
+
+        CredentialsDAO credentialsDAO1 = new CredentialsDAO(url.getPath(), secretKeyAlias,
+                new TestACSKeyStoreCallback());
+
+        byte[] array = credentialsDAO1.convertObjectToByteArray(certificateCredential);
+        CertificateCredential readCertificateCredential = (CertificateCredential) credentialsDAO1
+                .convertByteArrayToObject(array);
+
+        checkEquality(certificateCredential.getCertificates(), readCertificateCredential.getCertificates());
+        Assert.assertEquals(certificateCredential.getCertificateRequestedTime(),
+                readCertificateCredential.getCertificateRequestedTime());
+        Assert.assertEquals(certificateCredential.getCommunityUser().getGatewayName(), readCertificateCredential
+                .getCommunityUser().getGatewayName());
+        Assert.assertEquals(certificateCredential.getCommunityUser().getUserEmail(), readCertificateCredential
+                .getCommunityUser().getUserEmail());
+        Assert.assertEquals(certificateCredential.getCommunityUser().getUserName(), readCertificateCredential
+                .getCommunityUser().getUserName());
+        Assert.assertEquals(certificateCredential.getLifeTime(), readCertificateCredential.getLifeTime());
+        Assert.assertEquals(certificateCredential.getNotAfter(), readCertificateCredential.getNotAfter());
+        Assert.assertEquals(certificateCredential.getNotBefore(), readCertificateCredential.getNotBefore());
+        Assert.assertEquals(certificateCredential.getPortalUserName(), readCertificateCredential.getPortalUserName());
+
+        PrivateKey newKey = readCertificateCredential.getPrivateKey();
+
+        Assert.assertNotNull(newKey);
+        Assert.assertEquals(privateKey.getClass(), newKey.getClass());
+
+        Assert.assertEquals(privateKey.getFormat(), newKey.getFormat());
+        Assert.assertEquals(privateKey.getAlgorithm(), newKey.getAlgorithm());
+        Assert.assertTrue(Arrays.equals(privateKey.getEncoded(), newKey.getEncoded()));
+    }
+
+    private class TestACSKeyStoreCallback implements KeyStorePasswordCallback {
+
+        @Override
+        public char[] getStorePassword() {
+            return "airavata".toCharArray();
+        }
+
+        @Override
+        public char[] getSecretKeyPassPhrase(String keyAlias) {
+            if (keyAlias.equals("mykey")) {
+                return "airavatasecretkey".toCharArray();
+            }
+
+            return null;
+        }
     }
 
     private void checkEquality(X509Certificate[] certificates1, X509Certificate[] certificates2) {
