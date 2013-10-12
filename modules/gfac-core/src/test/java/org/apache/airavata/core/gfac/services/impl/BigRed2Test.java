@@ -54,11 +54,18 @@ public class BigRed2Test {
 
     private static final String hostAddress = "bigred2";
     private static final String hostName = "bigred2.uits.iu.edu";
-    private static final String userName = "lginnali";
-    private static final String password = "";
+    private static  String userName = "lginnali";
+    private static  String password = "";
 
     @Before
     public void setUp() throws Exception {
+
+        if(System.getProperty("bigred2.password") == null || System.getProperty("bigred2.username") == null){
+            System.out.println("set the bigred2 password/username in maven command : mvn clean install -Dbigred2.username=xxx -Dbigred2.password=yyy");
+            throw new Exception("Wrong inputs given");
+        }
+        userName = System.getProperty("bigred2.username");
+        password = System.getProperty("bigred2.password");
         URL resource = GramProviderTest.class.getClassLoader().getResource("gfac-config.xml");
         assert resource != null;
         System.out.println(resource.getFile());
@@ -76,9 +83,10 @@ public class BigRed2Test {
         /*
         * Host
         */
-        HostDescription host = new HostDescription(GsisshHostType.type);
+        HostDescription host = new HostDescription(SSHHostType.type);
         host.getType().setHostAddress(hostAddress);
         host.getType().setHostName(hostName);
+        ((SSHHostType)host.getType()).setHpcResource(true);
         /*
         * App
         */

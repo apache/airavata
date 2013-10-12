@@ -33,7 +33,7 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.JobSubmissionFault;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
-import org.apache.airavata.gfac.notification.events.GramJobIDEvent;
+import org.apache.airavata.gfac.notification.events.JobIDEvent;
 import org.apache.airavata.gfac.notification.events.StartExecutionEvent;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
@@ -191,7 +191,7 @@ public class GramProvider implements GFacProvider {
                 applicationSaved=true;
                 String jobStatusMessage = "Un-submitted JobID= " + job.getIDAsString();
                 log.info(jobStatusMessage);
-                jobExecutionContext.getNotifier().publish(new GramJobIDEvent(jobStatusMessage));
+                jobExecutionContext.getNotifier().publish(new JobIDEvent(jobStatusMessage));
 
                 log.info("JobID = " + job.getIDAsString());
 
@@ -226,7 +226,7 @@ public class GramProvider implements GFacProvider {
 
                 jobStatusMessage = "Submitted JobID= " + job.getIDAsString();
                 log.info(jobStatusMessage);
-                jobExecutionContext.getNotifier().publish(new GramJobIDEvent(jobStatusMessage));
+                jobExecutionContext.getNotifier().publish(new JobIDEvent(jobStatusMessage));
 
             } catch (GSSException e) {
                 // Renew credentials and re-submit
@@ -258,7 +258,7 @@ public class GramProvider implements GFacProvider {
 
             String jobStatusMessage = "Un-submitted JobID= " + job.getIDAsString();
             log.info(jobStatusMessage);
-            jobExecutionContext.getNotifier().publish(new GramJobIDEvent(jobStatusMessage));
+            jobExecutionContext.getNotifier().publish(new JobIDEvent(jobStatusMessage));
 
         }
 

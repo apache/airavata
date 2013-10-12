@@ -22,41 +22,50 @@
 package org.apache.airavata.gfac.provider;
 
 import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GFacProviderException extends Exception {
+    private static final Logger log = LoggerFactory.getLogger(GFacProviderException.class);
+
     private String aditionalInfo[] = null;
 
     public GFacProviderException(String message) {
         super(message);
+        log.error(message);
     }
 
     public GFacProviderException(String message, Throwable cause) {
         super(message, cause);
+        log.error(message);
     }
 
-    public GFacProviderException(String message, Throwable cause,JobExecutionContext context) {
+    public GFacProviderException(String message, Throwable cause, JobExecutionContext context) {
         super(message, cause);
-        sendFaultNotification(message,context,new Exception(cause));
+        sendFaultNotification(message, context, new Exception(cause));
+        log.error(message);
     }
 
     public GFacProviderException(String message, JobExecutionContext context) {
         super(message);
-        sendFaultNotification(message,context,new Exception(message));
+        sendFaultNotification(message, context, new Exception(message));
+        log.error(message);
     }
 
-    public GFacProviderException(String message, JobExecutionContext context,Exception e,String... additionExceptiondata) {
+    public GFacProviderException(String message, JobExecutionContext context, Exception e, String... additionExceptiondata) {
         super(message);
         this.aditionalInfo = additionExceptiondata;
-        sendFaultNotification(message,context,e, additionExceptiondata);
+        sendFaultNotification(message, context, e, additionExceptiondata);
+        log.error(message);
     }
 
     private void sendFaultNotification(String message,
-			JobExecutionContext executionContext, Exception e,
-			String... additionalExceptiondata) {
-		if (additionalExceptiondata==null || additionalExceptiondata.length==0){
-        	additionalExceptiondata=new String[]{message,e.getLocalizedMessage()};
+                                       JobExecutionContext executionContext, Exception e,
+                                       String... additionalExceptiondata) {
+        if (additionalExceptiondata == null || additionalExceptiondata.length == 0) {
+            additionalExceptiondata = new String[]{message, e.getLocalizedMessage()};
         }
-	}
+    }
 
     public String[] getAditionalInfo() {
         return aditionalInfo;
