@@ -27,13 +27,18 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
+import org.apache.airavata.gfac.notification.events.JobIDEvent;
 import org.apache.airavata.gfac.notification.events.StartExecutionEvent;
+import org.apache.airavata.gfac.notification.listeners.GSISSHJobSubmissionListener;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
+import org.apache.airavata.gsi.ssh.impl.DefaultJobSubmissionListener;
+import org.apache.airavata.gsi.ssh.impl.JobStatus;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
+import org.apache.airavata.gsi.ssh.listener.JobSubmissionListener;
 import org.apache.airavata.schemas.gfac.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,8 +57,9 @@ public class GSISSHProvider implements GFacProvider {
     }
 
     public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
+        log.info("Invoking GSISSH Provider Invoke ...");
         jobExecutionContext.getNotifier().publish(new StartExecutionEvent());
-        GsisshHostType host = (GsisshHostType) jobExecutionContext.getApplicationContext().
+        HostDescriptionType host = jobExecutionContext.getApplicationContext().
                 getHostDescription().getType();
         HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) jobExecutionContext.getApplicationContext().
                 getApplicationDeploymentDescription().getType();
@@ -76,10 +82,10 @@ public class GSISSHProvider implements GFacProvider {
             jobDescriptor.setProcessesPerNode(app.getProcessorsPerNode());
             jobDescriptor.setMaxWallTime(String.valueOf(app.getMaxWallTime()));
             jobDescriptor.setJobSubmitter(app.getJobSubmitterCommand());
-            if (app.getProjectAccount() != null) {
+            if (app.getProjectAccount().getProjectAccountNumber() != null) {
                 jobDescriptor.setAcountString(app.getProjectAccount().getProjectAccountNumber());
             }
-            if (app.getQueue() != null) {
+            if (app.getQueue().getQueueName() != null) {
                 jobDescriptor.setQueueName(app.getQueue().getQueueName());
             }
             jobDescriptor.setOwner(((PBSCluster) cluster).getServerInfo().getUserName());
@@ -108,8 +114,64 @@ public class GSISSHProvider implements GFacProvider {
             }
             jobDescriptor.setInputValues(inputValues);
 
-            System.out.println(jobDescriptor.toXML());
-            cluster.submitBatchJob(jobDescriptor);
+            log.info(jobDescriptor.toXML());
+            String jobID = cluster.submitBatchJob(jobDescriptor);
+            log.info("Job Submitted successfully and returned Job ID: " + jobID);
+            jobExecutionContext.getNotifier().publish(new JobIDEvent(jobID));
+
+            JobSubmissionListener listener = new GSISSHJobSubmissionListener(jobExecutionContext);
+            try {
+//            // Wait 5 seconds to start the first poll, this is hard coded, user doesn't have
+//            // to configure this.
+//            Thread.sleep(5000);
+//        } catch (InterruptedException e) {
+//            log.error("Error during job status monitoring");
+//            throw new SSHApiException("Error during job status monitoring", e);
+//        }
+//        // Get the job status first
+//        try {
+////
+////            Thread t = new Thread() {
+////                @Override
+////                public void run() {
+////                    try {
+                // p
+                JobStatus jobStatus = cluster.getJobStatus(jobID);
+                listener.statusChanged(jobStatus);
+                while (true) {
+                    while (!jobStatus.equals(JobStatus.C)) {
+                        if (!jobStatus.equals(listener.getJobStatus().toString())) {
+                            listener.setJobStatus(jobStatus);
+                            listener.statusChanged(jobStatus);
+                        }
+                        Thread.sleep(60000);
+
+                        jobStatus = cluster.getJobStatus(jobID);
+                    }
+                    //Set the job status to Complete
+                    listener.setJobStatus(JobStatus.C);
+                    listener.statusChanged(jobStatus);
+                    break;
+                }
+//                    } catch (InterruptedException e) {
+//                        log.error("Error listening to the submitted job", e);
+//                    } catch (SSHApiException e) {
+//                        log.error("Error listening to the submitted job", e);
+//                    }
+//                }
+//            };
+                //  This thread runs until the program termination, so that use can provide
+//            // any action in onChange method of the listener, without worrying for waiting in the caller thread.
+                //t.setDaemon(true);
+//            t.start();
+            } catch (Exception e) {
+                String error = "Error during job status monitoring";
+                log.error(error);
+                throw new GFacProviderException(error, e);
+            }
+            while (!listener.isJobDone()) {
+                Thread.sleep(10000);
+            }
         } catch (SSHApiException e) {
             String error = "Error submitting the job to host " + host.getHostAddress() + e.getMessage();
             log.error(error);

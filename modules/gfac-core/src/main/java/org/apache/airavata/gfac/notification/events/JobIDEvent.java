@@ -21,12 +21,12 @@
 
 package org.apache.airavata.gfac.notification.events;
 
-public class GramJobIDEvent extends GFacEvent {
+public class JobIDEvent extends GFacEvent {
 	String statusMessage;
 
-	public GramJobIDEvent(String message) {
+	public JobIDEvent(String message) {
 		statusMessage = message;
-		this.eventType = GramJobIDEvent.class.getSimpleName();
+		this.eventType = JobIDEvent.class.getSimpleName();
 	}
 
 	public String getStatusMessage() {

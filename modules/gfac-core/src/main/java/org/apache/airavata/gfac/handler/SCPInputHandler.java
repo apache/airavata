@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import com.sun.tools.javac.util.Paths;
 import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 
 import org.apache.airavata.common.utils.StringUtil;
@@ -82,14 +83,14 @@ public class SCPInputHandler implements GFacHandler{
         SSHSecurityContext securityContext = (SSHSecurityContext)context.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT);
         Cluster pbsCluster = securityContext.getPbsCluster();
         ApplicationDeploymentDescriptionType app = context.getApplicationContext().getApplicationDeploymentDescription().getType();
-        String remoteFile = app.getInputDataDirectory() + File.separatorChar + paramValue;
-
+        int i = paramValue.lastIndexOf(File.separator);
+        String substring = paramValue.substring(i + 1);
         try {
-            return pbsCluster.scpTo(app.getInputDataDirectory(), remoteFile);
+            String targetFile = app.getInputDataDirectory()+ File.separator + substring;
+            pbsCluster.scpTo(targetFile, paramValue);
+            return targetFile;
         } catch (SSHApiException e) {
             throw new GFacHandlerException("Error while input File Staging", context, e, e.getLocalizedMessage());
-        } finally {
-            return null;
         }
     }
 

@@ -63,78 +63,80 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  * Execute application using remote SSH
  */
 public class SSHProvider implements GFacProvider {
-	private static final Logger log = LoggerFactory.getLogger(SSHProvider.class);
-	private SSHSecurityContext securityContext;
-	private String jobID=null;
+    private static final Logger log = LoggerFactory.getLogger(SSHProvider.class);
+    private SSHSecurityContext securityContext;
+    private String jobID = null;
 
-	public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException,GFacException {
-        if(!((SSHHostType)jobExecutionContext.getApplicationContext().getHostDescription()).getHpcResource()){
-		jobID="SSH_"+jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress()+"_"+Calendar.getInstance().getTimeInMillis();
-		
-		securityContext = (SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT);
-		ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
-		String remoteFile = app.getStaticWorkingDirectory() + File.separatorChar + Constants.EXECUTABLE_NAME;
-		saveApplicationJob(jobExecutionContext, remoteFile);
-		log.info(remoteFile);
-		try {
-			File runscript = createShellScript(jobExecutionContext);
-			SCPFileTransfer fileTransfer = securityContext.getSSHClient().newSCPFileTransfer();
-			GFacUtils.updateApplicationJobStatus(jobExecutionContext, jobID, ApplicationJobStatus.STAGING);
-			fileTransfer.upload(runscript.getAbsolutePath(), remoteFile);
-		} catch (IOException e) {
-			throw new GFacProviderException(e.getLocalizedMessage(), e);
-		}
+    public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
+        if (!((SSHHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType()).getHpcResource()) {
+            jobID = "SSH_" + jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress() + "_" + Calendar.getInstance().getTimeInMillis();
+
+            securityContext = (SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT);
+            ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
+            String remoteFile = app.getStaticWorkingDirectory() + File.separatorChar + Constants.EXECUTABLE_NAME;
+            saveApplicationJob(jobExecutionContext, remoteFile);
+            log.info(remoteFile);
+            try {
+                File runscript = createShellScript(jobExecutionContext);
+                SCPFileTransfer fileTransfer = securityContext.getSSHClient().newSCPFileTransfer();
+                GFacUtils.updateApplicationJobStatus(jobExecutionContext, jobID, ApplicationJobStatus.STAGING);
+                fileTransfer.upload(runscript.getAbsolutePath(), remoteFile);
+            } catch (IOException e) {
+                throw new GFacProviderException(e.getLocalizedMessage(), e);
+            }
         }
-	}
+    }
 
-	private void saveApplicationJob(JobExecutionContext jobExecutionContext, String executableName) {
-		ApplicationJob job = GFacUtils.createApplicationJob(jobExecutionContext);
-		job.setJobId(jobID);
-		job.setStatus(ApplicationJobStatus.INITIALIZE);
-		job.setSubmittedTime(Calendar.getInstance().getTime());
-		job.setStatusUpdateTime(job.getSubmittedTime());
-		job.setJobData(executableName);
-		GFacUtils.recordApplicationJob(jobExecutionContext, job);
-	}
+    private void saveApplicationJob(JobExecutionContext jobExecutionContext, String executableName) {
+        ApplicationJob job = GFacUtils.createApplicationJob(jobExecutionContext);
+        job.setJobId(jobID);
+        job.setStatus(ApplicationJobStatus.INITIALIZE);
+        job.setSubmittedTime(Calendar.getInstance().getTime());
+        job.setStatusUpdateTime(job.getSubmittedTime());
+        job.setJobData(executableName);
+        GFacUtils.recordApplicationJob(jobExecutionContext, job);
+    }
 
-	public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
-        if(((SSHHostType)jobExecutionContext.getApplicationContext().getHostDescription()).getHpcResource()){
-		ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
-		Session session = null;
-		try {
-			session = securityContext.getSession(jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress());
-			/*
-			 * Execute
-			 */
-			String execuable = app.getStaticWorkingDirectory() + File.separatorChar + Constants.EXECUTABLE_NAME;
-			GFacUtils.updateApplicationJobStatus(jobExecutionContext, jobID, ApplicationJobStatus.SUBMITTED);
-			Command cmd = session.exec("/bin/chmod 755 " + execuable + "; " + execuable);
-			GFacUtils.updateApplicationJobStatus(jobExecutionContext, jobID, ApplicationJobStatus.RESULTS_RETRIEVE);
-			log.info("stdout=" + GFacUtils.readFromStream(session.getInputStream()));
-			cmd.join(Constants.COMMAND_EXECUTION_TIMEOUT, TimeUnit.SECONDS);
+    public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+        if (!((SSHHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType()).getHpcResource()) {
+            ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
+            Session session = null;
+            try {
+                session = securityContext.getSession(jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress());
+                /*
+                 * Execute
+                 */
+                String execuable = app.getStaticWorkingDirectory() + File.separatorChar + Constants.EXECUTABLE_NAME;
+                GFacUtils.updateApplicationJobStatus(jobExecutionContext, jobID, ApplicationJobStatus.SUBMITTED);
+                Command cmd = session.exec("/bin/chmod 755 " + execuable + "; " + execuable);
+                GFacUtils.updateApplicationJobStatus(jobExecutionContext, jobID, ApplicationJobStatus.RESULTS_RETRIEVE);
+                log.info("stdout=" + GFacUtils.readFromStream(session.getInputStream()));
+                cmd.join(Constants.COMMAND_EXECUTION_TIMEOUT, TimeUnit.SECONDS);
 
-			/*
-			 * check return value. usually not very helpful to draw conclusions
-			 * based on return values so don't bother. just provide warning in
-			 * the log messages
-			 */
-			if (cmd.getExitStatus() != 0) {
-				log.error("Process finished with non zero return value. Process may have failed");
-			} else {
-				log.info("Process finished with return value of zero.");
-			}
-			
-			GFacUtils.updateApplicationJobStatus(jobExecutionContext, jobID, ApplicationJobStatus.FINISHED);
-		} catch (ConnectionException e) {
-			throw new GFacProviderException(e.getMessage(), e);
-		} catch (TransportException e) {
-			throw new GFacProviderException(e.getMessage(), e);
-		} catch (IOException e) {
-			throw new GFacProviderException(e.getMessage(), e);
-		}finally{
-			securityContext.closeSession(session);
-		}
-        }else {
+                /*
+                 * check return value. usually not very helpful to draw conclusions
+                 * based on return values so don't bother. just provide warning in
+                 * the log messages
+                 */
+                if (cmd.getExitStatus() != 0) {
+                    log.error("Process finished with non zero return value. Process may have failed");
+                } else {
+                    log.info("Process finished with return value of zero.");
+                }
+
+                GFacUtils.updateApplicationJobStatus(jobExecutionContext, jobID, ApplicationJobStatus.FINISHED);
+            } catch (ConnectionException e) {
+                throw new GFacProviderException(e.getMessage(), e);
+            } catch (TransportException e) {
+                throw new GFacProviderException(e.getMessage(), e);
+            } catch (IOException e) {
+                throw new GFacProviderException(e.getMessage(), e);
+            } finally {
+                if (securityContext != null) {
+                    securityContext.closeSession(session);
+                }
+            }
+        } else {
             GSISSHProvider gsisshProvider = new GSISSHProvider();
             try {
                 gsisshProvider.execute(jobExecutionContext);
@@ -143,10 +145,10 @@ public class SSHProvider implements GFacProvider {
             }
         }
 
-	}
+    }
 
-	public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
-	}
+    public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+    }
 
     @Override
     public void cancelJob(String jobId, JobExecutionContext jobExecutionContext) throws GFacException {
@@ -155,80 +157,81 @@ public class SSHProvider implements GFacProvider {
 
 
     private File createShellScript(JobExecutionContext context) throws IOException {
-		ApplicationDeploymentDescriptionType app = context.getApplicationContext()
-				.getApplicationDeploymentDescription().getType();
-		String uniqueDir = app.getApplicationName().getStringValue() + System.currentTimeMillis()
-				+ new Random().nextLong();
+        ApplicationDeploymentDescriptionType app = context.getApplicationContext()
+                .getApplicationDeploymentDescription().getType();
+        String uniqueDir = app.getApplicationName().getStringValue() + System.currentTimeMillis()
+                + new Random().nextLong();
 
-		File shellScript = File.createTempFile(uniqueDir, "sh");
-		OutputStream out = new FileOutputStream(shellScript);
+        File shellScript = File.createTempFile(uniqueDir, "sh");
+        OutputStream out = new FileOutputStream(shellScript);
 
-		out.write("#!/bin/bash\n".getBytes());
-		out.write(("cd " + app.getStaticWorkingDirectory() + "\n").getBytes());
-		out.write(("export " + Constants.INPUT_DATA_DIR_VAR_NAME + "=" + app.getInputDataDirectory() + "\n").getBytes());
-		out.write(("export " + Constants.OUTPUT_DATA_DIR_VAR_NAME + "=" + app.getOutputDataDirectory() + "\n")
-				.getBytes());
-		// get the env of the host and the application
-		NameValuePairType[] env = app.getApplicationEnvironmentArray();
+        out.write("#!/bin/bash\n".getBytes());
+        out.write(("cd " + app.getStaticWorkingDirectory() + "\n").getBytes());
+        out.write(("export " + Constants.INPUT_DATA_DIR_VAR_NAME + "=" + app.getInputDataDirectory() + "\n").getBytes());
+        out.write(("export " + Constants.OUTPUT_DATA_DIR_VAR_NAME + "=" + app.getOutputDataDirectory() + "\n")
+                .getBytes());
+        // get the env of the host and the application
+        NameValuePairType[] env = app.getApplicationEnvironmentArray();
 
-		Map<String, String> nv = new HashMap<String, String>();
-		if (env != null) {
-			for (int i = 0; i < env.length; i++) {
-				String key = env[i].getName();
-				String value = env[i].getValue();
-				nv.put(key, value);
-			}
-		}
-		for (Entry<String, String> entry : nv.entrySet()) {
-			log.debug("Env[" + entry.getKey() + "] = " + entry.getValue());
-			out.write(("export " + entry.getKey() + "=" + entry.getValue() + "\n").getBytes());
+        Map<String, String> nv = new HashMap<String, String>();
+        if (env != null) {
+            for (int i = 0; i < env.length; i++) {
+                String key = env[i].getName();
+                String value = env[i].getValue();
+                nv.put(key, value);
+            }
+        }
+        for (Entry<String, String> entry : nv.entrySet()) {
+            log.debug("Env[" + entry.getKey() + "] = " + entry.getValue());
+            out.write(("export " + entry.getKey() + "=" + entry.getValue() + "\n").getBytes());
 
-		}
+        }
 
-		// prepare the command
-		final String SPACE = " ";
-		StringBuffer cmd = new StringBuffer();
-		cmd.append(app.getExecutableLocation());
-		cmd.append(SPACE);
+        // prepare the command
+        final String SPACE = " ";
+        StringBuffer cmd = new StringBuffer();
+        cmd.append(app.getExecutableLocation());
+        cmd.append(SPACE);
 
-		MessageContext input = context.getInMessageContext();
-		;
-		Map<String, Object> inputs = input.getParameters();
-		Set<String> keys = inputs.keySet();
-		for (String paramName : keys) {
-			ActualParameter actualParameter = (ActualParameter) inputs.get(paramName);
-			if ("URIArray".equals(actualParameter.getType().getType().toString())) {
-				String[] values = ((URIArrayType) actualParameter.getType()).getValueArray();
-				for (String value : values) {
-					cmd.append(value);
-					cmd.append(SPACE);
-				}
-			} else {
-				String paramValue = MappingFactory.toString(actualParameter);
-				cmd.append(paramValue);
-				cmd.append(SPACE);
-			}
-		}
-		// We redirect the error and stdout to remote files, they will be read
-		// in later
-		cmd.append(SPACE);
-		cmd.append("1>");
-		cmd.append(SPACE);
-		cmd.append(app.getStandardOutput());
-		cmd.append(SPACE);
-		cmd.append("2>");
-		cmd.append(SPACE);
-		cmd.append(app.getStandardError());
+        MessageContext input = context.getInMessageContext();
+        ;
+        Map<String, Object> inputs = input.getParameters();
+        Set<String> keys = inputs.keySet();
+        for (String paramName : keys) {
+            ActualParameter actualParameter = (ActualParameter) inputs.get(paramName);
+            if ("URIArray".equals(actualParameter.getType().getType().toString())) {
+                String[] values = ((URIArrayType) actualParameter.getType()).getValueArray();
+                for (String value : values) {
+                    cmd.append(value);
+                    cmd.append(SPACE);
+                }
+            } else {
+                String paramValue = MappingFactory.toString(actualParameter);
+                cmd.append(paramValue);
+                cmd.append(SPACE);
+            }
+        }
+        // We redirect the error and stdout to remote files, they will be read
+        // in later
+        cmd.append(SPACE);
+        cmd.append("1>");
+        cmd.append(SPACE);
+        cmd.append(app.getStandardOutput());
+        cmd.append(SPACE);
+        cmd.append("2>");
+        cmd.append(SPACE);
+        cmd.append(app.getStandardError());
 
-		String cmdStr = cmd.toString();
-		log.info("Command = " + cmdStr);
-		out.write((cmdStr + "\n").getBytes());
-		String message = "\"execuationSuceeded\"";
-		out.write(("echo " + message + "\n").getBytes());
-		out.close();
+        String cmdStr = cmd.toString();
+        log.info("Command = " + cmdStr);
+        out.write((cmdStr + "\n").getBytes());
+        String message = "\"execuationSuceeded\"";
+        out.write(("echo " + message + "\n").getBytes());
+        out.close();
 
-		return shellScript;
-	}
+        return shellScript;
+    }
+
     public void initProperties(Map<String, String> properties) throws GFacProviderException, GFacException {
 
     }
