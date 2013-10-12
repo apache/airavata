@@ -622,6 +622,26 @@
             <artifactId>cors-filter</artifactId>
             <version>${ebay.cors.filter}</version>
         </dependency>
+	<dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>gsissh</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>0.1.50</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.illinois.ncsa</groupId>
+            <artifactId>bcgss</artifactId>
+            <version>146</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xmlbeans</groupId>
+            <artifactId>xmlbeans</artifactId>
+            <version>${xmlbeans.version}</version>
+        </dependency>
     </dependencies>
 
 
