@@ -304,8 +304,6 @@ public class EmbeddedGFacInvoker implements Invoker {
             JobExecutionContext jobExecutionContext = new JobExecutionContext(gFacConfiguration, serviceName);
             //Here we get only the contextheader information sent specific for this node
             //Add security context
-            addSecurityContext(registeredHost, configurationProperties, jobExecutionContext,
-                    configuration.getContextHeader());
 
             jobExecutionContext.setContextHeader(WorkflowContextHeaderBuilder.removeOtherSchedulingConfig(nodeID, configuration.getContextHeader()));
 
@@ -326,6 +324,8 @@ public class EmbeddedGFacInvoker implements Invoker {
             jobExecutionContext.setOutMessageContext(getOutParameters(serviceDescription));
             jobExecutionContext.setInMessageContext(new MessageContext(actualParameters));
 
+            addSecurityContext(registeredHost, configurationProperties, jobExecutionContext,
+                    configuration.getContextHeader());
             GFacAPI gfacAPI1 = new GFacAPI();
             gfacAPI1.submitJob(jobExecutionContext);
 
@@ -432,7 +432,7 @@ public class EmbeddedGFacInvoker implements Invoker {
                 GSIAuthenticationInfo authenticationInfo
                         = new MyProxyAuthenticationInfo(requestData.getMyProxyUserName(), requestData.getMyProxyPassword(), requestData.getMyProxyServerUrl(),
                         requestData.getMyProxyPort(), requestData.getMyProxyLifeTime(), System.getProperty(Constants.TRUSTED_CERTIFICATE_SYSTEM_PROPERTY));
-                ServerInfo serverInfo = new ServerInfo(configurationProperties.getProperty("gsissh.user"), registeredHost.getType().getHostName());
+                ServerInfo serverInfo = new ServerInfo(configurationProperties.getProperty("gsissh.user"), registeredHost.getType().getHostAddress());
 
                 Cluster pbsCluster = null;
                 try {
@@ -459,6 +459,7 @@ public class EmbeddedGFacInvoker implements Invoker {
             String sshPrivateKeyPass = configurationProperties.getProperty(Constants.SSH_PRIVATE_KEY_PASS);
             String sshPassword = configurationProperties.getProperty(Constants.SSH_PASSWORD);
             String sshPublicKey = configurationProperties.getProperty(Constants.SSH_PUBLIC_KEY);
+            SSHSecurityContext sshSecurityContext = new SSHSecurityContext();
             if (((SSHHostType) registeredHost.getType()).getHpcResource()) {
                 AuthenticationInfo authenticationInfo = null;
                 if(sshPassword != null){
@@ -466,27 +467,24 @@ public class EmbeddedGFacInvoker implements Invoker {
                 }else{
                     authenticationInfo = new DefaultPublicKeyFileAuthentication(sshPublicKey, sshPrivateKey,sshPrivateKeyPass);
                 }
-                ServerInfo serverInfo = new ServerInfo(sshUserName, registeredHost.getType().getHostName());
+                ServerInfo serverInfo = new ServerInfo(sshUserName, registeredHost.getType().getHostAddress());
 
                 Cluster pbsCluster = null;
                 try {
                     pbsCluster = new PBSCluster(serverInfo, authenticationInfo,
-                            (((HpcApplicationDeploymentType) jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription()).getInstalledParentPath()));
+                            (((HpcApplicationDeploymentType) jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath()));
                 } catch (SSHApiException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
-
-
-                SSHSecurityContext sshSecurityContext = new SSHSecurityContext();
                 sshSecurityContext.setPbsCluster(pbsCluster);
                 sshSecurityContext.setUsername(sshUserName);
             } else {
-                SSHSecurityContext context = new SSHSecurityContext();
-                context.setUsername(sshUserName);
-                context.setPrivateKeyLoc(sshPrivateKey);
-                context.setKeyPass(sshPrivateKeyPass);
-                jobExecutionContext.addSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT, context);
+                 sshSecurityContext = new SSHSecurityContext();
+                sshSecurityContext.setUsername(sshUserName);
+                sshSecurityContext.setPrivateKeyLoc(sshPrivateKey);
+                sshSecurityContext.setKeyPass(sshPrivateKeyPass);
             }
+            jobExecutionContext.addSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT, sshSecurityContext);
 
         }
     }
