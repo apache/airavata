@@ -622,11 +622,11 @@
             <artifactId>cors-filter</artifactId>
             <version>${ebay.cors.filter}</version>
         </dependency>
-	<dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>gsissh</artifactId>
-            <version>0.1-SNAPSHOT</version>
-        </dependency>
+		<dependency>
+			<groupId>org.apache.airavata</groupId>
+	    		<artifactId>gsissh</artifactId>
+	    		<version>${project.version}</version>
+		</dependency>
         <dependency>
             <groupId>com.jcraft</groupId>
             <artifactId>jsch</artifactId>
