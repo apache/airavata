@@ -75,7 +75,7 @@ public class GridFTPInputHandler implements GFacHandler {
             }
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new GFacHandlerException("Error while input File Staging", jobExecutionContext, e, e.getLocalizedMessage());
+            throw new GFacHandlerException("Error while input File Staging", e, e.getLocalizedMessage());
         }
         jobExecutionContext.setInMessageContext(inputNew);
     }

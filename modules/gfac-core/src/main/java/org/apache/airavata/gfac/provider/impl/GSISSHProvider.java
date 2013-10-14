@@ -26,6 +26,7 @@ import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
+import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
 import org.apache.airavata.gfac.notification.events.JobIDEvent;
 import org.apache.airavata.gfac.notification.events.StartExecutionEvent;
@@ -64,8 +65,17 @@ public class GSISSHProvider implements GFacProvider {
         HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) jobExecutionContext.getApplicationContext().
                 getApplicationDeploymentDescription().getType();
         try {
-            SSHSecurityContext securityContext = (SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT);
-            Cluster cluster = securityContext.getPbsCluster();
+            Cluster cluster = null;
+            if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) != null) {
+                cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
+            }else{
+                cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
+            }
+            if(cluster == null){
+                throw new GFacProviderException("Security context is not set properly");
+            }else{
+                log.info("Successfully retrieved the Security Context");
+            }
             // This installed path is a mandetory field, because this could change based on the computing resource
             JobDescriptor jobDescriptor = new JobDescriptor();
             jobDescriptor.setWorkingDirectory(app.getScratchWorkingDirectory());

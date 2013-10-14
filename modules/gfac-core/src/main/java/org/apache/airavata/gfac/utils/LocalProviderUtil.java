@@ -31,12 +31,12 @@ import java.io.File;
 public class LocalProviderUtil {
     private static final Logger log = LoggerFactory.getLogger(LocalProviderUtil.class);
 
-    private void makeFileSystemDir(String dir, JobExecutionContext jobExecutionContext) throws GFacProviderException {
+    private void makeFileSystemDir(String dir) throws GFacProviderException {
         File f = new File(dir);
         if (f.isDirectory() && f.exists()) {
             return;
         } else if (!new File(dir).mkdir()) {
-            throw new GFacProviderException("Cannot make directory " + dir, jobExecutionContext);
+            throw new GFacProviderException("Cannot make directory " + dir);
         }
     }
 
@@ -45,10 +45,10 @@ public class LocalProviderUtil {
                 getApplicationContext().getApplicationDeploymentDescription().getType();
         log.info("working diectroy = " + app.getStaticWorkingDirectory());
         log.info("temp directory = " + app.getScratchWorkingDirectory());
-        makeFileSystemDir(app.getStaticWorkingDirectory(), jobExecutionContext);
-        makeFileSystemDir(app.getScratchWorkingDirectory(), jobExecutionContext);
-        makeFileSystemDir(app.getInputDataDirectory(), jobExecutionContext);
-        makeFileSystemDir(app.getOutputDataDirectory(), jobExecutionContext);
+        makeFileSystemDir(app.getStaticWorkingDirectory());
+        makeFileSystemDir(app.getScratchWorkingDirectory());
+        makeFileSystemDir(app.getInputDataDirectory());
+        makeFileSystemDir(app.getOutputDataDirectory());
     }
 
 }

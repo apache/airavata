@@ -111,15 +111,15 @@ public class EC2Provider implements GFacProvider {
 //        job
         /* Validation */
         if (amazonSecurityContext.getAccessKey() == null || amazonSecurityContext.getAccessKey().isEmpty())
-            throw new GFacProviderException("EC2 Access Key is empty", jobExecutionContext);
+            throw new GFacProviderException("EC2 Access Key is empty");
         if (amazonSecurityContext.getSecretKey() == null || amazonSecurityContext.getSecretKey().isEmpty())
-            throw new GFacProviderException("EC2 Secret Key is empty", jobExecutionContext);
+            throw new GFacProviderException("EC2 Secret Key is empty");
         if ((amazonSecurityContext.getAmiId() == null && amazonSecurityContext.getInstanceId() == null) ||
                 (amazonSecurityContext.getAmiId() != null && amazonSecurityContext.getAmiId().isEmpty()) ||
                 (amazonSecurityContext.getInstanceId() != null && amazonSecurityContext.getInstanceId().isEmpty()))
-            throw new GFacProviderException("EC2 AMI or Instance ID is empty", jobExecutionContext);
+            throw new GFacProviderException("EC2 AMI or Instance ID is empty");
         if (amazonSecurityContext.getUserName() == null || amazonSecurityContext.getUserName().isEmpty())
-            throw new GFacProviderException("EC2 Username is empty", jobExecutionContext);
+            throw new GFacProviderException("EC2 Username is empty");
 
         /* Need to start EC2 instance before running it */
         AWSCredentials credential =
@@ -166,7 +166,7 @@ public class EC2Provider implements GFacProvider {
                 outParamName = outputParametersArray[0].getParameterName();
             } else {
                 throw new GFacProviderException("Output parameter name is not set. Therefore, not being able " +
-                        "to filter the job result from standard out ", jobExecutionContext);
+                        "to filter the job result from standard out ");
             }
 
             sshClient.connect(properties, new HostKeyVerification() {
@@ -187,10 +187,10 @@ public class EC2Provider implements GFacProvider {
             // Authenticate
             int result = sshClient.authenticate(publicKeyAuth);
             if(result== AuthenticationProtocolState.FAILED) {
-                throw new GFacProviderException("The authentication failed", jobExecutionContext);
+                throw new GFacProviderException("The authentication failed");
             } else if(result==AuthenticationProtocolState.PARTIAL) {
                 throw new GFacProviderException("The authentication succeeded but another"
-                        + "authentication is required", jobExecutionContext);
+                        + "authentication is required");
             } else if(result==AuthenticationProtocolState.COMPLETE) {
                 log.info("ssh client authentication is complete...");
             }
@@ -246,7 +246,6 @@ public class EC2Provider implements GFacProvider {
         // Do nothing
     }
 
-    @Override
     public void cancelJob(String jobId, JobExecutionContext jobExecutionContext) throws GFacException {
         throw new NotImplementedException();
     }
@@ -368,7 +367,7 @@ public class EC2Provider implements GFacProvider {
                     this.instance.getInstanceId() + " is running with public name " + this.instance.getPublicDnsName()));
 
         } catch (Exception e) {
-            throw new GFacProviderException("Invalid Request",e,jobExecutionContext);
+            throw new GFacProviderException("Invalid Request",e);
         }
 
     }

@@ -41,7 +41,7 @@ public class JobSubmissionFault extends GFacProviderException{
 
     public JobSubmissionFault(Throwable cause, String submitHost, String contact, String rsl,
                               JobExecutionContext jobExecutionContext, String reason, int errorCode) {
-        super(cause.getMessage(), cause,jobExecutionContext);
+        super(cause.getMessage(), cause);
 
         this.host = submitHost;
         this.contact = contact;

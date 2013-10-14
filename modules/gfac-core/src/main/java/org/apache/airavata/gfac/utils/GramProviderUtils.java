@@ -45,7 +45,7 @@ public class GramProviderUtils {
             GramJob job = new GramJob(rsl);
             return job;
         } catch (ToolsException te) {
-            throw new GFacProviderException(te.getMessage(), te, jobExecutionContext);
+            throw new GFacProviderException(te.getMessage(), te);
         }
     }
 

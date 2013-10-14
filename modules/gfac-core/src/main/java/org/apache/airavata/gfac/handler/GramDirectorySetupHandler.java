@@ -107,17 +107,17 @@ public class GramDirectorySetupHandler implements GFacHandler {
                     success = true;
                     break;
                 } catch (URISyntaxException e) {
-                    pe = new GFacHandlerException("URI is malformatted:" + e.getMessage(), e, jobExecutionContext);
+                    pe = new GFacHandlerException("URI is malformatted:" + e.getMessage(), e);
 
                 } catch (ToolsException e) {
-                    pe = new GFacHandlerException(e.getMessage(), e, jobExecutionContext);
+                    pe = new GFacHandlerException(e.getMessage(), e);
                 }
             }
             if (success == false) {
                 throw pe;
             }
         } catch (SecurityException e) {
-            throw new GFacHandlerException(e.getMessage(), e, jobExecutionContext);
+            throw new GFacHandlerException(e.getMessage(), e);
         }
     }
 

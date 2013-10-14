@@ -23,35 +23,35 @@ package org.apache.airavata.gfac.handler;
 
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class GFacHandlerException extends GFacException{
-    public GFacHandlerException(String s) {
-        super(s,new Throwable(s));
+public class GFacHandlerException extends GFacException {
+    private static final Logger log = LoggerFactory.getLogger(GFacHandlerException.class);
+
+    public GFacHandlerException(String message) {
+        super(message, new Throwable(message));
+        sendFaultNotification(message, new Exception(message));
+        log.error(message);
     }
 
     public GFacHandlerException(String s, Throwable throwable) {
         super(s, throwable);
-    }
-        public GFacHandlerException(String message, Throwable cause,JobExecutionContext context) {
-        super(message, cause);
-        sendFaultNotification(message,context,new Exception(cause));
+        sendFaultNotification(s, new Exception(throwable));
+        log.error(s);
     }
 
-    public GFacHandlerException(String message, JobExecutionContext context) {
-        super(message,new Throwable(message));
-        sendFaultNotification(message,context,new Exception(message));
-    }
-
-    public GFacHandlerException(String message, JobExecutionContext context,Exception e,String... additionExceptiondata) {
-        super(message,e);
-        sendFaultNotification(message,context,e, additionExceptiondata);
+    public GFacHandlerException(String message, Exception e, String... additionExceptiondata) {
+        super(message, e);
+        sendFaultNotification(message, e, additionExceptiondata);
+        log.error(message);
     }
 
     private void sendFaultNotification(String message,
-			JobExecutionContext executionContext, Exception e,
-			String... additionalExceptiondata) {
-		if (additionalExceptiondata==null || additionalExceptiondata.length==0){
-        	additionalExceptiondata=new String[]{message,e.getLocalizedMessage()};
+                                        Exception e,
+                                       String... additionalExceptiondata) {
+        if (additionalExceptiondata == null || additionalExceptiondata.length == 0) {
+            additionalExceptiondata = new String[]{message, e.getLocalizedMessage()};
         }
-	}
+    }
 }

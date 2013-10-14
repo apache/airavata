@@ -66,6 +66,8 @@ public class SSHProvider implements GFacProvider {
     private static final Logger log = LoggerFactory.getLogger(SSHProvider.class);
     private SSHSecurityContext securityContext;
     private String jobID = null;
+    // we keep gsisshprovider to support qsub submission incase of hpc scenario with ssh
+    private GSISSHProvider gsiSshProvider = null;
 
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
         if (!((SSHHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType()).getHpcResource()) {
@@ -84,6 +86,8 @@ public class SSHProvider implements GFacProvider {
             } catch (IOException e) {
                 throw new GFacProviderException(e.getLocalizedMessage(), e);
             }
+        }else{
+           gsiSshProvider = new GSISSHProvider();
         }
     }
 
@@ -98,7 +102,7 @@ public class SSHProvider implements GFacProvider {
     }
 
     public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
-        if (!((SSHHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType()).getHpcResource()) {
+        if (gsiSshProvider == null) {
             ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
             Session session = null;
             try {
@@ -137,9 +141,8 @@ public class SSHProvider implements GFacProvider {
                 }
             }
         } else {
-            GSISSHProvider gsisshProvider = new GSISSHProvider();
             try {
-                gsisshProvider.execute(jobExecutionContext);
+                gsiSshProvider.execute(jobExecutionContext);
             } catch (GFacException e) {
                 throw new GFacProviderException(e.getMessage(), e);
             }
@@ -148,9 +151,16 @@ public class SSHProvider implements GFacProvider {
     }
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+        if (gsiSshProvider != null){
+            try {
+                gsiSshProvider.dispose(jobExecutionContext);
+            } catch (GFacException e) {
+                throw new GFacProviderException(e.getMessage(),e);
+            }
+        }
     }
 
-    @Override
+
     public void cancelJob(String jobId, JobExecutionContext jobExecutionContext) throws GFacException {
         throw new NotImplementedException();
     }
@@ -233,7 +243,13 @@ public class SSHProvider implements GFacProvider {
     }
 
     public void initProperties(Map<String, String> properties) throws GFacProviderException, GFacException {
-
+         if (gsiSshProvider != null){
+            try {
+               initProperties(properties);
+            } catch (GFacException e) {
+                throw new GFacProviderException(e.getMessage(),e);
+            }
+        }
     }
 
 }
