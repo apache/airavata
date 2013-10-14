@@ -14,6 +14,7 @@
 
 <servers>
     <server>
+        <type>local</type>
         <name>LocalHost</name>
         <host>127.0.0.1</host>
     </server>
@@ -32,33 +33,59 @@
         <gridftp.endpoint>gsiftp://gridftp-forge.ncsa.xsede.org:2811/</gridftp.endpoint>
     </server>
  	-->
-     <server>
-        <name>lonestar</name>
+    <server>
+        <name>globus-lonestar</name>
+        <type>globus</type>
         <host>lonestar4.tacc.teragrid.org</host>
         <gram.endpoint>gridftp1.ls4.tacc.utexas.edu:2119/jobmanager-sge</gram.endpoint>
         <gridftp.endpoint>gsiftp://gridftp1.ls4.tacc.utexas.edu:2811/</gridftp.endpoint>
     </server>
 
-     <server>
-        <name>stampede</name>
+    <server>
+        <type>globus</type>
+        <name>globus-stampede</name>
         <host>stampede.tacc.utexas.edu</host>
         <gram.endpoint>login5.stampede.tacc.utexas.edu:2119/jobmanager-slurm3</gram.endpoint>
         <gridftp.endpoint>gsiftp://data1.stampede.tacc.utexas.edu:2811/</gridftp.endpoint>
     </server>
 
-     <server>
-        <name>trestles</name>
+    <server>
+        <type>globus</type>
+        <name>globus-trestles</name>
         <host>trestles.sdsc.edu</host>
         <gram.endpoint>trestles-login2.sdsc.edu:2119/jobmanager-pbstest2</gram.endpoint>
         <gridftp.endpoint>gsiftp://trestles-dm1.sdsc.edu:2811/</gridftp.endpoint>
     </server>
-    
-<!--     
-     <server>
-        <name>kraken</name>
-        <host>gsissh.kraken.nics.xsede.org</host>
-        <gram.endpoint>grid.nics.xsede.org:2119/jobmanager-pbs</gram.endpoint>
-        <gridftp.endpoint>gsiftp://gridftp.kraken.nics.xsede.org:2811/</gridftp.endpoint>
-    </server> -->
+    <server>
+        <type>ssh</type>
+        <name>bigred2</name>
+        <host>bigred2.uits.iu.edu</host>
+        <hpc.resource>true</hpc.resource>
+    </server>
+
+  <server>
+        <name>gsissh-lonestar</name>
+        <type>gsissh</type>
+        <host>lonestar4.tacc.teragrid.org</host>
+    </server>
+
+    <server>
+        <type>gsissh</type>
+        <name>gsissh-stampede</name>
+        <host>stampede.tacc.utexas.edu</host>
+    </server>
+
+    <server>
+        <type>gsissh</type>
+        <name>gsissh-trestles</name>
+        <host>trestles.sdsc.edu</host>
+    </server>
+    <!--
+    <server>
+       <name>kraken</name>
+       <host>gsissh.kraken.nics.xsede.org</host>
+       <gram.endpoint>grid.nics.xsede.org:2119/jobmanager-pbs</gram.endpoint>
+       <gridftp.endpoint>gsiftp://gridftp.kraken.nics.xsede.org:2811/</gridftp.endpoint>
+   </server> -->
 
 </servers>

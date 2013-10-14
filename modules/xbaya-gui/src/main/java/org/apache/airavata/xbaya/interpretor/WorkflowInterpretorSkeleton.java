@@ -49,7 +49,9 @@ import org.apache.airavata.common.utils.ServiceUtils;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
+import org.apache.airavata.schemas.gfac.SSHHostType;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
@@ -117,7 +119,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 	protected static final String JCR_REG = "jcr_registry";
 
 	protected WIServiceThread thread;
-    
+
     private AiravataAPI getAiravataAPI(){
         if (airavataAPI==null) {
 			try {
@@ -140,7 +142,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     	}
     	return interactor;
     }
-    
+
     public void startUp(final ConfigurationContext configctx, AxisService service) {
     	AiravataUtils.setExecutionAsServer();
     	new Thread(){
@@ -177,7 +179,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
                             e.printStackTrace();
                         } catch (AiravataAPIInvocationException e) {
 		                    e.printStackTrace();
-		                
+
                         }
                     }else{
 		                provenance = false;
@@ -193,7 +195,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 		            }else{
 		                gfacEmbeddedMode = false;
 		            }
-                     
+
                      //save the interpreter service url in context
                     String localAddress = ServiceUtils.generateServiceURLFromConfigurationContext(configctx,SERVICE_NAME);
  					configctx.setProperty(SERVICE_URL,new URI(localAddress));
@@ -215,7 +217,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     	}.start();
 
     }
-    
+
     public void suspendWorkflow(String experimentId)throws Exception{
     	if (workflowConfigurations.containsKey(experimentId)){
     		if (getInteractor().isExecutionPaused(workflowConfigurations.get(experimentId))){
@@ -228,13 +230,13 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     		throw new Exception("Invalid Experiment id: Experiment "+experimentId+" not running");
     	}
     }
-    
+
     public void resumeWorkflow(String experimentId)throws Exception{
     	if (workflowConfigurations.containsKey(experimentId)){
     		if (getInteractor().isExecutionPaused(workflowConfigurations.get(experimentId)) || workflowConfigurations.get(experimentId).getWorkflow().getExecutionState()==WorkflowExecutionState.STOPPED){
     			log.info("Resuming workflow execution "+experimentId+"...");
     			getInteractor().resumeExecution(workflowConfigurations.get(experimentId));
-    			
+
     		}else{
     			throw new Exception("Experiment '"+experimentId+"' is not suspended!!!");
     		}
@@ -243,7 +245,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     		throw new Exception("Invalid Experiment id: Experiment "+experimentId+" not running");
     	}
     }
-    
+
     public void haltWorkflow(String experimentId)throws Exception{
     	if (workflowConfigurations.containsKey(experimentId)){
 			log.info("Terminating workflow execution "+experimentId+"...");
@@ -252,7 +254,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     		throw new Exception("Invalid Experiment id: Experiment "+experimentId+" not running");
     	}
     }
-    
+
     /**
      *
      * @param workflowAsString
@@ -347,7 +349,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     	Map<String, String> configuration = new HashMap<String, String>();
     	configuration.put(BROKER, getAiravataAPI().getAiravataManager().getEventingServiceURL().toASCIIString());
         configuration.put(MSGBOX, getAiravataAPI().getAiravataManager().getMessageBoxServiceURL().toASCIIString());
-        
+
     	return setupAndLaunch(workflowAsString, experimentId, gatewayId, username, inputData.toArray(new NameValue[]{}), configuration, inNewThread, builder);
     }
     private String setupAndLaunch(String workflowAsString, String topic, String gatewayId, String username,
@@ -413,7 +415,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 
         final WorkflowInterpretorEventListener finalListener = listener;
         conf.setAiravataAPI(getAiravataAPI());
-       
+
         final WorkflowInterpreter finalInterpreter = interpreter;
 //        interpreter.setActOnProvenance(provenance);
         interpreter.setProvenanceWriter(runner);
@@ -528,15 +530,24 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         StAXOMBuilder builder = new StAXOMBuilder(reader);
         OMElement documentElement = builder.getDocumentElement();
         Iterator<?> server = documentElement.getChildrenWithName(new QName("server"));
+        HostDescription hostDescription = new HostDescription();
         while (server.hasNext()) {
             OMElement next = (OMElement) server.next();
-            HostDescription hostDescription;
-            if (next.getFirstChildWithName(new QName("gram.endpoint")) != null) {
-                hostDescription = new HostDescription(GlobusHostType.type);
+            if (next.getFirstChildWithName(new QName("gram.endpoint")) != null &&
+                    "globus".equals(next.getFirstChildWithName(new QName("type")).getText())) {
+                hostDescription.getType().changeType(GlobusHostType.type);
                 ((GlobusHostType) hostDescription.getType()).addGlobusGateKeeperEndPoint(next.getFirstChildWithName(new QName("gram.endpoint")).getText());
                 ((GlobusHostType) hostDescription.getType()).addGridFTPEndPoint(next.getFirstChildWithName(new QName("gridftp.endpoint")).getText());
-            } else {
-                hostDescription = new HostDescription(HostDescriptionType.type);
+            } else if("ssh".equals(next.getFirstChildWithName(new QName("type")).getText())) {
+                hostDescription.getType().changeType(SSHHostType.type);
+                if(next.getFirstChildWithName(new QName("hpc.resource")) != null){
+                    if("true".equals(next.getFirstChildWithName(new QName("gram.endpoint")))){
+                        ((SSHHostType) hostDescription.getType()).setHpcResource(true);
+                    }
+                }
+                ((SSHHostType) hostDescription.getType()).setHpcResource(false);
+            } else if("gsissh".equals(next.getFirstChildWithName(new QName("type")).getText())) {
+                hostDescription.getType().changeType(GsisshHostType.type);
             }
             (hostDescription.getType()).setHostName(next.getFirstChildWithName(new QName("name")).getText());
             (hostDescription.getType()).setHostAddress(next.getFirstChildWithName(new QName("host")).getText());
