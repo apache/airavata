@@ -1,0 +1,14 @@
+CA_NAME             NICS MyProxy Certificate Authority
+HOMEPAGE            http://www.nics.tennessee.edu/ca
+CONTACT             security@nics.tennessee.edu
+HASH                dc75341f
+SIGNED_BY           /DC=EDU/DC=TENNESSEE/DC=NICS/O=National Institute for COmputational Sciences/CN=MyProxy
+SUBJECT             /DC=EDU/DC=TENNESSEE/DC=NICS/O=National Institute for Computational Sciences/CN=MyProxy
+MAY_SIGN            /DC=EDU/DC=TENNESSEE/DC=NICS/O=National Institute for Computational Sciences/CN=*
+CERTIFICATE_MD5     2F:11:B0:B7:F0:78:1F:9C:22:92:35:71:F9:20:E6:E6
+CERTIFICATE_SHA1    86:60:78:60:20:7A:EF:B7:A1:21:9C:91:B2:75:26:32:8B:05:70:4D
+CERTIFICATE_URL     http://www.nics.tennessee.edu/sites/www.nics.tennessee.edu/files/dc75341f.0
+SIGNING_POLICY_URL  http://www.nics.tennessee.edu/sites/www.nics.tennessee.edu/files/dc75341f.signing_policy
+CRL_URL             http://www.nics.tennessee.edu/sites/www.nics.tennessee.edu/files/dc75341f.r0
+# CERT_BEGINS       2011-05-26 21:23:59 UTC
+CERT_EXPIRES        2031-05-26 21:23:59 UTC

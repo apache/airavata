@@ -1,0 +1,14 @@
+#!/bin/bash
+# Grid Engine batch job script built by Globus job manager
+
+#$ -S /bin/bash
+#$ -V
+#$ -pe 1way 32
+#$ -m n
+#$ -q normal
+#$ -A
+#$ -l h_rt=0:60:00
+#$ -o application.stdout
+#$ -e application.stderr
+#PBS -N GSI_SSH_SLEEP_JOB
+/bin/sleep 60

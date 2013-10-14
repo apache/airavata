@@ -1,0 +1,4 @@
+# DigiCert Grid CA-1 Signing Policy
+access_id_CA		X509	'/DC=com/DC=DigiCert-Grid/O=DigiCert Grid/CN=DigiCert Grid CA-1'
+pos_rights		globus	CA:sign
+cond_subjects		globus	'"/DC=com/DC=DigiCert-Grid/*" "/DC=com/DC=DigiCertGrid/*" "/C=US/O=DigiCert Grid/*"'

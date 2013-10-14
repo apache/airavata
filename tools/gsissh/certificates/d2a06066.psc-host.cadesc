@@ -1,0 +1,15 @@
+CA_NAME             PSC Hosts Certificate Authority
+HOMEPAGE            http://www.psc.edu/ca/
+CONTACT             ca-admin@psc.edu
+HASH                acc06fda
+SIGNED_BY           /C=US/O=Pittsburgh Supercomputing Center/CN=PSC Root CA
+SUBJECT             /C=US/O=Pittsburgh Supercomputing Center/CN=PSC Hosts CA
+MAY_SIGN            /C=US/O=Pittsburgh Supercomputing Center/OU=PSC Hosts CA/*
+CERTIFICATE_MD5     C7:76:67:51:73:EE:F3:13:FA:12:DA:CB:95:CC:2E:C1
+CERTIFICATE_SHA1    6C:CD:19:F1:36:B8:49:01:C4:E4:3B:0B:56:44:9D:58:4B:89:14:88
+CERTIFICATE_URL     http://www.psc.edu/ca/cert/acc06fda.0
+SIGNING_POLICY_URL  http://www.psc.edu/ca/cert/acc06fda.signing_policy
+CRL_URL             http://www.psc.edu/ca/crl/acc06fda.r0
+# CERT_BEGINS         Thu 2006-08-17 16:47:28 UTC
+CERT_EXPIRES        Thu 2016-03-17 05:00:00 UTC
+

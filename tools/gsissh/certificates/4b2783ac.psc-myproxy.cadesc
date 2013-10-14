@@ -1,0 +1,15 @@
+CA_NAME             PSC MyProxy Certificate Authority
+HOMEPAGE            http://www.psc.edu/ca/
+CONTACT             ca-admin@psc.edu
+HASH                4b2783ac
+SIGNED_BY           /C=US/O=Pittsburgh Supercomputing Center/CN=PSC MyProxy CA
+SUBJECT             /C=US/O=Pittsburgh Supercomputing Center/CN=PSC MyProxy CA
+MAY_SIGN            /C=US/O=Pittsburgh Supercomputing Center/CN=*
+CERTIFICATE_MD5     21:F7:B4:30:26:C7:49:5E:F3:56:61:D4:73:A3:32:A1
+CERTIFICATE_SHA1    F8:13:D4:7B:44:9C:4A:83:CF:E3:A5:59:37:5C:9F:F7:FA:0A:1D:66
+CERTIFICATE_URL     http://www.psc.edu/ca/cert/4b2783ac.0
+SIGNING_POLICY_URL  http://www.psc.edu/ca/cert/4b2783ac.signing_policy
+CRL_URL             http://www.psc.edu/ca/crl/4b2783ac.r0
+# CERT_BEGINS         Wed 2010-04-07 15:14:12 UTC
+CERT_EXPIRES        Thu 2016-03-17 05:00:00 UTC
+
