@@ -15,12 +15,18 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<!-- the version of maven's project object model -->
 
+	<parent>
+		<groupId>org.apache.airavata</groupId>
+		<artifactId>airavata</artifactId>
+		<version>0.10-SNAPSHOT</version>
+		<relativePath>../../pom.xml</relativePath>
+	</parent>
+
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.apache.airavata</groupId>
 	<artifactId>gsissh</artifactId>
-	<name>Airavata GSISSH</name>
-	<version>0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<name>GSISSH Library</name>
+	<description>The core function of the library is to do GSISSH intractions.</description>
+	<url>http://airavata.apache.org/</url>
 
 	<prerequisites>
 		<maven>3.0</maven>
@@ -45,18 +51,15 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>${org.slf4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>${log4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.testng</groupId>
@@ -93,7 +96,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
@@ -102,12 +104,12 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>${surefire.version}</version>
 				<configuration>
-					<!--systemPropertyVariables> <credential.module.directory>${basedir}</credential.module.directory> 
-						</systemPropertyVariables> <excludes> <exclude>**/DAOBaseTestCase.java</exclude> 
-						<exclude>**/MappingDAOTest.java</exclude> </excludes -->
-					<testSourceDirectory>${basedir}\src\test\java\</testSourceDirectory>
+				 <excludes>
+                        <exclude>**/ssh/**</exclude>
+                    </excludes>
+                    <forkMode>always</forkMode>
+                    <failIfNoTests>false</failIfNoTests>		
 				</configuration>
 			</plugin>
 			<plugin>
