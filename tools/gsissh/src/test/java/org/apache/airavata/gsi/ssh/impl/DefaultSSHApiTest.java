@@ -39,13 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-/**
- * User: AmilaJ (amilaj@apache.org)
- * Date: 8/15/13
- * Time: 10:54 AM
- */
-
-
 public class DefaultSSHApiTest {
     private static final Logger log = LoggerFactory.getLogger(PBSCluster.class);
     private String myProxyUserName;

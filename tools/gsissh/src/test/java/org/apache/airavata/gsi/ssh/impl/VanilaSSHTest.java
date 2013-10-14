@@ -37,12 +37,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * User: AmilaJ (amilaj@apache.org)
- * Date: 9/20/13
- * Time: 12:05 PM
- */
-
 public class VanilaSSHTest {
 
     private String userName;

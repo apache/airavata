@@ -24,12 +24,6 @@ package org.apache.airavata.gsi.ssh.config;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-/**
- * User: AmilaJ (amilaj@apache.org)
- * Date: 8/14/13
- * Time: 3:07 PM
- */
-
 public class ConfigReaderTest {
 
     @Test

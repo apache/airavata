@@ -31,7 +31,8 @@
             </activation>
             <modules>
                 <module>phoebus-integration</module>
-		        <module>registry-tool</module>
+		<module>registry-tool</module>
+		<module>gsissh</module>
         </modules>
         </profile>
     </profiles>
