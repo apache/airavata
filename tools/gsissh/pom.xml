@@ -25,7 +25,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>gsissh</artifactId>
 	<name>GSISSH Library</name>
-	<description>The core function of the library is to do GSISSH intractions.</description>
+	<description>The core function of the library is to do GSISSH interactions.</description>
 	<url>http://airavata.apache.org/</url>
 
 	<prerequisites>
