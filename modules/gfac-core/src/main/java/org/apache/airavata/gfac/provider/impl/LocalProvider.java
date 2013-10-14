@@ -170,9 +170,9 @@ public class LocalProvider implements GFacProvider {
             log.info(buf.toString());
 
         } catch (IOException io) {
-            throw new GFacProviderException(io.getMessage(), io,jobExecutionContext);
+            throw new GFacProviderException(io.getMessage(), io);
         } catch (InterruptedException e) {
-            throw new GFacProviderException(e.getMessage(), e, jobExecutionContext);
+            throw new GFacProviderException(e.getMessage(), e);
         }
     }
 
@@ -206,11 +206,11 @@ public class LocalProvider implements GFacProvider {
 			Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
             OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
         } catch (XmlException e) {
-            throw new GFacProviderException("Cannot read output:" + e.getMessage(), e, jobExecutionContext);
+            throw new GFacProviderException("Cannot read output:" + e.getMessage(), e);
         } catch (IOException io) {
-            throw new GFacProviderException(io.getMessage(), io, jobExecutionContext);
+            throw new GFacProviderException(io.getMessage(), io);
         } catch (Exception e){
-        	throw new GFacProviderException("Error in retrieving results",e,jobExecutionContext);
+        	throw new GFacProviderException("Error in retrieving results",e);
         }
     }
 

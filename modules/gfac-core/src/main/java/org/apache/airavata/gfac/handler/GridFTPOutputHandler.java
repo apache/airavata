@@ -190,15 +190,15 @@ public class GridFTPOutputHandler implements GFacHandler {
                     }
                 } catch (ToolsException e) {
                     log.error(e.getMessage());
-                    throw new GFacHandlerException(e.getMessage(), jobExecutionContext, e, readLastLinesofStdOut(localStdErrFile.getPath(), 20));
+                    throw new GFacHandlerException(e.getMessage(), e, readLastLinesofStdOut(localStdErrFile.getPath(), 20));
                 } catch (URISyntaxException e) {
                     log.error(e.getMessage());
-                    throw new GFacHandlerException("URI is malformatted:" + e.getMessage(), jobExecutionContext, e, readLastLinesofStdOut(localStdErrFile.getPath(), 20));
+                    throw new GFacHandlerException("URI is malformatted:" + e.getMessage(), e, readLastLinesofStdOut(localStdErrFile.getPath(), 20));
                 }
             }
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new GFacHandlerException(e.getMessage(), jobExecutionContext, e, readLastLinesofStdOut(localStdErrFile.getPath(), 20));
+            throw new GFacHandlerException(e.getMessage(), e, readLastLinesofStdOut(localStdErrFile.getPath(), 20));
         }
 
     }
@@ -287,10 +287,10 @@ public class GridFTPOutputHandler implements GFacHandler {
                 }
             } catch (URISyntaxException e) {
                 log.error(e.getMessage());
-                throw new GFacProviderException(e.getMessage(), e, jobExecutionContext);
+                throw new GFacProviderException(e.getMessage(), e);
             } catch (ToolsException e) {
                 log.error(e.getMessage());
-                throw new GFacProviderException(e.getMessage(), e, jobExecutionContext);
+                throw new GFacProviderException(e.getMessage(), e);
             }
             outputNew.getParameters().put(paramName, actualParameter);
         }

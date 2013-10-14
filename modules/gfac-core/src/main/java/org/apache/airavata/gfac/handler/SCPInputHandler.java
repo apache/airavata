@@ -74,7 +74,7 @@ public class SCPInputHandler implements GFacHandler{
 	            }
 	        } catch (Exception e) {
 	            log.error(e.getMessage());
-	            throw new GFacHandlerException("Error while input File Staging", jobExecutionContext, e, e.getLocalizedMessage());
+	            throw new GFacHandlerException("Error while input File Staging", e, e.getLocalizedMessage());
 	        }
 	        jobExecutionContext.setInMessageContext(inputNew);
 	}
@@ -90,7 +90,7 @@ public class SCPInputHandler implements GFacHandler{
             pbsCluster.scpTo(targetFile, paramValue);
             return targetFile;
         } catch (SSHApiException e) {
-            throw new GFacHandlerException("Error while input File Staging", context, e, e.getLocalizedMessage());
+            throw new GFacHandlerException("Error while input File Staging", e, e.getLocalizedMessage());
         }
     }
 

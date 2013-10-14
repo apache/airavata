@@ -32,35 +32,27 @@ public class GFacProviderException extends Exception {
 
     public GFacProviderException(String message) {
         super(message);
+        sendFaultNotification(message, new Exception(message));
         log.error(message);
     }
+
 
     public GFacProviderException(String message, Throwable cause) {
         super(message, cause);
+        sendFaultNotification(message, new Exception(cause));
         log.error(message);
     }
 
-    public GFacProviderException(String message, Throwable cause, JobExecutionContext context) {
-        super(message, cause);
-        sendFaultNotification(message, context, new Exception(cause));
-        log.error(message);
-    }
 
-    public GFacProviderException(String message, JobExecutionContext context) {
-        super(message);
-        sendFaultNotification(message, context, new Exception(message));
-        log.error(message);
-    }
-
-    public GFacProviderException(String message, JobExecutionContext context, Exception e, String... additionExceptiondata) {
+    public GFacProviderException(String message, Exception e, String... additionExceptiondata) {
         super(message);
         this.aditionalInfo = additionExceptiondata;
-        sendFaultNotification(message, context, e, additionExceptiondata);
+        sendFaultNotification(message, e, additionExceptiondata);
         log.error(message);
     }
 
     private void sendFaultNotification(String message,
-                                       JobExecutionContext executionContext, Exception e,
+                                       Exception e,
                                        String... additionalExceptiondata) {
         if (additionalExceptiondata == null || additionalExceptiondata.length == 0) {
             additionalExceptiondata = new String[]{message, e.getLocalizedMessage()};

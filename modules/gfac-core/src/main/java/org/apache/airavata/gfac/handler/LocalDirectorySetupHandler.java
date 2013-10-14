@@ -52,7 +52,7 @@ public class LocalDirectorySetupHandler implements GFacHandler{
            if (f.isDirectory() && f.exists()) {
                return;
            } else if (!new File(dir).mkdir()) {
-               throw new GFacHandlerException("Cannot make directory "+dir, jobExecutionContext);
+               throw new GFacHandlerException("Cannot make directory "+dir);
            }
     }
 
