@@ -1,0 +1,8 @@
+alias = cilogon-silver
+url = http://ca.cilogon.org/
+ca_url = https://cilogon.org/cilogon-silver.pem
+crl_url = http://crl.cilogon.org/cilogon-silver.crl;http://crl.doegrids.org/cilogon-silver.crl
+email = ca@cilogon.org
+status = accredited:mics
+version = 1.44
+sha1fp.0 = 39:1C:E0:48:9A:BB:B1:0A:DA:DF:DD:A6:7C:C2:96:87:1A:83:6F:92

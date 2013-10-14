@@ -1,0 +1,78 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+[ Verify new PSC CA, April 2010 (mccreary) ]
+
+New CA cert tarball obtained on 23Apr2010 vi email from
+Derek Simmel <dsimmel@psc.edu>.  A good PGP signature for this tar file was
+sent in the same email message, using a PGP key I have signed myself.  The
+signature was made with this key:
+
+pub   1024D/F2882606 2004-01-12
+      Key fingerprint = EC23 8D42 69B3 3EBB 9850  F972 8575 CF80 F288 2606
+uid                  Derek Simmel <dsimmel@psc.edu>
+sub   2048g/DB7D9741 2004-01-12
+
+This key has been signed by my own key:
+
+pub   1024D/6851EF26 2006-05-03 [expire: 2011-05-02]
+      Key fingerprint = F9E7 8D30 2833 70A8 611A  42C2 6231 1FE3 6851 EF26
+uid                  Sean McCreary <mccreary@ucar.edu>
+sub   2048g/BD594BA4 2006-05-03 [expire: 2011-05-02]
+
+Extracted the following files from the tar file:
+9b88e95b.0
+9b88e95b.crl_url
+9b88e95b.psc-root.cadesc
+9b88e95b.signing_policy
+acc06fda.0
+acc06fda.crl_url
+acc06fda.psc-host.cadesc
+acc06fda.signing_policy
+4b2783ac.0
+4b2783ac.crl_url
+4b2783ac.psc-myproxy.cadesc
+4b2783ac.signing_policy
+4b2783ac.info
+4b2783ac.namespaces
+
+Note that the *.crl_url files refer to the DER-format revocation lists.  We
+require PEM-format revocation lists, so I have included the alternate URLs
+for these files (i.e. I replaced http://foo/bar/XXXXXXXX.crl with 
+http://foo/bar/XXXXXXXX.r0 in each file).
+
+9b88e95b already exists in the tarball.  I've verified that the CA cert is
+identical with the following differences in the signing_policy file:
+
+openssl x509 -subject -fingerprint -sha1 -noout -in 9b88e95b.0
+subject= /C=US/O=Pittsburgh Supercomputing Center/CN=PSC Root CA
+SHA1 Fingerprint=76:14:59:94:16:2B:E2:05:C9:16:3F:85:8E:7C:70:EE:B9:DD:84:50
+MD5 Fingerprint=A4:DC:F4:AB:62:B1:6B:8C:90:78:03:94:A6:8E:B9:5A
+
+$ diff 9b88e95b.signing_policy ../certificates-/9b88e95b.signing_policy 
+3c3
+<  cond_subjects     globus       '"/C=US/O=Pittsburgh Supercomputing Center/*"'
+- - ---
+>  cond_subjects     globus       '"/C=US/O=Pittsburgh Supercomputing Center/CN=PSC Root CA" "/C=US/O=Pittsburgh Supercomputing Center/CN=PSC Hosts CA" "/C=US/O=Pittsburgh Supercomputing Center/CN=PSC Web Services CA"'
+
+acc06fda also already exists in the tarball.  I've verified that the CA cert
+and signing_policy files are identical.
+
+openssl x509 -subject -fingerprint -sha1 -noout -in acc06fda.0 
+subject= /C=US/O=Pittsburgh Supercomputing Center/CN=PSC Hosts CA
+SHA1 Fingerprint=6C:CD:19:F1:36:B8:49:01:C4:E4:3B:0B:56:44:9D:58:4B:89:14:88
+MD5 Fingerprint=C7:76:67:51:73:EE:F3:13:FA:12:DA:CB:95:CC:2E:C1
+
+4b2783ac is a new addition to the tarball:
+
+openssl x509 -subject -fingerprint -sha1 -noout -in 4b2783ac.0 
+subject= /C=US/O=Pittsburgh Supercomputing Center/CN=PSC MyProxy CA
+SHA1 Fingerprint=F8:13:D4:7B:44:9C:4A:83:CF:E3:A5:59:37:5C:9F:F7:FA:0A:1D:66
+MD5 Fingerprint=21:F7:B4:30:26:C7:49:5E:F3:56:61:D4:73:A3:32:A1
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.9 (Darwin)
+
+iEYEARECAAYFAkvYfeQACgkQYjEf42hR7yaXOgCeM7u14ay4UI7Q5SJfnNCmsp4i
+K+UAn2Hr9KB3ZZ+2HtOVQN/wWGgAkuSL
+=BVSC
+-----END PGP SIGNATURE-----

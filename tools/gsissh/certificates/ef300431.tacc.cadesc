@@ -1,0 +1,18 @@
+# $Id: 684261aa.tacc.cadesc,v 1.1 2010/06/29 10:20:34 marg Exp $
+
+CA_NAME             TACC Root Certification Authority
+HOMEPAGE            http://www.tacc.utexas.edu/CA/
+CONTACT             ca@tacc.utexas.edu
+HASH                684261aa
+# SIGNED_BY           self
+SUBJECT             /DC=EDU/DC=UTEXAS/DC=TACC/O=UT-AUSTIN/CN=TACC Root CA 
+MAY_SIGN            /DC=EDU/DC=UTEXAS/DC=TACC/O=UT-AUSTIN/CN=TACC Classic CA
+MAY_SIGN            /DC=EDU/DC=UTEXAS/DC=TACC/O=UT-AUSTIN/CN=TACC MICS CA
+CERTIFICATE_MD5     01:46:1D:D5:80:60:5A:4B:CB:B3:61:AA:A1:3D:6C:42
+CERTIFICATE_SHA1    15:2D:FC:BA:13:11:2C:F5:65:53:AC:94:5F:89:2C:B0:E5:F6:BA:A8 
+CERTIFICATE_URL     http://www.tacc.utexas.edu/CA/684261aa.0
+SIGNING_POLICY_URL  http://www.tacc.utexas.edu/CA/684261aa.signing_policy
+# CERT_BEGINS         Thu 2008-10-02 03:56:02 UTC 
+CERT_EXPIRES        Mon 2018-09-30 03:56:02 UTC
+CRL_URL             http://www.tacc.utexas.edu/CA/684261aa.r0
+

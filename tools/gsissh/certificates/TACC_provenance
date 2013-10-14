@@ -1,0 +1,68 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+[ New TACC certificates, Dec 2008 (mccreary) ]
+
+Obtained these files from Margaret Murray <marg@tacc.utexas.edu> on 29Oct08
+	Encrypted with CAST5 using a shared secret exchanged by telephone
+
+e5cc84c2.signing_policy
+e5cc84c2.crl_url
+e5cc84c2.0
+684261aa.0
+684261aa.crl_url
+684261aa.tacc.cadesc
+
+Updated e5cc84c2.tacc.cadesc obtained from Margaret Murray
+	<marg@tacc.utexas.edu> on 10Dec08
+	Verified changes via telephone conversation
+Updated 684261aa.signing_policy obtained from Margaret Murray
+	<marg@tacc.utexas.edu> on 10Dec08
+	Only change is a typo fix
+
+diff 684261aa.signing_policy.OLD 684261aa.signing_policy 
+4c4
+< cond_subjects         globus  '"/DC=EDU/DC=UTEXAS/DC=TACC/O=UT-AUSTIN/TACC Classic CA"        "/DC=EDU/DC=UTEXAS/DC=TACC/O=UT-AUSTIN/TACC MICS CA"' 
+- - ---
+> cond_subjects         globus  '"/DC=EDU/DC=UTEXAS/DC=TACC/O=UT-AUSTIN/CN=TACC Classic CA"     "/DC=EDU/DC=UTEXAS/DC=TACC/O=UT-AUSTIN/CN=TACC MICS CA"' 
+
+New certs:
+openssl x509 -subject -fingerprint -sha1 -noout -in 684261aa.0 
+subject= /DC=EDU/DC=UTEXAS/DC=TACC/O=UT-AUSTIN/CN=TACC Root CA
+SHA1 Fingerprint=15:2D:FC:BA:13:11:2C:F5:65:53:AC:94:5F:89:2C:B0:E5:F6:BA:A8
+MD5 Fingerprint=01:46:1D:D5:80:60:5A:4B:CB:B3:61:AA:A1:3D:6C:42
+
+openssl x509 -subject -fingerprint -sha1 -noout -in e5cc84c2.0 
+subject= /DC=EDU/DC=UTEXAS/DC=TACC/O=UT-AUSTIN/CN=TACC Classic CA
+SHA1 Fingerprint=5B:AE:F7:20:B1:3A:91:4F:1C:FE:8F:AF:5E:ED:48:DB:62:0E:47:65
+MD5 Fingerprint=EA:31:04:07:7B:0A:04:EC:DD:B1:A2:75:29:39:83:98
+
+[ Updated cadesc files, June 2010 (mccreary) ]
+
+Obtained corrected cadesc files from Margaret Murray <marg@tacc.utexas.edu>
+on 29Jun10.  Included with the updated cadesc files were detached PGP
+signatures of the files:
+
+684261aa.tacc.cadesc.sig
+e5cc84c2.tacc.cadesc.sig
+
+These signatures were generated with the following key:
+
+pub   2048R/7373DBE8 2008-11-08
+      Key fingerprint = 8D4F 371E 8E17 8DA8 8FD4  2DB9 B639 1A0C 7373 DBE8
+uid                  Margaret Murray <marg@tacc.utexas.edu>
+sub   2048R/407CB31E 2008-11-08
+
+This key has been signed by my own key:
+
+pub   1024D/6851EF26 2006-05-03 [expire: 2011-05-02]
+      Key fingerprint = F9E7 8D30 2833 70A8 611A  42C2 6231 1FE3 6851 EF26
+uid                  Sean McCreary <mccreary@ucar.edu>
+sub   2048g/BD594BA4 2006-05-03 [expire: 2011-05-02]
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.9 (Darwin)
+
+iEYEARECAAYFAkwqUBUACgkQYjEf42hR7yZflACg1lV1LTy++UOEeRcvOAFsnEkZ
+zHMAoJ5/pNpdO+12mqZUqa2ol/aWl7HU
+=5wFr
+-----END PGP SIGNATURE-----

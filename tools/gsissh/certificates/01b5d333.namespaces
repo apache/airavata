@@ -1,0 +1,13 @@
+##############################################################################
+#NAMESPACES-VERSION: 1.0
+#
+# @(#)10718cba.namespaces
+# CA alias    : cilogon-silver
+#    subord_of: 
+#    subjectDN: /DC=org/DC=cilogon/C=US/O=CILogon/CN=CILogon Silver CA 1
+#    hash     : 10718cba
+#    (generated automatically from 10718cba.signing_policy)
+#
+TO Issuer "/DC=org/DC=cilogon/C=US/O=CILogon/CN=CILogon Silver CA 1" \
+  PERMIT Subject "/DC=org/DC=cilogon/C=US/.* "
+

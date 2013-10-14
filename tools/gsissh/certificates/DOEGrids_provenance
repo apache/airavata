@@ -1,0 +1,100 @@
+[ removed DOE Grids CA certs 12d0dac8.* 1c3f2ca8.* 2013-01-28 dsimmel ]
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+[ Replacement DOE Grids CRL URL, May 2009 (mccreary) ]
+
+Retrieved from
+<https://pki1.doegrids.org/Other/>
+	DOEGrids.tar
+	DOEGrids.tar.asc
+
+on 01May09. Web server presented certificate w/ subject:
+
+	CN = pki1.doegrids.org
+	OU = hosts
+Serial Num = 42:25
+
+from authority:
+
+	CN = DOEGrids CA 1
+	O  = DOEGrids CA 1
+	OU = Certificate Authorities
+
+Valid from 07May07 until 07May2012
+
+Fingerprints:
+	SHA1	4B:A2:9C:B8:86:8A:87:DD:4A:25:D8:6B:D4:6B:15:11:AB:1D:45:8C
+	MD5	95:53:C1:1C:45:A9:61:36:96:5B:74:60:F1:01:6A:08
+
+Verified untrusted GPG signature:
+dubfwe:~/repo/security/new mccreary$ gpg --verify DOEGrids.tar{.asc,}
+gpg: Signature made Fri Mar 27 13:05:00 2009 MDT using RSA key ID 9995D24A
+gpg: Good signature from "Dhiva <dhiva@es.net>"
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: 209B 63C2 1FC5 35BE 94F7  2C71 5BE6 31C1 9995 D24A
+
+Updated 1c3f2ca8.crl_url:
+dubfwe:~/repo/security/certificates mccreary$ diff 1c3f2ca8.crl_url ../new/doegrids/1c3f2ca8.crl_url 
+1c1
+< http://pki1.doegrids.org/CRL/1c3f2ca8.r0
+- ---
+> http://crl.doegrids.org/1c3f2ca8/1c3f2ca8.r0
+
+Verified that other files have no significant differences from current tarball:
+	1c3f2ca8.0
+
+dubfwe:~/repo/security/certificates mccreary$ openssl x509 -subject -fingerprint -sha1 -noout -in 1c3f2ca8.0 
+subject= /DC=org/DC=DOEGrids/OU=Certificate Authorities/CN=DOEGrids CA 1
+SHA1 Fingerprint=2D:7C:01:FE:A8:40:6A:D0:2E:80:F5:08:E4:D2:EB:A3:A8:84:F8:90
+MD5 Fingerprint=F3:76:00:EC:D0:8E:DB:20:BC:2B:E0:06:60:24:C4:9F
+
+	1c3f2ca8.signing_policy
+
+dubfwe:~/repo/security/certificates mccreary$ diff 1c3f2ca8.signing_policy ../new/doegrids/1c3f2ca8.signing_policy 
+1c1
+< # $Id: 1c3f2ca8.signing_policy,v 1.3 2006/08/23 23:07:04 dhiva Exp $ 
+- ---
+> # $Id: 1c3f2ca8.signing_policy,v 1.1 2009/03/27 18:31:33 dhiva Exp $ 
+40a41,43
+> # Revision 1.1  2009/03/27 18:31:33  dhiva
+> # *** empty log message ***
+> #
+59c62
+< # $Id: 1c3f2ca8.signing_policy,v 1.3 2006/08/23 23:07:04 dhiva Exp $ Included
+- ---
+> # $Id: 1c3f2ca8.signing_policy,v 1.1 2009/03/27 18:31:33 dhiva Exp $ Included
+
+	d1b603c3.0
+
+dubfwe:~/repo/security/certificates mccreary$ openssl x509 -subject -fingerprint -sha1 -noout -in d1b603c3.0 
+subject= /DC=net/DC=ES/O=ESnet/OU=Certificate Authorities/CN=ESnet Root CA 1
+SHA1 Fingerprint=F2:63:97:A8:B2:D5:1F:94:CC:0F:06:5A:FE:76:5D:F3:CF:28:81:A0
+MD5 Fingerprint=32:AC:21:5D:DE:43:73:E9:3A:EE:90:BC:17:C4:8F:36
+
+	d1b603c3.crl_url
+	d1b603c3.signing_policy
+
+dubfwe:~/repo/security/certificates mccreary$ diff d1b603c3.signing_policy ../new/doegrids/d1b603c3.signing_policy 
+1c1
+< # $Id: d1b603c3.signing_policy,v 1.5 2006/04/20 20:23:16 helm Exp $
+- ---
+> # $Id: d1b603c3.signing_policy,v 1.1 2009/03/27 18:31:33 dhiva Exp $
+34a35,37
+> # Revision 1.1  2009/03/27 18:31:33  dhiva
+> # *** empty log message ***
+> #
+52c55
+< # $Id: d1b603c3.signing_policy,v 1.5 2006/04/20 20:23:16 helm Exp $ included for all these files
+- ---
+> # $Id: d1b603c3.signing_policy,v 1.1 2009/03/27 18:31:33 dhiva Exp $ included for all these files
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (Darwin)
+
+iD8DBQFJ+2V9YjEf42hR7yYRApzdAJ9a4xq8oLzGZG+9U3Q0OCrdLm8NiwCfRFvu
+BWX1ikzv2jgdMZc+i8MFJgg=
+=eVq6
+-----END PGP SIGNATURE-----

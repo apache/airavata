@@ -1,0 +1,55 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+[ Verify NCSA CACL CA, May 2009 (mccreary) ]
+
+CACL CA cert obtained from on 13May09 from
+<https://dist.eugridpma.info/distribution/igtf/current/igtf-policy-installation-bundle-1.29.tar.gz>
+Web server presented certificate w/ subject:
+
+	CN = dist.eugridpma.info
+	O  = NIKHEF
+	OU = PDP
+Serial Num = 01:00:00:00:00:01:10:E4:53:B7:A5
+
+from authority:
+
+	CN = Cybertrust Educational CA
+	O  = Cybertrust
+	OU = Educational CA
+
+Valid from 21Feb07 until 21Feb2010
+
+Fingerprints:
+	SHA1	7D:EF:99:28:66:AB:46:91:AE:0C:05:59:8A:F8:69:60:0F:E0:E0:24
+	MD5	5D:AE:44:D1:14:F6:E8:8A:BB:EE:AD:3F:7A:1F:13:6D
+
+Good PGP signature for this tar file was also obtained from
+<https://dist.eugridpma.info/distribution/igtf/current/igtf-policy-installation-bundle-1.29.tar.gz.asc>
+Signature made with this key:
+
+pub   1024D/3CDBBC71 2005-07-12
+      Key fingerprint = D12E 9228 22BE 64D5 0146  188B C32D 99C8 3CDB BC71
+uid                  EUGridPMA Distribution Signing Key 3 <info@eugridpma.org>
+
+Unfortunately this key has no signatures, and is not part of the TG security
+working group web of trust.
+
+Extracted the following files from the tar file:
+igtf-policy-installation-bundle-1.29/src/accredited/9b95bbf2.0
+igtf-policy-installation-bundle-1.29/src/accredited/9b95bbf2.crl_url
+igtf-policy-installation-bundle-1.29/src/accredited/9b95bbf2.signing_policy
+
+Verified that these files match the current files in the TG CA tarball.
+
+openssl x509 -subject -fingerprint -sha1 -noout -in 9b95bbf2.0 
+subject= /C=US/O=National Center for Supercomputing Applications/OU=Certificate Authorities/CN=CACL
+SHA1 Fingerprint=D3:F1:43:DD:1F:D7:41:4A:19:79:E1:12:B2:11:06:87:B7:79:66:1A
+MD5 Fingerprint=98:E7:B5:3F:10:FD:24:E3:EF:B6:4A:54:A6:CE:87:1A
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (Darwin)
+
+iD8DBQFKCyoPYjEf42hR7yYRArY6AKDe9/HLwAriVUnBcpWPv6+1O1LkRQCfWTeR
+KXEC9UTETGCMC/dNnGd45IM=
+=lnTK
+-----END PGP SIGNATURE-----

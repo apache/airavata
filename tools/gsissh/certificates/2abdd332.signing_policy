@@ -1,0 +1,11 @@
+# SDSC CA Policy
+
+access_id_CA   X509    '/C=US/O=SDSC/OU=SDSC-CA/CN=Certificate Authority/UID=certman'
+pos_rights     globus  CA:sign
+cond_subjects  globus  '/C=US/O=SDSC/*'
+
+# The following section was added to provide compatibility with Globus 2.x (20041007 - dsimmel@psc.edu)
+
+access_id_CA   X509    '/C=US/O=SDSC/OU=SDSC-CA/CN=Certificate Authority/USERID=certman'
+pos_rights     globus  CA:sign
+cond_subjects  globus  '/C=US/O=SDSC/*'
