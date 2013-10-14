@@ -1,3 +1,0 @@
- access_id_CA      X509       '/C=US/O=Pittsburgh Supercomputing Center/CN=PSC MyProxy CA'
- pos_rights        globus      CA:sign
- cond_subjects     globus     '"/C=US/O=Pittsburgh Supercomputing Center/CN=*"'
