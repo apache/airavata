@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import com.sun.tools.javac.util.Paths;
 import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 
 import org.apache.airavata.common.utils.StringUtil;

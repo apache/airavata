@@ -50,7 +50,6 @@ import org.apache.airavata.common.workflow.execution.context.WorkflowContextHead
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
-import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.schemas.gfac.SSHHostType;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.workflow.model.component.ComponentException;
@@ -530,8 +529,8 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         StAXOMBuilder builder = new StAXOMBuilder(reader);
         OMElement documentElement = builder.getDocumentElement();
         Iterator<?> server = documentElement.getChildrenWithName(new QName("server"));
-        HostDescription hostDescription = new HostDescription();
         while (server.hasNext()) {
+            HostDescription hostDescription = new HostDescription();
             OMElement next = (OMElement) server.next();
             if (next.getFirstChildWithName(new QName("gram.endpoint")) != null &&
                     "globus".equals(next.getFirstChildWithName(new QName("type")).getText())) {

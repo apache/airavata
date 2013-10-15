@@ -151,7 +151,6 @@ public class DescriptorUtil {
             }
         }else if (hostDescriptionType instanceof GsisshHostType) {
             hostType.add(HostTypes.GSISSH_HOST_TYPE);
-            GlobusHostType globusHostType = (GlobusHostType) hostDescriptionType;
         } else if (hostDescriptionType instanceof SSHHostType) {
             hostType.add(HostTypes.SSH_HOST_TYPE);
             SSHHostType sshHostType = (SSHHostType) hostDescriptionType;
