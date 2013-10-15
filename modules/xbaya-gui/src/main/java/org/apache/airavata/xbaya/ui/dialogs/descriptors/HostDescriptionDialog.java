@@ -418,10 +418,14 @@ public class HostDescriptionDialog extends JDialog {
 			cmbResourceProtocol.setSelectedItem(REMOTE_PROTOCOL_STR_AMAZON_EC2);
 		}else if (t instanceof GsisshHostType){
 			cmbResourceProtocol.setSelectedItem(REMOTE_PROTOCOL_GSI_SSH);
-			Name[] nameArray = ((GsisshHostType) t).getExports().getNameArray();
 			List<String> arr=new ArrayList<String>();
-			for (Name name : nameArray) {
-				arr.add(name.getStringValue()+"="+StringUtil.quoteString(name.getValue(),"="));
+			ExportProperties exports = ((GsisshHostType) t).getExports();
+			if (exports!=null) {
+				Name[] nameArray = exports.getNameArray();
+				for (Name name : nameArray) {
+					arr.add(name.getStringValue() + "="
+							+ StringUtil.quoteString(name.getValue(), "="));
+				}
 			}
 			exportsTextField.setText(StringUtil.createDelimiteredString(arr.toArray(new String[]{})));
 			preJobCommandsTextField.setText(StringUtil.createDelimiteredString(((GsisshHostType) t).getPreJobCommandsArray()));
