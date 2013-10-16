@@ -287,8 +287,8 @@
                 <include>de.odysseus.staxon:staxon:jar:1.2</include>
                 <include>de.odysseus.staxon:staxon-jackson:jar:1.2</include>
                 <include>org.ebaysf.web:cors-filter:jar:1.0.0</include>
-   	 	<include>edu.illinois.ncsa:bcgss</include>	
-		<include>org.apache.xmlbeans:xmlbeans</include>
+   	 			<include>org.ogce:bcgss</include>	
+				<include>org.apache.xmlbeans:xmlbeans</include>
             </includes>
         </dependencySet>
         <dependencySet>
