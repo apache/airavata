@@ -31,6 +31,7 @@ import org.apache.airavata.gfac.SecurityContext;
 import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
+import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
@@ -194,9 +195,7 @@ public class GSISSHProviderTest {
         } catch (SSHApiException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-        SSHSecurityContext sshSecurityContext = new SSHSecurityContext();
-        sshSecurityContext.setPbsCluster(pbsCluster);
-        sshSecurityContext.setUsername(myProxyUserName);
+        GSISecurityContext sshSecurityContext = new GSISecurityContext(pbsCluster);
         return sshSecurityContext;
     }
     @Test

@@ -104,6 +104,11 @@ public class GSISecurityContext extends AbstractSecurityContext {
         super(credentialReader, requestData);
     }
 
+
+    public GSISecurityContext(Cluster pbsCluster) {
+        this.setPbsCluster(pbsCluster);
+    }
+
     /**
      * Gets GSSCredentials. The process is as follows;
      * If credentials were queried for the first time create credentials.

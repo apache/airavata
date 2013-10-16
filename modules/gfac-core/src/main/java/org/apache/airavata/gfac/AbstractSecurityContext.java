@@ -43,6 +43,9 @@ public abstract class AbstractSecurityContext implements SecurityContext {
         this.credentialReader = credentialReader;
         this.requestData = requestData;
     }
+    public AbstractSecurityContext() {
+
+    }
 
     public CredentialReader getCredentialReader() {
         return credentialReader;

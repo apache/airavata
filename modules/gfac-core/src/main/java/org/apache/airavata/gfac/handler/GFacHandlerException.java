@@ -38,13 +38,13 @@ public class GFacHandlerException extends GFacException {
     public GFacHandlerException(String s, Throwable throwable) {
         super(s, throwable);
         sendFaultNotification(s, new Exception(throwable));
-        log.error(s);
+        log.error(s,throwable);
     }
 
     public GFacHandlerException(String message, Exception e, String... additionExceptiondata) {
         super(message, e);
         sendFaultNotification(message, e, additionExceptiondata);
-        log.error(message);
+        log.error(message,e);
     }
 
     private void sendFaultNotification(String message,

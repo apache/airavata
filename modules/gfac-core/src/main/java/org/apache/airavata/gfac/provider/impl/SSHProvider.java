@@ -135,6 +135,8 @@ public class SSHProvider implements GFacProvider {
                 throw new GFacProviderException(e.getMessage(), e);
             } catch (IOException e) {
                 throw new GFacProviderException(e.getMessage(), e);
+            }catch (Exception e) {
+                throw new GFacProviderException(e.getMessage(), e);
             } finally {
                 if (securityContext != null) {
                     securityContext.closeSession(session);
