@@ -181,9 +181,6 @@ public class JobExecutionContext extends AbstractContext{
 
 	public SecurityContext getSecurityContext(String name) throws GFacException{
 		SecurityContext secContext = securityContext.get(name);
-		if(secContext == null){
-			throw new GFacException( name + " not set in security context");
-		}
 		return secContext;
 	}
 

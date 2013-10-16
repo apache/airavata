@@ -68,12 +68,12 @@ public class GSISSHProvider implements GFacProvider {
             Cluster cluster = null;
             if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) != null) {
                 cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
-            }else{
+            } else {
                 cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
             }
-            if(cluster == null){
+            if (cluster == null) {
                 throw new GFacProviderException("Security context is not set properly");
-            }else{
+            } else {
                 log.info("Successfully retrieved the Security Context");
             }
             // This installed path is a mandetory field, because this could change based on the computing resource
@@ -82,7 +82,7 @@ public class GSISSHProvider implements GFacProvider {
             jobDescriptor.setShellName("/bin/bash");
             Random random = new Random();
             int i = random.nextInt();
-            jobDescriptor.setJobName(app.getApplicationName() + String.valueOf(i));
+            jobDescriptor.setJobName(app.getApplicationName().getStringValue() + String.valueOf(i));
             jobDescriptor.setExecutablePath(app.getExecutableLocation());
             jobDescriptor.setAllEnvExport(true);
             jobDescriptor.setMailOptions("n");
@@ -125,12 +125,13 @@ public class GSISSHProvider implements GFacProvider {
             jobDescriptor.setInputValues(inputValues);
 
             log.info(jobDescriptor.toXML());
-            String jobID = cluster.submitBatchJob(jobDescriptor);
+            final String jobID = cluster.submitBatchJob(jobDescriptor);
             log.info("Job Submitted successfully and returned Job ID: " + jobID);
             jobExecutionContext.getNotifier().publish(new JobIDEvent(jobID));
 
-            JobSubmissionListener listener = new GSISSHJobSubmissionListener(jobExecutionContext);
-            try {
+            final JobSubmissionListener listener = new GSISSHJobSubmissionListener(jobExecutionContext);
+            final Cluster finalCluster = cluster;
+//            try {
 //            // Wait 5 seconds to start the first poll, this is hard coded, user doesn't have
 //            // to configure this.
 //            Thread.sleep(5000);
@@ -139,41 +140,40 @@ public class GSISSHProvider implements GFacProvider {
 //            throw new SSHApiException("Error during job status monitoring", e);
 //        }
 //        // Get the job status first
-//        try {
-////
-////            Thread t = new Thread() {
-////                @Override
-////                public void run() {
-////                    try {
-                // p
-                JobStatus jobStatus = cluster.getJobStatus(jobID);
-                listener.statusChanged(jobStatus);
-                while (true) {
-                    while (!jobStatus.equals(JobStatus.C)) {
-                        if (!jobStatus.equals(listener.getJobStatus().toString())) {
-                            listener.setJobStatus(jobStatus);
+            try {
+//
+                Thread t = new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            JobStatus jobStatus = finalCluster.getJobStatus(jobID);
                             listener.statusChanged(jobStatus);
-                        }
-                        Thread.sleep(60000);
+                            while (true) {
+                                while (!jobStatus.equals(JobStatus.C)) {
+                                    if (!jobStatus.equals(listener.getJobStatus().toString())) {
+                                        listener.setJobStatus(jobStatus);
+                                        listener.statusChanged(jobStatus);
+                                    }
+                                    Thread.sleep(60000);
 
-                        jobStatus = cluster.getJobStatus(jobID);
+                                    jobStatus = finalCluster.getJobStatus(jobID);
+                                }
+                                //Set the job status to Complete
+                                listener.setJobStatus(JobStatus.C);
+                                listener.statusChanged(jobStatus);
+                                break;
+                            }
+                        } catch (InterruptedException e) {
+                            log.error("Error listening to the submitted job", e);
+                        } catch (SSHApiException e) {
+                            log.error("Error listening to the submitted job", e);
+                        }
                     }
-                    //Set the job status to Complete
-                    listener.setJobStatus(JobStatus.C);
-                    listener.statusChanged(jobStatus);
-                    break;
-                }
-//                    } catch (InterruptedException e) {
-//                        log.error("Error listening to the submitted job", e);
-//                    } catch (SSHApiException e) {
-//                        log.error("Error listening to the submitted job", e);
-//                    }
-//                }
-//            };
+                };
                 //  This thread runs until the program termination, so that use can provide
 //            // any action in onChange method of the listener, without worrying for waiting in the caller thread.
-                //t.setDaemon(true);
-//            t.start();
+                t.setDaemon(false);
+                t.start();
             } catch (Exception e) {
                 String error = "Error during job status monitoring";
                 log.error(error);

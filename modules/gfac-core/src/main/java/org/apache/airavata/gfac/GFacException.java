@@ -21,7 +21,12 @@
 
 package org.apache.airavata.gfac;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class GFacException extends Exception {
+    private static final Logger log = LoggerFactory.getLogger(GFacException.class);
+
     /**
 	 *
 	 */
@@ -33,9 +38,11 @@ public class GFacException extends Exception {
 
     public GFacException(Exception e) {
         super(e);
+        log.error(e.getMessage(),e);
     }
 
 	public GFacException(String s, Throwable throwable) {
         super(s, throwable);
+        log.error(s,throwable);
     }
 }

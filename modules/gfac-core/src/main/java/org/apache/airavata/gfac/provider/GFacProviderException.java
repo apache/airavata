@@ -40,7 +40,7 @@ public class GFacProviderException extends Exception {
     public GFacProviderException(String message, Throwable cause) {
         super(message, cause);
         sendFaultNotification(message, new Exception(cause));
-        log.error(message);
+        log.error(message,cause);
     }
 
 
@@ -48,7 +48,7 @@ public class GFacProviderException extends Exception {
         super(message);
         this.aditionalInfo = additionExceptiondata;
         sendFaultNotification(message, e, additionExceptiondata);
-        log.error(message);
+        log.error(message,e);
     }
 
     private void sendFaultNotification(String message,
