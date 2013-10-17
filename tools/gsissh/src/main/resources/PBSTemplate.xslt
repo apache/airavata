@@ -9,7 +9,6 @@
 <xsl:output method="text" />
 <xsl:template match="/ns:JobDescriptor">
 #! /bin/sh
-# PBS batch job script built by Globus job manager
 #   <xsl:choose>
     <xsl:when test="ns:shellName">
 ##PBS -S <xsl:value-of select="ns:shellName"/>
