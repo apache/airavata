@@ -33,6 +33,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.common.utils.SwingUtil;
@@ -198,7 +199,9 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
         buttonPane.add(okButton);
         buttonPane.add(cancelButton);
         
-        getContentPane().add(panel.getSwingComponent());
+        JScrollPane thePane = new JScrollPane(panel.getSwingComponent());
+
+        getContentPane().add(thePane);
         getContentPane().add(buttonPane.getSwingComponent());
         SwingUtil.layoutToGrid(getContentPane(), 2, 1, 0, 0);
         setResizable(true);
@@ -210,9 +213,9 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 	private List<JobTypeType.Enum> getJobTypes() {
 		if (jobTypes==null){
 			jobTypes = new ArrayList<Enum>();
+			jobTypes.add(JobTypeType.SERIAL);
 			jobTypes.add(JobTypeType.OPEN_MP);
 			jobTypes.add(JobTypeType.MPI);
-			jobTypes.add(JobTypeType.SERIAL);
 //            jobTypes.add(JobTypeType.SINGLE);
 		}
 		return jobTypes;
