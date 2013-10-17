@@ -24,18 +24,6 @@
             <Handler class="org.apache.airavata.gfac.handler.LocalDirectorySetupHandler"/>
         </InHandlers>
     </Provider>
-    <Provider class="org.apache.airavata.gfac.provider.impl.GSISSHProvider" host="org.apache.airavata.schemas.gfac.impl.GlobusHostTypeImpl">
-        <property name="name" value="value"/>
-        <InHandlers>
-            <Handler class="org.apache.airavata.gfac.handler.GramDirectorySetupHandler">
-                    <property name="name" value="value"/>
-            </Handler>
-            <Handler class="org.apache.airavata.gfac.handler.GridFTPInputHandler"/>
-        </InHandlers>
-        <OutHandlers>
-            <Handler class="org.apache.airavata.gfac.handler.GridFTPOutputHandler"/>
-        </OutHandlers>
-    </Provider>
       <Provider class="org.apache.airavata.gfac.provider.impl.BESProvider" host="org.apache.airavata.schemas.gfac.impl.UnicoreHostTypeImpl">
         <InHandlers>
         	<Handler class="org.apache.airavata.gfac.handler.GramDirectorySetupHandler"/>
