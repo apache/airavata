@@ -82,12 +82,15 @@ public class PBSCluster implements Cluster {
             System.setProperty(X509_CERT_DIR, (String) ((GSIAuthenticationInfo) authenticationInfo).getProperties().
                     get("X509_CERT_DIR"));
         }
-
+        if(installedPath == null) {
+            throw new SSHApiException("Installed path cannot be null !!");
+        }
         if (installedPath.endsWith("/")) {
             this.installedPath = installedPath;
         } else {
             this.installedPath = installedPath + "/";
         }
+
 
         try {
             this.configReader = new ConfigReader();
@@ -233,12 +236,30 @@ public class PBSCluster implements Cluster {
         //Check whether pbs submission is successful or not, if it failed throw and exception in submitJob method
         // with the error thrown in qsub command
         //
+        String stdOutputString = getOutputifAvailable(jobIDReaderCommandOutput, "Error submitting job to resource");
+        return stdOutputString;
 
-        if (!jobIDReaderCommandOutput.getStdErrorString().equals("")) {
-            throw new SSHApiException(jobIDReaderCommandOutput.getStandardError().toString());
-        } else {
-            return jobIDReaderCommandOutput.getStdOutputString();
+    }
+
+    /**
+     * This method will read standard output and if there's any it will be parsed
+     * @param jobIDReaderCommandOutput
+     * @param errorMsg
+     * @return
+     * @throws SSHApiException
+     */
+    private String getOutputifAvailable(StandardOutReader jobIDReaderCommandOutput, String errorMsg) throws SSHApiException {
+        String stdOutputString = jobIDReaderCommandOutput.getStdOutputString();
+        String stdErrorString = jobIDReaderCommandOutput.getStdErrorString();
+
+        if(stdOutputString == null){
+            throw new SSHApiException(errorMsg + stdErrorString);
+        }else{
+            if(stdErrorString != null){
+                log.error("Standard Error output : " + stdErrorString);
+            }
         }
+        return stdOutputString;
     }
 
     public String submitBatchJob(JobDescriptor jobDescriptor) throws SSHApiException {
@@ -299,10 +320,8 @@ public class PBSCluster implements Cluster {
 
         StandardOutReader stdOutReader = new StandardOutReader();
         CommandExecutor.executeCommand(rawCommandInfo, this.getSession(), stdOutReader);
-        if (stdOutReader.getStdErrorString() != null) {
-            throw new SSHApiException(stdOutReader.getStandardError().toString());
-        }
-        String result = stdOutReader.getStdOutputString();
+
+        String result = getOutputifAvailable(stdOutReader, "Error getting cluster information !");
         String[] Nodes = result.split("\n");
         String[] line;
         String header, value;
@@ -367,10 +386,8 @@ public class PBSCluster implements Cluster {
 
         StandardOutReader stdOutReader = new StandardOutReader();
         CommandExecutor.executeCommand(rawCommandInfo, this.getSession(), stdOutReader);
-        if (!stdOutReader.getStdErrorString().equals("")) {
-            throw new SSHApiException(stdOutReader.getStandardError().toString());
-        }
-        String result = stdOutReader.getStdOutputString();
+
+        String result = getOutputifAvailable(stdOutReader, "Error getting job information from the resource !");;
         String[] info = result.split("\n");
         JobDescriptor jobDescriptor = new JobDescriptor();
         String[] line;
@@ -459,7 +476,7 @@ public class PBSCluster implements Cluster {
 
     public void scpTo(String remoteFile, String localFile) throws SSHApiException {
         try {
-             SSHUtils.scpTo(remoteFile, localFile, session);
+            SSHUtils.scpTo(remoteFile, localFile, session);
         } catch (IOException e) {
             throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
                     + serverInfo.getHost() + ":rFile", e);
@@ -471,7 +488,7 @@ public class PBSCluster implements Cluster {
 
     public void scpFrom(String remoteFile, String localFile) throws SSHApiException {
         try {
-             SSHUtils.scpFrom(remoteFile, localFile, session);
+            SSHUtils.scpFrom(remoteFile, localFile, session);
         } catch (IOException e) {
             throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
                     + serverInfo.getHost() + ":rFile", e);
@@ -552,11 +569,9 @@ public class PBSCluster implements Cluster {
 
         StandardOutReader stdOutReader = new StandardOutReader();
         CommandExecutor.executeCommand(rawCommandInfo, this.getSession(), stdOutReader);
-        // check the standard error, incase user gave wrong jobID
-        if (!stdOutReader.getStdErrorString().equals("")) {
-            throw new SSHApiException(stdOutReader.getStandardError().toString());
-        }
-        String result = stdOutReader.getStdOutputString();
+
+
+        String result = getOutputifAvailable(stdOutReader,"Error getting job status with job ID: " + jobID);
         String[] info = result.split("\n");
         String[] line = null;
         for (String anInfo : info) {
@@ -577,9 +592,8 @@ public class PBSCluster implements Cluster {
 
         StandardOutReader stdOutReader = new StandardOutReader();
         CommandExecutor.executeCommand(rawCommandInfo, this.getSession(), stdOutReader);
-        if (!stdOutReader.getStdErrorString().equals("")) {
-            throw new SSHApiException(stdOutReader.getStandardError().toString());
-        }
+
+        getOutputifAvailable(stdOutReader, "Error cancelling job with Job ID : " + jobID);
 
         JobDescriptor jobById = this.getJobDescriptorById(jobID);
         if (CommonUtils.isJobFinished(jobById)) {
