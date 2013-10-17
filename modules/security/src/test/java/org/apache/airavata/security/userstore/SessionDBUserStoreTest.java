@@ -47,6 +47,13 @@ public class SessionDBUserStoreTest extends DatabaseTestCases {
 
         waitTillServerStarts();
 
+        String dropTable = "drop table Persons";
+
+        try {
+            executeSQL(dropTable);
+        } catch (Exception e) {
+        }
+
         String createTable = "create table Persons ( sessionId varchar(255) )";
         executeSQL(createTable);
 

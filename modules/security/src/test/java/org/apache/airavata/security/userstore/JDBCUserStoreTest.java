@@ -61,11 +61,20 @@ public class JDBCUserStoreTest extends DatabaseTestCases {
 
         waitTillServerStarts();
 
+        String dropTable = "drop table AIRAVATA_USER";
+
+        try {
+            executeSQL(dropTable);
+        } catch (Exception e) {
+        }
+
         String createTable = "create table AIRAVATA_USER ( USERID varchar(255), PASSWORD varchar(255) )";
         executeSQL(createTable);
 
         String insertSQL = "INSERT INTO AIRAVATA_USER VALUES('amilaj', 'secret')";
         executeSQL(insertSQL);
+
+
     }
 
     @AfterClass
