@@ -58,9 +58,17 @@ public class SCPOutputHandler implements GFacHandler{
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext()
                 .getApplicationDeploymentDescription().getType();
         try {
-            SSHSecurityContext securityContext = (SSHSecurityContext) jobExecutionContext
-                    .getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT);
-            Cluster pbsCluster = securityContext.getPbsCluster();
+            Cluster cluster = null;
+            if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) != null) {
+                cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
+            } else {
+                cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
+            }
+            if (cluster == null) {
+                throw new GFacProviderException("Security context is not set properly");
+            } else {
+                log.info("Successfully retrieved the Security Context");
+            }
 
             // Get the Stdouts and StdErrs
             String timeStampedServiceName = GFacUtils.createUniqueNameForService(jobExecutionContext.getServiceName());
@@ -68,9 +76,9 @@ public class SCPOutputHandler implements GFacHandler{
             File localStdErrFile = File.createTempFile(timeStampedServiceName, "stderr");
 
             log.info("Downloading file : " + app.getStandardError() + " to : " + localStdErrFile.getAbsolutePath());
-            pbsCluster.scpFrom(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
+            cluster.scpFrom(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
             log.info("Downloading file : " + app.getStandardOutput() + " to : " + localStdOutFile.getAbsolutePath());
-            pbsCluster.scpFrom(app.getStandardError(), localStdErrFile.getAbsolutePath());
+            cluster.scpFrom(app.getStandardError(), localStdErrFile.getAbsolutePath());
 
             String stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
             String stdErrStr = GFacUtils.readFileToString(localStdErrFile.getAbsolutePath());

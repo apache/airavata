@@ -32,7 +32,9 @@ import net.schmizz.sshj.transport.TransportException;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
+import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
@@ -42,25 +44,31 @@ import org.slf4j.LoggerFactory;
 public class SCPDirectorySetupHandler implements GFacHandler{
     private static final Logger log = LoggerFactory.getLogger(SCPDirectorySetupHandler.class);
 
-	public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException,GFacException {
+	public void invoke(JobExecutionContext jobExecutionContext) throws GFacException {
 		log.info("Setup SSH job directorties");
 		makeDirectory(jobExecutionContext);
 
 	}
-	private void makeDirectory(JobExecutionContext context) throws GFacHandlerException,GFacException {
-		SSHSecurityContext securityContext = (SSHSecurityContext)context.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT);
-		ApplicationDeploymentDescriptionType app = context.getApplicationContext().getApplicationDeploymentDescription().getType();
-		Session session = null;
+	private void makeDirectory(JobExecutionContext jobExecutionContext) throws GFacException {
+		Cluster cluster = null;
+            if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) != null) {
+                cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
+            } else {
+                cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
+            }
+            if (cluster == null) {
+                throw new GFacHandlerException("Security context is not set properly");
+            } else {
+                log.info("Successfully retrieved the Security Context");
+            }
+		ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
 		try {
-            Cluster pbsCluster = securityContext.getPbsCluster();
-            pbsCluster.makeDirectory(app.getScratchWorkingDirectory());
-            pbsCluster.makeDirectory(app.getInputDataDirectory());
-            pbsCluster.makeDirectory(app.getOutputDataDirectory());
+            cluster.makeDirectory(app.getScratchWorkingDirectory());
+            cluster.makeDirectory(app.getInputDataDirectory());
+            cluster.makeDirectory(app.getOutputDataDirectory());
 		} catch (SSHApiException e) {
             throw new GFacHandlerException("Error executing the Handler: " + SCPDirectorySetupHandler.class,e);  //To change body of catch statement use File | Settings | File Templates.
-        } finally {
-			securityContext.closeSession(session);
-		}
+        }
 	}
 
     public void initProperties(Map<String, String> properties) throws GFacHandlerException, GFacException {
