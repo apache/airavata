@@ -25,10 +25,64 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StringUtil {
 	public static final String DELIMETER=",";
 	public static final String QUOTE="\"";
+	
+	// Merits for the following function should go to 
+	// http://blog.houen.net/java-get-url-from-string/ 
+	public static List<String> getURLS(String text) {
+		List<String> links = new ArrayList<String>();
+		String regex = "\\(?\\b((http|https|ftp)://|www[.])[-A-Za-z0-9+&@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&@#/%=~_()|]";
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(text);
+		while (m.find()) {
+			String urlStr = m.group();
+			if (urlStr.startsWith("(") && urlStr.endsWith(")")) {
+				urlStr = urlStr.substring(1, urlStr.length() - 1);
+			}
+			if (!links.contains(urlStr)) {
+				links.add(urlStr);
+			}
+		}
+		return links;
+	}
+
+	public static String createHTMLUrlTaggedString2(String value, List<String> pullLinks) {
+		for (String url : pullLinks) {
+			String hyperlinkString="<a href='"+url+"'>"+url+"</a>";
+			value=value.replaceAll(Pattern.quote(url), hyperlinkString);
+		}
+		return value;
+	}
+	public static String createHTMLUrlTaggedString(String value) {
+		String urledString = "";
+		int lastIndex=0,index=0;
+		while(index!=-1){
+			index=value.toLowerCase().indexOf("://",lastIndex);
+			if (index!=-1){
+				int beginIndex=value.lastIndexOf(" ",index);
+				urledString+=value.substring(lastIndex,beginIndex+1);
+				int endIndex=value.indexOf(" ",index);
+				if (beginIndex==-1){
+					beginIndex=0;
+				}else{
+					beginIndex++;
+				}
+				if (endIndex==-1){
+					endIndex=value.length();
+				}
+				String url=value.substring(beginIndex, endIndex);
+				urledString+="<a href='"+url+"'>"+url+"</a>";
+				lastIndex=endIndex;
+			}
+		}
+		urledString+=value.substring(lastIndex, value.length());
+		return urledString;
+	}
 	
 	private static boolean isQuoted(String s, String delimiter){
 		//Check if we need quotes

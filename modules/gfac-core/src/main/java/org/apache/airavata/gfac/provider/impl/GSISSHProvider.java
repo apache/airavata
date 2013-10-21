@@ -20,6 +20,12 @@
 */
 package org.apache.airavata.gfac.provider.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
@@ -36,15 +42,16 @@ import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
-import org.apache.airavata.gsi.ssh.impl.DefaultJobSubmissionListener;
 import org.apache.airavata.gsi.ssh.impl.JobStatus;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.listener.JobSubmissionListener;
-import org.apache.airavata.schemas.gfac.*;
+import org.apache.airavata.schemas.gfac.FileArrayType;
+import org.apache.airavata.schemas.gfac.HostDescriptionType;
+import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.StringArrayType;
+import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
 
 public class GSISSHProvider implements GFacProvider {
     private static final Logger log = LoggerFactory.getLogger(GSISSHProvider.class);
