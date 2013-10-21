@@ -42,16 +42,16 @@
     </server>
 
     <server>
-        <type>globus</type>
         <name>globus-stampede</name>
+        <type>globus</type>
         <host>stampede.tacc.utexas.edu</host>
         <gram.endpoint>login5.stampede.tacc.utexas.edu:2119/jobmanager-slurm3</gram.endpoint>
         <gridftp.endpoint>gsiftp://data1.stampede.tacc.utexas.edu:2811/</gridftp.endpoint>
     </server>
 
     <server>
-        <type>globus</type>
         <name>globus-trestles</name>
+        <type>globus</type>
         <host>trestles.sdsc.edu</host>
         <gram.endpoint>trestles-login2.sdsc.edu:2119/jobmanager-pbstest2</gram.endpoint>
         <gridftp.endpoint>gsiftp://trestles-dm1.sdsc.edu:2811/</gridftp.endpoint>
@@ -62,19 +62,6 @@
         <host>bigred2.uits.iu.edu</host>
         <hpc.resource>true</hpc.resource>
     </server>
-
-  <server>
-        <name>gsissh-lonestar</name>
-        <type>gsissh</type>
-        <host>lonestar4.tacc.teragrid.org</host>
-    </server>
-
-    <server>
-        <type>gsissh</type>
-        <name>gsissh-stampede</name>
-        <host>stampede.tacc.utexas.edu</host>
-    </server>
-
     <server>
         <type>gsissh</type>
         <name>gsissh-trestles</name>
