@@ -39,6 +39,7 @@ import javax.swing.event.HyperlinkEvent.EventType;
 import javax.swing.event.HyperlinkListener;
 
 import org.apache.airavata.common.utils.BrowserLauncher;
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
@@ -83,35 +84,9 @@ public class TextWindow {
         this.dialog.hide();
     }
 
-    public String createHTMLUrlTaggedString(String value) {
-		String urledString = "";
-		int lastIndex=0,index=0;
-		while(index!=-1){
-			index=value.toLowerCase().indexOf("://",lastIndex);
-			if (index!=-1){
-				int beginIndex=value.lastIndexOf(" ",index);
-				urledString+=value.substring(lastIndex,beginIndex+1);
-				int endIndex=value.indexOf(" ",index);
-				if (beginIndex==-1){
-					beginIndex=0;
-				}else{
-					beginIndex++;
-				}
-				if (endIndex==-1){
-					endIndex=value.length();
-				}
-				String url=value.substring(beginIndex, endIndex);
-				urledString+="<a href='"+url+"'>"+url+"</a>";
-				lastIndex=endIndex;
-			}
-		}
-		urledString+=value.substring(lastIndex, value.length());
-		return urledString;
-	}
-    
     @SuppressWarnings("serial")
 	private void init() {
-        final JEditorPane editorPane = new JEditorPane(XmlConstants.CONTENT_TYPE_HTML, createHTMLUrlTaggedString(value));
+        final JEditorPane editorPane = new JEditorPane(XmlConstants.CONTENT_TYPE_HTML, StringUtil.createHTMLUrlTaggedString(value));
         editorPane.setEditable(false);
         editorPane.setBackground(Color.WHITE);
         editorPane.addHyperlinkListener(new HyperlinkListener() {
