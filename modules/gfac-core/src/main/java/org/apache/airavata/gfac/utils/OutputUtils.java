@@ -32,10 +32,9 @@ import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.handler.GFacHandlerException;
 import org.apache.airavata.schemas.gfac.StdErrParameterType;
 import org.apache.airavata.schemas.gfac.StdOutParameterType;
-import org.apache.airavata.schemas.gfac.URIParameterType;
 
 public class OutputUtils {
-    private static String regexPattern = "\\s*=\\s*([^\\[\\s'\"][^\\s]*|\"[^\"]*\"|'[^']*'|\\[[^\\[]*\\])";
+    private static String regexPattern = "\\s*=\\s*(.*)\\r?\\n";
 
     public static Map<String, ActualParameter> fillOutputFromStdout(Map<String, Object> output, String stdout, String stderr) throws Exception {
 
@@ -95,7 +94,7 @@ public class OutputUtils {
             match.append(matcher.group(1) + StringUtil.DELIMETER);
         }
         if (match != null) {
-            return StringUtil.getElementsFromString(match.toString());
+        	return StringUtil.getElementsFromString(match.toString());
         } else {
             throw new Exception("Data for the output parameter '" + outParam + "' was not found");
         }
