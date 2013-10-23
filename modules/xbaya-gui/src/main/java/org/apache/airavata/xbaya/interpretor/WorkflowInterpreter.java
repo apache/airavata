@@ -302,8 +302,10 @@ public class WorkflowInterpreter {
 					}
 				}
 			}
-			this.config.getNotifier().workflowTerminated();
-			UUID uuid = UUID.randomUUID();
+
+            this.config.getNotifier().workflowTerminated();
+
+            UUID uuid = UUID.randomUUID();
 			notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_TASK_START, new WorkflowInterpreterInteractor.TaskNotification("Stop Workflow",
 					"Cleaning up resources for Workflow", uuid.toString()));
 			// Send Notification for output values
