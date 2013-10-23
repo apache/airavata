@@ -203,7 +203,7 @@ public class NotificationSender implements WorkflowNotifiable {
             message += keywords[i] + "=" + args[i];
         }
         this.notifier.sendingResult(context, this.invocationContext, message);
-        this.notifier.workflowTerminated(context, this.workflowID, "Workflow finished successfully.");
+        this.notifier.workflowTerminated(context, this.workflowID, "Workflow Execution Finished.");
     }
 
     /*
@@ -213,7 +213,7 @@ public class NotificationSender implements WorkflowNotifiable {
      */
     @Override
     public void workflowTerminated() {
-        this.notifier.workflowTerminated(context, this.workflowID, "Workflow finished successfully.");
+        this.notifier.workflowTerminated(context, this.workflowID, "Workflow Execution Finished.");
     }
 
     /*

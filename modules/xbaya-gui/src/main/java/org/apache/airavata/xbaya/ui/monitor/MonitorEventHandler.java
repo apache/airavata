@@ -83,9 +83,9 @@ public class MonitorEventHandler implements ChangeListener {
         FAILED(Color.RED),
 
         /**
-		 * DEFAULT COLOR
-		 */
-		DEFAULT(NodeGUI.DEFAULT_BODY_COLOR);
+         * DEFAULT COLOR
+         */
+        DEFAULT(NodeGUI.DEFAULT_BODY_COLOR);
 
 
         /**
@@ -116,10 +116,11 @@ public class MonitorEventHandler implements ChangeListener {
 
     /**
      * Model MonitorEventHandler
+     *
      * @param xbayaGUI
      */
     public MonitorEventHandler(XBayaGUI xbayaGUI) {
-        this.xbayaGUI=xbayaGUI;
+        this.xbayaGUI = xbayaGUI;
         this.incorrectWorkflowIDs = Collections.synchronizedSet(new HashSet<URI>());
         this.triedWorkflowIDs = Collections.synchronizedSet(new HashSet<URI>());
         this.resourcePaintableMap = new HashMap<Node, LinkedList<ResourcePaintable>>();
@@ -194,11 +195,11 @@ public class MonitorEventHandler implements ChangeListener {
             Workflow workflow = graphCanvas.getWorkflow();
 //            URI instanceID = workflow.getGPELInstanceID();
 //            if (instanceID == null) {
-                // If the workflow doesn't have an instance ID, it's a template.
-                // We handle it so that users can use a workflow template to
-                // monitor a workflow too.
-                // This is also needed in the case of jython workflow.
-                handleEvent(event, forward, workflow.getGraph());
+            // If the workflow doesn't have an instance ID, it's a template.
+            // We handle it so that users can use a workflow template to
+            // monitor a workflow too.
+            // This is also needed in the case of jython workflow.
+            handleEvent(event, forward, workflow.getGraph());
 //            } else if (instanceID.equals(workflowID)) {
 //                This is the regular case.
 //                found = true;
@@ -305,7 +306,8 @@ public class MonitorEventHandler implements ChangeListener {
         EventType type = event.getType();
         String nodeID = event.getNodeID();
         Node node = graph.getNode(nodeID);
-        System.out.println(type);;
+        System.out.println(type);
+        ;
         // logger.info("type: " + type);
         if (type == MonitorUtil.EventType.WORKFLOW_INVOKED) {
             workflowStarted(graph, forward);
@@ -314,8 +316,8 @@ public class MonitorEventHandler implements ChangeListener {
             workflowFinished(graph, forward);
 //            workflowStatusUpdater.workflowFinished(event.getExperimentID());
         } else if (type == EventType.INVOKING_SERVICE
-        // TODO this should be removed when GPEL sends all notification
-        // correctly.
+                // TODO this should be removed when GPEL sends all notification
+                // correctly.
                 || type == EventType.SERVICE_INVOKED) {
             if (node == null) {
                 logger.warn("There is no node that has ID, " + nodeID);
@@ -324,8 +326,8 @@ public class MonitorEventHandler implements ChangeListener {
 //                workflowNodeStatusUpdater.workflowStarted(event.getExperimentID(), event.getNodeID());
             }
         } else if (type == MonitorUtil.EventType.RECEIVED_RESULT
-        // TODO this should be removed when GPEL sends all notification
-        // correctly.
+                // TODO this should be removed when GPEL sends all notification
+                // correctly.
                 || type == EventType.SENDING_RESULT) {
             if (node == null) {
                 logger.warn("There is no node that has ID, " + nodeID);
@@ -335,7 +337,7 @@ public class MonitorEventHandler implements ChangeListener {
             }
 
         } else if (type == EventType.INVOKING_SERVICE_FAILED || type == EventType.RECEIVED_FAULT
-        // TODO
+                // TODO
                 || type == EventType.SENDING_FAULT || type == EventType.SENDING_RESPONSE_FAILED) {
             if (node == null) {
                 logger.warn("There is no node that has ID, " + nodeID);
@@ -423,7 +425,7 @@ public class MonitorEventHandler implements ChangeListener {
 
     private void nodeStarted(Node node, boolean forward) {
         if (forward) {
-            if (node.getState()!= NodeExecutionState.FINISHED) {
+            if (node.getState() != NodeExecutionState.FINISHED) {
                 executeNode(node);
                 finishPredecessorNodes(node);
             }
@@ -502,7 +504,9 @@ public class MonitorEventHandler implements ChangeListener {
     }
 
     private void finishNode(Node node) {
-        node.setState(NodeExecutionState.FINISHED);
+        if (!NodeExecutionState.FAILED.equals(node.getState())) {
+            node.setState(NodeExecutionState.FINISHED);
+        }
     }
 
     private void failNode(Node node) {
