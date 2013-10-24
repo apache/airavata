@@ -35,7 +35,7 @@ public class RegistryListener implements ServletContextListener {
         try {
         	AiravataUtils.setExecutionAsServer();
             ServletContext servletContext = servletContextEvent.getServletContext();
-            String gatewayID = ServerSettings.getDefaultGatewayId();
+            String gatewayID = ServerSettings.getSystemUserGateway();
             String user = ServerSettings.getSystemUser();
             Gateway gateway =  new Gateway(gatewayID);
 

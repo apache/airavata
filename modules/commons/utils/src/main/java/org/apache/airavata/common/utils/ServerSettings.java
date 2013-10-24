@@ -38,7 +38,6 @@ import org.apache.coyote.http11.Http11NioProtocol;
 import org.apache.coyote.http11.Http11Protocol;
 
 public class ServerSettings extends ApplicationSettings{
-    private static final String DEFAULT_GATEWAY_ID="default.registry.gateway";
     private static final String SYSTEM_USER="system.user";
     private static final String SYSTEM_USER_PASSWORD="system.password";
     private static final String SYSTEM_USER_GATEWAY="system.gateway";
@@ -58,10 +57,6 @@ public class ServerSettings extends ApplicationSettings{
     private static final String ENABLE_HTTPS = "enable.https";
     private static final String HOST_SCHEDULER = "host.scheduler";
 
-    public static String getDefaultGatewayId()throws ApplicationSettingsException{
-    	return getSetting(DEFAULT_GATEWAY_ID);
-    }
-    
     public static String getSystemUser() throws ApplicationSettingsException{
     	return getSetting(SYSTEM_USER);
     }
