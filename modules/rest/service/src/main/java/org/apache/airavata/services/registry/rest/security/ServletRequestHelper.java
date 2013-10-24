@@ -97,7 +97,7 @@ public class ServletRequestHelper {
 
         if (gatewayId == null) {
             try {
-                gatewayId = ServerSettings.getDefaultGatewayId();
+                gatewayId = ServerSettings.getSystemUserGateway();
             } catch (ApplicationSettingsException e) {
                 throw new AuthenticationException("Unable to retrieve default gateway", e);
             }

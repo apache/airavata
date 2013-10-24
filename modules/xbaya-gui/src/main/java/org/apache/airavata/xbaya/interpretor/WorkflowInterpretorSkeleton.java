@@ -286,7 +286,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 
         String s = null;
         try {
-             s = setupAndLaunch(workflowAsString, topic, ServerSettings.getDefaultGatewayId(),
+             s = setupAndLaunch(workflowAsString, topic, ServerSettings.getSystemUserGateway(),
                     user,inputs, configuration, runInThread, workflowContextHeaderBuilder);
         } catch (AiravataAPIInvocationException e) {
             log.error(e.getMessage());

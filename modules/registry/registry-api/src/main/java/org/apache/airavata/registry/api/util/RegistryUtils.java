@@ -105,7 +105,7 @@ public class RegistryUtils {
 //        }
         try {
         	username=ServerSettings.getSystemUser();
-            registry = AiravataRegistryFactory.getRegistry(new Gateway(ServerSettings.getDefaultGatewayId()),
+            registry = AiravataRegistryFactory.getRegistry(new Gateway(ServerSettings.getSystemUserGateway()),
                     new AiravataUser(username));
         } catch (AiravataConfigurationException e) {
             log.error("Error initializing AiravataRegistry2");
