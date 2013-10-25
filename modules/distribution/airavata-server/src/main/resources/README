@@ -18,7 +18,7 @@ airavata services shipped with a default derby database as the backend registry.
 
 Release Notes
 =============
-0.7 is the sixth release of Airavata (skipped 0.1-INCUBATNG). This release focuses GFac rearchitecturing and more GFac level changes. For detailed tasks list, please see RELEASE_NOTES.
+0.10 is the ninth release of Airavata (skipped 0.1-INCUBATNG). This release focuses bug fixes and GSISSH library for beta testing. For detailed tasks list, please see RELEASE_NOTES.
 
 Building from source
 ====================
