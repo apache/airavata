@@ -443,8 +443,9 @@ public class EmbeddedGFacInvoker implements Invoker {
                 }
 
                 context.setPbsCluster(pbsCluster);
-                jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT, context);
             }
+            
+            jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT, context);
         } else if (registeredHost.getType() instanceof Ec2HostType) {
             if (this.configuration.getAmazonSecurityContext() != null) {
                 jobExecutionContext.addSecurityContext(AmazonSecurityContext.AMAZON_SECURITY_CONTEXT,
