@@ -34,13 +34,21 @@
             <version>${oa4mp.version}</version>
             <exclusions>
         	<exclusion>
-          		<groupId>net.oauth.core</groupId> <!-- Exclude Project-D from Project-B -->
+          		<groupId>net.oauth.core</groupId> 
           		<artifactId>oauth-httpclient4</artifactId>
         	</exclusion>
-                <exclusion>
-          		<groupId>net.oauth.core</groupId> <!-- Exclude Project-D from Project-B -->
-          		<artifactId>oauth-consumer</artifactId>
-        	</exclusion>
+			<exclusion>
+				<groupId>net.oauth.core</groupId>
+				<artifactId>oauth-consumer</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+			</exclusion>
             </exclusions>
         </dependency>
         <dependency>

@@ -182,11 +182,29 @@
             <artifactId>airavata-credential-store</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>edu.uiuc.ncsa.myproxy</groupId>
-            <artifactId>oa4mp-client-oauth1</artifactId>
-            <version>${oa4mp.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>edu.uiuc.ncsa.myproxy</groupId>
+			<artifactId>oa4mp-client-oauth1</artifactId>
+			<version>${oa4mp.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>net.oauth.core</groupId>
+					<artifactId>oauth-httpclient4</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.oauth.core</groupId>
+					<artifactId>oauth-consumer</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>mysql</groupId>
+					<artifactId>mysql-connector-java</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>postgresql</groupId>
+					<artifactId>postgresql</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-rest-mappings</artifactId>
