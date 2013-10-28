@@ -316,24 +316,23 @@ public class WorkflowInterpreter {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			cleanup();
-			if (config.getNotifier() != null) {
-				this.config.getNotifier().cleanup();
-			}
 			notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_TASK_END, new WorkflowInterpreterInteractor.TaskNotification("Stop Workflow",
 					"Cleaning up resources for Workflow", uuid.toString()));
 
-			this.getWorkflow().setExecutionState(WorkflowExecutionState.NONE);
 		} catch (RuntimeException e) {
 			// we reset all the state
 			cleanup();
             this.config.getNotifier().workflowFailed(e.getMessage());
-            this.config.getNotifier().cleanup();
-			this.getWorkflow().setExecutionState(WorkflowExecutionState.NONE);
-			raiseException(e);
+        	raiseException(e);
 		} catch (AiravataAPIInvocationException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+        }finally{
+        	cleanup();
+			if (config.getNotifier() != null) {
+				this.config.getNotifier().cleanup();
+			}
+			this.getWorkflow().setExecutionState(WorkflowExecutionState.NONE);
+	    }
     }
 
 	/**
@@ -556,9 +555,6 @@ public class WorkflowInterpreter {
 
 		}
 		this.config.getNotifier().sendingPartialResults(outputValues.toArray(), outputKeywords.toArray(new String[outputKeywords.size()]));
-		cleanup();
-		this.config.getNotifier().cleanup();
-
 	}
 
 	private void executeDynamically(final Node node) throws WorkflowException {
