@@ -81,6 +81,12 @@
 			<groupId>com.jcabi</groupId>
 			<artifactId>jcabi-aspects</artifactId>
 			<version>0.9</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.jboss.logging</groupId>
+					<artifactId>jboss-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>
