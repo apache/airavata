@@ -2,6 +2,37 @@ Apache Airavata Release Notes
 
 See http://issues.apache.org/jira/browse/AIRAVATA-* (where * is the number of the issue below)
 
+Apache Airavata Version 0.10 Released on 2013-10-29
+==================================================
+This release focused on bug fixes and GSISSH library/provider for beta testing. GSISSH Library provides connectivity to remote resources using grid security, SSH keys and kerberos authentication. Feel free to explore the library https://svn.apache.org/repos/asf/airavata/trunk/tools/gsissh or work with GSISSHProvider in GFAC. This library is still in testing phase and contributions are welcome like libraries to different job managers and testing with different resources.   
+Below you will find detail list of JIRA tasks/issue resolutions incorporated in 0.10.
+
+
+** Sub-task
+    * [AIRAVATA-760] - GSISSH provider to run simple job manager commands provided by the user
+    * [AIRAVATA-761] - Input output data transfer using gsiscp or GridFTP
+    * [AIRAVATA-763] - Extending GFAC schema to support GSI hosts configurations
+    * [AIRAVATA-928] - Prepare release
+
+
+
+** Bug
+    * [AIRAVATA-744] - Cleanup configurations files
+    * [AIRAVATA-756] - Ensure Airavata can renew proxy for long running jobs.
+    * [AIRAVATA-882] - Tomcat port configuration accessing problem in certain older tomcat 7 version
+    * [AIRAVATA-920] - XBaya initialization fails when it is initialized from another client application
+    * [AIRAVATA-931] - GSISSHProviderTest is not working
+    * [AIRAVATA-933] - Regex in OutputUtils does not support space in output string
+    * [AIRAVATA-939] - When workflow fail it goes to workflow completed mode and not showing the red node
+
+
+
+** Improvement
+    * [AIRAVATA-870] - Enable CORS support in Airavata server
+    * [AIRAVATA-880] - Have a UserRegistry API to support user related operations
+    * [AIRAVATA-912] - [GSoC] JSON equivalent of XWF files
+
+
 Apache Airavata Version 0.9 Released on 2013-09-18
 ==================================================
 This release mainly focused on "Credential Store" functionality within Airavata. This release includes initial version of "Credential Store" and a sample-gateway (within samples) to demonstrate the functionality of "Credential Store". In addition we upgrade JGlobus version to 2.0.6. With the JGlobus upgrade we introduced functionalities such as "Two phase commit", "Job cancellation" etc ... In addition we introduced a new workflow interpreter and also introduced a REST API for workflow execution. JGlobus upgrade is well tested and some of the use cases we tested can be found in https://svn.apache.org/repos/asf/airavata/sandbox/grd-tools. Below you will find detail list of Jira tasks/issue resolutions incoporated in 0.9.
