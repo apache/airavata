@@ -23,12 +23,6 @@ package com.jcraft.jsch;
 
 import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
 
-/**
- * User: AmilaJ (amilaj@apache.org)
- * Date: 8/15/13
- * Time: 10:06 AM
- */
-
 public class ExtendedSession extends Session {
 
     private GSIAuthenticationInfo authenticationInfo;

@@ -21,12 +21,6 @@
 
 package com.jcraft.jsch;
 
-/**
- * User: AmilaJ (amilaj@apache.org)
- * Date: 10/4/13
- * Time: 12:37 PM
- */
-
 public class GSISSHIdentityRepository extends LocalIdentityRepository {
 
     public GSISSHIdentityRepository(JSch jsch) {
