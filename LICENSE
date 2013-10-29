@@ -217,6 +217,20 @@ jackson-jaxrs-1.9.2.jar, jackson-mapper-asl-1.9.2.jar, jackson-xc-1.9.2.jar,
 jets3t-0.8.0.jar, jettison-1.0-RC2.jar, neethi-2.0.4.jar, PDFBox libraries 
 (pdfbox, jempbox, fontbox), wstx-asl-3.2.4.jar
 
+- Bean Validation API (http://beanvalidation.org) javax.validation:validation-api:jar:1.1.0.Final
+- Hibernate Validator Engine (http://validator.hibernate.org/hibernate-validator) org.hibernate:hibernate-validator:jar:4.3.0.Final
+- GSS-API implementation for SSL with proxies (https://github.com/jglobus/JGlobus/gss) org.jglobus:gss:jar:2.0.6
+- SSL support (https://github.com/jglobus/JGlobus/jsse) org.jglobus:jsse:jar:2.0.6
+- myproxy (https://github.com/jglobus/JGlobus/myproxy) org.jglobus:myproxy:jar:2.0.6
+- SSL and proxy certificate support (https://github.com/jglobus/JGlobus/ssl-proxies) org.jglobus:ssl-proxies:jar:2.0.6
+- Bouncy Castle for GSS (https://github.com/jsiwek/BouncyCastleSSLv3) org.ogce:bcgss:jar:146
+- StAX API (http://stax.codehaus.org/) stax:stax-api:jar:1.0.1
+- Commons Codec (http://commons.apache.org/codec/) commons-codec:commons-codec:jar:1.4
+- Commons IO (http://commons.apache.org/io/) commons-io:commons-io:jar:1.4
+- Commons Lang (http://commons.apache.org/lang/) commons-lang:commons-lang:jar:2.6
+- Commons Logging (http://commons.apache.org/logging) commons-logging:commons-logging:jar:1.1.1
+- XmlBeans (http://xmlbeans.apache.org) org.apache.xmlbeans:xmlbeans:jar:2.5.0
+
 ===============================================================================
 The following components use Apache based Licenses
 ===============================================================================
@@ -1235,6 +1249,9 @@ XML API library, org.w3c classes (xml-apis)
 The following components come under the Eclipse Public 1.0 License 
 =============================================================================== 
 Eclipse JDT Core (core-3.1.1.jar)
+
+-AspectJ runtime (http://www.aspectj.org) org.aspectj:aspectjrt:jar:1.6.12
+    License: Eclipse Public License - v 1.0  (http://www.eclipse.org/legal/epl-v10.html)
 
   Eclipse Public License - v 1.0
 
@@ -2269,4 +2286,101 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+================================================================================
 
+From: 'JCraft,Inc.' (http://www.jcraft.com/)
+  - JSch (http://www.jcraft.com/jsch/) com.jcraft:jsch:jar:0.1.50
+    License: Revised BSD  (http://www.jcraft.com/jsch/LICENSE.txt)
+    
+================================================================================
+
+Copyright (c) 2002-2012 Atsuhiko Yamanaka, JCraft,Inc. 
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+  1. Redistributions of source code must retain the above copyright notice,
+     this list of conditions and the following disclaimer.
+
+  2. Redistributions in binary form must reproduce the above copyright 
+     notice, this list of conditions and the following disclaimer in 
+     the documentation and/or other materials provided with the distribution.
+
+  3. The names of the authors may not be used to endorse or promote products
+     derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL JCRAFT,
+INC. OR ANY CONTRIBUTORS TO THIS SOFTWARE BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+================================================================================
+
+From: 'jcabi.com' (http://www.jcabi.com)
+  - jcabi-aspects (http://www.jcabi.com/jcabi-aspects) com.jcabi:jcabi-aspects:jar:0.9
+    License: BSD  (http://www.jcabi.com/LICENSE.txt)
+  - jcabi-log (http://www.jcabi.com/jcabi-log) com.jcabi:jcabi-log:jar:0.7
+    License: BSD  (http://www.jcabi.com/LICENSE.txt)
+================================================================================
+
+Copyright (c) 2012-2013, JCabi.com
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met: 1) Redistributions of source code must retain the above
+copyright notice, this list of conditions and the following
+disclaimer. 2) Redistributions in binary form must reproduce the above
+copyright notice, this list of conditions and the following
+disclaimer in the documentation and/or other materials provided
+with the distribution. 3) Neither the name of the jcabi.com nor
+the names of its contributors may be used to endorse or promote
+products derived from this software without specific prior written
+permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+OF THE POSSIBILITY OF SUCH DAMAGE.
+
+================================================================================
+- Bouncy Castle Provider (http://www.bouncycastle.org/java.html) org.bouncycastle:bcprov-jdk16:jar:1.45
+    License: Bouncy Castle Licence  (http://www.bouncycastle.org/licence.html)
+================================================================================
+
+Please note this should be read in the same way as the MIT license.
+
+LICENSE
+Copyright (c) 2000 - 2013 The Legion of the Bouncy Castle Inc. (http://www.bouncycastle.org)
+
+Permission is hereby granted, free of charge, to any person obtaining a 
+copy of this software and associated documentation files (the "Software"), 
+to deal in the Software without restriction, including without limitation 
+the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+and/or sell copies of the Software, and to permit persons to whom the Software 
+is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included
+ in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+DEALINGS IN THE SOFTWARE.
