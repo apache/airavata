@@ -205,7 +205,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         compatibleVersionMap.put("0.7", new String[]{"0.6", "0.7"});
         compatibleVersionMap.put("0.8", new String[]{"0.8"});
         compatibleVersionMap.put("0.9", new String[]{"0.9","0.8"});
-        compatibleVersionMap.put("0.10", new String[]{"0.10","0.9"});
+        compatibleVersionMap.put("0.10", new String[]{"0.10","0.9", "0.8"});
     }
 
     /**
