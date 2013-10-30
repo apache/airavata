@@ -476,6 +476,7 @@
                                 <exclude>**/*.jks</exclude>
                                 <exclude>**/*.pem</exclude>
                                 <exclude>**/*.pk8</exclude>
+				 <exclude>modules/integration-tests/integration-tests.log</exclude>
                             </excludes>
                         </configuration>
                         <executions>
