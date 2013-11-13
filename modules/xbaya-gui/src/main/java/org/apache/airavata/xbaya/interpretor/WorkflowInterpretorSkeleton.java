@@ -48,6 +48,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ServiceUtils;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.experiment.execution.InterpreterService;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.apache.airavata.schemas.gfac.SSHHostType;
@@ -63,6 +64,7 @@ import org.apache.airavata.ws.monitor.MonitorException;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.concurrent.PredicatedTaskRunner;
+import org.apache.airavata.xbaya.interpretor.thrift.InterpreterServiceHandler;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
@@ -71,6 +73,11 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.engine.ServiceLifeCycle;
+import org.apache.thrift.server.TServer;
+import org.apache.thrift.server.TSimpleServer;
+import org.apache.thrift.transport.TServerSocket;
+import org.apache.thrift.transport.TServerTransport;
+import org.apache.thrift.transport.TTransportException;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,6 +98,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     public static final String MYPROXY_SERVER = "myproxy.server";
     public static final String MYPROXY_LIFETIME = "myproxy.life";
     public static final String TRUSTED_CERT_LOCATION = "trusted.cert.location";
+    public static final String THRIFT_SERVER_PORT = "thrift.server.port";
 
     public static boolean provenance = false;
     public static final String PROVENANCE = "provenance";
@@ -204,11 +212,22 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 					 */
 					thread = new WIServiceThread(getAiravataAPI(), configctx);
 					thread.start();
+
+                    InterpreterService.Processor<InterpreterServiceHandler> processor = new InterpreterService.Processor<InterpreterServiceHandler>(new InterpreterServiceHandler());
+                    String thriftPort = ServerSettings.getSetting(THRIFT_SERVER_PORT);
+                    TServerTransport serverTransport = new TServerSocket(Integer.parseInt(thriftPort));
+                    TServer server = new TSimpleServer(
+                            new TServer.Args(serverTransport).processor(processor));
+
+                    log.info("Starting the simple thrift server...");
+                    server.serve();
 		        } catch (IOException e) {
 		            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 		        } catch (URISyntaxException e) {
 					e.printStackTrace();
 				} catch (ApplicationSettingsException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                } catch (TTransportException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
                 WorkflowInterpretorSkeleton.configurationContext = configctx;

@@ -40,13 +40,7 @@ import org.apache.airavata.client.api.UserManager;
 import org.apache.airavata.client.api.WorkflowManager;
 import org.apache.airavata.client.api.builder.DescriptorBuilder;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.client.impl.AiravataManagerImpl;
-import org.apache.airavata.client.impl.ApplicationManagerImpl;
-import org.apache.airavata.client.impl.ExecutionManagerImpl;
-import org.apache.airavata.client.impl.PasswordCallBackImpl;
-import org.apache.airavata.client.impl.ProvenanceManagerImpl;
-import org.apache.airavata.client.impl.UserManagerImpl;
-import org.apache.airavata.client.impl.WorkflowManagerImpl;
+import org.apache.airavata.client.impl.*;
 import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ApplicationSettings;
@@ -92,7 +86,8 @@ public class AiravataClient extends Observable implements AiravataAPI {
 	private WorkflowManagerImpl workflowManagerImpl;
 	private ProvenanceManagerImpl provenanceManagerImpl;
 	private UserManagerImpl userManagerImpl;
-	private ExecutionManagerImpl executionManagerImpl;
+//	private ExecutionManagerThriftImpl executionManagerImpl;
+    private ExecutionManagerImpl executionManagerImpl;
 	private String gateway;
 	private boolean configCreated = false;
 
@@ -353,6 +348,7 @@ public class AiravataClient extends Observable implements AiravataAPI {
 
 	public ExecutionManager getExecutionManager() {
 		if (executionManagerImpl == null) {
+//			executionManagerImpl = new ExecutionManagerThriftImpl(this);
 			executionManagerImpl = new ExecutionManagerImpl(this);
 		}
 		return executionManagerImpl;
