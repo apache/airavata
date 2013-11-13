@@ -124,6 +124,9 @@
                 <include>org.apache.airavata:airavata-jpa-registry:jar</include>
                 <include>org.apache.airavata:airavata-rest-mappings:jar</include>
                 <include>org.apache.airavata:airavata-rest-client:jar</include>
+                <include>org.apache.airavata:airavata-interpreter-service-client:jar</include>
+                <include>org.apache.airavata:airavata-interpreter-service:jar</include>
+                <include>org.apache.airavata:airavata-interpreter-service-handler:jar</include>
                 <include>org.apache.airavata:airavata-xbaya-gui</include>
                 <include>org.apache.openjpa:openjpa-all:jar</include>
                 <include>com.sun.jersey:jersey-client:jar</include>
@@ -151,8 +154,11 @@
                 <!--<include>org.apache.httpcomponents:httpcore:jar</include> -->
                 <include>org.apache.axis2:axis2-adb:jar</include>
                 <include>com.google.guava:guava</include>
-                <include>org.apache.httpcomponents:httpcore:jar:4.1</include>
-                <include>org.apache.httpcomponents:httpclient:jar:4.1</include>
+                <include>org.apache.httpcomponents:httpcore:jar:4.3</include>
+                <include>org.apache.httpcomponents:httpclient:jar:4.3</include>
+                <include>org.globusonline:transfer-api-client-java:jar:0.10.8-SNAPSHOT</include>
+                <include>org.bouncycastle:bcprov-jdk16:jar:1.45</include>
+                <include>org.apache.thrift:libthrift:jar:0.9.1</include>
             </includes>
         </dependencySet>
     </dependencySets>
