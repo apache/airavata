@@ -138,7 +138,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     private static int CONNECT_FAIL_WAIT_TIME=1000;
     private static int MAX_TRIES=15;
     private static final String DEFAULT_PROJECT_NAME = "default";
-    private static final Version API_VERSION=new Version("Airavata Registry API",0,10,null,null,null);
+    private static final Version API_VERSION=new Version("Airavata Registry API",0,11,null,null,null);
 
     private JPAResourceAccessor jpa;
     private boolean active=false;
@@ -206,6 +206,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         compatibleVersionMap.put("0.8", new String[]{"0.8"});
         compatibleVersionMap.put("0.9", new String[]{"0.9","0.8"});
         compatibleVersionMap.put("0.10", new String[]{"0.10","0.9", "0.8"});
+        compatibleVersionMap.put("0.11", new String[]{"0.11","0.10","0.9", "0.8"});
     }
 
     /**
