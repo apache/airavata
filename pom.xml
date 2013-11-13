@@ -439,6 +439,7 @@
                 <module>modules/security</module>
                 <module>modules/credential-store</module>
                 <module>modules/rest</module>
+                <module>modules/thrift</module>
                 <module>tools</module>
                 <module>samples</module>
                 <module>modules/server</module>
