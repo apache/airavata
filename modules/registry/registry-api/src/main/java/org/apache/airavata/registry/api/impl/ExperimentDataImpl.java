@@ -70,12 +70,18 @@ public class ExperimentDataImpl implements ExperimentData{
 
     @Override
     public WorkflowExecutionStatus.State getState() throws ExperimentLazyLoadedException {
-        return getWorkflowExecutionDataList().get(0).getState();
+        if (executionStatus != null)
+            return executionStatus.getExecutionStatus();
+        else
+            return getWorkflowExecutionDataList().get(0).getState();
     }
 
     @Override
     public Date getStatusUpdateTime() throws ExperimentLazyLoadedException {
-        return getWorkflowExecutionDataList().get(0).getStatusUpdateTime();
+        if (executionStatus != null)
+            return executionStatus.getStatusUpdateTime();
+        else
+            return getWorkflowExecutionDataList().get(0).getStatusUpdateTime();
     }
 
     @Override
