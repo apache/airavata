@@ -21,11 +21,6 @@
 
 package org.apache.airavata.persistance.registry.jpa.resources;
 
-import org.apache.airavata.persistance.registry.jpa.Resource;
-import org.apache.airavata.persistance.registry.jpa.ResourceType;
-import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
-import org.apache.airavata.persistance.registry.jpa.model.Users;
-import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
 import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
 import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
@@ -41,8 +36,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 
 public class ExperimentDataRetriever {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentDataRetriever.class);
@@ -121,10 +114,20 @@ public class ExperimentDataRetriever {
             workflowInstances.add(workflowInstance);
             Date lastUpdateDate = getTime(rs.getString(9));
             String wdStatus = rs.getString(7);
+            WorkflowExecutionStatus workflowExecutionStatus = new WorkflowExecutionStatus(workflowInstance,
+                    createExecutionStatus(wdStatus),lastUpdateDate);
             workflowInstanceData = new WorkflowExecutionDataImpl(null,
-                    workflowInstance, new WorkflowExecutionStatus(workflowInstance,
-                    createExecutionStatus(wdStatus),lastUpdateDate), null);
-            workflowInstanceData.setExperimentData((ExperimentDataImpl)experimentData);
+                    workflowInstance, workflowExecutionStatus, null);
+            ExperimentDataImpl expData = (ExperimentDataImpl) experimentData;
+            workflowInstanceData.setExperimentData(expData);
+            // Set the last updated workflow's status and time as the experiment's status
+            if(expData.getExecutionStatus()!=null) {
+            	if(expData.getExecutionStatus().getStatusUpdateTime().compareTo(workflowExecutionStatus.getStatusUpdateTime())<0) {
+            		expData.setExecutionStatus(workflowExecutionStatus);
+                }
+            } else {
+            	expData.setExecutionStatus(workflowExecutionStatus);
+            }
             experimentData.getWorkflowExecutionDataList().add(workflowInstanceData);
         }
         WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(workflowInstanceData.getWorkflowExecution(), rs.getString(10));
