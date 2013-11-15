@@ -47,6 +47,9 @@ import java.util.*;
 public class ExecutionManagerThriftImpl implements ExecutionManager {
     private AiravataClient client;
 
+    public ExecutionManagerThriftImpl() {
+    }
+
     public ExecutionManagerThriftImpl(AiravataClient client) {
         setClient(client);
     }
