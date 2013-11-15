@@ -63,7 +63,10 @@ import org.apache.axis2.AxisFault;
 public class ExecutionManagerImpl implements ExecutionManager {
 	private AiravataClient client;
 
-	public ExecutionManagerImpl(AiravataClient client) {
+    public ExecutionManagerImpl() {
+    }
+
+    public ExecutionManagerImpl(AiravataClient client) {
 		setClient(client);
 	}
 

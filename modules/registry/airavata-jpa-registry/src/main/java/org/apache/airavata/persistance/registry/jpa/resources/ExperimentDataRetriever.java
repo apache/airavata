@@ -94,6 +94,7 @@ public class ExperimentDataRetriever {
         } catch (ClassNotFoundException e) {
             logger.error(e.getMessage(), e);
         } catch (SQLException e){
+            logger.error(e.getMessage());
         }catch (ParseException e) {
             logger.error(e.getMessage(), e);
         } catch (ExperimentLazyLoadedException e) {
