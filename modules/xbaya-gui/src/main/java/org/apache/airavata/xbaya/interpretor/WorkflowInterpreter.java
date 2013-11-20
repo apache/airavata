@@ -433,7 +433,7 @@ public class WorkflowInterpreter {
 	private void sendOutputsDynamically() throws WorkflowException, AiravataAPIInvocationException {
 		ArrayList<Node> outputNodes = getReadyOutputNodesDynamically();
 		if (outputNodes.size() != 0) {
-			LinkedList<Object> outputValues = new LinkedList<Object>();
+            LinkedList<Object> outputValues = new LinkedList<Object>();
 			LinkedList<String> outputKeywords = new LinkedList<String>();
 			for (Node node : outputNodes) {
 				// Change it to processing state so we will not pic it up in the
@@ -477,6 +477,8 @@ public class WorkflowInterpreter {
 										.saveWorkflowExecutionOutput(this.config.getTopic(), node.getName(),
 												XMLUtil.xmlElementToString((org.xmlpull.v1.builder.XmlElement) val));
 							}
+                            outputValues.add(val);
+                            outputKeywords.add(dataPort.getID());
 						} catch (AiravataAPIInvocationException e) {
 							e.printStackTrace(); // To change body of catch
 													// statement use File |
@@ -487,7 +489,6 @@ public class WorkflowInterpreter {
 					node.setState(NodeExecutionState.FINISHED);
 				}
 			}
-			this.config.getNotifier().sendingPartialResults(outputValues.toArray(), outputKeywords.toArray(new String[outputKeywords.size()]));
 
 		}
 	}
@@ -519,7 +520,7 @@ public class WorkflowInterpreter {
 					throw new WorkFlowInterpreterException("Unable to find output for the node:" + node.getID());
 				}
 				// Some node not yet updated
-				if (node.getState() != NodeExecutionState.FINISHED) {
+				if (node.getState().equals(NodeExecutionState.FINISHED)) {
 					if (this.config.isActOnProvenance()) {
 						try {
 							if (val instanceof String) {
@@ -549,6 +550,8 @@ public class WorkflowInterpreter {
 					} else {
 						((OutputNode) node).setDescription(val.toString());
 					}
+                    outputValues.add(val);
+                    outputKeywords.add(dataPort.getID());
 					node.setState(NodeExecutionState.FINISHED);
 				}
 			}
