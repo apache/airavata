@@ -190,7 +190,7 @@ public class GridFTPOutputHandler implements GFacHandler {
                     }
                 } catch (ToolsException e) {
                     log.error(e.getMessage());
-                    throw new GFacHandlerException(e.getMessage(), e, readLastLinesofStdOut(localStdErrFile.getPath(), 20));
+                    throw new GFacHandlerException(e.getMessage() + "\n StdError Data: \n" +readLastLinesofStdOut(localStdErrFile.getPath(), 20),e);
                 } catch (URISyntaxException e) {
                     log.error(e.getMessage());
                     throw new GFacHandlerException("URI is malformatted:" + e.getMessage(), e, readLastLinesofStdOut(localStdErrFile.getPath(), 20));
