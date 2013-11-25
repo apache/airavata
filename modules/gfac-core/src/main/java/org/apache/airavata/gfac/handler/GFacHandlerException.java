@@ -31,27 +31,16 @@ public class GFacHandlerException extends GFacException {
 
     public GFacHandlerException(String message) {
         super(message, new Throwable(message));
-        sendFaultNotification(message, new Exception(message));
         log.error(message);
     }
 
     public GFacHandlerException(String s, Throwable throwable) {
         super(s, throwable);
-        sendFaultNotification(s, new Exception(throwable));
         log.error(s,throwable);
     }
 
     public GFacHandlerException(String message, Exception e, String... additionExceptiondata) {
         super(message, e);
-        sendFaultNotification(message, e, additionExceptiondata);
         log.error(message,e);
-    }
-
-    private void sendFaultNotification(String message,
-                                        Exception e,
-                                       String... additionalExceptiondata) {
-        if (additionalExceptiondata == null || additionalExceptiondata.length == 0) {
-            additionalExceptiondata = new String[]{message, e.getLocalizedMessage()};
-        }
     }
 }
