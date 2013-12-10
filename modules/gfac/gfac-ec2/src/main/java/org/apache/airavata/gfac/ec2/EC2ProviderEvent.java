@@ -19,7 +19,9 @@
  *
  */
 
-package org.apache.airavata.gfac.notification.events;
+package org.apache.airavata.gfac.ec2;
+
+import org.apache.airavata.gfac.notification.events.GFacEvent;
 
 public class EC2ProviderEvent extends GFacEvent {
     String statusMessage;
