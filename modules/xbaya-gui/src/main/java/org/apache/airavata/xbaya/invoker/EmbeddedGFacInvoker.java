@@ -72,7 +72,6 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
-import org.jets3t.service.impl.rest.httpclient.GoogleStorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
