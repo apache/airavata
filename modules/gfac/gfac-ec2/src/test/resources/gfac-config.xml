@@ -9,7 +9,7 @@
     WARRANTIES OR CONDITIONS OF ANY ~ KIND, either express or implied. See the
     License for the ~ specific language governing permissions and limitations
     ~ under the License. -->
-
+    
 <GFac>
     <GlobalHandlers>
         <InHandlers>
@@ -24,7 +24,7 @@
             <Handler class="org.apache.airavata.gfac.handler.LocalDirectorySetupHandler"/>
         </InHandlers>
     </Provider>
-   <Provider class="org.apache.airavata.gfac.provider.impl.GramProvider" host="org.apache.airavata.schemas.gfac.impl.GlobusHostTypeImpl">
+    <Provider class="org.apache.airavata.gfac.provider.impl.GramProvider" host="org.apache.airavata.schemas.gfac.impl.GlobusHostTypeImpl">
         <property name="name" value="value"/>
         <InHandlers>
             <Handler class="org.apache.airavata.gfac.handler.GramDirectorySetupHandler">

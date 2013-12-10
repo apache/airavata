@@ -44,6 +44,14 @@
     <server>
         <name>globus-stampede</name>
         <type>globus</type>
+        <monitor host="stampede.tacc.utexas.edu">
+                <primary>org.apache.airavata.monitor.impl.AMQPMonitor</primary>
+                <secondary>org.apache.airavata.monitor.impl.GramMonitor</secondary>
+        </monitor>
+        <monitor hostType="SSHHostTypeImpl">
+            <primary>org.apache.airavata.monitor.impl.MoabMonitor</primary>
+            <secondary>org.apache.airavata.monitor.impl.QstatMonitor</secondary>
+        </monitor>
         <host>stampede.tacc.utexas.edu</host>
         <gram.endpoint>login5.stampede.tacc.utexas.edu:2119/jobmanager-slurm3</gram.endpoint>
         <gridftp.endpoint>gsiftp://data1.stampede.tacc.utexas.edu:2811/</gridftp.endpoint>
