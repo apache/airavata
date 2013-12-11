@@ -46,7 +46,7 @@ import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
-import org.apache.airavata.gfac.context.security.AmazonSecurityContext;
+import org.apache.airavata.gfac.ec2.AmazonSecurityContext;
 import org.apache.airavata.registry.api.workflow.WorkflowExecution;
 import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
