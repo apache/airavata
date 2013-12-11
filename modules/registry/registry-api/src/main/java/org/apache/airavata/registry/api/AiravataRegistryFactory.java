@@ -21,14 +21,11 @@
 
 package org.apache.airavata.registry.api;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
-import java.util.Properties;
-
 import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.registry.api.exception.*;
 import org.apache.airavata.registry.api.util.RegistrySettings;
+
+import java.net.URI;
 
 public class AiravataRegistryFactory {
 
