@@ -21,98 +21,96 @@
 
 namespace java org.apache.airavata.experiment.execution
 
-typedef string ExperimentName
-typedef map<string,string> workflowInputs
 
 struct HPCSettings {
-    1:string jobManager;
-    2:i32 cpuCount;
-    3:i32 nodeCount;
-    4:string queueName;
-    5:i32 maxWalltime;
+    1:optional string jobManager;
+    2:optional i32 cpuCount;
+    3:optional i32 nodeCount;
+    4:optional string queueName;
+    5:optional i32 maxWalltime;
 }
 
 struct HostSchedulingSettings {
-    1:string hostID;
-    2:bool isWSGramPreferred;
-    3:string gatekeeperEPR;
+    1:optional string hostID;
+    2:optional bool isWSGramPreferred;
+    3:optional string gatekeeperEPR;
 }
 
 struct NameValuePairType {
-    1:string name;
-    2:string value;
-    3:string description;
+    1:optional string name;
+    2:optional string value;
+    3:optional string description;
 }
 
 struct NodeSettings {
-    1:string nodeId;
-    2:string serviceId;
-    3:HostSchedulingSettings hostSchedulingSettings;
-    4:HPCSettings hpcSettings;
-    5:list<NameValuePairType> nameValuePairList;
+    1:optional string nodeId;
+    2:optional string serviceId;
+    3:optional HostSchedulingSettings hostSchedulingSettings;
+    4:optional HPCSettings hpcSettings;
+    5:optional list<NameValuePairType> nameValuePairList;
 }
 
 struct WorkflowSchedulingSettings {
-    1:list<NodeSettings> nodeSettingsList;
+    1:optional list<NodeSettings> nodeSettingsList;
 }
 
 struct OutputDataSettings {
-    1:string nodeID;
-    2:string outputdataDir;
-    3:string dataRegURL;
-    4:bool isdataPersisted;
+    1:optional string nodeID;
+    2:optional string outputdataDir;
+    3:optional string dataRegURL;
+    4:optional bool isdataPersisted;
 }
 
 struct WorkflowOutputDataSettings{
-    1:list<OutputDataSettings> outputDataSettingsList;
+    1:optional list<OutputDataSettings> outputDataSettingsList;
 }
 
 struct SSHAuthenticationSettings {
-    1:string accessKeyID;
-    2:string secretAccessKey;
+    1:optional string accessKeyID;
+    2:optional string secretAccessKey;
 }
 
 struct MyProxyRepositorySettings {
-    1:string userName;
-    2:string password;
-    3:string myproxyServer;
-    4:i32 lifetime;
+    1:optional string userName;
+    2:optional string password;
+    3:optional string myproxyServer;
+    4:optional i32 lifetime;
 }
 
 struct CredentialStoreSecuritySettings {
-    1:string tokenId;
-    2:string portalUser;
-    3:string gatewayID;
+    1:optional string tokenId;
+    2:optional string portalUser;
+    3:optional string gatewayID;
 }
 
 struct AmazonWebServicesSettings {
-    1:string accessKey;
-    2:string amiID;
-    3:string instanceID;
-    4:string instanceType;
-    5:string secretAccessKey;
-    6:string username;
+    1:optional string accessKey;
+    2:optional string amiID;
+    3:optional string instanceID;
+    4:optional string instanceType;
+    5:optional string secretAccessKey;
+    6:optional string username;
 }
 
 struct SecuritySettings {
-    1:AmazonWebServicesSettings amazonWSSettings;
-    2:CredentialStoreSecuritySettings credentialStoreSettings;
-    3:MyProxyRepositorySettings myproxySettings;
-    4:SSHAuthenticationSettings sshAuthSettings;
+    1:optional AmazonWebServicesSettings amazonWSSettings;
+    2:optional CredentialStoreSecuritySettings credentialStoreSettings;
+    3:optional MyProxyRepositorySettings myproxySettings;
+    4:optional SSHAuthenticationSettings sshAuthSettings;
 }
 
 struct ExperimentAdvanceOptions {
-    1:string executionUser;
-    2:string metadata;
-    3:string experimentName;
-    4:string customExperimentId;
-    5:WorkflowSchedulingSettings workflowSchedulingSettings;
-    6:WorkflowOutputDataSettings workflowOutputDataSettings;
-    7:SecuritySettings securitySettings;
+    1:optional string executionUser;
+    2:optional string metadata;
+    3:optional string experimentName;
+    4:optional string customExperimentId;
+    5:optional WorkflowSchedulingSettings workflowSchedulingSettings;
+    6:optional WorkflowOutputDataSettings workflowOutputDataSettings;
+    7:optional SecuritySettings securitySettings;
 }
 
 service InterpreterService {
-    string runExperiment(1:string workflowTemplateName, 2:map<string,string> workflowInputs, ExperimentAdvanceOptions experimentAdOptions),
+    string runExperiment(1:string workflowTemplateName, 2:map<string,string> workflowInputs, 3: ExperimentAdvanceOptions experimentAdOptions),
     void cancelExperiment(1:string experimentID),
     void suspendExperiment(1:string experimentID),
     void resumeExperiment(1:string experimentID)
