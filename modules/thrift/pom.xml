@@ -32,7 +32,7 @@
             <modules>
                 <module>interpreter-service</module>
                 <module>interpreter-service-client</module>
-                <!--<module>interpreter-service-handler</module>-->
+                <module>interpreter-service-handler</module>
             </modules>
         </profile>
     </profiles>
