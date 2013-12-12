@@ -21,21 +21,6 @@
 
 package org.apache.airavata.xbaya.interpretor;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
@@ -64,7 +49,6 @@ import org.apache.airavata.ws.monitor.MonitorException;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.concurrent.PredicatedTaskRunner;
-import org.apache.airavata.xbaya.interpretor.thrift.InterpreterServiceHandler;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
@@ -81,6 +65,16 @@ import org.apache.thrift.transport.TTransportException;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.*;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
 
 /**
@@ -98,7 +92,6 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     public static final String MYPROXY_SERVER = "myproxy.server";
     public static final String MYPROXY_LIFETIME = "myproxy.life";
     public static final String TRUSTED_CERT_LOCATION = "trusted.cert.location";
-    public static final String THRIFT_SERVER_PORT = "thrift.server.port";
 
     public static boolean provenance = false;
     public static final String PROVENANCE = "provenance";
@@ -106,7 +99,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     public static  String systemUserPW = "";
     public static boolean runInThread = false;
     public static final String RUN_IN_THREAD = "runInThread";
-    public static  Boolean gfacEmbeddedMode = false;
+    public static  Boolean gfacEmbeddedMode = true;
     private static PredicatedTaskRunner runner = null;
 //    public static  JCRComponentRegistry jcrComponentRegistry = null;
     private static AiravataAPI airavataAPI=null;
@@ -212,22 +205,11 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 					 */
 					thread = new WIServiceThread(getAiravataAPI(), configctx);
 					thread.start();
-
-                    InterpreterService.Processor<InterpreterServiceHandler> processor = new InterpreterService.Processor<InterpreterServiceHandler>(new InterpreterServiceHandler());
-                    String thriftPort = ServerSettings.getSetting(THRIFT_SERVER_PORT);
-                    TServerTransport serverTransport = new TServerSocket(Integer.parseInt(thriftPort));
-                    TServer server = new TSimpleServer(
-                            new TServer.Args(serverTransport).processor(processor));
-
-                    log.info("Starting the simple thrift server...");
-                    server.serve();
-		        } catch (IOException e) {
-		            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-		        } catch (URISyntaxException e) {
-					e.printStackTrace();
-				} catch (ApplicationSettingsException e) {
+                } catch (IOException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (TTransportException e) {
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                } catch (ApplicationSettingsException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
                 WorkflowInterpretorSkeleton.configurationContext = configctx;
@@ -274,7 +256,6 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     }
 
     /**
-     *
      * @param workflowAsString
      * @param topic
      * @param inputs
@@ -355,6 +336,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         workflowContextHeaderBuilder.setSubmissionUser(submissionUser);
 		return workflowContextHeaderBuilder;
     }
+
     public String setupAndLaunch(String workflowAsString, String experimentId, String gatewayId, String username,
             Map<String,String> inputs,boolean inNewThread,WorkflowContextHeaderBuilder builder) throws AiravataAPIInvocationException{
     	List<NameValue> inputData=new ArrayList<NameValue>();
@@ -370,6 +352,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 
     	return setupAndLaunch(workflowAsString, experimentId, gatewayId, username, inputData.toArray(new NameValue[]{}), configuration, inNewThread, builder);
     }
+
     private String setupAndLaunch(String workflowAsString, String topic, String gatewayId, String username,
                                   NameValue[] inputs,Map<String,String>configurations,boolean inNewThread,
                                   WorkflowContextHeaderBuilder builder) throws AiravataAPIInvocationException{
@@ -411,7 +394,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         WorkflowInterpretorEventListener listener = null;
         WorkflowInterpreter interpreter = null;
         AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(gatewayId, username);
-		WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow,topic,conf.getMessageBoxURL(), conf.getBrokerURL(), airavataAPI, conf, null, null);
+        WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow, topic, conf.getMessageBoxURL(), conf.getBrokerURL(), airavataAPI, conf, null, null);
         workflowInterpreterConfiguration.setGfacEmbeddedMode(gfacEmbeddedMode);
         workflowInterpreterConfiguration.setActOnProvenance(provenance);
 
@@ -423,7 +406,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         interpreter = new WorkflowInterpreter(workflowInterpreterConfiguration, getInteractor());
         listener = new WorkflowInterpretorEventListener(workflow, conf);
         try {
-        	log.debug("start listener set");
+            log.debug("start listener set");
             listener.start();
         } catch (MonitorException e1) {
             e1.printStackTrace();
@@ -573,6 +556,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         }
         return hostDescriptions;
     }
+
     public static final int URL_UPDATE_INTERVAL = 1000 * 60 * 60 * 3;
 
     class WIServiceThread extends PeriodicExecutorThread {

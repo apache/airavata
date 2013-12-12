@@ -83,38 +83,36 @@ public class ExecutionManagerThriftImpl implements ExecutionManager {
     private String runExperimentGeneral(String wfname, List<WorkflowInput> inputs, ExperimentAdvanceOptions options, EventDataListener listener) throws AiravataAPIInvocationException {
         Workflow workflowObj = null;
         try {
-            workflowObj = extractWorkflow(wfname);
-            String experimentID = options.getCustomExperimentId();
-            String workflowTemplateName = workflowObj.getName();
-            if (experimentID == null || experimentID.isEmpty()) {
-                experimentID = workflowTemplateName + "_" + UUID.randomUUID();
-            }
-            options.setCustomExperimentId(experimentID);
-            getClient().getProvenanceManager().setWorkflowInstanceTemplateName(experimentID, workflowTemplateName);
-
-            String submissionUser = getClient().getUserManager().getAiravataUser();
-            String executionUser=options.getExperimentExecutionUser();
-            if (executionUser==null){
-                executionUser=submissionUser;
-            }
-            options.setExperimentExecutionUser(executionUser);
-            runPreWorkflowExecutionTasks(experimentID, executionUser, options.getExperimentMetadata(), options.getExperimentName());
-
-            String workflowContent = extractWorkflowContent(wfname);
+//            workflowObj = extractWorkflow(wfname);
+//            String experimentID = options.getCustomExperimentId();
+//            String workflowTemplateName = workflowObj.getName();
+//            if (experimentID == null || experimentID.isEmpty()) {
+//                experimentID = workflowTemplateName + "_" + UUID.randomUUID();
+//            }
+//            options.setCustomExperimentId(experimentID);
+//            getClient().getProvenanceManager().setWorkflowInstanceTemplateName(experimentID, workflowTemplateName);
+//
+//            String submissionUser = getClient().getUserManager().getAiravataUser();
+//            String executionUser=options.getExperimentExecutionUser();
+//            if (executionUser==null){
+//                executionUser=submissionUser;
+//            }
+//            options.setExperimentExecutionUser(executionUser);
+//            runPreWorkflowExecutionTasks(experimentID, executionUser, options.getExperimentMetadata(), options.getExperimentName());
+//
+//            String workflowContent = extractWorkflowContent(wfname);
             Map<String, String> workflowInputs = new HashMap<String, String>();
             for (WorkflowInput workflowInput : inputs){
                 String name = workflowInput.getName();
                 String value = (String)workflowInput.getValue();
                 workflowInputs.put(name, value);
             }
-            if (listener!=null){
-                getExperimentMonitor(experimentID, listener).startMonitoring();
-            }
+//            if (listener!=null){
+//                getExperimentMonitor(experimentID, listener).startMonitoring();
+//            }
             org.apache.airavata.experiment.execution.ExperimentAdvanceOptions experimentAdvanceOptions = generateAdvancedOptions(options);
-            return getExecutionClient().runExperiment(workflowContent, workflowInputs, experimentAdvanceOptions);
-        } catch (AiravataAPIInvocationException e) {
-            throw new AiravataAPIInvocationException("Error occured while running the workflow", e);
-        } catch (TException e) {
+            return getExecutionClient().runExperiment(wfname, workflowInputs, experimentAdvanceOptions);
+        }  catch (TException e) {
             throw new AiravataAPIInvocationException("Error occured while running the workflow", e);
         }
     }
