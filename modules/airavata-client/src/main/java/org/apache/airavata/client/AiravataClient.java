@@ -74,7 +74,6 @@ public class AiravataClient extends Observable implements AiravataAPI {
 	public static final String WITHLISTENER = "with.Listener";
 	public static final String WORKFLOWSERVICEURL = "xbaya.service.url";
 	public static final String TRUSTED_CERT_LOCATION = "trusted.cert.location";
-	public static final String EXECUTION_CLASS_IMPL = "class.execution.service.impl";
 	private AiravataClientConfiguration clientConfiguration;
 	private String currentUser;
 	private URI regitryURI;
@@ -349,27 +348,6 @@ public class AiravataClient extends Observable implements AiravataAPI {
 	}
 
 	public ExecutionManager getExecutionManager() {
-        try{
-            String executionImplClass = ClientSettings.getSetting(EXECUTION_CLASS_IMPL);
-            if (executionImplClass == null){
-                throw new ApplicationSettingsException("Execution impl class not defined in client properties");
-            } else {
-                executionManager = getExecutionManagerObj(executionImplClass);
-                if (executionManager instanceof ExecutionManagerImpl){
-                    ((ExecutionManagerImpl) executionManager).setClient(this);
-                }else if (executionManager instanceof  ExecutionManagerThriftImpl){
-                    ((ExecutionManagerThriftImpl) executionManager).setClient(this);
-                }
-            }
-        } catch (ApplicationSettingsException e) {
-            log.error("Error while reading airavata client properties", e);
-        } catch (ClassNotFoundException e) {
-            log.error("Execution Impl class not found", e);
-        } catch (InstantiationException e) {
-            log.error("Unable to instantiate Execution impl class", e);
-        } catch (IllegalAccessException e) {
-            log.error("Illegal access of the execution impl class", e);
-        }
         if (executionManager == null){
             executionManager = new ExecutionManagerImpl(this);
         }

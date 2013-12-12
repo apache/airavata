@@ -31,18 +31,15 @@ import org.apache.thrift.transport.TTransportException;
 import org.apache.airavata.common.utils.ClientSettings;
 
 public class ExecutionClient {
-    public static final String THRIFT_SERVER_PORT = "thrift.server.port";
+    public static final int THRIFT_SERVER_PORT = 9090 ;
 
     public InterpreterService.Client getInterpreterServiceClient (){
         try {
-            String thriftPort = ClientSettings.getSetting(THRIFT_SERVER_PORT);
-            TTransport transport = new TSocket("localhost", Integer.parseInt(thriftPort));
+            TTransport transport = new TSocket("localhost", THRIFT_SERVER_PORT);
             transport.open();
             TProtocol protocol = new TBinaryProtocol(transport);
             return new InterpreterService.Client(protocol);
         } catch (TTransportException e) {
-            e.printStackTrace();
-        } catch (ApplicationSettingsException e) {
             e.printStackTrace();
         }
         return null;
