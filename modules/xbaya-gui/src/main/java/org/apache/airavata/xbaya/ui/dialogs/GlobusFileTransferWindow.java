@@ -179,11 +179,13 @@ public class GlobusFileTransferWindow {
         otherPanel.add(transferLabelTextField.getSwingComponent());
 
         otherPanel.layout(5, 2, GridPanel.WEIGHT_NONE, 1);
+        infoPanel.add(authButtonPanel);
 
         infoPanel.add(otherPanel);
         JPanel buttonPanel = new JPanel();
+        infoPanel.add(buttonPanel);
 
-        infoPanel.layout(2, 1, GridPanel.WEIGHT_NONE, GridPanel.WEIGHT_NONE);
+        infoPanel.layout(3, 1, GridPanel.WEIGHT_NONE, GridPanel.WEIGHT_NONE);
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new AbstractAction() {
