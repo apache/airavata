@@ -22,43 +22,48 @@
 package org.apache.airavata.xbaya.ui.dialogs;
 
 import org.apache.airavata.xbaya.XBayaEngine;
-//import org.apache.airavata.xbaya.globus.GridFTPFileTransferClient;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
+import org.apache.airavata.xbaya.ui.widgets.XBayaComboBox;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
-//import org.globusonline.transfer.APIError;
-//import org.globusonline.transfer.JSONTransferAPIClient;
-//import org.json.JSONException;
+import org.apache.airavata.xbaya.util.GlobusOnlineUtils;
+import org.apache.airavata.xbaya.util.TransferFile;
+import org.globusonline.transfer.APIError;
+import org.json.JSONException;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class GlobusFileTransferWindow {
-    public static final String GLOBUSONLINE_BASE_URL_V0_10 = "https://transfer.api.globusonline.org/v0.10";
-
     private XBayaEngine engine;
 
     private XBayaDialog dialog;
 
     private XBayaTextField usernameTextField;
 
-    private XBayaTextField caFileTextField;
+    private JPasswordField pwdTextField;
 
-    private XBayaTextField certFileTextField;
-
-    private XBayaTextField keyFileTextField;
-
-    private XBayaTextField sourceEndpointTextField;
+    private XBayaComboBox sourceEndpointTextField;
 
     private XBayaTextField sourceFilePathTextField;
 
-    private XBayaTextField destEndpointTextField;
+    private XBayaComboBox destEndpointTextField;
 
     private XBayaTextField destFilePathTextField;
+
+    private XBayaTextField transferLabelTextField;
+
+    private GlobusOnlineUtils globusOnlineUtils;
+
+
+    private String goUserName;
+    private String goPWD;
 
     /**
      * @param engine XBaya workflow engine
@@ -80,47 +85,42 @@ public class GlobusFileTransferWindow {
     }
 
     private void ok() {
-        String username = this.usernameTextField.getText();
-        String caFile = this.caFileTextField.getText();
-        String certFile = this.certFileTextField.getText();
-        String keyFile = this.keyFileTextField.getText();
+
+        goUserName = this.usernameTextField.getText();
+        goPWD  = new String(this.pwdTextField.getPassword());
 
         String sourceEndpoint = this.sourceEndpointTextField.getText();
         String sourceFilePath = this.sourceFilePathTextField.getText();
         String destEndpoint = this.destEndpointTextField.getText();
         String destFilePath = this.destFilePathTextField.getText();
+        String transferLabel = this.transferLabelTextField.getText();
 
-//        JSONTransferAPIClient c;
-//        try {
-//            c = new JSONTransferAPIClient(username, caFile, certFile, keyFile, GLOBUSONLINE_BASE_URL_V0_10);
-//        } catch (KeyManagementException e) {
-//            this.engine.getGUI().getErrorWindow().error("Key Management Error.", e);
-//            return;
-//        } catch (NoSuchAlgorithmException e) {
-//            this.engine.getGUI().getErrorWindow().error("No Such Algorithm Error.", e);
-//            return;
-//        }
-//        System.out.println("base url: " + c.getBaseUrl());
-//        GridFTPFileTransferClient e = new GridFTPFileTransferClient(c);
-//        try {
-//            e.transfer(sourceEndpoint, sourceFilePath, destEndpoint, destFilePath);
-//        } catch (IOException e1) {
-//            this.engine.getGUI().getErrorWindow().error("IO Error.", e1);
-//            return;
-//        } catch (JSONException e1) {
-//            this.engine.getGUI().getErrorWindow().error("JSON Error.", e1);
-//            return;
-//        } catch (GeneralSecurityException e1) {
-//            this.engine.getGUI().getErrorWindow().error("Key Management Error.", e1);
-//            return;
-//        } catch (APIError apiError) {
-//            this.engine.getGUI().getErrorWindow().error("Globus Transfer API Calling Error.", apiError);
-//            return;
-//        }
+        if(globusOnlineUtils == null){
+            globusOnlineUtils = new GlobusOnlineUtils(goUserName, goPWD);
+        }
+        TransferFile transferFile = globusOnlineUtils.getTransferFile(sourceEndpoint, destEndpoint, sourceFilePath, destFilePath, transferLabel);
+        globusOnlineUtils.transferFiles(transferFile);
+    }
 
-        // TODO: should display a message whether the transfer was successful/unsuccessful
-        hide();
-
+    private String[] getGOEndpointList(){
+        if (getGoUserName() != null && getGoPWD() != null){
+            globusOnlineUtils = new GlobusOnlineUtils(goUserName, goPWD);
+        }
+        List<String> epList = new ArrayList<String>();
+        try {
+            if (globusOnlineUtils != null){
+                epList = globusOnlineUtils.getEPList();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (APIError apiError) {
+            apiError.printStackTrace();
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return epList.toArray(new String[]{});
     }
 
     /**
@@ -128,52 +128,62 @@ public class GlobusFileTransferWindow {
      */
     private void initGUI() {
         this.usernameTextField = new XBayaTextField();
-        this.caFileTextField = new XBayaTextField();
-        this.certFileTextField = new XBayaTextField();
-        this.keyFileTextField = new XBayaTextField();
-        this.sourceEndpointTextField = new XBayaTextField();
-        this.sourceFilePathTextField = new XBayaTextField();
-        this.destEndpointTextField = new XBayaTextField();
-        this.destFilePathTextField = new XBayaTextField();
+        this.pwdTextField = new JPasswordField();
+        JButton authenticateButton = new JButton("Authenticate");
 
-        // Setting some sample values when the Window is loaded
-        /*this.usernameTextField.setText("heshan");
-        this.caFileTextField
-                .setText("/home/heshan/Dev/globusonline/transfer-api-client-java.git/trunk/ca/gd-bundle_ca.cert");
-        this.certFileTextField.setText("/tmp/x509up_u780936");
-        this.keyFileTextField.setText("/tmp/x509up_u780936");
-        this.sourceEndpointTextField.setText("xsede#ranger");
-        this.sourceFilePathTextField.setText("~/tmp.log");
-        this.destEndpointTextField.setText("xsede#trestles");
-        this.destFilePathTextField.setText("~/tmp.log.copy");*/
-
-        XBayaLabel nameLabel = new XBayaLabel("Username", this.usernameTextField);
-        XBayaLabel caFileLabel = new XBayaLabel("CA File", this.caFileTextField);
-        XBayaLabel certFileLabel = new XBayaLabel("Certificate File", this.certFileTextField);
-        XBayaLabel keyFileLabel = new XBayaLabel("Key File", this.keyFileTextField);
-        XBayaLabel sourceEprLabel = new XBayaLabel("Source Endpoint", this.sourceEndpointTextField);
-        XBayaLabel sourceFilePathLabel = new XBayaLabel("Source File Path", this.sourceFilePathTextField);
-        XBayaLabel destEprLabel = new XBayaLabel("Destination Endpoint", this.destEndpointTextField);
-        XBayaLabel destFilePathLabel = new XBayaLabel("Destination FIle path", this.destFilePathTextField);
+        XBayaLabel nameLabel = new XBayaLabel("GO Username", this.usernameTextField);
+        XBayaLabel pwdLabel = new XBayaLabel("GO Password", this.pwdTextField);
+        JLabel authLabel = new JLabel("");
 
         GridPanel infoPanel = new GridPanel();
-        infoPanel.add(nameLabel);
-        infoPanel.add(this.usernameTextField);
-        infoPanel.add(caFileLabel);
-        infoPanel.add(this.caFileTextField);
-        infoPanel.add(certFileLabel);
-        infoPanel.add(certFileTextField);
-        infoPanel.add(keyFileLabel);
-        infoPanel.add(this.keyFileTextField);
-        infoPanel.add(sourceEprLabel);
-        infoPanel.add(this.sourceEndpointTextField);
-        infoPanel.add(sourceFilePathLabel);
-        infoPanel.add(this.sourceFilePathTextField);
-        infoPanel.add(destEprLabel);
-        infoPanel.add(this.destEndpointTextField);
-        infoPanel.add(destFilePathLabel);
-        infoPanel.add(this.destFilePathTextField);
-        infoPanel.layout(8, 2, GridPanel.WEIGHT_NONE, 1);
+        GridPanel authButtonPanel = new GridPanel();
+        GridPanel otherPanel = new GridPanel();
+
+        authButtonPanel.add(nameLabel.getSwingComponent());
+        authButtonPanel.add(this.usernameTextField.getSwingComponent());
+        authButtonPanel.add(pwdLabel.getSwingComponent());
+        authButtonPanel.add(this.pwdTextField);
+        authButtonPanel.add(authLabel);
+        authButtonPanel.add(authenticateButton);
+
+        authButtonPanel.layout(3,2,GridPanel.WEIGHT_NONE, 1);
+
+        String[] goEndpointList = getGOEndpointList();
+        DefaultComboBoxModel cmbModelJobType1 = new DefaultComboBoxModel(goEndpointList);
+        sourceEndpointTextField = new XBayaComboBox(cmbModelJobType1);
+        sourceEndpointTextField.setEditable(true);
+
+        sourceFilePathTextField = new XBayaTextField();
+        DefaultComboBoxModel cmbModelJobType2 = new DefaultComboBoxModel(goEndpointList);
+        destEndpointTextField = new XBayaComboBox(cmbModelJobType2);
+        destEndpointTextField.setEditable(true);
+        destFilePathTextField = new XBayaTextField();
+        transferLabelTextField = new XBayaTextField();
+
+        XBayaLabel sourceEprLabel = new XBayaLabel("Source Endpoint", sourceEndpointTextField);
+        XBayaLabel sourceFilePathLabel = new XBayaLabel("Source File Path", sourceFilePathTextField);
+        XBayaLabel destEprLabel = new XBayaLabel("Destination Endpoint", destEndpointTextField);
+        XBayaLabel destFilePathLabel = new XBayaLabel("Destination FIle path", destFilePathTextField);
+        XBayaLabel labelTransferLabel = new XBayaLabel("Label This Transfer", destFilePathTextField);
+
+
+        otherPanel.add(sourceEprLabel.getSwingComponent());
+        otherPanel.add(sourceEndpointTextField.getSwingComponent());
+        otherPanel.add(sourceFilePathLabel.getSwingComponent());
+        otherPanel.add(sourceFilePathTextField.getSwingComponent());
+        otherPanel.add(destEprLabel.getSwingComponent());
+        otherPanel.add(destEndpointTextField.getSwingComponent());
+        otherPanel.add(destFilePathLabel.getSwingComponent());
+        otherPanel.add(destFilePathTextField.getSwingComponent());
+        otherPanel.add(labelTransferLabel.getSwingComponent());
+        otherPanel.add(transferLabelTextField.getSwingComponent());
+
+        otherPanel.layout(5, 2, GridPanel.WEIGHT_NONE, 1);
+
+        infoPanel.add(otherPanel);
+        JPanel buttonPanel = new JPanel();
+
+        infoPanel.layout(2, 1, GridPanel.WEIGHT_NONE, GridPanel.WEIGHT_NONE);
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new AbstractAction() {
@@ -189,11 +199,58 @@ public class GlobusFileTransferWindow {
             }
         });
 
-        JPanel buttonPanel = new JPanel();
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
+        usernameTextField.getSwingComponent().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                setGoUserName(usernameTextField.getText());
+            }
+        }
+        );
+
+        pwdTextField.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                setGoPWD(new String(pwdTextField.getPassword()));
+            }
+        }
+        );
+
+        authenticateButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                goUserName = usernameTextField.getText();
+                goPWD = new String(pwdTextField.getPassword());
+
+                if (goUserName != null && goPWD != null){
+                    globusOnlineUtils = new GlobusOnlineUtils(usernameTextField.getText(), new String(pwdTextField.getPassword()));
+                    String[] goEndpointList = getGOEndpointList();
+                    DefaultComboBoxModel comboBoxModel1 = new DefaultComboBoxModel(goEndpointList);
+                    DefaultComboBoxModel comboBoxModel2 = new DefaultComboBoxModel(goEndpointList);
+                    sourceEndpointTextField.setModel(comboBoxModel1);
+                    destEndpointTextField.setModel(comboBoxModel2);
+                }
+            }
+        });
+
         this.dialog = new XBayaDialog(this.engine.getGUI(), "Globus file transfer", infoPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
+    }
+
+    public String getGoUserName() {
+        return goUserName;
+    }
+
+    public void setGoUserName(String goUserName) {
+        this.goUserName = goUserName;
+    }
+
+    public String getGoPWD() {
+        return goPWD;
+    }
+
+    public void setGoPWD(String goPWD) {
+        this.goPWD = goPWD;
     }
 }

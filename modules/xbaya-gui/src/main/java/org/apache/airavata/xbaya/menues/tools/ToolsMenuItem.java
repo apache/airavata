@@ -35,9 +35,7 @@ public class ToolsMenuItem {
     private XBayaEngine engine;
 
     private JMenu toolsMenu;
-    
-    private JMenuItem globusFileTransferItem;
-    
+
     private static final Logger logger = LoggerFactory.getLogger(ToolsMenuItem.class);
 
     /**
@@ -61,11 +59,10 @@ public class ToolsMenuItem {
      * Creates workflow menu.
      */
     private void createWorkflowMenu() {
-        this.globusFileTransferItem = createGlobusFileTransferItem();
-
+        JMenuItem globusFileTransferItem = createGlobusFileTransferItem();
         toolsMenu = new JMenu("Tools");
         toolsMenu.setMnemonic(KeyEvent.VK_T);
-        toolsMenu.add(this.globusFileTransferItem);
+        toolsMenu.add(globusFileTransferItem);
 
     }
     
@@ -84,4 +81,20 @@ public class ToolsMenuItem {
         });
         return item;
     }
+
+//    private JMenuItem createAmberRunItem() {
+//        JMenuItem item = new JMenuItem("Amber Run...");
+//        item.setMnemonic(KeyEvent.VK_J);
+//        item.addActionListener(new AbstractAction() {
+//            private AmberRunWindow window;
+//
+//            public void actionPerformed(ActionEvent e) {
+//                if (this.window == null) {
+//                    this.window = new AmberRunWindow(engine);
+//                }
+//                this.window.show();
+//            }
+//        });
+//        return item;
+//    }
 }
