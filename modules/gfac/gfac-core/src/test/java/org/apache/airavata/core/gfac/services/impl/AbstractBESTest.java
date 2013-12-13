@@ -23,10 +23,9 @@ package org.apache.airavata.core.gfac.services.impl;
 import java.io.File;
 import java.net.URL;
 import java.util.Date;
+import java.util.Random;
 import java.util.UUID;
 
-import org.apache.airavata.common.utils.DatabaseTestCases;
-import org.apache.airavata.common.utils.DerbyUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
@@ -40,20 +39,32 @@ import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.schemas.gfac.JobTypeType;
 import org.apache.airavata.schemas.gfac.UnicoreHostType;
+import org.apache.airavata.schemas.wec.ContextHeaderDocument;
+import org.apache.airavata.schemas.wec.ContextHeaderDocument.ContextHeader;
 import org.apache.log4j.PropertyConfigurator;
-import org.junit.BeforeClass;
 
 public abstract class AbstractBESTest extends GFacBaseTestCase {
-
+	
+	protected static String tmpFilePath = "target"+File.separator+"data";
 	protected JobExecutionContext jobExecutionContext;
+	private String userName = "";
 
-	public static final String[] hostArray = new String[] { "https://zam1161v01.zam.kfa-juelich.de:8002/INTEROP1/services/BESFactory?res=default_bes_factory" };
+//	public static final String[] hostArray = new String[] { "https://zam1161v01.zam.kfa-juelich.de:8002/INTEROP1/services/BESFactory?res=default_bes_factory" };
 
+	 public static final String[] hostArray = new String[] {
+	 "https://deisa-unic.fz-juelich.de:9111/FZJ_JUROPA/services/BESFactory?res=default_bes_factory"
+	 };
+	 
+	
+//	 public static final String[] hostArray = new String[] {
+//	 "https://daemon.alamo.futuregrid.org:8082/ALAMO/services/BESFactory?res=default_bes_factory"
+//	 };
+	 
+//	public static final String[] hostArray = new String[] {
+//		"https://daemon.india.futuregrid.org:8081/INDIA/services/BESFactory?res=default_bes_factory"
+//	};
 
-	// public static final String[] hostArray = new String[] {
-	// "https://deisa-unic.fz-juelich.de:9111/FZJ_JUROPA/services/BESFactory?res=default_bes_factory"
-	// };
-
+	 
 	// directory where data will be copy into and copied out to unicore
 	// resources
 
@@ -66,7 +77,7 @@ public abstract class AbstractBESTest extends GFacBaseTestCase {
 	// public static final String scratchDir = "/brashear/msmemon/airavata/";
 
 	public static final String gridftpAddress = "gsiftp://osg-xsede.grid.iu.edu:2811/";
-	public static final String scratchDir = "/home/ramifnu/airavata/";
+    public static final String scratchDir = "/home/ogce/airavata/";
 
 	protected String remoteTempDir = null;
 
@@ -91,7 +102,13 @@ public abstract class AbstractBESTest extends GFacBaseTestCase {
 
 	}
 
-	protected abstract void submitJob() throws Exception;
+	protected void submitJob() throws Exception {
+		ContextHeader contextHeader = ContextHeader.Factory.newInstance();
+		buildOutputLocation(contextHeader);
+		
+		buildUserName(contextHeader, userName);
+		jobExecutionContext.setContextHeader(contextHeader);
+	}
 
 	protected GFacConfiguration getGFACConfig() throws Exception {
 		URL resource = this.getClass().getClassLoader()
@@ -130,5 +147,27 @@ public abstract class AbstractBESTest extends GFacBaseTestCase {
 	protected abstract MessageContext getInMessageContext();
 
 	protected abstract MessageContext getOutMessageContext();
+	
+	
+	protected void buildOutputLocation(ContextHeader currentContextHeader) {
+		File tmpDir = new File(tmpFilePath+File.separator+"output-"+new Random().nextInt(1000));
+		
+		if(!tmpDir.exists()) {
+			tmpDir.mkdirs();
+		}
+		currentContextHeader.addNewWorkflowOutputDataHandling().addNewApplicationOutputDataHandling().setOutputDataDirectory(tmpDir.getAbsolutePath());
+		
+	}
+	
+	
+	protected void buildUserName(ContextHeader currentContextHeader, String userName) {
+		if("".equals(userName) || userName == null) return;
+
+		currentContextHeader.setUserIdentifier(userName);
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
 
 }

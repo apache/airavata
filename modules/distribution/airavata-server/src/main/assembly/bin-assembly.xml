@@ -253,8 +253,7 @@
                 <include>org.apache.openjpa:openjpa-all:jar</include>
                 <include>com.sun.jersey:jersey-client:jar</include>
                 <include>com.sun.jersey:jersey-core:jar</include>
-                <include>org.bouncycastle:bcprov-jdk16</include>
-                <include>org.bouncycastle:bcmail-jdk16</include>
+                <include>org.bouncycastle:bcprov-jdk15on</include>
                 <include>org.apache.tomcat:tomcat-jasper</include>
                 <include>org.apache.tomcat:tomcat-jasper-el</include>
                 <include>org.apache.tomcat:tomcat-jsp-api</include>
@@ -293,6 +292,48 @@
    	 			<include>org.ogce:bcgss</include>	
 				<include>org.apache.xmlbeans:xmlbeans</include>
 				<include>org.apache.thrift:libthrift:jar:0.9.1</include>
+                  <!-- unicore start -->
+                <include>eu.unicore:ogsabes-client</include>
+				<include>eu.unicore:ogsabes-types</include>
+				<include>de.fzj.unicore:jsdl-xmlbeans</include>
+				<include>eu.unicore:cis-u6-infoprovider-types</include>
+				<include>eu.unicore.services:use-wsrftypes</include>
+				<include>eu.unicore:uas-types</include>
+				<include>eu.unicore:uas-client</include>
+				<include>eu.unicore.services:use-wsrfclient</include>
+				<include>org.apache.xmlbeans:xmlbeans-xpath</include>
+				<include>net.sf.saxon:saxon</include>
+				<include>net.sf.saxon:saxon-dom</include>
+				<include>net.sf.saxon:saxon-xpath</include>
+				<include>eu.unicore.security:secutils-cxf</include>
+				<include>eu.unicore.security:securityLibrary</include>
+				<include>log4j:apache-log4j-extras</include>
+				<include>eu.eu-emi.security:canl</include>
+				<include>org.bouncycastle:bcpkix-jdk15on</include>
+				<include>pl.edu.icm.saml:samly2</include>
+				<include>eu.unicore.security:SAMLtypes</include>
+				<include>org.apache.ws.security:wss4j</include>
+				<include>org.json:json</include>
+				<include>org.apache.cxf:cxf-rt-databinding-xmlbeans</include>
+				<include>org.apache.cxf:cxf-api</include>
+				<include>org.codehaus.woodstox:woodstox-core-asl</include>
+				<include>org.codehaus.woodstox:stax2-api</include>
+				<include>org.apache.ws.xmlschema:xmlschema-core</include>
+				<include>org.apache.cxf:cxf-rt-core</include>
+				<include>com.sun.xml.bind:jaxb-impl</include>
+				<include>org.apache.cxf:cxf-rt-frontend-jaxws</include>
+				<include>xml-resolver:xml-resolver</include>
+				<include>asm:asm</include>
+				<include>org.apache.cxf:cxf-rt-bindings-soap</include>
+				<include>org.apache.cxf:cxf-rt-databinding-jaxb</include>
+				<include>org.apache.cxf:cxf-rt-bindings-xml</include>
+				<include>org.apache.cxf:cxf-rt-frontend-simple</include>
+				<include>org.apache.cxf:cxf-rt-ws-addr</include>
+				<include>org.apache.cxf:cxf-rt-ws-policy</include>
+				<include>org.apache.cxf:cxf-rt-transports-http</include>
+				<include>org.apache.cxf:cxf-rt-features-clustering</include>
+				<include>eu.unicore:uftp-core</include>
+				<!-- unicore end-->
             </includes>
         </dependencySet>
         <dependencySet>

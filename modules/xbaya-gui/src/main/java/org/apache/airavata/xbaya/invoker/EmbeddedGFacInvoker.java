@@ -412,17 +412,16 @@ public class EmbeddedGFacInvoker implements Invoker {
 
             GSISecurityContext context;
 
-            String gatewayId = contextHeader.getSecurityContext().getCredentialManagementService().getGatewayId();
 
             if (credentialManagementService != null) {
+                String gatewayId = credentialManagementService.getGatewayId();
                 String tokenId
                         = credentialManagementService.getTokenId();
                 String portalUser = credentialManagementService.getPortalUser();
 
                 requestData = new RequestData(tokenId, portalUser, gatewayId);
             } else {
-
-                requestData = new RequestData(gatewayId);
+               requestData = new RequestData("default");
             }
 
             try {

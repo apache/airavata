@@ -72,22 +72,11 @@ public class GFacAPI {
                 executeProvider(provider, jobExecutionContext);
                 disposeProvider(provider, jobExecutionContext);
             }
-
+            invokeOutFlowHandlers(jobExecutionContext);
         }catch (Exception e){
             jobExecutionContext.setProperty(ERROR_SENT,"true");
             jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
             throw new GFacException(e.getMessage(),e);
-        }
-        finally {
-            try{
-            invokeOutFlowHandlers(jobExecutionContext);
-            }catch(GFacException e){
-                // This will avoid getting two error notification messages if there's already an error in provider
-                if(!Boolean.getBoolean((String)jobExecutionContext.getProperty(ERROR_SENT))){
-                  jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
-            }
-               throw e;
-            }
         }
     }
 
