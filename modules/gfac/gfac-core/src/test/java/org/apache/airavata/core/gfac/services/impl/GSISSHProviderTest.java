@@ -58,7 +58,7 @@ public class GSISSHProviderTest {
     private static final String hostName = "trestles";
     private static final String myProxyUserName = "ogce";
     private static final String myProxyPassword = "";
-    private static final String certificateLocation = "/Users/lahirugunathilake/Downloads/certificates";
+    private static final String certificateLocation = "/Users/raminder/.globus/certificates/";
 
     @Before
     public void setUp() throws Exception {

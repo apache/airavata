@@ -20,53 +20,84 @@
  */
 package org.apache.airavata.gfac.provider.utils;
 
+
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
-import org.ogf.schemas.jsdl.JobDefinitionDocument;
-import org.ogf.schemas.jsdl.JobDefinitionType;
+import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionDocument;
+import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * 
  * Utility class generates a JSDL instance from JobExecutionContext instance
+ * @author shahbaz memon
  * 
  * */
 
 public class JSDLGenerator {
+	
+	protected final Logger log = LoggerFactory.getLogger(this.getClass());
+	
+	
+	public synchronized static JobDefinitionDocument buildJSDLInstance(JobExecutionContext context) throws Exception {
 
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+		JobDefinitionDocument jobDefDoc = JobDefinitionDocument.Factory
+				.newInstance();
+		JobDefinitionType value = jobDefDoc.addNewJobDefinition();
 
-    public synchronized static JobDefinitionDocument buildJSDLInstance(JobExecutionContext context) throws Exception {
+		HpcApplicationDeploymentType appDepType = (HpcApplicationDeploymentType) context
+				.getApplicationContext().getApplicationDeploymentDescription()
+				.getType();
 
-        JobDefinitionDocument jobDefDoc = JobDefinitionDocument.Factory.newInstance();
-        JobDefinitionType value = jobDefDoc.addNewJobDefinition();
+		// build Identification
+		createJobIdentification(value, appDepType);
+		
+		ResourceProcessor.generateResourceElements(value, context);
+		
+		ApplicationProcessor.generateJobSpecificAppElements(value, context);
+		
+		DataStagingProcessor.generateDataStagingElements(value, context);
+		
+		
+		return jobDefDoc;
+	}
 
-        HpcApplicationDeploymentType appDepType = (HpcApplicationDeploymentType) context.getApplicationContext()
-                .getApplicationDeploymentDescription().getType();
 
-        // build Identification
-        createJobIdentification(value, appDepType);
+	public synchronized static JobDefinitionDocument buildJSDLInstance(JobExecutionContext context, String smsUrl) throws Exception {
 
-        ResourceProcessor.generateResourceElements(value, context);
+		JobDefinitionDocument jobDefDoc = JobDefinitionDocument.Factory
+				.newInstance();
+		JobDefinitionType value = jobDefDoc.addNewJobDefinition();
 
-        ApplicationProcessor.generateJobSpecificAppElements(value, context);
+		HpcApplicationDeploymentType appDepType = (HpcApplicationDeploymentType) context
+				.getApplicationContext().getApplicationDeploymentDescription()
+				.getType();
 
-        DataStagingProcessor.generateDataStagingElements(value, context);
+		// build Identification
+		createJobIdentification(value, appDepType);
+		
+		ResourceProcessor.generateResourceElements(value, context);
+		
+		ApplicationProcessor.generateJobSpecificAppElements(value, context);
+		
+		UASDataStagingProcessor.generateDataStagingElements(value, context, smsUrl);
+		
+		return jobDefDoc;
+	}
 
-        return jobDefDoc;
-    }
+	private static void createJobIdentification(JobDefinitionType value, HpcApplicationDeploymentType appDepType){
+		if( appDepType.getProjectAccount() != null ){
+			
+			if (appDepType.getProjectAccount().getProjectAccountNumber() != null)
+				JSDLUtils.addProjectName(value, appDepType.getProjectAccount()
+						.getProjectAccountNumber());
 
-    private static void createJobIdentification(JobDefinitionType value, HpcApplicationDeploymentType appDepType) {
-        if (appDepType.getProjectAccount() != null) {
-
-            if (appDepType.getProjectAccount().getProjectAccountNumber() != null)
-                JSDLUtils.addProjectName(value, appDepType.getProjectAccount().getProjectAccountNumber());
-
-            if (appDepType.getProjectAccount().getProjectAccountDescription() != null)
-                JSDLUtils.getOrCreateJobIdentification(value).setDescription(
-                        appDepType.getProjectAccount().getProjectAccountDescription());
-        }
-    }
-
+			if (appDepType.getProjectAccount().getProjectAccountDescription() != null)
+				JSDLUtils.getOrCreateJobIdentification(value).setDescription(
+						appDepType.getProjectAccount()
+								.getProjectAccountDescription());
+		}
+	}
+	
 }

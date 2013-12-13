@@ -68,8 +68,12 @@ public class ApplicationJob {
 		/**
 		 * Application job is being executed.
 		 */
-		EXECUTING, 
-		/**
+		EXECUTING,
+        /**
+         * Application job is being active.
+         */
+        ACTIVE,
+        /**
 		 * Application job is paused/suspended
 		 */
 		SUSPENDED,
@@ -105,6 +109,10 @@ public class ApplicationJob {
 		 * Execution of the application job was cancelled.
 		 */
 		CANCELLED,
+        /**
+         * Execution of the application job was cancelled.
+         */
+        CANCELED,
 		/**
 		 * Unable to determine the current status of the application job. <br />
 		 * <em><strong>Note: </strong>More information may be available on the application job 

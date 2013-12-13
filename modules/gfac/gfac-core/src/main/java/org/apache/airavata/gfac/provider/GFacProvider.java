@@ -58,7 +58,7 @@ public interface GFacProvider {
      * @param jobExecutionContext The job execution context, contains runtime information.
      * @throws GFacException If an error occurred while cancelling the job.
      */
-    public void cancelJob(String jobId, JobExecutionContext jobExecutionContext) throws GFacException;
+    public void cancelJob(String jobId, JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException;
 
 
 }

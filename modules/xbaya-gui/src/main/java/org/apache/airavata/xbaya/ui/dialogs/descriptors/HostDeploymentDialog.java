@@ -51,11 +51,7 @@ import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.GlobusHostType;
-import org.apache.airavata.schemas.gfac.GsisshHostType;
-import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
-import org.apache.airavata.schemas.gfac.SSHHostType;
+import org.apache.airavata.schemas.gfac.*;
 import org.apache.airavata.xbaya.ui.menues.MenuIcons;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
@@ -502,10 +498,8 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
             HostDescription hostDescription;
             try {
                 hostDescription = registry.getApplicationManager().getHostDescription(hostName);
-                if (hostDescription.getType() instanceof GlobusHostType) {
+                if (hostDescription.getType() instanceof GlobusHostType || hostDescription.getType() instanceof UnicoreHostType || hostDescription.getType() instanceof GsisshHostType) {
                     getShellApplicationDescription().getType().changeType(HpcApplicationDeploymentType.type);
-                }else if (hostDescription.getType() instanceof GsisshHostType) {
-                        getShellApplicationDescription().getType().changeType(HpcApplicationDeploymentType.type);
                 }else if (hostDescription.getType() instanceof SSHHostType && ((SSHHostType)hostDescription.getType()).getHpcResource()) {
                     getShellApplicationDescription().getType().changeType(HpcApplicationDeploymentType.type);
                 } else {
