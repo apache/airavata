@@ -111,7 +111,7 @@ public class CredentialsDAO extends ParentDAO {
             preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
-            StringBuilder stringBuilder = new StringBuilder("Error persisting community credentials.");
+            StringBuilder stringBuilder = new StringBuilder("Error persisting credentials.");
             stringBuilder.append(" gateway - ").append(gatewayId);
             stringBuilder.append(" token id - ").append(credential.getToken());
 
@@ -233,7 +233,7 @@ public class CredentialsDAO extends ParentDAO {
             }
 
         } catch (SQLException e) {
-            StringBuilder stringBuilder = new StringBuilder("Error retrieving credentials for community user.");
+            StringBuilder stringBuilder = new StringBuilder("Error retrieving credentials for user.");
             stringBuilder.append("gateway - ").append(gatewayName);
             stringBuilder.append("token id - ").append(tokenId);
 

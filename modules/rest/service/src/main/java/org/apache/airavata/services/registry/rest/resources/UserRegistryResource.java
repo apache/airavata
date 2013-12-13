@@ -39,25 +39,21 @@ import org.apache.airavata.rest.mappings.utils.ResourcePathConstants;
 import org.apache.airavata.services.registry.rest.utils.WebAppUtil;
 
 /**
- * This class is a REST interface to all the operations related to user workflows that has been
- * exposed by Airavata Registry API
+ * This class provides a REST interface to all the user management related operations
  */
-@Path(ResourcePathConstants.UserRegistryConstants.REGISTRY_API_USERREGISTRY)
+@Path(ResourcePathConstants.UserResourceConstants.REGISTRY_API_USERREGISTRY)
 public class UserRegistryResource {
 
     @Context
     ServletContext context;
 
-    /**---------------------------------User Workflow Registry----------------------------------**/
-
     /**
-     * This method will check whether a given user workflow name already exists
+     * This method gets all users of Airavata present in the registry
      *
-     * @param workflowName workflow name
-     * @return HTTP response
+     * @return HTTP response - List of AiravataUsers
      */
     @GET
-    @Path(ResourcePathConstants.UserRegistryConstants.GET_ALL_USERS)
+    @Path(ResourcePathConstants.UserResourceConstants.GET_ALL_USERS)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getAllUsers() {
         AiravataRegistry2 airavataRegistry = RegPoolUtils.acquireRegistry(context);
@@ -74,7 +70,7 @@ public class UserRegistryResource {
                 return builder.build();
             }
         } catch (Throwable e) {
-            return WebAppUtil.reportInternalServerError(ResourcePathConstants.UserRegistryConstants.GET_ALL_USERS, e);
+            return WebAppUtil.reportInternalServerError(ResourcePathConstants.UserResourceConstants.GET_ALL_USERS, e);
         } finally {
             if (airavataRegistry != null) {
                 RegPoolUtils.releaseRegistry(context, airavataRegistry);

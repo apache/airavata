@@ -69,6 +69,12 @@ public interface AiravataAPI {
      * @return
      */
 	public ExecutionManager getExecutionManager();
+	
+	/**
+     * Returns the CredentialStoreManager
+     * @return
+     */
+	public CredentialStoreManager getCredentialStoreManager();
 
     /**
      * Returns the Current User

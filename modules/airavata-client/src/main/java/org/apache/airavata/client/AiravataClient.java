@@ -33,6 +33,7 @@ import javax.jcr.RepositoryException;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.AiravataManager;
 import org.apache.airavata.client.api.ApplicationManager;
+import org.apache.airavata.client.api.CredentialStoreManager;
 import org.apache.airavata.client.api.ExecutionManager;
 import org.apache.airavata.client.api.ExperimentAdvanceOptions;
 import org.apache.airavata.client.api.ProvenanceManager;
@@ -89,6 +90,8 @@ public class AiravataClient extends Observable implements AiravataAPI {
 	private UserManagerImpl userManagerImpl;
 //	private ExecutionManagerThriftImpl executionManagerImpl;
     private ExecutionManager executionManager;
+
+    private CredentialStoreManagerImpl credentialStoreManagerImpl;
 	private String gateway;
 	private boolean configCreated = false;
 
@@ -353,6 +356,13 @@ public class AiravataClient extends Observable implements AiravataAPI {
         }
 		return executionManager;
 	}
+	
+	@Override
+	public CredentialStoreManager getCredentialStoreManager() {
+		if(credentialStoreManagerImpl == null)
+			credentialStoreManagerImpl = new CredentialStoreManagerImpl(this);
+		return credentialStoreManagerImpl;
+	}
 
     private ExecutionManager getExecutionManagerObj(String className) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         Class<?> cls = Class.forName(className);
@@ -418,4 +428,5 @@ public class AiravataClient extends Observable implements AiravataAPI {
 		List<WorkflowInput> inputs = api.getWorkflowManager().getWorkflowInputs(workflow);
 		System.out.println(api.getExecutionManager().runExperiment(workflow, inputs,options));
 	}
+
 }
