@@ -33,10 +33,18 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.airavata.common.exception.AiravataConfigurationException;
+import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
+import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredentialGenerator;
+import org.apache.airavata.credential.store.store.CredentialReader;
+import org.apache.airavata.credential.store.store.CredentialStoreException;
+import org.apache.airavata.credential.store.store.CredentialWriter;
+import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
+import org.apache.airavata.credential.store.store.impl.SSHCredentialWriter;
 import org.apache.airavata.persistance.registry.jpa.JPAResourceAccessor;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
@@ -85,6 +93,7 @@ import org.apache.airavata.registry.api.exception.RegistryAccessorInstantiateExc
 import org.apache.airavata.registry.api.exception.RegistryAccessorNotFoundException;
 import org.apache.airavata.registry.api.exception.RegistryAccessorUndefinedException;
 import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegistrySettingsException;
 import org.apache.airavata.registry.api.exception.UnimplementedRegistryOperationException;
 import org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException;
 import org.apache.airavata.registry.api.exception.gateway.DescriptorDoesNotExistsException;
@@ -151,6 +160,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     private PublishedWorkflowRegistry publishedWorkflowRegistry;
     private UserRegistry userRegistry;
     private PasswordCallback callback;
+    private CredentialReader credentialReader;
+    private CredentialWriter credentialWriter;
+    private SSHCredentialGenerator credentialGenerator;
     
     @Override
     protected void initialize() throws RegistryException {
@@ -197,6 +209,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         if (!ResourceUtils.isGatewayExist(getGateway().getGatewayName())){
     		throw new GatewayNotRegisteredException(getGateway().getGatewayName());
     	}
+        
     }
 
     static {
@@ -2493,4 +2506,83 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		}
 	}
 
+	@Override
+	public boolean isCredentialExist(String gatewayId, String tokenId)
+			throws RegistryException {
+		credentialReader = new CredentialReaderImpl(getDBConnector());
+		try {
+			SSHCredential credential = (SSHCredential) credentialReader.getCredential(gatewayId, tokenId);
+	    	if (credential!=null) {
+	    		return true;
+	    	}
+		} catch(CredentialStoreException e) {
+			return false;
+		}
+		return false;
+	}
+
+	@Override
+	public String getCredentialPublicKey(String gatewayId, String tokenId)
+			throws RegistryException {
+		
+		credentialReader = new CredentialReaderImpl(getDBConnector());
+		try {
+			SSHCredential credential = (SSHCredential) credentialReader.getCredential(gatewayId, tokenId);
+	    	if (credential!=null) {
+	    		return new String(credential.getPublicKey());
+	    	}
+		} catch(CredentialStoreException e) {
+			return null;
+		}
+		return null;
+	}
+
+	@Override
+	public String createCredential(String gatewayId, String tokenId)
+			throws RegistryException {
+		return createCredential(gatewayId, tokenId, null);
+	}
+
+	@Override
+	public String createCredential(String gatewayId, String tokenId,
+			String username) throws RegistryException {
+    	credentialWriter = new SSHCredentialWriter(getDBConnector());
+    	credentialGenerator = new SSHCredentialGenerator();
+    	try {
+	    	SSHCredential credential = credentialGenerator.generateCredential(tokenId);
+	    	if (credential!=null) {
+	    		credential.setGateway(gatewayId);
+	    		credential.setToken(tokenId);
+	    		credential.setPortalUserName(username);
+	        	credentialWriter.writeCredentials(credential);
+	        	return new String(credential.getPublicKey());
+	    	}
+    	} catch (CredentialStoreException e) {
+    		return null;
+    	}
+		return null;
+	}
+
+	private static DBUtil getDBConnector() throws RegistryException{
+        try {
+        	String url = RegistrySettings.getSetting("registry.jdbc.url");
+        	String driver = RegistrySettings.getSetting("registry.jdbc.driver");
+        	String username = RegistrySettings.getSetting("registry.jdbc.user");
+        	String password = RegistrySettings.getSetting("registry.jdbc.password");
+        	DBUtil dbConnector = new DBUtil(url,username,password,driver);
+            return dbConnector;
+        } catch (InstantiationException e) {
+        	logger.error("Error while accesing registrty settings ", e);
+        	throw new RegistryException("Error while accesing registrty settings ", e);
+        } catch (IllegalAccessException e) {
+        	logger.error("Error while reading registrty settings ", e);
+        	throw new RegistryException("Error while accesing registrty settings ", e);
+        } catch (ClassNotFoundException e) {
+        	logger.error("Error while reading registrty settings ", e);
+        	throw new RegistryException("Error while accesing registrty settings ", e);
+        } catch (RegistrySettingsException e) {
+        	logger.error("Error while reading registrty settings ", e);
+        	throw new RegistryException("Error while accesing registrty settings ", e);
+		}
+    }
 }

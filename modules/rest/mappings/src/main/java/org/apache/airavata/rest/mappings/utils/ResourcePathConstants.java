@@ -23,7 +23,7 @@ package org.apache.airavata.rest.mappings.utils;
 
 public class ResourcePathConstants {
 
-    public static final String BASE_URL = "http://localhost:8080/airavata-registry/api";
+    public static final String BASE_URL = "http://localhost:8080/airavata/services/registry";
 
     public final class ConfigResourcePathConstants {
         public static final String CONFIGURATION_REGISTRY_RESOURCE = "/congfigregistry/";
@@ -191,7 +191,14 @@ public class ResourcePathConstants {
         public static final String REMOVE_WORKFLOW = "remove/workflow";
     }
     
-    public final class UserRegistryConstants {
+    public final class CredentialResourceConstants {
+
+        public static final String REGISTRY_API_CREDENTIALREGISTRY = "/credentialregistry/";
+        public static final String SSH_CREDENTIAL = "ssh/credential";
+        public static final String SSH_CREDENTIAL_EXIST = "ssh/credential/exist";
+    }
+    
+    public final class UserResourceConstants {
 
         public static final String REGISTRY_API_USERREGISTRY = "/userregistry/";
         public static final String GET_ALL_USERS = "get/user/all";

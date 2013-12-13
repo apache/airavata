@@ -61,6 +61,7 @@ public class RegistryClient extends AiravataRegistry2 {
     private ProvenanceResourceClient provenanceResourceClient;
     private PublishedWorkflowResourceClient publishedWorkflowResourceClient;
     private UserWorkflowResourceClient userWorkflowResourceClient;
+    private CredentialStoreResourceClient credentialStoreResourceClient;
 
 //    private CookieManager cookieManager = new CookieManager();
 
@@ -99,6 +100,10 @@ public class RegistryClient extends AiravataRegistry2 {
     public UserWorkflowResourceClient getUserWorkflowResourceClient() {
         return userWorkflowResourceClient;
     }
+    
+    public CredentialStoreResourceClient getCredentialStoreResourceClient() {
+        return credentialStoreResourceClient;
+    }
 
 
     @Override
@@ -130,6 +135,9 @@ public class RegistryClient extends AiravataRegistry2 {
                         userName, getGateway().getGatewayName(),serviceURI, callback, CookieManager.getCookie());
         userWorkflowResourceClient =
                 new UserWorkflowResourceClient(
+                        userName,getGateway().getGatewayName(),serviceURI,callback, CookieManager.getCookie());
+        credentialStoreResourceClient =
+                new CredentialStoreResourceClient(
                         userName,getGateway().getGatewayName(),serviceURI,callback, CookieManager.getCookie());
     }
 
@@ -991,4 +999,29 @@ public class RegistryClient extends AiravataRegistry2 {
 	public List<AiravataUser> getUsers() throws RegistryException {
         throw new UnimplementedRegistryOperationException();
 	}
+
+	@Override
+	public boolean isCredentialExist(String gatewayId, String tokenId)
+			throws RegistryException {
+		return getCredentialStoreResourceClient().isCredentialExist(gatewayId,tokenId);
+	}
+
+	@Override
+	public String getCredentialPublicKey(String gatewayId, String tokenId)
+			throws RegistryException {
+		return getCredentialStoreResourceClient().getCredentialPublicKey(gatewayId, tokenId);
+	}
+
+	@Override
+	public String createCredential(String gatewayId, String tokenId)
+			throws RegistryException {
+		return getCredentialStoreResourceClient().createCredential(gatewayId, tokenId);
+	}
+	
+	@Override
+	public String createCredential(String gatewayId, String tokenId, String username)
+			throws RegistryException {
+		return getCredentialStoreResourceClient().createCredential(gatewayId, tokenId, username);
+	}
+
 }
