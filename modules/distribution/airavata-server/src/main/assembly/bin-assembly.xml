@@ -253,7 +253,7 @@
                 <include>org.apache.openjpa:openjpa-all:jar</include>
                 <include>com.sun.jersey:jersey-client:jar</include>
                 <include>com.sun.jersey:jersey-core:jar</include>
-                <include>org.bouncycastle:bcprov-jdk15on</include>
+                <include>org.bouncycastle:bcprov-jdk16</include>
                 <include>org.apache.tomcat:tomcat-jasper</include>
                 <include>org.apache.tomcat:tomcat-jasper-el</include>
                 <include>org.apache.tomcat:tomcat-jsp-api</include>
@@ -292,7 +292,7 @@
    	 			<include>org.ogce:bcgss</include>	
 				<include>org.apache.xmlbeans:xmlbeans</include>
 				<include>org.apache.thrift:libthrift:jar:0.9.1</include>
-                  <!-- unicore start -->
+                  <!-- unicore start 
                 <include>eu.unicore:ogsabes-client</include>
 				<include>eu.unicore:ogsabes-types</include>
 				<include>de.fzj.unicore:jsdl-xmlbeans</include>
@@ -333,7 +333,7 @@
 				<include>org.apache.cxf:cxf-rt-transports-http</include>
 				<include>org.apache.cxf:cxf-rt-features-clustering</include>
 				<include>eu.unicore:uftp-core</include>
-				<!-- unicore end-->
+				unicore end-->
             </includes>
         </dependencySet>
         <dependencySet>
