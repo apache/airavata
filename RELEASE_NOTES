@@ -4,8 +4,17 @@ See http://issues.apache.org/jira/browse/AIRAVATA-* (where * is the number of th
 
 Apache Airavata Version 0.11 Released on 2013-12-20
 ==================================================
-This release focused on evaluting apache thrift as a framework to implement airavata API. As the first step, we are adding thrift interfaces to workflow execution API. Feel free to explore the thrift module in airavata source code, which contains the stand-alone thrift server and a thrift client. Apart from apache thrift integration, this release has bug fixes which related to Globus online file transfer, GSISSH library and integration of Airavata Credential Store with Airavata client API. 
+This release focused on evaluating apache thrift as a framework to implement Airavata API. As the first step, we are adding thrift interfaces to workflow execution API. Feel free to explore the thrift module in Airavata source code, which contains the stand-alone thrift server and a thrift client. Apart from apache thrift integration, this release has bug fixes which related to Globus online file transfer, GSISSH library and integration of Airavata Credential Store with Airavata client API. 
 Below you will find the detail list of JIRA tasks/issues resolutions incorporated in 0.11. 
+
+** Improvement
+     * [AIRAVATA-278] - Improve GFac stdout handling to cover output types
+     * [AIRAVATA-941] - JCR properties in GFAC's service.properties are obsolete
+     * [AIRAVATA-952] - Add credential store to the Airavata API
+     * [AIRAVATA-963] - Refactoring Integration Tests module to allow easy extendability and remove redundancy
+
+** Task
+     * [AIRAVATA-953] - Distribute JNLP With Releases
 
 ** Sub-task
       * [AIRAVATA-925] - Display status of experiments upfront in experiments list
@@ -15,22 +24,14 @@ Below you will find the detail list of JIRA tasks/issues resolutions incorporate
       * [AIRAVATA-966] - Update Jglobus version
       * [AIRAVATA-967] - Update Unicore client version
 
-** Bug
-     * [AIRAVATA-922] - Reduce the size of war distributions
-     * [AIRAVATA-954] - Evaluating thrift based execution API
-
-** Improvement
-     * [AIRAVATA-278] - Improve GFac stdout handling to cover output types
-     * [AIRAVATA-941] - JCR properties in GFAC's service.properties are obsolete
-     * [AIRAVATA-952] - Add credential store to the Airavata API
-     * [AIRAVATA-963] - Refactoring Integration Tests module to allow easy extendability and remove redundancy
-
 ** Story
      * [AIRAVATA-935] - Integrate Globus Online rest interfaces with XBaya
      * [AIRAVATA-965] - Update Airavata JGLOBUS and Unicore jar
 
-** Task
-     * [AIRAVATA-953] - Distribute JNLP With Releases
+** Bug
+     * [AIRAVATA-922] - Reduce the size of war distributions
+     * [AIRAVATA-954] - Evaluating thrift based execution API
+
 
 
 Apache Airavata Version 0.10 Released on 2013-10-29
