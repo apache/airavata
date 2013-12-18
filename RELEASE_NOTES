@@ -31,8 +31,11 @@ Below you will find the detail list of JIRA tasks/issues resolutions incorporate
 ** Bug
      * [AIRAVATA-922] - Reduce the size of war distributions
      * [AIRAVATA-954] - Evaluating thrift based execution API
+     * [AIRAVATA-969] - GSISSH provider not fail on PBS Syntax errors
 
-
+Known Issues in This Release
+============================
+    * [AIRAVATA-971] - XBaya run workflow window does not render correctly for a workflow which has lot of inputs
 
 Apache Airavata Version 0.10 Released on 2013-10-29
 ==================================================
