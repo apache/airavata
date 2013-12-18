@@ -14,7 +14,7 @@ the License. -->
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>thrift</artifactId>
-        <version>0.11-SNAPSHOT</version>
+        <version>0.11</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
