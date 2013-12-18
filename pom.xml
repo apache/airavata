@@ -342,11 +342,16 @@
     </dependencyManagement>
 
     <repositories>
-	<repository>
+	    <repository>
            <name>ogce.m2.all</name>
             <id>ogce.m2.all</id>
             <url>http://community.ucs.indiana.edu:9090/archiva/repository/ogce.m2.all</url>
         </repository>
+        <!--<repository>-->
+            <!--<name>go.nexus.repo</name>-->
+            <!--<id>go.nexus.repo</id>-->
+            <!--<url>http://code.ceres.auckland.ac.nz/nexus/content/repositories/releases/</url>-->
+        <!--</repository>-->
         <repository>
             <id>central</id>
             <name>Maven Central</name>
@@ -358,6 +363,7 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+
         <repository>
             <id>unicore.eu</id>
             <name>UNICORE repository</name>
