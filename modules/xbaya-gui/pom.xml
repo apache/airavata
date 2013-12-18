@@ -315,11 +315,11 @@
             <artifactId>derbyclient</artifactId>
             <version>${derby.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.globusonline</groupId>
-            <artifactId>transfer-api-client-java</artifactId>
-            <version>0.10.8-SNAPSHOT</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.globusonline</groupId>-->
+            <!--<artifactId>transfer-api-client-java</artifactId>-->
+            <!--<version>0.10.8</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>

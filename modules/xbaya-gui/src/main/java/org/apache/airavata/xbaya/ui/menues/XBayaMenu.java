@@ -26,7 +26,7 @@ import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.core.ide.XBayaExecutionModeListener;
-import org.apache.airavata.xbaya.menues.tools.ToolsMenuItem;
+//import org.apache.airavata.xbaya.menues.tools.ToolsMenuItem;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.AboutWindow;
 import org.apache.airavata.xbaya.ui.widgets.XBayaComponent;
@@ -54,7 +54,7 @@ public class XBayaMenu implements XBayaComponent,XBayaExecutionModeListener{
 
     private AmazonEC2MenuItem amazonEC2MenuItem;
 
-	private ToolsMenuItem toolsMenuItem;
+//	private ToolsMenuItem toolsMenuItem;
 
 	private XBayaGUI gui;
 
@@ -79,7 +79,7 @@ public class XBayaMenu implements XBayaComponent,XBayaExecutionModeListener{
 		viewMenuItem = new ViewMenuItem(getEngine());
 		runMenuItem = new RunMenuItem(getEngine(), getToolBar());
 		registryMenuItem = new RegistryMenuItem(getEngine(),getToolBar());
-		toolsMenuItem = new ToolsMenuItem(getEngine());
+//		toolsMenuItem = new ToolsMenuItem(getEngine());
 
 		createMenuBar();
 		executionModeChanged(getEngine().getConfiguration());
@@ -103,7 +103,7 @@ public class XBayaMenu implements XBayaComponent,XBayaExecutionModeListener{
         menuBar.add(editMenuItem.getMenu());
         menuBar.add(viewMenuItem.getMenu());
         menuBar.add(runMenuItem.getMenu());
-        menuBar.add(toolsMenuItem.getMenu());
+//        menuBar.add(toolsMenuItem.getMenu());
         menuBar.add(registryMenuItem.getMenu());
         menuBar.add(amazonEC2MenuItem.getMenu());
         // Space before Help

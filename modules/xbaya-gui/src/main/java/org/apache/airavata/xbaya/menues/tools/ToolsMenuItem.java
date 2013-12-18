@@ -22,7 +22,7 @@
 package org.apache.airavata.xbaya.menues.tools;
 
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.ui.dialogs.GlobusFileTransferWindow;
+//import org.apache.airavata.xbaya.ui.dialogs.GlobusFileTransferWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,28 +59,28 @@ public class ToolsMenuItem {
      * Creates workflow menu.
      */
     private void createWorkflowMenu() {
-        JMenuItem globusFileTransferItem = createGlobusFileTransferItem();
-        toolsMenu = new JMenu("Tools");
-        toolsMenu.setMnemonic(KeyEvent.VK_T);
-        toolsMenu.add(globusFileTransferItem);
+//        JMenuItem globusFileTransferItem = createGlobusFileTransferItem();
+//        toolsMenu = new JMenu("Tools");
+//        toolsMenu.setMnemonic(KeyEvent.VK_T);
+//        toolsMenu.add(globusFileTransferItem);
 
     }
     
-    private JMenuItem createGlobusFileTransferItem() {
-        JMenuItem item = new JMenuItem("Globus File Transfer...");
-        item.setMnemonic(KeyEvent.VK_J);
-        item.addActionListener(new AbstractAction() {
-            private GlobusFileTransferWindow window;
-
-            public void actionPerformed(ActionEvent e) {
-                if (this.window == null) {
-                    this.window = new GlobusFileTransferWindow(engine);
-                }
-                this.window.show();
-            }
-        });
-        return item;
-    }
+//    private JMenuItem createGlobusFileTransferItem() {
+//        JMenuItem item = new JMenuItem("Globus File Transfer...");
+//        item.setMnemonic(KeyEvent.VK_J);
+//        item.addActionListener(new AbstractAction() {
+//            private GlobusFileTransferWindow window;
+//
+//            public void actionPerformed(ActionEvent e) {
+//                if (this.window == null) {
+//                    this.window = new GlobusFileTransferWindow(engine);
+//                }
+//                this.window.show();
+//            }
+//        });
+//        return item;
+//    }
 
 //    private JMenuItem createAmberRunItem() {
 //        JMenuItem item = new JMenuItem("Amber Run...");
