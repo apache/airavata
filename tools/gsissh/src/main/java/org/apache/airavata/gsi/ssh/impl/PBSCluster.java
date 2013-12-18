@@ -252,12 +252,9 @@ public class PBSCluster implements Cluster {
         String stdOutputString = jobIDReaderCommandOutput.getStdOutputString();
         String stdErrorString = jobIDReaderCommandOutput.getStdErrorString();
 
-        if(stdOutputString == null){
+        if(stdOutputString == null && "".equals(stdOutputString) || (stdErrorString != null )){
+            log.error("Standard Error output : " + stdErrorString);
             throw new SSHApiException(errorMsg + stdErrorString);
-        }else{
-            if(stdErrorString != null){
-                log.error("Standard Error output : " + stdErrorString);
-            }
         }
         return stdOutputString;
     }
