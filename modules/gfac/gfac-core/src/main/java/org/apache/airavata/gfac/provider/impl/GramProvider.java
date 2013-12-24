@@ -245,7 +245,7 @@ public class GramProvider implements GFacProvider {
             */
             try {
 
-                job.request(gateKeeper, false, false);
+                job.request(true, gateKeeper, false, false);
                 renewCredentialsAttempt = false;
 
             } catch (GramException e) {
