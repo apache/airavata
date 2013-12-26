@@ -50,6 +50,18 @@ public class WorkflowExecutorTest {
     }
 
     //@Test
+    public void testRunWorkflowTrestlesOGCEWithToken() throws Exception {
+
+        WorkflowExecutor workflowExecutor = getSampleGatewayExecutor();
+        ExecutionParameters executionParameters = getTrestlesOGCEParameters();
+
+        Workflow workflow = workflowExecutor.setupExperiment(executionParameters);
+        workflowExecutor.runWorkflow(workflow, Arrays.asList("echo_output=Hello World"),
+                "15673deb-cad5-460d-94b7-c4736d8159e5", "kermit");
+
+    }
+
+    //@Test
     public void testRunWorkflowStampedeOGCE() throws Exception {
 
         WorkflowExecutor workflowExecutor = getSampleGatewayExecutor();
@@ -81,7 +93,7 @@ public class WorkflowExecutorTest {
 
         Workflow workflow = workflowExecutor.setupExperiment(executionParameters);
         workflowExecutor.runWorkflow(workflow, Arrays.asList("echo_output=Hello World"),
-                "9964c023-7d30-4247-a6eb-b0c9cd7be138", "bunny");
+                "86cb2ddb-b96c-464c-a542-a8a7ab433add", "bunny");
 
     }
 

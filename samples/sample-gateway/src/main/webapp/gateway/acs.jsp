@@ -44,7 +44,7 @@
     <table border="0">
         <tr>
             <td>Gateway Name</td>
-            <td><input type="text" name="gatewayName"></td>
+            <td><input type="text" name="gatewayName" value="default" readonly="readonly"></td>
         </tr>
         <tr>
             <td>Portal Username</td>
