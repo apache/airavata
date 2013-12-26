@@ -12,7 +12,7 @@
     <parent>
         <artifactId>commons</artifactId>
         <groupId>org.apache.airavata</groupId>
-        <version>0.12-SNAPSHOT</version>
+        <version>0.11-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
