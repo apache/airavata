@@ -1,4 +1,4 @@
-Apache Airavata Server Web Applications - README.txt
+Apache Airavata Server - README.txt
 Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
 --------------------------------------------------------------------------------
 
@@ -13,29 +13,52 @@ and build gadgets to deploy in open social containers such as Apache Rave and mo
 to suit their needs. Airavata builds on general concepts of service oriented computing, 
 distributed messaging, and workflow composition and orchestration.
 
-This distribution allows you to run Airavata Server in a tomcat hosted environment. It 
-includes all the airavata services shipped with a default derby database as the backend 
-registry.
+This distribution allows you to run a standalone Airavata Server which includes all the 
+airavata services shipped with a default derby database as the backend registry.
 
 Release Notes
 =============
-0.7 is the sixth release of Airavata (skipped 0.1-INCUBATNG). This release focuses GFac rearchitecturing and more GFac level changes. For detailed tasks list, please see RELEASE_NOTES.
+0.11 is the ninth release of Airavata (skipped 0.1-INCUBATNG). This release focuses bug fixes and GSISSH library for beta testing. For detailed tasks list, please see RELEASE_NOTES.
 
 Building from source
 ====================
-For brief installation instructions, see INSTALL for detailed installation and further instructions refer http://airavata.apache.org/ - Documentation section in left hand panel. Step by step with proper documentation are provided.
+For brief installation instructions, see INSTALL
+For detailed installation and further instructions refer http://airavata.apache.org/ - Documentation section in left hand panel. Step by step with proper documentation are provided.
 
 Known Issues in This Release
 ============================
-This is the base release and is focused on a good foundation and less on features. This version is not recommended for production usage.
+This is the base release and is focused on a good foundation and less on features. This 
+version is not recommended for production usage.
 
-Airavata Web Application Distribution Directory Structure
-=========================================================
+Airavata Binary Distribution Directory Structure
+================================================
 
-    AIRAVATA_WEBAPP_DISTRIBUTION
-		├── airavata-registry.war
-		├── airavata-server.war
+    AIRAVATA_HOME
+		├── bin
+		│   ├── database_scripts <dir>
+		│   ├── airavata-server.bat
+		│   ├── airavata-server.properties
+		│   ├── airavata-server.sh
+		│   ├── authenticators.xml
+		│   ├── axis2.xml
+		│   ├── derby.sh
+		│   ├── host.xml
+		│   ├── log4j.properties
+		│   ├── logo.txt
+		│   ├── setenv.bat
+		│   ├── setenv.sh
+		│   └── startNetworkServer
+		├── lib <dir>
+		├── repository
+		│   ├── modules 
+		│   └── services
+		├── samples
+		│   ├── workflows <dir>
+		│   ├── echo_out.sh
+		│   └── echo.sh
 		├── INSTALL
+		├── LICENSE
+		├── NOTICE
 		└── README
 
 
@@ -49,18 +72,28 @@ How to test and run samples
 
 Description of Directory Structure
 ==================================
+    - bin
+      This contains all the configuration files & the executable scripts to run the Airavata Server (Axis2 server 
+      with Airavata services which include messageBroker and messageBox with GFac Axis2 services), & a standalone Apache Derby server.
 
-	- airavata-registry.war
-      This deploys the airavata rest registry service capable of performing Airavata registry operations
+    - bin - database_scripts
+      Contains the database scripts which are used to create tables for messagebox and messagebroker services
 
-	- airavata-server.war
-      This deploys the airavata server web services capable launching & monitoring experiments, applications etc.
+    - samples
+      This contains sample workflow to try out & sample application scripts.
+
+    - lib
+      This contains all the libraries required to run the airavata server and/or derby server.
+
+    - repository - services
+      Contains deployed services in Axis2 runtime.
 
     - README
       This document.
 
     - INSTALL
       This document will contain information on installing Apache-Airavata.
+
 
 Other Available Distributions
 =============================
@@ -69,19 +102,20 @@ Server Distributions
 --------------------
 * Airavata Server
   The Airavata Server binary distribution allows you to run a standalone Airavata Server which includes all the airavata services 
-  shipped with a default derby database as the backend registry.
+  shipped with a default derby database as the backend registry. For stable purposes, a mysql configuration is recommended. 
+
+* Airavata Server Web Application
+  This is similar package as the Airavata Server but is distributed as the server Web Application archive.
+  This war is compatible with Apache Tomcat application server. The war bundles all airavata services 
+  enabled by defualt to startup a derby database as the backend registry. For stable purposes, a mysql configuration is recommended. 
 
 Client Distributions
 --------------------
 * Airavata XBaya
-  The Airavata XBaya distribution is a client gui application capable of composing workflows, application descriptors & communicating 
-  with the airavata server to persist user data, run & monitor experiments and analyze the results.
+  The Airavata XBaya distribution is a client GUI application with features to register applications as web services, construct workflows,
+  execute and monitor workflows and browse the generated results from the airavata registry.
 
 * Airavata XBaya JNLP
-  The Airavata XBaya JNLP distribution is a client gui application designed to be hosted on a web server as a web start application
-  that can compose workflows, application descriptors & communicate with the airavata server to persist user data, run & monitor experiments
-  and analyze the results.
-
-* Airavata Client
-  The Airavata Client distribution is a set of libraries and configurations files that allow a 3rd party application to programatically 
-  access Airavata functionality through Airavata API. 
+  The Airavata XBaya JNLP distribution is the simular GUI distribution but prepackeged to be ready to be deployed to 
+   a web server as a web start application. The GUI provides features to register applications as web services, construct workflows,
+  execute and monitor workflows and browse the generated results from the airavata registry. 
