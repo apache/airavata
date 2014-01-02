@@ -35,7 +35,7 @@ public class CredentialReaderFactory {
      * @param dbUti The database configurations.
      * @return CredentialReader object.
      */
-    public static CredentialReader createCredentialStoreReader(DBUtil dbUti) {
+    public static CredentialReader createCredentialStoreReader(DBUtil dbUti) throws ApplicationSettingsException {
         return new CredentialReaderImpl(dbUti);
     }
 

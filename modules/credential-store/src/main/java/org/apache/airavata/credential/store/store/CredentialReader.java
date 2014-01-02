@@ -24,6 +24,8 @@ package org.apache.airavata.credential.store.store;
 import org.apache.airavata.credential.store.credential.AuditInfo;
 import org.apache.airavata.credential.store.credential.Credential;
 
+import java.util.List;
+
 /**
  * This interface provides an API for Credential Store. Provides methods to manipulate credential store data.
  */
@@ -65,8 +67,15 @@ public interface CredentialReader {
     AuditInfo getAuditInfo(String gatewayName, String tokenId) throws CredentialStoreException;
 
     /**
+     * Gets all the credential records.
+     * @return All credential records as a list
+     * @throws CredentialStoreException If an error occurred while retrieving credentials.
+     */
+    public List<Credential> getAllCredentials() throws CredentialStoreException;
+
+    /**
      * Updates the community user contact email address.
-     * 
+     *
      * @param gatewayName
      *            The gateway name.
      * @param communityUser

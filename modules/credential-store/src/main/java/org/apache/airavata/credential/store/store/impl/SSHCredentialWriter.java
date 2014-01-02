@@ -24,7 +24,10 @@ package org.apache.airavata.credential.store.store.impl;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.DBUtil;
+import org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback;
 import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
@@ -43,9 +46,11 @@ public class SSHCredentialWriter implements CredentialWriter {
     
     protected static Logger logger = LoggerFactory.getLogger(SSHCredentialWriter.class);
 
-    public SSHCredentialWriter(DBUtil dbUtil) {
+    public SSHCredentialWriter(DBUtil dbUtil) throws ApplicationSettingsException {
         this.dbUtil = dbUtil;
-        credentialsDAO = new CredentialsDAO();
+        this.credentialsDAO = new CredentialsDAO(ApplicationSettings.getCredentialStoreKeyStorePath(),
+                ApplicationSettings.getCredentialStoreKeyAlias(), new DefaultKeyStorePasswordCallback());
+
     }
 
     public void writeCredentials(Credential credential) throws CredentialStoreException {

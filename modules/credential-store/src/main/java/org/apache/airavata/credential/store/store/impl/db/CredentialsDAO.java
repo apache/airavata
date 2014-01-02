@@ -42,9 +42,7 @@ public class CredentialsDAO extends ParentDAO {
     private String secretKeyAlias = null;
     private KeyStorePasswordCallback keyStorePasswordCallback = null;
 
-
     public CredentialsDAO() {
-        super();
     }
 
     public CredentialsDAO(String keyStore, String alias, KeyStorePasswordCallback passwordCallback) {
@@ -288,6 +286,54 @@ public class CredentialsDAO extends ParentDAO {
         } catch (SQLException e) {
             StringBuilder stringBuilder = new StringBuilder("Error retrieving credential list for ");
             stringBuilder.append("gateway - ").append(gatewayName);
+
+            log.debug(stringBuilder.toString(), e);
+
+            throw new CredentialStoreException(stringBuilder.toString(), e);
+        } finally {
+            DBUtil.cleanup(preparedStatement, resultSet);
+        }
+
+        return credentialList;
+    }
+
+    /**
+     * Gets all credentials.
+     * @param connection The database connection
+     * @return All credentials as a list
+     * @throws CredentialStoreException If an error occurred while rerieving credentials.
+     */
+    public List<Credential> getCredentials(Connection connection) throws CredentialStoreException {
+
+        List<Credential> credentialList = new ArrayList<Credential>();
+
+        String sql = "select * from credentials";
+
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+
+            resultSet = preparedStatement.executeQuery();
+
+            Credential certificateCredential;
+
+            while (resultSet.next()) {
+
+                Blob blobCredentials = resultSet.getBlob("CREDENTIAL");
+                byte[] certificate = blobCredentials.getBytes(1, (int) blobCredentials.length());
+
+                certificateCredential = (Credential) convertByteArrayToObject(certificate);
+
+                certificateCredential.setPortalUserName(resultSet.getString("PORTAL_USER_ID"));
+                certificateCredential.setCertificateRequestedTime(resultSet.getTimestamp("TIME_PERSISTED"));
+
+                credentialList.add(certificateCredential);
+            }
+
+        } catch (SQLException e) {
+            StringBuilder stringBuilder = new StringBuilder("Error retrieving all credentials");
 
             log.debug(stringBuilder.toString(), e);
 

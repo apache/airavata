@@ -25,6 +25,7 @@ import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -39,6 +40,12 @@ public class Utility {
 
         DateFormat df = new SimpleDateFormat(DATE_FORMAT);
         return df.format(date);
+    }
+
+    public static Date convertStringToDate(String date) throws ParseException {
+
+        DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+        return df.parse(date);
     }
 
     public static String encrypt(String stringToEncrypt) {

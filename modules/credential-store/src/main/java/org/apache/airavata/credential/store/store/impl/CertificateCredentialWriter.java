@@ -21,7 +21,10 @@
 
 package org.apache.airavata.credential.store.store.impl;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.DBUtil;
+import org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback;
 import org.apache.airavata.credential.store.credential.CommunityUser;
 import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;
@@ -47,11 +50,13 @@ public class CertificateCredentialWriter implements CredentialWriter {
 
     private DBUtil dbUtil;
 
-    public CertificateCredentialWriter(DBUtil dbUtil) {
+    public CertificateCredentialWriter(DBUtil dbUtil) throws ApplicationSettingsException {
 
         this.dbUtil = dbUtil;
 
-        credentialsDAO = new CredentialsDAO();
+        this.credentialsDAO = new CredentialsDAO(ApplicationSettings.getCredentialStoreKeyStorePath(),
+                ApplicationSettings.getCredentialStoreKeyAlias(), new DefaultKeyStorePasswordCallback());
+
         communityUserDAO = new CommunityUserDAO();
     }
 
