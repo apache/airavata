@@ -27,9 +27,13 @@ import edu.uiuc.ncsa.myproxy.oa4mp.client.OA4MPService;
 import edu.uiuc.ncsa.myproxy.oa4mp.client.servlet.ClientServlet;
 import edu.uiuc.ncsa.security.core.exceptions.GeneralException;
 import edu.uiuc.ncsa.security.servlet.JSPUtil;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.credential.store.credential.CommunityUser;
 import org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;
+import org.apache.airavata.credential.store.notifier.NotifierBootstrap;
+import org.apache.airavata.credential.store.notifier.impl.EmailNotifierConfiguration;
 import org.apache.airavata.credential.store.store.impl.CertificateCredentialWriter;
 import org.apache.airavata.credential.store.util.ConfigurationReader;
 import org.apache.airavata.credential.store.util.CredentialStoreConstants;
@@ -58,6 +62,8 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
 
     private static ConfigurationReader configurationReader;
 
+    private NotifierBootstrap notifierBootstrap;
+
     public void init() throws ServletException {
 
         DBUtil dbUtil;
@@ -70,12 +76,29 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
 
         try {
             configurationReader = new ConfigurationReader();
+            super.init();
+            certificateCredentialWriter = new CertificateCredentialWriter(dbUtil);
         } catch (Exception e) {
             throw new ServletException("Error initializing configuration reader.", e);
         }
 
-        super.init();
-        certificateCredentialWriter = new CertificateCredentialWriter(dbUtil);
+
+        // initialize notifier
+        try {
+            boolean enabled = Boolean.parseBoolean(ApplicationSettings.getCredentialStoreNotifierEnabled());
+
+            if (enabled) {
+                EmailNotifierConfiguration notifierConfiguration
+                        = EmailNotifierConfiguration.getEmailNotifierConfigurations();
+                long duration = Long.parseLong(ApplicationSettings.getCredentialStoreNotifierDuration());
+
+                notifierBootstrap = new NotifierBootstrap(duration, dbUtil, notifierConfiguration);
+            }
+
+        } catch (ApplicationSettingsException e) {
+            throw new ServletException("Error initializing notifier.", e);
+        }
+
 
         info("Credential store callback initialized successfully.");
     }

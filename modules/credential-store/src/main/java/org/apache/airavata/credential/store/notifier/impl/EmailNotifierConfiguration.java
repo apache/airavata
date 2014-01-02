@@ -21,6 +21,9 @@
 
 package org.apache.airavata.credential.store.notifier.impl;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ApplicationSettings;
+
 /**
  * User: AmilaJ (amilaj@apache.org)
  * Date: 12/3/13
@@ -68,4 +71,14 @@ public class EmailNotifierConfiguration {
     public String getFromAddress() {
         return fromAddress;
     }
+
+    public static EmailNotifierConfiguration getEmailNotifierConfigurations() throws ApplicationSettingsException {
+        return new EmailNotifierConfiguration(ApplicationSettings.getCredentialStoreEmailServer(),
+                Integer.parseInt(ApplicationSettings.getCredentialStoreEmailServerPort()),
+                ApplicationSettings.getCredentialStoreEmailUser(),
+                ApplicationSettings.getCredentialStoreEmailPassword(),
+                Boolean.parseBoolean(ApplicationSettings.getCredentialStoreEmailSSLConnect()),
+                ApplicationSettings.getCredentialStoreEmailFromEmail());
+    }
+
 }

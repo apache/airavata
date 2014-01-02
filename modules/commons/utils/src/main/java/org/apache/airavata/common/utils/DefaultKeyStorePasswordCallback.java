@@ -1,4 +1,4 @@
-package org.apache.airavata.common.utils;/*
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,32 +19,37 @@ package org.apache.airavata.common.utils;/*
  *
  */
 
+package org.apache.airavata.common.utils;
+
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+
 /**
  * User: AmilaJ (amilaj@apache.org)
- * Date: 10/11/13
- * Time: 11:30 AM
+ * Date: 12/29/13
+ * Time: 12:10 PM
  */
 
-/**
- * An interface to get keystore password in a form of a callback.
- */
-public interface KeyStorePasswordCallback {
+public class DefaultKeyStorePasswordCallback implements KeyStorePasswordCallback {
 
-    /**
-     * Caller should implement the interface. Should return the password for
-     * the keystore. This should return the keystore password. i.e. password used to open the keystore.
-     * Instead of the actual file.
-     * @return The password to open the keystore.
-     */
-    char[] getStorePassword() throws RuntimeException;
+    public DefaultKeyStorePasswordCallback(){
 
-    /**
-     * Caller should implement the interface. Should return the pass phrase for
-     * the secret key.
-     * Instead of the actual file.
-     * @param keyAlias The alias of the key
-     * @return The pass phrase for the secret key.
-     */
-    char[] getSecretKeyPassPhrase(String keyAlias);
+    }
 
+    @Override
+    public char[] getStorePassword() {
+        try {
+            return ApplicationSettings.getCredentialStoreKeyStorePassword().toCharArray();
+        } catch (ApplicationSettingsException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public char[] getSecretKeyPassPhrase(String keyAlias) {
+        try {
+            return ApplicationSettings.getCredentialStoreKeyStorePassword().toCharArray();
+        } catch (ApplicationSettingsException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

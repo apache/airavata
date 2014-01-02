@@ -180,6 +180,50 @@ public abstract class ApplicationSettings {
         SecurityUtil.setTrustStoreParameters(getTrustStorePath(), getTrustStorePassword());
     }
 
+    public static String getCredentialStoreKeyStorePath() throws ApplicationSettingsException {
+        return getSetting("credential.store.keystore.url");
+    }
+
+    public static String getCredentialStoreKeyAlias() throws ApplicationSettingsException {
+        return getSetting("credential.store.keystore.alias");
+    }
+
+    public static String getCredentialStoreKeyStorePassword() throws ApplicationSettingsException {
+        return getSetting("credential.store.keystore.password");
+    }
+
+    public static String getCredentialStoreNotifierEnabled() throws ApplicationSettingsException {
+        return getSetting("notifier.enabled");
+    }
+
+    public static String getCredentialStoreNotifierDuration() throws ApplicationSettingsException {
+        return getSetting("notifier.duration");
+    }
+
+    public static String getCredentialStoreEmailServer() throws ApplicationSettingsException {
+        return getSetting("email.server");
+    }
+
+    public static String getCredentialStoreEmailServerPort() throws ApplicationSettingsException {
+        return getSetting("email.server.port");
+    }
+
+    public static String getCredentialStoreEmailUser() throws ApplicationSettingsException {
+        return getSetting("email.user");
+    }
+
+    public static String getCredentialStoreEmailPassword() throws ApplicationSettingsException {
+        return getSetting("email.password");
+    }
+
+    public static String getCredentialStoreEmailSSLConnect() throws ApplicationSettingsException {
+        return getSetting("email.ssl");
+    }
+
+    public static String getCredentialStoreEmailFromEmail() throws ApplicationSettingsException {
+        return getSetting("email.from");
+    }
+
     public static Properties getProperties() {
         return properties;
     }

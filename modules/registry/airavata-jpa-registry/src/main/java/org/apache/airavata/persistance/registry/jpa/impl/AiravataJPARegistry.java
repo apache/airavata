@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.airavata.common.exception.AiravataConfigurationException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
@@ -2509,32 +2510,37 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public boolean isCredentialExist(String gatewayId, String tokenId)
 			throws RegistryException {
-		credentialReader = new CredentialReaderImpl(getDBConnector());
 		try {
-			SSHCredential credential = (SSHCredential) credentialReader.getCredential(gatewayId, tokenId);
+            credentialReader = new CredentialReaderImpl(getDBConnector());
+            SSHCredential credential = (SSHCredential) credentialReader.getCredential(gatewayId, tokenId);
 	    	if (credential!=null) {
 	    		return true;
 	    	}
 		} catch(CredentialStoreException e) {
 			return false;
-		}
-		return false;
+		} catch (ApplicationSettingsException e) {
+            throw new RegistryException("An error occurred while creating credential reader.");
+        }
+        return false;
 	}
 
 	@Override
 	public String getCredentialPublicKey(String gatewayId, String tokenId)
 			throws RegistryException {
 		
-		credentialReader = new CredentialReaderImpl(getDBConnector());
 		try {
-			SSHCredential credential = (SSHCredential) credentialReader.getCredential(gatewayId, tokenId);
+            credentialReader = new CredentialReaderImpl(getDBConnector());
+
+            SSHCredential credential = (SSHCredential) credentialReader.getCredential(gatewayId, tokenId);
 	    	if (credential!=null) {
 	    		return new String(credential.getPublicKey());
 	    	}
 		} catch(CredentialStoreException e) {
 			return null;
-		}
-		return null;
+		} catch (ApplicationSettingsException e) {
+            throw new RegistryException("An error occurred while creating credential reader");
+        }
+        return null;
 	}
 
 	@Override
@@ -2546,9 +2552,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public String createCredential(String gatewayId, String tokenId,
 			String username) throws RegistryException {
-    	credentialWriter = new SSHCredentialWriter(getDBConnector());
-    	credentialGenerator = new SSHCredentialGenerator();
+
     	try {
+            credentialWriter = new SSHCredentialWriter(getDBConnector());
+            credentialGenerator = new SSHCredentialGenerator();
 	    	SSHCredential credential = credentialGenerator.generateCredential(tokenId);
 	    	if (credential!=null) {
 	    		credential.setGateway(gatewayId);
@@ -2559,8 +2566,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	    	}
     	} catch (CredentialStoreException e) {
     		return null;
-    	}
-		return null;
+    	} catch (ApplicationSettingsException e) {
+            throw new RegistryException("An error occurred while creating ssh credential writer");
+        }
+        return null;
 	}
 
 	private static DBUtil getDBConnector() throws RegistryException{

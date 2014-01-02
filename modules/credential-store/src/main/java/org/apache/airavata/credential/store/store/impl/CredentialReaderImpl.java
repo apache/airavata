@@ -21,7 +21,10 @@
 
 package org.apache.airavata.credential.store.store.impl;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.DBUtil;
+import org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback;
 import org.apache.airavata.credential.store.credential.CommunityUser;
 import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.credential.impl.certificate.CertificateAuditInfo;
@@ -33,6 +36,7 @@ import org.apache.airavata.credential.store.store.CredentialStoreException;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Credential store API implementation.
@@ -43,9 +47,10 @@ public class CredentialReaderImpl implements CredentialReader, Serializable {
 
     private DBUtil dbUtil;
 
-    public CredentialReaderImpl(DBUtil dbUtil) {
+    public CredentialReaderImpl(DBUtil dbUtil) throws ApplicationSettingsException {
 
-        this.credentialsDAO = new CredentialsDAO();
+        this.credentialsDAO = new CredentialsDAO(ApplicationSettings.getCredentialStoreKeyStorePath(),
+                ApplicationSettings.getCredentialStoreKeyAlias(), new DefaultKeyStorePasswordCallback());
 
         this.dbUtil = dbUtil;
     }
@@ -68,6 +73,18 @@ public class CredentialReaderImpl implements CredentialReader, Serializable {
         } finally {
             DBUtil.cleanup(connection);
         }
+    }
+
+    public List<Credential> getAllCredentials() throws CredentialStoreException {
+
+        Connection connection = getConnection();
+
+        try {
+            return this.credentialsDAO.getCredentials(connection);
+        } finally {
+            DBUtil.cleanup(connection);
+        }
+
     }
 
     public String getPortalUser(String gatewayName, String tokenId) throws CredentialStoreException {
