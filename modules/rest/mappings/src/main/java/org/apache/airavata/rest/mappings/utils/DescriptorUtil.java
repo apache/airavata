@@ -233,6 +233,7 @@ public class DescriptorUtil {
             InputParameterType parameter = InputParameterType.Factory.newInstance();
             parameter.setParameterName(inputParams.get(i).getName());
             parameter.setParameterValueArray(new String[]{inputParams.get(i).getName()});
+            parameter.setParameterDescription(inputParams.get(i).getDescription());
             ParameterType parameterType = parameter.addNewParameterType();
             parameterType.setType(DataType.Enum.forString(inputParams.get(i).getType()));
             parameterType.setName(inputParams.get(i).getType());
@@ -246,6 +247,7 @@ public class DescriptorUtil {
         for (int i = 0; i < outputParams.size(); i++){
             OutputParameterType parameter = OutputParameterType.Factory.newInstance();
             parameter.setParameterName(outputParams.get(i).getName());
+            parameter.setParameterDescription(outputParams.get(i).getDescription());
             ParameterType parameterType = parameter.addNewParameterType();
             parameterType.setType(DataType.Enum.forString(outputParams.get(i).getType()));
             parameterType.setName(outputParams.get(i).getType());
