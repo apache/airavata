@@ -60,5 +60,6 @@ public class SimpleJobSubmitter implements JobSubmitter{
                 logger.error("Error getting job related information");
             }
         }
+	return true;
     }
 }
