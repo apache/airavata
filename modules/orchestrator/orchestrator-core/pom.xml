@@ -44,5 +44,10 @@ the License. -->
             <artifactId>airavata-common-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-gfac-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

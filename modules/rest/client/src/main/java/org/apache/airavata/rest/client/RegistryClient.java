@@ -1046,7 +1046,7 @@ public class RegistryClient extends AiravataRegistry2 {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public String fetchAcceptedJob(String experimentID) throws RegistryException {
+    public JobRequest fetchAcceptedJob(String experimentID) throws RegistryException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

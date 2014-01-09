@@ -20,6 +20,10 @@
 */
 package org.apache.airavata.orchestrator.core;
 
+import org.apache.airavata.client.api.AiravataAPI;
+
+import java.net.URL;
+
 public class OrchestratorConfiguration {
 
     private String submitterClass;
@@ -29,7 +33,20 @@ public class OrchestratorConfiguration {
     private int threadPoolSize = 10;
 
     private boolean startSubmitter = false;
-    /* setter methods */
+
+    private AiravataAPI airavataAPI;
+
+    private URL brokerURL;
+
+
+    public URL getBrokerURL() {
+        return brokerURL;
+    }
+
+    public void setBrokerURL(URL brokerURL) {
+        this.brokerURL = brokerURL;
+    }
+
     public String getSubmitterClass() {
         return submitterClass;
     }
@@ -42,7 +59,6 @@ public class OrchestratorConfiguration {
         return threadPoolSize;
     }
 
-    /* setter methods */
     public void setSubmitterClass(String submitterClass) {
         this.submitterClass = submitterClass;
     }
@@ -61,5 +77,13 @@ public class OrchestratorConfiguration {
 
     public void setStartSubmitter(boolean startSubmitter) {
         this.startSubmitter = startSubmitter;
+    }
+
+    public AiravataAPI getAiravataAPI() {
+        return airavataAPI;
+    }
+
+    public void setAiravataAPI(AiravataAPI airavataAPI) {
+        this.airavataAPI = airavataAPI;
     }
 }
