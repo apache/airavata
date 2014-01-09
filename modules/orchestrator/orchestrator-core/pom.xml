@@ -13,12 +13,12 @@ the License. -->
 
     <parent>
 	<groupId>org.apache.airavata</groupId>
-	<artifactId>airavata</artifactId>
+	<artifactId>orchestrator</artifactId>
         <version>0.12-SNAPSHOT</version>
-	<relativePath>../../../trunk/pom.xml</relativePath>
+	<relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>airavata-orchestrator-service</artifactId>
+    <artifactId>airavata-orchestrator-core</artifactId>
     <packaging>jar</packaging>
     <name>Airavata Orchestrator Core</name>
     <url>http://airavata.apache.org/</url>
