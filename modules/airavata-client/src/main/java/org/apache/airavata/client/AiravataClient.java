@@ -425,7 +425,7 @@ public class AiravataClient extends Observable implements AiravataAPI {
 		ExperimentAdvanceOptions options = api.getExecutionManager().createExperimentAdvanceOptions();
 		options.getCustomWorkflowSchedulingSettings().addNewNodeSettings("data1", "comma_app", 1, 1);
 		String workflow = "Workflow3";
-		List<WorkflowInput> inputs = api.getWorkflowManager().getWorkflowInputs(workflow);
+            List<WorkflowInput> inputs = api.getWorkflowManager().getWorkflowInputs(workflow);
 		System.out.println(api.getExecutionManager().runExperiment(workflow, inputs,options));
 	}
 
