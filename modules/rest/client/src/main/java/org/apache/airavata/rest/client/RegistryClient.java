@@ -27,17 +27,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.airavata.common.utils.AiravataJobState;
 import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.AiravataExperiment;
-import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.AiravataUser;
+import org.apache.airavata.registry.api.*;
 import org.apache.airavata.registry.api.ExecutionErrors.Source;
-import org.apache.airavata.registry.api.PasswordCallback;
-import org.apache.airavata.registry.api.ResourceMetadata;
-import org.apache.airavata.registry.api.WorkspaceProject;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.UnimplementedRegistryOperationException;
 import org.apache.airavata.registry.api.exception.worker.ExperimentDoesNotExistsException;
@@ -62,7 +58,6 @@ public class RegistryClient extends AiravataRegistry2 {
     private PublishedWorkflowResourceClient publishedWorkflowResourceClient;
     private UserWorkflowResourceClient userWorkflowResourceClient;
     private CredentialStoreResourceClient credentialStoreResourceClient;
-
 //    private CookieManager cookieManager = new CookieManager();
 
 
@@ -104,6 +99,7 @@ public class RegistryClient extends AiravataRegistry2 {
     public CredentialStoreResourceClient getCredentialStoreResourceClient() {
         return credentialStoreResourceClient;
     }
+
 
 
     @Override
@@ -1024,4 +1020,45 @@ public class RegistryClient extends AiravataRegistry2 {
 		return getCredentialStoreResourceClient().createCredential(gatewayId, tokenId, username);
 	}
 
+
+    //todo implement these methods properly
+    public Map<String, Integer> getGFACNodeList() throws RegistryException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public boolean storeExperiment(String userName, String experimentID) throws RegistryException {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public boolean changeStatus(String experimentID, AiravataJobState.State state) throws RegistryException {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public AiravataJobState getState(String experimentID) throws RegistryException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public List<String> getAllJobsWithState(AiravataJobState state) throws RuntimeException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public List<String> getAllAcceptedJobs() throws RegistryException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public String fetchAcceptedJob(String experimentID) throws RegistryException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public List<String> getAllHangedJobs() throws RegistryException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public int getHangedJobCount() throws RegistryException {
+        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public boolean resetHangedJob(String experimentID) throws RegistryException {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }
