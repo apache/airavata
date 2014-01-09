@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.airavata.common.exception.AiravataConfigurationException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataJobState;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
@@ -2510,37 +2510,32 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public boolean isCredentialExist(String gatewayId, String tokenId)
 			throws RegistryException {
+		credentialReader = new CredentialReaderImpl(getDBConnector());
 		try {
-            credentialReader = new CredentialReaderImpl(getDBConnector());
-            SSHCredential credential = (SSHCredential) credentialReader.getCredential(gatewayId, tokenId);
+			SSHCredential credential = (SSHCredential) credentialReader.getCredential(gatewayId, tokenId);
 	    	if (credential!=null) {
 	    		return true;
 	    	}
 		} catch(CredentialStoreException e) {
 			return false;
-		} catch (ApplicationSettingsException e) {
-            throw new RegistryException("An error occurred while creating credential reader.");
-        }
-        return false;
+		}
+		return false;
 	}
 
 	@Override
 	public String getCredentialPublicKey(String gatewayId, String tokenId)
 			throws RegistryException {
 		
+		credentialReader = new CredentialReaderImpl(getDBConnector());
 		try {
-            credentialReader = new CredentialReaderImpl(getDBConnector());
-
-            SSHCredential credential = (SSHCredential) credentialReader.getCredential(gatewayId, tokenId);
+			SSHCredential credential = (SSHCredential) credentialReader.getCredential(gatewayId, tokenId);
 	    	if (credential!=null) {
 	    		return new String(credential.getPublicKey());
 	    	}
 		} catch(CredentialStoreException e) {
 			return null;
-		} catch (ApplicationSettingsException e) {
-            throw new RegistryException("An error occurred while creating credential reader");
-        }
-        return null;
+		}
+		return null;
 	}
 
 	@Override
@@ -2552,10 +2547,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public String createCredential(String gatewayId, String tokenId,
 			String username) throws RegistryException {
-
+    	credentialWriter = new SSHCredentialWriter(getDBConnector());
+    	credentialGenerator = new SSHCredentialGenerator();
     	try {
-            credentialWriter = new SSHCredentialWriter(getDBConnector());
-            credentialGenerator = new SSHCredentialGenerator();
 	    	SSHCredential credential = credentialGenerator.generateCredential(tokenId);
 	    	if (credential!=null) {
 	    		credential.setGateway(gatewayId);
@@ -2566,10 +2560,8 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	    	}
     	} catch (CredentialStoreException e) {
     		return null;
-    	} catch (ApplicationSettingsException e) {
-            throw new RegistryException("An error occurred while creating ssh credential writer");
-        }
-        return null;
+    	}
+		return null;
 	}
 
 	private static DBUtil getDBConnector() throws RegistryException{
@@ -2593,5 +2585,54 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         	logger.error("Error while reading registrty settings ", e);
         	throw new RegistryException("Error while accesing registrty settings ", e);
 		}
+    }
+
+    public Map<String, Integer> getGFACNodeList() throws RegistryException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    /**
+     *These are the methods inherited from Orchestrator Registry
+     */
+
+
+    public List<URI> getLiveGFacURIs() throws RegistryException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public boolean storeExperiment(String userName, String experimentID) throws RegistryException {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public boolean changeStatus(String experimentID, AiravataJobState.State state) throws RegistryException {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public AiravataJobState getState(String experimentID) throws RegistryException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public List<String> getAllJobsWithState(AiravataJobState state) throws RuntimeException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public List<String> getAllAcceptedJobs() throws RegistryException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public String fetchAcceptedJob(String experimentID) throws RegistryException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public List<String> getAllHangedJobs() throws RegistryException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public int getHangedJobCount() throws RegistryException {
+        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public boolean resetHangedJob(String experimentID) throws RegistryException {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
