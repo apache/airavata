@@ -21,6 +21,7 @@
 package org.apache.airavata.orchestrator.core;
 
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
+import org.apache.airavata.registry.api.JobRequest;
 
 /*
    This is the interface for orchestrator functionality exposed to the out side of the
@@ -55,7 +56,7 @@ public interface Orchestrator {
      * @return
      * @throws OrchestratorException
      */
-    boolean acceptExperiment(JobRequest request) throws OrchestratorException;
+    boolean launchExperiment(JobRequest request) throws OrchestratorException;
 
     /**
      * This is like a cron job which runs continuously and take available jobs to

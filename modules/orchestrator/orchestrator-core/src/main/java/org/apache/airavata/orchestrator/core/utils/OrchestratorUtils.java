@@ -20,10 +20,10 @@
 */
 package org.apache.airavata.orchestrator.core.utils;
 
-import org.apache.airavata.orchestrator.core.JobRequest;
 import org.apache.airavata.orchestrator.core.JobSubmitterWorker;
 import org.apache.airavata.orchestrator.core.OrchestratorConfiguration;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
+import org.apache.airavata.registry.api.JobRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

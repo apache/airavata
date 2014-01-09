@@ -87,7 +87,7 @@ public interface OrchestratorRegistry extends AiravataSubRegistry {
      * @return experimentID
      * @throws RegistryException
      */
-    String fetchAcceptedJob(String experimentID)throws RegistryException;
+    JobRequest fetchAcceptedJob(String experimentID)throws RegistryException;
 
     /**
      * This will return all the hanged jobs, the logic to determine

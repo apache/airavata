@@ -69,24 +69,8 @@ import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserWorkflowResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkflowDataResource;
-import org.apache.airavata.registry.api.AiravataExperiment;
-import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.AiravataRegistryFactory;
-import org.apache.airavata.registry.api.AiravataSubRegistry;
-import org.apache.airavata.registry.api.AiravataUser;
-import org.apache.airavata.registry.api.ConfigurationRegistry;
-import org.apache.airavata.registry.api.DescriptorRegistry;
-import org.apache.airavata.registry.api.ExecutionErrors;
+import org.apache.airavata.registry.api.*;
 import org.apache.airavata.registry.api.ExecutionErrors.Source;
-import org.apache.airavata.registry.api.Gateway;
-import org.apache.airavata.registry.api.PasswordCallback;
-import org.apache.airavata.registry.api.ProjectsRegistry;
-import org.apache.airavata.registry.api.ProvenanceRegistry;
-import org.apache.airavata.registry.api.PublishedWorkflowRegistry;
-import org.apache.airavata.registry.api.ResourceMetadata;
-import org.apache.airavata.registry.api.UserRegistry;
-import org.apache.airavata.registry.api.UserWorkflowRegistry;
-import org.apache.airavata.registry.api.WorkspaceProject;
 import org.apache.airavata.registry.api.exception.AiravataRegistryUninitializedException;
 import org.apache.airavata.registry.api.exception.GatewayNotRegisteredException;
 import org.apache.airavata.registry.api.exception.RegistryAPIVersionIncompatibleException;
@@ -2620,7 +2604,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public String fetchAcceptedJob(String experimentID) throws RegistryException {
+    public JobRequest fetchAcceptedJob(String experimentID) throws RegistryException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

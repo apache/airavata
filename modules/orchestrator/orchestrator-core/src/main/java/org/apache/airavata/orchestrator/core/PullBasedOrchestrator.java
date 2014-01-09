@@ -20,23 +20,24 @@
 */
 package org.apache.airavata.orchestrator.core;
 
+import org.apache.airavata.client.AiravataAPIFactory;
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.exception.AiravataConfigurationException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataJobState;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
-import org.apache.airavata.orchestrator.core.utils.OrchestratorConstants;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
-import org.apache.airavata.persistance.registry.jpa.impl.AiravataJPARegistry;
 import org.apache.airavata.registry.api.*;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.*;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -48,6 +49,8 @@ public class PullBasedOrchestrator implements Orchestrator {
     AiravataRegistry2 airavataRegistry;
 
     ExecutorService executor;
+
+    AiravataAPI airavataAPI;
 
     public boolean initialize() throws OrchestratorException {
         try {
@@ -73,12 +76,10 @@ public class PullBasedOrchestrator implements Orchestrator {
 
             orchestratorContext = new OrchestratorContext(gfacInstanceList);
             orchestratorContext.setOrchestratorConfiguration(orchestratorConfiguration);
-
+            orchestratorConfiguration.setAiravataAPI(getAiravataAPI());
             /* Starting submitter thread pool */
 
             executor = Executors.newFixedThreadPool(orchestratorConfiguration.getThreadPoolSize());
-
-
         } catch (RegistryException e) {
             logger.error("Failed to initializing Orchestrator");
             OrchestratorException orchestratorException = new OrchestratorException(e);
@@ -117,7 +118,7 @@ public class PullBasedOrchestrator implements Orchestrator {
         return experimentID;
     }
 
-    public boolean acceptExperiment(JobRequest request) throws OrchestratorException {
+    public boolean launchExperiment(JobRequest request) throws OrchestratorException {
         // validate the jobRequest first
         if (!OrchestratorUtils.validateJobRequest(request)) {
             logger.error("Invalid Job request sent, Experiment creation failed");
@@ -140,5 +141,19 @@ public class PullBasedOrchestrator implements Orchestrator {
             JobSubmitterWorker jobSubmitterWorker = new JobSubmitterWorker(orchestratorContext);
             executor.execute(jobSubmitterWorker);
         }
+    }
+    private AiravataAPI getAiravataAPI(){
+        if (airavataAPI==null) {
+			try {
+				String systemUserName = ServerSettings.getSystemUser();
+				String gateway = ServerSettings.getSystemUserGateway();
+				airavataAPI = AiravataAPIFactory.getAPI(gateway, systemUserName);
+			} catch (ApplicationSettingsException e) {
+				logger.error("Unable to read the properties file", e);
+			} catch (AiravataAPIInvocationException e) {
+				logger.error("Unable to create Airavata API", e);
+			}
+		}
+		return airavataAPI;
     }
 }
