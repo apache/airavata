@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.airavata.common.exception.AiravataConfigurationException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataJobState;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.Version;
@@ -2194,24 +2195,6 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		return errors;
 	}
 	
-//	@Override
-//	public List<ExecutionError> getAllExperimentErrors(String experimentId,
-//			Source... filterBy) throws RegistryException {
-//		return getExecutionErrors(experimentId, null, null, null, filterBy);
-//	}
-//	@Override
-//	public List<ExecutionError> getAllWorkflowErrors(String experimentId,
-//			String workflowInstanceId, Source... filterBy)
-//			throws RegistryException {
-//		return getExecutionErrors(experimentId, workflowInstanceId, null, null, filterBy);
-//	}
-//	@Override
-//	public List<ExecutionError> getAllNodeErrors(String experimentId,
-//			String workflowInstanceId, String nodeId, Source... filterBy)
-//			throws RegistryException {
-//		return getExecutionErrors(experimentId, workflowInstanceId, nodeId, null, filterBy);
-//	}
-
 	@Override
 	public int addExperimentError(ExperimentExecutionError error)
 			throws RegistryException {
@@ -2494,13 +2477,16 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public boolean isCredentialExist(String gatewayId, String tokenId)
 			throws RegistryException {
-		credentialReader = new CredentialReaderImpl(getDBConnector());
 		try {
+			credentialReader = new CredentialReaderImpl(getDBConnector());
 			SSHCredential credential = (SSHCredential) credentialReader.getCredential(gatewayId, tokenId);
 	    	if (credential!=null) {
 	    		return true;
 	    	}
-		} catch(CredentialStoreException e) {
+		} catch (ApplicationSettingsException e1) {
+			return false;
+		}
+		catch(CredentialStoreException e) {
 			return false;
 		}
 		return false;
@@ -2509,14 +2495,16 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public String getCredentialPublicKey(String gatewayId, String tokenId)
 			throws RegistryException {
-		
-		credentialReader = new CredentialReaderImpl(getDBConnector());
 		try {
+			credentialReader = new CredentialReaderImpl(getDBConnector());
 			SSHCredential credential = (SSHCredential) credentialReader.getCredential(gatewayId, tokenId);
 	    	if (credential!=null) {
 	    		return new String(credential.getPublicKey());
 	    	}
-		} catch(CredentialStoreException e) {
+		}catch (ApplicationSettingsException e1) {
+			return null;
+		}
+		catch(CredentialStoreException e) {
 			return null;
 		}
 		return null;
@@ -2531,10 +2519,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public String createCredential(String gatewayId, String tokenId,
 			String username) throws RegistryException {
-    	credentialWriter = new SSHCredentialWriter(getDBConnector());
-    	credentialGenerator = new SSHCredentialGenerator();
     	try {
-	    	SSHCredential credential = credentialGenerator.generateCredential(tokenId);
+    		credentialWriter = new SSHCredentialWriter(getDBConnector());
+        	credentialGenerator = new SSHCredentialGenerator();
+        	SSHCredential credential = credentialGenerator.generateCredential(tokenId);
 	    	if (credential!=null) {
 	    		credential.setGateway(gatewayId);
 	    		credential.setToken(tokenId);
@@ -2542,7 +2530,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	        	credentialWriter.writeCredentials(credential);
 	        	return new String(credential.getPublicKey());
 	    	}
-    	} catch (CredentialStoreException e) {
+    	}catch (ApplicationSettingsException e1) {
+			return null;
+		} 
+    	catch (CredentialStoreException e) {
     		return null;
     	}
 		return null;
