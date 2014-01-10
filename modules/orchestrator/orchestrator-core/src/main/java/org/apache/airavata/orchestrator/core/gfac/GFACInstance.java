@@ -23,6 +23,12 @@ package org.apache.airavata.orchestrator.core.gfac;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This class represent the data related to gfac instances
+ * if orchestrator is running on non-embedded mode,
+ * This information can be used to do better load balancing between
+ * different gfac instances
+ */
 public class GFACInstance {
     private final static Logger logger = LoggerFactory.getLogger(GFACInstance.class);
 

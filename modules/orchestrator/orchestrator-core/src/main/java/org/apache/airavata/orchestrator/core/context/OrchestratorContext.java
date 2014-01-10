@@ -28,6 +28,9 @@ import org.apache.airavata.registry.api.OrchestratorRegistry;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This is the context object used in orchestrator whic h
+ */
 public class OrchestratorContext {
     private List<GFACInstance> gfacInstanceList;
 
