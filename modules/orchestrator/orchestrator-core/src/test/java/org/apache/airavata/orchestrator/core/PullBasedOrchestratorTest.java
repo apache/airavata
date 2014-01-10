@@ -43,10 +43,6 @@ public class PullBasedOrchestratorTest {
 
     @BeforeTest
     public void setUp() throws Exception {
-//        System.setProperty("myproxy.user", "ogce");
-//        System.setProperty("myproxy.password", "");
-//        System.setProperty("basedir", "/Users/lahirugunathilake/work/airavata/sandbox/gsissh");
-//        System.setProperty("gsi.working.directory","/home/ogce");
         orchestrator = new PullBasedOrchestrator();
         orchestrator.initialize();
     }

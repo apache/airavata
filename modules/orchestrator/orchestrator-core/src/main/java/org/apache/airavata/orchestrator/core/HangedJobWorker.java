@@ -24,18 +24,14 @@ import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
-import org.apache.airavata.orchestrator.core.utils.OrchestratorConstants;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.List;
-import java.util.Properties;
 
-public class JobSubmitterWorker implements Runnable {
-    private final static Logger logger = LoggerFactory.getLogger(JobSubmitterWorker.class);
+public class HangedJobWorker implements Runnable{
+     private final static Logger logger = LoggerFactory.getLogger(HangedJobWorker.class);
 
     private OrchestratorContext orchestratorContext;
 
@@ -45,7 +41,7 @@ public class JobSubmitterWorker implements Runnable {
     private int submitInterval = 1000;
 
 
-    public JobSubmitterWorker(OrchestratorContext orchestratorContext) throws OrchestratorException {
+    public HangedJobWorker(OrchestratorContext orchestratorContext) throws OrchestratorException {
         this.orchestratorContext = orchestratorContext;
         try {
             String submitterClass = this.orchestratorContext.getOrchestratorConfiguration().getSubmitterClass();
@@ -83,9 +79,8 @@ public class JobSubmitterWorker implements Runnable {
             // select what are the jobs available to submit
 
             try {
-                List<String> allAcceptedJobs = orchestratorContext.getRegistry().getAllAcceptedJobs();
                 List<String> allHangedJobs = orchestratorContext.getRegistry().getAllHangedJobs();
-                if (allAcceptedJobs.size() == 0) {
+                if (allHangedJobs.size() == 0) {
                     idleCount++;
 
                     if (idleCount == 10) {
@@ -99,7 +94,8 @@ public class JobSubmitterWorker implements Runnable {
                     }
                     continue;
                 }
-                jobSubmitter.submitJob(gfacInstance,allAcceptedJobs);
+
+                jobSubmitter.submitJob(gfacInstance,allHangedJobs);
 
                 /* After submitting available jobs try to schedule again and then submit*/
                 jobSubmitter.submitJob(jobSubmitter.selectGFACInstance(orchestratorContext),allHangedJobs);

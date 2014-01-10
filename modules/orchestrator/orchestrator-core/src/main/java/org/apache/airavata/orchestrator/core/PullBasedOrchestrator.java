@@ -79,7 +79,9 @@ public class PullBasedOrchestrator implements Orchestrator {
             orchestratorConfiguration.setAiravataAPI(getAiravataAPI());
             /* Starting submitter thread pool */
 
-            executor = Executors.newFixedThreadPool(orchestratorConfiguration.getThreadPoolSize());
+            // we have a thread to run normal new jobs except to monitor hanged jobs
+            executor = Executors.newFixedThreadPool(orchestratorConfiguration.getThreadPoolSize() + 1);
+            this.startJobSubmitter();
         } catch (RegistryException e) {
             logger.error("Failed to initializing Orchestrator");
             OrchestratorException orchestratorException = new OrchestratorException(e);
@@ -105,6 +107,7 @@ public class PullBasedOrchestrator implements Orchestrator {
     //todo decide whether to return an error or do what
 
     public String createExperiment(ExperimentRequest request) throws OrchestratorException {
+        //todo use a consistent method to create the experiment ID
         String experimentID = UUID.randomUUID().toString();
         String username = request.getUserName();
         try {
@@ -125,9 +128,11 @@ public class PullBasedOrchestrator implements Orchestrator {
             return false;
         }
         String experimentID = request.getExperimentID();
+        //todo use a more concrete user type in to this
         String username = request.getUserName();
         try {
             airavataRegistry.changeStatus(experimentID, AiravataJobState.State.ACCEPTED);
+            //todo save jobRequest data in to the database
         } catch (RegistryException e) {
             //todo put more meaningful error message
             logger.error("Failed to create experiment for the request from " + request.getUserName());
@@ -137,23 +142,27 @@ public class PullBasedOrchestrator implements Orchestrator {
     }
 
     public void startJobSubmitter() throws OrchestratorException {
-        for (int i = 0; i < orchestratorContext.getOrchestratorConfiguration().getThreadPoolSize(); i++) {
-            JobSubmitterWorker jobSubmitterWorker = new JobSubmitterWorker(orchestratorContext);
-            executor.execute(jobSubmitterWorker);
+        NewJobWorker jobSubmitterWorker = new NewJobWorker(orchestratorContext);
+        executor.execute(jobSubmitterWorker);
+
+        for (int i = 0; i < orchestratorContext.getOrchestratorConfiguration().getThreadPoolSize()-1; i++) {
+            HangedJobWorker hangedJobWorker = new HangedJobWorker(orchestratorContext);
+            executor.execute(hangedJobWorker);
         }
     }
-    private AiravataAPI getAiravataAPI(){
-        if (airavataAPI==null) {
-			try {
-				String systemUserName = ServerSettings.getSystemUser();
-				String gateway = ServerSettings.getSystemUserGateway();
-				airavataAPI = AiravataAPIFactory.getAPI(gateway, systemUserName);
-			} catch (ApplicationSettingsException e) {
-				logger.error("Unable to read the properties file", e);
-			} catch (AiravataAPIInvocationException e) {
-				logger.error("Unable to create Airavata API", e);
-			}
-		}
-		return airavataAPI;
+
+    private AiravataAPI getAiravataAPI() {
+        if (airavataAPI == null) {
+            try {
+                String systemUserName = ServerSettings.getSystemUser();
+                String gateway = ServerSettings.getSystemUserGateway();
+                airavataAPI = AiravataAPIFactory.getAPI(gateway, systemUserName);
+            } catch (ApplicationSettingsException e) {
+                logger.error("Unable to read the properties file", e);
+            } catch (AiravataAPIInvocationException e) {
+                logger.error("Unable to create Airavata API", e);
+            }
+        }
+        return airavataAPI;
     }
 }
