@@ -265,3 +265,14 @@ CREATE TABLE Execution_Error
        FOREIGN KEY (experiment_ID) REFERENCES Experiment_Data(experiment_ID) ON DELETE CASCADE
 );
 
+create table Orchestrator_Data
+(
+        orchestrator_ID varchar(255),
+        experiment_ID varchar(255),
+        username varchar(255),
+        status varchar(255),
+        state varchar(255),
+        PRIMARY KEY (experiment_ID)
+);
+
+
