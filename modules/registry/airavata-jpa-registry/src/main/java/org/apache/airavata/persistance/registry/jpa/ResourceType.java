@@ -39,6 +39,7 @@ public enum ResourceType {
     GRAM_DATA,
     EXECUTION_ERROR,
     GFAC_JOB_DATA,
-    GFAC_JOB_STATUS
+    GFAC_JOB_STATUS,
+    ORCHESTRATOR_DATA
 
 }

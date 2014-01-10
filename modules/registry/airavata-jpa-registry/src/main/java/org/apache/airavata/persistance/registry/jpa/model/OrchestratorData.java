@@ -35,6 +35,10 @@ public class OrchestratorData {
 		return status.toString();
 	}
 
+	public void setOrchestratorId(String orchestratorId) {
+		this.orchestratorId = orchestratorId;
+	}
+	
 	public void setExperimentId(String experimentId) {
 		this.experimentId = experimentId;
 	}
