@@ -23,6 +23,7 @@ package org.apache.airavata.registry.api;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +34,9 @@ public class JobRequest {
 
     private String userName;
 
-    private String experimentID;
+    private String systemExperimentID;
+
+    private String userExperimentID;
 
     private HostDescription hostDescription;
 
@@ -44,6 +47,8 @@ public class JobRequest {
     private Map<String,Object> inputParameters;
 
     private Map<String,Object> outputParameters;
+
+    private ContextHeaderDocument.ContextHeader contextHeader;
 
     public Map<String, Object> getInputParameters() {
         return inputParameters;
@@ -93,11 +98,27 @@ public class JobRequest {
         this.userName = userName;
     }
 
-    public String getExperimentID() {
-        return experimentID;
+    public String getSystemExperimentID() {
+        return systemExperimentID;
     }
 
-    public void setExperimentID(String experimentID) {
-        this.experimentID = experimentID;
+    public void setSystemExperimentID(String systemExperimentID) {
+        this.systemExperimentID = systemExperimentID;
+    }
+
+    public String getUserExperimentID() {
+        return userExperimentID;
+    }
+
+    public void setUserExperimentID(String userExperimentID) {
+        this.userExperimentID = userExperimentID;
+    }
+
+    public ContextHeaderDocument.ContextHeader getContextHeader() {
+        return contextHeader;
+    }
+
+    public void setContextHeader(ContextHeaderDocument.ContextHeader contextHeader) {
+        this.contextHeader = contextHeader;
     }
 }
