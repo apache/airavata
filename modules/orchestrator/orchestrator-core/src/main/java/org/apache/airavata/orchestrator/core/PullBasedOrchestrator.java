@@ -111,7 +111,7 @@ public class PullBasedOrchestrator implements Orchestrator {
             airavataRegistry.storeExperiment(username, experimentID);
             airavataRegistry.changeStatus(experimentID, AiravataJobState.State.CREATED);
         } catch (RegistryException e) {
-            //todo put more meaningful error message
+            //todo put more meaningful error  message
             logger.error("Failed to create experiment for the request from " + request.getUserName());
             throw new OrchestratorException(e);
         }

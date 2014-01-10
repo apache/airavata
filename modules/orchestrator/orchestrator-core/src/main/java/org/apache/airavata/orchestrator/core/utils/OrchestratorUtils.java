@@ -31,6 +31,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
 
+/**
+ * This contains orchestrator specific utilities
+ */
 public class OrchestratorUtils {
     private final static Logger logger = LoggerFactory.getLogger(OrchestratorUtils.class);
 

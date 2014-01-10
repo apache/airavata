@@ -20,6 +20,10 @@
 */
 package org.apache.airavata.orchestrator.core.utils;
 
+/**
+ * This class contains all the constants in orchestrator-core
+ *
+ */
 public class OrchestratorConstants {
     private static final String SUBMITTER_PROPERTY = "job.submitter";
     public static final String ORCHESTRATOR_PROPERTIES = "orchestrator.properties";

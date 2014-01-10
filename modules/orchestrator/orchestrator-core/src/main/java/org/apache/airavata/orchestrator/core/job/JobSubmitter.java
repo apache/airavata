@@ -25,6 +25,13 @@ import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
 
 import java.util.List;
 
+/**
+ * This is the submitter interface, orchestrator can
+ * submit jobs to gfac in different modes, gfac running embedded
+ * or gfac running in server mode. This can be configured in
+ * orchestrator.properties
+ * todo provide a way to configure this in a dynamic way
+ */
 public interface JobSubmitter {
 
     /**

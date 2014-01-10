@@ -24,6 +24,10 @@ import org.apache.airavata.client.api.AiravataAPI;
 
 import java.net.URL;
 
+/**
+ * This keeps configuration of orchestrator, mostly this keep static
+ * configuration, this can be accessed through orchestratorContext object
+ */
 public class OrchestratorConfiguration {
 
     private String submitterClass;

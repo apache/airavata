@@ -20,6 +20,10 @@
 */
 package org.apache.airavata.orchestrator.core.exception;
 
+/**
+ * This is the main exception class for orchestrator, All the other
+ * exception classes has to extend this class
+ */
 public class OrchestratorException extends Exception{
     private static final long serialVersionUID = -2849422320139467602L;
 

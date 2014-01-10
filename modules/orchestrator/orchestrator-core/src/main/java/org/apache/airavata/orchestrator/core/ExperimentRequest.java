@@ -23,10 +23,25 @@ package org.apache.airavata.orchestrator.core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This is the initial experiment Creation request
+ * This is simple compair to JobRequest object in registry-api
+ * This contains user specified userExperimentID
+ */
 public class ExperimentRequest {
     private final static Logger logger = LoggerFactory.getLogger(ExperimentRequest.class);
 
     private String userName;
+
+    private String userExperimentID;
+
+    public String getUserExperimentID() {
+        return userExperimentID;
+    }
+
+    public void setUserExperimentID(String userExperimentID) {
+        this.userExperimentID = userExperimentID;
+    }
 
     public String getUserName() {
         return userName;
