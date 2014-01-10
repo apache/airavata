@@ -20,7 +20,7 @@
 */
 package org.apache.airavata.orchestrator.core.utils;
 
-import org.apache.airavata.orchestrator.core.JobSubmitterWorker;
+import org.apache.airavata.orchestrator.core.NewJobWorker;
 import org.apache.airavata.orchestrator.core.OrchestratorConfiguration;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.registry.api.JobRequest;
@@ -39,7 +39,7 @@ public class OrchestratorUtils {
 
     public static OrchestratorConfiguration loadOrchestratorConfiguration() throws OrchestratorException, IOException {
         URL resource =
-                JobSubmitterWorker.class.getClassLoader().getResource(OrchestratorConstants.ORCHESTRATOR_PROPERTIES);
+                NewJobWorker.class.getClassLoader().getResource(OrchestratorConstants.ORCHESTRATOR_PROPERTIES);
         if (resource == null) {
             String error = "orchestrator.properties cannot be found, Failed to initialize Orchestrator";
             logger.error(error);
