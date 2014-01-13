@@ -30,6 +30,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+/**
+ * this worker is handling hanged jobs and invoke the submitter
+ * after finding hanged jobs
+ */
 public class HangedJobWorker implements Runnable{
      private final static Logger logger = LoggerFactory.getLogger(HangedJobWorker.class);
 
@@ -48,6 +52,7 @@ public class HangedJobWorker implements Runnable{
             submitInterval = this.orchestratorContext.getOrchestratorConfiguration().getSubmitterInterval();
             Class<? extends JobSubmitter> aClass = Class.forName(submitterClass.trim()).asSubclass(JobSubmitter.class);
             jobSubmitter = aClass.newInstance();
+            jobSubmitter.initialize(this.orchestratorContext.getRegistry());
         } catch (ClassNotFoundException e) {
             logger.error("Error while loading Job Submitter");
         } catch (InstantiationException e) {
@@ -73,7 +78,7 @@ public class HangedJobWorker implements Runnable{
             /* Here the worker pick bunch of jobs available to submit and submit that to a single
               GFAC instance, we do not handle job by job submission to each gfac instance
             */
-            GFACInstance gfacInstance = jobSubmitter.selectGFACInstance(orchestratorContext);
+            GFACInstance gfacInstance = jobSubmitter.selectGFACInstance();
 
             // Now we have picked a gfac instance to submit set of jobs at this time, now its time to
             // select what are the jobs available to submit
@@ -98,7 +103,7 @@ public class HangedJobWorker implements Runnable{
                 jobSubmitter.submitJob(gfacInstance,allHangedJobs);
 
                 /* After submitting available jobs try to schedule again and then submit*/
-                jobSubmitter.submitJob(jobSubmitter.selectGFACInstance(orchestratorContext),allHangedJobs);
+                jobSubmitter.submitJob(jobSubmitter.selectGFACInstance(),allHangedJobs);
             } catch (RegistryException e) {
                 logger.error("Error while trying to retrieve available ");
             }

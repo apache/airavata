@@ -42,6 +42,9 @@ public class OrchestratorContext {
         this.gfacInstanceList = new ArrayList<GFACInstance>();
     }
 
+    public OrchestratorContext() {
+    }
+
     public List<GFACInstance> getGfacInstanceList() {
         return gfacInstanceList;
     }
@@ -58,7 +61,7 @@ public class OrchestratorContext {
         this.orchestratorConfiguration = orchestratorConfiguration;
     }
 
-    public OrchestratorRegistry getRegistry() {
+    public AiravataRegistry2 getRegistry() {
         return registry;
     }
 

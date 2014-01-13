@@ -22,6 +22,7 @@ package org.apache.airavata.orchestrator.core.job;
 
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 
 import java.util.List;
 
@@ -34,11 +35,14 @@ import java.util.List;
  */
 public interface JobSubmitter {
 
+
+    void initialize(AiravataRegistry2 registry2);
+
     /**
-     * @param context
+     * This will return a single GFACInstance among multiple if available
      * @return
      */
-    GFACInstance selectGFACInstance(OrchestratorContext context);
+    GFACInstance selectGFACInstance();
 
     /**
      * @param gfac

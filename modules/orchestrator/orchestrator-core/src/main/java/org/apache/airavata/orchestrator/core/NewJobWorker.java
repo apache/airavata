@@ -30,6 +30,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+/*
+This is the worker class to handle the jobs stored in to registry as
+fresh and this will pick those jobs and invoke the defined submitter
+ */
 public class NewJobWorker implements Runnable {
     private final static Logger logger = LoggerFactory.getLogger(NewJobWorker.class);
 
@@ -48,6 +52,7 @@ public class NewJobWorker implements Runnable {
             submitInterval = this.orchestratorContext.getOrchestratorConfiguration().getSubmitterInterval();
             Class<? extends JobSubmitter> aClass = Class.forName(submitterClass.trim()).asSubclass(JobSubmitter.class);
             jobSubmitter = aClass.newInstance();
+            jobSubmitter.initialize(this.orchestratorContext.getRegistry());
         } catch (ClassNotFoundException e) {
             logger.error("Error while loading Job Submitter");
         } catch (InstantiationException e) {
@@ -73,7 +78,7 @@ public class NewJobWorker implements Runnable {
             /* Here the worker pick bunch of jobs available to submit and submit that to a single
               GFAC instance, we do not handle job by job submission to each gfac instance
             */
-            GFACInstance gfacInstance = jobSubmitter.selectGFACInstance(orchestratorContext);
+            GFACInstance gfacInstance = jobSubmitter.selectGFACInstance();
 
             // Now we have picked a gfac instance to submit set of jobs at this time, now its time to
             // select what are the jobs available to submit

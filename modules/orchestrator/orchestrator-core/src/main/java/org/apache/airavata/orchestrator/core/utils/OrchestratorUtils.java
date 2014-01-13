@@ -52,6 +52,7 @@ public class OrchestratorUtils {
         orchestratorConfiguration.setSubmitterInterval((Integer) orchestratorProps.get(OrchestratorConstants.SUBMIT_INTERVAL));
         orchestratorConfiguration.setThreadPoolSize((Integer) orchestratorProps.get(OrchestratorConstants.THREAD_POOL_SIZE));
         orchestratorConfiguration.setStartSubmitter(Boolean.valueOf(orchestratorProps.getProperty(OrchestratorConstants.START_SUBMITTER)));
+        orchestratorConfiguration.setEmbeddedMode(Boolean.valueOf(orchestratorProps.getProperty(OrchestratorConstants.EMBEDDED_MODE)));
         return orchestratorConfiguration;
     }
 

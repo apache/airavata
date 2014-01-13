@@ -2562,17 +2562,22 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		}
     }
 
-    public Map<String, Integer> getGFACNodeList() throws RegistryException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
     /**
      *These are the methods inherited from Orchestrator Registry
      */
 
 
+
     public List<URI> getLiveGFacURIs() throws RegistryException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Map<String, Integer> getGFACNodeList() throws RegistryException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public boolean addGFACNode(String uri, int nodeID) throws RegistryException {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public boolean storeExperiment(String userName, String experimentID) throws RegistryException {

@@ -25,6 +25,18 @@ These are the job statuses shared in database level between orchestrator and
 gfac instances
  */
 public class AiravataJobState {
+
+    private State jobState;
+
+    public State getJobState() {
+        return jobState;
+    }
+
+    public void setJobState(State jobState) {
+        this.jobState = jobState;
+    }
+
+
     public enum State {
         CREATED {
             public String toString() {
@@ -71,11 +83,6 @@ public class AiravataJobState {
                 return "PAUSED";
             }
         },
-        FINISHED {
-            public String toString() {
-                return "FINISHED";
-            }
-        },
         PENDING {
             public String toString() {
                 return "PENDING";
@@ -89,6 +96,11 @@ public class AiravataJobState {
         DONE {
             public String toString() {
                 return "DONE";
+            }
+        },
+        CANCELLED {
+            public String toString() {
+                return "CANCELLED";
             }
         },
         UNKNOWN {
