@@ -1,11 +1,14 @@
 package org.apache.airavata.persistance.registry.jpa.model;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
 
 @Entity
 public class OrchestratorData {
-	private String orchestratorId;
+	
+	@Id
 	private String experimentId;
+	private String orchestratorId;
 	private String user;
 	private String status;
 	private String state;
