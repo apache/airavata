@@ -36,6 +36,15 @@ public interface OrchestratorRegistry extends AiravataSubRegistry {
      */
     Map<String, Integer> getGFACNodeList() throws RegistryException;
 
+    /**
+     * This is the method to use to add a GFAC Node to registry,
+     * during embedded mode it should add a single gfac node
+     * @param uri
+     * @param nodeID
+     * @return
+     * @throws RegistryException
+     */
+    boolean addGFACNode(String uri, int nodeID)throws RegistryException;
 
     /**
      * This method will add an entry to job management table in database

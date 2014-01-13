@@ -59,6 +59,16 @@ public interface Orchestrator {
     boolean launchExperiment(JobRequest request) throws OrchestratorException;
 
     /**
+     * This method can be used to cancel a running experiment, if job is already finished it
+     * throws an exception. If job is not yet submitted it will just change the status to cancelled,
+     * if Job is running it will be killed from the resource and make the status to cancelled
+     * @param experimentID
+     * @return
+     * @throws OrchestratorException
+     */
+    boolean cancelExperiment(String experimentID)throws OrchestratorException;
+
+    /**
      * This is like a cron job which runs continuously and take available jobs to
      * submit to GFAC and submit them to GFAC
      * @throws OrchestratorException

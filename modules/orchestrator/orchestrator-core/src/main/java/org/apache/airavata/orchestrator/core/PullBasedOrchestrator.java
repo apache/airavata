@@ -59,22 +59,25 @@ public class PullBasedOrchestrator implements Orchestrator {
 
             /* initializing the Orchestratorcontext object */
             airavataRegistry = AiravataRegistryFactory.getRegistry(new Gateway("default"), new AiravataUser("admin"));
-            Map<String, Integer> gfacNodeList = airavataRegistry.getGFACNodeList();
-            if (gfacNodeList.size() == 0) {
-                String error = "No GFAC instances available in the system, Can't initialize Orchestrator";
-                logger.error(error);
-                throw new OrchestratorException(error);
+            // todo move this code to gfac service mode Jobsubmitter,
+            // todo this is ugly, SHOULD fix these isEmbedded mode code from Orchestrator
+            if (!orchestratorConfiguration.isEmbeddedMode()) {
+                Map<String, Integer> gfacNodeList = airavataRegistry.getGFACNodeList();
+                if (gfacNodeList.size() == 0) {
+                    String error = "No GFAC instances available in the system, Can't initialize Orchestrator";
+                    logger.error(error);
+                    throw new OrchestratorException(error);
+                }
+                Set<String> uriList = gfacNodeList.keySet();
+                Iterator<String> iterator = uriList.iterator();
+                List<GFACInstance> gfacInstanceList = new ArrayList<GFACInstance>();
+                while (iterator.hasNext()) {
+                    String uri = iterator.next();
+                    Integer integer = gfacNodeList.get(uri);
+                    gfacInstanceList.add(new GFACInstance(uri, integer));
+                }
             }
-            Set<String> uriList = gfacNodeList.keySet();
-            Iterator<String> iterator = uriList.iterator();
-            List<GFACInstance> gfacInstanceList = new ArrayList<GFACInstance>();
-            while (iterator.hasNext()) {
-                String uri = iterator.next();
-                Integer integer = gfacNodeList.get(uri);
-                gfacInstanceList.add(new GFACInstance(uri, integer));
-            }
-
-            orchestratorContext = new OrchestratorContext(gfacInstanceList);
+            orchestratorContext = new OrchestratorContext();
             orchestratorContext.setOrchestratorConfiguration(orchestratorConfiguration);
             orchestratorConfiguration.setAiravataAPI(getAiravataAPI());
             /* Starting submitter thread pool */
@@ -127,7 +130,16 @@ public class PullBasedOrchestrator implements Orchestrator {
             logger.error("Invalid Job request sent, Experiment creation failed");
             return false;
         }
-        String experimentID = request.getExperimentID();
+        String experimentID = null;
+        // we give higher priority to userExperimentID
+        if (request.getUserExperimentID() != null) {
+            experimentID = request.getUserExperimentID();
+        } else if (request.getSystemExperimentID() != null) {
+            experimentID = request.getSystemExperimentID();
+        } else {
+            logger.error("Invalid Experiment ID given: " + request.getUserName());
+            return false;
+        }
         //todo use a more concrete user type in to this
         String username = request.getUserName();
         try {
@@ -145,10 +157,36 @@ public class PullBasedOrchestrator implements Orchestrator {
         NewJobWorker jobSubmitterWorker = new NewJobWorker(orchestratorContext);
         executor.execute(jobSubmitterWorker);
 
-        for (int i = 0; i < orchestratorContext.getOrchestratorConfiguration().getThreadPoolSize()-1; i++) {
+        for (int i = 0; i < orchestratorContext.getOrchestratorConfiguration().getThreadPoolSize() - 1; i++) {
             HangedJobWorker hangedJobWorker = new HangedJobWorker(orchestratorContext);
             executor.execute(hangedJobWorker);
         }
+    }
+
+    public boolean cancelExperiment(String experimentID) throws OrchestratorException {
+        try {
+            AiravataJobState state = orchestratorContext.getRegistry().getState(experimentID);
+            if (state.getJobState().equals(AiravataJobState.State.RUNNING) || state.getJobState().equals(AiravataJobState.State.PENDING) ||
+                    state.getJobState().equals(AiravataJobState.State.ACTIVE) || state.getJobState().equals(AiravataJobState.State.SUBMITTED)) {
+
+                //todo perform cancelling and last peform the database update
+
+                orchestratorContext.getRegistry().changeStatus(experimentID, AiravataJobState.State.CANCELLED);
+            } else if (state.getJobState().equals(AiravataJobState.State.DONE)) {
+                String error = "Job is already Finished so cannot cancel the job " + experimentID;
+                logger.error(error);
+                new OrchestratorException(error);
+            }else{
+                // do nothing but simply change the job state to cancelled because job is not yet submitted to the resource
+                orchestratorContext.getRegistry().changeStatus(experimentID, AiravataJobState.State.CANCELLED);
+            }
+
+        } catch (RegistryException e) {
+            String error = "Error reading the job state for the given Experiment ID: " + experimentID;
+            logger.error(error);
+            throw new OrchestratorException(error, e);
+        }
+        return true;
     }
 
     private AiravataAPI getAiravataAPI() {

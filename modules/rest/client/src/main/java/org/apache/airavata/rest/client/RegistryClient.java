@@ -1022,6 +1022,12 @@ public class RegistryClient extends AiravataRegistry2 {
 
 
     //todo implement these methods properly
+
+
+    public boolean addGFACNode(String uri, int nodeID) throws RegistryException {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public Map<String, Integer> getGFACNodeList() throws RegistryException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }

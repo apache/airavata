@@ -41,6 +41,7 @@ import org.apache.airavata.gfac.scheduler.HostScheduler;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.JobRequest;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.axiom.om.OMElement;
@@ -75,8 +76,12 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
         this.orchestratorContext = orchestratorContext;
     }
 
-    public GFACInstance selectGFACInstance(OrchestratorContext context) {
-        return null;
+    public void initialize(AiravataRegistry2 registry2) {
+        // since this is embedded mode we do not use gfacinstance information
+    }
+
+    public GFACInstance selectGFACInstance() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
 

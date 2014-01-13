@@ -42,6 +42,16 @@ public class OrchestratorConfiguration {
 
     private URL brokerURL;
 
+    private boolean embeddedMode;
+
+
+    public boolean isEmbeddedMode() {
+        return embeddedMode;
+    }
+
+    public void setEmbeddedMode(boolean embeddedMode) {
+        this.embeddedMode = embeddedMode;
+    }
 
     public URL getBrokerURL() {
         return brokerURL;
