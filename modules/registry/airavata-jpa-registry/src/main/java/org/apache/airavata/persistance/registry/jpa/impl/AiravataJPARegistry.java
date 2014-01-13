@@ -63,6 +63,7 @@ import org.apache.airavata.persistance.registry.jpa.resources.GFacJobStatusResou
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.HostDescriptorResource;
 import org.apache.airavata.persistance.registry.jpa.resources.NodeDataResource;
+import org.apache.airavata.persistance.registry.jpa.resources.OrchestratorDataResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
 import org.apache.airavata.persistance.registry.jpa.resources.PublishWorkflowResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ServiceDescriptorResource;
@@ -2580,12 +2581,30 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public boolean storeExperiment(String userName, String experimentID) throws RegistryException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+    public boolean storeExperiment(String userName, String experimentID, String orchestratorID,AiravataJobState.State state) throws RegistryException {
+    	GatewayResource gateway = jpa.getGateway();
+		OrchestratorDataResource dataResource = gateway.createOrchestratorData(orchestratorID); 
+		dataResource.setUserName(userName);
+		dataResource.setExperimentID(experimentID);
+		dataResource.setStatus(state.toString());
+		dataResource.save();
+		return true;
+	}
 
-    public boolean changeStatus(String experimentID, AiravataJobState.State state) throws RegistryException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+	public boolean changeStatus(String experimentID, AiravataJobState.State state) throws RegistryException {
+		GatewayResource gateway = jpa.getGateway();
+		OrchestratorDataResource dataResource = gateway.createOrchestratorData(experimentID); 
+		dataResource.setStatus(state.toString());
+		dataResource.save();
+		return true; 
+    }
+    public boolean changeStatus(String orchestratorID, AiravataJobState.State state, String gfacEPR) throws RegistryException {
+    	GatewayResource gateway = jpa.getGateway();
+		OrchestratorDataResource dataResource = gateway.createOrchestratorData(orchestratorID); 
+		dataResource.setStatus(state.toString());
+		dataResource.setGfacEPR(gfacEPR);
+		dataResource.save();
+		return true; 
     }
 
     public AiravataJobState getState(String experimentID) throws RegistryException {
@@ -2615,4 +2634,6 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     public boolean resetHangedJob(String experimentID) throws RegistryException {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+	
 }

@@ -34,6 +34,8 @@ public class ExperimentRequest {
     private String userName;
 
     private String userExperimentID;
+    
+    private String orchestratorID;
 
     public String getUserExperimentID() {
         return userExperimentID;
@@ -50,4 +52,12 @@ public class ExperimentRequest {
     public void setUserName(String userName) {
         this.userName = userName;
     }
+
+	public String getOrchestratorID() {
+		return orchestratorID;
+	}
+
+	public void setOrchestratorID(String orchestratorID) {
+		this.orchestratorID = orchestratorID;
+	}
 }

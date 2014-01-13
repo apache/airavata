@@ -23,6 +23,7 @@ public class OrchestratorDataResource extends AbstractResource {
 	private String status;
 	private String state;
 	private String gfacEPR;
+	private GatewayResource gateway;
 
 	public String getExperimentID() {
 		return experimentID;
@@ -70,6 +71,14 @@ public class OrchestratorDataResource extends AbstractResource {
 
 	public void setGfacEPR(String gfacEPR) {
 		this.gfacEPR = gfacEPR;
+	}
+
+	public GatewayResource getGateway() {
+		return gateway;
+	}
+
+	public void setGateway(GatewayResource gateway) {
+		this.gateway = gateway;
 	}
 
 	@Override

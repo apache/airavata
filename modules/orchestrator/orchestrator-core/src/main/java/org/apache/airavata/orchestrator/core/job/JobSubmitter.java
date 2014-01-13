@@ -20,11 +20,10 @@
 */
 package org.apache.airavata.orchestrator.core.job;
 
-import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
+import java.util.List;
+
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
 import org.apache.airavata.registry.api.AiravataRegistry2;
-
-import java.util.List;
 
 /**
  * This is the submitter interface, orchestrator can

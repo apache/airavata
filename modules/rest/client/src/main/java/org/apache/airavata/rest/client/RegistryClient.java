@@ -27,22 +27,45 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.core.NewCookie;
+
 import org.apache.airavata.common.utils.AiravataJobState;
+import org.apache.airavata.common.utils.AiravataJobState.State;
 import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.*;
+import org.apache.airavata.registry.api.AiravataExperiment;
+import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.ExecutionErrors.Source;
+import org.apache.airavata.registry.api.JobRequest;
+import org.apache.airavata.registry.api.PasswordCallback;
+import org.apache.airavata.registry.api.ResourceMetadata;
+import org.apache.airavata.registry.api.WorkspaceProject;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.UnimplementedRegistryOperationException;
 import org.apache.airavata.registry.api.exception.worker.ExperimentDoesNotExistsException;
-import org.apache.airavata.registry.api.workflow.*;
+import org.apache.airavata.registry.api.workflow.ApplicationJob;
 import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
+import org.apache.airavata.registry.api.workflow.ApplicationJobExecutionError;
+import org.apache.airavata.registry.api.workflow.ApplicationJobStatusData;
+import org.apache.airavata.registry.api.workflow.ExecutionError;
+import org.apache.airavata.registry.api.workflow.ExperimentData;
+import org.apache.airavata.registry.api.workflow.ExperimentExecutionError;
+import org.apache.airavata.registry.api.workflow.NodeExecutionData;
+import org.apache.airavata.registry.api.workflow.NodeExecutionError;
+import org.apache.airavata.registry.api.workflow.NodeExecutionStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowExecution;
+import org.apache.airavata.registry.api.workflow.WorkflowExecutionData;
+import org.apache.airavata.registry.api.workflow.WorkflowExecutionError;
+import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowIOData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeGramData;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeType;
 import org.apache.airavata.rest.utils.CookieManager;
-
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.NewCookie;
 
 public class RegistryClient extends AiravataRegistry2 {
 
@@ -1032,39 +1055,71 @@ public class RegistryClient extends AiravataRegistry2 {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public boolean storeExperiment(String userName, String experimentID) throws RegistryException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+	@Override
+	public boolean storeExperiment(String userName, String experimentID,
+			String orchestratorID, State state) throws RegistryException {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-    public boolean changeStatus(String experimentID, AiravataJobState.State state) throws RegistryException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+	@Override
+	public boolean changeStatus(String experimentID, State state, String gfacEPR)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-    public AiravataJobState getState(String experimentID) throws RegistryException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+	@Override
+	public AiravataJobState getState(String experimentID)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    public List<String> getAllJobsWithState(AiravataJobState state) throws RuntimeException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+	@Override
+	public List<String> getAllJobsWithState(AiravataJobState state)
+			throws RuntimeException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    public List<String> getAllAcceptedJobs() throws RegistryException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+	@Override
+	public List<String> getAllAcceptedJobs() throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    public JobRequest fetchAcceptedJob(String experimentID) throws RegistryException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+	@Override
+	public JobRequest fetchAcceptedJob(String experimentID)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    public List<String> getAllHangedJobs() throws RegistryException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+	@Override
+	public List<String> getAllHangedJobs() throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    public int getHangedJobCount() throws RegistryException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+	@Override
+	public int getHangedJobCount() throws RegistryException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
-    public boolean resetHangedJob(String experimentID) throws RegistryException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+	@Override
+	public boolean resetHangedJob(String experimentID) throws RegistryException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean changeStatus(String experimentID, State state)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+    
 }

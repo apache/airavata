@@ -41,6 +41,7 @@ import org.apache.airavata.gfac.scheduler.HostScheduler;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
+import org.apache.airavata.orchestrator.core.utils.OrchestratorConstants;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.JobRequest;
 import org.apache.airavata.registry.api.exception.RegistryException;
@@ -49,11 +50,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xmlpull.v1.builder.XmlElement;
+
 import xsul.wsif.impl.WSIFMessageElement;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.xpath.XPathExpressionException;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -97,7 +100,7 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
 
                 //after successfully submitting the jobs set the status of the job to submitted
 
-                orchestratorContext.getRegistry().changeStatus(experimentIDList.get(i), AiravataJobState.State.SUBMITTED);
+                orchestratorContext.getRegistry().changeStatus(experimentIDList.get(i), AiravataJobState.State.SUBMITTED, OrchestratorConstants.EMBEDDED_MODE);
                 AiravataAPI airavataAPI = orchestratorContext.getOrchestratorConfiguration().getAiravataAPI();
                 HostDescription registeredHost = null;
                 ServiceDescription serviceDescription = airavataAPI.getApplicationManager().getServiceDescription(serviceName);
