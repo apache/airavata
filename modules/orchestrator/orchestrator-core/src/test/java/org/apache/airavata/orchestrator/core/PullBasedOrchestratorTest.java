@@ -139,7 +139,7 @@ public class PullBasedOrchestratorTest {
 
 
         // setting all the parameters to jobRequest
-        jobRequest.setExperimentID(systemExpID);
+        jobRequest.setSystemExperimentID(systemExpID);
         jobRequest.setHostDescription(descriptor);
         jobRequest.setServiceDescription(serviceDescription);
         jobRequest.setApplicationDescription(applicationDeploymentDescription);

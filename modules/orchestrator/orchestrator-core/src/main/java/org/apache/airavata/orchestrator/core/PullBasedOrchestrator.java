@@ -30,6 +30,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
+import org.apache.airavata.orchestrator.core.utils.OrchestratorConstants;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
 import org.apache.airavata.registry.api.*;
 import org.apache.airavata.registry.api.exception.RegistryException;
@@ -111,11 +112,11 @@ public class PullBasedOrchestrator implements Orchestrator {
 
     public String createExperiment(ExperimentRequest request) throws OrchestratorException {
         //todo use a consistent method to create the experiment ID
-        String experimentID = UUID.randomUUID().toString();
+    	String experimentID = request.getUserExperimentID();
+        String orchestratorID = UUID.randomUUID().toString();
         String username = request.getUserName();
         try {
-            airavataRegistry.storeExperiment(username, experimentID);
-            airavataRegistry.changeStatus(experimentID, AiravataJobState.State.CREATED);
+            airavataRegistry.storeExperiment(username, experimentID, orchestratorID, AiravataJobState.State.CREATED);
         } catch (RegistryException e) {
             //todo put more meaningful error  message
             logger.error("Failed to create experiment for the request from " + request.getUserName());
@@ -140,10 +141,11 @@ public class PullBasedOrchestrator implements Orchestrator {
             logger.error("Invalid Experiment ID given: " + request.getUserName());
             return false;
         }
+        String gfacEPR = OrchestratorConstants.EMBEDDED_MODE;
         //todo use a more concrete user type in to this
         String username = request.getUserName();
         try {
-            airavataRegistry.changeStatus(experimentID, AiravataJobState.State.ACCEPTED);
+            airavataRegistry.changeStatus(experimentID, AiravataJobState.State.ACCEPTED, gfacEPR);
             //todo save jobRequest data in to the database
         } catch (RegistryException e) {
             //todo put more meaningful error message

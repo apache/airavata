@@ -132,6 +132,10 @@ public class GatewayResource extends AbstractResource {
                 WorkerResource workerResource = new WorkerResource();
                 workerResource.setGateway(this);
                 return workerResource;
+            case ORCHESTRATOR_DATA:
+                OrchestratorDataResource orchestratorDataResource = new OrchestratorDataResource();
+                orchestratorDataResource.setGateway(this);
+                return orchestratorDataResource;
             default:
                 logger.error("Unsupported resource type for gateway resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported resource type for gateway resource.");
@@ -739,6 +743,12 @@ public class GatewayResource extends AbstractResource {
      */
     public void removePublishedWorkflow(String workflowTemplateName){
     	remove(ResourceType.PUBLISHED_WORKFLOW, workflowTemplateName);
+    }
+    
+    public OrchestratorDataResource createOrchestratorData(String orchestratorID){
+    	OrchestratorDataResource dataResource = (OrchestratorDataResource)create(ResourceType.ORCHESTRATOR_DATA);
+    	dataResource.setOrchestratorID(orchestratorID);
+    	return dataResource;
     }
 }
 
