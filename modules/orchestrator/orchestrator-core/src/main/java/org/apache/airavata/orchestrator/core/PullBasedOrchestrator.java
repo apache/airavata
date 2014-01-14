@@ -133,6 +133,9 @@ public class PullBasedOrchestrator implements Orchestrator {
         //todo use a consistent method to create the experiment ID
         String experimentID = request.getUserExperimentID();
         String orchestratorID = UUID.randomUUID().toString();
+        if(experimentID == null){
+            experimentID = orchestratorID;
+        }
         String username = request.getUserName();
         try {
             airavataRegistry.storeExperiment(username, experimentID, orchestratorID);
@@ -150,13 +153,9 @@ public class PullBasedOrchestrator implements Orchestrator {
             logger.error("Invalid Job request sent, Experiment creation failed");
             return false;
         }
-        String experimentID = null;
+        String experimentID = OrchestratorUtils.getUniqueID(request);
         // we give higher priority to userExperimentID
-        if (request.getUserExperimentID() != null) {
-            experimentID = request.getUserExperimentID();
-        } else if (request.getSystemExperimentID() != null) {
-            experimentID = request.getSystemExperimentID();
-        } else {
+        if(experimentID == null) {
             logger.error("Invalid Experiment ID given: " + request.getUserName());
             return false;
         }
