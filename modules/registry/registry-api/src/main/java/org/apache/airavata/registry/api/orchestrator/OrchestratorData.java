@@ -14,7 +14,7 @@ public interface OrchestratorData {
 	 * 
 	 * @return
 	 */
-	public String getOrchestratorId();
+	public int getOrchestratorId();
 
 	/**
 	 * 

@@ -745,9 +745,9 @@ public class GatewayResource extends AbstractResource {
     	remove(ResourceType.PUBLISHED_WORKFLOW, workflowTemplateName);
     }
     
-    public OrchestratorDataResource createOrchestratorData(String orchestratorID){
+    public OrchestratorDataResource createOrchestratorData(String experimentID){
     	OrchestratorDataResource dataResource = (OrchestratorDataResource)create(ResourceType.ORCHESTRATOR_DATA);
-    	dataResource.setOrchestratorID(orchestratorID);
+    	dataResource.setExperimentID(experimentID);
     	return dataResource;
     }
 }
