@@ -23,6 +23,7 @@ package org.apache.airavata.orchestrator.core;
 import junit.framework.Assert;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ExecutionMode;
+import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
@@ -137,7 +138,9 @@ public class PullBasedOrchestratorTest extends AbstractOrchestratorTest{
         //creating input Map
 
         HashMap<String, Object> inputData = new HashMap<String, Object>();
-        inputData.put("echo_input", "Hello World");
+        ActualParameter echo_input = new ActualParameter();
+        ((StringParameterType) echo_input.getType()).setValue("echo_output=hello");
+        inputData.put("echo_input", echo_input);
 
         HashMap<String, Object> outputData = new HashMap<String, Object>();
 
@@ -147,6 +150,8 @@ public class PullBasedOrchestratorTest extends AbstractOrchestratorTest{
         jobRequest.setHostDescription(descriptor);
         jobRequest.setServiceDescription(serviceDescription);
         jobRequest.setApplicationDescription(applicationDeploymentDescription);
+        jobRequest.setInputParameters(inputData);
+        jobRequest.setOutputParameters(outputData);
         return jobRequest;
     }
 
