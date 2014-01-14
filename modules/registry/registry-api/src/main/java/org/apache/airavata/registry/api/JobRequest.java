@@ -50,6 +50,16 @@ public class JobRequest {
 
     private ContextHeaderDocument.ContextHeader contextHeader;
 
+    private String serviceName;
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
+
     public Map<String, Object> getInputParameters() {
         return inputParameters;
     }

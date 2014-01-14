@@ -84,7 +84,8 @@ import xsul.wsif.WSIFMessage;
 import xsul.wsif.impl.WSIFMessageElement;
 import xsul.xwsif_runtime.WSIFClient;
 
-public class EmbeddedGFacInvoker implements Invoker {
+public class
+        EmbeddedGFacInvoker implements Invoker {
 
     private static final Logger logger = LoggerFactory.getLogger(EmbeddedGFacInvoker.class);
 

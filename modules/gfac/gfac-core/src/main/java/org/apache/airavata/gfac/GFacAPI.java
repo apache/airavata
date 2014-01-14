@@ -23,6 +23,8 @@ package org.apache.airavata.gfac;
 
 import java.util.List;
 
+import org.apache.airavata.client.AiravataClient;
+import org.apache.airavata.common.utils.AiravataJobState;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.handler.GFacHandler;
 import org.apache.airavata.gfac.handler.GFacHandlerConfig;
@@ -32,6 +34,7 @@ import org.apache.airavata.gfac.notification.listeners.LoggingListener;
 import org.apache.airavata.gfac.notification.listeners.WorkflowTrackingListener;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,11 +60,14 @@ public class GFacAPI {
     private void schedule(JobExecutionContext jobExecutionContext) throws GFacException {
         // Scheduler will decide the execution flow of handlers and provider which handles
         // the job.
+        String experimentID = jobExecutionContext.getExperimentID();
         try {
+            AiravataRegistry2 registry2 = ((AiravataClient)jobExecutionContext.getGFacConfiguration().getAiravataAPI()).getRegistryClient();
             Scheduler.schedule(jobExecutionContext);
 
             // Executing in handlers in the order as they have configured in GFac configuration
             invokeInFlowHandlers(jobExecutionContext);
+            registry2.changeStatus(jobExecutionContext.getExperimentID(),AiravataJobState.State.INHANDLERSDONE);
 
 
             // After executing the in handlers provider instance should be set to job execution context.
@@ -73,6 +79,7 @@ public class GFacAPI {
                 disposeProvider(provider, jobExecutionContext);
             }
             invokeOutFlowHandlers(jobExecutionContext);
+            registry2.changeStatus(jobExecutionContext.getExperimentID(),AiravataJobState.State.OUTHANDLERSDONE);
         }catch (Exception e){
             jobExecutionContext.setProperty(ERROR_SENT,"true");
             jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
