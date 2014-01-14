@@ -166,13 +166,13 @@ public class OrchestratorDataResource extends AbstractResource {
 		em.getTransaction().begin();
 		Orchestrator_Data orchestratorData = new Orchestrator_Data();
 		orchestratorData.setExperiment_ID(experimentID);
-		orchestratorData.setUser(userName);
+		orchestratorData.setUserName(userName);
 		orchestratorData.setGfacEPR(gfacEPR);
 		orchestratorData.setState(state);
 		orchestratorData.setStatus(status);
 		if (existingOrchestratorData != null) {
 			existingOrchestratorData.setExperiment_ID(experimentID);
-			existingOrchestratorData.setUser(userName);
+			existingOrchestratorData.setUserName(userName);
 			existingOrchestratorData.setState(state);
 			existingOrchestratorData.setStatus(status);
 			existingOrchestratorData.setGfacEPR(gfacEPR);

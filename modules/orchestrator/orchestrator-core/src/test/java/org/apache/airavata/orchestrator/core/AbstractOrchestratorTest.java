@@ -21,10 +21,10 @@
 package org.apache.airavata.orchestrator.core;
 
 import junit.framework.TestCase;
+
 import org.apache.airavata.orchestrator.core.util.Initialize;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
-import org.apache.airavata.persistance.registry.jpa.model.Orchestrator_Data;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.OrchestratorDataResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
