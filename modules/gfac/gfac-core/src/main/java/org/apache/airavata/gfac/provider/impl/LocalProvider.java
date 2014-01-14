@@ -127,11 +127,12 @@ public class LocalProvider implements GFacProvider {
         try {
             // running cmd
             Process process = builder.start();
-            jobId="Local_"+Calendar.getInstance().getTimeInMillis();
-            if(jobExecutionContext.getGFacConfiguration().getAiravataAPI() != null){
-        		saveApplicationJob(jobExecutionContext);
-        	}
-            GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId, ApplicationJobStatus.INITIALIZE);
+            jobId= jobExecutionContext.getExperimentID();
+            //todo fix how to incoperate orchestrator with gfac
+//            if(jobExecutionContext.getGFacConfiguration().getAiravataAPI() != null){
+//        		saveApplicationJob(jobExecutionContext);
+//        	}
+//            GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId, ApplicationJobStatus.INITIALIZE);
             Thread standardOutWriter = new InputStreamToFileWriter(process.getInputStream(), app.getStandardOutput());
             Thread standardErrorWriter = new InputStreamToFileWriter(process.getErrorStream(), app.getStandardError());
 
@@ -140,10 +141,11 @@ public class LocalProvider implements GFacProvider {
             standardErrorWriter.setDaemon(true);
             standardOutWriter.start();
             standardErrorWriter.start();
-            GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId, ApplicationJobStatus.EXECUTING);
+//            GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId, ApplicationJobStatus.EXECUTING);
             // wait for the process (application) to finish executing
             int returnValue = process.waitFor();
-            GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId, ApplicationJobStatus.FINALIZE);
+            //todo fix how to incoperate orchestrator with gfac
+//            GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId, ApplicationJobStatus.FINALIZE);
 
             // make sure other two threads are done
             standardOutWriter.join();
@@ -154,10 +156,10 @@ public class LocalProvider implements GFacProvider {
              * just provide warning in the log messages
              */
             if (returnValue != 0) {
-            	GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId, ApplicationJobStatus.FAILED);
+//            	GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId, ApplicationJobStatus.FAILED);
                 log.error("Process finished with non zero return value. Process may have failed");
             } else {
-            	GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId, ApplicationJobStatus.FINISHED);
+//            	GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId, ApplicationJobStatus.FINISHED);
                 log.info("Process finished with return value of zero.");
             }
 
