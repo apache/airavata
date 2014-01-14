@@ -70,6 +70,8 @@ public class JobExecutionContext extends AbstractContext{
     // by this context instance.
     private String serviceName;
 
+    private String experimentID;
+
     /**
      *  Security context is used to handle authentication for input handlers and providers.
      *  There can be multiple security requirement for a single job so this allows you to add multiple security types
@@ -81,6 +83,14 @@ public class JobExecutionContext extends AbstractContext{
         this.gfacConfiguration = gFacConfiguration;
         notifier = new GFacNotifier();
         setServiceName(serviceName);
+    }
+
+    public String getExperimentID() {
+        return experimentID;
+    }
+
+    public void setExperimentID(String experimentID) {
+        this.experimentID = experimentID;
     }
 
     public ApplicationContext getApplicationContext() {
