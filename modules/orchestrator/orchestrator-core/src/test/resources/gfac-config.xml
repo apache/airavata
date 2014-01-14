@@ -1,0 +1,83 @@
+<!-- ~ Licensed to the Apache Software Foundation (ASF) under one ~ or more
+    contributor license agreements. See the NOTICE file ~ distributed with this
+    work for additional information ~ regarding copyright ownership. The ASF
+    licenses this file ~ to you under the Apache License, Version 2.0 (the ~
+    "License"); you may not use this file except in compliance ~ with the License.
+    You may obtain a copy of the License at ~ ~ http://www.apache.org/licenses/LICENSE-2.0
+    ~ ~ Unless required by applicable law or agreed to in writing, ~ software
+    distributed under the License is distributed on an ~ "AS IS" BASIS, WITHOUT
+    WARRANTIES OR CONDITIONS OF ANY ~ KIND, either express or implied. See the
+    License for the ~ specific language governing permissions and limitations
+    ~ under the License. -->
+
+<GFac>
+    <GlobalHandlers>
+        <InHandlers>
+            <Handler class="org.apache.airavata.gfac.handler.AppDescriptorCheckHandler">
+                    <property name="name" value="value"/>
+            </Handler>
+        </InHandlers>
+        <OutHandlers></OutHandlers>
+    </GlobalHandlers>
+    <Provider class="org.apache.airavata.gfac.provider.impl.LocalProvider" host="org.apache.airavata.schemas.gfac.impl.HostDescriptionTypeImpl">
+        <InHandlers>
+            <Handler class="org.apache.airavata.gfac.handler.LocalDirectorySetupHandler"/>
+        </InHandlers>
+    </Provider>
+   <Provider class="org.apache.airavata.gfac.provider.impl.GramProvider" host="org.apache.airavata.schemas.gfac.impl.GlobusHostTypeImpl">
+        <property name="name" value="value"/>
+        <InHandlers>
+            <Handler class="org.apache.airavata.gfac.handler.GramDirectorySetupHandler">
+                    <property name="name" value="value"/>
+            </Handler>
+            <Handler class="org.apache.airavata.gfac.handler.GridFTPInputHandler"/>
+        </InHandlers>
+        <OutHandlers>
+            <Handler class="org.apache.airavata.gfac.handler.GridFTPOutputHandler"/>
+        </OutHandlers>
+    </Provider>
+    <Provider class="org.apache.airavata.gfac.provider.impl.BESProvider" host="org.apache.airavata.schemas.gfac.impl.UnicoreHostTypeImpl">
+    </Provider>
+
+    <Provider class="org.apache.airavata.gfac.ec2.EC2Provider" host="org.apache.airavata.schemas.gfac.impl.Ec2HostTypeImpl">
+        <InHandlers/>
+        <OutHandlers/>
+    </Provider>
+
+    <Provider class="org.apache.airavata.gfac.provider.impl.HadoopProvider" host="org.apache.airavata.schemas.gfac.impl.HadoopHostTypeImpl">
+        <InHandlers>
+        	<Handler class="org.apache.airavata.gfac.handler.HadoopDeploymentHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.HDFSDataMovementHandler"/>
+        </InHandlers>
+        <OutHandlers/>
+    </Provider>
+
+    <Application name="UltraScan">
+        <InHandlers>
+            <Handler class="org.apache.airavata.gfac.handler.GramDirectorySetupHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.GridFTPInputHandler"/>
+        </InHandlers>
+        <OutHandlers>
+            <Handler class="org.apache.airavata.gfac.handler.GridFTPOutputHandler"/>
+        </OutHandlers>
+    </Application>
+
+     <Provider class="org.apache.airavata.gfac.provider.impl.SSHProvider" host="org.apache.airavata.schemas.gfac.impl.SSHHostTypeImpl">
+         <InHandlers>
+            <Handler class="org.apache.airavata.gfac.handler.SCPDirectorySetupHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.SCPInputHandler"/>
+        </InHandlers>
+        <OutHandlers>
+            <Handler class="org.apache.airavata.gfac.handler.SCPOutputHandler"/>
+        </OutHandlers>
+    </Provider>
+     <Provider class="org.apache.airavata.gfac.provider.impl.GSISSHProvider" host="org.apache.airavata.schemas.gfac.impl.GsisshHostTypeImpl">
+         <InHandlers>
+            <Handler class="org.apache.airavata.gfac.handler.SCPDirectorySetupHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.SCPInputHandler"/>
+        </InHandlers>
+        <OutHandlers>
+            <Handler class="org.apache.airavata.gfac.handler.SCPOutputHandler"/>
+        </OutHandlers>
+    </Provider>
+</GFac>
