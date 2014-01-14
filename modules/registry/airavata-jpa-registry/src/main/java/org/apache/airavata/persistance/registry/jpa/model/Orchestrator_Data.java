@@ -13,7 +13,7 @@ public class Orchestrator_Data {
     private String experiment_ID;
 	@GeneratedValue
 	private int orchestrator_ID;
-	private String user;
+	private String username;
 	private String status;
 	private String state;
 	private String gfacEPR;
@@ -31,11 +31,11 @@ public class Orchestrator_Data {
 	public void setOrchestrator_ID(int orchestrator_ID) {
 		this.orchestrator_ID = orchestrator_ID;
 	}
-	public String getUser() {
-		return user;
+	public String getUserName() {
+		return username;
 	}
-	public void setUser(String user) {
-		this.user = user;
+	public void setUserName(String username) {
+		this.username = username;
 	}
 	public String getStatus() {
 		return status;
