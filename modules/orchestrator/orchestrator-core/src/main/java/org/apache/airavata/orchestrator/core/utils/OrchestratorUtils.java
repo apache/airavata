@@ -62,4 +62,14 @@ public class OrchestratorUtils {
         return true;
     }
 
+    public static String getUniqueID(JobRequest jobRequest){
+        if(jobRequest.getUserExperimentID() != null){
+            return jobRequest.getUserExperimentID();
+        }else if(jobRequest.getSystemExperimentID() != null){
+            return jobRequest.getSystemExperimentID();
+        }else{
+            return null;
+        }
+
+    }
 }

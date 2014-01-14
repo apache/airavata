@@ -30,24 +30,30 @@ import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacAPI;
 import org.apache.airavata.gfac.GFacConfiguration;
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.scheduler.HostScheduler;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
+import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorConstants;
+import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.JobRequest;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -61,78 +67,74 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
     private OrchestratorContext orchestratorContext;
 
 
-    public void initialize(OrchestratorContext orchestratorContext) {
+    public void initialize(OrchestratorContext orchestratorContext)  throws OrchestratorException {
         this.orchestratorContext = orchestratorContext;
     }
 
-    public GFACInstance selectGFACInstance() {
+    public GFACInstance selectGFACInstance()  throws OrchestratorException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
 
-    public boolean submitJob(GFACInstance gfac, List<String> experimentIDList) {
+    public boolean submitJob(GFACInstance gfac, List<String> experimentIDList)  throws OrchestratorException {
 
         for (int i = 0; i < experimentIDList.size(); i++) {
             try {
                 // once its fetched it's status will changed to fetched state
                 JobRequest jobRequest = orchestratorContext.getRegistry().fetchAcceptedJob(experimentIDList.get(i));
-                String hostName = jobRequest.getHostDescription().getType().getHostAddress();
-                String serviceName = jobRequest.getServiceDescription().getType().getName();
-                //todo submit the jobs
-
-                //after successfully submitting the jobs set the status of the job to submitted
-
-                orchestratorContext.getRegistry().changeStatus(experimentIDList.get(i), AiravataJobState.State.SUBMITTED, OrchestratorConstants.EMBEDDED_MODE);
-                AiravataAPI airavataAPI = orchestratorContext.getOrchestratorConfiguration().getAiravataAPI();
-                HostDescription registeredHost = null;
-                ServiceDescription serviceDescription = airavataAPI.getApplicationManager().getServiceDescription(serviceName);
-                if (hostName == null) {
-                    List<HostDescription> registeredHosts = new ArrayList<HostDescription>();
-                    Map<String, ApplicationDescription> applicationDescriptors = airavataAPI.getApplicationManager().getApplicationDescriptors(serviceName);
-                    for (String hostDescName : applicationDescriptors.keySet()) {
-                        registeredHosts.add(airavataAPI.getApplicationManager().getHostDescription(hostDescName));
-                    }
-                    Class<? extends HostScheduler> aClass = Class.forName(ServerSettings.getHostScheduler()).asSubclass(HostScheduler.class);
-                    HostScheduler hostScheduler = aClass.newInstance();
-                    registeredHost = hostScheduler.schedule(registeredHosts);
-                } else {
-                    registeredHost = airavataAPI.getApplicationManager().getHostDescription(hostName);
-                }
-                ApplicationDescription applicationDescription =
-                        airavataAPI.getApplicationManager().getApplicationDescription(serviceName, registeredHost.getType().getHostName());
-
-                // When we run getInParameters we set the actualParameter object, this has to be fixed
-                URL resource = EmbeddedGFACJobSubmitter.class.getClassLoader().getResource("gfac-config.xml");
-                Properties configurationProperties = ServerSettings.getProperties();
-                GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, configurationProperties);
-
-                JobExecutionContext jobExecutionContext = new JobExecutionContext(gFacConfiguration, serviceName);
-                //Here we get only the contextheader information sent specific for this node
-                //Add security context
-
-
-
-                jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentIDList.get(i));
-                jobExecutionContext.setProperty(Constants.PROP_BROKER_URL, orchestratorContext.getOrchestratorConfiguration().getBrokerURL().toString());
-
-
-                ApplicationContext applicationContext = new ApplicationContext();
-                applicationContext.setApplicationDeploymentDescription(applicationDescription);
-                applicationContext.setHostDescription(registeredHost);
-                applicationContext.setServiceDescription(serviceDescription);
-
-                jobExecutionContext.setApplicationContext(applicationContext);
-
-                jobExecutionContext.setOutMessageContext(new MessageContext(jobRequest.getOutputParameters()));
-                jobExecutionContext.setInMessageContext(new MessageContext(jobRequest.getInputParameters()));
-
-                //addSecurityContext(registeredHost, configurationProperties, jobExecutionContext,
-                  //      configuration.getContextHeader());
-                GFacAPI gfacAPI1 = new GFacAPI();
-                gfacAPI1.submitJob(jobExecutionContext);
+                launchGfacWithJobRequest(jobRequest);
             } catch (Exception e) {
                 logger.error("Error getting job related information");
             }
+        }
+        return true;
+    }
+
+    private void launchGfacWithJobRequest(JobRequest jobRequest) throws RegistryException, ParserConfigurationException, IOException, SAXException, XPathExpressionException, GFacException {
+        String serviceName = jobRequest.getServiceDescription().getType().getName();
+        //todo submit the jobs
+
+        //after successfully submitting the jobs set the status of the job to submitted
+        String experimentID = OrchestratorUtils.getUniqueID(jobRequest);
+        orchestratorContext.getRegistry().changeStatus(experimentID, AiravataJobState.State.SUBMITTED);
+        AiravataAPI airavataAPI = orchestratorContext.getOrchestratorConfiguration().getAiravataAPI();
+        ServiceDescription serviceDescription = jobRequest.getServiceDescription();
+
+        ApplicationDescription applicationDescription = jobRequest.getApplicationDescription();
+
+        // When we run getInParameters we set the actualParameter object, this has to be fixed
+        URL resource = EmbeddedGFACJobSubmitter.class.getClassLoader().getResource("gfac-config.xml");
+        Properties configurationProperties = ServerSettings.getProperties();
+        GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, configurationProperties);
+
+        JobExecutionContext jobExecutionContext = new JobExecutionContext(gFacConfiguration, serviceName);
+        //Here we get only the contextheader information sent specific for this node
+        //Add security context
+
+
+        ApplicationContext applicationContext = new ApplicationContext();
+        applicationContext.setApplicationDeploymentDescription(applicationDescription);
+        applicationContext.setHostDescription(jobRequest.getHostDescription());
+        applicationContext.setServiceDescription(serviceDescription);
+
+        jobExecutionContext.setApplicationContext(applicationContext);
+
+        jobExecutionContext.setOutMessageContext(new MessageContext(jobRequest.getOutputParameters()));
+        jobExecutionContext.setInMessageContext(new MessageContext(jobRequest.getInputParameters()));
+
+        jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
+        jobExecutionContext.setProperty(Constants.PROP_BROKER_URL, orchestratorContext.getOrchestratorConfiguration().getBrokerURL().toString());
+
+        GFacAPI gfacAPI1 = new GFacAPI();
+        gfacAPI1.submitJob(jobExecutionContext);
+    }
+
+    public boolean directJobSubmit(JobRequest request) throws OrchestratorException {
+        try {
+            launchGfacWithJobRequest(request);
+        } catch (Exception e) {
+            logger.error("Error launching the job : " + OrchestratorUtils.getUniqueID(request));
+
         }
         return true;
     }

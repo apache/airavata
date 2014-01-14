@@ -23,8 +23,10 @@ package org.apache.airavata.orchestrator.core.job;
 import java.util.List;
 
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
+import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
 import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.JobRequest;
 
 /**
  * This is the submitter interface, orchestrator can
@@ -36,17 +38,25 @@ import org.apache.airavata.registry.api.AiravataRegistry2;
 public interface JobSubmitter {
 
 
-    void initialize(OrchestratorContext orchestratorContext);
+    void initialize(OrchestratorContext orchestratorContext) throws OrchestratorException;
 
     /**
      * This will return a single GFACInstance among multiple if available
      * @return
      */
-    GFACInstance selectGFACInstance();
+    GFACInstance selectGFACInstance() throws OrchestratorException;
 
     /**
      * @param gfac
      * @return
      */
-    boolean submitJob(GFACInstance gfac,List<String> experimentIDList);
+    boolean submitJob(GFACInstance gfac,List<String> experimentIDList) throws OrchestratorException;
+
+    /**
+     * This can be used when user doesn't want to run in a threaded pull mode
+     * just get the request data and do the submission
+     * @param request
+     * @return
+     */
+    boolean directJobSubmit(JobRequest request) throws OrchestratorException;
 }

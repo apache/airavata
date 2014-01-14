@@ -78,32 +78,33 @@ public class NewJobWorker implements Runnable {
             }
             /* Here the worker pick bunch of jobs available to submit and submit that to a single
               GFAC instance, we do not handle job by job submission to each gfac instance
+
             */
-            GFACInstance gfacInstance = jobSubmitter.selectGFACInstance();
-
-            // Now we have picked a gfac instance to submit set of jobs at this time, now its time to
-            // select what are the jobs available to submit
-
             try {
+                GFACInstance gfacInstance = jobSubmitter.selectGFACInstance();
+
                 List<String> allAcceptedJobs = orchestratorContext.getRegistry().getAllAcceptedJobs();
                 if (allAcceptedJobs.size() == 0) {
                     idleCount++;
 
                     if (idleCount == 10) {
                         try {
-                            Thread.sleep(submitInterval*2);
+                            Thread.sleep(submitInterval * 2);
                         } catch (InterruptedException e) {
                             logger.error("Error in JobSubmitter during sleeping process before submit jobs");
                             e.printStackTrace();
                         }
-                        idleCount=0;
+                        idleCount = 0;
                     }
                     continue;
                 }
-                jobSubmitter.submitJob(gfacInstance,allAcceptedJobs);
-            } catch (RegistryException e) {
+                jobSubmitter.submitJob(gfacInstance, allAcceptedJobs);
+            } catch (Exception e) {
                 logger.error("Error while trying to retrieve available ");
             }
+            // Now we have picked a gfac instance to submit set of jobs at this time, now its time to
+            // select what are the jobs available to submit
+
         }
     }
 

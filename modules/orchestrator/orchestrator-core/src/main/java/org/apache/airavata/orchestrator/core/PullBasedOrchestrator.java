@@ -30,6 +30,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
+import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorConstants;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
 import org.apache.airavata.registry.api.*;
@@ -45,13 +46,16 @@ import java.util.concurrent.Executors;
 public class PullBasedOrchestrator implements Orchestrator {
     private final static Logger logger = LoggerFactory.getLogger(PullBasedOrchestrator.class);
 
-    OrchestratorContext orchestratorContext;
+    private OrchestratorContext orchestratorContext;
 
-    AiravataRegistry2 airavataRegistry;
+    private AiravataRegistry2 airavataRegistry;
 
-    ExecutorService executor;
+    private ExecutorService executor;
 
-    AiravataAPI airavataAPI;
+    private AiravataAPI airavataAPI;
+
+    // this is going to be null unless the thread count is 0
+    private JobSubmitter jobSubmitter = null;
 
     public boolean initialize() throws OrchestratorException {
         try {
@@ -81,11 +85,26 @@ public class PullBasedOrchestrator implements Orchestrator {
             orchestratorContext = new OrchestratorContext();
             orchestratorContext.setOrchestratorConfiguration(orchestratorConfiguration);
             orchestratorConfiguration.setAiravataAPI(getAiravataAPI());
+            orchestratorContext.setRegistry(airavataRegistry);
             /* Starting submitter thread pool */
 
             // we have a thread to run normal new jobs except to monitor hanged jobs
-            executor = Executors.newFixedThreadPool(orchestratorConfiguration.getThreadPoolSize() + 1);
-            this.startJobSubmitter();
+            if (orchestratorConfiguration.getThreadPoolSize() != 0) {
+                executor = Executors.newFixedThreadPool(orchestratorConfiguration.getThreadPoolSize() + 1);
+                this.startJobSubmitter();
+            } else {
+
+                try {
+                    String submitterClass = this.orchestratorContext.getOrchestratorConfiguration().getSubmitterClass();
+                    Class<? extends JobSubmitter> aClass = Class.forName(submitterClass.trim()).asSubclass(JobSubmitter.class);
+                    jobSubmitter = aClass.newInstance();
+                    jobSubmitter.initialize(this.orchestratorContext);
+                } catch (Exception e) {
+                    String error = "Error creating JobSubmitter in non threaded mode ";
+                    logger.error(error);
+                    throw new OrchestratorException(error, e);
+                }
+            }
         } catch (RegistryException e) {
             logger.error("Failed to initializing Orchestrator");
             OrchestratorException orchestratorException = new OrchestratorException(e);
@@ -141,11 +160,36 @@ public class PullBasedOrchestrator implements Orchestrator {
             logger.error("Invalid Experiment ID given: " + request.getUserName());
             return false;
         }
-        String gfacEPR = OrchestratorConstants.EMBEDDED_MODE;
         //todo use a more concrete user type in to this
-        String username = request.getUserName();
         try {
-            airavataRegistry.changeStatus(experimentID, AiravataJobState.State.ACCEPTED, gfacEPR);
+            if (request.getHostDescription() != null) {
+                if (!airavataRegistry.isHostDescriptorExists(request.getHostDescription().getType().getHostName())) {
+                    airavataRegistry.addHostDescriptor(request.getHostDescription());
+                }
+            }
+            if (request.getServiceDescription() != null) {
+                if (!airavataRegistry.isServiceDescriptorExists(request.getServiceDescription().getType().getName())) {
+                    airavataRegistry.addServiceDescriptor(request.getServiceDescription());
+                }
+            }
+            if (request.getApplicationDescription() != null) {
+                if (request.getServiceDescription() != null && request.getHostDescription() != null) {
+                    if(!airavataRegistry.isApplicationDescriptorExists(request.getServiceDescription().getType().getName(),
+                            request.getHostDescription().getType().getHostName(),request.getApplicationDescription().getType().getApplicationName().getStringValue())){
+                    airavataRegistry.addApplicationDescriptor(request.getServiceDescription(),
+                            request.getHostDescription(), request.getApplicationDescription());
+                    }
+                } else {
+                    String error = "Providing just Application Descriptor is not sufficient to save to Registry";
+                    logger.error(error);
+                    throw new OrchestratorException(error);
+                }
+            }
+            airavataRegistry.changeStatus(experimentID, AiravataJobState.State.ACCEPTED);
+            if (orchestratorContext.getOrchestratorConfiguration().getThreadPoolSize() == 0) {
+                jobSubmitter.directJobSubmit(request);
+            }
+
             //todo save jobRequest data in to the database
         } catch (RegistryException e) {
             //todo put more meaningful error message
@@ -178,7 +222,7 @@ public class PullBasedOrchestrator implements Orchestrator {
                 String error = "Job is already Finished so cannot cancel the job " + experimentID;
                 logger.error(error);
                 new OrchestratorException(error);
-            }else{
+            } else {
                 // do nothing but simply change the job state to cancelled because job is not yet submitted to the resource
                 orchestratorContext.getRegistry().changeStatus(experimentID, AiravataJobState.State.CANCELLED);
             }
