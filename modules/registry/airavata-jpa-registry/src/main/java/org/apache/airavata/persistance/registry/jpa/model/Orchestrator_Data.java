@@ -3,9 +3,11 @@ package org.apache.airavata.persistance.registry.jpa.model;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
-public class OrchestratorData {
+@Table(name = "Orchestrator_Data")
+public class Orchestrator_Data {
 	
 	@Id
     private String experiment_ID;

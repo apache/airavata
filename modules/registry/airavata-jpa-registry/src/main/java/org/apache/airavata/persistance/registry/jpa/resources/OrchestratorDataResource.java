@@ -9,7 +9,7 @@ import javax.persistence.Query;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
-import org.apache.airavata.persistance.registry.jpa.model.OrchestratorData;
+import org.apache.airavata.persistance.registry.jpa.model.Orchestrator_Data;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,9 +112,9 @@ public class OrchestratorDataResource extends AbstractResource {
 	        switch (type) {
 	            case ORCHESTRATOR_DATA:
 	                generator = new QueryGenerator(ORCHESTRATORDATA);
-	                generator.setParameter(OrchestratorDataConstants.ORCHESTRATOR_ID, name);
+	                generator.setParameter(OrchestratorDataConstants.EXPERIMENT_ID, name);
 	                q = generator.selectQuery(em);
-	                OrchestratorData orchestrator_data = (OrchestratorData)q.getSingleResult();
+	                Orchestrator_Data orchestrator_data = (Orchestrator_Data)q.getSingleResult();
 	                OrchestratorDataResource orchestratorDataResource = (OrchestratorDataResource)Utils.getResource(ResourceType.ORCHESTRATOR_DATA, orchestrator_data);
 	                em.getTransaction().commit();
 	                em.close();
@@ -140,7 +140,7 @@ public class OrchestratorDataResource extends AbstractResource {
 	            List<?> results = q.getResultList();
 	            if (results.size() != 0) {
 	                for (Object result : results) {
-	                	OrchestratorData orchestratorData = (OrchestratorData) result;
+	                	Orchestrator_Data orchestratorData = (Orchestrator_Data) result;
 	                	OrchestratorDataResource orchestratorDataResource = (OrchestratorDataResource)
 	                            Utils.getResource(ResourceType.ORCHESTRATOR_DATA, orchestratorData);
 	                    resourceList.add(orchestratorDataResource);
@@ -158,13 +158,13 @@ public class OrchestratorDataResource extends AbstractResource {
 	@Override
 	public void save() {
 		EntityManager em = ResourceUtils.getEntityManager();
-		OrchestratorData existingOrchestratorData = em.find(OrchestratorData.class,
+		Orchestrator_Data existingOrchestratorData = em.find(Orchestrator_Data.class,
 				experimentID);
 		em.close();
 
 		em = ResourceUtils.getEntityManager();
 		em.getTransaction().begin();
-		OrchestratorData orchestratorData = new OrchestratorData();
+		Orchestrator_Data orchestratorData = new Orchestrator_Data();
 		orchestratorData.setExperiment_ID(experimentID);
 		orchestratorData.setUser(userName);
 		orchestratorData.setGfacEPR(gfacEPR);
