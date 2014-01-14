@@ -36,13 +36,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-public class PullBasedOrchestratorTest {
+public class PullBasedOrchestratorTest extends AbstractOrchestratorTest{
     private static final Logger log = LoggerFactory.getLogger(PullBasedOrchestratorTest.class);
 
     private Orchestrator orchestrator;
 
     @BeforeTest
     public void setUp() throws Exception {
+        super.setUp();
         orchestrator = new PullBasedOrchestrator();
         orchestrator.initialize();
     }

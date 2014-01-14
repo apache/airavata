@@ -1057,7 +1057,7 @@ public class RegistryClient extends AiravataRegistry2 {
 
 	@Override
 	public boolean storeExperiment(String userName, String experimentID,
-			String orchestratorID, State state) throws RegistryException {
+			String orchestratorID) throws RegistryException {
 		// TODO Auto-generated method stub
 		return false;
 	}

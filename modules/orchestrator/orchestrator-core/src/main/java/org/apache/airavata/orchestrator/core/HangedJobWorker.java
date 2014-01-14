@@ -52,7 +52,7 @@ public class HangedJobWorker implements Runnable{
             submitInterval = this.orchestratorContext.getOrchestratorConfiguration().getSubmitterInterval();
             Class<? extends JobSubmitter> aClass = Class.forName(submitterClass.trim()).asSubclass(JobSubmitter.class);
             jobSubmitter = aClass.newInstance();
-            jobSubmitter.initialize(this.orchestratorContext.getRegistry());
+            jobSubmitter.initialize(this.orchestratorContext);
         } catch (ClassNotFoundException e) {
             logger.error("Error while loading Job Submitter");
         } catch (InstantiationException e) {

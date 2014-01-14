@@ -20,20 +20,16 @@
 */
 package org.apache.airavata.orchestrator.core.impl;
 
+
 import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataJobState;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacAPI;
 import org.apache.airavata.gfac.GFacConfiguration;
-import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
@@ -44,21 +40,10 @@ import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorConstants;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.JobRequest;
-import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.axiom.om.OMElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-import org.xmlpull.v1.builder.XmlElement;
-
-import xsul.wsif.impl.WSIFMessageElement;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.xpath.XPathExpressionException;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,12 +60,9 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
 
     private OrchestratorContext orchestratorContext;
 
-    public EmbeddedGFACJobSubmitter(OrchestratorContext orchestratorContext) {
-        this.orchestratorContext = orchestratorContext;
-    }
 
-    public void initialize(AiravataRegistry2 registry2) {
-        // since this is embedded mode we do not use gfacinstance information
+    public void initialize(OrchestratorContext orchestratorContext) {
+        this.orchestratorContext = orchestratorContext;
     }
 
     public GFACInstance selectGFACInstance() {
