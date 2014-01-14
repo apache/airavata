@@ -18,7 +18,7 @@ public class OrchestratorDataResource extends AbstractResource {
    
 	private final static Logger log = LoggerFactory.getLogger(OrchestratorDataResource.class);
 	private String experimentID;
-	private String orchestratorID;
+	private int orchestratorID;
 	private String userName;
 	private String status;
 	private String state;
@@ -29,7 +29,7 @@ public class OrchestratorDataResource extends AbstractResource {
 		return experimentID;
 	}
 
-	public String getOrchestratorID() {
+	public int getOrchestratorID() {
 		return orchestratorID;
 	}
 
@@ -41,7 +41,7 @@ public class OrchestratorDataResource extends AbstractResource {
 		this.experimentID = experimentID;
 	}
 
-	public void setOrchestratorID(String orchestratorID) {
+	public void setOrchestratorID(int orchestratorID) {
 		this.orchestratorID = orchestratorID;
 	}
 
@@ -85,7 +85,6 @@ public class OrchestratorDataResource extends AbstractResource {
 	public Resource create(ResourceType type) {
 		 if (type == ResourceType.ORCHESTRATOR_DATA) {
 	            OrchestratorDataResource orchestratorResource = new OrchestratorDataResource();
-	            orchestratorResource.setOrchestratorID(orchestratorID);
 	            orchestratorResource.setExperimentID(experimentID);
 	            orchestratorResource.setUserName(userName);
 	            orchestratorResource.setState(state);
@@ -136,7 +135,7 @@ public class OrchestratorDataResource extends AbstractResource {
 	            EntityManager em = ResourceUtils.getEntityManager();
 	            em.getTransaction().begin();
 	        	QueryGenerator generator = new QueryGenerator(ORCHESTRATORDATA);
-	        	generator.setParameter(OrchestratorDataConstants.ORCHESTRATOR_ID, orchestratorID);
+	        	generator.setParameter(OrchestratorDataConstants.EXPERIMENT_ID, experimentID);
 	        	Query q = generator.selectQuery(em);
 	            List<?> results = q.getResultList();
 	            if (results.size() != 0) {
@@ -166,18 +165,17 @@ public class OrchestratorDataResource extends AbstractResource {
 		em = ResourceUtils.getEntityManager();
 		em.getTransaction().begin();
 		OrchestratorData orchestratorData = new OrchestratorData();
-		orchestratorData.setExperimentId(experimentID);
-		orchestratorData.setOrchestratorId(orchestratorID);
+		orchestratorData.setExperiment_ID(experimentID);
 		orchestratorData.setUser(userName);
-		orchestratorData.setGFACServiceEPR(gfacEPR);
+		orchestratorData.setGfacEPR(gfacEPR);
 		orchestratorData.setState(state);
 		orchestratorData.setStatus(status);
 		if (existingOrchestratorData != null) {
-			existingOrchestratorData.setExperimentId(experimentID);
+			existingOrchestratorData.setExperiment_ID(experimentID);
 			existingOrchestratorData.setUser(userName);
-			existingOrchestratorData.setGFACServiceEPR(gfacEPR);
 			existingOrchestratorData.setState(state);
 			existingOrchestratorData.setStatus(status);
+			existingOrchestratorData.setGfacEPR(gfacEPR);
 			orchestratorData = em.merge(existingOrchestratorData);
 		} else {
 			em.persist(orchestratorData);

@@ -10,7 +10,7 @@ import org.apache.airavata.registry.api.orchestrator.OrchestratorData;
 @XmlRootElement
 public class OrchestratorDataImpl implements OrchestratorData{
 
-	private String orchestratorId;
+	private int orchestratorId;
 	private String experimentId;
 	private String user;
 	private String status;
@@ -26,7 +26,7 @@ public class OrchestratorDataImpl implements OrchestratorData{
         this.lazyLoaded = lazyLoaded;
     }
 	@Override
-	public String getOrchestratorId() {
+	public int getOrchestratorId() {
 		return orchestratorId;
 	}
 

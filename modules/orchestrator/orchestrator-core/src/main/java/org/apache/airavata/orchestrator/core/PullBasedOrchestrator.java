@@ -112,7 +112,7 @@ public class PullBasedOrchestrator implements Orchestrator {
 
     public String createExperiment(ExperimentRequest request) throws OrchestratorException {
         //todo use a consistent method to create the experiment ID
-            String experimentID = request.getUserExperimentID();
+        String experimentID = request.getUserExperimentID();
         String orchestratorID = UUID.randomUUID().toString();
         String username = request.getUserName();
         try {
