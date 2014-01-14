@@ -67,16 +67,16 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
     private OrchestratorContext orchestratorContext;
 
 
-    public void initialize(OrchestratorContext orchestratorContext)  throws OrchestratorException {
+    public void initialize(OrchestratorContext orchestratorContext) throws OrchestratorException {
         this.orchestratorContext = orchestratorContext;
     }
 
-    public GFACInstance selectGFACInstance()  throws OrchestratorException {
+    public GFACInstance selectGFACInstance() throws OrchestratorException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
 
-    public boolean submitJob(GFACInstance gfac, List<String> experimentIDList)  throws OrchestratorException {
+    public boolean submitJob(GFACInstance gfac, List<String> experimentIDList) throws OrchestratorException {
 
         for (int i = 0; i < experimentIDList.size(); i++) {
             try {
@@ -123,8 +123,7 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
         jobExecutionContext.setInMessageContext(new MessageContext(jobRequest.getInputParameters()));
 
         jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
-        jobExecutionContext.setProperty(Constants.PROP_BROKER_URL, orchestratorContext.getOrchestratorConfiguration().getBrokerURL().toString());
-
+        jobExecutionContext.setExperimentID(experimentID);
         GFacAPI gfacAPI1 = new GFacAPI();
         gfacAPI1.submitJob(jobExecutionContext);
     }
@@ -133,8 +132,9 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
         try {
             launchGfacWithJobRequest(request);
         } catch (Exception e) {
-            logger.error("Error launching the job : " + OrchestratorUtils.getUniqueID(request));
-
+            String error = "Error launching the job : " + OrchestratorUtils.getUniqueID(request);
+            logger.error(error);
+            throw new OrchestratorException(error);
         }
         return true;
     }
