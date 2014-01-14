@@ -21,8 +21,12 @@
 package org.apache.airavata.orchestrator.core;
 
 import junit.framework.Assert;
+import org.apache.airavata.client.AiravataAPIFactory;
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ExecutionMode;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -39,8 +43,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-public class PullBasedOrchestratorTest extends AbstractOrchestratorTest{
-    private static final Logger log = LoggerFactory.getLogger(PullBasedOrchestratorTest.class);
+public class TestWithStoredDescriptors extends AbstractOrchestratorTest {
+    private static final Logger log = LoggerFactory.getLogger(SimpleOrchestratorTest.class);
 
     private Orchestrator orchestrator;
 
@@ -50,55 +54,19 @@ public class PullBasedOrchestratorTest extends AbstractOrchestratorTest{
         super.setUp();
         orchestrator = new PullBasedOrchestrator();
         orchestrator.initialize();
+        createJobRequestWithDocuments(getAiravataAPI());
     }
 
-    @Test
-    public void noUserIDTest() throws Exception {
-        ExperimentRequest experimentRequest = new ExperimentRequest();
-        //experimentRequest.setUserExperimentID("test-" + UUID.randomUUID().toString());
-        experimentRequest.setUserName("orchestrator");
-
-        String systemExpID = orchestrator.createExperiment(experimentRequest);
-
-        JobRequest jobRequest = createJobRequest(systemExpID);
-
-        boolean b = orchestrator.launchExperiment(jobRequest);
-
-        if(b){
-            // This means orchestrator successfully accepted the job
-            Assert.assertTrue(true);
-        }else {
-            Assert.assertFalse(true);
-        }
-    }
-
-    @Test
-    public void userIDTest() throws Exception {
-        ExperimentRequest experimentRequest = new ExperimentRequest();
-        experimentRequest.setUserExperimentID("test-" + UUID.randomUUID().toString());
-        experimentRequest.setUserName("orchestrator");
-
-        String systemExpID = orchestrator.createExperiment(experimentRequest);
-
-        JobRequest jobRequest = createJobRequest(systemExpID);
-
-        boolean b = orchestrator.launchExperiment(jobRequest);
-
-        if(b){
-            // This means orchestrator successfully accepted the job
-            Assert.assertTrue(true);
-        }else {
-            Assert.assertFalse(true);
-        }
-    }
-    private JobRequest createJobRequest(String systemExpID) {
-        JobRequest jobRequest = new JobRequest();
-
+    private void createJobRequestWithDocuments(AiravataAPI airavataAPI) {
         // creating host description
         HostDescription descriptor = new HostDescription();
         descriptor.getType().setHostName("localhost");
         descriptor.getType().setHostAddress("127.0.0.1");
-
+        try {
+            airavataAPI.getApplicationManager().saveHostDescription(descriptor);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
 
         ServiceDescription serviceDescription = new ServiceDescription();
         List<InputParameterType> inputParameters = new ArrayList<InputParameterType>();
@@ -127,6 +95,11 @@ public class PullBasedOrchestratorTest extends AbstractOrchestratorTest{
         serviceDescription.getType().setInputParametersArray(inputParameters.toArray(new InputParameterType[]{}));
         serviceDescription.getType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[]{}));
 
+        try {
+            airavataAPI.getApplicationManager().saveServiceDescription(serviceDescription);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
 
         ApplicationDescription applicationDeploymentDescription = new ApplicationDescription();
         ApplicationDeploymentDescriptionType applicationDeploymentDescriptionType = applicationDeploymentDescription
@@ -135,7 +108,38 @@ public class PullBasedOrchestratorTest extends AbstractOrchestratorTest{
         applicationDeploymentDescriptionType.setExecutableLocation("/bin/echo");
         applicationDeploymentDescriptionType.setScratchWorkingDirectory("/tmp");
 
-        //creating input Map
+        try {
+            airavataAPI.getApplicationManager().saveApplicationDescription("Echo", "localhost", applicationDeploymentDescription);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+    @Test
+    public void noDescriptorTest() throws Exception {
+        ExperimentRequest experimentRequest = new ExperimentRequest();
+        experimentRequest.setUserExperimentID("test-" + UUID.randomUUID().toString());
+        experimentRequest.setUserName("orchestrator");
+
+        String systemExpID = orchestrator.createExperiment(experimentRequest);
+
+        JobRequest jobRequest = createJobRequestWithoutDocuments(systemExpID);
+
+
+        boolean b = orchestrator.launchExperiment(jobRequest);
+
+        if (b) {
+            // This means orchestrator successfully accepted the job
+            Assert.assertTrue(true);
+        } else {
+            Assert.assertFalse(true);
+        }
+    }
+
+
+    private JobRequest createJobRequestWithoutDocuments(String systemExpID) {
+        JobRequest jobRequest = new JobRequest();
+        jobRequest.setServiceName("Echo");
 
         HashMap<String, Object> inputData = new HashMap<String, Object>();
         ActualParameter echo_input = new ActualParameter();
@@ -147,12 +151,26 @@ public class PullBasedOrchestratorTest extends AbstractOrchestratorTest{
 
         // setting all the parameters to jobRequest
         jobRequest.setSystemExperimentID(systemExpID);
-        jobRequest.setHostDescription(descriptor);
-        jobRequest.setServiceDescription(serviceDescription);
-        jobRequest.setApplicationDescription(applicationDeploymentDescription);
         jobRequest.setInputParameters(inputData);
         jobRequest.setOutputParameters(outputData);
+
         return jobRequest;
+    }
+
+    private AiravataAPI getAiravataAPI() {
+        AiravataAPI airavataAPI = null;
+        if (airavataAPI == null) {
+            try {
+                String systemUserName = ServerSettings.getSystemUser();
+                String gateway = ServerSettings.getSystemUserGateway();
+                airavataAPI = AiravataAPIFactory.getAPI(gateway, systemUserName);
+            } catch (ApplicationSettingsException e) {
+                e.printStackTrace();
+            } catch (AiravataAPIInvocationException e) {
+                e.printStackTrace();
+            }
+        }
+        return airavataAPI;
     }
 
 
