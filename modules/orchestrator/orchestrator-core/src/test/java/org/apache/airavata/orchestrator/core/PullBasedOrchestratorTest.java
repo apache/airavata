@@ -21,6 +21,8 @@
 package org.apache.airavata.orchestrator.core;
 
 import junit.framework.Assert;
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.ExecutionMode;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
@@ -43,6 +45,7 @@ public class PullBasedOrchestratorTest extends AbstractOrchestratorTest{
 
     @BeforeTest
     public void setUp() throws Exception {
+        AiravataUtils.setExecutionAsServer();
         super.setUp();
         orchestrator = new PullBasedOrchestrator();
         orchestrator.initialize();
