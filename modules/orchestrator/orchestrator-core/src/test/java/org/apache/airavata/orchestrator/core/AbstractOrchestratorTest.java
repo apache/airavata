@@ -17,30 +17,35 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- */
-
-package org.apache.airavata.persistance.registry.jpa;
+*/
+package org.apache.airavata.orchestrator.core;
 
 import junit.framework.TestCase;
+import org.apache.airavata.orchestrator.core.util.Initialize;
+import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
+import org.apache.airavata.persistance.registry.jpa.model.OrchestratorData;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
+import org.apache.airavata.persistance.registry.jpa.resources.OrchestratorDataResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
-import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 
-public abstract class AbstractResourceTest extends TestCase {
+public class AbstractOrchestratorTest extends TestCase {
 
     private GatewayResource gatewayResource;
     private WorkerResource workerResource;
     private UserResource userResource;
-
+    private OrchestratorDataResource orchestratorDataResource;
     private Initialize initialize;
+
     @Override
     public void setUp() throws Exception {
         initialize = new Initialize("data-derby.sql");
         initialize.initializeDB();
-        gatewayResource = (GatewayResource)ResourceUtils.getGateway("default");
-        workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayName(), "admin");
-        userResource = (UserResource)gatewayResource.create(ResourceType.USER);
+        gatewayResource = (GatewayResource) ResourceUtils.getGateway("default");
+        workerResource = (WorkerResource) ResourceUtils.getWorker(gatewayResource.getGatewayName(), "admin");
+        userResource = (UserResource) gatewayResource.create(ResourceType.USER);
+        orchestratorDataResource = (OrchestratorDataResource) gatewayResource.create(ResourceType.ORCHESTRATOR_DATA);
         userResource.setUserName("admin");
         userResource.setPassword("admin");
     }

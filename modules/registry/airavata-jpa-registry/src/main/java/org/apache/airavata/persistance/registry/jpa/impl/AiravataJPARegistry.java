@@ -2581,12 +2581,12 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public boolean storeExperiment(String userName, String experimentID, String orchestratorID,AiravataJobState.State state) throws RegistryException {
+    public boolean storeExperiment(String userName, String experimentID, String orchestratorID) throws RegistryException {
     	GatewayResource gateway = jpa.getGateway();
 		OrchestratorDataResource dataResource = gateway.createOrchestratorData(orchestratorID); 
 		dataResource.setUserName(userName);
 		dataResource.setExperimentID(experimentID);
-		dataResource.setStatus(state.toString());
+		dataResource.setStatus(AiravataJobState.State.CREATED.toString());
 		dataResource.save();
 		return true;
 	}

@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.orchestrator.core;
 
+import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
@@ -52,7 +53,7 @@ public class NewJobWorker implements Runnable {
             submitInterval = this.orchestratorContext.getOrchestratorConfiguration().getSubmitterInterval();
             Class<? extends JobSubmitter> aClass = Class.forName(submitterClass.trim()).asSubclass(JobSubmitter.class);
             jobSubmitter = aClass.newInstance();
-            jobSubmitter.initialize(this.orchestratorContext.getRegistry());
+            jobSubmitter.initialize(this.orchestratorContext);
         } catch (ClassNotFoundException e) {
             logger.error("Error while loading Job Submitter");
         } catch (InstantiationException e) {
