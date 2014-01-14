@@ -78,12 +78,13 @@ public class HangedJobWorker implements Runnable{
             /* Here the worker pick bunch of jobs available to submit and submit that to a single
               GFAC instance, we do not handle job by job submission to each gfac instance
             */
+            try {
+
             GFACInstance gfacInstance = jobSubmitter.selectGFACInstance();
 
             // Now we have picked a gfac instance to submit set of jobs at this time, now its time to
             // select what are the jobs available to submit
 
-            try {
                 List<String> allHangedJobs = orchestratorContext.getRegistry().getAllHangedJobs();
                 if (allHangedJobs.size() == 0) {
                     idleCount++;
@@ -104,7 +105,7 @@ public class HangedJobWorker implements Runnable{
 
                 /* After submitting available jobs try to schedule again and then submit*/
                 jobSubmitter.submitJob(jobSubmitter.selectGFACInstance(),allHangedJobs);
-            } catch (RegistryException e) {
+            } catch (Exception e) {
                 logger.error("Error while trying to retrieve available ");
             }
         }

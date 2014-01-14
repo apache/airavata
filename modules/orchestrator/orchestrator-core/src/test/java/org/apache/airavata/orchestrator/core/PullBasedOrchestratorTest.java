@@ -51,25 +51,25 @@ public class PullBasedOrchestratorTest extends AbstractOrchestratorTest{
         orchestrator.initialize();
     }
 
-    @Test
-    public void noUserIDTest() throws Exception {
-        ExperimentRequest experimentRequest = new ExperimentRequest();
-        //experimentRequest.setUserExperimentID("test-" + UUID.randomUUID().toString());
-        experimentRequest.setUserName("orchestrator");
-
-        String systemExpID = orchestrator.createExperiment(experimentRequest);
-
-        JobRequest jobRequest = createJobRequest(systemExpID);
-
-        boolean b = orchestrator.launchExperiment(jobRequest);
-
-        if(b){
-            // This means orchestrator successfully accepted the job
-            Assert.assertTrue(true);
-        }else {
-            Assert.assertFalse(true);
-        }
-    }
+//    @Test
+//    public void noUserIDTest() throws Exception {
+//        ExperimentRequest experimentRequest = new ExperimentRequest();
+//        //experimentRequest.setUserExperimentID("test-" + UUID.randomUUID().toString());
+//        experimentRequest.setUserName("orchestrator");
+//
+//        String systemExpID = orchestrator.createExperiment(experimentRequest);
+//
+//        JobRequest jobRequest = createJobRequest(systemExpID);
+//
+//        boolean b = orchestrator.launchExperiment(jobRequest);
+//
+//        if(b){
+//            // This means orchestrator successfully accepted the job
+//            Assert.assertTrue(true);
+//        }else {
+//            Assert.assertFalse(true);
+//        }
+//    }
 
     @Test
     public void userIDTest() throws Exception {
