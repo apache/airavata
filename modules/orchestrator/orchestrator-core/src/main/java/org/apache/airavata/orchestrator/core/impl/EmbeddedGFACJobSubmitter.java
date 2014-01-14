@@ -22,6 +22,7 @@ package org.apache.airavata.orchestrator.core.impl;
 
 
 import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.AiravataJobState;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
@@ -53,7 +54,9 @@ import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -90,42 +93,75 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
         return true;
     }
 
-    private void launchGfacWithJobRequest(JobRequest jobRequest) throws RegistryException, ParserConfigurationException, IOException, SAXException, XPathExpressionException, GFacException {
-        String serviceName = jobRequest.getServiceDescription().getType().getName();
+    private void launchGfacWithJobRequest(JobRequest jobRequest) throws OrchestratorException {
+        String serviceName = jobRequest.getServiceName();
+        if(serviceName == null){
+            serviceName = jobRequest.getServiceDescription().getType().getName();
+        }
+
+
         //todo submit the jobs
 
         //after successfully submitting the jobs set the status of the job to submitted
         String experimentID = OrchestratorUtils.getUniqueID(jobRequest);
-        orchestratorContext.getRegistry().changeStatus(experimentID, AiravataJobState.State.SUBMITTED);
-        AiravataAPI airavataAPI = orchestratorContext.getOrchestratorConfiguration().getAiravataAPI();
-        ServiceDescription serviceDescription = jobRequest.getServiceDescription();
+        AiravataAPI airavataAPI = null;
+        try {
 
-        ApplicationDescription applicationDescription = jobRequest.getApplicationDescription();
+            airavataAPI = orchestratorContext.getOrchestratorConfiguration().getAiravataAPI();
+            HostDescription hostDescription = jobRequest.getHostDescription();
+            if (hostDescription == null) {
+                List<HostDescription> registeredHosts = new ArrayList<HostDescription>();
+                Map<String, ApplicationDescription> applicationDescriptors = airavataAPI.getApplicationManager().getApplicationDescriptors(serviceName);
+                for (String hostDescName : applicationDescriptors.keySet()) {
+                    registeredHosts.add(airavataAPI.getApplicationManager().getHostDescription(hostDescName));
+                }
+                Class<? extends HostScheduler> aClass = Class.forName(ServerSettings.getHostScheduler()).asSubclass(HostScheduler.class);
+                HostScheduler hostScheduler = aClass.newInstance();
+                hostDescription = hostScheduler.schedule(registeredHosts);
+            }
 
-        // When we run getInParameters we set the actualParameter object, this has to be fixed
-        URL resource = EmbeddedGFACJobSubmitter.class.getClassLoader().getResource("gfac-config.xml");
-        Properties configurationProperties = ServerSettings.getProperties();
-        GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, configurationProperties);
+            ServiceDescription serviceDescription = jobRequest.getServiceDescription();
+            if (serviceDescription == null) {
+                try {
+                    serviceDescription = airavataAPI.getApplicationManager().getServiceDescription(jobRequest.getServiceName());
+                } catch (AiravataAPIInvocationException e) {
+                    String error = "Error retrieving document from Registry: " + jobRequest.getServiceName();
+                    throw new OrchestratorException(error, e);
+                }
+            }
 
-        JobExecutionContext jobExecutionContext = new JobExecutionContext(gFacConfiguration, serviceName);
-        //Here we get only the contextheader information sent specific for this node
-        //Add security context
+            ApplicationDescription applicationDescription = jobRequest.getApplicationDescription();
+            if (applicationDescription == null) {
+                 applicationDescription = airavataAPI.getApplicationManager().getApplicationDescription(serviceName, hostDescription.getType().getHostName());
+            }
+            // When we run getInParameters we set the actualParameter object, this has to be fixed
+            URL resource = EmbeddedGFACJobSubmitter.class.getClassLoader().getResource("gfac-config.xml");
+            Properties configurationProperties = ServerSettings.getProperties();
+            GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, configurationProperties);
+
+            JobExecutionContext jobExecutionContext = new JobExecutionContext(gFacConfiguration, serviceName);
+            //Here we get only the contextheader information sent specific for this node
+            //Add security context
 
 
-        ApplicationContext applicationContext = new ApplicationContext();
-        applicationContext.setApplicationDeploymentDescription(applicationDescription);
-        applicationContext.setHostDescription(jobRequest.getHostDescription());
-        applicationContext.setServiceDescription(serviceDescription);
+            ApplicationContext applicationContext = new ApplicationContext();
+            applicationContext.setApplicationDeploymentDescription(applicationDescription);
+            applicationContext.setHostDescription(hostDescription);
+            applicationContext.setServiceDescription(serviceDescription);
 
-        jobExecutionContext.setApplicationContext(applicationContext);
+            jobExecutionContext.setApplicationContext(applicationContext);
 
-        jobExecutionContext.setOutMessageContext(new MessageContext(jobRequest.getOutputParameters()));
-        jobExecutionContext.setInMessageContext(new MessageContext(jobRequest.getInputParameters()));
+            jobExecutionContext.setOutMessageContext(new MessageContext(jobRequest.getOutputParameters()));
+            jobExecutionContext.setInMessageContext(new MessageContext(jobRequest.getInputParameters()));
 
-        jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
-        jobExecutionContext.setExperimentID(experimentID);
-        GFacAPI gfacAPI1 = new GFacAPI();
-        gfacAPI1.submitJob(jobExecutionContext);
+            jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
+            jobExecutionContext.setExperimentID(experimentID);
+            GFacAPI gfacAPI1 = new GFacAPI();
+            gfacAPI1.submitJob(jobExecutionContext);
+            orchestratorContext.getRegistry().changeStatus(experimentID, AiravataJobState.State.SUBMITTED);
+        } catch (Exception e) {
+            throw new OrchestratorException("Error launching the Job", e);
+        }
     }
 
     public boolean directJobSubmit(JobRequest request) throws OrchestratorException {
