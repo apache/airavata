@@ -30,6 +30,10 @@ public interface OrchestratorData {
 	public String getUser();
 
 	/**
+	 * Returns application name to execute
+	 */
+	public String getApplicationName();
+	/**
 	 * Returns GFAC service URL
 	 * 
 	 * @return
@@ -80,6 +84,11 @@ public interface OrchestratorData {
 	 */
 	public void setStatus(String status);
 
+	/**
+	 * 
+	 * @param applicationName
+	 */
+	public void setApplicationName(String applicationName);
 
 	
 }

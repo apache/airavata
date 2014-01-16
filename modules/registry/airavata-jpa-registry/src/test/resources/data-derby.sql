@@ -274,6 +274,8 @@ create table Orchestrator_Data
         status varchar(255),
         state varchar(255),
         gfacEPR varchar(255),
+        applicationName varchar(255),
+        jobRequest CLOB,
         PRIMARY KEY (experiment_ID)
 );
 -- CREATE TABLE openjpa_sequence_table

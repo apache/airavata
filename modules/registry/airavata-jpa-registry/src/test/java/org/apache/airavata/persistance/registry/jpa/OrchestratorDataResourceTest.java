@@ -9,6 +9,7 @@ import org.apache.airavata.persistance.registry.jpa.resources.OrchestratorDataRe
 public class OrchestratorDataResourceTest extends AbstractResourceTest{
 	 private OrchestratorDataResource dataResource;
 	 private String experimentID = UUID.randomUUID().toString();
+	 private String applicationName = "echo_test";
 	
 	 @Override
 	    public void setUp() throws Exception {
@@ -21,14 +22,13 @@ public class OrchestratorDataResourceTest extends AbstractResourceTest{
 	    public void testSave() throws Exception {
 	        dataResource.setExperimentID(experimentID);
 	        dataResource.setStatus(AiravataJobState.State.CREATED.toString());
+	        dataResource.setApplicationName(applicationName);
 	        dataResource.save();
 	        assertNotNull("Orchestrator data resource created successfully", dataResource);
+	        // Get saved data
+	        assertNotNull("Orchestrator data resource get successfully", dataResource.get(ResourceType.ORCHESTRATOR_DATA, experimentID));
 	    }
 
-	    public void testGet() throws Exception {
-//	        dataResource.get(ResourceType.ORCHESTRATOR_DATA, experimentID);
-//	        assertNotNull("Orchestrator data resource created successfully", dataResource);
-	    }
 	    @Override
 	    public void tearDown() throws Exception {
 	        super.tearDown();

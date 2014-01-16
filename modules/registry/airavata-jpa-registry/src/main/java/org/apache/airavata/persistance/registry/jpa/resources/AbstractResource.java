@@ -219,6 +219,9 @@ public abstract class AbstractResource implements Resource {
 		public static final String USERNAME = "username";
 		public static final String STATUS = "status";
 		public static final String STATE = "state";
+		public static final String APPLICATION_NAME = "applicationName";
+		public static final String JOB_REQUEST = "jobRequest";
+		
 	}
 
 	protected AbstractResource() {
