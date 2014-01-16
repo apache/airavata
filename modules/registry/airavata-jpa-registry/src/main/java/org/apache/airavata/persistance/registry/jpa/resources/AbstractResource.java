@@ -214,7 +214,6 @@ public abstract class AbstractResource implements Resource {
 
 	// Orchestrator_Data table
 	public final class OrchestratorDataConstants {
-		public static final String ORCHESTRATOR_ID = "orchestrator_ID";
 		public static final String EXPERIMENT_ID = "experiment_ID";
 		public static final String USERNAME = "username";
 		public static final String STATUS = "status";

@@ -7,14 +7,15 @@ import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.OrchestratorDataResource;
 
 public class OrchestratorDataResourceTest extends AbstractResourceTest{
-	 private OrchestratorDataResource dataResource;
-	 private String experimentID = UUID.randomUUID().toString();
-	 private String applicationName = "echo_test";
+	private OrchestratorDataResource dataResource;
+    private GatewayResource gatewayResource;
+	private String experimentID = UUID.randomUUID().toString();
+	private String applicationName = "echo_test";
 	
 	 @Override
 	    public void setUp() throws Exception {
 	        super.setUp();
-	        GatewayResource gatewayResource = super.getGatewayResource();
+	        gatewayResource = super.getGatewayResource();
 		    dataResource = (OrchestratorDataResource) gatewayResource.create(ResourceType.ORCHESTRATOR_DATA);
 	      
 	   }
@@ -26,7 +27,7 @@ public class OrchestratorDataResourceTest extends AbstractResourceTest{
 	        dataResource.save();
 	        assertNotNull("Orchestrator data resource created successfully", dataResource);
 	        // Get saved data
-	        assertNotNull("Orchestrator data resource get successfully", dataResource.get(ResourceType.ORCHESTRATOR_DATA, experimentID));
+	        assertNotNull("Orchestrator data resource get successfully", gatewayResource.get(ResourceType.ORCHESTRATOR_DATA, experimentID));
 	    }
 
 	    @Override

@@ -194,6 +194,12 @@ public class GatewayResource extends AbstractResource {
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
                 break;
+            case ORCHESTRATOR_DATA:
+                generator = new QueryGenerator(ORCHESTRATORDATA);
+                generator.setParameter(OrchestratorDataConstants.EXPERIMENT_ID, name);
+                q = generator.deleteQuery(em);
+                q.executeUpdate();
+                break;
             default:
                 logger.error("Unsupported resource type for gateway resource.", new IllegalArgumentException());
                 break;
@@ -281,6 +287,16 @@ public class GatewayResource extends AbstractResource {
                 em.getTransaction().commit();
                 em.close();
                 return applicationDescriptorResource;
+            case ORCHESTRATOR_DATA:
+                generator = new QueryGenerator(ORCHESTRATORDATA);
+                generator.setParameter(OrchestratorDataConstants.EXPERIMENT_ID, name);
+                q = generator.selectQuery(em);
+                Orchestrator_Data orchData = (Orchestrator_Data) q.getSingleResult();
+                OrchestratorDataResource orchestratorDataResource =
+                        (OrchestratorDataResource)Utils.getResource(ResourceType.ORCHESTRATOR_DATA, orchData);
+                em.getTransaction().commit();
+                em.close();
+                return orchestratorDataResource;
             default:
                 em.getTransaction().commit();
                 em.close();
@@ -413,6 +429,16 @@ public class GatewayResource extends AbstractResource {
 		        	resourceList.add(userResource);
 		        }
 		        break;
+            case ORCHESTRATOR_DATA:
+                generator = new QueryGenerator(ORCHESTRATORDATA);
+                q = generator.selectQuery(em);
+                for (Object o : q.getResultList()) {
+                    Orchestrator_Data orchData = (Orchestrator_Data) o;
+                    OrchestratorDataResource orchestratorDataResource =
+                            (OrchestratorDataResource)Utils.getResource(ResourceType.ORCHESTRATOR_DATA, orchData);
+                    resourceList.add(orchestratorDataResource);
+                }
+                break;
             default:
                 em.getTransaction().commit();
                 em.close();

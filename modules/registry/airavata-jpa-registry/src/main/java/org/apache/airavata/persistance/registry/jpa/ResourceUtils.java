@@ -33,18 +33,8 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import org.apache.airavata.persistance.registry.jpa.model.Configuration;
-import org.apache.airavata.persistance.registry.jpa.model.Configuration_PK;
-import org.apache.airavata.persistance.registry.jpa.model.Gateway;
-import org.apache.airavata.persistance.registry.jpa.model.Gateway_Worker;
-import org.apache.airavata.persistance.registry.jpa.model.Gateway_Worker_PK;
-import org.apache.airavata.persistance.registry.jpa.model.Users;
-import org.apache.airavata.persistance.registry.jpa.resources.AbstractResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ConfigurationResource;
-import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
-import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
-import org.apache.airavata.persistance.registry.jpa.resources.Utils;
-import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
+import org.apache.airavata.persistance.registry.jpa.model.*;
+import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 import org.apache.airavata.registry.api.exception.AiravataRegistryUninitializedException;
 import org.apache.airavata.registry.api.exception.RegistryException;
@@ -319,6 +309,27 @@ public class ResourceUtils {
             logger.error(e.getMessage(), e);
             throw new EntityNotFoundException();
         }
+    }
+
+    public List<Resource> getOrchestratorDataWithStatus(String status) {
+        List<Resource> resourceList = new ArrayList<Resource>();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        QueryGenerator generator = new QueryGenerator(AbstractResource.ORCHESTRATORDATA);
+        generator.setParameter(AbstractResource.OrchestratorDataConstants.STATUS, status);
+        Query q = generator.selectQuery(em);
+        List<?> results = q.getResultList();
+        if (results.size() != 0) {
+            for (Object result : results) {
+                Orchestrator_Data orchestratorData = (Orchestrator_Data) result;
+                OrchestratorDataResource orchestratorDataResource = (OrchestratorDataResource)
+                        Utils.getResource(ResourceType.ORCHESTRATOR_DATA, orchestratorData);
+                resourceList.add(orchestratorDataResource);
+            }
+        }
+        em.getTransaction().commit();
+        em.close();
+        return resourceList;
     }
 
     public static Lock getLock() {

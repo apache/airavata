@@ -265,7 +265,6 @@ CREATE TABLE Execution_Error
 create table Orchestrator_Data
 (
         experiment_ID varchar(255) NOT NULL,
-        orchestrator_ID INT NOT NULL AUTO_INCREMENT,
         username varchar(255),
         status varchar(255),
         state varchar(255),

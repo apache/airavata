@@ -12,8 +12,6 @@ public class Orchestrator_Data {
 	
 	@Id
     private String experiment_ID;
-	@GeneratedValue
-	private int orchestrator_ID;
 	private String username;
 	private String status;
 	private String state;
@@ -29,12 +27,6 @@ public class Orchestrator_Data {
 		this.experiment_ID = experiment_ID;
 	}
 	
-	public int getOrchestrator_ID() {
-		return orchestrator_ID;
-	}
-	public void setOrchestrator_ID(int orchestrator_ID) {
-		this.orchestrator_ID = orchestrator_ID;
-	}
 	public String getUserName() {
 		return username;
 	}
