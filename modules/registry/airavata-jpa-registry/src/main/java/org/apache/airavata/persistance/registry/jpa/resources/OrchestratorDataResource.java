@@ -19,7 +19,6 @@ public class OrchestratorDataResource extends AbstractResource {
    
 	private final static Logger log = LoggerFactory.getLogger(OrchestratorDataResource.class);
 	private String experimentID;
-	private int orchestratorID;
 	private String userName;
 	private String applicationName;
 	private String status;
@@ -32,20 +31,12 @@ public class OrchestratorDataResource extends AbstractResource {
 		return experimentID;
 	}
 
-	public int getOrchestratorID() {
-		return orchestratorID;
-	}
-
 	public String getUserName() {
 		return userName;
 	}
 
 	public void setExperimentID(String experimentID) {
 		this.experimentID = experimentID;
-	}
-
-	public void setOrchestratorID(int orchestratorID) {
-		this.orchestratorID = orchestratorID;
 	}
 
 	public void setUserName(String userName) {
@@ -102,21 +93,9 @@ public class OrchestratorDataResource extends AbstractResource {
 
 	@Override
 	public Resource create(ResourceType type) {
-		 if (type == ResourceType.ORCHESTRATOR_DATA) {
-	            OrchestratorDataResource orchestratorResource = new OrchestratorDataResource();
-	            orchestratorResource.setExperimentID(experimentID);
-	            orchestratorResource.setUserName(userName);
-	            orchestratorResource.setState(state);
-	            orchestratorResource.setStatus(status);
-	            orchestratorResource.setGfacEPR(gfacEPR);
-	            orchestratorResource.setApplicationName(applicationName);
-	            orchestratorResource.setJobRequest(jobRequest);
-	            return orchestratorResource;
-	        } else {
-	            log.error("Unsupported resource type for orchestrator resource.", new IllegalArgumentException());
-	            throw new IllegalArgumentException("Unsupported resource type for orchestrator resource.");
-	        }
-	}
+        log.error("Unsupported resource type for orchestrator resource.", new IllegalArgumentException());
+        throw new IllegalArgumentException("Unsupported resource type for orchestrator resource.");
+    }
 
 	@Override
 	public void remove(ResourceType type, Object name) {
@@ -126,80 +105,14 @@ public class OrchestratorDataResource extends AbstractResource {
 
 	@Override
 	public Resource get(ResourceType type, Object name) {
-		  EntityManager em = ResourceUtils.getEntityManager();
-	      em.getTransaction().begin();
-	      QueryGenerator generator;
-	      Query q;
-	        switch (type) {
-	            case ORCHESTRATOR_DATA:
-	                generator = new QueryGenerator(ORCHESTRATORDATA);
-	                generator.setParameter(OrchestratorDataConstants.EXPERIMENT_ID, name.toString());
-	                q = generator.selectQuery(em);
-	                Orchestrator_Data orchestrator_data = (Orchestrator_Data)q.getSingleResult();
-	                OrchestratorDataResource orchestratorDataResource = (OrchestratorDataResource)Utils.getResource(ResourceType.ORCHESTRATOR_DATA, orchestrator_data);
-	                em.getTransaction().commit();
-	                em.close();
-	                return orchestratorDataResource;
-	            default:
-	                em.getTransaction().commit();
-	                em.close();
-	                log.error("Unsupported resource type for node data resource.", new IllegalArgumentException());
-	                throw new IllegalArgumentException("Unsupported resource type for node data resource.");
-	        }
+        log.error("Unsupported resource type for orchestrator data.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
 	}
-	public List<Resource> getDataWithStatus(ResourceType type,Object name) {
-		 List<Resource> resourceList = new ArrayList<Resource>();
 
-	        if (type == ResourceType.ORCHESTRATOR_DATA) {
-	            EntityManager em = ResourceUtils.getEntityManager();
-	            em.getTransaction().begin();
-	        	QueryGenerator generator = new QueryGenerator(ORCHESTRATORDATA);
-	        	generator.setParameter(OrchestratorDataConstants.STATUS, name);
-	        	Query q = generator.selectQuery(em);
-	            List<?> results = q.getResultList();
-	            if (results.size() != 0) {
-	                for (Object result : results) {
-	                	Orchestrator_Data orchestratorData = (Orchestrator_Data) result;
-	                	OrchestratorDataResource orchestratorDataResource = (OrchestratorDataResource)
-	                            Utils.getResource(ResourceType.ORCHESTRATOR_DATA, orchestratorData);
-	                    resourceList.add(orchestratorDataResource);
-	                }
-	            }
-	            em.getTransaction().commit();
-	            em.close();
-	        } else {
-	            log.error("Unsupported resource type for orchestrator data resource.", new IllegalArgumentException());
-	            throw new IllegalArgumentException("Unsupported resource type for orchestrator data resource.");
-	        }
-	        return resourceList;
-	}
-	
 	@Override
 	public List<Resource> get(ResourceType type) {
-		 List<Resource> resourceList = new ArrayList<Resource>();
-
-	        if (type == ResourceType.ORCHESTRATOR_DATA) {
-	            EntityManager em = ResourceUtils.getEntityManager();
-	            em.getTransaction().begin();
-	        	QueryGenerator generator = new QueryGenerator(ORCHESTRATORDATA);
-	        	generator.setParameter(OrchestratorDataConstants.EXPERIMENT_ID, experimentID);
-	        	Query q = generator.selectQuery(em);
-	            List<?> results = q.getResultList();
-	            if (results.size() != 0) {
-	                for (Object result : results) {
-	                	Orchestrator_Data orchestratorData = (Orchestrator_Data) result;
-	                	OrchestratorDataResource orchestratorDataResource = (OrchestratorDataResource)
-	                            Utils.getResource(ResourceType.ORCHESTRATOR_DATA, orchestratorData);
-	                    resourceList.add(orchestratorDataResource);
-	                }
-	            }
-	            em.getTransaction().commit();
-	            em.close();
-	        } else {
-	            log.error("Unsupported resource type for orchestrator data resource.", new IllegalArgumentException());
-	            throw new IllegalArgumentException("Unsupported resource type for orchestrator data resource.");
-	        }
-	        return resourceList;
+        log.error("Unsupported resource type for orchestrator data.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
 	}
 
 	@Override

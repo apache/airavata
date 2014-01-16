@@ -67,8 +67,9 @@ public class GFacAPI {
 
             // Executing in handlers in the order as they have configured in GFac configuration
             invokeInFlowHandlers(jobExecutionContext);
-            registry2.changeStatus(jobExecutionContext.getExperimentID(),AiravataJobState.State.INHANDLERSDONE);
-
+//            if (experimentID != null){
+//                registry2.changeStatus(jobExecutionContext.getExperimentID(),AiravataJobState.State.INHANDLERSDONE);
+//            }
 
             // After executing the in handlers provider instance should be set to job execution context.
             // We get the provider instance and execute it.
@@ -79,7 +80,9 @@ public class GFacAPI {
                 disposeProvider(provider, jobExecutionContext);
             }
             invokeOutFlowHandlers(jobExecutionContext);
-            registry2.changeStatus(jobExecutionContext.getExperimentID(),AiravataJobState.State.OUTHANDLERSDONE);
+//            if (experimentID != null){
+//                registry2.changeStatus(jobExecutionContext.getExperimentID(),AiravataJobState.State.OUTHANDLERSDONE);
+//            }
         }catch (Exception e){
             jobExecutionContext.setProperty(ERROR_SENT,"true");
             jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
