@@ -311,7 +311,7 @@ public class ResourceUtils {
         }
     }
 
-    public List<Resource> getOrchestratorDataWithStatus(String status) {
+    public static List<Resource> getOrchestratorDataWithStatus(String status) {
         List<Resource> resourceList = new ArrayList<Resource>();
         EntityManager em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();

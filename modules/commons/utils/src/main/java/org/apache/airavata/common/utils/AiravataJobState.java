@@ -107,6 +107,11 @@ public class AiravataJobState {
             public String toString() {
                 return "UNKNOWN";
             }
+        },
+        HANGED {
+            public String toString() {
+                return "HANGED";
+            }
         }
     }
 }
