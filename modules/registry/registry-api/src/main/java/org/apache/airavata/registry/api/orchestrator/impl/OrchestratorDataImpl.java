@@ -16,6 +16,7 @@ public class OrchestratorDataImpl implements OrchestratorData{
 	private String status;
 	private String state;
 	private String gfacEPR;
+	private String applicationName;
 	private boolean lazyLoaded=false;
 
     public OrchestratorDataImpl() {
@@ -79,6 +80,14 @@ public class OrchestratorDataImpl implements OrchestratorData{
 	@Override
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	@Override
+	public String getApplicationName() {
+		return applicationName;
+	}
+	@Override
+	public void setApplicationName(String applicationName) {
+		this.applicationName = applicationName;
 	}
 
 }

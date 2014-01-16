@@ -20,8 +20,6 @@
 */
 package org.apache.airavata.orchestrator.core;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This is the initial experiment Creation request
@@ -29,13 +27,16 @@ import org.slf4j.LoggerFactory;
  * This contains user specified userExperimentID
  */
 public class ExperimentRequest {
-    private final static Logger logger = LoggerFactory.getLogger(ExperimentRequest.class);
-
+  
     private String userName;
 
     private String userExperimentID;
     
-    private String orchestratorID;
+    private String systemExperimentID;
+    
+    private String applicationName;
+    
+    private String jobRequest;
 
     public String getUserExperimentID() {
         return userExperimentID;
@@ -53,11 +54,27 @@ public class ExperimentRequest {
         this.userName = userName;
     }
 
-	public String getOrchestratorID() {
-		return orchestratorID;
+	public String getSystemExperimentID() {
+		return systemExperimentID;
 	}
 
-	public void setOrchestratorID(String orchestratorID) {
-		this.orchestratorID = orchestratorID;
+	public void setSystemExperimentID(String systemExperimentID) {
+		this.systemExperimentID = systemExperimentID;
+	}
+
+	public String getApplicationName() {
+		return applicationName;
+	}
+
+	public void setApplicationName(String applicationName) {
+		this.applicationName = applicationName;
+	}
+
+	public String getJobRequest() {
+		return jobRequest;
+	}
+
+	public void setJobRequest(String jobRequest) {
+		this.jobRequest = jobRequest;
 	}
 }

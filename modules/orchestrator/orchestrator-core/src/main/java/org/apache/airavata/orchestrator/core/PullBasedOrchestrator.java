@@ -20,6 +20,16 @@
 */
 package org.apache.airavata.orchestrator.core;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
@@ -31,17 +41,15 @@ import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
-import org.apache.airavata.orchestrator.core.utils.OrchestratorConstants;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
-import org.apache.airavata.registry.api.*;
+import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.AiravataRegistryFactory;
+import org.apache.airavata.registry.api.AiravataUser;
+import org.apache.airavata.registry.api.Gateway;
+import org.apache.airavata.registry.api.JobRequest;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class PullBasedOrchestrator implements Orchestrator {
     private final static Logger logger = LoggerFactory.getLogger(PullBasedOrchestrator.class);
@@ -132,13 +140,11 @@ public class PullBasedOrchestrator implements Orchestrator {
     public String createExperiment(ExperimentRequest request) throws OrchestratorException {
         //todo use a consistent method to create the experiment ID
         String experimentID = request.getUserExperimentID();
-        String orchestratorID = UUID.randomUUID().toString();
         if(experimentID == null){
-            experimentID = orchestratorID;
+        	experimentID = UUID.randomUUID().toString(); 
         }
-        String username = request.getUserName();
         try {
-            airavataRegistry.storeExperiment(username, experimentID, orchestratorID);
+            airavataRegistry.storeExperiment(request.getUserName(), experimentID, request.getApplicationName(), request.getJobRequest());
         } catch (RegistryException e) {
             //todo put more meaningful error  message
             logger.error("Failed to create experiment for the request from " + request.getUserName());

@@ -270,6 +270,8 @@ create table Orchestrator_Data
         status varchar(255),
         state varchar(255),
         gfacEPR varchar(255),
+        applicationName varchar(255),
+        jobRequest LONGTEXT,
         PRIMARY KEY (experiment_ID)
 );
 
