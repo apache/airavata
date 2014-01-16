@@ -2587,6 +2587,8 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		dataResource.setUserName(userName);
 		dataResource.setExperimentID(experimentID);
 		dataResource.setStatus(AiravataJobState.State.CREATED.toString());
+        dataResource.setJobRequest(jobRequest);
+        dataResource.setApplicationName(applicationName);
 		dataResource.save();
 		return true;
 	}
@@ -2608,31 +2610,74 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public AiravataJobState getState(String experimentID) throws RegistryException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        GatewayResource gateway = jpa.getGateway();
+        OrchestratorDataResource resource = (OrchestratorDataResource)gateway.get(ResourceType.ORCHESTRATOR_DATA, experimentID);
+        AiravataJobState airavataJobState = new AiravataJobState();
+        airavataJobState.setJobState(AiravataJobState.State.valueOf(resource.getStatus()));
+        return airavataJobState;
     }
 
     public List<String> getAllJobsWithState(AiravataJobState state) throws RuntimeException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        List<Resource> orchestratorDataWithStatus = ResourceUtils.getOrchestratorDataWithStatus(state.toString());
+        List<String> jobsWithStatus = new ArrayList<String>();
+        for (Resource resource : orchestratorDataWithStatus){
+            String experimentID = ((OrchestratorDataResource) resource).getExperimentID();
+            jobsWithStatus.add(experimentID);
+        }
+        return jobsWithStatus;
     }
 
     public List<String> getAllAcceptedJobs() throws RegistryException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        List<Resource> acceptedJobs = ResourceUtils.getOrchestratorDataWithStatus(AiravataJobState.State.ACCEPTED.toString());
+        List<String> acceptedJobIds = new ArrayList<String>();
+        for (Resource resource : acceptedJobs){
+            String experimentID = ((OrchestratorDataResource) resource).getExperimentID();
+            acceptedJobIds.add(experimentID);
+        }
+        return acceptedJobIds;
     }
 
+    /**
+     * TODO: Not fully implemented
+     * @param experimentID
+     * @return
+     * @throws RegistryException
+     */
     public JobRequest fetchAcceptedJob(String experimentID) throws RegistryException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        GatewayResource gatewayResource = jpa.getGateway();
+        OrchestratorDataResource orchestratorResource = (OrchestratorDataResource)gatewayResource.get(ResourceType.ORCHESTRATOR_DATA, experimentID);
+        JobRequest jobRequest = new JobRequest();
+        jobRequest.setUserName(orchestratorResource.getUserName());
+        jobRequest.setSystemExperimentID(orchestratorResource.getExperimentID());
+        return jobRequest;
     }
 
     public List<String> getAllHangedJobs() throws RegistryException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        List<Resource> hangedJobs = ResourceUtils.getOrchestratorDataWithStatus(AiravataJobState.State.UNKNOWN.toString());
+        List<String> hangedJobIds = new ArrayList<String>();
+        for (Resource resource : hangedJobs){
+            String experimentID = ((OrchestratorDataResource) resource).getExperimentID();
+            hangedJobIds.add(experimentID);
+        }
+        return hangedJobIds;
     }
 
     public int getHangedJobCount() throws RegistryException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        List<Resource> hangedJobs = ResourceUtils.getOrchestratorDataWithStatus(AiravataJobState.State.HANGED.toString());
+        return hangedJobs.size();
     }
 
     public boolean resetHangedJob(String experimentID) throws RegistryException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        try {
+            GatewayResource gatewayResource = jpa.getGateway();
+            OrchestratorDataResource orchestratorResource = (OrchestratorDataResource)gatewayResource.get(ResourceType.ORCHESTRATOR_DATA, experimentID);
+            orchestratorResource.setStatus(AiravataJobState.State.SUBMITTED.toString());
+            orchestratorResource.save();
+            return true;
+        } catch (Exception e) {
+           return false;
+        }
+
     }
 
 	
