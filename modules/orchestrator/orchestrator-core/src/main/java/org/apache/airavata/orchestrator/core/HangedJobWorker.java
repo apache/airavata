@@ -49,7 +49,9 @@ public class HangedJobWorker implements Runnable{
         this.orchestratorContext = orchestratorContext;
         try {
             String submitterClass = this.orchestratorContext.getOrchestratorConfiguration().getSubmitterClass();
+				//FIXME: (MEP) Do you want to use the same submit interval for hung jobs as newly submitted jobs?  Suggest separate parameters.
             submitInterval = this.orchestratorContext.getOrchestratorConfiguration().getSubmitterInterval();
+				//FIXME: (MEP) It is possible that you want to have a different JobSubmitter for hung jobs and for new jobs, so the property file needs to have separate name/value pairs for these.
             Class<? extends JobSubmitter> aClass = Class.forName(submitterClass.trim()).asSubclass(JobSubmitter.class);
             jobSubmitter = aClass.newInstance();
             jobSubmitter.initialize(this.orchestratorContext);
@@ -86,6 +88,7 @@ public class HangedJobWorker implements Runnable{
             // select what are the jobs available to submit
 
                 List<String> allHangedJobs = orchestratorContext.getRegistry().getAllHangedJobs();
+					 //FIXME: (MEP) Suggest putting this in a separate method, and you'll need a method to also decrease the submitInterval if you are busy. This submitInterval adjustment seems to be too fined grained of a detail to worry about now.
                 if (allHangedJobs.size() == 0) {
                     idleCount++;
 

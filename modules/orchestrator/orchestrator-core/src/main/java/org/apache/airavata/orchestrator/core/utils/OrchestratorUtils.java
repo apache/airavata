@@ -38,6 +38,7 @@ public class OrchestratorUtils {
     private final static Logger logger = LoggerFactory.getLogger(OrchestratorUtils.class);
 
     public static OrchestratorConfiguration loadOrchestratorConfiguration() throws OrchestratorException, IOException {
+		  //FIXME: (MEP) why are you using the NewJobWorker class to get the properties file here?
         URL resource =
                 NewJobWorker.class.getClassLoader().getResource(OrchestratorConstants.ORCHESTRATOR_PROPERTIES);
         if (resource == null) {

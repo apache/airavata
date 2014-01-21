@@ -85,6 +85,7 @@ public class NewJobWorker implements Runnable {
 
                 List<String> allAcceptedJobs = orchestratorContext.getRegistry().getAllAcceptedJobs();
                 if (allAcceptedJobs.size() == 0) {
+						  //FIXME: (MEP) this stuff should be in a separate method, and I'm not sure it is necessary.  You have no way to decrease the submit interval if busy. 
                     idleCount++;
 
                     if (idleCount == 10) {
