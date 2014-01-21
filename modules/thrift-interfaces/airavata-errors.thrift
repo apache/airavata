@@ -20,7 +20,8 @@
 
 /*
 * This file describes the definations of the Error Messages that can occur
-*  when invoking Apache Airavata Services through the API.
+*  when invoking Apache Airavata Services through the API. In addition Thrift provides
+*  built in funcationality to raise TApplicationException for all internal server errors.
 */
 
 namespace java org.apache.airavata.api.error
