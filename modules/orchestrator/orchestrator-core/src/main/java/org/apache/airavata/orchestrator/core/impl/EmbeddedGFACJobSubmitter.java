@@ -71,6 +71,7 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
     }
 
 
+	 //FIXME: (MEP) why are you passing in a GFACInstance?  It isn't used. 
     public boolean submitJob(GFACInstance gfac, List<String> experimentIDList) throws OrchestratorException {
 
         for (int i = 0; i < experimentIDList.size(); i++) {
@@ -85,6 +86,7 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
         return true;
     }
 
+	 //FIXME: (MEP) This method is pretty gruesome.  If we really expect multiple implementations of the JobSubmitter interface and at least some of them will need to do the stuff in this method, then we need a parent class GenericJobSubmitterImpl.java (maybe abstract) that includes launchGfacWithJobRequest() so that subclasses can inherit it.
     private void launchGfacWithJobRequest(JobRequest jobRequest) throws OrchestratorException {
         String serviceName = jobRequest.getServiceName();
         if(serviceName == null){
@@ -100,6 +102,8 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
         try {
 
             airavataAPI = orchestratorContext.getOrchestratorConfiguration().getAiravataAPI();
+				//FIXME: (MEP) Why do all of this validation here?  Is it needed?  Why would you get an empty job request?
+				//FIXME: (MEP) If you do need this, it should go into a utility class or something similar that does the validation.
             HostDescription hostDescription = jobRequest.getHostDescription();
             if (hostDescription == null) {
                 List<HostDescription> registeredHosts = new ArrayList<HostDescription>();
@@ -127,6 +131,8 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
                  applicationDescription = airavataAPI.getApplicationManager().getApplicationDescription(serviceName, hostDescription.getType().getHostName());
             }
             // When we run getInParameters we set the actualParameter object, this has to be fixed
+				//FIXME: will these class loaders work correctly in Thrift?
+				//FIXME: gfac-config.xml is only under src/test.
             URL resource = EmbeddedGFACJobSubmitter.class.getClassLoader().getResource("gfac-config.xml");
             Properties configurationProperties = ServerSettings.getProperties();
             GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, configurationProperties);
@@ -148,14 +154,17 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
 
             jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
             jobExecutionContext.setExperimentID(experimentID);
+				//FIXME: (MEP) GFacAPI.submitJob() throws a GFacException that isn't caught here. You want to catch this before updating the registry.
             GFacAPI gfacAPI1 = new GFacAPI();
             gfacAPI1.submitJob(jobExecutionContext);
+				//FIXME: (MEP) It may be better to change the registry status in GFacAPI rather then here.
             orchestratorContext.getRegistry().changeStatus(experimentID, AiravataJobState.State.SUBMITTED);
         } catch (Exception e) {
             throw new OrchestratorException("Error launching the Job", e);
         }
     }
 
+	 //FIXME: (MEP) I suggest putting this into a separate JobSubmitter implementation.  If so, launchGfacWithJobRequest() needs to be in an inherited parent.
     public boolean directJobSubmit(JobRequest request) throws OrchestratorException {
         try {
             launchGfacWithJobRequest(request);

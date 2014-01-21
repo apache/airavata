@@ -136,9 +136,10 @@ public class PullBasedOrchestrator implements Orchestrator {
     }
 
     //todo decide whether to return an error or do what
-
+	 //FIXME: (MEP) as posted on dev list, I think this should return a JobRequest with the experimentID set. This would simplify some of the validation in EmbeddedGFACJobSubmitter's launcGfacWithJobRequest--just throw the job away if the JobRequest is incomplete or malformed.
     public String createExperiment(ExperimentRequest request) throws OrchestratorException {
         //todo use a consistent method to create the experiment ID
+		  //FIXME: (MEP) Should you trust the user to do this?  What if the same experimentID is sent twice by the same gateway?
         String experimentID = request.getUserExperimentID();
         if(experimentID == null){
         	experimentID = UUID.randomUUID().toString(); 
@@ -166,6 +167,7 @@ public class PullBasedOrchestrator implements Orchestrator {
             return false;
         }
         //todo use a more concrete user type in to this
+		  //FIXME: (MEP) Why don't we pass the JobRequest to the registry and let it do all of this?  Or just store the JobRequest as an object directly in the registry?
         try {
             if (request.getHostDescription() != null) {
                 if (!airavataRegistry.isHostDescriptorExists(request.getHostDescription().getType().getHostName())) {
@@ -191,6 +193,7 @@ public class PullBasedOrchestrator implements Orchestrator {
                 }
             }
             airavataRegistry.changeStatus(experimentID, AiravataJobState.State.ACCEPTED);
+				//FIXME: (MEP) Instead of embedding this special case, why not make a separate SimpleOrchestratorImpl class that just does this?
             if (orchestratorContext.getOrchestratorConfiguration().getThreadPoolSize() == 0) {
                 jobSubmitter.directJobSubmit(request);
             }
@@ -205,6 +208,8 @@ public class PullBasedOrchestrator implements Orchestrator {
     }
 
     public void startJobSubmitter() throws OrchestratorException {
+		  //FIXME: (MEP) Why create a new thread for jobSubmittedWorker but use the pool for HangedJobWorker?
+		  //FIXME: (MEP) As discussed on the dev list, we need to improve this
         NewJobWorker jobSubmitterWorker = new NewJobWorker(orchestratorContext);
         executor.execute(jobSubmitterWorker);
 
