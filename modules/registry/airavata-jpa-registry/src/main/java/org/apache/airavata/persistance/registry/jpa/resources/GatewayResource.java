@@ -132,7 +132,7 @@ public class GatewayResource extends AbstractResource {
                 WorkerResource workerResource = new WorkerResource();
                 workerResource.setGateway(this);
                 return workerResource;
-            case ORCHESTRATOR_DATA:
+            case ORCHESTRATOR:
                 OrchestratorDataResource orchestratorDataResource = new OrchestratorDataResource();
                 orchestratorDataResource.setGateway(this);
                 return orchestratorDataResource;
@@ -194,8 +194,8 @@ public class GatewayResource extends AbstractResource {
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
                 break;
-            case ORCHESTRATOR_DATA:
-                generator = new QueryGenerator(ORCHESTRATORDATA);
+            case ORCHESTRATOR:
+                generator = new QueryGenerator(ORCHESTRATOR);
                 generator.setParameter(OrchestratorDataConstants.EXPERIMENT_ID, name);
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
@@ -287,13 +287,13 @@ public class GatewayResource extends AbstractResource {
                 em.getTransaction().commit();
                 em.close();
                 return applicationDescriptorResource;
-            case ORCHESTRATOR_DATA:
-                generator = new QueryGenerator(ORCHESTRATORDATA);
+            case ORCHESTRATOR:
+                generator = new QueryGenerator(ORCHESTRATOR);
                 generator.setParameter(OrchestratorDataConstants.EXPERIMENT_ID, name);
                 q = generator.selectQuery(em);
-                Orchestrator_Data orchData = (Orchestrator_Data) q.getSingleResult();
+                Orchestrator orchData = (Orchestrator) q.getSingleResult();
                 OrchestratorDataResource orchestratorDataResource =
-                        (OrchestratorDataResource)Utils.getResource(ResourceType.ORCHESTRATOR_DATA, orchData);
+                        (OrchestratorDataResource)Utils.getResource(ResourceType.ORCHESTRATOR, orchData);
                 em.getTransaction().commit();
                 em.close();
                 return orchestratorDataResource;
@@ -429,13 +429,13 @@ public class GatewayResource extends AbstractResource {
 		        	resourceList.add(userResource);
 		        }
 		        break;
-            case ORCHESTRATOR_DATA:
-                generator = new QueryGenerator(ORCHESTRATORDATA);
+            case ORCHESTRATOR:
+                generator = new QueryGenerator(ORCHESTRATOR);
                 q = generator.selectQuery(em);
                 for (Object o : q.getResultList()) {
-                    Orchestrator_Data orchData = (Orchestrator_Data) o;
+                    Orchestrator orchData = (Orchestrator) o;
                     OrchestratorDataResource orchestratorDataResource =
-                            (OrchestratorDataResource)Utils.getResource(ResourceType.ORCHESTRATOR_DATA, orchData);
+                            (OrchestratorDataResource)Utils.getResource(ResourceType.ORCHESTRATOR, orchData);
                     resourceList.add(orchestratorDataResource);
                 }
                 break;
@@ -516,6 +516,11 @@ public class GatewayResource extends AbstractResource {
                 Experiment existingExp = em.find(Experiment.class, name.toString());
                 em.close();
                 return existingExp != null;
+            case ORCHESTRATOR:
+                em = ResourceUtils.getEntityManager();
+                Orchestrator existingOrchestrator = em.find(Orchestrator.class, name.toString());
+                em.close();
+                return existingOrchestrator != null;   
             default:
                 logger.error("Unsupported resource type for gateway resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported resource type for gateway resource.");
@@ -772,7 +777,7 @@ public class GatewayResource extends AbstractResource {
     }
     
     public OrchestratorDataResource createOrchestratorData(String experimentID){
-    	OrchestratorDataResource dataResource = (OrchestratorDataResource)create(ResourceType.ORCHESTRATOR_DATA);
+    	OrchestratorDataResource dataResource = (OrchestratorDataResource)create(ResourceType.ORCHESTRATOR);
     	dataResource.setExperimentID(experimentID);
     	return dataResource;
     }

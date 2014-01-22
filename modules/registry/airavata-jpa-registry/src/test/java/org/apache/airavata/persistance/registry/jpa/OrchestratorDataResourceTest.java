@@ -16,7 +16,7 @@ public class OrchestratorDataResourceTest extends AbstractResourceTest{
 	    public void setUp() throws Exception {
 	        super.setUp();
 	        gatewayResource = super.getGatewayResource();
-		    dataResource = (OrchestratorDataResource) gatewayResource.create(ResourceType.ORCHESTRATOR_DATA);
+		    dataResource = (OrchestratorDataResource) gatewayResource.create(ResourceType.ORCHESTRATOR);
 	      
 	   }
 
@@ -27,7 +27,7 @@ public class OrchestratorDataResourceTest extends AbstractResourceTest{
 	        dataResource.save();
 	        assertNotNull("Orchestrator data resource created successfully", dataResource);
 	        // Get saved data
-	        assertNotNull("Orchestrator data resource get successfully", gatewayResource.get(ResourceType.ORCHESTRATOR_DATA, experimentID));
+	        assertNotNull("Orchestrator data resource get successfully", gatewayResource.get(ResourceType.ORCHESTRATOR, experimentID));
 	    }
 
 	    @Override

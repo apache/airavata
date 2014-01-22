@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -42,7 +41,6 @@ import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
-import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataRegistryFactory;
 import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.Gateway;
@@ -51,51 +49,16 @@ import org.apache.airavata.registry.api.exception.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PullBasedOrchestrator implements Orchestrator {
+public class PullBasedOrchestrator extends AbstractOrchestrator {
     private final static Logger logger = LoggerFactory.getLogger(PullBasedOrchestrator.class);
-
-    private OrchestratorContext orchestratorContext;
-
-    private AiravataRegistry2 airavataRegistry;
-
     private ExecutorService executor;
 
-    private AiravataAPI airavataAPI;
 
     // this is going to be null unless the thread count is 0
     private JobSubmitter jobSubmitter = null;
 
     public boolean initialize() throws OrchestratorException {
-        try {
-            /* Initializing the OrchestratorConfiguration object */
-            OrchestratorConfiguration orchestratorConfiguration = OrchestratorUtils.loadOrchestratorConfiguration();
-
-            /* initializing the Orchestratorcontext object */
-            airavataRegistry = AiravataRegistryFactory.getRegistry(new Gateway("default"), new AiravataUser("admin"));
-            // todo move this code to gfac service mode Jobsubmitter,
-            // todo this is ugly, SHOULD fix these isEmbedded mode code from Orchestrator
-            if (!orchestratorConfiguration.isEmbeddedMode()) {
-                Map<String, Integer> gfacNodeList = airavataRegistry.getGFACNodeList();
-                if (gfacNodeList.size() == 0) {
-                    String error = "No GFAC instances available in the system, Can't initialize Orchestrator";
-                    logger.error(error);
-                    throw new OrchestratorException(error);
-                }
-                Set<String> uriList = gfacNodeList.keySet();
-                Iterator<String> iterator = uriList.iterator();
-                List<GFACInstance> gfacInstanceList = new ArrayList<GFACInstance>();
-                while (iterator.hasNext()) {
-                    String uri = iterator.next();
-                    Integer integer = gfacNodeList.get(uri);
-                    gfacInstanceList.add(new GFACInstance(uri, integer));
-                }
-            }
-            orchestratorContext = new OrchestratorContext();
-            orchestratorContext.setOrchestratorConfiguration(orchestratorConfiguration);
-            orchestratorConfiguration.setAiravataAPI(getAiravataAPI());
-            orchestratorContext.setRegistry(airavataRegistry);
-            /* Starting submitter thread pool */
-
+        	super.initialize();
             // we have a thread to run normal new jobs except to monitor hanged jobs
             if (orchestratorConfiguration.getThreadPoolSize() != 0) {
                 executor = Executors.newFixedThreadPool(orchestratorConfiguration.getThreadPoolSize() + 1);
@@ -113,19 +76,6 @@ public class PullBasedOrchestrator implements Orchestrator {
                     throw new OrchestratorException(error, e);
                 }
             }
-        } catch (RegistryException e) {
-            logger.error("Failed to initializing Orchestrator");
-            OrchestratorException orchestratorException = new OrchestratorException(e);
-            throw orchestratorException;
-        } catch (AiravataConfigurationException e) {
-            logger.error("Failed to initializing Orchestrator");
-            OrchestratorException orchestratorException = new OrchestratorException(e);
-            throw orchestratorException;
-        } catch (IOException e) {
-            logger.error("Failed to initializing Orchestrator - Error parsing orchestrator.properties");
-            OrchestratorException orchestratorException = new OrchestratorException(e);
-            throw orchestratorException;
-        }
         return true;
     }
 
@@ -135,26 +85,7 @@ public class PullBasedOrchestrator implements Orchestrator {
 
     }
 
-    //todo decide whether to return an error or do what
-	 //FIXME: (MEP) as posted on dev list, I think this should return a JobRequest with the experimentID set. This would simplify some of the validation in EmbeddedGFACJobSubmitter's launcGfacWithJobRequest--just throw the job away if the JobRequest is incomplete or malformed.
-    public String createExperiment(ExperimentRequest request) throws OrchestratorException {
-        //todo use a consistent method to create the experiment ID
-		  //FIXME: (MEP) Should you trust the user to do this?  What if the same experimentID is sent twice by the same gateway?
-        String experimentID = request.getUserExperimentID();
-        if(experimentID == null){
-        	experimentID = UUID.randomUUID().toString(); 
-        }
-        try {
-            airavataRegistry.storeExperiment(request.getUserName(), experimentID, request.getApplicationName(), request.getJobRequest());
-        } catch (RegistryException e) {
-            //todo put more meaningful error  message
-            logger.error("Failed to create experiment for the request from " + request.getUserName());
-            throw new OrchestratorException(e);
-        }
-        return experimentID;
-    }
-
-    public boolean launchExperiment(JobRequest request) throws OrchestratorException {
+       public boolean launchExperiment(JobRequest request) throws OrchestratorException {
         // validate the jobRequest first
         if (!OrchestratorUtils.validateJobRequest(request)) {
             logger.error("Invalid Job request sent, Experiment creation failed");
@@ -243,20 +174,5 @@ public class PullBasedOrchestrator implements Orchestrator {
             throw new OrchestratorException(error, e);
         }
         return true;
-    }
-
-    private AiravataAPI getAiravataAPI() {
-        if (airavataAPI == null) {
-            try {
-                String systemUserName = ServerSettings.getSystemUser();
-                String gateway = ServerSettings.getSystemUserGateway();
-                airavataAPI = AiravataAPIFactory.getAPI(gateway, systemUserName);
-            } catch (ApplicationSettingsException e) {
-                logger.error("Unable to read the properties file", e);
-            } catch (AiravataAPIInvocationException e) {
-                logger.error("Unable to create Airavata API", e);
-            }
-        }
-        return airavataAPI;
     }
 }

@@ -23,12 +23,12 @@ package org.apache.airavata.orchestrator.core;
 
 /**
  * This is the initial experiment Creation request
- * This is simple compair to JobRequest object in registry-api
+ * This is simple compare to JobRequest object in registry-api
  * This contains user specified userExperimentID
  */
 public class ExperimentRequest {
   
-    private String userName;
+    private String submitterUserName;
 
     private String userExperimentID;
     
@@ -46,12 +46,12 @@ public class ExperimentRequest {
         this.userExperimentID = userExperimentID;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getSubmitterUserName() {
+        return submitterUserName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setSubmitterUserName(String submitterUserName) {
+        this.submitterUserName = submitterUserName;
     }
 
 	public String getSystemExperimentID() {

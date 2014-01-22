@@ -2611,7 +2611,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
     public AiravataJobState getState(String experimentID) throws RegistryException {
         GatewayResource gateway = jpa.getGateway();
-        OrchestratorDataResource resource = (OrchestratorDataResource)gateway.get(ResourceType.ORCHESTRATOR_DATA, experimentID);
+        OrchestratorDataResource resource = (OrchestratorDataResource)gateway.get(ResourceType.ORCHESTRATOR, experimentID);
         AiravataJobState airavataJobState = new AiravataJobState();
         airavataJobState.setJobState(AiravataJobState.State.valueOf(resource.getStatus()));
         return airavataJobState;
@@ -2645,7 +2645,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
      */
     public JobRequest fetchAcceptedJob(String experimentID) throws RegistryException {
         GatewayResource gatewayResource = jpa.getGateway();
-        OrchestratorDataResource orchestratorResource = (OrchestratorDataResource)gatewayResource.get(ResourceType.ORCHESTRATOR_DATA, experimentID);
+        OrchestratorDataResource orchestratorResource = (OrchestratorDataResource)gatewayResource.get(ResourceType.ORCHESTRATOR, experimentID);
         JobRequest jobRequest = new JobRequest();
         jobRequest.setUserName(orchestratorResource.getUserName());
         jobRequest.setSystemExperimentID(orchestratorResource.getExperimentID());
@@ -2670,7 +2670,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     public boolean resetHangedJob(String experimentID) throws RegistryException {
         try {
             GatewayResource gatewayResource = jpa.getGateway();
-            OrchestratorDataResource orchestratorResource = (OrchestratorDataResource)gatewayResource.get(ResourceType.ORCHESTRATOR_DATA, experimentID);
+            OrchestratorDataResource orchestratorResource = (OrchestratorDataResource)gatewayResource.get(ResourceType.ORCHESTRATOR, experimentID);
             orchestratorResource.setStatus(AiravataJobState.State.SUBMITTED.toString());
             orchestratorResource.save();
             return true;

@@ -61,7 +61,7 @@ public class SimpleOrchestratorTest extends AbstractOrchestratorTest {
     public void noUserIDTest() throws Exception {
         ExperimentRequest experimentRequest = new ExperimentRequest();
         //experimentRequest.setUserExperimentID("test-" + UUID.randomUUID().toString());
-        experimentRequest.setUserName("orchestrator");
+        experimentRequest.setSubmitterUserName("orchestrator");
 
         String systemExpID = orchestrator.createExperiment(experimentRequest);
 
@@ -81,7 +81,7 @@ public class SimpleOrchestratorTest extends AbstractOrchestratorTest {
     public void userIDTest() throws Exception {
         ExperimentRequest experimentRequest = new ExperimentRequest();
         experimentRequest.setUserExperimentID("test-" + UUID.randomUUID().toString());
-        experimentRequest.setUserName("orchestrator");
+        experimentRequest.setSubmitterUserName("orchestrator");
 
         String systemExpID = orchestrator.createExperiment(experimentRequest);
 

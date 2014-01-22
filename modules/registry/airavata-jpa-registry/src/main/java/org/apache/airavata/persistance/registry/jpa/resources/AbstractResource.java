@@ -45,7 +45,7 @@ public abstract class AbstractResource implements Resource {
 	public static final String EXECUTION_ERROR = "Execution_Error";
 	public static final String GFAC_JOB_DATA = "GFac_Job_Data";
 	public static final String GFAC_JOB_STATUS = "GFac_Job_Status";
-	public static final String ORCHESTRATORDATA = "Orchestrator_Data";
+	public static final String ORCHESTRATOR = "Orchestrator";
 
 	// Gateway Table
 	public final class GatewayConstants {
