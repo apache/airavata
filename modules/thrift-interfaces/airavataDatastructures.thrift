@@ -19,22 +19,22 @@
  */
 
 /*
- * This file describes the definations of the Airavata Execution Data Structures. Each of the
- *   lagunage specific Airavata Client SDK's will translate this neutral data model into an 
+ * This file describes the definitions of the Airavata Execution Data Structures. Each of the
+ *   language specific Airavata Client SDK's will translate this neutral data model into an
  *   appropriate form for passing to the Airavata Server Execution API Calls.
 */
 
 /**
- * A structure holding the experimemt metadata.
+ * A structure holding the experiment metadata.
  *
  * userName:
- *   The user name of the targetted gateway end user on whos behalf the experiment is being created.
- *     the associated gateway identity can only be infered from the security hand-shake so as to avoid
- *     authorized Airavata Clients mimicing an unauthorized request. If a gateway is not registered with
+ *   The user name of the targeted gateway end user on whose behalf the experiment is being created.
+ *     the associated gateway identity can only be inferred from the security hand-shake so as to avoid
+ *     authorized Airavata Clients mimicking an unauthorized request. If a gateway is not registered with
  *     Airavata, an authorization exception is thrown.
  *
  * experimentName:
- *   The name of the expeiment as defined by the user. The name need not be unique as uniqueness is enforced
+ *   The name of the experiment as defined by the user. The name need not be unique as uniqueness is enforced
  *      by the generated experiment id.
  *
  * experimentDescription:
@@ -44,16 +44,16 @@ struct ExperimentMetadata {
   1: required string userName,
   2: required string experimentName,
   3: optional string experimentDescription,
-  4: optional bool shareExperimentPublicly = "false"
+  4: optional bool shareExperimentPublicly = 0
 }
 
 /**
- * A structure holding the required Security Information to execute expriements.
+ * A structure holding the required Security Information to execute experiments.
  *
  * airavataCredStoreToken:
- *   A requirement to execute experiments within Airavata is to first register the targetted remote computational account
+ *   A requirement to execute experiments within Airavata is to first register the targeted remote computational account
  *     credentials with Airavata Credential Store. The administrative API (related to credential store) will return a 
- *     generated token associated with the registered credentials. The client has to securily posses this token id and is 
+ *     generated token associated with the registered credentials. The client has to securely posses this token id and is
  *     required to pass it to Airavata Server for all execution requests.
 */
 struct ExecutionSecurityParameters {
@@ -66,13 +66,13 @@ struct ExecutionSecurityParameters {
  *
 */
 struct ComputationalResourceScheduling {
-  1:required bool airavataAutoSchedule = "true"
-  2:required bool overrideManualScheduledParams = "false",
+  1:required bool airavataAutoSchedule = 1
+  2:required bool overrideManualScheduledParams = 0,
   3:optional string resourceHostId,
   4:optional i32 cpuCount,
-  4:optional i32 nodeCount,
-  5:optional string queueName,
-  6:optional i32 maxWalltime
+  5:optional i32 nodeCount,
+  6:optional string queueName,
+  7:optional i32 maxWalltime
 }
 
 /**
@@ -80,7 +80,7 @@ struct ComputationalResourceScheduling {
  *
 */
 struct InputDataHandling {
-    1:optional bool stageInputFilesToWorkingDir = "false"
+    1:optional bool stageInputFilesToWorkingDir = 0
 }
 
 /**
@@ -90,15 +90,15 @@ struct InputDataHandling {
 struct OutputDataHandling {
     2:optional string outputdataDir,
     3:optional string dataRegistryURL,
-    4:optional bool persistOutputData = "true"
+    4:optional bool persistOutputData = 1
 }
 
 /**
- * A structure holding the configuration data of an experimemt.
+ * A structure holding the configuration data of an experiment.
  *
 */
 struct ExperimentConfigurationData {
   1: required ComputationalResourceScheduling computationalResourceScheduling,
   2: optional InputDataHandling inputDataHandling,
-  2: optional OutputDataHandling OutputDataHandling
+  3: optional OutputDataHandling OutputDataHandling
 }
