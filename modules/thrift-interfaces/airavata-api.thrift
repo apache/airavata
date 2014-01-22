@@ -58,9 +58,9 @@ service Airavata {
   
   /**
    * Create an experiment for the specified user belonging to the gateway. The gateway identity is not explicitly passed
-   *   but infered from the authentication header. This experiment is just a persistant place holder. The client
+   *   but inferred from the authentication header. This experiment is just a persistent place holder. The client
    *   has to subsequently configure and launch the created experiment. No action is taken on Airavata Server except
-   *   registering the experiment in a persistant store.
+   *   registering the experiment in a persistent store.
    *
    * @param experimentMetada
    *    The create experiment will require the basic experiment metadata like the name and description, intended user, 
@@ -68,27 +68,30 @@ service Airavata {
    *      the ExperimentMetadata is a required field.
    *
    * @return
-   *   The server-side geneated airavata experiment globally unique identifier.
+   *   The server-side generated airavata experiment globally unique identifier.
    *
    * @throws InvalidRequestException
    *    For any incorrect forming of the request itself.
    * 
    * @throws AiravataClientException
-   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve
-   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time adminstrative
+   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   *      
+   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
    *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
    *         gateway registration steps and retry this request.
+   *
    *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
    *         For now this is a place holder.
+   *
    *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
    *         is implemented, the authorization will be more substantial.
    * 
    * @throws AiravataSystemException
    *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
-   *       rather an Airavata Adminstrator will be notified to take corrective action.
+   *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  string CreateExperiment(1: required ExperimentMetadata experimentMetadata)
+  string createExperiment(1: required ExperimentMetadata experimentMetadata)
     throws (1:InvalidRequestException ire
             2:AiravataClientException ace,
             3:AiravataSystemException ase)
@@ -109,21 +112,24 @@ service Airavata {
    *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
    * 
    * @throws AiravataClientException
-   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve
-   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time adminstrative
+   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   *      
+   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
    *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
    *         gateway registration steps and retry this request.
+   *
    *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
    *         For now this is a place holder.
+   *
    *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
    *         is implemented, the authorization will be more substantial.
    *
    * @throws AiravataSystemException
    *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
-   *       rather an Airavata Adminstrator will be notified to take corrective action.
+   *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  ExperimentMetadata GetExperimentMetadata(1:required string airavataExperimentId)
+  ExperimentMetadata getExperimentMetadata(1:required string airavataExperimentId)
     throws (1:InvalidRequestException ire, 
             2:ExperimentNotFoundException enf,
             3:AiravataClientException ace,
@@ -131,18 +137,18 @@ service Airavata {
 
   /**
    * Configure a previously created experiment with required inputs, scheduling and other quality of service
-   *   parameters. This method only updates the experiment object within the registry. The experimet has to be launched
+   *   parameters. This method only updates the experiment object within the registry. The experiment has to be launched
    *   to make it actionable by the server.
    *
    * @param airavataExperimentId
    *    The identifier for the requested experiment. This is returned during the create experiment step.
    *
    * @param ExperimentConfigurationData
-   *    The configuration information of the experiment with application input parameters, computational resouce scheduling
-   *      information, special input output handling and additional quality of service paramaters.
+   *    The configuration information of the experiment with application input parameters, computational resource scheduling
+   *      information, special input output handling and additional quality of service parameters.
    *
    * @param experimentMetada
-   *    Optionally update the experiment metadata. If provided, this information will overide the metadata described during the 
+   *    Optionally update the experiment metadata. If provided, this information will override the metadata described during the 
    *      create experiment step.
    *
    * @return
@@ -155,21 +161,24 @@ service Airavata {
    *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
    * 
    * @throws AiravataClientException
-   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve
-   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time adminstrative
+   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   *      
+   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
    *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
    *         gateway registration steps and retry this request.
+   *
    *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
    *         For now this is a place holder.
+   *
    *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
    *         is implemented, the authorization will be more substantial.
    *
    * @throws AiravataSystemException
    *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
-   *       rather an Airavata Adminstrator will be notified to take corrective action.
+   *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  void ConfigureExperiment(1:required string airavataExperimentId,
+  void configureExperiment(1:required string airavataExperimentId,
                            2:required ExperimentConfigurationData experimentConfigurationData,
                            3:optional ExperimentMetadata experimentMetadata)
     throws (1:InvalidRequestException ire, 
@@ -178,7 +187,7 @@ service Airavata {
             4:AiravataSystemException ase)
 
   /**
-   * Fetch the previously configired experiment configuration information.
+   * Fetch the previously configured experiment configuration information.
    *
    * @param airavataExperimentId
    *    The identifier for the requested experiment. This is returned during the create experiment step.
@@ -193,37 +202,40 @@ service Airavata {
    *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
    * 
    * @throws AiravataClientException
-   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve
-   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time adminstrative
+   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   *      
+   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
    *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
    *         gateway registration steps and retry this request.
+   *
    *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
    *         For now this is a place holder.
+   *
    *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
    *         is implemented, the authorization will be more substantial.
    *
    * @throws AiravataSystemException
    *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
-   *       rather an Airavata Adminstrator will be notified to take corrective action.
+   *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  ExperimentConfigurationData GetExperimentConfiguration(1:required string airavataExperimentId)
+  ExperimentConfigurationData getExperimentConfiguration(1:required string airavataExperimentId)
     throws (1:InvalidRequestException ire, 
             2:ExperimentNotFoundException enf,
             3:AiravataClientException ace,
             4:AiravataSystemException ase)
 
   /**
-   * Launch a previously created and configured experiment. Airavata Server will then strart processing the request and approriate
-   *   notifications and intermediate and output data will be subsequently available for this expeirment.
+   * Launch a previously created and configured experiment. Airavata Server will then start processing the request and appropriate
+   *   notifications and intermediate and output data will be subsequently available for this experiment.
    *
    * @param airavataExperimentId
    *    The identifier for the requested experiment. This is returned during the create experiment step.
    *
    * @param airavataCredStoreToken:
-   *   A requirement to execute experiments within Airavata is to first register the targetted remote computational account
+   *   A requirement to execute experiments within Airavata is to first register the targeted remote computational account
    *     credentials with Airavata Credential Store. The administrative API (related to credential store) will return a
-   *     generated token associated with the registered credentials. The client has to securily posses this token id and is
+   *     generated token associated with the registered credentials. The client has to security posses this token id and is
    *     required to pass it to Airavata Server for all execution requests.
    *   Note: At this point only the credential store token is required so the string is directly passed here. In future if 
    *     if more security credentials are enables, then the structure ExecutionSecurityParameters should be used.
@@ -239,21 +251,24 @@ service Airavata {
    *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
    * 
    * @throws AiravataClientException
-   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve
-   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time adminstrative
+   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   *      
+   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
    *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
    *         gateway registration steps and retry this request.
+   *
    *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
    *         For now this is a place holder.
+   *
    *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
    *         is implemented, the authorization will be more substantial.
    *
    * @throws AiravataSystemException
    *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
-   *       rather an Airavata Adminstrator will be notified to take corrective action.
+   *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  void LaunchConfiguredExperiment(1:required string airavataExperimentId
+  void launchConfiguredExperiment(1:required string airavataExperimentId
                                   2:required string airavataCredStoreToken)
     throws (1:InvalidRequestException ire, 
             2:ExperimentNotFoundException enf,
@@ -269,42 +284,46 @@ service Airavata {
    *    The identifier for the requested experiment. This is returned during the create experiment step.
    * 
    * @param ExperimentConfigurationData
-   *    The configuration information of the experiment with application input parameters, computational resouce scheduling
-   *      information, special input output handling and additional quality of service paramaters.
+   *    The configuration information of the experiment with application input parameters, computational resource scheduling
+   *      information, special input output handling and additional quality of service parameters.
    *
    * @param experimentMetada
    *    Optionally update the experiment metadata. If provided, this information will overide the metadata described during the 
    *      create experiment step.
    * 
    * @param airavataCredStoreToken:
-   *   A requirement to execute experiments within Airavata is to first register the targetted remote computational account
+   *   A requirement to execute experiments within Airavata is to first register the targeted remote computational account
    *     credentials with Airavata Credential Store. The administrative API (related to credential store) will return a
-   *     generated token associated with the registered credentials. The client has to securily posses this token id and is
+   *     generated token associated with the registered credentials. The client has to security posses this token id and is
    *     required to pass it to Airavata Server for all execution requests.
    *   Note: At this point only the credential store token is required so the string is directly passed here. In future if 
    *     if more security credentials are enables, then the structure ExecutionSecurityParameters should be used.
    *
    * @return
-   *   The server-side geneated experiment GUID.
+   *   The server-side generated experiment GUID.
    *
    * @throws InvalidRequestException
    *    For any incorrect forming of the request itself.
    * 
    * @throws AiravataClientException
-   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve
-   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time adminstrative
+   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   *      
+   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
    *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
    *         gateway registration steps and retry this request.
+   *
    *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
    *         For now this is a place holder.
+   *
    *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
    *         is implemented, the authorization will be more substantial.
+   *
    * @throws AiravataSystemException 
    *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
-   *       rather an Airavata Adminstrator will be notified to take corrective action.
+   *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  string ConfigureAndLaunchExperiment (1:required string airavataExperimentId
+  string configureAndLaunchExperiment (1:required string airavataExperimentId
                                        2:required ExperimentConfigurationData experimentConfigurationData,
                                        3:required string airavataCredStoreToken
                                        4:optional ExperimentMetadata experimentMetadata)
@@ -314,19 +333,19 @@ service Airavata {
             4:AiravataSystemException ase)
 
   /**
-   * Clone an specified experiment with a new name. A copy of the expeirment configuration is made and is persisted with new metadata.
+   * Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.
    *   The client has to subsequently update this configuration if needed and launch the cloned experiment. 
    *
    * @param airavataExperimentIdToBeCloned
-   *    This is the experiment identifier which is to be cloned.
+   *    This is the experiment identifier that is to be cloned.
    *
    * @param experimentMetada
-   *    Once an experiment is cloned, to disambiguate, the users are suggested to provide new meatadata. This will again require
-   *      the basic experiment metadata like the name and description, intended user, the gateway identifer and if the experiment
-   *      should be shared public by defualt.
+   *    Once an experiment is cloned, to disambiguate, the users are suggested to provide new metadata. This will again require
+   *      the basic experiment metadata like the name and description, intended user, the gateway identifier and if the experiment
+   *      should be shared public by default.
    *
    * @return
-   *   The server-side geneated airavata experiment globally unique identifier for the newly cloned experiment.
+   *   The server-side generated airavata experiment globally unique identifier for the newly cloned experiment.
    *
    * @throws InvalidRequestException
    *    For any incorrect forming of the request itself.
@@ -335,21 +354,24 @@ service Airavata {
    *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
    * 
    * @throws AiravataClientException
-   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve
-   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time adminstrative
+   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   *      
+   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
    *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
    *         gateway registration steps and retry this request.
+   *
    *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
    *         For now this is a place holder.
+   *
    *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
    *         is implemented, the authorization will be more substantial.
    *
    * @throws AiravataSystemException
    *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
-   *       rather an Airavata Adminstrator will be notified to take corrective action.
+   *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  string CloneExperimentConfiguration(1:required string airavataExperimentIdToBeCloned,
+  string cloneExperimentConfiguration(1:required string airavataExperimentIdToBeCloned,
                                       2:required ExperimentMetadata experimentMetadata)
     throws (1:InvalidRequestException ire, 
             2:ExperimentNotFoundException enf,
@@ -372,21 +394,24 @@ service Airavata {
    *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
    * 
    * @throws AiravataClientException
-   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve
-   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time adminstrative
+   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   *      
+   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
    *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
    *         gateway registration steps and retry this request.
+   *
    *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
    *         For now this is a place holder.
+   *
    *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
    *         is implemented, the authorization will be more substantial.
    *
    * @throws AiravataSystemException
    *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
-   *       rather an Airavata Adminstrator will be notified to take corrective action.
+   *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  void TerminateExperiment(1:required string airavataExperimentId)
+  void terminateExperiment(1:required string airavataExperimentId)
     throws (1:InvalidRequestException ire, 
             2:ExperimentNotFoundException enf,
             3:AiravataClientException ace,
