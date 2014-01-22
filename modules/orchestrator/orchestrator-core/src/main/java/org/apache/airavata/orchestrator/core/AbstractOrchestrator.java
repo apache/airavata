@@ -29,18 +29,16 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.Executors;
 
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.exception.AiravataConfigurationException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
-import org.apache.airavata.orchestrator.core.job.JobSubmitter;
+import org.apache.airavata.orchestrator.core.model.ExperimentRequest;
+import org.apache.airavata.orchestrator.core.utils.OrchestratorConstants;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataRegistryFactory;
@@ -130,7 +128,7 @@ public abstract class AbstractOrchestrator implements Orchestrator{
 	
 	//get the registry URL and the credentials from the property file
     protected void setGatewayProperties() {
-        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("gateway.properties");
+        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(OrchestratorConstants.AIRAVATA_PROPERTIES);
         Properties properties = new Properties();
         try {
             properties.load(inputStream);
@@ -152,7 +150,7 @@ public abstract class AbstractOrchestrator implements Orchestrator{
        	experimentID = UUID.randomUUID().toString(); 
        }
        try {
-           airavataRegistry.storeExperiment(request.getSubmitterUserName(), experimentID, request.getApplicationName(), request.getJobRequest());
+           airavataRegistry.storeExperiment(request.getSubmitterUserName(), experimentID, null, null);
        } catch (RegistryException e) {
            //todo put more meaningful error  message
            logger.error("Failed to create experiment for the request from " + request.getSubmitterUserName());

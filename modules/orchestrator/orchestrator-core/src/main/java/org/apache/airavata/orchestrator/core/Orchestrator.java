@@ -21,6 +21,7 @@
 package org.apache.airavata.orchestrator.core;
 
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
+import org.apache.airavata.orchestrator.core.model.ExperimentRequest;
 import org.apache.airavata.registry.api.JobRequest;
 
 /*

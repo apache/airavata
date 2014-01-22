@@ -20,16 +20,14 @@
 */
 package org.apache.airavata.orchestrator.core;
 
-import org.apache.airavata.gfac.provider.GFacProvider;
+import java.util.List;
+
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /*
 This is the worker class to handle the jobs stored in to registry as

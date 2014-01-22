@@ -21,6 +21,7 @@
 package org.apache.airavata.orchestrator.core;
 
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
+import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.airavata.registry.api.JobRequest;
 
 public class SimpleOrchestratorImpl extends AbstractOrchestrator{
@@ -28,7 +29,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
 	@Override
 	public boolean initialize() throws OrchestratorException {
 		super.initialize();
-		return false;
+		return true;
 	}
 
 	@Override

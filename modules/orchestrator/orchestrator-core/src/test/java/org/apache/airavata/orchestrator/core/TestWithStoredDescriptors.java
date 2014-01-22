@@ -21,6 +21,7 @@
 package org.apache.airavata.orchestrator.core;
 
 import junit.framework.Assert;
+
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
@@ -31,6 +32,7 @@ import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.orchestrator.core.model.ExperimentRequest;
 import org.apache.airavata.registry.api.JobRequest;
 import org.apache.airavata.schemas.gfac.*;
 import org.slf4j.Logger;

@@ -18,7 +18,7 @@
  * under the License.
  *
 */
-package org.apache.airavata.orchestrator.core;
+package org.apache.airavata.orchestrator.core.model;
 
 
 /**
@@ -34,11 +34,7 @@ public class ExperimentRequest {
     
     private String systemExperimentID;
     
-    private String applicationName;
-    
-    private String jobRequest;
-
-    public String getUserExperimentID() {
+       public String getUserExperimentID() {
         return userExperimentID;
     }
 
@@ -62,19 +58,4 @@ public class ExperimentRequest {
 		this.systemExperimentID = systemExperimentID;
 	}
 
-	public String getApplicationName() {
-		return applicationName;
-	}
-
-	public void setApplicationName(String applicationName) {
-		this.applicationName = applicationName;
-	}
-
-	public String getJobRequest() {
-		return jobRequest;
-	}
-
-	public void setJobRequest(String jobRequest) {
-		this.jobRequest = jobRequest;
-	}
 }
