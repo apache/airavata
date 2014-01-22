@@ -100,5 +100,8 @@ struct OutputDataHandling {
 struct ExperimentConfigurationData {
   1: required ComputationalResourceScheduling computationalResourceScheduling,
   2: optional InputDataHandling inputDataHandling,
-  3: optional OutputDataHandling OutputDataHandling
+  3: optional OutputDataHandling OutputDataHandling,
+  4: optional ExperimentMetadata experimentMetadata
 }
+
+

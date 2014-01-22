@@ -179,8 +179,7 @@ service Airavata {
    *
   */
   void configureExperiment(1:required string airavataExperimentId,
-                           2:required airavataDatastructures.ExperimentConfigurationData experimentConfigurationData,
-                           3:optional airavataDatastructures.ExperimentMetadata experimentMetadata)
+                           2:required airavataDatastructures.ExperimentConfigurationData experimentConfigurationData)
     throws (1:airavataErrors.InvalidRequestException ire,
             2:airavataErrors.ExperimentNotFoundException enf,
             3:airavataErrors.AiravataClientException ace,
@@ -325,8 +324,7 @@ service Airavata {
   */
   string configureAndLaunchExperiment (1:required string airavataExperimentId
                                        2:required airavataDatastructures.ExperimentConfigurationData experimentConfigurationData,
-                                       3:required string airavataCredStoreToken
-                                       4:optional airavataDatastructures.ExperimentMetadata experimentMetadata)
+                                       3:required string airavataCredStoreToken)
     throws (1:airavataErrors.InvalidRequestException ire,
             2:airavataErrors.ExperimentNotFoundException enf,
             3:airavataErrors.AiravataClientException ace,
