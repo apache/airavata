@@ -119,7 +119,7 @@ public class TestWithStoredDescriptors extends AbstractOrchestratorTest {
     public void noDescriptorTest() throws Exception {
         ExperimentRequest experimentRequest = new ExperimentRequest();
         experimentRequest.setUserExperimentID("test-" + UUID.randomUUID().toString());
-        experimentRequest.setUserName("orchestrator");
+        experimentRequest.setSubmitterUserName("orchestrator");
 
         String systemExpID = orchestrator.createExperiment(experimentRequest);
 

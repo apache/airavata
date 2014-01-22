@@ -315,15 +315,15 @@ public class ResourceUtils {
         List<Resource> resourceList = new ArrayList<Resource>();
         EntityManager em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
-        QueryGenerator generator = new QueryGenerator(AbstractResource.ORCHESTRATORDATA);
+        QueryGenerator generator = new QueryGenerator(AbstractResource.ORCHESTRATOR);
         generator.setParameter(AbstractResource.OrchestratorDataConstants.STATUS, status);
         Query q = generator.selectQuery(em);
         List<?> results = q.getResultList();
         if (results.size() != 0) {
             for (Object result : results) {
-                Orchestrator_Data orchestratorData = (Orchestrator_Data) result;
+                Orchestrator orchestratorData = (Orchestrator) result;
                 OrchestratorDataResource orchestratorDataResource = (OrchestratorDataResource)
-                        Utils.getResource(ResourceType.ORCHESTRATOR_DATA, orchestratorData);
+                        Utils.getResource(ResourceType.ORCHESTRATOR, orchestratorData);
                 resourceList.add(orchestratorDataResource);
             }
         }

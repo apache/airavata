@@ -265,7 +265,7 @@ CREATE TABLE Execution_Error
        FOREIGN KEY (experiment_ID) REFERENCES Experiment_Data(experiment_ID) ON DELETE CASCADE
 );
 
-create table Orchestrator_Data
+create table Orchestrator
 (
         experiment_ID varchar(255) NOT NULL,
         username varchar(255),
@@ -274,6 +274,8 @@ create table Orchestrator_Data
         gfacEPR varchar(255),
         applicationName varchar(255),
         jobRequest CLOB,
+        submitted_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
+        status_update_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
         PRIMARY KEY (experiment_ID)
 );
 

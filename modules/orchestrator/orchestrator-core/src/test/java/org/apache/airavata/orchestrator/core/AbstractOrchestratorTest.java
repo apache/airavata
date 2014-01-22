@@ -42,7 +42,7 @@ public class AbstractOrchestratorTest extends TestCase {
         gatewayResource = (GatewayResource) ResourceUtils.getGateway("default");
         workerResource = (WorkerResource) ResourceUtils.getWorker(gatewayResource.getGatewayName(), "admin");
         userResource = (UserResource) gatewayResource.create(ResourceType.USER);
-        orchestratorDataResource = (OrchestratorDataResource) gatewayResource.create(ResourceType.ORCHESTRATOR_DATA);
+        orchestratorDataResource = (OrchestratorDataResource) gatewayResource.create(ResourceType.ORCHESTRATOR);
         userResource.setUserName("admin");
         userResource.setPassword("admin");
     }

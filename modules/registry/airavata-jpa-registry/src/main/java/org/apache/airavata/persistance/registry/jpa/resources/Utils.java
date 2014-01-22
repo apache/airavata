@@ -331,9 +331,9 @@ public class Utils {
                     logger.error("Object should be a GFac Job Status type.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a GFac Job Status.");
                 }
-            case ORCHESTRATOR_DATA:
-            	if(o instanceof Orchestrator_Data){
-            		return createOrchestratorData((Orchestrator_Data)o);
+            case ORCHESTRATOR:
+            	if(o instanceof Orchestrator){
+            		return createOrchestratorData((Orchestrator)o);
             	}else{
             		 logger.error("Object should be orchestrator data.", new IllegalArgumentException());
                      throw new IllegalArgumentException("Object should be orchestrator data.");
@@ -652,7 +652,7 @@ public class Utils {
         return gFacJobStatusResource;
     }
 
-    private static Resource createOrchestratorData(Orchestrator_Data data){
+    private static Resource createOrchestratorData(Orchestrator data){
     	OrchestratorDataResource dataResource = new OrchestratorDataResource();
     	dataResource.setExperimentID(data.getExperiment_ID());
     	dataResource.setUserName(data.getUserName());
@@ -660,6 +660,8 @@ public class Utils {
     	dataResource.setStatus(data.getStatus());
     	dataResource.setGfacEPR(data.getGfacEPR());
     	dataResource.setJobRequest(data.getJobRequest());
+    	dataResource.setSubmittedTime(data.getSubmittedTime());
+    	dataResource.setStatusUpdateTime(data.getStatusUpdateTime());
     	return dataResource;
     }
 //    public static byte[] getByteArray(String content){

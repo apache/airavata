@@ -40,6 +40,6 @@ public enum ResourceType {
     EXECUTION_ERROR,
     GFAC_JOB_DATA,
     GFAC_JOB_STATUS,
-    ORCHESTRATOR_DATA
+    ORCHESTRATOR
 
 }
