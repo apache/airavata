@@ -81,8 +81,11 @@ public class RunWorkflow {
         airavataAPI = AiravataAPIFactory.getAPI(new URI(getRegistryURL()), getGatewayName(), getUserName(),
                 passwordCallback);
         airavataAPI.setCurrentUser(getUserName());
-
+        //Update these variables
         String workflowName = "EchoSample";
+        String inputName = "echo_input";
+        String outputName = "echo_output";
+        
         // Saving workflow method, workflow file has the workflow Name set to EchoSample, so when we use saveWorkflow
         // method it will
         // save the workflow with that name.
@@ -92,10 +95,9 @@ public class RunWorkflow {
 
         // Now workflow has saved, Now we have to set inputs
         List<WorkflowInput> workflowInputs = new ArrayList<WorkflowInput>();
-        String name = "echo_input";
         String type = "String";
-        String value = "echo_output=ODI Test";
-        WorkflowInput workflowInput = new WorkflowInput(name, (type == null || type.isEmpty()) ? "String" : type, null,
+        String value = outputName + "=ODI Test";
+        WorkflowInput workflowInput = new WorkflowInput(inputName, (type == null || type.isEmpty()) ? "String" : type, null,
                 value, false);
         workflowInputs.add(workflowInput);
 
