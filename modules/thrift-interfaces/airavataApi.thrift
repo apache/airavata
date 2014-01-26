@@ -91,10 +91,10 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  string createExperiment(1: required airavataDatastructures.ExperimentMetadata experimentMetadata)
-    throws (1:airavataErrors.InvalidRequestException ire
-            2:airavataErrors.AiravataClientException ace,
-            3:airavataErrors.AiravataSystemException ase)
+  string createExperiment(1: airavataDatastructures.ExperimentMetadata experimentMetadata)
+    throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
 
   /**
    * Fetch previously created experiment metadata.
@@ -129,11 +129,11 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  airavataDatastructures.ExperimentMetadata getExperimentMetadata(1:required string airavataExperimentId)
-    throws (1:airavataErrors.InvalidRequestException ire,
-            2:airavataErrors.ExperimentNotFoundException enf,
-            3:airavataErrors.AiravataClientException ace,
-            4:airavataErrors.AiravataSystemException ase)
+  airavataDatastructures.ExperimentMetadata getExperimentMetadata(1: string airavataExperimentId)
+    throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.ExperimentNotFoundException enf,
+            3: airavataErrors.AiravataClientException ace,
+            4: airavataErrors.AiravataSystemException ase)
 
   /**
    * Configure a previously created experiment with required inputs, scheduling and other quality of service
@@ -178,12 +178,12 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  void configureExperiment(1:required string airavataExperimentId,
-                           2:required airavataDatastructures.ExperimentConfigurationData experimentConfigurationData)
-    throws (1:airavataErrors.InvalidRequestException ire,
-            2:airavataErrors.ExperimentNotFoundException enf,
-            3:airavataErrors.AiravataClientException ace,
-            4:airavataErrors.AiravataSystemException ase)
+  void configureExperiment(1: string airavataExperimentId,
+                           2: airavataDatastructures.ExperimentConfigurationData experimentConfigurationData)
+    throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.ExperimentNotFoundException enf,
+            3: airavataErrors.AiravataClientException ace,
+            4: airavataErrors.AiravataSystemException ase)
 
   /**
    * Fetch the previously configured experiment configuration information.
@@ -218,11 +218,11 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  airavataDatastructures.ExperimentConfigurationData getExperimentConfiguration(1:required string airavataExperimentId)
-    throws (1:airavataErrors.InvalidRequestException ire,
-            2:airavataErrors.ExperimentNotFoundException enf,
-            3:airavataErrors.AiravataClientException ace,
-            4:airavataErrors.AiravataSystemException ase)
+  airavataDatastructures.ExperimentConfigurationData getExperimentConfiguration(1: string airavataExperimentId)
+    throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.ExperimentNotFoundException enf,
+            3: airavataErrors.AiravataClientException ace,
+            4: airavataErrors.AiravataSystemException ase)
 
   /**
    * Launch a previously created and configured experiment. Airavata Server will then start processing the request and appropriate
@@ -267,12 +267,12 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  void launchConfiguredExperiment(1:required string airavataExperimentId
-                                  2:required string airavataCredStoreToken)
-    throws (1:airavataErrors.InvalidRequestException ire,
-            2:airavataErrors.ExperimentNotFoundException enf,
-            3:airavataErrors.AiravataClientException ace,
-            4:airavataErrors.AiravataSystemException ase)
+  void launchConfiguredExperiment(1: string airavataExperimentId
+                                  2: string airavataCredStoreToken)
+    throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.ExperimentNotFoundException enf,
+            3: airavataErrors.AiravataClientException ace,
+            4: airavataErrors.AiravataSystemException ase)
             
   /**
    * Configure and Launch a previously created experiment with required inputs, scheduling, security and other quality of service
@@ -322,13 +322,13 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  string configureAndLaunchExperiment (1:required string airavataExperimentId
-                                       2:required airavataDatastructures.ExperimentConfigurationData experimentConfigurationData,
-                                       3:required string airavataCredStoreToken)
-    throws (1:airavataErrors.InvalidRequestException ire,
-            2:airavataErrors.ExperimentNotFoundException enf,
-            3:airavataErrors.AiravataClientException ace,
-            4:airavataErrors.AiravataSystemException ase)
+  string configureAndLaunchExperiment (1: string airavataExperimentId
+                                       2: airavataDatastructures.ExperimentConfigurationData experimentConfigurationData,
+                                       3: string airavataCredStoreToken)
+    throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.ExperimentNotFoundException enf,
+            3: airavataErrors.AiravataClientException ace,
+            4: airavataErrors.AiravataSystemException ase)
 
   /**
    * Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.
@@ -369,12 +369,12 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  string cloneExperimentConfiguration(1:required string airavataExperimentIdToBeCloned,
-                                      2:required airavataDatastructures.ExperimentMetadata experimentMetadata)
-    throws (1:airavataErrors.InvalidRequestException ire,
-            2:airavataErrors.ExperimentNotFoundException enf,
-            3:airavataErrors.AiravataClientException ace,
-            4:airavataErrors.AiravataSystemException ase)
+  string cloneExperimentConfiguration(1: string airavataExperimentIdToBeCloned,
+                                      2: airavataDatastructures.ExperimentMetadata experimentMetadata)
+    throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.ExperimentNotFoundException enf,
+            3: airavataErrors.AiravataClientException ace,
+            4: airavataErrors.AiravataSystemException ase)
 
   /**
    * Terminate a running experiment.
@@ -409,10 +409,10 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  void terminateExperiment(1:required string airavataExperimentId)
-    throws (1:airavataErrors.InvalidRequestException ire,
-            2:airavataErrors.ExperimentNotFoundException enf,
-            3:airavataErrors.AiravataClientException ace,
-            4:airavataErrors.AiravataSystemException ase)
+  void terminateExperiment(1: string airavataExperimentId)
+    throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.ExperimentNotFoundException enf,
+            3: airavataErrors.AiravataClientException ace,
+            4: airavataErrors.AiravataSystemException ase)
 
 }

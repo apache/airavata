@@ -342,11 +342,6 @@
     </dependencyManagement>
 
     <repositories>
-	    <repository>
-           <name>ogce.m2.all</name>
-            <id>ogce.m2.all</id>
-            <url>http://community.ucs.indiana.edu:9090/archiva/repository/ogce.m2.all</url>
-        </repository>
         <!--<repository>-->
             <!--<name>go.nexus.repo</name>-->
             <!--<id>go.nexus.repo</id>-->

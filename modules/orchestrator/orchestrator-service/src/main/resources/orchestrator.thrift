@@ -19,7 +19,7 @@
  *
  */
 
-namespace java org.apache.airavata.orchestrator
+namespace java org.apache.airavata.api.execution
 
 
 struct HPCSettings {
@@ -102,7 +102,9 @@ struct ExperimentAdvanceOptions {
     7:optional SecuritySettings securitySettings;
 }
 
-service InterpreterService {
-    string createExperiment(1:string executionUser,2:string applicationName),
-    string submitExperiment(1:map<string,string> applicationInputs, 2: ExperimentAdvanceOptions experimentAdOptions)
-}
+Service CreateExperiment
+
+Service LaunchExperiment
+
+Service TerminateExperiment
+
