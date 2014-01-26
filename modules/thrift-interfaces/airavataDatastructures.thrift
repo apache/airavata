@@ -18,11 +18,37 @@
  *
  */
 
+namespace java org.apache.airavata.datamodel
+
 /*
  * This file describes the definitions of the Airavata Execution Data Structures. Each of the
  *   language specific Airavata Client SDK's will translate this neutral data model into an
  *   appropriate form for passing to the Airavata Server Execution API Calls.
 */
+
+/**
+ * A structure holding the experiment configuration.
+ *
+ * userName:
+ *   The user name of the targeted gateway end user on whose behalf the experiment is being created.
+ *     the associated gateway identity can only be inferred from the security hand-shake so as to avoid
+ *     authorized Airavata Clients mimicking an unauthorized request. If a gateway is not registered with
+ *     Airavata, an authorization exception is thrown.
+ *
+ * experimentName:
+ *   The name of the experiment as defined by the user. The name need not be unique as uniqueness is enforced
+ *      by the generated experiment id.
+ *
+ * experimentDescription:
+ *    The verbose description of the experiment. This is an optional parameter.
+*/
+struct ExperimentConfiguration {
+  1: required string userName,
+  2: required string experimentName,
+  3: optional string experimentDescription,
+  4: optional bool shareExperimentPublicly = 0
+}
+
 
 /**
  * A structure holding the experiment metadata.
