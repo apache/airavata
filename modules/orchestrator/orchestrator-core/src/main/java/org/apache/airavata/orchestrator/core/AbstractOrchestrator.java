@@ -135,9 +135,8 @@ public abstract class AbstractOrchestrator implements Orchestrator{
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        setAiravataUserName(properties.getProperty("airavata.server.user"));
-        setGatewayName(properties.getProperty("gateway.name"));
+        setAiravataUserName(properties.getProperty("system.user"));
+        setGatewayName(properties.getProperty("system.gateway"));
         setRegistryURL(properties.getProperty("airavata.server.url"));
     }
     //todo decide whether to return an error or do what
