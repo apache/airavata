@@ -154,6 +154,26 @@ public class AiravataManagerImpl implements AiravataManager {
             throw new AiravataAPIInvocationException(e);
         }
     }
+    
+	@Override
+	public Object getConfiguration(String key)
+			throws AiravataAPIInvocationException {
+        try{
+            return getClient().getRegistryClient().getConfiguration(key);
+        }catch (Exception e){
+            throw new AiravataAPIInvocationException(e);
+        }
+	}
+
+	@Override
+	public List<Object> getConfigurationList(String key)
+			throws AiravataAPIInvocationException {
+        try{
+            return getClient().getRegistryClient().getConfigurationList(key);
+        }catch (Exception e){
+            throw new AiravataAPIInvocationException(e);
+        }
+	}
 
     @Override
     public void removeAllConfiguration(String key) throws AiravataAPIInvocationException {

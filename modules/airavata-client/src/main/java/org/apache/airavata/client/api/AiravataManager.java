@@ -101,7 +101,11 @@ public interface AiravataManager {
      */
 	public URI getEventingServiceURL(URI defaultURL) throws AiravataAPIInvocationException;
 
-    public void setConfiguration(String key, String value, Date expire) throws AiravataAPIInvocationException;
+    public Object getConfiguration(String key) throws AiravataAPIInvocationException;
+
+    public List<Object> getConfigurationList(String key) throws AiravataAPIInvocationException;
+    
+	public void setConfiguration(String key, String value, Date expire) throws AiravataAPIInvocationException;
 
     public void addConfiguration(String key, String value, Date expire) throws AiravataAPIInvocationException;
 
