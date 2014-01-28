@@ -20,6 +20,8 @@
 
 /*
  * Application Programming Interface definition for Apache Airavata Services.
+ *   this parent thrift file is contains all service interfaces. The data models are 
+ *   described in respective thrift files.
 */
 
 include "airavataDatastructures.thrift"
