@@ -20,14 +20,13 @@
 */
 package org.apache.airavata.orchestrator.core;
 
-import junit.framework.TestCase;
 
 import org.apache.airavata.orchestrator.core.util.Initialize;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 
-public class AbstractOrchestratorTest extends TestCase {
+public class AbstractOrchestratorTest {
 
     private GatewayResource gatewayResource;
     private WorkerResource workerResource;
@@ -35,7 +34,6 @@ public class AbstractOrchestratorTest extends TestCase {
     private OrchestratorDataResource orchestratorDataResource;
     private Initialize initialize;
 
-    @Override
     public void setUp() throws Exception {
         initialize = new Initialize("data-derby.sql");
         initialize.initializeDB();
@@ -47,7 +45,6 @@ public class AbstractOrchestratorTest extends TestCase {
         userResource.setPassword("admin");
     }
 
-    @Override
     public void tearDown() throws Exception {
         initialize.stopDerbyServer();
     }
