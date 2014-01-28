@@ -24,7 +24,7 @@
  *   described in respective thrift files.
 */
 
-include "airavataDatastructures.thrift"
+include "airavataDataModel.thrift"
 include "airavataErrors.thrift"
 
 namespace java org.apache.airavata.api
