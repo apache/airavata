@@ -33,9 +33,9 @@
     <inceptionYear>2011</inceptionYear>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/airavata/trunk/</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/airavata/trunk/</developerConnection>
-        <url>http://svn.apache.org/viewvc/airavata/trunk/</url>
+        <connection>scm:git:https://git-wip-us.apache.org/repos/asf/airavata.git</connection>
+        <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/airavata.git</developerConnection>
+        <url>https://git-wip-us.apache.org/repos/asf?p=airavata.git</url>
     </scm>
 
     <mailingLists>
