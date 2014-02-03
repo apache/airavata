@@ -24,8 +24,9 @@
  *   described in respective thrift files.
 */
 
-include "airavataDataModel.thrift"
 include "airavataErrors.thrift"
+include "airavataDataModel.thrift"
+include "experimentModel.thrift"
 
 namespace java org.apache.airavata.api
 namespace php Airavata.API
@@ -93,7 +94,7 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  string createExperiment(1: airavataDatastructures.ExperimentMetadata experimentMetadata)
+  string createExperiment(1: experimentModel.BasicMetadata basicExperimentMetadata)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
@@ -131,7 +132,7 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  airavataDatastructures.ExperimentMetadata getExperimentMetadata(1: string airavataExperimentId)
+  experimentModel.BasicMetadata getBasicExperimentMetadata(1: string airavataExperimentId)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.ExperimentNotFoundException enf,
             3: airavataErrors.AiravataClientException ace,
@@ -181,7 +182,7 @@ service Airavata {
    *
   */
   void configureExperiment(1: string airavataExperimentId,
-                           2: airavataDatastructures.ExperimentConfigurationData experimentConfigurationData)
+                           2: experimentModel.ConfigurationData experimentConfigurationData)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.ExperimentNotFoundException enf,
             3: airavataErrors.AiravataClientException ace,
@@ -220,7 +221,7 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  airavataDatastructures.ExperimentConfigurationData getExperimentConfiguration(1: string airavataExperimentId)
+  experimentModel.ConfigurationData getExperimentConfiguration(1: string airavataExperimentId)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.ExperimentNotFoundException enf,
             3: airavataErrors.AiravataClientException ace,
@@ -325,7 +326,7 @@ service Airavata {
    *
   */
   string configureAndLaunchExperiment (1: string airavataExperimentId
-                                       2: airavataDatastructures.ExperimentConfigurationData experimentConfigurationData,
+                                       2: experimentModel.ConfigurationData experimentConfigurationData,
                                        3: string airavataCredStoreToken)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.ExperimentNotFoundException enf,
@@ -372,7 +373,7 @@ service Airavata {
    *
   */
   string cloneExperimentConfiguration(1: string airavataExperimentIdToBeCloned,
-                                      2: airavataDatastructures.ExperimentMetadata experimentMetadata)
+                                      2: experimentModel.BasicMetadata basicExperimentMetadata)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.ExperimentNotFoundException enf,
             3: airavataErrors.AiravataClientException ace,

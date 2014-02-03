@@ -72,24 +72,6 @@ struct BasicMetadata {
 }
 
 /**
- * A structure holding the experiment configuration.
- *
- *
-*/
-struct ConfigurationData {
-  1: optional BasicMetadata basicMetadata,
-  2: optional string applicationId,
-  3: optional string applicationVersion,
-  4: optional string workflowTemplateId,
-  5: optional string worklfowTemplateVersion,
-  6: optional map<string,string> experimentInputs,
-  7: optional ComputationalResourceScheduling computationalResourceScheduling,
-  8: optional AdvancedInputDataHandling advanceInputDataHandling,
-  9: optional AdvancedOutputDataHandling advanceOutputDataHandling,
-  10: optional QualityOfServiceParams qosParams
-}
-
-/**
  * A structure holding the Computational Resource Scheduling.
  *
 */
@@ -136,4 +118,22 @@ struct QualityOfServiceParams {
     1:optional string startExecutionAt,
     2:optional string executeBefore,
     3:optional i32 numberofRetries,
+}
+
+/**
+ * A structure holding the experiment configuration.
+ *
+ *
+*/
+struct ConfigurationData {
+  1: optional BasicMetadata basicMetadata,
+  2: optional string applicationId,
+  3: optional string applicationVersion,
+  4: optional string workflowTemplateId,
+  5: optional string worklfowTemplateVersion,
+  6: optional map<string,string> experimentInputs,
+  7: optional ComputationalResourceScheduling computationalResourceScheduling,
+  8: optional AdvancedInputDataHandling advanceInputDataHandling,
+  9: optional AdvancedOutputDataHandling advanceOutputDataHandling,
+  10: optional QualityOfServiceParams qosParams
 }
