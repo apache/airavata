@@ -124,10 +124,10 @@ public class GatewayResource extends AbstractResource {
                         new ApplicationDescriptorResource();
                 applicationDescriptorResource.setGatewayName(gatewayName);
                 return applicationDescriptorResource;
-            case EXPERIMENT:
-                ExperimentResource experimentResource =new ExperimentResource();
-                experimentResource.setGateway(this);
-                return experimentResource;
+            case EXPERIMENT_METADATA:
+                ExperimentMetadataResource metadataResource =new ExperimentMetadataResource();
+                metadataResource.setGateway(this);
+                return metadataResource;
             case GATEWAY_WORKER:
                 WorkerResource workerResource = new WorkerResource();
                 workerResource.setGateway(this);
@@ -180,10 +180,10 @@ public class GatewayResource extends AbstractResource {
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
                 break;
-            case EXPERIMENT:
-                generator = new QueryGenerator(EXPERIMENT);
-                generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
-                generator.setParameter(ExperimentConstants.GATEWAY_NAME, gatewayName);
+            case EXPERIMENT_METADATA:
+                generator = new QueryGenerator(EXPERIMENT_METADATA);
+                generator.setParameter(ExperimentMetadataConstants.EXPERIMENT_ID, name);
+                generator.setParameter(ExperimentMetadataConstants.GATEWAY_NAME, gatewayName);
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
                 break;
@@ -254,14 +254,14 @@ public class GatewayResource extends AbstractResource {
                 em.getTransaction().commit();
                 em.close();
                 return hostDescriptorResource;
-            case EXPERIMENT:
-                generator = new QueryGenerator(EXPERIMENT);
-                generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
-                generator.setParameter(ExperimentConstants.GATEWAY_NAME, gatewayName);
+            case EXPERIMENT_METADATA:
+                generator = new QueryGenerator(EXPERIMENT_METADATA);
+                generator.setParameter(ExperimentMetadataConstants.EXPERIMENT_ID, name);
+//                generator.setParameter(ExperimentMetadataConstants.GATEWAY_NAME, gatewayName);
                 q = generator.selectQuery(em);
-                Experiment experiment = (Experiment)q.getSingleResult();
-                ExperimentResource experimentResource =
-                        (ExperimentResource)Utils.getResource(ResourceType.EXPERIMENT, experiment);
+                Experiment_Metadata experiment = (Experiment_Metadata)q.getSingleResult();
+                ExperimentMetadataResource experimentResource =
+                        (ExperimentMetadataResource)Utils.getResource(ResourceType.EXPERIMENT_METADATA, experiment);
                 em.getTransaction().commit();
                 em.close();
                 return experimentResource;
@@ -405,16 +405,16 @@ public class GatewayResource extends AbstractResource {
                     }
                 }
                 break;
-            case EXPERIMENT:
-                generator = new QueryGenerator(EXPERIMENT);
-                generator.setParameter(ExperimentConstants.GATEWAY_NAME, gatewayName);
+            case EXPERIMENT_METADATA:
+                generator = new QueryGenerator(EXPERIMENT_METADATA);
+                generator.setParameter(ExperimentMetadataConstants.GATEWAY_NAME, gatewayName);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        Experiment experiment = (Experiment) result;
-                        ExperimentResource experimentResource =
-                                (ExperimentResource)Utils.getResource(ResourceType.EXPERIMENT, experiment);
+                        Experiment_Metadata experiment = (Experiment_Metadata) result;
+                        ExperimentMetadataResource experimentResource =
+                                (ExperimentMetadataResource)Utils.getResource(ResourceType.EXPERIMENT_METADATA, experiment);
                         resourceList.add(experimentResource);
                     }
                 }
@@ -511,9 +511,9 @@ public class GatewayResource extends AbstractResource {
                 Application_Descriptor existingAppDesc = em.find(Application_Descriptor.class, new Application_Descriptor_PK(gatewayName, name.toString()));
                 em.close();
                 return existingAppDesc != null;
-            case EXPERIMENT:
+            case EXPERIMENT_METADATA:
                 em = ResourceUtils.getEntityManager();
-                Experiment existingExp = em.find(Experiment.class, name.toString());
+                Experiment_Metadata existingExp = em.find(Experiment_Metadata.class, name.toString());
                 em.close();
                 return existingExp != null;
             case ORCHESTRATOR:

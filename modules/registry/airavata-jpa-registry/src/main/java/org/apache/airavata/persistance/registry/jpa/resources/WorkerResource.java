@@ -78,9 +78,9 @@ public class WorkerResource extends AbstractResource {
 				userWorkflowResource.setGateway(gateway);
 				result=userWorkflowResource;
                 break;
-            case EXPERIMENT:
-                ExperimentResource experimentResource = new ExperimentResource();
-                experimentResource.setWorker(this);
+            case EXPERIMENT_METADATA:
+                ExperimentMetadataResource experimentResource = new ExperimentMetadataResource();
+                experimentResource.setExecutionUser(user);
                 experimentResource.setGateway(gateway);
                 result=experimentResource;
                 break;
@@ -117,10 +117,9 @@ public class WorkerResource extends AbstractResource {
                 q = generator.deleteQuery(em);
 	            q.executeUpdate();
 	            break;
-			case EXPERIMENT:
-                generator = new QueryGenerator(EXPERIMENT);
-                generator.setParameter(ExperimentConstants.USERNAME, getUser());
-                generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
+			case EXPERIMENT_METADATA:
+                generator = new QueryGenerator(EXPERIMENT_METADATA);
+                generator.setParameter(ExperimentMetadataConstants.EXPERIMENT_ID, name);
                 q = generator.deleteQuery(em);
 	            q.executeUpdate();
 	            break;
@@ -167,13 +166,12 @@ public class WorkerResource extends AbstractResource {
 	            User_Workflow userWorkflow = (User_Workflow) q.getSingleResult();
                 result= Utils.getResource(ResourceType.USER_WORKFLOW, userWorkflow);
 	            break;
-			case EXPERIMENT:
-                generator = new QueryGenerator(EXPERIMENT);
-                generator.setParameter(ExperimentConstants.USERNAME, getUser());
-                generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
+			case EXPERIMENT_METADATA:
+                generator = new QueryGenerator(EXPERIMENT_METADATA);
+                generator.setParameter(ExperimentMetadataConstants.EXPERIMENT_ID, name);
                 q = generator.selectQuery(em);
-	            Experiment experiment = (Experiment) q.getSingleResult();
-                result= Utils.getResource(ResourceType.EXPERIMENT, experiment);
+	            Experiment_Metadata experiment = (Experiment_Metadata) q.getSingleResult();
+                result= Utils.getResource(ResourceType.EXPERIMENT_METADATA, experiment);
 				break;
 			case WORKFLOW_DATA:
                 generator = new QueryGenerator(WORKFLOW_DATA);
@@ -276,14 +274,13 @@ public class WorkerResource extends AbstractResource {
 		            result.add(userWorkflowResource);
 	            }
 	            break;
-			case EXPERIMENT:
-                generator = new QueryGenerator(EXPERIMENT);
-                generator.setParameter(ExperimentConstants.USERNAME, getUser());
-                generator.setParameter(ExperimentConstants.GATEWAY_NAME, gateway.getGatewayName());
+			case EXPERIMENT_METADATA:
+                generator = new QueryGenerator(EXPERIMENT_METADATA);
+                generator.setParameter(ExperimentMetadataConstants.GATEWAY_NAME, gateway.getGatewayName());
                 q = generator.selectQuery(em);
 	            for (Object o : q.getResultList()) {
-	            	Experiment experiment = (Experiment) o;
-	            	ExperimentResource experimentResource = (ExperimentResource)Utils.getResource(ResourceType.EXPERIMENT, experiment);
+	            	Experiment_Metadata experiment = (Experiment_Metadata) o;
+	            	ExperimentMetadataResource experimentResource = (ExperimentMetadataResource)Utils.getResource(ResourceType.EXPERIMENT_METADATA, experiment);
 		            result.add(experimentResource);
 	            }
 	            break;
@@ -461,7 +458,7 @@ public class WorkerResource extends AbstractResource {
      * @return whether experiment is already exist for the given user
      */
 	public boolean isExperimentExists(String name){
-		return isExists(ResourceType.EXPERIMENT, name);
+		return isExists(ResourceType.EXPERIMENT_METADATA, name);
 	}
 	
 	/**
@@ -478,8 +475,8 @@ public class WorkerResource extends AbstractResource {
      * @param name experiment name
      * @return experiment resource
      */
-    public ExperimentResource getExperiment(String name){
-		return (ExperimentResource)get(ResourceType.EXPERIMENT, name);
+    public ExperimentMetadataResource getExperiment(String name){
+		return (ExperimentMetadataResource)get(ResourceType.EXPERIMENT_METADATA, name);
 	}
     
     public GFacJobDataResource getGFacJob(String jobId){
@@ -490,11 +487,11 @@ public class WorkerResource extends AbstractResource {
      *
      * @return list of experiments for the user
      */
-	public List<ExperimentResource> getExperiments(){
-		List<ExperimentResource> result=new ArrayList<ExperimentResource>();
-		List<Resource> list = get(ResourceType.EXPERIMENT);
+	public List<ExperimentMetadataResource> getExperiments(){
+		List<ExperimentMetadataResource> result=new ArrayList<ExperimentMetadataResource>();
+		List<Resource> list = get(ResourceType.EXPERIMENT_METADATA);
 		for (Resource resource : list) {
-			result.add((ExperimentResource) resource);
+			result.add((ExperimentMetadataResource) resource);
 		}
 		return result;
 	}
@@ -504,7 +501,7 @@ public class WorkerResource extends AbstractResource {
      * @param experimentId  experiment name
      */
 	public void removeExperiment(String experimentId){
-		remove(ResourceType.EXPERIMENT, experimentId);
+		remove(ResourceType.EXPERIMENT_METADATA, experimentId);
 	}
 	
     public boolean isWorkflowInstancePresent(String workflowInstanceId){

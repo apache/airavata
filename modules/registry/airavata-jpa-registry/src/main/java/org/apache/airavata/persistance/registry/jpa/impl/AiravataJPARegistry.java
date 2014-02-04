@@ -54,10 +54,10 @@ import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.ApplicationDescriptorResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ConfigurationResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ExecutionErrorResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ExperimentDataResource;
+//import org.apache.airavata.persistance.registry.jpa.resources.ExperimentDataResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ExperimentDataRetriever;
 import org.apache.airavata.persistance.registry.jpa.resources.ExperimentMetadataResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ExperimentResource;
+//import org.apache.airavata.persistance.registry.jpa.resources.ExperimentResource;
 import org.apache.airavata.persistance.registry.jpa.resources.GFacJobDataResource;
 import org.apache.airavata.persistance.registry.jpa.resources.GFacJobStatusResource;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
@@ -134,7 +134,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     private static int CONNECT_FAIL_WAIT_TIME=1000;
     private static int MAX_TRIES=15;
     private static final String DEFAULT_PROJECT_NAME = "default";
-    private static final Version API_VERSION=new Version("Airavata Registry API",0,11,null,null,null);
+    private static final Version API_VERSION=new Version("Airavata Registry API",0,12,null,null,null);
 
     private JPAResourceAccessor jpa;
     private boolean active=false;
@@ -207,6 +207,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         compatibleVersionMap.put("0.9", new String[]{"0.9","0.8"});
         compatibleVersionMap.put("0.10", new String[]{"0.10","0.9", "0.8"});
         compatibleVersionMap.put("0.11", new String[]{"0.11","0.10","0.9", "0.8"});
+        compatibleVersionMap.put("0.12", new String[]{"0.12"});
     }
 
     /**
@@ -991,7 +992,11 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             if (isExperimentExists(experimentId)){
                 throw new ExperimentDoesNotExistsException(experimentId);
             }
-            ExperimentResource experimentResource = project.createExperiment(experimentId);
+            ExperimentMetadataResource experimentResource = project.createExperiment(experimentId);
+            experimentResource.setExperimentName(experimentId);
+            experimentResource.setGateway(jpa.getGateway());
+            experimentResource.setProject(project);
+            experimentResource.setExecutionUser(jpa.getWorker().getUser());
             if (experiment.getSubmittedDate()!=null) {
                 experimentResource.setSubmittedDate(new Timestamp(experiment.getSubmittedDate().getTime()));
             }
@@ -1017,8 +1022,8 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
         WorkerResource worker = jpa.getWorker();
     	List<AiravataExperiment> result=new ArrayList<AiravataExperiment>();
-    	List<ExperimentResource> experiments = worker.getExperiments();
-    	for (ExperimentResource resource : experiments) {
+    	List<ExperimentMetadataResource> experiments = worker.getExperiments();
+    	for (ExperimentMetadataResource resource : experiments) {
 			AiravataExperiment e = createAiravataExperimentObj(resource);
 			result.add(e);
 		}
@@ -1026,10 +1031,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
 	private AiravataExperiment createAiravataExperimentObj(
-			ExperimentResource resource) {
+			ExperimentMetadataResource resource) {
 		AiravataExperiment e = new AiravataExperiment();
 		e.setExperimentId(resource.getExpID());
-		e.setUser(new AiravataUser(resource.getWorker().getUser()));
+		e.setUser(new AiravataUser(resource.getExecutionUser()));
 		e.setSubmittedDate(new Date(resource.getSubmittedDate().getTime()));
 		e.setGateway(new Gateway(resource.getGateway().getGatewayName()));
 		e.setProject(new WorkspaceProject(getProjName(resource.getProject().getName()), this));
@@ -1041,9 +1046,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             return projectsRegistry.getExperiments(projectName);
         }
         ProjectResource project = jpa.getWorker().getProject(createProjName(projectName));
-    	List<ExperimentResource> experiments = project.getExperiments();
+    	List<ExperimentMetadataResource> experiments = project.getExperiments();
     	List<AiravataExperiment> result=new ArrayList<AiravataExperiment>();
-    	for (ExperimentResource resource : experiments) {
+    	for (ExperimentMetadataResource resource : experiments) {
 			AiravataExperiment e = createAiravataExperimentObj(resource);
 			result.add(e);
 		}
@@ -1312,10 +1317,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             if (!isExperimentExists(experimentId, true)){
                 throw new ExperimentDoesNotExistsException(experimentId);
             }
-            ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
-            ExperimentDataResource data = experiment.getData();
-            data.setUserName(user);
-            data.save();
+            ExperimentMetadataResource experiment = jpa.getWorker().getExperiment(experimentId);
+            experiment.setExecutionUser(user);
+            experiment.save();
         }
 	}
 
@@ -1329,8 +1333,8 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		if (!isExperimentExists(experimentId)){
 			throw new ExperimentDoesNotExistsException(experimentId);
 		}
-		ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
-		return experiment.getData().getUserName();
+		ExperimentMetadataResource experiment = jpa.getWorker().getExperiment(experimentId);
+		return experiment.getExecutionUser();
 	}
 
     @Override
@@ -1364,14 +1368,14 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             if (!isExperimentExists(experimentId, true)){
                 throw new ExperimentDoesNotExistsException(experimentId);
             }
-            ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
-            ExperimentDataResource data = experiment.getData();
-            data.setExpName(experimentName);
-            data.save();
+            ExperimentMetadataResource experiment = jpa.getWorker().getExperiment(experimentId);
+            experiment.setExperimentName(experimentName);
+            experiment.save();
         }
 	}
 
 
+    // FIXME : Need to replace with new Experiment_Generated_Data
 	@Override
 	public String getExperimentMetadata(String experimentId)
 			throws RegistryException {
@@ -1381,15 +1385,16 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		if (!isExperimentExists(experimentId, true)){
 			throw new ExperimentDoesNotExistsException(experimentId);
 		}
-		ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
-		ExperimentDataResource data = experiment.getData();
-		if (data.isExperimentMetadataPresent()){
-			return data.getExperimentMetadata().getMetadata();
-		}
+		ExperimentMetadataResource experiment = jpa.getWorker().getExperiment(experimentId);
+//		ExperimentDataResource data = experiment.getData();
+//		if (data.isExperimentMetadataPresent()){
+//			return data.getExperimentMetadata().getMetadata();
+//		}
 		return null;
 	}
 
 
+    // FIXME : Need to replace with new Experiment_Generated_Data
 	@Override
 	public void updateExperimentMetadata(String experimentId, String metadata)
 			throws RegistryException {
@@ -1399,17 +1404,17 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             if (!isExperimentExists(experimentId, true)){
                 throw new ExperimentDoesNotExistsException(experimentId);
             }
-            ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
-            ExperimentDataResource data = experiment.getData();
-            ExperimentMetadataResource experimentMetadata;
-            if (data.isExperimentMetadataPresent()){
-                experimentMetadata = data.getExperimentMetadata();
-                experimentMetadata.setMetadata(metadata);
-            }else{
-                experimentMetadata = data.createExperimentMetadata();
-                experimentMetadata.setMetadata(metadata);
-            }
-            experimentMetadata.save();
+//            ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
+//            ExperimentDataResource data = experiment.getData();
+//            ExperimentMetadataResource experimentMetadata;
+//            if (data.isExperimentMetadataPresent()){
+//                experimentMetadata = data.getExperimentMetadata();
+//                experimentMetadata.setMetadata(metadata);
+//            }else{
+//                experimentMetadata = data.createExperimentMetadata();
+//                experimentMetadata.setMetadata(metadata);
+//            }
+//            experimentMetadata.save();
         }
 	}
 
@@ -1452,10 +1457,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		if (!isExperimentExists(experimentId)){
 			throw new ExperimentDoesNotExistsException(experimentId);
 		}
-		ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
-		ExperimentDataResource data = experiment.getData();
+		ExperimentMetadataResource experiment = jpa.getWorker().getExperiment(experimentId);
 		List<WorkflowExecution> result=new ArrayList<WorkflowExecution>();
-		List<WorkflowDataResource> workflowInstances = data.getWorkflowInstances();
+		List<WorkflowDataResource> workflowInstances = experiment.getWorkflowInstances();
 		for (WorkflowDataResource resource : workflowInstances) {
 			WorkflowExecution workflowInstance = new WorkflowExecution(resource.getExperimentID(), resource.getWorkflowInstanceID());
 			workflowInstance.setTemplateName(resource.getTemplateName());
@@ -1699,7 +1703,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		if (!isExperimentExists(experimentId)){
 			throw new ExperimentDoesNotExistsException(experimentId);
 		}
+        // FIXME : We dont have the data structure for experiment generated data at the moment
         return (new ExperimentDataRetriever()).getExperiment(experimentId);
+
 	}
 
 
@@ -1954,9 +1960,8 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             if (isWorkflowInstanceExists(workflowInstanceId)){
                 throw new WorkflowInstanceAlreadyExistsException(workflowInstanceId);
             }
-            ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
-            ExperimentDataResource data = experiment.getData();
-            WorkflowDataResource workflowInstanceResource = data.createWorkflowInstanceResource(workflowInstanceId);
+            ExperimentMetadataResource experiment = jpa.getWorker().getExperiment(experimentId);
+            WorkflowDataResource workflowInstanceResource = experiment.createWorkflowInstanceResource(workflowInstanceId);
             workflowInstanceResource.setTemplateName(templateName);
             workflowInstanceResource.save();
         }
@@ -2077,11 +2082,11 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             return provenanceRegistry.getExperimentExecutionErrors(experimentId);
         }
 		List<ExperimentExecutionError> result=new ArrayList<ExperimentExecutionError>();
-		List<ExecutionErrorResource> executionErrors = jpa.getWorker().getExperiment(experimentId).getData().getExecutionErrors(Source.EXPERIMENT.toString(), experimentId, null, null, null);
+		List<ExecutionErrorResource> executionErrors = jpa.getWorker().getExperiment(experimentId).getExecutionErrors(Source.EXPERIMENT.toString(), experimentId, null, null, null);
 		for (ExecutionErrorResource errorResource : executionErrors) {
 			ExperimentExecutionError error = new ExperimentExecutionError();
 			setupValues(errorResource, error);
-			error.setExperimentId(errorResource.getExperimentDataResource().getExperimentID());
+			error.setExperimentId(errorResource.getMetadataResource().getExpID());
 			result.add(error);
 		}
 		return result;
@@ -2095,11 +2100,11 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             return provenanceRegistry.getWorkflowExecutionErrors(experimentId, workflowInstanceId);
         }
 		List<WorkflowExecutionError> result=new ArrayList<WorkflowExecutionError>();
-		List<ExecutionErrorResource> executionErrors = jpa.getWorker().getExperiment(experimentId).getData().getExecutionErrors(Source.WORKFLOW.toString(), experimentId, workflowInstanceId, null, null);
+		List<ExecutionErrorResource> executionErrors = jpa.getWorker().getExperiment(experimentId).getExecutionErrors(Source.WORKFLOW.toString(), experimentId, workflowInstanceId, null, null);
 		for (ExecutionErrorResource errorResource : executionErrors) {
 			WorkflowExecutionError error = new WorkflowExecutionError();
 			setupValues(errorResource, error);
-			error.setExperimentId(errorResource.getExperimentDataResource().getExperimentID());
+			error.setExperimentId(errorResource.getMetadataResource().getExpID());
 			error.setWorkflowInstanceId(errorResource.getWorkflowDataResource().getWorkflowInstanceID());
 			result.add(error);
 		}
@@ -2113,11 +2118,11 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             return provenanceRegistry.getNodeExecutionErrors(experimentId, workflowInstanceId, nodeId);
         }
 		List<NodeExecutionError> result=new ArrayList<NodeExecutionError>();
-		List<ExecutionErrorResource> executionErrors = jpa.getWorker().getExperiment(experimentId).getData().getExecutionErrors(Source.NODE.toString(), experimentId, workflowInstanceId, nodeId, null);
+		List<ExecutionErrorResource> executionErrors = jpa.getWorker().getExperiment(experimentId).getExecutionErrors(Source.NODE.toString(), experimentId, workflowInstanceId, nodeId, null);
 		for (ExecutionErrorResource errorResource : executionErrors) {
 			NodeExecutionError error = new NodeExecutionError();
 			setupValues(errorResource, error);
-			error.setExperimentId(errorResource.getExperimentDataResource().getExperimentID());
+			error.setExperimentId(errorResource.getMetadataResource().getExpID());
 			error.setNodeId(errorResource.getNodeID());
 			error.setWorkflowInstanceId(errorResource.getWorkflowDataResource().getWorkflowInstanceID());
 			result.add(error);
@@ -2133,11 +2138,11 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             return provenanceRegistry.getApplicationJobErrors(experimentId, workflowInstanceId, nodeId, gfacJobId);
         }
 		List<ApplicationJobExecutionError> result=new ArrayList<ApplicationJobExecutionError>();
-		List<ExecutionErrorResource> executionErrors = jpa.getWorker().getExperiment(experimentId).getData().getExecutionErrors(Source.APPLICATION.toString(), experimentId, workflowInstanceId, nodeId, gfacJobId);
+		List<ExecutionErrorResource> executionErrors = jpa.getWorker().getExperiment(experimentId).getExecutionErrors(Source.APPLICATION.toString(), experimentId, workflowInstanceId, nodeId, gfacJobId);
 		for (ExecutionErrorResource errorResource : executionErrors) {
 			ApplicationJobExecutionError error = new ApplicationJobExecutionError();
 			setupValues(errorResource, error);
-			error.setExperimentId(errorResource.getExperimentDataResource().getExperimentID());
+			error.setExperimentId(errorResource.getMetadataResource().getExpID());
 			error.setJobId(errorResource.getGfacJobID());
 			error.setNodeId(errorResource.getNodeID());
 			error.setWorkflowInstanceId(errorResource.getWorkflowDataResource().getWorkflowInstanceID());
@@ -2212,7 +2217,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		if (!isExperimentExists(experimentId)){
 			throw new ExperimentDoesNotExistsException(experimentId);
 		}
-		ExecutionErrorResource executionError = jpa.getWorker().getExperiment(experimentId).getData().createExecutionError();
+		ExecutionErrorResource executionError = jpa.getWorker().getExperiment(experimentId).createExecutionError();
 		setupValues(errorSource, executionError);
 		executionError.setSourceType(type.toString());
 		return executionError;
@@ -2237,7 +2242,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             return provenanceRegistry.addWorkflowExecutionError(error);
         }
 		ExecutionErrorResource executionError = createNewExecutionErrorResource(error.getExperimentId(),error,ExecutionErrors.Source.WORKFLOW);
-		executionError.setWorkflowDataResource(jpa.getWorker().getExperiment(error.getExperimentId()).getData().getWorkflowInstance(error.getWorkflowInstanceId()));
+		executionError.setWorkflowDataResource(jpa.getWorker().getExperiment(error.getExperimentId()).getWorkflowInstance(error.getWorkflowInstanceId()));
 		executionError.save();
 		return executionError.getErrorID();
 	}
@@ -2249,7 +2254,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             return provenanceRegistry.addNodeExecutionError(error);
         }
 		ExecutionErrorResource executionError = createNewExecutionErrorResource(error.getExperimentId(),error, Source.NODE);
-		executionError.setWorkflowDataResource(jpa.getWorker().getExperiment(error.getExperimentId()).getData().getWorkflowInstance(error.getWorkflowInstanceId()));
+		executionError.setWorkflowDataResource(jpa.getWorker().getExperiment(error.getExperimentId()).getWorkflowInstance(error.getWorkflowInstanceId()));
 		executionError.setNodeID(error.getNodeId());
 		executionError.save();
 		return executionError.getErrorID();
@@ -2262,7 +2267,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             return provenanceRegistry.addApplicationJobExecutionError(error);
         }
 		ExecutionErrorResource executionError = createNewExecutionErrorResource(error.getExperimentId(),error, Source.APPLICATION);
-		executionError.setWorkflowDataResource(jpa.getWorker().getExperiment(error.getExperimentId()).getData().getWorkflowInstance(error.getWorkflowInstanceId()));
+		executionError.setWorkflowDataResource(jpa.getWorker().getExperiment(error.getExperimentId()).getWorkflowInstance(error.getWorkflowInstanceId()));
 		executionError.setNodeID(error.getNodeId());
 		executionError.setGfacJobID(error.getJobId());
 		executionError.save();
@@ -2283,9 +2288,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 //		if (!isWorkflowInstanceNodePresent(job.getWorkflowExecutionId(), job.getNodeId())){
 //			throw new WorkflowInstanceNodeDoesNotExistsException(job.getWorkflowExecutionId(), job.getNodeId());
 //		}
-		ExperimentDataResource expData = jpa.getWorker().getExperiment(job.getExperimentId()).getData();
+		ExperimentMetadataResource expData = jpa.getWorker().getExperiment(job.getExperimentId());
 		GFacJobDataResource gfacJob = expData.createGFacJob(job.getJobId());
-		gfacJob.setExperimentDataResource(expData);
+		gfacJob.setMetadataResource(expData);
 		gfacJob.setWorkflowDataResource(expData.getWorkflowInstance(job.getWorkflowExecutionId()));
 		gfacJob.setNodeID(job.getNodeId());
 		setupValues(job, gfacJob);
@@ -2377,7 +2382,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	private void setupValues(GFacJobDataResource gfacJob, ApplicationJob job) {
 		job.setApplicationDescriptionId(gfacJob.getApplicationDescID());
 		job.setStatusUpdateTime(gfacJob.getStatusUpdateTime());
-		job.setExperimentId(gfacJob.getExperimentDataResource().getExperimentID());
+		job.setExperimentId(gfacJob.getMetadataResource().getExpID());
 		job.setHostDescriptionId(gfacJob.getHostDescID());
 		job.setJobData(gfacJob.getJobData());
 		job.setJobId(gfacJob.getLocalJobID());
@@ -2412,17 +2417,17 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 			if (!isExperimentExists(experimentId)){
 				throw new ExperimentDoesNotExistsException(experimentId);
 			}
-			gFacJobs = jpa.getWorker().getExperiment(experimentId).getData().getGFacJobs();
+			gFacJobs = jpa.getWorker().getExperiment(experimentId).getGFacJobs();
 		}else if (nodeId==null){
 			if (!isWorkflowInstanceExists(workflowExecutionId)){
 				throw new WorkflowInstanceDoesNotExistsException(workflowExecutionId);
 			}
-			gFacJobs = jpa.getWorker().getExperiment(experimentId).getData().getWorkflowInstance(workflowExecutionId).getGFacJobs();
+			gFacJobs = jpa.getWorker().getExperiment(experimentId).getWorkflowInstance(workflowExecutionId).getGFacJobs();
 		}else{
 			if (!isWorkflowInstanceNodePresent(workflowExecutionId, nodeId)){
 				throw new WorkflowInstanceNodeDoesNotExistsException(workflowExecutionId, nodeId);
 			}
-			gFacJobs = jpa.getWorker().getExperiment(experimentId).getData().getWorkflowInstance(workflowExecutionId).getNodeData(nodeId).getGFacJobs();
+			gFacJobs = jpa.getWorker().getExperiment(experimentId).getWorkflowInstance(workflowExecutionId).getNodeData(nodeId).getGFacJobs();
 		}
 		for (Resource resource : gFacJobs) {
 			ApplicationJob job = new ApplicationJob();

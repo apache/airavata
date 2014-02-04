@@ -23,21 +23,24 @@ package org.apache.airavata.persistance.registry.jpa.model;
 import javax.persistence.*;
 
 @Entity
+@Table(name ="GATEWAY_WORKER")
 @IdClass(Gateway_Worker_PK.class)
 public class Gateway_Worker {
     @Id
+    @Column(name = "GATEWAY_NAME")
     private String gateway_name;
 
     @Id
+    @Column(name = "USER_NAME")
     private String user_name;
 
     @ManyToOne(cascade=CascadeType.MERGE)
-    @JoinColumn(name = "gateway_name")
+    @JoinColumn(name = "GATEWAY_NAME")
     private Gateway gateway;
 
 
     @ManyToOne(cascade=CascadeType.MERGE)
-    @JoinColumn(name = "user_name")
+    @JoinColumn(name = "USER_NAME")
     private Users user;
 
     public String getUser_name() {

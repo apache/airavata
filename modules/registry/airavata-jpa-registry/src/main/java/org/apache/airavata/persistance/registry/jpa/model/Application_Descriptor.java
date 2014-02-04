@@ -25,24 +25,30 @@ import javax.persistence.*;
 
 @Entity
 @IdClass(Application_Descriptor_PK.class)
+@Table(name ="APPLICATION_DESCRIPTOR")
 public class Application_Descriptor {
     @Id
+    @Column(name = "APPLICATION_DESCRIPTOR_ID")
     private String application_descriptor_ID;
     @Id
+    @Column(name = "GATEWAY_NAME")
     private String gateway_name;
 
+    @Column(name = "HOST_DESCRIPTOR_ID")
     private String host_descriptor_ID;
+    @Column(name = "SERVICE_DESCRIPTOR_ID")
     private String service_descriptor_ID;
 
     @Lob
+    @Column(name = "APPLICATION_DESCRIPTOR_XML")
     private byte[] application_descriptor_xml;
 
     @ManyToOne(cascade=CascadeType.PERSIST)
-    @JoinColumn(name = "gateway_name")
+    @JoinColumn(name = "GATEWAY_NAME")
     private Gateway gateway;
 
     @ManyToOne(cascade=CascadeType.PERSIST)
-    @JoinColumn(name = "updated_user", referencedColumnName = "user_name")
+    @JoinColumn(name = "UPDATED_USER", referencedColumnName = "USER_NAME")
     private Users user;
 
     public String getApplication_descriptor_ID() {

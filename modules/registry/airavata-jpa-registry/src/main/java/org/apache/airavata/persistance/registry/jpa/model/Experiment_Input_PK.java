@@ -17,35 +17,45 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
+
 package org.apache.airavata.persistance.registry.jpa.model;
 
-import javax.persistence.*;
+public class Experiment_Input_PK {
+    private String experiment_id;
+    private String ex_key;
 
-@Entity
-@Table(name ="USERS")
-public class Users {
-
-    @Id
-    @Column(name = "USER_NAME")
-    private String user_name;
-    @Column(name = "PASSWORD")
-    private String password;
-
-
-    public String getUser_name() {
-        return user_name;
+    public Experiment_Input_PK(String experiment_id, String ex_key) {
+        this.experiment_id = experiment_id;
+        this.ex_key = ex_key;
     }
 
-    public void setUser_name(String user_name) {
-        this.user_name = user_name;
+    public Experiment_Input_PK() {
     }
 
-    public String getPassword() {
-        return password;
+    @Override
+    public boolean equals(Object o) {
+        return false;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    @Override
+    public int hashCode() {
+        return 1;
+    }
+
+    public String getExperiment_id() {
+        return experiment_id;
+    }
+
+    public void setExperiment_id(String experiment_id) {
+        this.experiment_id = experiment_id;
+    }
+
+    public String getEx_key() {
+        return ex_key;
+    }
+
+    public void setEx_key(String ex_key) {
+        this.ex_key = ex_key;
     }
 }

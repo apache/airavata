@@ -21,10 +21,7 @@
 
 package org.apache.airavata.persistance.registry.jpa;
 
-import org.apache.airavata.persistance.registry.jpa.resources.ExperimentResource;
-import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
-import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
+import org.apache.airavata.persistance.registry.jpa.resources.*;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -33,7 +30,7 @@ public class ProjectResourceTest extends AbstractResourceTest {
     private GatewayResource gatewayResource;
     private WorkerResource workerResource;
     private ProjectResource projectResource;
-    private ExperimentResource experimentResource;
+    private ExperimentMetadataResource experimentResource;
 
     @Override
     public void setUp() throws Exception {
@@ -47,11 +44,9 @@ public class ProjectResourceTest extends AbstractResourceTest {
 
         experimentResource = projectResource.createExperiment("testExpID");
         experimentResource.setGateway(gatewayResource);
-        experimentResource.setWorker(workerResource);
-        Calendar calender = Calendar.getInstance();
-        java.util.Date d = calender.getTime();
-        Timestamp currentTime = new Timestamp(d.getTime());
-        experimentResource.setSubmittedDate(currentTime);
+        experimentResource.setExperimentName("testExpID");
+        experimentResource.setExecutionUser(workerResource.getUser());
+        experimentResource.setSubmittedDate(getCurrentTimestamp());
         experimentResource.setProject(projectResource);
         experimentResource.save();
     }
@@ -61,7 +56,7 @@ public class ProjectResourceTest extends AbstractResourceTest {
     }
 
     public void testGet() throws Exception {
-        ExperimentResource experiment = projectResource.getExperiment("testExpID");
+        ExperimentMetadataResource experiment = projectResource.getExperiment("testExpID");
         assertNotNull("experiment resource retrieved successfully", experiment);
     }
 
@@ -70,27 +65,14 @@ public class ProjectResourceTest extends AbstractResourceTest {
     }
 
     public void testSave() throws Exception {
-        projectResource.save();
         assertTrue("Project saved successfully", workerResource.isProjectExists("testProject"));
-        //remove project
-        workerResource.removeProject("testProject");
     }
 
 
-    public void testRemove() throws Exception {
-        projectResource.removeExperiment("testExpID");
-        assertFalse("experiment removed successfully", projectResource.isExperimentExists("testExpID"));
-
-        experimentResource = projectResource.createExperiment("testExpID");
-        experimentResource.setGateway(gatewayResource);
-        experimentResource.setWorker(workerResource);
-        Calendar calender = Calendar.getInstance();
-        java.util.Date d = calender.getTime();
-        Timestamp currentTime = new Timestamp(d.getTime());
-        experimentResource.setSubmittedDate(currentTime);
-        experimentResource.setProject(projectResource);
-        experimentResource.save();
-    }
+//    public void testRemove() throws Exception {
+//        projectResource.removeExperiment("testExpID");
+//        assertFalse("experiment removed successfully", projectResource.isExperimentExists("testExpID"));
+//    }
 
     @Override
     public void tearDown() throws Exception {

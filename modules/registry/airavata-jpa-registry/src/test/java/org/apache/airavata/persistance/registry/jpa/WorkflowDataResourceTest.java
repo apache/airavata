@@ -27,7 +27,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 
 public class WorkflowDataResourceTest extends AbstractResourceTest {
-    private ExperimentDataResource experimentDataResource;
+    private ExperimentMetadataResource experimentResource;
     private WorkflowDataResource workflowDataResource;
     private NodeDataResource nodeDataResource;
     private GramDataResource gramDataResource;
@@ -38,18 +38,14 @@ public class WorkflowDataResourceTest extends AbstractResourceTest {
         GatewayResource gatewayResource = super.getGatewayResource();
         WorkerResource workerResource = super.getWorkerResource();
 
-        ExperimentResource experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
+        experimentResource = (ExperimentMetadataResource) gatewayResource.create(ResourceType.EXPERIMENT_METADATA);
         experimentResource.setExpID("testExpID");
-        experimentResource.setWorker(workerResource);
+        experimentResource.setExperimentName("testExpID");
+        experimentResource.setExecutionUser(workerResource.getUser());
         experimentResource.setProject(new ProjectResource(workerResource, gatewayResource, "testProject"));
         experimentResource.save();
 
-        experimentDataResource = (ExperimentDataResource) experimentResource.create(ResourceType.EXPERIMENT_DATA);
-        experimentDataResource.setExpName("testExpID");
-        experimentDataResource.setUserName(workerResource.getUser());
-        experimentDataResource.save();
-
-        workflowDataResource = (WorkflowDataResource) experimentDataResource.create(ResourceType.WORKFLOW_DATA);
+        workflowDataResource = (WorkflowDataResource) experimentResource.create(ResourceType.WORKFLOW_DATA);
         workflowDataResource.setWorkflowInstanceID("testWFInstance");
         workflowDataResource.setTemplateName("testTemplate");
         workflowDataResource.setExperimentID("testExpID");
@@ -98,7 +94,7 @@ public class WorkflowDataResourceTest extends AbstractResourceTest {
     }
 
     public void testSave() throws Exception {
-        assertTrue("workflow data saved successfully", experimentDataResource.isWorkflowInstancePresent("testWFInstance"));
+        assertTrue("workflow data saved successfully", experimentResource.isExists(ResourceType.WORKFLOW_DATA, "testWFInstance"));
     }
 
     @Override

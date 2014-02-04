@@ -164,7 +164,7 @@ public class Initialize {
         BufferedReader reader = null;
         try{
 
-            InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("data-derby.sql");
+            InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("airavata-registry-derby.sql");
             reader = new BufferedReader(new InputStreamReader(inputStream));
             String line;
             while ((line = reader.readLine()) != null) {

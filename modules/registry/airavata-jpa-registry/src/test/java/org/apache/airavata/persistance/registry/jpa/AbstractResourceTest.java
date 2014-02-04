@@ -27,6 +27,9 @@ import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 
+import java.sql.Timestamp;
+import java.util.Calendar;
+
 public abstract class AbstractResourceTest extends TestCase {
 
     private GatewayResource gatewayResource;
@@ -36,13 +39,19 @@ public abstract class AbstractResourceTest extends TestCase {
     private Initialize initialize;
     @Override
     public void setUp() throws Exception {
-        initialize = new Initialize("data-derby.sql");
+        initialize = new Initialize("airavata-registry-derby.sql");
         initialize.initializeDB();
         gatewayResource = (GatewayResource)ResourceUtils.getGateway("default");
         workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayName(), "admin");
         userResource = (UserResource)gatewayResource.create(ResourceType.USER);
         userResource.setUserName("admin");
         userResource.setPassword("admin");
+    }
+
+    public Timestamp getCurrentTimestamp() {
+        Calendar calender = Calendar.getInstance();
+        java.util.Date d = calender.getTime();
+        return new Timestamp(d.getTime());
     }
 
     @Override

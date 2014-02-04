@@ -30,14 +30,14 @@ import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Execution_Error;
-import org.apache.airavata.persistance.registry.jpa.model.Experiment_Data;
+import org.apache.airavata.persistance.registry.jpa.model.Experiment_Metadata;
 import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ExecutionErrorResource extends AbstractResource {
     private final static Logger logger = LoggerFactory.getLogger(ExecutionErrorResource.class);
-    private ExperimentDataResource experimentDataResource;
+    private ExperimentMetadataResource metadataResource;
     private WorkflowDataResource workflowDataResource;
     private String nodeID;
     private String gfacJobID;
@@ -83,10 +83,10 @@ public class ExecutionErrorResource extends AbstractResource {
 
         Execution_Error execution_error = new Execution_Error();
         execution_error.setNode_id(nodeID);
-        Experiment_Data experiment_data = em.find(Experiment_Data.class, experimentDataResource.getExperimentID());
-        execution_error.setExperiment_data(experiment_data);
+        Experiment_Metadata experiment_data = em.find(Experiment_Metadata.class, metadataResource.getExpID());
+        execution_error.setExperiment_Metadata(experiment_data);
         Workflow_Data workflow_data = em.find(Workflow_Data.class, workflowDataResource.getWorkflowInstanceID());
-        execution_error.setExperiment_ID(experiment_data.getExperiment_ID());
+        execution_error.setExperiment_ID(experiment_data.getExperiment_id());
         execution_error.setWorkflow_Data(workflow_data);
         execution_error.setWorkflow_instanceID(workflow_data.getWorkflow_instanceID());
         execution_error.setError_code(errorCode);
@@ -103,8 +103,8 @@ public class ExecutionErrorResource extends AbstractResource {
 
     }
 
-    public ExperimentDataResource getExperimentDataResource() {
-        return experimentDataResource;
+    public ExperimentMetadataResource getMetadataResource() {
+        return metadataResource;
     }
 
     public WorkflowDataResource getWorkflowDataResource() {
@@ -139,8 +139,8 @@ public class ExecutionErrorResource extends AbstractResource {
         return errorCode;
     }
 
-    public void setExperimentDataResource(ExperimentDataResource experimentDataResource) {
-        this.experimentDataResource = experimentDataResource;
+    public void setMetadataResource(ExperimentMetadataResource metadataResource) {
+        this.metadataResource = metadataResource;
     }
 
     public void setWorkflowDataResource(WorkflowDataResource workflowDataResource) {

@@ -27,9 +27,9 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 
 public class ExecutionErrorResourceTest extends AbstractResourceTest {
-    private ExperimentDataResource experimentDataResource;
     private WorkflowDataResource workflowDataResource;
     private NodeDataResource nodeDataResource;
+    private ExperimentMetadataResource experimentResource;
 
     @Override
     public void setUp() throws Exception {
@@ -37,24 +37,25 @@ public class ExecutionErrorResourceTest extends AbstractResourceTest {
         GatewayResource gatewayResource = super.getGatewayResource();
         WorkerResource workerResource = super.getWorkerResource();
 
-        ExperimentResource experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
+        ProjectResource project = new ProjectResource(workerResource, gatewayResource, "testProject");
+        project.save();
+
+        experimentResource = (ExperimentMetadataResource) gatewayResource.create(ResourceType.EXPERIMENT_METADATA);
         experimentResource.setExpID("testExpID");
-        experimentResource.setWorker(workerResource);
-        experimentResource.setProject(new ProjectResource(workerResource, gatewayResource, "testProject"));
+        experimentResource.setExecutionUser(workerResource.getUser());
+
+        experimentResource.setProject(project);
+        experimentResource.setDescription("testDescription");
+        experimentResource.setExperimentName("textExpID");
+        experimentResource.setSubmittedDate(getCurrentTimestamp());
+        experimentResource.setShareExp(true);
         experimentResource.save();
 
-        experimentDataResource = (ExperimentDataResource) experimentResource.create(ResourceType.EXPERIMENT_DATA);
-        experimentDataResource.setExpName("testExpID");
-        experimentDataResource.setUserName(workerResource.getUser());
-        experimentDataResource.save();
-
-        workflowDataResource = (WorkflowDataResource) experimentDataResource.create(ResourceType.WORKFLOW_DATA);
+        workflowDataResource = (WorkflowDataResource) experimentResource.create(ResourceType.WORKFLOW_DATA);
         workflowDataResource.setWorkflowInstanceID("testWFInstance");
         workflowDataResource.setTemplateName("testTemplate");
         workflowDataResource.setExperimentID("testExpID");
-        Calendar calender = Calendar.getInstance();
-        java.util.Date d = calender.getTime();
-        Timestamp timestamp = new Timestamp(d.getTime());
+        Timestamp timestamp = getCurrentTimestamp();
         workflowDataResource.setLastUpdatedTime(timestamp);
         workflowDataResource.save();
 
@@ -66,6 +67,7 @@ public class ExecutionErrorResourceTest extends AbstractResourceTest {
         nodeDataResource.save();
     }
 
+
     public void testSave() throws Exception {
         ExecutionErrorResource executionErrorResource = (ExecutionErrorResource) workflowDataResource.create(ResourceType.EXECUTION_ERROR);
         executionErrorResource.setErrorCode("testErrorCode");
@@ -74,7 +76,7 @@ public class ExecutionErrorResourceTest extends AbstractResourceTest {
         executionErrorResource.setErrorReference(0);
         executionErrorResource.setWorkflowDataResource(workflowDataResource);
 
-        executionErrorResource.setExperimentDataResource(experimentDataResource);
+        executionErrorResource.setMetadataResource(experimentResource);
         executionErrorResource.setNodeID(nodeDataResource.getNodeID());
         executionErrorResource.setGfacJobID("testGfacJobID");
         executionErrorResource.setErrorDes("testDes");
@@ -82,7 +84,7 @@ public class ExecutionErrorResourceTest extends AbstractResourceTest {
         executionErrorResource.save();
         System.out.println(executionErrorResource.getErrorID());
 
-        assertTrue("application descriptor saved successfully", workflowDataResource.isExists(ResourceType.EXECUTION_ERROR, executionErrorResource.getErrorID()));
+        assertTrue("Execution Error saved successfully", workflowDataResource.isExists(ResourceType.EXECUTION_ERROR, executionErrorResource.getErrorID()));
 
     }
 
