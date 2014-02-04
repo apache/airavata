@@ -226,13 +226,6 @@ public class Utils {
                     logger.error("Object should be a Application Descriptor.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Application Descriptor.");
                 }
-            case EXPERIMENT:
-                if (o instanceof Experiment){
-                    return createExperiment((Experiment) o);
-                }  else {
-                    logger.error("Object should be a Experiment.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a Experiment.");
-                }
             case USER:
                 if(o instanceof Users) {
                     return createUser((Users) o);
@@ -275,19 +268,40 @@ public class Utils {
                     logger.error("Object should be a Gateway Worker.", new IllegalArgumentException());
                     throw  new IllegalArgumentException("Object should be a Gateway Worker.");
                 }
-            case EXPERIMENT_DATA:
-                if (o instanceof  Experiment_Data){
-                    return createExperimentData((Experiment_Data)o);
-                }else {
-                    logger.error("Object should be a Experiment Data.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a Experiment Data.");
-                }
             case EXPERIMENT_METADATA:
                 if (o instanceof  Experiment_Metadata){
                     return createExperimentMetadata((Experiment_Metadata)o);
                 }else {
-                    logger.error("Object should be a Experiment Metadata.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a Experiment Metadata.");
+                    logger.error("Object should be a Experiment MetaData.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Experiment MetaData.");
+                }
+            case EXPERIMENT_CONFIG_DATA:
+                if (o instanceof  Experiment_Configuration_Data){
+                    return createExperimentConfigData((Experiment_Configuration_Data)o);
+                }else {
+                    logger.error("Object should be a Experiment Config data.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Experiment Config data.");
+                }
+            case EXPERIMENT_SUMMARY:
+                if (o instanceof  Experiment_Summary){
+                    return createExperimentSummary((Experiment_Summary)o);
+                }else {
+                    logger.error("Object should be a Experiment Summary data.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Experiment Summary data.");
+                }
+            case EXPERIMENT_INPUT:
+                if (o instanceof  Experiment_Input){
+                    return createExperimentInput((Experiment_Input)o);
+                }else {
+                    logger.error("Object should be a Experiment input data.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Experiment input data.");
+                }
+            case EXPERIMENT_OUTPUT:
+                if (o instanceof  Experiment_Output){
+                    return createExperimentOutput((Experiment_Output)o);
+                }else {
+                    logger.error("Object should be a Experiment output data.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Experiment output data.");
                 }
             case WORKFLOW_DATA:
                 if (o instanceof  Workflow_Data){
@@ -404,25 +418,25 @@ public class Utils {
     }
 
     /**
-     *
+     * @deprecated
      * @param o Experiment model object
      * @return  Experiment resource object
      */
-    private static Resource createExperiment(Experiment o) {
-        ExperimentResource experimentResource = new ExperimentResource();
-        GatewayResource gatewayResource = (GatewayResource)createGateway(o.getGateway());
-        experimentResource.setGateway(gatewayResource);
-        Gateway_Worker gateway_worker = new Gateway_Worker();
-        gateway_worker.setGateway(o.getGateway());
-        gateway_worker.setUser(o.getUser());
-        WorkerResource workerResource = (WorkerResource) createGatewayWorker(gateway_worker);
-        experimentResource.setWorker(workerResource);
-        ProjectResource projectResource = (ProjectResource)createProject(o.getProject());
-        experimentResource.setProject(projectResource);
-        experimentResource.setExpID(o.getExperiment_ID());
-        experimentResource.setSubmittedDate(o.getSubmitted_date());
-        return experimentResource;
-    }
+//    private static Resource createExperiment(Experiment o) {
+//        ExperimentResource experimentResource = new ExperimentResource();
+//        GatewayResource gatewayResource = (GatewayResource)createGateway(o.getGateway());
+//        experimentResource.setGateway(gatewayResource);
+//        Gateway_Worker gateway_worker = new Gateway_Worker();
+//        gateway_worker.setGateway(o.getGateway());
+//        gateway_worker.setUser(o.getUser());
+//        WorkerResource workerResource = (WorkerResource) createGatewayWorker(gateway_worker);
+//        experimentResource.setWorker(workerResource);
+//        ProjectResource projectResource = (ProjectResource)createProject(o.getProject());
+//        experimentResource.setProject(projectResource);
+//        experimentResource.setExpID(o.getExperiment_ID());
+//        experimentResource.setSubmittedDate(o.getSubmitted_date());
+//        return experimentResource;
+//    }
 
     /**
      *
@@ -522,16 +536,41 @@ public class Utils {
     }
 
     /**
-     *
+     * @deprecated
      * @param o Experiment Data model object
      * @return Experiment Data resource object
      */
-    private static Resource createExperimentData(Experiment_Data o){
-        ExperimentDataResource experimentDataResource = new ExperimentDataResource();
-        experimentDataResource.setExperimentID(o.getExperiment_ID());
-        experimentDataResource.setExpName(o.getName());
-        experimentDataResource.setUserName(o.getUsername());
-        return experimentDataResource;
+//    private static Resource createExperimentData(Experiment_Data o){
+//        ExperimentDataResource experimentDataResource = new ExperimentDataResource();
+//        experimentDataResource.setExperimentID(o.getExperiment_ID());
+//        experimentDataResource.setExpName(o.getName());
+//        experimentDataResource.setUserName(o.getUsername());
+//        return experimentDataResource;
+//    }
+
+    private static Resource createExperimentConfigData(Experiment_Configuration_Data o){
+        ExperimentConfigDataResource exConfigDataResource = new ExperimentConfigDataResource();
+        ExperimentMetadataResource experimentMetadata = (ExperimentMetadataResource)createExperimentMetadata(o.getExperiment_metadata());
+        exConfigDataResource.setExMetadata(experimentMetadata);
+        exConfigDataResource.setAiravataAutoSchedule(o.isAiravata_auto_schedule());
+        exConfigDataResource.setCleanAfterJob(o.isClean_after_job());
+        exConfigDataResource.setCpuCount(o.getTotal_cpu_count());
+        exConfigDataResource.setDataRegURL(o.getData_reg_url());
+        exConfigDataResource.setJobStartTime(o.getJob_start_time());
+        exConfigDataResource.setNodeCount(o.getNode_count());
+        exConfigDataResource.setNumberOfThreads(o.getNumber_of_threads());
+        exConfigDataResource.setOutputDataDir(o.getOutput_data_dir());
+        exConfigDataResource.setOverrideManualSchedule(o.isOverride_manual_schedule());
+        exConfigDataResource.setPersistOutputData(o.isPersist_output_data());
+        exConfigDataResource.setPhysicalMemory(o.getTotal_physical_memory());
+        exConfigDataResource.setProjectAccount(o.getComputational_project_account());
+        exConfigDataResource.setQueueName(o.getQueue_name());
+        exConfigDataResource.setResourceHostID(o.getResource_host_id());
+        exConfigDataResource.setStageInputsToWDir(o.isStage_input_files_to_working_dir());
+        exConfigDataResource.setWallTimeLimit(o.getWalltime_limit());
+        exConfigDataResource.setOverrideManualSchedule(o.isOverride_manual_schedule());
+        exConfigDataResource.setWorkingDir(o.getWorking_dir());
+        return exConfigDataResource;
     }
 
     /**
@@ -541,9 +580,46 @@ public class Utils {
      */
     private static Resource createExperimentMetadata(Experiment_Metadata o) {
         ExperimentMetadataResource experimentMetadataResource = new ExperimentMetadataResource();
-        experimentMetadataResource.setExpID(o.getExperiment_ID());
-        experimentMetadataResource.setMetadata(new String(o.getMetadata()));
+        experimentMetadataResource.setExpID(o.getExperiment_id());
+        experimentMetadataResource.setDescription(o.getDescription());
+        Gateway_Worker gw = new Gateway_Worker();
+        gw.setGateway(o.getGateway());
+        experimentMetadataResource.setExecutionUser(o.getExecution_user());
+        experimentMetadataResource.setShareExp(o.isShare_experiment());
+        experimentMetadataResource.setSubmittedDate(o.getSubmitted_date());
+        GatewayResource gResource = (GatewayResource)createGateway(o.getGateway());
+        experimentMetadataResource.setGateway(gResource);
+        ProjectResource pResource = (ProjectResource)createProject(o.getProject());
+        experimentMetadataResource.setProject(pResource);
+        experimentMetadataResource.setExperimentName(o.getExperiment_name());
         return experimentMetadataResource;
+    }
+
+    private static Resource createExperimentSummary (Experiment_Summary o){
+        ExperimentSummaryResource summaryResource = new ExperimentSummaryResource();
+        ExperimentMetadataResource metadata = (ExperimentMetadataResource)createExperimentMetadata(o.getExperiment_metadata());
+        summaryResource.setExperimentMetadataResource(metadata);
+        summaryResource.setLastUpdateTime(o.getLast_update_time());
+        summaryResource.setStatus(o.getStatus());
+        return summaryResource;
+    }
+
+    private static Resource createExperimentInput (Experiment_Input o){
+        ExperimentInputResource eInputResource = new ExperimentInputResource();
+        ExperimentMetadataResource metadata = (ExperimentMetadataResource)createExperimentMetadata(o.getExperiment_metadata());
+        eInputResource.setExperimentMetadataResource(metadata);
+        eInputResource.setExperimentKey(o.getEx_key());
+        eInputResource.setValue(o.getValue());
+        return eInputResource;
+    }
+
+    private static Resource createExperimentOutput (Experiment_Output o){
+        ExperimentOutputResource eOutputResource = new ExperimentOutputResource();
+        ExperimentMetadataResource metadata = (ExperimentMetadataResource)createExperimentMetadata(o.getExperiment_metadata());
+        eOutputResource.setExperimentMetadataResource(metadata);
+        eOutputResource.setExperimentKey(o.getEx_key());
+        eOutputResource.setValue(o.getValue());
+        return eOutputResource;
     }
 
     /**
@@ -553,7 +629,7 @@ public class Utils {
      */
     private static Resource createWorkflowData(Workflow_Data o){
         WorkflowDataResource workflowDataResource = new WorkflowDataResource();
-        workflowDataResource.setExperimentID(o.getExperiment_data().getExperiment_ID());
+        workflowDataResource.setExperimentID(o.getExperiment_data().getExperiment_id());
         workflowDataResource.setWorkflowInstanceID(o.getWorkflow_instanceID());
         workflowDataResource.setTemplateName(o.getTemplate_name());
         workflowDataResource.setStatus(o.getStatus());
@@ -604,8 +680,8 @@ public class Utils {
 
     private static Resource createExecutionError(Execution_Error o){
         ExecutionErrorResource executionErrorResource = new ExecutionErrorResource();
-        ExperimentDataResource experimentDataResource = (ExperimentDataResource)createExperimentData(o.getExperiment_Data());
-        executionErrorResource.setExperimentDataResource(experimentDataResource);
+        ExperimentMetadataResource experimentDataResource = (ExperimentMetadataResource)createExperimentMetadata(o.getExperiment_MetaData());
+        executionErrorResource.setMetadataResource(experimentDataResource);
         WorkflowDataResource workflowDataResource = (WorkflowDataResource)createWorkflowData(o.getWorkflow_Data());
         executionErrorResource.setWorkflowDataResource(workflowDataResource);
         executionErrorResource.setNodeID(o.getNode_id());
@@ -625,9 +701,9 @@ public class Utils {
 
     private static Resource createGfacJobData (GFac_Job_Data o){
         GFacJobDataResource gFacJobDataResource = new GFacJobDataResource();
-        ExperimentDataResource experimentDataResource = (ExperimentDataResource)createExperimentData(o.getExperiment_data());
+        ExperimentMetadataResource experimentDataResource = (ExperimentMetadataResource)createExperimentMetadata(o.getExperiment_metadata());
         WorkflowDataResource workflowDataResource = (WorkflowDataResource)createWorkflowData(o.getWorkflow_Data());
-        gFacJobDataResource.setExperimentDataResource(experimentDataResource);
+        gFacJobDataResource.setMetadataResource(experimentDataResource);
         gFacJobDataResource.setWorkflowDataResource(workflowDataResource);
         gFacJobDataResource.setNodeID(o.getNode_id());
         gFacJobDataResource.setApplicationDescID(o.getApplication_descriptor_ID());

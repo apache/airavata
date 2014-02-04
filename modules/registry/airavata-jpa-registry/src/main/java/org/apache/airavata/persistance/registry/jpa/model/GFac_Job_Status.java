@@ -25,13 +25,17 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
+@Table(name ="GFAC_JOB_STATUS")
 public class GFac_Job_Status {
+    @Column(name = "LOCAL_JOB_ID")
     private String local_Job_ID;
+    @Column(name = "STATUS_UPDATE_TIME")
     private Timestamp status_update_time;
+    @Column(name = "STATUS")
     private String status;
 
     @ManyToOne()
-    @JoinColumn(name = "local_Job_ID")
+    @JoinColumn(name = "LOCAL_JOB_ID")
     private GFac_Job_Data gFac_job_data;
 
 

@@ -25,30 +25,40 @@ import java.sql.Timestamp;
 import javax.persistence.*;
 
 @Entity
+@Table(name ="NODE_DATA")
 @IdClass(Node_DataPK.class)
 public class Node_Data {
 
 	@Id
+    @Column(name = "WORKFLOW_INSTANCE_ID")
     private String workflow_instanceID;
 
 	@ManyToOne()
-	@JoinColumn(name = "workflow_instanceID")
+	@JoinColumn(name = "WORKFLOW_INSTANCE_ID")
 	private Workflow_Data workflow_Data;
 
 	@Id
+    @Column(name = "NODE_ID")
 	private String node_id;
 
     @Id
+    @Column(name = "EXECUTION_INDEX")
     private int execution_index;
 
+    @Column(name = "NODE_TYPE")
 	private String node_type;
 	@Lob
+    @Column(name = "INPUTS")
     private byte[] inputs;
 	@Lob
+    @Column(name = "OUTPUTS")
     private byte[] outputs;
-	private String status;
-	private Timestamp start_time;
-	private Timestamp last_update_time;
+    @Column(name = "STATUS")
+    private String status;
+    @Column(name = "START_TIME")
+    private Timestamp start_time;
+    @Column(name = "LAST_UPDATE_TIME")
+    private Timestamp last_update_time;
 
 	public Workflow_Data getWorkflow_Data() {
 		return workflow_Data;

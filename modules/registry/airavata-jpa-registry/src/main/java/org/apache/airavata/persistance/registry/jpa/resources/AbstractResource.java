@@ -38,10 +38,12 @@ public abstract class AbstractResource implements Resource {
 	public static final String HOST_DESCRIPTOR = "Host_Descriptor";
 	public static final String SERVICE_DESCRIPTOR = "Service_Descriptor";
 	public static final String APPLICATION_DESCRIPTOR = "Application_Descriptor";
-	public static final String EXPERIMENT = "Experiment";
-	public static final String EXPERIMENT_DATA = "Experiment_Data";
-	public static final String WORKFLOW_DATA = "Workflow_Data";
 	public static final String EXPERIMENT_METADATA = "Experiment_Metadata";
+	public static final String EXPERIMENT_CONFIG_DATA = "Experiment_Configuration_Data";
+	public static final String EXPERIMENT_SUMMARY = "Experiment_Summary";
+	public static final String EXPERIMENT_INPUT = "Experiment_Input";
+	public static final String EXPERIMENT_OUTPUT = "Experiment_Output";
+	public static final String WORKFLOW_DATA = "Workflow_Data";
 	public static final String EXECUTION_ERROR = "Execution_Error";
 	public static final String GFAC_JOB_DATA = "GFac_Job_Data";
 	public static final String GFAC_JOB_STATUS = "GFac_Job_Status";
@@ -129,23 +131,62 @@ public abstract class AbstractResource implements Resource {
 		public static final String APPLICATION_DESC_XML = "application_descriptor_xml";
 	}
 
-	// Experiment table
-	public final class ExperimentConstants {
+	// Experiment Metadata table
+	public final class ExperimentMetadataConstants {
 		public static final String PROJECT_NAME = "project_name";
-		public static final String USERNAME = "user_name";
+		public static final String EXECUTION_USER = "execution_user";
 		public static final String GATEWAY_NAME = "gateway_name";
-		public static final String EXPERIMENT_ID = "experiment_ID";
+		public static final String EXPERIMENT_ID = "experiment_id";
+		public static final String EXPERIMENT_NAME = "experiment_name";
+		public static final String DESCRIPTION = "description";
 		public static final String SUBMITTED_DATE = "submitted_date";
+		public static final String SHARE_EXPERIMENT = "share_experiment";
 
 	}
 
-	// Experiment_Data table
-	public final class ExperimentDataConstants {
-		public static final String EXPERIMENT_ID = "experiment_ID";
-		public static final String NAME = "name";
-		public static final String USERNAME = "username";
-		public static final String METADATA = "metadata";
-	}
+    // Experiment Configuration Data table
+    public final class ExperimentConfigurationDataConstants {
+        public static final String EXPERIMENT_ID = "experiment_id";
+        public static final String RESOURCE_HOST_ID = "resource_host_id";
+        public static final String TOTAL_CPU_COUNT = "total_cpu_count";
+        public static final String NODE_COUNT = "node_count";
+        public static final String NUMBER_OF_THREADS = "number_of_threads";
+        public static final String QUEUE_NAME = "queue_name";
+        public static final String WALLTIME_LIMIT = "walltime_limit";
+        public static final String JOB_START_TIME = "job_start_time";
+        public static final String TOTAL_PHYSICAL_MEMORY = "total_physical_memory";
+        public static final String COMP_PROJECT_ACCOUNT = "computational_project_account";
+        public static final String AIRAVATA_AUTO_SCHEDULE = "airavata_auto_schedule";
+        public static final String OVERRIDE_MANUAL_SCHEDULE = "override_manual_schedule";
+        public static final String WORKING_DIR = "working_dir";
+        public static final String STAGE_INPUT_FILES_TO_WORKING_DIR = "stage_input_files_to_working_dir";
+        public static final String OUTPUT_DATA_DIR = "output_data_dir";
+        public static final String DATA_REG_URL = "data_reg_url";
+        public static final String PERSIST_OUTPUT_DATA = "persist_output_data";
+        public static final String CLEAN_AFTER_JOB = "clean_after_job";
+    }
+
+    //Experiment Summary table
+    public final class ExperimentSummaryConstants {
+        public static final String EXPERIMENT_ID = "experiment_id";
+        public static final String STATUS = "status";
+        public static final String LAST_UPDATE_TIME = "last_update_time";
+
+    }
+
+    //Experiment Input table
+    public final class ExperimentInputConstants {
+        public static final String EXPERIMENT_ID = "experiment_id";
+        public static final String EXPERIMENT_INPUT_KEY = "ex_key";
+        public static final String EXPERIMENT_INPUT_VAL = "value";
+    }
+
+    //Experiment Output table
+    public final class ExperimentOutputConstants {
+        public static final String EXPERIMENT_ID = "experiment_id";
+        public static final String EXPERIMENT_OUTPUT_KEY = "ex_key";
+        public static final String EXPERIMENT_OUTPUT_VAL = "value";
+    }
 
 	// Workflow_Data table
 	public final class WorkflowDataConstants {

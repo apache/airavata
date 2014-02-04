@@ -1154,46 +1154,46 @@ public class AiravataRegistryAPITest extends TestCase {
     }
 
 
-    public void testGetExperimentMetadata() throws Exception {
-        Calendar c = Calendar.getInstance();
-        java.util.Date date = c.getTime();
-        Date currentTime = new Date(date.getTime());
-        WorkspaceProject workspaceProject = null;
-        if(!registry.isWorkspaceProjectExists("testProject"))  {
-            workspaceProject =  new WorkspaceProject("testProject", registry);
-            registry.addWorkspaceProject(workspaceProject);
-        }
-        AiravataExperiment experiment = new AiravataExperiment();
-        experiment.setExperimentId("testExp");
-        experiment.setSubmittedDate(currentTime);
-        registry.addExperiment("testProject", experiment);
-        registry.updateExperimentMetadata("testExp", "testMetadata");
+//    public void testGetExperimentMetadata() throws Exception {
+//        Calendar c = Calendar.getInstance();
+//        java.util.Date date = c.getTime();
+//        Date currentTime = new Date(date.getTime());
+//        WorkspaceProject workspaceProject = null;
+//        if(!registry.isWorkspaceProjectExists("testProject"))  {
+//            workspaceProject =  new WorkspaceProject("testProject", registry);
+//            registry.addWorkspaceProject(workspaceProject);
+//        }
+//        AiravataExperiment experiment = new AiravataExperiment();
+//        experiment.setExperimentId("testExp");
+//        experiment.setSubmittedDate(currentTime);
+//        registry.addExperiment("testProject", experiment);
+//        registry.updateExperimentMetadata("testExp", "testMetadata");
+//
+//        assertTrue("experiment metadata retrieved successfully", registry.getExperimentMetadata("testExp").equals("testMetadata"));
+//        registry.removeExperiment("testExp");
+//        registry.deleteWorkspaceProject("testProject");
+//    }
 
-        assertTrue("experiment metadata retrieved successfully", registry.getExperimentMetadata("testExp").equals("testMetadata"));
-        registry.removeExperiment("testExp");
-        registry.deleteWorkspaceProject("testProject");
-    }
 
-
-    public void testUpdateExperimentMetadata() throws Exception {
-        Calendar c = Calendar.getInstance();
-        java.util.Date date = c.getTime();
-        Date currentTime = new Date(date.getTime());
-        WorkspaceProject workspaceProject = null;
-        if(!registry.isWorkspaceProjectExists("testProject"))  {
-            workspaceProject =  new WorkspaceProject("testProject", registry);
-            registry.addWorkspaceProject(workspaceProject);
-        }
-        AiravataExperiment experiment = new AiravataExperiment();
-        experiment.setExperimentId("testExp");
-        experiment.setSubmittedDate(currentTime);
-        registry.addExperiment("testProject", experiment);
-        registry.updateExperimentMetadata("testExp", "testMetadata");
-
-        assertTrue("experiment metadata updated successfully", registry.getExperimentMetadata("testExp").equals("testMetadata"));
-        registry.removeExperiment("testExp");
-        registry.deleteWorkspaceProject("testProject");
-    }
+//    public void testUpdateExperimentMetadata() throws Exception {
+//        Calendar c = Calendar.getInstance();
+//        java.util.Date date = c.getTime();
+//        Date currentTime = new Date(date.getTime());
+//        WorkspaceProject workspaceProject = null;
+//        if(!registry.isWorkspaceProjectExists("testProject"))  {
+//            workspaceProject =  new WorkspaceProject("testProject", registry);
+//            registry.addWorkspaceProject(workspaceProject);
+//        }
+//        AiravataExperiment experiment = new AiravataExperiment();
+//        experiment.setExperimentId("testExp");
+//        experiment.setSubmittedDate(currentTime);
+//        registry.addExperiment("testProject", experiment);
+//        registry.updateExperimentMetadata("testExp", "testMetadata");
+//
+//        assertTrue("experiment metadata updated successfully", registry.getExperimentMetadata("testExp").equals("testMetadata"));
+//        registry.removeExperiment("testExp");
+//        registry.deleteWorkspaceProject("testProject");
+//    }
 
 
     public void testGetWorkflowExecutionTemplateName() throws Exception {

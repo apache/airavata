@@ -123,6 +123,97 @@
                     </execution>
                 </executions>
             </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-antrun-plugin</artifactId>-->
+                <!--<version>1.7</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<phase>compile</phase>-->
+                        <!--<configuration>-->
+                            <!--<tasks>-->
+                                <!--<path id="enhance.path.ref">-->
+                                    <!--<fileset dir="${project.build.outputDirectory}">-->
+                                        <!--<include name="Application_Descriptor.class" />-->
+                                        <!--<include name="Application_Descriptor_PK.class" />-->
+                                        <!--<include name="Configuration.class" />-->
+                                        <!--<include name="Configuration_PK.class" />-->
+                                        <!--<include name="Execution_Error.class" />-->
+                                        <!--<include name="Experiment_Configuration_Data.class" />-->
+                                        <!--<include name="Experiment_Input.class" />-->
+                                        <!--<include name="Experiment_Input_PK.class" />-->
+                                        <!--<include name="Experiment_Metadata.class" />-->
+                                        <!--<include name="Experiment_Output.class" />-->
+                                        <!--<include name="Experiment_Output_PK.class" />-->
+                                        <!--<include name="Experiment_Output.class" />-->
+                                        <!--<include name="Gateway.class" />-->
+                                        <!--<include name="Gateway_Worker.class" />-->
+                                        <!--<include name="Gateway_Worker_PK.class" />-->
+                                        <!--<include name="GFac_Job_Data.class" />-->
+                                        <!--<include name="GFac_Job_Status.class" />-->
+                                        <!--<include name="Gram_Data.class" />-->
+                                        <!--<include name="Gram_Data_PK.class" />-->
+                                        <!--<include name="Host_Descriptor.class" />-->
+                                        <!--<include name="Host_Descriptor_PK.class" />-->
+                                        <!--<include name="Node_Data.class" />-->
+                                        <!--<include name="Node_Data_PK.class" />-->
+                                        <!--<include name="Orchestrator.class" />-->
+                                        <!--<include name="Project.class" />-->
+                                        <!--<include name="Published_Workflow.class" />-->
+                                        <!--<include name="Published_Workflow_PK.class" />-->
+                                        <!--<include name="Service_Descriptor.class" />-->
+                                        <!--<include name="Service_Descriptor_PK.class" />-->
+                                        <!--<include name="User_Workflow.class" />-->
+                                        <!--<include name="User_Workflow_PK.class" />-->
+                                        <!--<include name="Users.class" />-->
+                                        <!--<include name="Workflow_Data.class" />-->
+                                    <!--</fileset>-->
+                                <!--</path>-->
+                                <!--<pathconvert property="enhance.files" refid="enhance.path.ref" pathsep=" " />-->
+                                <!--<java classname="org.apache.openjpa.enhance.PCEnhancer">-->
+                                    <!--<arg line="-p persistence.xml" />-->
+                                    <!--<arg line="${enhance.files}" />-->
+                                    <!--<classpath>-->
+                                        <!--<path refid="maven.dependency.classpath" />-->
+                                        <!--<path refid="maven.compile.classpath" />-->
+                                    <!--</classpath>-->
+                                <!--</java>-->
+                            <!--</tasks>-->
+                        <!--</configuration>-->
+                        <!--<goals>-->
+                            <!--<goal>run</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
+            <!--<plugin>-->
+                <!--<groupId>org.apache.openjpa</groupId>-->
+                <!--<artifactId>openjpa-maven-plugin</artifactId>-->
+                <!--<version>2.2.0</version>-->
+                <!--<configuration>-->
+                    <!--<includes>**/model/*.class</includes>-->
+                    <!--<excludes>**/model/XML*.class</excludes>-->
+                    <!--<addDefaultConstructor>true</addDefaultConstructor>-->
+                    <!--<enforcePropertyRestrictions>true</enforcePropertyRestrictions>-->
+                <!--</configuration>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>enhancer</id>-->
+                        <!--<phase>process-classes</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>enhance</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+                <!--<dependencies>-->
+                    <!--<dependency>-->
+                        <!--<groupId>org.apache.openjpa</groupId>-->
+                        <!--<artifactId>openjpa</artifactId>-->
+                        <!--&lt;!&ndash; set the version to be the same as the level in your runtime &ndash;&gt;-->
+                        <!--<version>1.2.2</version>-->
+                    <!--</dependency>-->
+                <!--</dependencies>-->
+            <!--</plugin>-->
         </plugins>
     </build>
 

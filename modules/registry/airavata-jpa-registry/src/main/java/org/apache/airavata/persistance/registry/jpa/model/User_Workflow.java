@@ -24,24 +24,30 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
+@Table(name ="USER_WORKFLOW")
 @IdClass(User_Workflow_PK.class)
 public class User_Workflow {
     @Id
+    @Column(name = "GATEWAY_NAME")
     private String gateway_name;
     @Id
+    @Column(name = "OWNER")
     private String owner;
     @Id
+    @Column(name = "TEMPLATE_NAME")
     private String template_name;
 
     @ManyToOne(cascade= CascadeType.MERGE)
-    @JoinColumn(name = "gateway_name")
+    @JoinColumn(name = "GATEWAY_NAME")
     private Gateway gateway;
 
     @ManyToOne(cascade=CascadeType.MERGE)
-    @JoinColumn(name = "owner", referencedColumnName = "user_name")
+    @JoinColumn(name = "OWNER", referencedColumnName = "USER_NAME")
     private Users user;
 
+    @Column(name = "PATH")
     private String path;
+    @Column(name = "LAST_UPDATED_TIME")
     private Timestamp last_updated_date;
 
     @Lob

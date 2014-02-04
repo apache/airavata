@@ -37,7 +37,7 @@ public class GatewayResourceTest extends AbstractResourceTest {
     private HostDescriptorResource hostDescriptorResource;
     private ServiceDescriptorResource serviceDescriptorResource;
     private ApplicationDescriptorResource applicationDescriptorResource;
-    private ExperimentResource experimentResource;
+    private ExperimentMetadataResource experimentResource;
 
 
     @Override
@@ -59,7 +59,7 @@ public class GatewayResourceTest extends AbstractResourceTest {
         hostDescriptorResource = (HostDescriptorResource) gatewayResource.create(ResourceType.HOST_DESCRIPTOR);
         serviceDescriptorResource = (ServiceDescriptorResource) gatewayResource.create(ResourceType.SERVICE_DESCRIPTOR);
         applicationDescriptorResource = (ApplicationDescriptorResource) gatewayResource.create(ResourceType.APPLICATION_DESCRIPTOR);
-        experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
+        experimentResource = (ExperimentMetadataResource) gatewayResource.create(ResourceType.EXPERIMENT_METADATA);
 
         hostDescriptorResource.setUserName(workerResource.getUser());
         hostDescriptorResource.setHostDescName("testHostDesc");
@@ -97,8 +97,10 @@ public class GatewayResourceTest extends AbstractResourceTest {
         publishWorkflowResource.save();
 
         experimentResource.setExpID("testExpID");
+        experimentResource.setExperimentName("testExpID");
         experimentResource.setProject(projectResource);
-        experimentResource.setWorker(workerResource);
+        experimentResource.setExecutionUser(workerResource.getUser());
+        experimentResource.setGateway(gatewayResource);
         experimentResource.setSubmittedDate(currentTime);
         experimentResource.save();
     }
@@ -130,7 +132,7 @@ public class GatewayResourceTest extends AbstractResourceTest {
         assertTrue(gatewayResource.isExists(ResourceType.HOST_DESCRIPTOR, "testHostDesc"));
         assertTrue(gatewayResource.isExists(ResourceType.SERVICE_DESCRIPTOR, "testServiceDesc"));
         assertTrue(gatewayResource.isExists(ResourceType.APPLICATION_DESCRIPTOR, "testAppDesc"));
-        assertTrue(gatewayResource.isExists(ResourceType.EXPERIMENT, "testExpID"));
+        assertTrue(gatewayResource.isExists(ResourceType.EXPERIMENT_METADATA, "testExpID"));
     }
 
     public void testGet() throws Exception {
@@ -139,7 +141,7 @@ public class GatewayResourceTest extends AbstractResourceTest {
         assertNotNull(gatewayResource.get(ResourceType.HOST_DESCRIPTOR, "testHostDesc"));
         assertNotNull(gatewayResource.get(ResourceType.SERVICE_DESCRIPTOR, "testServiceDesc"));
         assertNotNull(gatewayResource.get(ResourceType.APPLICATION_DESCRIPTOR, "testAppDesc"));
-        assertNotNull(gatewayResource.get(ResourceType.EXPERIMENT, "testExpID"));
+        assertNotNull(gatewayResource.get(ResourceType.EXPERIMENT_METADATA, "testExpID"));
     }
 
     public void testGetList() throws Exception {
@@ -149,7 +151,7 @@ public class GatewayResourceTest extends AbstractResourceTest {
         assertNotNull(gatewayResource.get(ResourceType.HOST_DESCRIPTOR));
         assertNotNull(gatewayResource.get(ResourceType.SERVICE_DESCRIPTOR));
         assertNotNull(gatewayResource.get(ResourceType.APPLICATION_DESCRIPTOR));
-        assertNotNull(gatewayResource.get(ResourceType.EXPERIMENT));
+        assertNotNull(gatewayResource.get(ResourceType.EXPERIMENT_METADATA));
     }
 
     public void testRemove() throws Exception {
@@ -164,8 +166,8 @@ public class GatewayResourceTest extends AbstractResourceTest {
         gatewayResource.remove(ResourceType.SERVICE_DESCRIPTOR, "testServiceDesc");
         assertFalse(gatewayResource.isExists(ResourceType.SERVICE_DESCRIPTOR, "testServiceDesc"));
 
-        gatewayResource.remove(ResourceType.EXPERIMENT, "testExpID");
-        assertFalse(gatewayResource.isExists(ResourceType.EXPERIMENT, "testExpID"));
+        gatewayResource.remove(ResourceType.EXPERIMENT_METADATA, "testExpID");
+        assertFalse(gatewayResource.isExists(ResourceType.EXPERIMENT_METADATA, "testExpID"));
 
         gatewayResource.remove(ResourceType.APPLICATION_DESCRIPTOR, "testAppDesc");
         assertFalse(gatewayResource.isExists(ResourceType.APPLICATION_DESCRIPTOR, "testAppDesc"));

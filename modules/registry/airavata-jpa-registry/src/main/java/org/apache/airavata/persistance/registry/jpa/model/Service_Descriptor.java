@@ -23,21 +23,25 @@ package org.apache.airavata.persistance.registry.jpa.model;
 import javax.persistence.*;
 
 @Entity
+@Table(name ="SERVICE_DESCRIPTOR")
 @IdClass(Service_Descriptor_PK.class)
 public class Service_Descriptor {
     @Id
+    @Column(name = "SERVICE_DESCRIPTOR_ID")
     private String service_descriptor_ID;
     @Id
+    @Column(name = "GATEWAY_NAME")
     private String gateway_name;
     @Lob
+    @Column(name = "SERVICE_DESCRIPTOR_XML")
     private byte[] service_descriptor_xml;
 
     @ManyToOne(cascade=CascadeType.MERGE)
-    @JoinColumn(name = "gateway_name")
+    @JoinColumn(name = "GATEWAY_NAME")
     private Gateway gateway;
 
     @ManyToOne(cascade=CascadeType.MERGE)
-    @JoinColumn(name = "updated_user", referencedColumnName = "user_name")
+    @JoinColumn(name = "UPDATED_USER", referencedColumnName = "USER_NAME")
     private Users user;
 
     public String getService_descriptor_ID() {
