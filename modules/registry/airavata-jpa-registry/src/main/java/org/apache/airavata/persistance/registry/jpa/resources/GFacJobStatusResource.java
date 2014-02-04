@@ -23,7 +23,6 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
-import org.apache.airavata.persistance.registry.jpa.model.Experiment_Data;
 import org.apache.airavata.persistance.registry.jpa.model.GFac_Job_Data;
 import org.apache.airavata.persistance.registry.jpa.model.GFac_Job_Status;
 import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;

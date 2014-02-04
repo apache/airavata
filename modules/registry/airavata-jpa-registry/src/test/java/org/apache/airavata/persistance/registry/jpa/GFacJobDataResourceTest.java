@@ -28,8 +28,8 @@ import java.util.Calendar;
 
 public class GFacJobDataResourceTest extends AbstractResourceTest {
     private WorkerResource workerResource;
-    private ExperimentDataResource experimentDataResource;
     private WorkflowDataResource workflowDataResource;
+    private ExperimentMetadataResource  experimentResource;
 
     @Override
     public void setUp() throws Exception {
@@ -37,18 +37,14 @@ public class GFacJobDataResourceTest extends AbstractResourceTest {
         GatewayResource gatewayResource = super.getGatewayResource();
         workerResource = super.getWorkerResource();
 
-        ExperimentResource experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
+        experimentResource = (ExperimentMetadataResource) gatewayResource.create(ResourceType.EXPERIMENT_METADATA);
         experimentResource.setExpID("testExpID");
-        experimentResource.setWorker(workerResource);
+        experimentResource.setExperimentName("testExpID");
+        experimentResource.setExecutionUser(workerResource.getUser());
         experimentResource.setProject(new ProjectResource(workerResource, gatewayResource, "testProject"));
         experimentResource.save();
 
-        experimentDataResource = (ExperimentDataResource) experimentResource.create(ResourceType.EXPERIMENT_DATA);
-        experimentDataResource.setExpName("testExpID");
-        experimentDataResource.setUserName(workerResource.getUser());
-        experimentDataResource.save();
-
-        workflowDataResource = (WorkflowDataResource) experimentDataResource.create(ResourceType.WORKFLOW_DATA);
+        workflowDataResource = (WorkflowDataResource) experimentResource.create(ResourceType.WORKFLOW_DATA);
         workflowDataResource.setWorkflowInstanceID("testWFInstance");
         workflowDataResource.setTemplateName("testTemplate");
         workflowDataResource.setExperimentID("testExpID");
@@ -68,7 +64,7 @@ public class GFacJobDataResourceTest extends AbstractResourceTest {
         GFacJobDataResource resource = (GFacJobDataResource)workflowDataResource.create(ResourceType.GFAC_JOB_DATA);
         resource.setLocalJobID("testJobID");
         resource.setApplicationDescID("testApplication");
-        resource.setExperimentDataResource(experimentDataResource);
+        resource.setMetadataResource(experimentResource);
         resource.setNodeID("testNode");
         resource.setHostDescID("testHost");
         resource.setServiceDescID("testService");

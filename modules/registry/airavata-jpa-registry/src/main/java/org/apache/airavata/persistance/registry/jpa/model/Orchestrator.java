@@ -22,26 +22,31 @@ package org.apache.airavata.persistance.registry.jpa.model;
 
 import java.sql.Timestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
-@Table(name = "Orchestrator")
+@Table(name = "ORCHESTRATOR")
 public class Orchestrator {
 	
 	@Id
+    @Column(name = "EXPERIMENT_ID")
     private String experiment_ID;
+    @Column(name = "USERNAME")
 	private String username;
-	private String status;
-	private String state;
-	private String gfacEPR;
-	private String applicationName;
+    @Column(name = "STATUS")
+    private String status;
+    @Column(name = "STATE")
+    private String state;
+    @Column(name = "GFAC_EPR")
+    private String gfacEPR;
+    @Column(name = "APPLICATION_NAME")
+    private String applicationName;
 	@Lob
+    @Column(name = "JOBREQUEST")
 	private String jobRequest;
+    @Column(name = "SUBMITTED_TIME")
     private Timestamp  submitted_time;
+    @Column(name = "STATUS_UPDATE_TIME")
     private Timestamp  status_update_time;
 	
 	public String getExperiment_ID() {

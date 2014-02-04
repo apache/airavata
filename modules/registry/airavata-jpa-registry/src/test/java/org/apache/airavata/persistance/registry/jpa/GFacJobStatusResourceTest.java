@@ -36,18 +36,15 @@ public class GFacJobStatusResourceTest extends AbstractResourceTest {
         GatewayResource gatewayResource = super.getGatewayResource();
         WorkerResource workerResource = super.getWorkerResource();
 
-        ExperimentResource experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
+        ExperimentMetadataResource experimentResource = (ExperimentMetadataResource) gatewayResource.create(ResourceType.EXPERIMENT_METADATA);
         experimentResource.setExpID("testExpID");
-        experimentResource.setWorker(workerResource);
+        experimentResource.setExperimentName("testExpID");
+        experimentResource.setExecutionUser(workerResource.getUser());
         experimentResource.setProject(new ProjectResource(workerResource, gatewayResource, "testProject"));
         experimentResource.save();
 
-        ExperimentDataResource experimentDataResource = (ExperimentDataResource) experimentResource.create(ResourceType.EXPERIMENT_DATA);
-        experimentDataResource.setExpName("testExpID");
-        experimentDataResource.setUserName(workerResource.getUser());
-        experimentDataResource.save();
 
-        WorkflowDataResource workflowDataResource = (WorkflowDataResource) experimentDataResource.create(ResourceType.WORKFLOW_DATA);
+        WorkflowDataResource workflowDataResource = (WorkflowDataResource) experimentResource.create(ResourceType.WORKFLOW_DATA);
         workflowDataResource.setWorkflowInstanceID("testWFInstance");
         workflowDataResource.setTemplateName("testTemplate");
         workflowDataResource.setExperimentID("testExpID");
@@ -60,7 +57,7 @@ public class GFacJobStatusResourceTest extends AbstractResourceTest {
         gFacJobDataResource = (GFacJobDataResource) workflowDataResource.create(ResourceType.GFAC_JOB_DATA);
         gFacJobDataResource.setLocalJobID("testJobID");
         gFacJobDataResource.setApplicationDescID("testApplication");
-        gFacJobDataResource.setExperimentDataResource(experimentDataResource);
+        gFacJobDataResource.setMetadataResource(experimentResource);
         gFacJobDataResource.setNodeID("testNode");
         gFacJobDataResource.setHostDescID("testHost");
         gFacJobDataResource.setServiceDescID("testService");

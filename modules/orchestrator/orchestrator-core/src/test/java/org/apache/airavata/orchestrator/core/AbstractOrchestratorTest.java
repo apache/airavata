@@ -35,7 +35,7 @@ public class AbstractOrchestratorTest {
     private Initialize initialize;
 
     public void setUp() throws Exception {
-        initialize = new Initialize("data-derby.sql");
+        initialize = new Initialize("airavata-registry-derby.sql");
         initialize.initializeDB();
         gatewayResource = (GatewayResource) ResourceUtils.getGateway("default");
         workerResource = (WorkerResource) ResourceUtils.getWorker(gatewayResource.getGatewayName(), "admin");

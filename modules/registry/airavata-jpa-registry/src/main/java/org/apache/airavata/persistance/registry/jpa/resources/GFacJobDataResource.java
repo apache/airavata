@@ -23,10 +23,7 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
-import org.apache.airavata.persistance.registry.jpa.model.Experiment_Data;
-import org.apache.airavata.persistance.registry.jpa.model.GFac_Job_Data;
-import org.apache.airavata.persistance.registry.jpa.model.GFac_Job_Status;
-import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
+import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +36,7 @@ import java.util.List;
 
 public class GFacJobDataResource extends AbstractResource {
     private final static Logger logger = LoggerFactory.getLogger(GFacJobDataResource.class);
-    private ExperimentDataResource experimentDataResource;
+    private ExperimentMetadataResource metadataResource;
     private WorkflowDataResource workflowDataResource;
     private String nodeID;
     private String applicationDescID;
@@ -52,8 +49,8 @@ public class GFacJobDataResource extends AbstractResource {
     private String status;
     private String metadata;
 
-    public ExperimentDataResource getExperimentDataResource() {
-        return experimentDataResource;
+    public ExperimentMetadataResource getMetadataResource() {
+        return metadataResource;
     }
 
     public WorkflowDataResource getWorkflowDataResource() {
@@ -100,8 +97,8 @@ public class GFacJobDataResource extends AbstractResource {
         return metadata;
     }
 
-    public void setExperimentDataResource(ExperimentDataResource experimentDataResource) {
-        this.experimentDataResource = experimentDataResource;
+    public void setMetadataResource(ExperimentMetadataResource metadataResource) {
+        this.metadataResource = metadataResource;
     }
 
     public void setWorkflowDataResource(WorkflowDataResource workflowDataResource) {
@@ -217,9 +214,9 @@ public class GFacJobDataResource extends AbstractResource {
         em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
         GFac_Job_Data gFacJobData = new GFac_Job_Data();
-        Experiment_Data experiment_data = em.find(Experiment_Data.class, experimentDataResource.getExperimentID());
-        gFacJobData.setExperiment_data(experiment_data);
-        gFacJobData.setExperiment_ID(experimentDataResource.getExperimentID());
+        Experiment_Metadata experiment_data = em.find(Experiment_Metadata.class, metadataResource.getExpID());
+        gFacJobData.setExperiment_metadata(experiment_data);
+        gFacJobData.setExperiment_ID(metadataResource.getExpID());
         Workflow_Data workflow_data = em.find(Workflow_Data.class, workflowDataResource.getWorkflowInstanceID());
         gFacJobData.setWorkflow_Data(workflow_data);
         gFacJobData.setWorkflow_instanceID(workflowDataResource.getWorkflowInstanceID());
@@ -234,9 +231,8 @@ public class GFacJobDataResource extends AbstractResource {
         gFacJobData.setStatus(status);
         gFacJobData.setMetadata(metadata);
         if(existingGfacJobData != null){
-            Experiment_Data experiment_data1 = em.find(Experiment_Data.class, experimentDataResource.getExperimentID());
-            existingGfacJobData.setExperiment_data(experiment_data1);
-            existingGfacJobData.setExperiment_ID(experimentDataResource.getExperimentID());
+            existingGfacJobData.setExperiment_metadata(experiment_data);
+            existingGfacJobData.setExperiment_ID(metadataResource.getExpID());
             Workflow_Data workflow_data1 = em.find(Workflow_Data.class, workflowDataResource.getWorkflowInstanceID());
             existingGfacJobData.setWorkflow_Data(workflow_data1);
             existingGfacJobData.setWorkflow_instanceID(workflowDataResource.getWorkflowInstanceID());

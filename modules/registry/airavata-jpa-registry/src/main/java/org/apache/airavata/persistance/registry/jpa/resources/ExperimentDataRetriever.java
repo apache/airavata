@@ -51,21 +51,17 @@ public class ExperimentDataRetriever {
             Class.forName(Utils.getJDBCDriver()).newInstance();
             connection = DriverManager.getConnection(connectionURL, Utils.getJDBCUser(), Utils.getJDBCPassword());
             statement = connection.createStatement();
-            String queryString = "SELECT e.experiment_ID, ed.name, ed.username, em.metadata, " +
-                    "wd.workflow_instanceID, wd.template_name, wd.status, wd.start_time," +
-                    "wd.last_update_time, nd.node_id, nd.inputs, nd.outputs, " +
-                    "e.project_name, e.submitted_date, nd.node_type, nd.status," +
-                    "nd.start_time, nd.last_update_time " +
-                    "FROM Experiment e " +
-                    "LEFT JOIN Experiment_Data ed " +
-                    "ON e.experiment_ID = ed.experiment_ID " +
-                    "LEFT JOIN Experiment_Metadata em " +
-                    "ON ed.experiment_ID = em.experiment_ID  " +
-                    "LEFT JOIN Workflow_Data wd " +
-                    "ON e.experiment_ID = wd.experiment_ID " +
-                    "LEFT JOIN Node_Data nd " +
-                    "ON wd.workflow_instanceID = nd.workflow_instanceID " +
-                    "WHERE e.experiment_ID ='" + experimentId + "'";
+            String queryString = "SELECT e.EXPERIMENT_ID, e.EXPERIMENT_NAME, e.EXECUTION_USER, e.DESCRIPTION, " +
+                    "wd.WORKFLOW_INSTANCE_ID, wd.TEMPLATE_NAME, wd.STATUS, wd.START_TIME," +
+                    "wd.LAST_UPDATE_TIME, nd.NODE_ID, nd.INPUTS, nd.OUTPUTS, " +
+                    "e.PROJECT_NAME, e.SUBMITTED_DATE, nd.NODE_TYPE, nd.STATUS," +
+                    "nd.START_TIME, nd.LAST_UPDATE_TIME " +
+                    "FROM EXPERIMENT_METADATA e " +
+                    "LEFT JOIN WORKFLOW_DATA wd " +
+                    "ON e.EXPERIMENT_ID = wd.EXPERIMENT_ID " +
+                    "LEFT JOIN NODE_DATA nd " +
+                    "ON wd.WORKFLOW_INSTANCE_ID = nd.WORKFLOW_INSTANCE_ID " +
+                    "WHERE e.EXPERIMENT_ID ='" + experimentId + "'";
 
 
             rs = statement.executeQuery(queryString);
@@ -76,7 +72,7 @@ public class ExperimentDataRetriever {
                         experimentData.setExperimentId(rs.getString(1));
                         experimentData.setExperimentName(rs.getString(2));
                         experimentData.setUser(rs.getString(3));
-                        experimentData.setMetadata(rs.getString(4));
+//                        experimentData.setMetadata(rs.getString(4));
                         experimentData.setTopic(rs.getString(1));
                     }
                     fillWorkflowInstanceData(experimentData, rs, experimentWorkflowInstances);
@@ -98,7 +94,7 @@ public class ExperimentDataRetriever {
         }catch (ParseException e) {
             logger.error(e.getMessage(), e);
         } catch (ExperimentLazyLoadedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            logger.error(e.getMessage());
         }
         return experimentData;
     }
@@ -181,10 +177,8 @@ public class ExperimentDataRetriever {
             statement = connection.createStatement();
 
             // FIXME : pass user ID as a regular expression
-            String queryString = "SELECT ed.experiment_ID FROM Experiment_Data ed " +
-                    "LEFT JOIN Experiment e " +
-                    "ON ed.experiment_ID = e.experiment_ID " +
-                    "WHERE ed.username ='" + user + "'";
+            String queryString = "SELECT e.EXPERIMENT_ID FROM EXPERIMENT_METADATA e " +
+                    "WHERE e.EXECUTION_USER ='" + user + "'";
             rs = statement.executeQuery(queryString);
             if(rs != null){
                 while (rs.next()) {
@@ -219,10 +213,8 @@ public class ExperimentDataRetriever {
             Class.forName(Utils.getJDBCDriver()).newInstance();
             connection = DriverManager.getConnection(connectionURL, Utils.getJDBCUser(), Utils.getJDBCPassword());
             statement =  connection.createStatement();
-            String queryString = "SELECT ed.name FROM Experiment e " +
-                    "LEFT JOIN Experiment_Data ed " +
-                    "ON e.experiment_ID = ed.experiment_ID " +
-                    "WHERE e.experiment_ID='" + experimentId + "'";
+            String queryString = "SELECT e.name FROM EXPERIMENT_METADATA e " +
+                    "WHERE e.EXPERIMENT_ID='" + experimentId + "'";
             rs = statement.executeQuery(queryString);
             if(rs != null){
                 while (rs.next()) {
@@ -261,20 +253,17 @@ public class ExperimentDataRetriever {
             connection = DriverManager.getConnection(connectionURL, Utils.getJDBCUser(),
                     Utils.getJDBCPassword());
             statement = connection.createStatement();
-            String queryString = "SELECT e.experiment_ID, ed.name, ed.username, em.metadata, " +
-                    "wd.workflow_instanceID, wd.template_name, wd.status, wd.start_time," +
-                    "wd.last_update_time, nd.node_id, nd.inputs, nd.outputs, " +
-                    "e.project_name, e.submitted_date, nd.node_type, nd.status," +
-                    "nd.start_time, nd.last_update_time" +
-                    " FROM Experiment e INNER JOIN Experiment_Data ed " +
-                    "ON e.experiment_ID = ed.experiment_ID " +
-                    "LEFT JOIN Experiment_Metadata em " +
-                    "ON ed.experiment_ID = em.experiment_ID  " +
-                    "LEFT JOIN Workflow_Data wd " +
-                    "ON e.experiment_ID = wd.experiment_ID " +
-                    "LEFT JOIN Node_Data nd " +
-                    "ON wd.workflow_instanceID = nd.workflow_instanceID " +
-                    "WHERE ed.username='" + user + "'";
+            String queryString = "SELECT e.EXPERIMENT_ID, e.EXPERIMENT_NAME, e.EXECUTION_USER, e.DESCRIPTION, " +
+                    "wd.WORKFLOW_INSTANCE_ID, wd.TEMPLATE_NAME, wd.STATUS, wd.START_TIME," +
+                    "wd.LAST_UPDATE_TIME, nd.NODE_ID, nd.INPUTS, nd.OUTPUTS, " +
+                    "e.PROJECT_NAME, e.SUBMITTED_DATE, nd.NODE_TYPE, nd.STATUS, " +
+                    "nd.START_TIME, nd.LAST_UPDATE_TIME " +
+                    "FROM EXPERIMENT_METADATA e " +
+                    "LEFT JOIN WORKFLOW_DATA wd " +
+                    "ON e.EXPERIMENT_ID = wd.EXPERIMENT_ID " +
+                    "LEFT JOIN NODE_DATA nd " +
+                    "ON wd.WORKFLOW_INSTANCE_ID = nd.WORKFLOW_INSTANCE_ID " +
+                    "WHERE e.EXECUTION_USER='" + user + "'";
 
             rs = statement.executeQuery(queryString);
             if (rs != null) {
@@ -287,7 +276,7 @@ public class ExperimentDataRetriever {
                         experimentData.setExperimentId(rs.getString(1));
                         experimentData.setExperimentName(rs.getString(2));
                         experimentData.setUser(rs.getString(3));
-                        experimentData.setMetadata(rs.getString(4));
+//                        experimentData.setMetadata(rs.getString(4));
                         experimentData.setTopic(rs.getString(1));
                         experimentDataMap.put(experimentData.getExperimentId(),experimentData);
                         experimentDataList.add(experimentData);
@@ -331,19 +320,16 @@ public class ExperimentDataRetriever {
             connection = DriverManager.getConnection(connectionURL, Utils.getJDBCUser(),
                     Utils.getJDBCPassword());
             statement = connection.createStatement();
-            String queryString = "SELECT e.experiment_ID, ed.name, ed.username, em.metadata, " +
-                    "wd.workflow_instanceID, wd.template_name, wd.status, wd.start_time," +
-                    "wd.last_update_time, nd.node_id, nd.inputs, nd.outputs, " +
-                    "e.project_name, e.submitted_date, nd.node_type, nd.status," +
-                    "nd.start_time, nd.last_update_time" +
-                    " FROM Experiment e INNER JOIN Experiment_Data ed " +
-                    "ON e.experiment_ID = ed.experiment_ID " +
-                    "LEFT JOIN Experiment_Metadata em " +
-                    "ON ed.experiment_ID = em.experiment_ID  " +
-                    "LEFT JOIN Workflow_Data wd " +
-                    "ON e.experiment_ID = wd.experiment_ID " +
-                    "LEFT JOIN Node_Data nd " +
-                    "ON wd.workflow_instanceID = nd.workflow_instanceID ";
+            String queryString = "SELECT e.EXPERIMENT_ID, e.EXPERIMENT_NAME, e.EXECUTION_USER, e.DESCRIPTION, " +
+                    "wd.WORKFLOW_INSTANCE_ID, wd.TEMPLATE_NAME, wd.STATUS, wd.START_TIME," +
+                    "wd.LAST_UPDATE_TIME, nd.NODE_ID, nd.INPUTS, nd.OUTPUTS, " +
+                    "e.PROJECT_NAME, e.SUBMITTED_DATE, nd.NODE_TYPE, nd.STATUS, " +
+                    "nd.START_TIME, nd.LAST_UPDATE_TIME " +
+                    "FROM EXPERIMENT_METADATA e " +
+                    "LEFT JOIN WORKFLOW_DATA wd " +
+                    "ON e.EXPERIMENT_ID = wd.EXPERIMENT_ID " +
+                    "LEFT JOIN NODE_DATA nd " +
+                    "ON wd.WORKFLOW_INSTANCE_ID = nd.WORKFLOW_INSTANCE_ID ";
             
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             if(params.keySet().size()>0) {
@@ -362,7 +348,7 @@ public class ExperimentDataRetriever {
             		Date fromDate = dateFormat.parse(from);
             		Timestamp fromTime = new Timestamp(fromDate.getTime());
             		queryString += "e.submitted_date>='" + fromTime + "'";
-            		if(to!=null && to!="") {
+            		if(to!=null && !to.equals("")) {
             			queryString += " AND ";
             		}
             	}
@@ -383,7 +369,7 @@ public class ExperimentDataRetriever {
                         experimentData.setExperimentId(rs.getString(1));
                         experimentData.setExperimentName(rs.getString(2));
                         experimentData.setUser(rs.getString(3));
-                        experimentData.setMetadata(rs.getString(4));
+//                        experimentData.setMetadata(rs.getString(4));
                         experimentData.setTopic(rs.getString(1));
                         experimentDataMap.put(experimentData.getExperimentId(),experimentData);
                         experimentDataList.add(experimentData);
@@ -424,14 +410,12 @@ public class ExperimentDataRetriever {
             Class.forName(Utils.getJDBCDriver()).newInstance();
             connection = DriverManager.getConnection(connectionURL, Utils.getJDBCUser(), Utils.getJDBCPassword());
             statement = connection.createStatement();
-            String queryString = "SELECT e.experiment_ID, ed.name, ed.username, em.metadata, " +
-                    "e.project_name, e.submitted_date " +
-                    "FROM Experiment e " +
-                    "LEFT JOIN Experiment_Data ed " +
-                    "ON e.experiment_ID = ed.experiment_ID " +
-                    "LEFT JOIN Experiment_Metadata em " +
-                    "ON ed.experiment_ID = em.experiment_ID  " +
-                    "WHERE e.experiment_ID ='" + experimentId + "'";
+            String queryString = "SELECT e.EXPERIMENT_ID, e.EXPERIMENT_NAME, e.EXECUTION_USER, " +
+                    "e.PROJECT_NAME, e.SUBMITTED_DATE, wd.WORKFLOW_INSTANCE_ID " +
+                    "FROM EXPERIMENT_METADATA e " +
+                    "LEFT JOIN WORKFLOW_DATA wd " +
+                    "ON e.EXPERIMENT_ID = wd.EXPERIMENT_ID " +
+                    "WHERE e.EXPERIMENT_ID ='" + experimentId + "'";
 
             rs = statement.executeQuery(queryString);
             if (rs != null){
@@ -440,13 +424,13 @@ public class ExperimentDataRetriever {
                     experimentData.setExperimentId(rs.getString(1));
                     experimentData.setExperimentName(rs.getString(2));
                     experimentData.setUser(rs.getString(3));
-                    experimentData.setMetadata(rs.getString(4));
+//                    experimentData.setMetadata(rs.getString(4));
                     experimentData.setTopic(rs.getString(1));
 
-                    WorkflowExecution workflowInstance = new WorkflowExecution(experimentId, rs.getString(5));
+                    WorkflowExecution workflowInstance = new WorkflowExecution(experimentId, rs.getString(6));
                     workflowInstance.setTemplateName(rs.getString(6));
                     workflowInstance.setExperimentId(rs.getString(1));
-                    workflowInstance.setWorkflowExecutionId(rs.getString(5));
+                    workflowInstance.setWorkflowExecutionId(rs.getString(6));
                     experimentWorkflowInstances.add(workflowInstance);
                 }
             }
@@ -476,7 +460,7 @@ public class ExperimentDataRetriever {
             Class.forName(Utils.getJDBCDriver()).newInstance();
             connection = DriverManager.getConnection(connectionURL, Utils.getJDBCUser(), Utils.getJDBCPassword());
             statement = connection.createStatement();
-            String queryString = "SELECT name FROM Experiment_Data WHERE name='" + experimentName + "'";
+            String queryString = "SELECT EXPERIMENT_NAME FROM EXPERIMENT_METADATA WHERE EXPERIMENT_NAME='" + experimentName + "'";
             rs = statement.executeQuery(queryString);
             if(rs != null){
                 while (rs.next()) {
@@ -514,15 +498,11 @@ public class ExperimentDataRetriever {
             connection = DriverManager.getConnection(connectionURL, Utils.getJDBCUser(), Utils.getJDBCPassword());
             statement = connection.createStatement();
             //FIXME : pass user ID as a regular expression
-            String queryString = "SELECT e.experiment_ID, ed.name, ed.username, em.metadata, " +
-                    "e.project_name, e.submitted_date " +
-                    "FROM Experiment e " +
-                    "LEFT JOIN Experiment_Data ed " +
-                    "ON e.experiment_ID = ed.experiment_ID " +
-                    "LEFT JOIN Experiment_Metadata em " +
-                    "ON ed.experiment_ID = em.experiment_ID  " +
-                    "WHERE ed.username ='" + user + "'" +
-                    " ORDER BY e.submitted_date ASC";
+            String queryString = "SELECT e.EXPERIMENT_ID, e.EXPERIMENT_NAME, e.EXECUTION_USER,  " +
+                    "e.PROJECT_NAME, e.SUBMITTED_DATE " +
+                    "FROM EXPERIMENT_METADATA e " +
+                    "WHERE e.EXECUTION_USER ='" + user + "'" +
+                    " ORDER BY e.SUBMITTED_DATE ASC";
 
             rs = statement.executeQuery(queryString);
             if (rs != null){
@@ -531,7 +511,7 @@ public class ExperimentDataRetriever {
                     experimentData.setExperimentId(rs.getString(1));
                     experimentData.setExperimentName(rs.getString(2));
                     experimentData.setUser(rs.getString(3));
-                    experimentData.setMetadata(rs.getString(4));
+//                    experimentData.setMetadata(rs.getString(4));
                     experimentData.setTopic(rs.getString(1));
 
                     WorkflowExecution workflowInstance = new WorkflowExecution(rs.getString(1), rs.getString(5));

@@ -18,34 +18,47 @@
  * under the License.
  *
 */
+
 package org.apache.airavata.persistance.registry.jpa.model;
 
+
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 @Entity
-@Table(name ="USERS")
-public class Users {
+@Table(name ="EXPERIMENT_SUMMARY")
+public class Experiment_Summary {
 
     @Id
-    @Column(name = "USER_NAME")
-    private String user_name;
-    @Column(name = "PASSWORD")
-    private String password;
+    @ManyToOne(cascade= CascadeType.MERGE)
+    @JoinColumn(name = "EXPERIMENT_ID")
+    private Experiment_Metadata experiment_metadata;
+    @Column(name = "STATUS")
+    private String status;
+    @Column(name = "LAST_UPDATED_TIME")
+    private Timestamp last_update_time;
 
-
-    public String getUser_name() {
-        return user_name;
+    public Experiment_Metadata getExperiment_metadata() {
+        return experiment_metadata;
     }
 
-    public void setUser_name(String user_name) {
-        this.user_name = user_name;
+    public void setExperiment_metadata(Experiment_Metadata experiment_metadata) {
+        this.experiment_metadata = experiment_metadata;
     }
 
-    public String getPassword() {
-        return password;
+    public String getStatus() {
+        return status;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Timestamp getLast_update_time() {
+        return last_update_time;
+    }
+
+    public void setLast_update_time(Timestamp last_update_time) {
+        this.last_update_time = last_update_time;
     }
 }
