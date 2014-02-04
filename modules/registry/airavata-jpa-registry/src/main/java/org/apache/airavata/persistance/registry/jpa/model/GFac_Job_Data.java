@@ -25,29 +25,42 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
+@Table(name ="GFAC_JOB_DATA")
 public class GFac_Job_Data {
+    @Column(name = "EXPERIMENT_ID")
     private String experiment_ID;
+    @Column(name = "WORKFLOW_INSTANCE_ID")
     private String workflow_instanceID;
+    @Column(name = "NODE_ID")
     private String  node_id;
+    @Column(name = "APPLICATION_DESC_ID")
     private String application_descriptor_ID;
+    @Column(name = "HOST_DESC_ID")
     private String host_descriptor_ID;
+    @Column(name = "SERVICE_DESC_ID")
     private String service_descriptor_ID;
     @Lob
+    @Column(name = "JOB_DATA")
     private String job_data;
     @Id
+    @Column(name = "LOCAL_JOB_ID")
     private String local_Job_ID;
+    @Column(name = "SUBMITTED_TIME")
     private Timestamp  submitted_time;
+    @Column(name = "STATUS_UPDATE_TIME")
     private Timestamp  status_update_time;
+    @Column(name = "STATUS")
     private String status;
     @Lob
+    @Column(name = "METADATA")
     private String metadata;
 
     @ManyToOne()
-    @JoinColumn(name = "experiment_ID")
-    private Experiment_Data experiment_data;
+    @JoinColumn(name = "EXPERIMENT_ID")
+    private Experiment_Metadata experiment_metadata;
 
     @ManyToOne()
-    @JoinColumn(name = "workflow_instanceID")
+    @JoinColumn(name = "WORKFLOW_INSTANCE_ID")
     private Workflow_Data workflow_Data;
 
     public String getExperiment_ID() {
@@ -98,8 +111,8 @@ public class GFac_Job_Data {
         return metadata;
     }
 
-    public Experiment_Data getExperiment_data() {
-        return experiment_data;
+    public Experiment_Metadata getExperiment_metadata() {
+        return experiment_metadata;
     }
 
     public Workflow_Data getWorkflow_Data() {
@@ -154,8 +167,8 @@ public class GFac_Job_Data {
         this.metadata = metadata;
     }
 
-    public void setExperiment_data(Experiment_Data experiment_data) {
-        this.experiment_data = experiment_data;
+    public void setExperiment_metadata(Experiment_Metadata experiment_metadata) {
+        this.experiment_metadata = experiment_metadata;
     }
 
     public void setWorkflow_Data(Workflow_Data workflow_Data) {

@@ -24,28 +24,35 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
+@Table(name ="PUBLISHED_WORKFLOW")
 @IdClass(Published_Workflow_PK.class)
 public class Published_Workflow {
 
     @Id
+    @Column(name = "PUBLISH_WORKFLOW_NAME")
     private String publish_workflow_name;
 
     @Id
+    @Column(name = "GATEWAY_NAME")
     private String gateway_name;
 
     @ManyToOne(cascade= CascadeType.MERGE)
-    @JoinColumn(name = "gateway_name")
+    @JoinColumn(name = "GATEWAY_NAME")
     private Gateway gateway;
 
+    @Column(name = "VERSION")
     private String version;
+    @Column(name = "PUBLISHED_DATE")
     private Timestamp published_date;
 
     @Lob
+    @Column(name = "WORKFLOW_CONTENT")
     private byte[] workflow_content;
+    @Column(name = "PATH")
     private String path;
 
     @ManyToOne(cascade=CascadeType.MERGE)
-    @JoinColumn(name = "created_user", referencedColumnName = "user_name")
+    @JoinColumn(name = "CREATED_USER", referencedColumnName = "USER_NAME")
     private Users user;
 
     public String getPublish_workflow_name() {

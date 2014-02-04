@@ -29,39 +29,43 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 
 public class ExperimentMetadataResourceTest extends AbstractResourceTest {
-    private ExperimentDataResource experimentDataResource;
+
+    private GatewayResource gatewayResource;
+    private WorkflowDataResource workflowDataResource;
+    private ExperimentMetadataResource experimentResource;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        GatewayResource gatewayResource = super.getGatewayResource();
+        gatewayResource = super.getGatewayResource();
         WorkerResource workerResource = super.getWorkerResource();
-
-        ExperimentResource experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
+        experimentResource = (ExperimentMetadataResource) gatewayResource.create(ResourceType.EXPERIMENT_METADATA);
         experimentResource.setExpID("testExpID");
-        experimentResource.setWorker(workerResource);
+        experimentResource.setExecutionUser("admin");
         experimentResource.setProject(new ProjectResource(workerResource, gatewayResource, "testProject"));
-
-        Calendar calender = Calendar.getInstance();
-        java.util.Date d = calender.getTime();
-        Timestamp currentDate = new Timestamp(d.getTime());
-        experimentResource.setSubmittedDate(currentDate);
+        experimentResource.setDescription("testDescription");
+        experimentResource.setExperimentName("textExpID");
+        experimentResource.setSubmittedDate(getCurrentTimestamp());
+        experimentResource.setShareExp(true);
         experimentResource.save();
 
-        experimentDataResource = (ExperimentDataResource) experimentResource.create(ResourceType.EXPERIMENT_DATA);
-        experimentDataResource.setExpName("testExpID");
-        experimentDataResource.setUserName(workerResource.getUser());
-        experimentDataResource.save();
+        workflowDataResource = experimentResource.createWorkflowInstanceResource("testWFInstance");
+        workflowDataResource.setExperimentID("testExpID");
+        workflowDataResource.setStatus("testStatus");
+        workflowDataResource.setTemplateName("testWFInstance");
+        workflowDataResource.setLastUpdatedTime(getCurrentTimestamp());
+        workflowDataResource.setStartTime(getCurrentTimestamp());
+        workflowDataResource.save();
     }
 
     public void testSave() throws Exception {
-        ExperimentMetadataResource experimentMetadataResource = new ExperimentMetadataResource();
-        experimentMetadataResource.setExpID("testExpID");
-        experimentMetadataResource.setMetadata("testMetadata");
-        experimentMetadataResource.save();
+        assertTrue("experiment meta data saved successfully", gatewayResource.isExists(ResourceType.EXPERIMENT_METADATA, "testExpID"));
 
-        assertTrue("experiment meta data saved successfully", experimentDataResource.isExists(ResourceType.EXPERIMENT_METADATA, "testExpID"));
+    }
 
+    public void testRemove() throws Exception {
+        experimentResource.remove(ResourceType.WORKFLOW_DATA, "testWFInstance");
+        assertTrue("workflow data resource removed successfully", !experimentResource.isExists(ResourceType.WORKFLOW_DATA, "testWFInstance"));
     }
 
     @Override

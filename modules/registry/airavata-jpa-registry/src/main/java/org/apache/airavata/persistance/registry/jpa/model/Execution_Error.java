@@ -23,40 +23,52 @@ package org.apache.airavata.persistance.registry.jpa.model;
 
 import java.sql.Timestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
+@Table(name="EXECUTION_ERROR")
 public class Execution_Error {
     @Id @GeneratedValue
+    @Column(name = "ERROR_ID")
     private int error_id;
+
+    @Column(name = "EXPERIMENT_ID")
     private String experiment_ID;
+    @Column(name = "WORKFLOW_INSTANCE_ID")
     private String workflow_instanceID;
+    @Column(name = "NODE_ID")
     private String node_id;
+    @Column(name = "GFAC_JOB_ID")
     private String gfacJobID;
+    @Column(name = "SOURCE_TYPE")
     private String source_type;
+    @Column(name = "ERROR_DATE")
     private Timestamp error_date;
+
+    @Column(name = "ERROR_REPORTER")
     private String error_reporter;
+    @Column(name = "ERROR_LOCATION")
     private String error_location;
+    @Column(name = "ACTION_TAKEN")
     private String action_taken;
+    @Column(name = "ERROR_REFERENCE")
     private int error_reference;
 
     @ManyToOne()
-    @JoinColumn(name = "experiment_ID")
-    private Experiment_Data experiment_data;
+    @JoinColumn(name = "EXPERIMENT_ID")
+    private Experiment_Metadata experiment_metadata;
 
     @ManyToOne()
-    @JoinColumn(name = "workflow_instanceID")
+    @JoinColumn(name = "WORKFLOW_INSTANCE_ID")
     private Workflow_Data workflow_Data;
 
     @Lob
+    @Column(name = "ERROR_MSG")
     private String error_msg;
     @Lob
+    @Column(name = "ERROR_DESC")
     private String error_des;
+    @Column(name = "ERROR_CODE")
     private String error_code;
 
     public String getWorkflow_instanceID() {
@@ -127,8 +139,8 @@ public class Execution_Error {
         return error_date;
     }
 
-    public Experiment_Data getExperiment_Data() {
-        return experiment_data;
+    public Experiment_Metadata getExperiment_MetaData() {
+        return experiment_metadata;
     }
 
     public void setError_id(int error_id) {
@@ -151,8 +163,8 @@ public class Execution_Error {
         this.error_date = error_date;
     }
 
-    public void setExperiment_data(Experiment_Data experiment_data) {
-        this.experiment_data = experiment_data;
+    public void setExperiment_Metadata(Experiment_Metadata experiment_metadata) {
+        this.experiment_metadata = experiment_metadata;
     }
 
     public String getError_reporter() {
@@ -167,8 +179,8 @@ public class Execution_Error {
         return action_taken;
     }
 
-    public Experiment_Data getExperiment_data() {
-        return experiment_data;
+    public Experiment_Metadata getExperiment_Metadata() {
+        return experiment_metadata;
     }
 
     public void setError_reporter(String error_reporter) {

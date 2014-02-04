@@ -25,18 +25,24 @@ import java.sql.Timestamp;
 import javax.persistence.*;
 
 @Entity
+@Table(name ="WORKFLOW_DATA")
 public class Workflow_Data {
 
 	@ManyToOne(cascade = CascadeType.PERSIST)
-	@JoinColumn(name="experiment_ID")
-    private Experiment_Data experiment_data;
+	@JoinColumn(name="EXPERIMENT_ID")
+    private Experiment_Metadata experiment_metadata;
 
 	@Id
+    @Column(name = "WORKFLOW_INSTANCE_ID")
 	private String workflow_instanceID;
-	private String template_name;
-	private String status;
-	private Timestamp start_time;
-	private Timestamp last_update_time;
+    @Column(name = "TEMPLATE_NAME")
+    private String template_name;
+    @Column(name = "STATUS")
+    private String status;
+    @Column(name = "START_TIME")
+    private Timestamp start_time;
+    @Column(name = "LAST_UPDATE_TIME")
+    private Timestamp last_update_time;
 
 
 	public String getWorkflow_instanceID() {
@@ -79,11 +85,11 @@ public class Workflow_Data {
 		this.last_update_time = last_update_time;
 	}
 
-    public Experiment_Data getExperiment_data() {
-        return experiment_data;
+    public Experiment_Metadata getExperiment_data() {
+        return experiment_metadata;
     }
 
-    public void setExperiment_data(Experiment_Data experiment_data) {
-        this.experiment_data = experiment_data;
+    public void setExperiment_data(Experiment_Metadata experiment_data) {
+        this.experiment_metadata = experiment_data;
     }
 }

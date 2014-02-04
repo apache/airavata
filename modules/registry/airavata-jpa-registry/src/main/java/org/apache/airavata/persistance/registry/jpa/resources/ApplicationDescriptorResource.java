@@ -171,7 +171,7 @@ public class ApplicationDescriptorResource extends AbstractResource {
 //    public void removeMe(Object[] keys) {
 //        EntityManager em = ResourceUtils.getEntityManager();
 //        em.getTransaction().begin();
-//        QueryGenerator queryGenerator = new QueryGenerator(APPLICATION_DESCRIPTOR);
+//        QueryGenerator queryGenerator = new QueryGenerator(Application_Descriptor);
 //        queryGenerator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, keys[0]);
 //        queryGenerator.setParameter(ApplicationDescriptorConstants.APPLICATION_DESC_ID, keys[1]);
 //        queryGenerator.setParameter(ApplicationDescriptorConstants.HOST_DESC_ID, keys[2]);

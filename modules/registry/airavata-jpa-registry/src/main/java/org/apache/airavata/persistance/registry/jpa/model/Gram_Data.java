@@ -23,21 +23,27 @@ package org.apache.airavata.persistance.registry.jpa.model;
 import javax.persistence.*;
 
 @Entity
+@Table(name ="GRAM_DATA")
 @IdClass(Gram_DataPK.class)
 public class Gram_Data {
 
 	@ManyToOne(cascade = CascadeType.PERSIST)
-	@JoinColumn(name = "workflow_instanceID")
+	@JoinColumn(name = "WORKFLOW_INSTANCE_ID")
 	private Workflow_Data workflow_Data;
 
     @Id
+    @Column(name = "WORKFLOW_INSTANCE_ID")
     private String workflow_instanceID;
 	@Id
+    @Column(name = "NODE_ID")
 	private String node_id;
 
     @Lob
+    @Column(name = "RSL")
 	private byte[] rsl;
-	private String invoked_host;
+    @Column(name = "INVOKED_HOST")
+    private String invoked_host;
+    @Column(name = "LOCAL_JOB_ID")
     private String local_Job_ID;
 
 	public Workflow_Data getWorkflow_Data() {

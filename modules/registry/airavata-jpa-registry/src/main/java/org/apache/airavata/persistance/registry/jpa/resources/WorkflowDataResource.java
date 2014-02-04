@@ -301,7 +301,7 @@ public class WorkflowDataResource extends AbstractResource{
         em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
         Workflow_Data workflowData = new Workflow_Data();
-        Experiment_Data expData = em.find(Experiment_Data.class, experimentID);
+        Experiment_Metadata expData = em.find(Experiment_Metadata.class, experimentID);
         workflowData.setExperiment_data(expData);
         workflowData.setWorkflow_instanceID(workflowInstanceID);
         workflowData.setLast_update_time(lastUpdatedTime);

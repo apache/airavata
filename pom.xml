@@ -86,7 +86,7 @@
         <tomcat.version>7.0.41</tomcat.version>
         <cargo.version>1.3.1</cargo.version>
         <oa4mp.version>1.0.6</oa4mp.version>
-        <antrun.version>1.6</antrun.version>
+        <antrun.version>1.7</antrun.version>
         <bouncy.castle.version>1.45</bouncy.castle.version>
         <jglobus.version>2.0.6</jglobus.version>
         <ebay.cors.filter>1.0.0</ebay.cors.filter>

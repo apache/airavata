@@ -20,13 +20,18 @@
 */
 package org.apache.airavata.persistance.registry.jpa.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name ="GATEWAY")
 public class Gateway {
     @Id
+    @Column(name = "GATEWAY_NAME")
     private String gateway_name;
+    @Column(name = "OWNER")
     private String owner;
 
     public String getGateway_name() {
