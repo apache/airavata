@@ -160,4 +160,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         }
         return true;
     }
+
+    public boolean validateExperiment(JobRequest jobRequest) {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }
