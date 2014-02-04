@@ -49,7 +49,7 @@ public class OrchestratorUtils {
         OrchestratorConfiguration orchestratorConfiguration = new OrchestratorConfiguration();
         Properties orchestratorProps = new Properties();
         orchestratorProps.load(resource.openStream());
-        orchestratorConfiguration.setSubmitterClass((String) orchestratorProps.get(OrchestratorConstants.JOB_SUBMITTER));
+        orchestratorConfiguration.setNewJobSubmitterClass((String) orchestratorProps.get(OrchestratorConstants.JOB_SUBMITTER));
         orchestratorConfiguration.setSubmitterInterval(Integer.parseInt((String)orchestratorProps.get(OrchestratorConstants.SUBMIT_INTERVAL)));
         orchestratorConfiguration.setThreadPoolSize(Integer.parseInt((String)orchestratorProps.get(OrchestratorConstants.THREAD_POOL_SIZE)));
         orchestratorConfiguration.setStartSubmitter(Boolean.valueOf(orchestratorProps.getProperty(OrchestratorConstants.START_SUBMITTER)));

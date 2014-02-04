@@ -24,7 +24,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.airavata.common.utils.AiravataJobState;
-import org.apache.airavata.orchestrator.core.AbstractOrchestrator;
 import org.apache.airavata.orchestrator.core.HangedJobWorker;
 import org.apache.airavata.orchestrator.core.NewJobWorker;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;

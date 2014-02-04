@@ -30,7 +30,9 @@ import java.net.URL;
  */
 public class OrchestratorConfiguration {
 
-    private String submitterClass;
+    private String newJobSubmitterClass;
+
+    private String hangedJobSubmitterClass;
 
     private int submitterInterval = 1000;
 
@@ -61,8 +63,8 @@ public class OrchestratorConfiguration {
         this.brokerURL = brokerURL;
     }
 
-    public String getSubmitterClass() {
-        return submitterClass;
+    public String getNewJobSubmitterClass() {
+        return newJobSubmitterClass;
     }
 
     public int getSubmitterInterval() {
@@ -73,8 +75,8 @@ public class OrchestratorConfiguration {
         return threadPoolSize;
     }
 
-    public void setSubmitterClass(String submitterClass) {
-        this.submitterClass = submitterClass;
+    public void setNewJobSubmitterClass(String newJobSubmitterClass) {
+        this.newJobSubmitterClass = newJobSubmitterClass;
     }
 
     public void setSubmitterInterval(int submitterInterval) {
@@ -99,5 +101,13 @@ public class OrchestratorConfiguration {
 
     public void setAiravataAPI(AiravataAPI airavataAPI) {
         this.airavataAPI = airavataAPI;
+    }
+
+    public String getHangedJobSubmitterClass() {
+        return hangedJobSubmitterClass;
+    }
+
+    public void setHangedJobSubmitterClass(String hangedJobSubmitterClass) {
+        this.hangedJobSubmitterClass = hangedJobSubmitterClass;
     }
 }

@@ -47,7 +47,7 @@ public class HangedJobWorker implements Runnable{
     public HangedJobWorker(OrchestratorContext orchestratorContext) throws OrchestratorException {
         this.orchestratorContext = orchestratorContext;
         try {
-            String submitterClass = this.orchestratorContext.getOrchestratorConfiguration().getSubmitterClass();
+            String submitterClass = this.orchestratorContext.getOrchestratorConfiguration().getNewJobSubmitterClass();
 				//FIXME: (MEP) Do you want to use the same submit interval for hung jobs as newly submitted jobs?  Suggest separate parameters.
             submitInterval = this.orchestratorContext.getOrchestratorConfiguration().getSubmitterInterval();
 				//FIXME: (MEP) It is possible that you want to have a different JobSubmitter for hung jobs and for new jobs, so the property file needs to have separate name/value pairs for these.

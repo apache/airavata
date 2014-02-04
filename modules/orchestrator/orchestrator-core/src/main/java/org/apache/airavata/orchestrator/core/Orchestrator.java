@@ -67,7 +67,7 @@ public interface Orchestrator {
      * @return
      * @throws OrchestratorException
      */
-    boolean cancelExperiment(String experimentID)throws OrchestratorException;
+    boolean terminateExperiment(String experimentID)throws OrchestratorException;
 
     /**
      * This is like a cron job which runs continuously and take available jobs to
