@@ -19,12 +19,14 @@
  *
 */
 
-package org.apache.airavata.gfac;
+package org.apache.airavata.gfac.cpi;
 
 import java.util.List;
 
 import org.apache.airavata.client.AiravataClient;
-import org.apache.airavata.common.utils.AiravataJobState;
+import org.apache.airavata.gfac.Constants;
+import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.Scheduler;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.handler.GFacHandler;
 import org.apache.airavata.gfac.handler.GFacHandlerConfig;
@@ -33,7 +35,6 @@ import org.apache.airavata.gfac.notification.events.ExecutionFailEvent;
 import org.apache.airavata.gfac.notification.listeners.LoggingListener;
 import org.apache.airavata.gfac.notification.listeners.WorkflowTrackingListener;
 import org.apache.airavata.gfac.provider.GFacProvider;
-import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

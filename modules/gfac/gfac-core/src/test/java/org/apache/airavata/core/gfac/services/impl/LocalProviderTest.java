@@ -21,7 +21,7 @@
 package org.apache.airavata.core.gfac.services.impl;
 
 import org.apache.airavata.commons.gfac.type.*;
-import org.apache.airavata.gfac.GFacAPI;
+import org.apache.airavata.gfac.cpi.GFacAPI;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.ApplicationContext;
