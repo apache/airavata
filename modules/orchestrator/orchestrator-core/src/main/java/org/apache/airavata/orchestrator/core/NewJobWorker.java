@@ -47,7 +47,7 @@ public class NewJobWorker implements Runnable {
     public NewJobWorker(OrchestratorContext orchestratorContext) throws OrchestratorException {
         this.orchestratorContext = orchestratorContext;
         try {
-            String submitterClass = this.orchestratorContext.getOrchestratorConfiguration().getSubmitterClass();
+            String submitterClass = this.orchestratorContext.getOrchestratorConfiguration().getNewJobSubmitterClass();
             submitInterval = this.orchestratorContext.getOrchestratorConfiguration().getSubmitterInterval();
             Class<? extends JobSubmitter> aClass = Class.forName(submitterClass.trim()).asSubclass(JobSubmitter.class);
             jobSubmitter = aClass.newInstance();
