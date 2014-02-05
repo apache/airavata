@@ -1,0 +1,15 @@
+package org.apache.airavata.registry.cpi;
+
+public enum DataType {
+    APPLiCATION_CATALOG,
+    GROUP,
+    USER,
+    PROJECT,
+    EXPERIMENT_BASIC_DATA,
+    EXPERIMENT_SUMMARY,
+    EXPERIMENT_CONFIGURATION_DATA,
+    EXPERIMENT_GENERATED_DATA,
+    MONITORING_DATA,
+    PROVENANCE_DATA,
+    EXECUTION_ERROR
+}
