@@ -88,8 +88,8 @@ public interface Orchestrator {
      * This method can be used to parse the current job data configured in
      * Registry and validate its status, if it has minimum required parameters to
      * submit the job this method returns true otherwise this returns false
-     * @param jobRequest
+     * @param experimentID
      * @return
      */
-    boolean validateExperiment(JobRequest jobRequest);
+    boolean validateExperiment(String experimentID);
 }
