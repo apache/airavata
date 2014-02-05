@@ -29,6 +29,7 @@ import org.apache.airavata.orchestrator.core.NewJobWorker;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
+import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
 import org.apache.airavata.registry.api.JobRequest;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.slf4j.Logger;
@@ -41,6 +42,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
     // this is going to be null unless the thread count is 0
     private JobSubmitter jobSubmitter = null;
+
+    private JobMetadataValidator jobMetadataValidator = null;
 
     public boolean initialize() throws OrchestratorException {
         super.initialize();
@@ -55,6 +58,10 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                 Class<? extends JobSubmitter> aClass = Class.forName(submitterClass.trim()).asSubclass(JobSubmitter.class);
                 jobSubmitter = aClass.newInstance();
                 jobSubmitter.initialize(this.orchestratorContext);
+
+                String validatorClzz = this.orchestratorContext.getOrchestratorConfiguration().getValidatorClass();
+                Class<? extends JobMetadataValidator> vClass = Class.forName(validatorClzz.trim()).asSubclass(JobMetadataValidator.class);
+                jobMetadataValidator = vClass.newInstance();
             } catch (Exception e) {
                 String error = "Error creating JobSubmitter in non threaded mode ";
                 logger.error(error);
@@ -160,7 +167,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         return true;
     }
 
-    public boolean validateExperiment(String experimentID) {
-        return false;
+    public boolean validateExperiment(String experimentID) throws OrchestratorException{
+        return jobMetadataValidator.validate(experimentID);
     }
 }

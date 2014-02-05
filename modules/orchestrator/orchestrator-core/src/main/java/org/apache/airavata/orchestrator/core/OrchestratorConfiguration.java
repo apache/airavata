@@ -46,6 +46,16 @@ public class OrchestratorConfiguration {
 
     private boolean embeddedMode;
 
+    private String validatorClass;
+
+
+    public String getValidatorClass() {
+        return validatorClass;
+    }
+
+    public void setValidatorClass(String validatorClass) {
+        this.validatorClass = validatorClass;
+    }
 
     public boolean isEmbeddedMode() {
         return embeddedMode;
