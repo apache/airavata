@@ -91,5 +91,5 @@ public interface Orchestrator {
      * @param experimentID
      * @return
      */
-    boolean validateExperiment(String experimentID);
+    boolean validateExperiment(String experimentID)throws OrchestratorException;
 }
