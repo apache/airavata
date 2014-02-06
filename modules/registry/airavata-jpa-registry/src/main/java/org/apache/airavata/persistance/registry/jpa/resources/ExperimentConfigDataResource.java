@@ -53,6 +53,15 @@ public class ExperimentConfigDataResource extends AbstractResource {
     private String dataRegURL;
     private boolean persistOutputData;
     private boolean cleanAfterJob;
+    private String applicationID;
+    private String applicationVersion;
+    private String workflowTemplateId;
+    private String workflowTemplateVersion;
+    private String workingDirParent;
+    private String startExecutionAt;
+    private String executeBefore;
+    private int numberOfRetries;
+
     private byte[] request;
 
     public ExperimentMetadataResource getExMetadata() {
@@ -207,6 +216,74 @@ public class ExperimentConfigDataResource extends AbstractResource {
         this.request = request;
     }
 
+    public static Logger getLogger() {
+        return logger;
+    }
+
+    public String getApplicationID() {
+        return applicationID;
+    }
+
+    public void setApplicationID(String applicationID) {
+        this.applicationID = applicationID;
+    }
+
+    public String getApplicationVersion() {
+        return applicationVersion;
+    }
+
+    public void setApplicationVersion(String applicationVersion) {
+        this.applicationVersion = applicationVersion;
+    }
+
+    public String getWorkflowTemplateId() {
+        return workflowTemplateId;
+    }
+
+    public void setWorkflowTemplateId(String workflowTemplateId) {
+        this.workflowTemplateId = workflowTemplateId;
+    }
+
+    public String getWorkflowTemplateVersion() {
+        return workflowTemplateVersion;
+    }
+
+    public void setWorkflowTemplateVersion(String workflowTemplateVersion) {
+        this.workflowTemplateVersion = workflowTemplateVersion;
+    }
+
+    public String getWorkingDirParent() {
+        return workingDirParent;
+    }
+
+    public void setWorkingDirParent(String workingDirParent) {
+        this.workingDirParent = workingDirParent;
+    }
+
+    public String getStartExecutionAt() {
+        return startExecutionAt;
+    }
+
+    public void setStartExecutionAt(String startExecutionAt) {
+        this.startExecutionAt = startExecutionAt;
+    }
+
+    public String getExecuteBefore() {
+        return executeBefore;
+    }
+
+    public void setExecuteBefore(String executeBefore) {
+        this.executeBefore = executeBefore;
+    }
+
+    public int getNumberOfRetries() {
+        return numberOfRetries;
+    }
+
+    public void setNumberOfRetries(int numberOfRetries) {
+        this.numberOfRetries = numberOfRetries;
+    }
+
     public Resource create(ResourceType type) {
         logger.error("Unsupported resource type for experiment config data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
@@ -251,7 +328,15 @@ public class ExperimentConfigDataResource extends AbstractResource {
         exconfig.setTotal_cpu_count(cpuCount);
         exconfig.setTotal_physical_memory(physicalMemory);
         exconfig.setWalltime_limit(wallTimeLimit);
-        exconfig.setWorking_dir(workingDir);
+        exconfig.setUnique_working_dir(workingDir);
+        exconfig.setWorking_dir_parent(workingDirParent);
+        exconfig.setApplication_id(applicationID);
+        exconfig.setApplication_version(applicationVersion);
+        exconfig.setWorkflow_template_id(workflowTemplateId);
+        exconfig.setWorkflow_template_version(workflowTemplateVersion);
+        exconfig.setStart_execution_at(startExecutionAt);
+        exconfig.setExecute_before(executeBefore);
+        exconfig.setNumber_of_retries(numberOfRetries);
 
         if (existingConfig != null){
             existingConfig.setAiravata_auto_schedule(isAiravataAutoSchedule());
@@ -272,7 +357,16 @@ public class ExperimentConfigDataResource extends AbstractResource {
             existingConfig.setTotal_cpu_count(cpuCount);
             existingConfig.setTotal_physical_memory(physicalMemory);
             existingConfig.setWalltime_limit(wallTimeLimit);
-            existingConfig.setWorking_dir(workingDir);
+            existingConfig.setUnique_working_dir(workingDir);
+            existingConfig.setUnique_working_dir(workingDir);
+            existingConfig.setWorking_dir_parent(workingDirParent);
+            existingConfig.setApplication_id(applicationID);
+            existingConfig.setApplication_version(applicationVersion);
+            existingConfig.setWorkflow_template_id(workflowTemplateId);
+            existingConfig.setWorkflow_template_version(workflowTemplateVersion);
+            existingConfig.setStart_execution_at(startExecutionAt);
+            existingConfig.setExecute_before(executeBefore);
+            existingConfig.setNumber_of_retries(numberOfRetries);
             exconfig = em.merge(existingConfig);
         }
         else {
