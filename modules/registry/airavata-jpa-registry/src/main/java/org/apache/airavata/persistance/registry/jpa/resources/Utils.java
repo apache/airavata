@@ -569,7 +569,15 @@ public class Utils {
         exConfigDataResource.setStageInputsToWDir(o.isStage_input_files_to_working_dir());
         exConfigDataResource.setWallTimeLimit(o.getWalltime_limit());
         exConfigDataResource.setOverrideManualSchedule(o.isOverride_manual_schedule());
-        exConfigDataResource.setWorkingDir(o.getWorking_dir());
+        exConfigDataResource.setWorkingDir(o.getUnique_working_dir());
+        exConfigDataResource.setWorkingDirParent(o.getWorking_dir_parent());
+        exConfigDataResource.setApplicationID(o.getApplication_id());
+        exConfigDataResource.setApplicationVersion(o.getApplication_version());
+        exConfigDataResource.setWorkflowTemplateId(o.getWorkflow_template_id());
+        exConfigDataResource.setWorkflowTemplateVersion(o.getWorkflow_template_version());
+        exConfigDataResource.setStartExecutionAt(o.getStart_execution_at());
+        exConfigDataResource.setExecuteBefore(o.getExecute_before());
+        exConfigDataResource.setNumberOfRetries(o.getNumber_of_retries());
         return exConfigDataResource;
     }
 

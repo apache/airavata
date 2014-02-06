@@ -781,5 +781,11 @@ public class GatewayResource extends AbstractResource {
     	dataResource.setExperimentID(experimentID);
     	return dataResource;
     }
+
+    public ExperimentMetadataResource createBasicMetada (String experimentID){
+        ExperimentMetadataResource metadataResource = (ExperimentMetadataResource)create(ResourceType.EXPERIMENT_METADATA);
+        metadataResource.setExpID(experimentID);
+        return metadataResource;
+    }
 }
 

@@ -37,7 +37,6 @@ public class Experiment_Configuration_Data {
     private int total_cpu_count;
     @Column(name = "NODE_COUNT")
     private int node_count;
-
     @Column(name = "NUMBER_OF_THREADS")
     private int number_of_threads;
     @Column(name = "QUEUE_NAME")
@@ -50,13 +49,12 @@ public class Experiment_Configuration_Data {
     private int total_physical_memory;
     @Column(name = "COMPUTATIONAL_PROJECT_ACCOUNT")
     private String computational_project_account;
-
     @Column(name = "AIRAVATA_AUTO_SCHEDULE")
     private boolean airavata_auto_schedule;
     @Column(name = "OVERRIDE_MANUAL_SCHEDULE_PARAMS")
     private boolean override_manual_schedule;
-    @Column(name = "WORKING_DIR")
-    private String working_dir;
+    @Column(name = "UNIQUE_WORKING_DIR")
+    private String unique_working_dir;
     @Column(name = "STAGE_INPUT_FILES_TO_WORKING_DIR")
     private boolean stage_input_files_to_working_dir;
     @Column(name = "OUTPUT_DATA_DIR")
@@ -67,6 +65,23 @@ public class Experiment_Configuration_Data {
     private boolean persist_output_data;
     @Column(name = "CLEAN_AFTER_JOB")
     private boolean clean_after_job;
+    @Column(name = "APPLICATION_ID")
+    private String application_id;
+    @Column(name = "APPLICATION_VERSION")
+    private String application_version;
+    @Column(name = "WORKFLOW_TEMPLATE_ID")
+    private String workflow_template_id;
+    @Column(name = "WORKFLOW_TEMPLATE_VERSION")
+    private String workflow_template_version;
+    @Column(name = "WORKING_DIR_PARENT")
+    private String working_dir_parent;
+    @Column(name = "START_EXECUTION_AT")
+    private String start_execution_at;
+    @Column(name = "EXECUTE_BEFORE")
+    private String execute_before;
+    @Column(name = "NUMBER_OF_RETRIES")
+    private int number_of_retries;
+
     @Lob
     @Column(name = "EXPERIMENT_CONFIG_DATA")
     private byte[] experiment_config_data;
@@ -167,14 +182,6 @@ public class Experiment_Configuration_Data {
         this.override_manual_schedule = override_manual_schedule;
     }
 
-    public String getWorking_dir() {
-        return working_dir;
-    }
-
-    public void setWorking_dir(String working_dir) {
-        this.working_dir = working_dir;
-    }
-
     public boolean isStage_input_files_to_working_dir() {
         return stage_input_files_to_working_dir;
     }
@@ -221,5 +228,77 @@ public class Experiment_Configuration_Data {
 
     public void setExperiment_config_data(byte[] experiment_config_data) {
         this.experiment_config_data = experiment_config_data;
+    }
+
+    public String getUnique_working_dir() {
+        return unique_working_dir;
+    }
+
+    public void setUnique_working_dir(String unique_working_dir) {
+        this.unique_working_dir = unique_working_dir;
+    }
+
+    public String getApplication_id() {
+        return application_id;
+    }
+
+    public void setApplication_id(String application_id) {
+        this.application_id = application_id;
+    }
+
+    public String getApplication_version() {
+        return application_version;
+    }
+
+    public void setApplication_version(String application_version) {
+        this.application_version = application_version;
+    }
+
+    public String getWorkflow_template_id() {
+        return workflow_template_id;
+    }
+
+    public void setWorkflow_template_id(String workflow_template_id) {
+        this.workflow_template_id = workflow_template_id;
+    }
+
+    public String getWorkflow_template_version() {
+        return workflow_template_version;
+    }
+
+    public void setWorkflow_template_version(String workflow_template_version) {
+        this.workflow_template_version = workflow_template_version;
+    }
+
+    public String getWorking_dir_parent() {
+        return working_dir_parent;
+    }
+
+    public void setWorking_dir_parent(String working_dir_parent) {
+        this.working_dir_parent = working_dir_parent;
+    }
+
+    public String getStart_execution_at() {
+        return start_execution_at;
+    }
+
+    public void setStart_execution_at(String start_execution_at) {
+        this.start_execution_at = start_execution_at;
+    }
+
+    public String getExecute_before() {
+        return execute_before;
+    }
+
+    public void setExecute_before(String execute_before) {
+        this.execute_before = execute_before;
+    }
+
+    public int getNumber_of_retries() {
+        return number_of_retries;
+    }
+
+    public void setNumber_of_retries(int number_of_retries) {
+        this.number_of_retries = number_of_retries;
     }
 }
