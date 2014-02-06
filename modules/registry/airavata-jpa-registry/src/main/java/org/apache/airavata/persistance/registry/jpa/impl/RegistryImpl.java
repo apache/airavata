@@ -42,7 +42,7 @@ public class RegistryImpl implements Registry {
                 experimentRegistry.add((BasicMetadata)newObjectToAdd);
                 break;
             default:
-                logger.error("Unsupported data type", new UnsupportedOperationException());
+                logger.error("Unsupported top level type..", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
         }
     }
@@ -54,35 +54,52 @@ public class RegistryImpl implements Registry {
                 experimentRegistry.add((ConfigurationData)newObjectToAdd, (String)dependentIdentifier);
                 break;
             case EXPERIMENT_SUMMARY:
+                // no thrift model yet
                 break;
             case EXPERIMENT_GENERATED_DATA:
+                // no thrift model yet
                 break;
             case EXECUTION_ERROR:
+                // no thrift model yet
                 break;
             default:
-                logger.error("Unsupported data type", new UnsupportedOperationException());
+                logger.error("Unsupported dependent data type...", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
         }
 
     }
 
     @Override
-    public void update(TopLevelDataType dataType, Object newObjectToUpdate) {
+    public void update(DataType dataType, Object newObjectToUpdate, Object identifier) {
+        switch (dataType){
+            case EXPERIMENT_BASIC_DATA:
+                experimentRegistry.update(newObjectToUpdate, (String)identifier);
+                break;
+            case EXPERIMENT_CONFIGURATION_DATA:
+                experimentRegistry.update(newObjectToUpdate, (String)identifier);
+            default:
+                logger.error("Unsupported data type...", new UnsupportedOperationException());
+                throw new UnsupportedOperationException();
+        }
 
     }
 
     @Override
-    public void update(DependentDataType dataType, Object newObjectToUpdate, Object dependentIdentifier) {
-
+    public void update(DataType dataType, Object identifier, String field, Object value) {
+        switch (dataType){
+            case EXPERIMENT_BASIC_DATA:
+                experimentRegistry.updateExpBasicMetadataField((String) identifier, field, value);
+                break;
+            case EXPERIMENT_CONFIGURATION_DATA:
+                experimentRegistry.updateExpConfigDataField((String) identifier, field, value);
+            default:
+                logger.error("Unsupported data type...", new UnsupportedOperationException());
+                throw new UnsupportedOperationException();
+        }
     }
 
     @Override
-    public void update(DataType dataType, Object identifier, Object field, Object value) {
-
-    }
-
-    @Override
-    public List<Object> get(DataType dataType, Object filteredBy, Object value) {
+    public List<Object> get(DataType dataType, Object fieldName, Object value) {
         return null;
     }
 
