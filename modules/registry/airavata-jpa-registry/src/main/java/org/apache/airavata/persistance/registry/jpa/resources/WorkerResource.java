@@ -277,6 +277,7 @@ public class WorkerResource extends AbstractResource {
 			case EXPERIMENT_METADATA:
                 generator = new QueryGenerator(EXPERIMENT_METADATA);
                 generator.setParameter(ExperimentMetadataConstants.GATEWAY_NAME, gateway.getGatewayName());
+                generator.setParameter(ExperimentMetadataConstants.EXECUTION_USER, user);
                 q = generator.selectQuery(em);
 	            for (Object o : q.getResultList()) {
 	            	Experiment_Metadata experiment = (Experiment_Metadata) o;

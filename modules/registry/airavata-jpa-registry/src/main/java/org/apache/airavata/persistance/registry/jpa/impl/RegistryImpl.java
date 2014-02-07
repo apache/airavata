@@ -30,6 +30,7 @@ import org.apache.airavata.registry.cpi.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RegistryImpl implements Registry {
@@ -77,6 +78,7 @@ public class RegistryImpl implements Registry {
                 break;
             case EXPERIMENT_CONFIGURATION_DATA:
                 experimentRegistry.update(newObjectToUpdate, (String)identifier);
+                break;
             default:
                 logger.error("Unsupported data type...", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
@@ -92,6 +94,7 @@ public class RegistryImpl implements Registry {
                 break;
             case EXPERIMENT_CONFIGURATION_DATA:
                 experimentRegistry.updateExpConfigDataField((String) identifier, field, value);
+                break;
             default:
                 logger.error("Unsupported data type...", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
@@ -99,12 +102,38 @@ public class RegistryImpl implements Registry {
     }
 
     @Override
-    public List<Object> get(DataType dataType, Object fieldName, Object value) {
-        return null;
+    /**
+     * This method is to retrieve list of objects according to a given criteria
+     * @param dataType Data type is a predefined type which the programmer should choose according to the object he
+     *                 is going to save in to registry
+     * @param fieldName FieldName is the field that filtering should be done. For example, if we want to retrieve all
+     *                   the experiments for a given user, filterBy will be "userName"
+     * @param value value for the filtering field. In the experiment case, value for "userName" can be "admin"
+     * @return List of objects according to the given criteria
+     */
+    public List<Object> get(DataType dataType, String fieldName, Object value) {
+        List<Object> result = new ArrayList<Object>();
+        switch (dataType){
+            case EXPERIMENT_BASIC_DATA:
+                List<BasicMetadata> experimentMetaDataList = experimentRegistry.getExperimentMetaDataList(fieldName, value);
+                for (BasicMetadata basicMetadata : experimentMetaDataList){
+                    result.add(basicMetadata);
+                }
+                return result;
+            case EXPERIMENT_CONFIGURATION_DATA:
+                List<ConfigurationData> configurationDataList = experimentRegistry.getConfigurationDataList(fieldName, value);
+                for (ConfigurationData configData : configurationDataList){
+                    result.add(configData);
+                }
+                return result;
+            default:
+                logger.error("Unsupported data type...", new UnsupportedOperationException());
+                throw new UnsupportedOperationException();
+        }
     }
 
     @Override
-    public Object getValue(DataType dataType, Object identifier, Object field) {
+    public Object getValue(DataType dataType, Object identifier, String field) {
         return null;
     }
 

@@ -25,10 +25,8 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
-import org.apache.airavata.persistance.registry.jpa.resources.ExperimentConfigDataResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ExperimentInputResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ExperimentMetadataResource;
-import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
+import org.apache.airavata.persistance.registry.jpa.resources.*;
+import org.apache.airavata.persistance.registry.jpa.utils.ThriftDataModelConversion;
 import org.apache.airavata.registry.cpi.DependentDataType;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.slf4j.Logger;
@@ -39,6 +37,7 @@ import java.util.*;
 
 public class ExperimentRegistry {
     private GatewayRegistry gatewayRegistry;
+    private UserRegistry userRegistry;
     private final static Logger logger = LoggerFactory.getLogger(ExperimentRegistry.class);
 
     public void add(BasicMetadata basicMetadata) {
@@ -336,17 +335,51 @@ public class ExperimentRegistry {
         exConfigResource.save();
     }
 
-    public void update(ConfigurationData configurationData, String experimentID) {
-
+    public List<BasicMetadata> getExperimentMetaDataList (String fieldName, Object value){
+        List<BasicMetadata> metadataList = new ArrayList<BasicMetadata>();
+        try {
+            gatewayRegistry = new GatewayRegistry();
+            GatewayResource gateway = gatewayRegistry.getGateway();
+            if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.USER_NAME)){
+                userRegistry = new UserRegistry();
+                WorkerResource worker = userRegistry.getWorker(gateway.getGatewayName(), (String) value);
+                List<Resource> resources = worker.get(ResourceType.EXPERIMENT_METADATA);
+                for (Resource resource : resources){
+                    ExperimentMetadataResource ex =  (ExperimentMetadataResource)resource;
+                    BasicMetadata basicMetadata = ThriftDataModelConversion.getBasicMetadata(ex);
+                    metadataList.add(basicMetadata);
+                }
+                return metadataList;
+            }else {
+                logger.error("Unsupported field type for Experiment meta data");
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties", e.getMessage());
+        }
+        return metadataList;
     }
 
-
-    public void update(DependentDataType dataType, Object identifier, Object field, Object value) {
-
-    }
-
-    public List<Object> get(DependentDataType dataType, Object filteredBy, Object value) {
-        return null;
+    public List<ConfigurationData> getConfigurationDataList (String fieldName, Object value){
+        List<ConfigurationData> configDataList = new ArrayList<ConfigurationData>();
+        try {
+            gatewayRegistry = new GatewayRegistry();
+            GatewayResource gateway = gatewayRegistry.getGateway();
+            if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.EXPERIMENT_ID)){
+                ExperimentMetadataResource exBasicData = (ExperimentMetadataResource) gateway.get(ResourceType.EXPERIMENT_METADATA, (String)value);
+                List<Resource> resources = exBasicData.get(ResourceType.EXPERIMENT_CONFIG_DATA);
+                for (Resource resource : resources){
+                    ExperimentConfigDataResource configDataResource = (ExperimentConfigDataResource)resource;
+                    ConfigurationData conData = ThriftDataModelConversion.getConfigurationData(configDataResource);
+                    configDataList.add(conData);
+                }
+                return configDataList;
+            }else {
+                logger.error("Unsupported field type for Experiment meta data");
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties", e.getMessage());
+        }
+        return configDataList;
     }
 
     public Object getValue(DependentDataType dataType, Object identifier, Object field) {
