@@ -430,7 +430,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
-                <module>modules/airavata-api</module>
+                <module>airavata-api</module>
                 <module>modules/gfac</module>
                 <module>modules/ws-messenger</module>
                 <module>modules/workflow-model</module>
@@ -441,7 +441,6 @@
                 <module>modules/security</module>
                 <module>modules/credential-store</module>
                 <module>modules/rest</module>
-                <module>modules/thrift</module>
                 <module>modules/orchestrator</module>
                 <module>tools</module>
                 <module>samples</module>
