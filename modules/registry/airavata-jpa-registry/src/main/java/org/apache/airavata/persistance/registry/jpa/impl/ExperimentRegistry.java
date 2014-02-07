@@ -37,7 +37,7 @@ import java.util.*;
 
 public class ExperimentRegistry {
     private GatewayRegistry gatewayRegistry;
-    private UserRegistry userRegistry;
+    private UserReg userRegistry;
     private final static Logger logger = LoggerFactory.getLogger(ExperimentRegistry.class);
 
     public void add(BasicMetadata basicMetadata) {
@@ -341,7 +341,7 @@ public class ExperimentRegistry {
             gatewayRegistry = new GatewayRegistry();
             GatewayResource gateway = gatewayRegistry.getGateway();
             if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.USER_NAME)){
-                userRegistry = new UserRegistry();
+                userRegistry = new UserReg();
                 WorkerResource worker = userRegistry.getWorker(gateway.getGatewayName(), (String) value);
                 List<Resource> resources = worker.get(ResourceType.EXPERIMENT_METADATA);
                 for (Resource resource : resources){

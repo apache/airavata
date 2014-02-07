@@ -24,7 +24,7 @@ package org.apache.airavata.persistance.registry.jpa.impl;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 
-public class UserRegistry {
+public class UserReg {
     public WorkerResource getWorker (String gatewayName, String username) {
         WorkerResource worker = (WorkerResource)ResourceUtils.getWorker(gatewayName, username);
         return worker;
