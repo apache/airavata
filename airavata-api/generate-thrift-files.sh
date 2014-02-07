@@ -21,7 +21,8 @@
 
 # ========================================================================================================================
 REQUIRED_THRIFT_VERSION='0.9'
-BASE_OUTPUT_PACKAGE='org.apache.airavata.api'
+BASE_OUTPUT_PACKAGE='org.apache.airavata'
+THRIFT_IDL_DIR='thrift-interface-descriptions'
 PACKAGES_TO_GENERATE=(gc master tabletserver security client.impl data)
 BUILD_DIR='target'
 FINAL_DIR='src/main/java'
@@ -43,8 +44,9 @@ if [ "$VERSION" -ne 1 ] ; then
   fail "****************************************************"
 fi
 
-# Initialize the thrift arguements
-THRIFT_ARGS=''
+# Initialize the thrift arguements.
+#  Since most of the Airavata API and Data Models have includes, use recursive option by defualt.
+THRIFT_ARGS='-r'
 # Ensure output directories are created
 THRIFT_ARGS="${THRIFT_ARGS} -o $BUILD_DIR"
 mkdir -p $BUILD_DIR
