@@ -67,8 +67,10 @@ namespace java org.apache.airavata.model.experiment
 struct BasicMetadata {
   1: required string userName,
   2: required string experimentName,
-  3: optional string experimentDescription,
-  4: optional bool shareExperimentPublicly = 0
+  3: required string projectID = "default",
+  4: optional string experimentDescription,
+  5: optional bool shareExperimentPublicly = 0,
+  6: required string experimentID = "DO_NOT_SET"
 }
 
 /**
