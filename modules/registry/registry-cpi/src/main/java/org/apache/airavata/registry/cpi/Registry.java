@@ -83,7 +83,7 @@ public interface Registry {
      * @param value value for the filtering field. In the experiment case, value for "userName" can be "admin"
      * @return List of objects according to the given criteria
      */
-    public List<Object> get(DataType dataType, Object fieldName, Object value);
+    public List<Object> get(DataType dataType, String fieldName, Object value);
 
     /**
      * This method is to retrieve a specific value for a given field.
@@ -96,7 +96,7 @@ public interface Registry {
      * @return return the value for the specific field where data model is identified by the unique identifier that has
      *         given
      */
-    public Object getValue (DataType dataType, Object identifier, Object field);
+    public Object getValue (DataType dataType, Object identifier, String field);
 
     /**
      * This method is to remove a item from the registry

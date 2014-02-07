@@ -31,6 +31,7 @@ public class Constants {
         }
 
         public final class ConfigurationDataConstants {
+            public static final String EXPERIMENT_ID = "experimentId";
             public static final String APPLICATION_ID = "applicationId";
             public static final String APPLICATION_VERSION = "applicationVersion";
             public static final String WORKFLOW_TEMPLATE_ID = "workflowTemplateId";
