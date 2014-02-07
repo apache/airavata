@@ -25,7 +25,7 @@ BASE_OUTPUT_PACKAGE='org.apache.airavata'
 THRIFT_IDL_DIR='thrift-interface-descriptions'
 PACKAGES_TO_GENERATE=(gc master tabletserver security client.impl data)
 BUILD_DIR='target'
-FINAL_DIR='src/main/java'
+FINAL_DIR='datamodel/src/main/java'
 # ========================================================================================================================
 
 fail() {
@@ -34,7 +34,7 @@ fail() {
 }
 
 # Test to see if we have thrift installed
-VERSION=$(thrifts -version 2>/dev/null | grep -F "${REQUIRED_THRIFT_VERSION}" |  wc -l)
+VERSION=$(thrift -version 2>/dev/null | grep -F "${REQUIRED_THRIFT_VERSION}" |  wc -l)
 if [ "$VERSION" -ne 1 ] ; then
   # Nope: bail
   echo "****************************************************"
@@ -46,20 +46,27 @@ fi
 
 # Initialize the thrift arguements.
 #  Since most of the Airavata API and Data Models have includes, use recursive option by defualt.
-THRIFT_ARGS='-r'
+#  Generate all the files in target directory
+THRIFT_ARGS="-r -o $BUILD_DIR"
+
 # Ensure output directories are created
-THRIFT_ARGS="${THRIFT_ARGS} -o $BUILD_DIR"
 mkdir -p $BUILD_DIR
-rm -rf $BUILD_DIR/gen-java
-for f in src/main/thrift/*.thrift; do
-  thrift ${THRIFT_ARGS} --gen java $f || fail unable to generate java thrift classes
-  thrift ${THRIFT_ARGS} --gen php $f || fail unable to generate python thrift classes
-done
+
+
+# Generate the Airavata Data Model. Use Java Beans to generate to take advantage of the bean style
+#   with members being private and setters returning voids.
+
+# First remove and previously generated files
+rm -rf $BUILD_DIR/gen-javabean
+
+# the airavataDataModel.thrift includes rest of data models.
+thrift ${THRIFT_ARGS} --gen java:beans $THRIFT_IDL_DIR/airavataDataModel.thrift || fail unable to generate java bean thrift classes
+
 
 # For all generated thrift code, suppress all warnings and add the LICENSE header
-find $BUILD_DIR/gen-java -name '*.java' -print0 | xargs -0 sed -i.orig -e 's/public class /@SuppressWarnings("all") public class /'
-find $BUILD_DIR/gen-java -name '*.java' -print0 | xargs -0 sed -i.orig -e 's/public enum /@SuppressWarnings("all") public enum /'
-for f in $(find $BUILD_DIR/gen-java -name '*.java'); do
+find $BUILD_DIR/gen-javabean -name '*.java' -print0 | xargs -0 sed -i.orig -e 's/public class /@SuppressWarnings("all") public class /'
+#find $BUILD_DIR/gen-javabean -name '*.java' -print0 | xargs -0 sed -i.orig -e 's/public enum /@SuppressWarnings("all") public enum /'
+for f in $(find $BUILD_DIR/gen-javabean -name '*.java'); do
   cat - $f >${f}-with-license <<EOF
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -81,9 +88,8 @@ EOF
 done
 
 # For every generated java file, compare it with the version-controlled one, and copy the ones that have changed into place
-for d in "${PACKAGES_TO_GENERATE[@]}"; do
-  SDIR="${BUILD_DIR}/gen-java/${BASE_OUTPUT_PACKAGE//.//}/${d//.//}/thrift"
-  DDIR="${FINAL_DIR}/${BASE_OUTPUT_PACKAGE//.//}/${d//.//}/thrift"
+  SDIR="${BUILD_DIR}/gen-javabean/org/apache/airavata/model/experiment"
+  DDIR="${FINAL_DIR}/org/apache/airavata/model/experiment"
   mkdir -p "$DDIR"
   for f in "$SDIR"/*.java; do
     DEST="$DDIR/`basename $f`"
@@ -92,4 +98,3 @@ for d in "${PACKAGES_TO_GENERATE[@]}"; do
       cp -f "${f}-with-license" "${DEST}" || fail unable to copy files to java workspace
     fi
   done
-done
