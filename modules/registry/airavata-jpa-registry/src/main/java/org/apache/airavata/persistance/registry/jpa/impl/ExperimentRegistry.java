@@ -37,14 +37,15 @@ import java.util.*;
 
 public class ExperimentRegistry {
     private GatewayRegistry gatewayRegistry;
-    private UserReg userRegistry;
     private final static Logger logger = LoggerFactory.getLogger(ExperimentRegistry.class);
 
-    public void add(BasicMetadata basicMetadata) {
+    public String add(BasicMetadata basicMetadata) {
+        String experimentID = "";
         try {
             gatewayRegistry = new GatewayRegistry();
             GatewayResource gateway = gatewayRegistry.getGateway();
-            ExperimentMetadataResource exBasicData = gateway.createBasicMetada(getExperimentID(basicMetadata.getExperimentName()));
+            experimentID = getExperimentID(basicMetadata.getExperimentName());
+            ExperimentMetadataResource exBasicData = gateway.createBasicMetada(experimentID);
             exBasicData.setExperimentName(basicMetadata.getExperimentName());
             exBasicData.setDescription(basicMetadata.getExperimentDescription());
             exBasicData.setExecutionUser(basicMetadata.getUserName());
@@ -54,6 +55,7 @@ public class ExperimentRegistry {
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read airavata-server properties", e.getMessage());
         }
+        return experimentID;
     }
 
     public void add(ConfigurationData configurationData, String experimentID) {
@@ -341,7 +343,7 @@ public class ExperimentRegistry {
             gatewayRegistry = new GatewayRegistry();
             GatewayResource gateway = gatewayRegistry.getGateway();
             if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.USER_NAME)){
-                userRegistry = new UserReg();
+                UserReg userRegistry = new UserReg();
                 WorkerResource worker = userRegistry.getWorker(gateway.getGatewayName(), (String) value);
                 List<Resource> resources = worker.get(ResourceType.EXPERIMENT_METADATA);
                 for (Resource resource : resources){
@@ -382,7 +384,14 @@ public class ExperimentRegistry {
         return configDataList;
     }
 
-    public Object getValue(DependentDataType dataType, Object identifier, Object field) {
+    public Object getBasicMetaDataValues(String expId, String fieldName) {
+        if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.USER_NAME)){
+
+        }
+        return null;
+    }
+
+    public Object getConfigDataValues(String expId, String fieldName) {
         return null;
     }
 
