@@ -43,8 +43,9 @@ add_license_header() {
     GENERATED_CODE_DIR=$1
 
     # For all generated thrift code, add the suppress all warnings annotation
-    find $GENERATED_CODE_DIR -name '*.java' -print0 | xargs -0 sed -i.orig -e 's/public class /@SuppressWarnings("all") public class /'
-    find $GENERATED_CODE_DIR -name '*.java' -print0 | xargs -0 sed -i.orig -e 's/public enum /@SuppressWarnings("all") public enum /'
+    #  NOTE: In order to save the orginal file as a backup, use sed -i.orig in place of sed -i ''
+    find $GENERATED_CODE_DIR -name '*.java' -print0 | xargs -0 sed -i '' -e 's/public class /@SuppressWarnings("all") public class /'
+    find $GENERATED_CODE_DIR -name '*.java' -print0 | xargs -0 sed -i '' -e 's/public enum /@SuppressWarnings("all") public enum /'
 
     # For each java file within the genrated directory, add the ASF V2 LICENSE header
     for f in $(find $GENERATED_CODE_DIR -name '*.java'); do
@@ -66,6 +67,7 @@ add_license_header() {
      * limitations under the License.
      */
 EOF
+    mv ${f}-with-license $f
     done
 }
 
@@ -77,18 +79,21 @@ copy_changed_files() {
 
     # Read all the funcation arguments
     GENERATED_CODE_DIR=$1
-    EXISTING_SRC_DIR=$2
+    WORKSPACE_SRC_DIR=$2
 
-    SDIR="${GENERATED_CODE_DIR}/org/apache/airavata/model/experiment"
-    DDIR="${EXISTING_SRC_DIR}/org/apache/airavata/model/experiment"
-    mkdir -p "$DDIR"
-    for f in "$SDIR"/*.java; do
-    DEST="$DDIR/`basename $f`"
-    if ! cmp -s "${f}-with-license" "${DEST}" ; then
-      echo "Copying ${f}-with-license to ${DEST}"
-      cp -f "${f}-with-license" "${DEST}" || fail unable to copy files to java workspace
-    fi
-    done
+    echo "Generated sources are in $GENERATED_CODE_DIR"
+    echo "Destination workspace is in $WORKSPACE_SRC_DIR"
+
+#    SDIR="${GENERATED_CODE_DIR}/org/apache/airavata/model/experiment"
+#    DDIR="${EXISTING_SRC_DIR}/org/apache/airavata/model/experiment"
+#    mkdir -p "$DDIR"
+#    for f in "$SDIR"/*.java; do
+#    DEST="$DDIR/`basename $f`"
+#    if ! cmp -s "${f}-with-license" "${DEST}" ; then
+#      echo "Copying ${f}-with-license to ${DEST}"
+#      cp -f "${f}-with-license" "${DEST}" || fail unable to copy files to java workspace
+#    fi
+#    done
 }
 
 # Generation of thrift files will require installing Apache Thrift. Please add thrift to your path.
@@ -127,10 +132,10 @@ thrift ${THRIFT_ARGS} --gen java $THRIFT_IDL_DIR/airavataAPI.thrift || fail unab
 add_license_header $JAVA_GEN_DIR
 
 # Compare the newly generated classes with existing server skelton sources and replace the changed ones.
-copy_changed_files $JAVA_GEN_DIR $SERVER_SRC_DIR
+#copy_changed_files $JAVA_GEN_DIR $SERVER_SRC_DIR
 
 # Compare the newly generated classes with existing java client stub sources and replace the changed ones.
-copy_changed_files $JAVA_GEN_DIR $JAVA_CLIENT_SRC_DIR
+#copy_changed_files $JAVA_GEN_DIR $JAVA_CLIENT_SRC_DIR
 
 ##############################
 # Update Airavata Data Model #
