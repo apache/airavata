@@ -19,82 +19,142 @@
 #
 # Credit: This script was created referring to Apache Accumulo project and tuned to Airavata Needs.
 
-# ========================================================================================================================
-REQUIRED_THRIFT_VERSION='0.9'
-BASE_OUTPUT_PACKAGE='org.apache.airavata'
+# Global Constants used across the script
+REQUIRED_THRIFT_VERSION='0.9.1'
 THRIFT_IDL_DIR='thrift-interface-descriptions'
-PACKAGES_TO_GENERATE=(gc master tabletserver security client.impl data)
-BUILD_DIR='target'
-FINAL_DIR='datamodel/src/main/java'
-# ========================================================================================================================
+BASE_TARGET_DIR='target'
+DATAMODEL_SRC_DIR='datamodel/src/main/java'
+SERVER_SRC_DIR='server/src/main/java'
+JAVA_CLIENT_SRC_DIR='client-sdks/java-client-sdk/src/main/java'
 
+# The Funcation fail prints error messages on failure and quits the script.
 fail() {
-  echo $@
-  exit 1
+    echo $@
+    exit 1
 }
 
-# Test to see if we have thrift installed
+# The funcation add_license_header adds the ASF V2 license header to all java files within the specified generated
+#   directory. The funcation also adds suppress all warnings annotation to all public classes and enum's
+#  To Call:
+#   add_license_header $generated_code_directory
+add_license_header() {
+
+    # Fetch the generated code directory passed as the argument
+    GENERATED_CODE_DIR=$1
+
+    # For all generated thrift code, add the suppress all warnings annotation
+    find $GENERATED_CODE_DIR -name '*.java' -print0 | xargs -0 sed -i.orig -e 's/public class /@SuppressWarnings("all") public class /'
+    find $GENERATED_CODE_DIR -name '*.java' -print0 | xargs -0 sed -i.orig -e 's/public enum /@SuppressWarnings("all") public enum /'
+
+    # For each java file within the genrated directory, add the ASF V2 LICENSE header
+    for f in $(find $GENERATED_CODE_DIR -name '*.java'); do
+      cat - $f >${f}-with-license <<EOF
+    /*
+     * Licensed to the Apache Software Foundation (ASF) under one or more
+     * contributor license agreements.  See the NOTICE file distributed with
+     * this work for additional information regarding copyright ownership.
+     * The ASF licenses this file to You under the Apache License, Version 2.0
+     * (the "License"); you may not use this file except in compliance with
+     * the License.  You may obtain a copy of the License at
+     *
+     *     http://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
+EOF
+    done
+}
+
+# The funcation compares every generated java file with the one in specified existing source location. If the comparision
+#   shows a difference, then it replaces with the newly generated file (with added license header).
+#  To Call:
+#   copy_changed_files $generated_code_directory $existing_source_directory
+copy_changed_files() {
+
+    # Read all the funcation arguments
+    GENERATED_CODE_DIR=$1
+    EXISTING_SRC_DIR=$2
+
+    SDIR="${GENERATED_CODE_DIR}/org/apache/airavata/model/experiment"
+    DDIR="${EXISTING_SRC_DIR}/org/apache/airavata/model/experiment"
+    mkdir -p "$DDIR"
+    for f in "$SDIR"/*.java; do
+    DEST="$DDIR/`basename $f`"
+    if ! cmp -s "${f}-with-license" "${DEST}" ; then
+      echo "Copying ${f}-with-license to ${DEST}"
+      cp -f "${f}-with-license" "${DEST}" || fail unable to copy files to java workspace
+    fi
+    done
+}
+
+# Generation of thrift files will require installing Apache Thrift. Please add thrift to your path.
+#  Verify is thrift is installed, is in the path is at a specified version.
 VERSION=$(thrift -version 2>/dev/null | grep -F "${REQUIRED_THRIFT_VERSION}" |  wc -l)
 if [ "$VERSION" -ne 1 ] ; then
-  # Nope: bail
-  echo "****************************************************"
-  echo "*** thrift is not available"
-  echo "***   expecting 'thrift -version' to return ${REQUIRED_THRIFT_VERSION}"
-  echo "*** generated code will not be updated"
-  fail "****************************************************"
+    echo "****************************************************"
+    echo "*** thrift is not installed or is not in the path"
+    echo "***   expecting 'thrift -version' to return ${REQUIRED_THRIFT_VERSION}"
+    echo "*** generated code will not be updated"
+    fail "****************************************************"
 fi
 
 # Initialize the thrift arguements.
 #  Since most of the Airavata API and Data Models have includes, use recursive option by defualt.
 #  Generate all the files in target directory
-THRIFT_ARGS="-r -o $BUILD_DIR"
+THRIFT_ARGS="-r -o $BASE_TARGET_DIR"
+# Ensure the required target directories exists, if not create.
+mkdir -p $BASE_TARGET_DIR
 
-# Ensure output directories are created
-mkdir -p $BUILD_DIR
+#######################################################
+# Update Airavata Server Skeltons & Java Client Stubs #
+#######################################################
 
+#Java generation directory
+JAVA_GEN_DIR=$BASE_TARGET_DIR/gen-java
 
-# Generate the Airavata Data Model. Use Java Beans to generate to take advantage of the bean style
+# As a precausion  remove and previously generated files if exists
+rm -rf $JAVA_GEN_DIR
+
+# Using thrify Java generator, generate the java classes based on Airavata API. This
+#   The airavataAPI.thrift includes rest of data models.
+thrift ${THRIFT_ARGS} --gen java $THRIFT_IDL_DIR/airavataAPI.thrift || fail unable to generate java thrift classes
+
+# For the generated java classes add the ASF V2 License header
+add_license_header $JAVA_GEN_DIR
+
+# Compare the newly generated classes with existing server skelton sources and replace the changed ones.
+copy_changed_files $JAVA_GEN_DIR $SERVER_SRC_DIR
+
+# Compare the newly generated classes with existing java client stub sources and replace the changed ones.
+copy_changed_files $JAVA_GEN_DIR $JAVA_CLIENT_SRC_DIR
+
+##############################
+# Update Airavata Data Model #
+##############################
+
+#Java Beans generation directory
+JAVA_BEAN_GEN_DIR=$BASE_TARGET_DIR/gen-javabean
+
+# As a precausion  remove and previously generated files if exists
+rm -rf $JAVA_BEAN_GEN_DIR
+
+# Generate the Airavata Data Model using thrify Java Beans generator. This will take generate the classes in bean style
 #   with members being private and setters returning voids.
-
-# First remove and previously generated files
-rm -rf $BUILD_DIR/gen-javabean
-
-# the airavataDataModel.thrift includes rest of data models.
+#   The airavataDataModel.thrift includes rest of data models.
 thrift ${THRIFT_ARGS} --gen java:beans $THRIFT_IDL_DIR/airavataDataModel.thrift || fail unable to generate java bean thrift classes
 
+# For the generated java beans add the ASF V2 License header
+add_license_header $JAVA_BEAN_GEN_DIR
 
-# For all generated thrift code, suppress all warnings and add the LICENSE header
-find $BUILD_DIR/gen-javabean -name '*.java' -print0 | xargs -0 sed -i.orig -e 's/public class /@SuppressWarnings("all") public class /'
-#find $BUILD_DIR/gen-javabean -name '*.java' -print0 | xargs -0 sed -i.orig -e 's/public enum /@SuppressWarnings("all") public enum /'
-for f in $(find $BUILD_DIR/gen-javabean -name '*.java'); do
-  cat - $f >${f}-with-license <<EOF
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-EOF
-done
+# Compare the newly generated beans with existing sources and replace the changed ones.
+copy_changed_files $JAVA_BEAN_GEN_DIR $DATAMODEL_SRC_DIR
 
-# For every generated java file, compare it with the version-controlled one, and copy the ones that have changed into place
-  SDIR="${BUILD_DIR}/gen-javabean/org/apache/airavata/model/experiment"
-  DDIR="${FINAL_DIR}/org/apache/airavata/model/experiment"
-  mkdir -p "$DDIR"
-  for f in "$SDIR"/*.java; do
-    DEST="$DDIR/`basename $f`"
-    if ! cmp -s "${f}-with-license" "${DEST}" ; then
-      echo cp -f "${f}-with-license" "${DEST}"
-      cp -f "${f}-with-license" "${DEST}" || fail unable to copy files to java workspace
-    fi
-  done
+# CleanUp: Delete the base target build directory
+#rm -rf $BASE_TARGET_DIR
+
+echo "Successfully generated new sources, compared against exiting code and replaced the changed files"
+exit 0
