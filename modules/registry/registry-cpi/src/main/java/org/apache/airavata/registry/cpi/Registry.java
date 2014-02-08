@@ -17,8 +17,9 @@ public interface Registry {
      * @param newObjectToAdd Object which contains the fields that need to be saved in to registry. This object is a
      *                       thrift model object. In experiment case this object can be BasicMetadata, ConfigurationData
      *                       etc
+     * @return return the identifier to identify the object
      */
-    public void add(TopLevelDataType dataType, Object newObjectToAdd);
+    public Object add(TopLevelDataType dataType, Object newObjectToAdd);
 
     /**
      * This method is to add an object in to the registry

@@ -37,11 +37,10 @@ public class RegistryImpl implements Registry {
     private final static Logger logger = LoggerFactory.getLogger(RegistryImpl.class);
     ExperimentRegistry experimentRegistry = new ExperimentRegistry();
 
-    public void add(TopLevelDataType dataType, Object newObjectToAdd) {
+    public Object add(TopLevelDataType dataType, Object newObjectToAdd) {
         switch (dataType){
             case EXPERIMENT_BASIC_DATA:
-                experimentRegistry.add((BasicMetadata)newObjectToAdd);
-                break;
+                return experimentRegistry.add((BasicMetadata) newObjectToAdd);
             default:
                 logger.error("Unsupported top level type..", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
@@ -132,9 +131,28 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    /**
+     * This method is to retrieve a specific value for a given field.
+     * @param dataType Data type is a predefined type which the programmer should choose according to the object he
+     *                 is going to save in to registry
+     * @param identifier Identifier which will uniquely identify the data model. For example, in Experiment_Basic_Type,
+     *                   identifier will be generated experimentID
+     * @param field field that filtering should be done. For example, if we want to execution user for a given
+     *              experiment, field will be "userName"
+     * @return return the value for the specific field where data model is identified by the unique identifier that has
+     *         given
+     */
     @Override
     public Object getValue(DataType dataType, Object identifier, String field) {
-        return null;
+        switch (dataType){
+            case EXPERIMENT_BASIC_DATA:
+                return experimentRegistry.getBasicMetaDataValues((String)identifier, field);
+            case EXPERIMENT_CONFIGURATION_DATA:
+                return experimentRegistry.getConfigDataValues((String) identifier, field);
+            default:
+                logger.error("Unsupported data type...", new UnsupportedOperationException());
+                throw new UnsupportedOperationException();
+        }
     }
 
     @Override
