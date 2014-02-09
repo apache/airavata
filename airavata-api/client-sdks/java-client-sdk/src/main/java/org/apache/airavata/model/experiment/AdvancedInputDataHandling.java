@@ -66,10 +66,10 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new AdvancedInputDataHandlingTupleSchemeFactory());
   }
 
-  private boolean stageInputFilesToWorkingDir; // optional
-  private String workingDirectoryParent; // optional
-  private String uniqueWorkingDirectory; // optional
-  private boolean cleanUpWorkingDirAfterJob; // optional
+  public boolean stageInputFilesToWorkingDir; // optional
+  public String workingDirectoryParent; // optional
+  public String uniqueWorkingDirectory; // optional
+  public boolean cleanUpWorkingDirAfterJob; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -198,9 +198,10 @@ import org.slf4j.LoggerFactory;
     return this.stageInputFilesToWorkingDir;
   }
 
-  public void setStageInputFilesToWorkingDir(boolean stageInputFilesToWorkingDir) {
+  public AdvancedInputDataHandling setStageInputFilesToWorkingDir(boolean stageInputFilesToWorkingDir) {
     this.stageInputFilesToWorkingDir = stageInputFilesToWorkingDir;
     setStageInputFilesToWorkingDirIsSet(true);
+    return this;
   }
 
   public void unsetStageInputFilesToWorkingDir() {
@@ -220,8 +221,9 @@ import org.slf4j.LoggerFactory;
     return this.workingDirectoryParent;
   }
 
-  public void setWorkingDirectoryParent(String workingDirectoryParent) {
+  public AdvancedInputDataHandling setWorkingDirectoryParent(String workingDirectoryParent) {
     this.workingDirectoryParent = workingDirectoryParent;
+    return this;
   }
 
   public void unsetWorkingDirectoryParent() {
@@ -243,8 +245,9 @@ import org.slf4j.LoggerFactory;
     return this.uniqueWorkingDirectory;
   }
 
-  public void setUniqueWorkingDirectory(String uniqueWorkingDirectory) {
+  public AdvancedInputDataHandling setUniqueWorkingDirectory(String uniqueWorkingDirectory) {
     this.uniqueWorkingDirectory = uniqueWorkingDirectory;
+    return this;
   }
 
   public void unsetUniqueWorkingDirectory() {
@@ -266,9 +269,10 @@ import org.slf4j.LoggerFactory;
     return this.cleanUpWorkingDirAfterJob;
   }
 
-  public void setCleanUpWorkingDirAfterJob(boolean cleanUpWorkingDirAfterJob) {
+  public AdvancedInputDataHandling setCleanUpWorkingDirAfterJob(boolean cleanUpWorkingDirAfterJob) {
     this.cleanUpWorkingDirAfterJob = cleanUpWorkingDirAfterJob;
     setCleanUpWorkingDirAfterJobIsSet(true);
+    return this;
   }
 
   public void unsetCleanUpWorkingDirAfterJob() {
@@ -597,6 +601,8 @@ import org.slf4j.LoggerFactory;
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
+
+      // check for required fields of primitive type, which can't be checked in the validate method
       struct.validate();
     }
 

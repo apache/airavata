@@ -65,9 +65,9 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new AdvancedOutputDataHandlingTupleSchemeFactory());
   }
 
-  private String outputdataDir; // optional
-  private String dataRegistryURL; // optional
-  private boolean persistOutputData; // optional
+  public String outputdataDir; // optional
+  public String dataRegistryURL; // optional
+  public boolean persistOutputData; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -185,8 +185,9 @@ import org.slf4j.LoggerFactory;
     return this.outputdataDir;
   }
 
-  public void setOutputdataDir(String outputdataDir) {
+  public AdvancedOutputDataHandling setOutputdataDir(String outputdataDir) {
     this.outputdataDir = outputdataDir;
+    return this;
   }
 
   public void unsetOutputdataDir() {
@@ -208,8 +209,9 @@ import org.slf4j.LoggerFactory;
     return this.dataRegistryURL;
   }
 
-  public void setDataRegistryURL(String dataRegistryURL) {
+  public AdvancedOutputDataHandling setDataRegistryURL(String dataRegistryURL) {
     this.dataRegistryURL = dataRegistryURL;
+    return this;
   }
 
   public void unsetDataRegistryURL() {
@@ -231,9 +233,10 @@ import org.slf4j.LoggerFactory;
     return this.persistOutputData;
   }
 
-  public void setPersistOutputData(boolean persistOutputData) {
+  public AdvancedOutputDataHandling setPersistOutputData(boolean persistOutputData) {
     this.persistOutputData = persistOutputData;
     setPersistOutputDataIsSet(true);
+    return this;
   }
 
   public void unsetPersistOutputData() {
@@ -516,6 +519,8 @@ import org.slf4j.LoggerFactory;
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
+
+      // check for required fields of primitive type, which can't be checked in the validate method
       struct.validate();
     }
 
