@@ -84,16 +84,9 @@ copy_changed_files() {
     echo "Generated sources are in $GENERATED_CODE_DIR"
     echo "Destination workspace is in $WORKSPACE_SRC_DIR"
 
-#    SDIR="${GENERATED_CODE_DIR}/org/apache/airavata/model/experiment"
-#    DDIR="${EXISTING_SRC_DIR}/org/apache/airavata/model/experiment"
-#    mkdir -p "$DDIR"
-#    for f in "$SDIR"/*.java; do
-#    DEST="$DDIR/`basename $f`"
-#    if ! cmp -s "${f}-with-license" "${DEST}" ; then
-#      echo "Copying ${f}-with-license to ${DEST}"
-#      cp -f "${f}-with-license" "${DEST}" || fail unable to copy files to java workspace
-#    fi
-#    done
+    # Check if the newly generated files exist in the targetted workspace, if not copy. Only changed files will be synced.
+    #  the extra slash to GENERATED_CODE_DIR is needed to ensure the parent directory itself is not copied.
+    rsync -auv $GENERATED_CODE_DIR/ $WORKSPACE_SRC_DIR
 }
 
 # Generation of thrift files will require installing Apache Thrift. Please add thrift to your path.
@@ -132,10 +125,10 @@ thrift ${THRIFT_ARGS} --gen java $THRIFT_IDL_DIR/airavataAPI.thrift || fail unab
 add_license_header $JAVA_GEN_DIR
 
 # Compare the newly generated classes with existing server skelton sources and replace the changed ones.
-#copy_changed_files $JAVA_GEN_DIR $SERVER_SRC_DIR
+copy_changed_files $JAVA_GEN_DIR $SERVER_SRC_DIR
 
 # Compare the newly generated classes with existing java client stub sources and replace the changed ones.
-#copy_changed_files $JAVA_GEN_DIR $JAVA_CLIENT_SRC_DIR
+copy_changed_files $JAVA_GEN_DIR $JAVA_CLIENT_SRC_DIR
 
 ##############################
 # Update Airavata Data Model #
@@ -159,7 +152,7 @@ add_license_header $JAVA_BEAN_GEN_DIR
 copy_changed_files $JAVA_BEAN_GEN_DIR $DATAMODEL_SRC_DIR
 
 # CleanUp: Delete the base target build directory
-#rm -rf $BASE_TARGET_DIR
+rm -rf $BASE_TARGET_DIR
 
 echo "Successfully generated new sources, compared against exiting code and replaced the changed files"
 exit 0
