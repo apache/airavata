@@ -73,17 +73,17 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new ComputationalResourceSchedulingTupleSchemeFactory());
   }
 
-  private boolean airavataAutoSchedule; // required
-  private boolean overrideManualScheduledParams; // required
-  private String resourceHostId; // optional
-  private int totalCPUCount; // optional
-  private int nodeCount; // optional
-  private int numberOfThreads; // optional
-  private String queueName; // optional
-  private int wallTimeLimit; // optional
-  private int jobStartTime; // optional
-  private int totalPhysicalMemory; // optional
-  private String ComputationalProjectAccount; // optional
+  public boolean airavataAutoSchedule; // required
+  public boolean overrideManualScheduledParams; // required
+  public String resourceHostId; // optional
+  public int totalCPUCount; // optional
+  public int nodeCount; // optional
+  public int numberOfThreads; // optional
+  public String queueName; // optional
+  public int wallTimeLimit; // optional
+  public int jobStartTime; // optional
+  public int totalPhysicalMemory; // optional
+  public String ComputationalProjectAccount; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -286,9 +286,10 @@ import org.slf4j.LoggerFactory;
     return this.airavataAutoSchedule;
   }
 
-  public void setAiravataAutoSchedule(boolean airavataAutoSchedule) {
+  public ComputationalResourceScheduling setAiravataAutoSchedule(boolean airavataAutoSchedule) {
     this.airavataAutoSchedule = airavataAutoSchedule;
     setAiravataAutoScheduleIsSet(true);
+    return this;
   }
 
   public void unsetAiravataAutoSchedule() {
@@ -308,9 +309,10 @@ import org.slf4j.LoggerFactory;
     return this.overrideManualScheduledParams;
   }
 
-  public void setOverrideManualScheduledParams(boolean overrideManualScheduledParams) {
+  public ComputationalResourceScheduling setOverrideManualScheduledParams(boolean overrideManualScheduledParams) {
     this.overrideManualScheduledParams = overrideManualScheduledParams;
     setOverrideManualScheduledParamsIsSet(true);
+    return this;
   }
 
   public void unsetOverrideManualScheduledParams() {
@@ -330,8 +332,9 @@ import org.slf4j.LoggerFactory;
     return this.resourceHostId;
   }
 
-  public void setResourceHostId(String resourceHostId) {
+  public ComputationalResourceScheduling setResourceHostId(String resourceHostId) {
     this.resourceHostId = resourceHostId;
+    return this;
   }
 
   public void unsetResourceHostId() {
@@ -353,9 +356,10 @@ import org.slf4j.LoggerFactory;
     return this.totalCPUCount;
   }
 
-  public void setTotalCPUCount(int totalCPUCount) {
+  public ComputationalResourceScheduling setTotalCPUCount(int totalCPUCount) {
     this.totalCPUCount = totalCPUCount;
     setTotalCPUCountIsSet(true);
+    return this;
   }
 
   public void unsetTotalCPUCount() {
@@ -375,9 +379,10 @@ import org.slf4j.LoggerFactory;
     return this.nodeCount;
   }
 
-  public void setNodeCount(int nodeCount) {
+  public ComputationalResourceScheduling setNodeCount(int nodeCount) {
     this.nodeCount = nodeCount;
     setNodeCountIsSet(true);
+    return this;
   }
 
   public void unsetNodeCount() {
@@ -397,9 +402,10 @@ import org.slf4j.LoggerFactory;
     return this.numberOfThreads;
   }
 
-  public void setNumberOfThreads(int numberOfThreads) {
+  public ComputationalResourceScheduling setNumberOfThreads(int numberOfThreads) {
     this.numberOfThreads = numberOfThreads;
     setNumberOfThreadsIsSet(true);
+    return this;
   }
 
   public void unsetNumberOfThreads() {
@@ -419,8 +425,9 @@ import org.slf4j.LoggerFactory;
     return this.queueName;
   }
 
-  public void setQueueName(String queueName) {
+  public ComputationalResourceScheduling setQueueName(String queueName) {
     this.queueName = queueName;
+    return this;
   }
 
   public void unsetQueueName() {
@@ -442,9 +449,10 @@ import org.slf4j.LoggerFactory;
     return this.wallTimeLimit;
   }
 
-  public void setWallTimeLimit(int wallTimeLimit) {
+  public ComputationalResourceScheduling setWallTimeLimit(int wallTimeLimit) {
     this.wallTimeLimit = wallTimeLimit;
     setWallTimeLimitIsSet(true);
+    return this;
   }
 
   public void unsetWallTimeLimit() {
@@ -464,9 +472,10 @@ import org.slf4j.LoggerFactory;
     return this.jobStartTime;
   }
 
-  public void setJobStartTime(int jobStartTime) {
+  public ComputationalResourceScheduling setJobStartTime(int jobStartTime) {
     this.jobStartTime = jobStartTime;
     setJobStartTimeIsSet(true);
+    return this;
   }
 
   public void unsetJobStartTime() {
@@ -486,9 +495,10 @@ import org.slf4j.LoggerFactory;
     return this.totalPhysicalMemory;
   }
 
-  public void setTotalPhysicalMemory(int totalPhysicalMemory) {
+  public ComputationalResourceScheduling setTotalPhysicalMemory(int totalPhysicalMemory) {
     this.totalPhysicalMemory = totalPhysicalMemory;
     setTotalPhysicalMemoryIsSet(true);
+    return this;
   }
 
   public void unsetTotalPhysicalMemory() {
@@ -508,8 +518,9 @@ import org.slf4j.LoggerFactory;
     return this.ComputationalProjectAccount;
   }
 
-  public void setComputationalProjectAccount(String ComputationalProjectAccount) {
+  public ComputationalResourceScheduling setComputationalProjectAccount(String ComputationalProjectAccount) {
     this.ComputationalProjectAccount = ComputationalProjectAccount;
+    return this;
   }
 
   public void unsetComputationalProjectAccount() {
@@ -1029,14 +1040,8 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetAiravataAutoSchedule()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'airavataAutoSchedule' is unset! Struct:" + toString());
-    }
-
-    if (!isSetOverrideManualScheduledParams()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'overrideManualScheduledParams' is unset! Struct:" + toString());
-    }
-
+    // alas, we cannot check 'airavataAutoSchedule' because it's a primitive and you chose the non-beans generator.
+    // alas, we cannot check 'overrideManualScheduledParams' because it's a primitive and you chose the non-beans generator.
     // check for sub-struct validity
   }
 
@@ -1170,6 +1175,14 @@ import org.slf4j.LoggerFactory;
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
+
+      // check for required fields of primitive type, which can't be checked in the validate method
+      if (!struct.isSetAiravataAutoSchedule()) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'airavataAutoSchedule' was not found in serialized data! Struct: " + toString());
+      }
+      if (!struct.isSetOverrideManualScheduledParams()) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'overrideManualScheduledParams' was not found in serialized data! Struct: " + toString());
+      }
       struct.validate();
     }
 

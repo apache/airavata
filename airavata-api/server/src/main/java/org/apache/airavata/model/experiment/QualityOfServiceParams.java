@@ -65,9 +65,9 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new QualityOfServiceParamsTupleSchemeFactory());
   }
 
-  private String startExecutionAt; // optional
-  private String executeBefore; // optional
-  private int numberofRetries; // optional
+  public String startExecutionAt; // optional
+  public String executeBefore; // optional
+  public int numberofRetries; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -183,8 +183,9 @@ import org.slf4j.LoggerFactory;
     return this.startExecutionAt;
   }
 
-  public void setStartExecutionAt(String startExecutionAt) {
+  public QualityOfServiceParams setStartExecutionAt(String startExecutionAt) {
     this.startExecutionAt = startExecutionAt;
+    return this;
   }
 
   public void unsetStartExecutionAt() {
@@ -206,8 +207,9 @@ import org.slf4j.LoggerFactory;
     return this.executeBefore;
   }
 
-  public void setExecuteBefore(String executeBefore) {
+  public QualityOfServiceParams setExecuteBefore(String executeBefore) {
     this.executeBefore = executeBefore;
+    return this;
   }
 
   public void unsetExecuteBefore() {
@@ -229,9 +231,10 @@ import org.slf4j.LoggerFactory;
     return this.numberofRetries;
   }
 
-  public void setNumberofRetries(int numberofRetries) {
+  public QualityOfServiceParams setNumberofRetries(int numberofRetries) {
     this.numberofRetries = numberofRetries;
     setNumberofRetriesIsSet(true);
+    return this;
   }
 
   public void unsetNumberofRetries() {
@@ -514,6 +517,8 @@ import org.slf4j.LoggerFactory;
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
+
+      // check for required fields of primitive type, which can't be checked in the validate method
       struct.validate();
     }
 

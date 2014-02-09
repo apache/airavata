@@ -73,16 +73,16 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new ConfigurationDataTupleSchemeFactory());
   }
 
-  private BasicMetadata basicMetadata; // optional
-  private String applicationId; // optional
-  private String applicationVersion; // optional
-  private String workflowTemplateId; // optional
-  private String worklfowTemplateVersion; // optional
-  private Map<String,String> experimentInputs; // optional
-  private ComputationalResourceScheduling computationalResourceScheduling; // optional
-  private AdvancedInputDataHandling advanceInputDataHandling; // optional
-  private AdvancedOutputDataHandling advanceOutputDataHandling; // optional
-  private QualityOfServiceParams qosParams; // optional
+  public BasicMetadata basicMetadata; // optional
+  public String applicationId; // optional
+  public String applicationVersion; // optional
+  public String workflowTemplateId; // optional
+  public String worklfowTemplateVersion; // optional
+  public Map<String,String> experimentInputs; // optional
+  public ComputationalResourceScheduling computationalResourceScheduling; // optional
+  public AdvancedInputDataHandling advanceInputDataHandling; // optional
+  public AdvancedOutputDataHandling advanceOutputDataHandling; // optional
+  public QualityOfServiceParams qosParams; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -262,8 +262,9 @@ import org.slf4j.LoggerFactory;
     return this.basicMetadata;
   }
 
-  public void setBasicMetadata(BasicMetadata basicMetadata) {
+  public ConfigurationData setBasicMetadata(BasicMetadata basicMetadata) {
     this.basicMetadata = basicMetadata;
+    return this;
   }
 
   public void unsetBasicMetadata() {
@@ -285,8 +286,9 @@ import org.slf4j.LoggerFactory;
     return this.applicationId;
   }
 
-  public void setApplicationId(String applicationId) {
+  public ConfigurationData setApplicationId(String applicationId) {
     this.applicationId = applicationId;
+    return this;
   }
 
   public void unsetApplicationId() {
@@ -308,8 +310,9 @@ import org.slf4j.LoggerFactory;
     return this.applicationVersion;
   }
 
-  public void setApplicationVersion(String applicationVersion) {
+  public ConfigurationData setApplicationVersion(String applicationVersion) {
     this.applicationVersion = applicationVersion;
+    return this;
   }
 
   public void unsetApplicationVersion() {
@@ -331,8 +334,9 @@ import org.slf4j.LoggerFactory;
     return this.workflowTemplateId;
   }
 
-  public void setWorkflowTemplateId(String workflowTemplateId) {
+  public ConfigurationData setWorkflowTemplateId(String workflowTemplateId) {
     this.workflowTemplateId = workflowTemplateId;
+    return this;
   }
 
   public void unsetWorkflowTemplateId() {
@@ -354,8 +358,9 @@ import org.slf4j.LoggerFactory;
     return this.worklfowTemplateVersion;
   }
 
-  public void setWorklfowTemplateVersion(String worklfowTemplateVersion) {
+  public ConfigurationData setWorklfowTemplateVersion(String worklfowTemplateVersion) {
     this.worklfowTemplateVersion = worklfowTemplateVersion;
+    return this;
   }
 
   public void unsetWorklfowTemplateVersion() {
@@ -388,8 +393,9 @@ import org.slf4j.LoggerFactory;
     return this.experimentInputs;
   }
 
-  public void setExperimentInputs(Map<String,String> experimentInputs) {
+  public ConfigurationData setExperimentInputs(Map<String,String> experimentInputs) {
     this.experimentInputs = experimentInputs;
+    return this;
   }
 
   public void unsetExperimentInputs() {
@@ -411,8 +417,9 @@ import org.slf4j.LoggerFactory;
     return this.computationalResourceScheduling;
   }
 
-  public void setComputationalResourceScheduling(ComputationalResourceScheduling computationalResourceScheduling) {
+  public ConfigurationData setComputationalResourceScheduling(ComputationalResourceScheduling computationalResourceScheduling) {
     this.computationalResourceScheduling = computationalResourceScheduling;
+    return this;
   }
 
   public void unsetComputationalResourceScheduling() {
@@ -434,8 +441,9 @@ import org.slf4j.LoggerFactory;
     return this.advanceInputDataHandling;
   }
 
-  public void setAdvanceInputDataHandling(AdvancedInputDataHandling advanceInputDataHandling) {
+  public ConfigurationData setAdvanceInputDataHandling(AdvancedInputDataHandling advanceInputDataHandling) {
     this.advanceInputDataHandling = advanceInputDataHandling;
+    return this;
   }
 
   public void unsetAdvanceInputDataHandling() {
@@ -457,8 +465,9 @@ import org.slf4j.LoggerFactory;
     return this.advanceOutputDataHandling;
   }
 
-  public void setAdvanceOutputDataHandling(AdvancedOutputDataHandling advanceOutputDataHandling) {
+  public ConfigurationData setAdvanceOutputDataHandling(AdvancedOutputDataHandling advanceOutputDataHandling) {
     this.advanceOutputDataHandling = advanceOutputDataHandling;
+    return this;
   }
 
   public void unsetAdvanceOutputDataHandling() {
@@ -480,8 +489,9 @@ import org.slf4j.LoggerFactory;
     return this.qosParams;
   }
 
-  public void setQosParams(QualityOfServiceParams qosParams) {
+  public ConfigurationData setQosParams(QualityOfServiceParams qosParams) {
     this.qosParams = qosParams;
+    return this;
   }
 
   public void unsetQosParams() {
@@ -1150,6 +1160,8 @@ import org.slf4j.LoggerFactory;
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
+
+      // check for required fields of primitive type, which can't be checked in the validate method
       struct.validate();
     }
 

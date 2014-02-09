@@ -80,12 +80,12 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new BasicMetadataTupleSchemeFactory());
   }
 
-  private String userName; // required
-  private String experimentName; // required
-  private String projectID; // required
-  private String experimentDescription; // optional
-  private boolean shareExperimentPublicly; // optional
-  private String experimentID; // required
+  public String userName; // required
+  public String experimentName; // required
+  public String projectID; // required
+  public String experimentDescription; // optional
+  public boolean shareExperimentPublicly; // optional
+  public String experimentID; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -249,8 +249,9 @@ import org.slf4j.LoggerFactory;
     return this.userName;
   }
 
-  public void setUserName(String userName) {
+  public BasicMetadata setUserName(String userName) {
     this.userName = userName;
+    return this;
   }
 
   public void unsetUserName() {
@@ -272,8 +273,9 @@ import org.slf4j.LoggerFactory;
     return this.experimentName;
   }
 
-  public void setExperimentName(String experimentName) {
+  public BasicMetadata setExperimentName(String experimentName) {
     this.experimentName = experimentName;
+    return this;
   }
 
   public void unsetExperimentName() {
@@ -295,8 +297,9 @@ import org.slf4j.LoggerFactory;
     return this.projectID;
   }
 
-  public void setProjectID(String projectID) {
+  public BasicMetadata setProjectID(String projectID) {
     this.projectID = projectID;
+    return this;
   }
 
   public void unsetProjectID() {
@@ -318,8 +321,9 @@ import org.slf4j.LoggerFactory;
     return this.experimentDescription;
   }
 
-  public void setExperimentDescription(String experimentDescription) {
+  public BasicMetadata setExperimentDescription(String experimentDescription) {
     this.experimentDescription = experimentDescription;
+    return this;
   }
 
   public void unsetExperimentDescription() {
@@ -341,9 +345,10 @@ import org.slf4j.LoggerFactory;
     return this.shareExperimentPublicly;
   }
 
-  public void setShareExperimentPublicly(boolean shareExperimentPublicly) {
+  public BasicMetadata setShareExperimentPublicly(boolean shareExperimentPublicly) {
     this.shareExperimentPublicly = shareExperimentPublicly;
     setShareExperimentPubliclyIsSet(true);
+    return this;
   }
 
   public void unsetShareExperimentPublicly() {
@@ -363,8 +368,9 @@ import org.slf4j.LoggerFactory;
     return this.experimentID;
   }
 
-  public void setExperimentID(String experimentID) {
+  public BasicMetadata setExperimentID(String experimentID) {
     this.experimentID = experimentID;
+    return this;
   }
 
   public void unsetExperimentID() {
@@ -698,22 +704,18 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetUserName()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'userName' is unset! Struct:" + toString());
+    if (userName == null) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'userName' was not present! Struct: " + toString());
     }
-
-    if (!isSetExperimentName()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'experimentName' is unset! Struct:" + toString());
+    if (experimentName == null) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'experimentName' was not present! Struct: " + toString());
     }
-
-    if (!isSetProjectID()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'projectID' is unset! Struct:" + toString());
+    if (projectID == null) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'projectID' was not present! Struct: " + toString());
     }
-
-    if (!isSetExperimentID()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'experimentID' is unset! Struct:" + toString());
+    if (experimentID == null) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'experimentID' was not present! Struct: " + toString());
     }
-
     // check for sub-struct validity
   }
 
@@ -807,6 +809,8 @@ import org.slf4j.LoggerFactory;
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
+
+      // check for required fields of primitive type, which can't be checked in the validate method
       struct.validate();
     }
 
