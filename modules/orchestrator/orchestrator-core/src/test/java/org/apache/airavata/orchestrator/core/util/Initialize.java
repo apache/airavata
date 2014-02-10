@@ -20,11 +20,9 @@
 */
 package org.apache.airavata.orchestrator.core.util;
 
+import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
-import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
-import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
-import org.apache.airavata.persistance.registry.jpa.resources.Utils;
-import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
+import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.apache.airavata.registry.api.exception.RegistrySettingsException;
 import org.apache.airavata.registry.api.util.RegistrySettings;
 import org.apache.derby.drda.NetworkServerControl;
@@ -154,6 +152,12 @@ public class Initialize {
             WorkerResource workerResource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
             workerResource.setUser(userResource.getUserName());
             workerResource.save();
+
+            ProjectResource resource = (ProjectResource)gatewayResource.create(ResourceType.PROJECT);
+            resource.setName("default");
+            resource.setWorker(workerResource);
+            resource.save();
+
         } catch (RegistrySettingsException e) {
             logger.error("Unable to read properties", e);
         }

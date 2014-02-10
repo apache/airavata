@@ -23,10 +23,7 @@ package org.apache.airavata.orchestrator.core.impl;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
@@ -42,12 +39,16 @@ import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.scheduler.HostScheduler;
+import org.apache.airavata.model.experiment.ConfigurationData;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
 import org.apache.airavata.registry.api.JobRequest;
+import org.apache.airavata.registry.cpi.DataType;
+import org.apache.airavata.registry.cpi.DependentDataType;
+import org.apache.airavata.registry.cpi.TopLevelDataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -149,8 +150,15 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
 
             jobExecutionContext.setApplicationContext(applicationContext);
 
-            jobExecutionContext.setOutMessageContext(new MessageContext(jobRequest.getOutputParameters()));
-            jobExecutionContext.setInMessageContext(new MessageContext(jobRequest.getInputParameters()));
+
+            ConfigurationData configurationData = (ConfigurationData) orchestratorContext.getNewRegistry().get(DataType.EXPERIMENT_CONFIGURATION_DATA, experimentID);
+            Map<String, String> experimentInputs = configurationData.getExperimentInputs();
+
+            jobExecutionContext.setInMessageContext(new MessageContext(OrchestratorUtils.getMessageContext(experimentInputs,
+                    serviceDescription.getType().getInputParametersArray())));
+
+            HashMap<String, Object> outputData = new HashMap<String, Object>();
+            jobExecutionContext.setOutMessageContext(new MessageContext(outputData));
 
             jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
             jobExecutionContext.setExperimentID(experimentID);
