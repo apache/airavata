@@ -76,6 +76,17 @@ public interface Registry {
     public void update(DataType dataType, Object identifier, String fieldName, Object value);
 
     /**
+     * This method is to retrieve object according to the identifier. In the experiment basic data type, if you give the
+     * experiment id, this method will return the BasicMetadata object
+     * @param dataType Data type is a predefined type which the programmer should choose according to the object he
+     *                 is going to save in to registry
+     * @param identifier Identifier which will uniquely identify the data model. For example, in Experiment_Basic_Type,
+     *                   identifier will be generated experimentID
+     * @return object according to the given identifier.
+     */
+    public Object get(DataType dataType, Object identifier);
+
+    /**
      * This method is to retrieve list of objects according to a given criteria
      * @param dataType Data type is a predefined type which the programmer should choose according to the object he
      *                 is going to save in to registry
@@ -98,6 +109,19 @@ public interface Registry {
      *         given
      */
     public Object getValue (DataType dataType, Object identifier, String field);
+
+    /**
+     * This method is to retrieve all the identifiers according to given filtering criteria. For an example, if you want
+     * to get all the experiment ids for a given gateway, your field name will be "gateway" and the value will be the
+     * name of the gateway ("default"). Similar manner you can retrieve all the experiment ids for a given user.
+     * @param dataType Data type is a predefined type which the programmer should choose according to the object he
+     *                 is going to save in to registry
+     * @param fieldName FieldName is the field that filtering should be done. For example, if we want to retrieve all
+     *                the experiments for a given user, filterBy will be "userName"
+     * @param value value for the filtering field. In the experiment case, value for "userName" can be "admin"
+     * @return id list according to the filtering criteria
+     */
+    public List<String> getIds (DataType dataType, String fieldName, Object value);
 
     /**
      * This method is to remove a item from the registry

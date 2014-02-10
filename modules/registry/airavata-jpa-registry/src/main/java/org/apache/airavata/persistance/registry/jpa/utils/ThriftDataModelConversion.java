@@ -61,7 +61,7 @@ public class ThriftDataModelConversion {
         return configData;
     }
 
-    private static Map<String, String> getExperimentInputs (ExperimentMetadataResource exmdr){
+    public static Map<String, String> getExperimentInputs (ExperimentMetadataResource exmdr){
         List<Resource> resources = exmdr.get(ResourceType.EXPERIMENT_INPUT);
         Map<String, String> exInputs = new HashMap<String, String>();
         for (Resource resource : resources){
@@ -71,7 +71,7 @@ public class ThriftDataModelConversion {
         return exInputs;
     }
 
-    private static ComputationalResourceScheduling getComputationalResourceScheduling (ExperimentConfigDataResource excdr){
+    public static ComputationalResourceScheduling getComputationalResourceScheduling (ExperimentConfigDataResource excdr){
         ComputationalResourceScheduling scheduling = new ComputationalResourceScheduling();
         scheduling.setAiravataAutoSchedule(excdr.isAiravataAutoSchedule());
         scheduling.setOverrideManualScheduledParams(excdr.isOverrideManualSchedule());
@@ -87,7 +87,7 @@ public class ThriftDataModelConversion {
         return scheduling;
     }
 
-    private static AdvancedInputDataHandling getAdvanceInputDataHandling(ExperimentConfigDataResource excd){
+    public static AdvancedInputDataHandling getAdvanceInputDataHandling(ExperimentConfigDataResource excd){
         AdvancedInputDataHandling adih = new AdvancedInputDataHandling();
         adih.setStageInputFilesToWorkingDir(excd.isStageInputsToWDir());
         adih.setWorkingDirectoryParent(excd.getWorkingDirParent());
@@ -96,7 +96,7 @@ public class ThriftDataModelConversion {
         return adih;
     }
 
-    private static AdvancedOutputDataHandling getAdvanceOutputDataHandling(ExperimentConfigDataResource excd){
+    public static AdvancedOutputDataHandling getAdvanceOutputDataHandling(ExperimentConfigDataResource excd){
         AdvancedOutputDataHandling outputDataHandling = new AdvancedOutputDataHandling();
         outputDataHandling.setOutputdataDir(excd.getOutputDataDir());
         outputDataHandling.setDataRegistryURL(excd.getDataRegURL());
@@ -104,7 +104,7 @@ public class ThriftDataModelConversion {
         return outputDataHandling;
     }
 
-    private static QualityOfServiceParams getQOSParams (ExperimentConfigDataResource excd){
+    public static QualityOfServiceParams getQOSParams (ExperimentConfigDataResource excd){
         QualityOfServiceParams qosParams = new QualityOfServiceParams();
         qosParams.setStartExecutionAt(excd.getStartExecutionAt());
         qosParams.setExecuteBefore(excd.getExecuteBefore());

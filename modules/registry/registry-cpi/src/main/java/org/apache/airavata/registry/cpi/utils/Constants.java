@@ -26,6 +26,7 @@ public class Constants {
         public final class BasicMetadataConstants {
             public static final String EXPERIMENT_NAME = "experimentName";
             public static final String USER_NAME = "userName";
+            public static final String GATEWAY = "gateway";
             public static final String EXPERIMENT_DESC = "experimentDescription";
             public static final String SHARE_EXP_PUBLIC = "shareExperimentPublicly";
             public static final String PROJECT_NAME = "project";

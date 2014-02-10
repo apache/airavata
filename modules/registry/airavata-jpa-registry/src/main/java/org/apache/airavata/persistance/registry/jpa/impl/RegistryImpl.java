@@ -101,6 +101,29 @@ public class RegistryImpl implements Registry {
     }
 
     /**
+     * This method is to retrieve object according to the identifier. In the experiment basic data type, if you give the
+     * experiment id, this method will return the BasicMetadata object
+     * @param dataType Data type is a predefined type which the programmer should choose according to the object he
+     *                 is going to save in to registry
+     * @param identifier Identifier which will uniquely identify the data model. For example, in Experiment_Basic_Type,
+     *                   identifier will be generated experimentID
+     * @return object according to the given identifier.
+     */
+    @Override
+    public Object get(DataType dataType, Object identifier) {
+
+        switch (dataType){
+            case EXPERIMENT_BASIC_DATA:
+                return experimentRegistry.getBasicMetaData((String)identifier, null);
+            case EXPERIMENT_CONFIGURATION_DATA:
+                return experimentRegistry.getConfigData((String)identifier, null);
+            default:
+                logger.error("Unsupported data type...", new UnsupportedOperationException());
+                throw new UnsupportedOperationException();
+        }
+    }
+
+    /**
      * This method is to retrieve list of objects according to a given criteria
      * @param dataType Data type is a predefined type which the programmer should choose according to the object he
      *                 is going to save in to registry
@@ -146,9 +169,33 @@ public class RegistryImpl implements Registry {
     public Object getValue(DataType dataType, Object identifier, String field) {
         switch (dataType){
             case EXPERIMENT_BASIC_DATA:
-                return experimentRegistry.getBasicMetaDataValues((String)identifier, field);
+                return experimentRegistry.getBasicMetaData((String) identifier, field);
             case EXPERIMENT_CONFIGURATION_DATA:
-                return experimentRegistry.getConfigDataValues((String) identifier, field);
+                return experimentRegistry.getConfigData((String) identifier, field);
+            default:
+                logger.error("Unsupported data type...", new UnsupportedOperationException());
+                throw new UnsupportedOperationException();
+        }
+    }
+
+    /**
+     * This method is to retrieve all the identifiers according to given filtering criteria. For an example, if you want
+     * to get all the experiment ids for a given gateway, your field name will be "gateway" and the value will be the
+     * name of the gateway ("default"). Similar manner you can retrieve all the experiment ids for a given user.
+     * @param dataType Data type is a predefined type which the programmer should choose according to the object he
+     *                 is going to save in to registry
+     * @param fieldName FieldName is the field that filtering should be done. For example, if we want to retrieve all
+     *                the experiments for a given user, filterBy will be "userName"
+     * @param value value for the filtering field. In the experiment case, value for "userName" can be "admin"
+     * @return id list according to the filtering criteria
+     */
+    @Override
+    public List<String> getIds(DataType dataType, String fieldName, Object value) {
+        switch (dataType){
+            case EXPERIMENT_BASIC_DATA:
+                return experimentRegistry.getExperimentIDs(fieldName, value);
+            case EXPERIMENT_CONFIGURATION_DATA:
+                return experimentRegistry.getExperimentIDs(fieldName, value);
             default:
                 logger.error("Unsupported data type...", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
