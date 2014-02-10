@@ -27,9 +27,12 @@ import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 
 public class GatewayRegistry {
-    public GatewayResource getGateway () throws ApplicationSettingsException {
-        GatewayResource gateway = (GatewayResource)ResourceUtils.getGateway(ServerSettings.getSystemUserGateway());
-        return gateway;
+    public GatewayResource getDefaultGateway () throws ApplicationSettingsException {
+        return (GatewayResource)ResourceUtils.getGateway(ServerSettings.getSystemUserGateway());
+    }
+
+    public GatewayResource getExistingGateway (String gatewayName) {
+        return (GatewayResource)ResourceUtils.getGateway(gatewayName);
     }
 
 }

@@ -27,8 +27,13 @@ import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 
 public class UserReg {
-    public WorkerResource getWorker () throws ApplicationSettingsException {
+    public WorkerResource getSysteUser () throws ApplicationSettingsException {
         WorkerResource worker = (WorkerResource)ResourceUtils.getWorker(ServerSettings.getSystemUserGateway(), ServerSettings.getSystemUser());
+        return worker;
+    }
+
+    public WorkerResource getExistingUser (String gatewayName, String userName) {
+        WorkerResource worker = (WorkerResource)ResourceUtils.getWorker(gatewayName, userName);
         return worker;
     }
 }
