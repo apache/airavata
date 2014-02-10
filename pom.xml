@@ -299,6 +299,17 @@
                 <role>PMC member</role>
             </roles>
         </developer>
+        <developer>
+            <id>shameera</id>
+            <name>Shameera Rathnayaka</name>
+            <email>shameera@apache.org</email>
+            <timezone>+5.5</timezone>
+            <organization>WSO2</organization>
+            <organizationUrl>http://wso2.com/</organizationUrl>
+            <roles>
+                <role>committer</role>
+            </roles>
+        </developer>
     </developers>
 
     <dependencyManagement>
