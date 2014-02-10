@@ -9,19 +9,20 @@
     the License. -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
 
     <parent>
+        <artifactId>airavata-api</artifactId>
         <groupId>org.apache.airavata</groupId>
-        <artifactId>airavata</artifactId>
         <version>0.12-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>airavata-api</artifactId>
+    <name>Airavata Client SDKS</name>
+    <artifactId>airavata-client-sdks</artifactId>
     <packaging>pom</packaging>
-    <name>Airavata API</name>
     <url>http://airavata.apache.org/</url>
 
     <profiles>
@@ -31,10 +32,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
-                <module>airavata-api-sdk</module>
-                <module>airavata-api-server</module>
-                <module>airavata-client-sdks</module>
-                <module>airavata-data-models</module>
+                <module>java-client-samples</module>
             </modules>
         </profile>
     </profiles>

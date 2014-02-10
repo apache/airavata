@@ -9,39 +9,35 @@
     the License. -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
 
     <parent>
+        <artifactId>airavata-api</artifactId>
         <groupId>org.apache.airavata</groupId>
-        <artifactId>airavata</artifactId>
         <version>0.12-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>airavata-api</artifactId>
-    <packaging>pom</packaging>
-    <name>Airavata API</name>
+    <name>Airavata Data Models</name>
+    <artifactId>airavata-data-models</artifactId>
+    <packaging>jar</packaging>
     <url>http://airavata.apache.org/</url>
 
-    <profiles>
-        <profile>
-            <id>default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <modules>
-                <module>airavata-api-sdk</module>
-                <module>airavata-api-server</module>
-                <module>airavata-client-sdks</module>
-                <module>airavata-data-models</module>
-            </modules>
-        </profile>
-    </profiles>
+    <dependencies>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    </properties>
+        <dependency>
+            <groupId>org.apache.thrift</groupId>
+            <artifactId>libthrift</artifactId>
+            <version>0.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.5</version>
+        </dependency>
+        
+    </dependencies>
 
 </project>

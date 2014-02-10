@@ -48,7 +48,7 @@ namespace js AiravataAPI
  *  - Patch: Incremented for bug fixes. The patch level should be increased for every edit that doesn't result
  *              in a change to major/minor version numbers.
 */
-const string VERSION = "0.12.0"
+const string AIRAVATA_API_VERSION = "0.12.0"
 
 service Airavata {
 

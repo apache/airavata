@@ -19,6 +19,7 @@
  */
 
 namespace java org.apache.airavata.model.experiment
+namespace php Airavata.Model.Experiment
 
 /*
  * This file describes the definitions of the Airavata Experiment Data Structures. Each of the
