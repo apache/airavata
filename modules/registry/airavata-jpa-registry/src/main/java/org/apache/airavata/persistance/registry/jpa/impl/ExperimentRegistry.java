@@ -385,9 +385,16 @@ public class ExperimentRegistry {
     }
 
     public Object getBasicMetaDataValues(String expId, String fieldName) {
-        if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.USER_NAME)){
+        try {
+            gatewayRegistry = new GatewayRegistry();
+            GatewayResource gateway = gatewayRegistry.getGateway();
+            if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.USER_NAME)){
 
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties", e.getMessage());
         }
+
         return null;
     }
 
