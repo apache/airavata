@@ -44,6 +44,8 @@ public class ExperimentRegistry {
         try {
             gatewayRegistry = new GatewayRegistry();
             GatewayResource gateway = gatewayRegistry.getGateway();
+            UserReg userReg = new UserReg();
+            WorkerResource worker = userReg.getWorker();
             experimentID = getExperimentID(basicMetadata.getExperimentName());
             ExperimentMetadataResource exBasicData = gateway.createBasicMetada(experimentID);
             exBasicData.setExperimentName(basicMetadata.getExperimentName());
@@ -51,6 +53,8 @@ public class ExperimentRegistry {
             exBasicData.setExecutionUser(basicMetadata.getUserName());
             exBasicData.setSubmittedDate(getCurrentTimestamp());
             exBasicData.setShareExp(basicMetadata.isSetShareExperimentPublicly());
+            ProjectResource projectResource = worker.createProject(basicMetadata.getProjectID());
+            exBasicData.setProject(projectResource);
             exBasicData.save();
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read airavata-server properties", e.getMessage());
@@ -344,7 +348,7 @@ public class ExperimentRegistry {
             GatewayResource gateway = gatewayRegistry.getGateway();
             if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.USER_NAME)){
                 UserReg userRegistry = new UserReg();
-                WorkerResource worker = userRegistry.getWorker(gateway.getGatewayName(), (String) value);
+                WorkerResource worker = userRegistry.getWorker();
                 List<Resource> resources = worker.get(ResourceType.EXPERIMENT_METADATA);
                 for (Resource resource : resources){
                     ExperimentMetadataResource ex =  (ExperimentMetadataResource)resource;
@@ -388,17 +392,46 @@ public class ExperimentRegistry {
         try {
             gatewayRegistry = new GatewayRegistry();
             GatewayResource gateway = gatewayRegistry.getGateway();
+            ExperimentMetadataResource exBasicData = (ExperimentMetadataResource) gateway.get(ResourceType.EXPERIMENT_METADATA, expId);
             if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.USER_NAME)){
-
+                return exBasicData.getExecutionUser();
+            }else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.EXPERIMENT_NAME)){
+                return exBasicData.getExperimentName();
+            }else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.EXPERIMENT_DESC)){
+                return exBasicData.getDescription();
+            }else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.SHARE_EXP_PUBLIC)){
+                return exBasicData.isShareExp();
+            }else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.PROJECT_NAME)){
+                return exBasicData.getProject().getName();
+            }else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.SUBMITTED_DATE)){
+                return exBasicData.getSubmittedDate();
+            }else {
+                logger.error("Unsupported field name for experiment basic data..");
             }
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read airavata-server properties", e.getMessage());
         }
-
         return null;
     }
 
     public Object getConfigDataValues(String expId, String fieldName) {
+        try {
+            gatewayRegistry = new GatewayRegistry();
+            GatewayResource gateway = gatewayRegistry.getGateway();
+            ExperimentMetadataResource exBasicData = (ExperimentMetadataResource) gateway.get(ResourceType.EXPERIMENT_METADATA, expId);
+            ExperimentConfigDataResource exCongfig = (ExperimentConfigDataResource)exBasicData.get(ResourceType.EXPERIMENT_CONFIG_DATA, expId);
+            if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.APPLICATION_ID)){
+                return exCongfig.getApplicationID();
+            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.APPLICATION_VERSION)){
+                return exCongfig.getApplicationVersion();
+            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.WORKFLOW_TEMPLATE_ID)){
+                return exCongfig.getWorkflowTemplateId();
+            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.WORKFLOW_TEMPLATE_VERSION)){
+                return exCongfig.getWorkflowTemplateVersion();
+            }
+        } catch (ApplicationSettingsException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 

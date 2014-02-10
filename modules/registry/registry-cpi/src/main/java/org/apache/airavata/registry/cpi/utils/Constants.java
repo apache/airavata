@@ -28,6 +28,8 @@ public class Constants {
             public static final String USER_NAME = "userName";
             public static final String EXPERIMENT_DESC = "experimentDescription";
             public static final String SHARE_EXP_PUBLIC = "shareExperimentPublicly";
+            public static final String PROJECT_NAME = "project";
+            public static final String SUBMITTED_DATE = "submitted_date";
         }
 
         public final class ConfigurationDataConstants {

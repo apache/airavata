@@ -21,12 +21,14 @@
 
 package org.apache.airavata.persistance.registry.jpa.impl;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 
 public class UserReg {
-    public WorkerResource getWorker (String gatewayName, String username) {
-        WorkerResource worker = (WorkerResource)ResourceUtils.getWorker(gatewayName, username);
+    public WorkerResource getWorker () throws ApplicationSettingsException {
+        WorkerResource worker = (WorkerResource)ResourceUtils.getWorker(ServerSettings.getSystemUserGateway(), ServerSettings.getSystemUser());
         return worker;
     }
 }
