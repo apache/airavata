@@ -204,35 +204,20 @@ public class RegistryImpl implements Registry {
 
     @Override
     public void remove(DataType dataType, Object identifier) {
-
+        switch (dataType){
+            case EXPERIMENT_BASIC_DATA:
+                experimentRegistry.removeExperiment((String)identifier);
+                break;
+            case EXPERIMENT_CONFIGURATION_DATA:
+                experimentRegistry.removeExperimentConfigData((String)identifier);
+            default:
+                logger.error("Unsupported data type...", new UnsupportedOperationException());
+                throw new UnsupportedOperationException();
+        }
     }
 
     @Override
     public boolean isExist(DataType dataType, Object identifier) {
-        return false;
-    }
-
-    public void update(DependentDataType dataType, Object newObjectToUpdate) {
-
-    }
-
-    public void update(DependentDataType dataType, Object identifier, Object field, Object value) {
-
-    }
-
-    public List<Object> get(DependentDataType dataType, Object filteredBy, Object value) {
-        return null;
-    }
-
-    public Object getValue(DependentDataType dataType, Object identifier, Object field) {
-        return null;
-    }
-
-    public void remove(DependentDataType dataType, Object identifier) {
-
-    }
-
-    public boolean isExist(DependentDataType dataType, Object identifier) {
         return false;
     }
 }

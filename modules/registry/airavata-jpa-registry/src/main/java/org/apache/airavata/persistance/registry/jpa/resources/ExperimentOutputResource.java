@@ -95,12 +95,14 @@ public class ExperimentOutputResource extends AbstractResource {
         exOutput.setEx_key(experimentKey);
         Experiment_Metadata metadata = em.find(Experiment_Metadata.class, experimentMetadataResource.getExpID());
         exOutput.setExperiment_metadata(metadata);
+        exOutput.setExperiment_id(metadata.getExperiment_id());
         exOutput.setValue(value);
 
         if (existingOutput != null){
             existingOutput.setEx_key(experimentKey);
             existingOutput.setExperiment_metadata(metadata);
             existingOutput.setValue(value);
+            existingOutput.setExperiment_id(metadata.getExperiment_id());
             exOutput = em.merge(existingOutput);
         }else {
             em.persist(exOutput);

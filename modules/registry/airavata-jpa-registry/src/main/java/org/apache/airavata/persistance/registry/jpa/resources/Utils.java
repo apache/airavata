@@ -536,7 +536,6 @@ public class Utils {
     }
 
     /**
-     * @deprecated
      * @param o Experiment Data model object
      * @return Experiment Data resource object
      */
