@@ -39,17 +39,6 @@ public interface Orchestrator {
      */
     boolean initialize() throws OrchestratorException;
 
-
-    /**
-     *  This method is the very first method which create an entry in
-     * database for a given experiment, this return the experiment ID, so
-     * user have full control for the experiment
-     * @param request
-     * @return
-     * @throws OrchestratorException
-     */
-    String createExperiment(ExperimentRequest request) throws OrchestratorException;
-
     /**
      * After creating the experiment user has the experimentID, then user
      * can create the JobRequest and send the Job input parameters to Orchestrator
