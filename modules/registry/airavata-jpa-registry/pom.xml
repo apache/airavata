@@ -71,7 +71,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-datamodel</artifactId>
+            <artifactId>airavata-data-models</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

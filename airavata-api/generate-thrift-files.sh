@@ -23,9 +23,8 @@
 REQUIRED_THRIFT_VERSION='0.9.1'
 THRIFT_IDL_DIR='thrift-interface-descriptions'
 BASE_TARGET_DIR='target'
-DATAMODEL_SRC_DIR='datamodel/src/main/java'
-SERVER_SRC_DIR='server/src/main/java'
-JAVA_CLIENT_SRC_DIR='client-sdks/java-client-sdk/src/main/java'
+DATAMODEL_SRC_DIR='data-models/src/main/java'
+JAVA_API_SDK_DIR='airavata-api-sdk/src/main/java'
 
 # The Funcation fail prints error messages on failure and quits the script.
 fail() {
@@ -44,12 +43,12 @@ add_license_header() {
 
     # For all generated thrift code, add the suppress all warnings annotation
     #  NOTE: In order to save the orginal file as a backup, use sed -i.orig in place of sed -i ''
-    find $GENERATED_CODE_DIR -name '*.java' -print0 | xargs -0 sed -i '' -e 's/public class /@SuppressWarnings("all") public class /'
-    find $GENERATED_CODE_DIR -name '*.java' -print0 | xargs -0 sed -i '' -e 's/public enum /@SuppressWarnings("all") public enum /'
+    find ${GENERATED_CODE_DIR} -name '*.java' -print0 | xargs -0 sed -i '' -e 's/public class /@SuppressWarnings("all") public class /'
+    find ${GENERATED_CODE_DIR} -name '*.java' -print0 | xargs -0 sed -i '' -e 's/public enum /@SuppressWarnings("all") public enum /'
 
     # For each java file within the genrated directory, add the ASF V2 LICENSE header
-    for f in $(find $GENERATED_CODE_DIR -name '*.java'); do
-      cat - $f >${f}-with-license <<EOF
+    for f in $(find ${GENERATED_CODE_DIR} -name '*.java'); do
+      cat - ${f} >${f}-with-license <<EOF
     /*
      * Licensed to the Apache Software Foundation (ASF) under one or more
      * contributor license agreements.  See the NOTICE file distributed with
@@ -67,7 +66,7 @@ add_license_header() {
      * limitations under the License.
      */
 EOF
-    mv ${f}-with-license $f
+    mv ${f}-with-license ${f}
     done
 }
 
@@ -81,12 +80,12 @@ copy_changed_files() {
     GENERATED_CODE_DIR=$1
     WORKSPACE_SRC_DIR=$2
 
-    echo "Generated sources are in $GENERATED_CODE_DIR"
-    echo "Destination workspace is in $WORKSPACE_SRC_DIR"
+    echo "Generated sources are in ${GENERATED_CODE_DIR}"
+    echo "Destination workspace is in ${WORKSPACE_SRC_DIR}"
 
     # Check if the newly generated files exist in the targetted workspace, if not copy. Only changed files will be synced.
     #  the extra slash to GENERATED_CODE_DIR is needed to ensure the parent directory itself is not copied.
-    rsync -auv $GENERATED_CODE_DIR/ $WORKSPACE_SRC_DIR
+    rsync -auv ${GENERATED_CODE_DIR}/ ${WORKSPACE_SRC_DIR}
 }
 
 # Generation of thrift files will require installing Apache Thrift. Please add thrift to your path.
@@ -103,56 +102,54 @@ fi
 # Initialize the thrift arguements.
 #  Since most of the Airavata API and Data Models have includes, use recursive option by defualt.
 #  Generate all the files in target directory
-THRIFT_ARGS="-r -o $BASE_TARGET_DIR"
+THRIFT_ARGS="-r -o ${BASE_TARGET_DIR}"
 # Ensure the required target directories exists, if not create.
-mkdir -p $BASE_TARGET_DIR
-
-#######################################################
-# Update Airavata Server Skeltons & Java Client Stubs #
-#######################################################
-
-#Java generation directory
-JAVA_GEN_DIR=$BASE_TARGET_DIR/gen-java
-
-# As a precausion  remove and previously generated files if exists
-rm -rf $JAVA_GEN_DIR
-
-# Using thrify Java generator, generate the java classes based on Airavata API. This
-#   The airavataAPI.thrift includes rest of data models.
-thrift ${THRIFT_ARGS} --gen java $THRIFT_IDL_DIR/airavataAPI.thrift || fail unable to generate java thrift classes
-
-# For the generated java classes add the ASF V2 License header
-add_license_header $JAVA_GEN_DIR
-
-# Compare the newly generated classes with existing server skelton sources and replace the changed ones.
-copy_changed_files $JAVA_GEN_DIR $SERVER_SRC_DIR
-
-# Compare the newly generated classes with existing java client stub sources and replace the changed ones.
-copy_changed_files $JAVA_GEN_DIR $JAVA_CLIENT_SRC_DIR
+mkdir -p ${BASE_TARGET_DIR}
 
 ##############################
 # Update Airavata Data Model #
 ##############################
 
 #Java Beans generation directory
-JAVA_BEAN_GEN_DIR=$BASE_TARGET_DIR/gen-javabean
+JAVA_BEAN_GEN_DIR=${BASE_TARGET_DIR}/gen-javabean
 
 # As a precausion  remove and previously generated files if exists
-rm -rf $JAVA_BEAN_GEN_DIR
+rm -rf ${JAVA_BEAN_GEN_DIR}
 
 # Generate the Airavata Data Model using thrify Java Beans generator. This will take generate the classes in bean style
 #   with members being private and setters returning voids.
 #   The airavataDataModel.thrift includes rest of data models.
-thrift ${THRIFT_ARGS} --gen java:beans $THRIFT_IDL_DIR/airavataDataModel.thrift || fail unable to generate java bean thrift classes
+thrift ${THRIFT_ARGS} --gen java:beans ${THRIFT_IDL_DIR}/airavataDataModel.thrift || fail unable to generate java bean thrift classes
 
 # For the generated java beans add the ASF V2 License header
-add_license_header $JAVA_BEAN_GEN_DIR
+add_license_header ${JAVA_BEAN_GEN_DIR}
 
 # Compare the newly generated beans with existing sources and replace the changed ones.
-copy_changed_files $JAVA_BEAN_GEN_DIR $DATAMODEL_SRC_DIR
+copy_changed_files ${JAVA_BEAN_GEN_DIR} ${DATAMODEL_SRC_DIR}
+
+######################################################################
+# Update source used by Airavata Server Skeltons & Java Client Stubs #
+#  JAVA server and client both use generated api-boilerplate-code    #
+######################################################################
+
+#Java generation directory
+JAVA_GEN_DIR=${BASE_TARGET_DIR}/gen-java
+
+# As a precausion  remove and previously generated files if exists
+rm -rf ${JAVA_GEN_DIR}
+
+# Using thrify Java generator, generate the java classes based on Airavata API. This
+#   The airavataAPI.thrift includes rest of data models.
+thrift ${THRIFT_ARGS} --gen java ${THRIFT_IDL_DIR}/airavataAPI.thrift || fail unable to generate java thrift classes
+
+# For the generated java classes add the ASF V2 License header
+add_license_header $JAVA_GEN_DIR
+
+# Compare the newly generated classes with existing java generated skelton/stub sources and replace the changed ones.
+copy_changed_files ${JAVA_GEN_DIR} ${JAVA_API_SDK_DIR}
 
 # CleanUp: Delete the base target build directory
-rm -rf $BASE_TARGET_DIR
+rm -rf ${BASE_TARGET_DIR}
 
 echo "Successfully generated new sources, compared against exiting code and replaced the changed files"
 exit 0

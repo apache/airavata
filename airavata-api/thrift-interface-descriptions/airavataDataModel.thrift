@@ -21,6 +21,7 @@
 include "experimentModel.thrift"
 
 namespace java org.apache.airavata.model
+namespace php Airavata.Model
 
 /*
  * This file describes the definitions of the Airavata Execution Data Structures. Each of the
