@@ -28,7 +28,9 @@ import java.sql.Timestamp;
 @Table(name ="EXPERIMENT_CONFIGURATION_DATA")
 public class Experiment_Configuration_Data {
     @Id
-    @ManyToOne(cascade= CascadeType.MERGE)
+    @Column(name = "EXPERIMENT_ID")
+    private String experiment_id;
+    @ManyToOne
     @JoinColumn(name = "EXPERIMENT_ID")
     private Experiment_Metadata experiment_metadata;
     @Column(name = "RESOURCE_HOST_ID")
@@ -300,5 +302,13 @@ public class Experiment_Configuration_Data {
 
     public void setNumber_of_retries(int number_of_retries) {
         this.number_of_retries = number_of_retries;
+    }
+
+    public String getExperiment_id() {
+        return experiment_id;
+    }
+
+    public void setExperiment_id(String experiment_id) {
+        this.experiment_id = experiment_id;
     }
 }

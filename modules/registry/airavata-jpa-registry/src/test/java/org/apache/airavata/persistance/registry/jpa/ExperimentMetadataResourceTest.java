@@ -49,6 +49,14 @@ public class ExperimentMetadataResourceTest extends AbstractResourceTest {
         experimentResource.setShareExp(true);
         experimentResource.save();
 
+        ExperimentConfigDataResource exConfig = (ExperimentConfigDataResource)experimentResource.create(ResourceType.EXPERIMENT_CONFIG_DATA);
+        exConfig.setExpID("testExpID");
+        exConfig.setNodeCount(5);
+        exConfig.setCpuCount(10);
+        exConfig.setApplicationID("testApp");
+        exConfig.setApplicationVersion("testAppVersion");
+        exConfig.save();
+
         workflowDataResource = experimentResource.createWorkflowInstanceResource("testWFInstance");
         workflowDataResource.setExperimentID("testExpID");
         workflowDataResource.setStatus("testStatus");
@@ -66,6 +74,10 @@ public class ExperimentMetadataResourceTest extends AbstractResourceTest {
     public void testRemove() throws Exception {
         experimentResource.remove(ResourceType.WORKFLOW_DATA, "testWFInstance");
         assertTrue("workflow data resource removed successfully", !experimentResource.isExists(ResourceType.WORKFLOW_DATA, "testWFInstance"));
+    }
+
+    public void testGet() throws Exception {
+        assertNotNull("experiment configuration retrieved successfully...", experimentResource.get(ResourceType.EXPERIMENT_CONFIG_DATA, "testExpID"));
     }
 
     @Override

@@ -28,9 +28,11 @@ import java.sql.Timestamp;
 @Entity
 @Table(name ="EXPERIMENT_SUMMARY")
 public class Experiment_Summary {
-
     @Id
-    @ManyToOne(cascade= CascadeType.MERGE)
+    @Column(name = "EXPERIMENT_ID")
+    private String experimentID;
+
+    @ManyToOne
     @JoinColumn(name = "EXPERIMENT_ID")
     private Experiment_Metadata experiment_metadata;
     @Column(name = "STATUS")
@@ -60,5 +62,13 @@ public class Experiment_Summary {
 
     public void setLast_update_time(Timestamp last_update_time) {
         this.last_update_time = last_update_time;
+    }
+
+    public String getExperimentID() {
+        return experimentID;
+    }
+
+    public void setExperimentID(String experimentID) {
+        this.experimentID = experimentID;
     }
 }

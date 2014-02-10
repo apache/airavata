@@ -36,6 +36,7 @@ import java.util.List;
 public class ExperimentConfigDataResource extends AbstractResource {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentConfigDataResource.class);
     private ExperimentMetadataResource exMetadata;
+    private String expID;
     private String resourceHostID;
     private int cpuCount;
     private int nodeCount;
@@ -63,6 +64,14 @@ public class ExperimentConfigDataResource extends AbstractResource {
     private int numberOfRetries;
 
     private byte[] request;
+
+    public String getExpID() {
+        return expID;
+    }
+
+    public void setExpID(String expID) {
+        this.expID = expID;
+    }
 
     public ExperimentMetadataResource getExMetadata() {
         return exMetadata;
@@ -316,6 +325,7 @@ public class ExperimentConfigDataResource extends AbstractResource {
         exconfig.setExperiment_config_data(request);
         Experiment_Metadata metadata = em.find(Experiment_Metadata.class, exMetadata.getExpID());
         exconfig.setExperiment_metadata(metadata);
+        exconfig.setExperiment_id(metadata.getExperiment_id());
         exconfig.setJob_start_time(jobStartTime);
         exconfig.setNode_count(nodeCount);
         exconfig.setNumber_of_threads(numberOfThreads);
@@ -345,6 +355,7 @@ public class ExperimentConfigDataResource extends AbstractResource {
             existingConfig.setData_reg_url(dataRegURL);
             existingConfig.setExperiment_config_data(request);
             existingConfig.setExperiment_metadata(metadata);
+            existingConfig.setExperiment_id(metadata.getExperiment_id());
             existingConfig.setJob_start_time(jobStartTime);
             existingConfig.setNode_count(nodeCount);
             existingConfig.setNumber_of_threads(numberOfThreads);
