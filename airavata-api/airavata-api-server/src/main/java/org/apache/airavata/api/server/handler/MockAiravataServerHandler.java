@@ -31,6 +31,8 @@ import org.apache.airavata.model.experiment.BasicMetadata;
 import org.apache.airavata.model.experiment.ConfigurationData;
 import org.apache.thrift.TException;
 
+import java.util.UUID;
+
 public class MockAiravataServerHandler implements Airavata.Iface{
     /**
      * Query Airavata to fetch the API version
@@ -67,7 +69,8 @@ public class MockAiravataServerHandler implements Airavata.Iface{
      */
     @Override
     public String createExperiment(BasicMetadata basicExperimentMetadata) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        //FIXME: this should be generated at the registry CPI level.
+        return UUID.randomUUID().toString();
     }
 
     /**
