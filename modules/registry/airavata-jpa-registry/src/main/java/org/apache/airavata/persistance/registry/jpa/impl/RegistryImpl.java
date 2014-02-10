@@ -37,6 +37,16 @@ public class RegistryImpl implements Registry {
     private final static Logger logger = LoggerFactory.getLogger(RegistryImpl.class);
     ExperimentRegistry experimentRegistry = new ExperimentRegistry();
 
+    /**
+     * This method is to add an object in to the registry
+     * @param dataType Data type is a predefined type which the programmer should choose according to the object he
+     *                 is going to save in to registry
+     * @param newObjectToAdd Object which contains the fields that need to be saved in to registry. This object is a
+     *                       thrift model object. In experiment case this object can be BasicMetadata, ConfigurationData
+     *                       etc
+     * @return return the identifier to identify the object
+     */
+    @Override
     public Object add(TopLevelDataType dataType, Object newObjectToAdd) {
         switch (dataType){
             case EXPERIMENT_BASIC_DATA:
@@ -47,6 +57,17 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    /**
+     * This method is to add an object in to the registry
+     * @param dataType Data type is a predefined type which the programmer should choose according to the object he
+     *                 is going to save in to registry
+     * @param newObjectToAdd Object which contains the fields that need to be saved in to registry. This object is a
+     *                       thrift model object. In experiment case this object can be BasicMetadata, ConfigurationData
+     *                       etc
+     * @param dependentIdentifier Object which contains the identifier if the object that is going to add is not a top
+     *                            level object in the data model. If it is a top level object, programmer can pass it as
+     *                            null
+     */
     @Override
     public void add(DependentDataType dataType, Object newObjectToAdd, Object dependentIdentifier) {
         switch (dataType){
@@ -69,6 +90,16 @@ public class RegistryImpl implements Registry {
 
     }
 
+    /**
+     * This method is to update the whole object in registry
+     * @param dataType Data type is a predefined type which the programmer should choose according to the object he
+     *                 is going to save in to registry
+     * @param newObjectToUpdate Object which contains the fields that need to be updated in to registry. This object is a
+     *                       thrift model object. In experiment case this object can be BasicMetadata, ConfigurationData
+     *                       etc. CPI programmer can only fill necessary fields that need to be updated. He does not
+     *                       have to fill the whole object. He needs to only fill the mandatory fields and whatever the
+     *                       other fields that need to be updated.
+     */
     @Override
     public void update(DataType dataType, Object newObjectToUpdate, Object identifier) {
         switch (dataType){
@@ -85,14 +116,26 @@ public class RegistryImpl implements Registry {
 
     }
 
+    /**
+     * This method is to update a specific field of the data model
+     * @param dataType Data type is a predefined type which the programmer should choose according to the object he
+     *                 is going to save in to registry
+     * @param identifier Identifier which will uniquely identify the data model. For example, in Experiment_Basic_Type,
+     *                   identifier will be generated experimentID
+     * @param fieldName Field which need to be updated in the registry. In Experiment_Basic_Type, if you want to update the
+     *              description, field will be "description". Field names are defined in
+     *              org.apache.airavata.registry.cpi.utils.Constants
+     * @param value Value by which the given field need to be updated. If the field is "description", that field will be
+     *              updated by given value
+     */
     @Override
-    public void update(DataType dataType, Object identifier, String field, Object value) {
+    public void update(DataType dataType, Object identifier, String fieldName, Object value) {
         switch (dataType){
             case EXPERIMENT_BASIC_DATA:
-                experimentRegistry.updateExpBasicMetadataField((String) identifier, field, value);
+                experimentRegistry.updateExpBasicMetadataField((String) identifier, fieldName, value);
                 break;
             case EXPERIMENT_CONFIGURATION_DATA:
-                experimentRegistry.updateExpConfigDataField((String) identifier, field, value);
+                experimentRegistry.updateExpConfigDataField((String) identifier, fieldName, value);
                 break;
             default:
                 logger.error("Unsupported data type...", new UnsupportedOperationException());
@@ -202,6 +245,13 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    /**
+     * This method is to remove a item from the registry
+     * @param dataType Data type is a predefined type which the programmer should choose according to the object he
+     *                 is going to save in to registry
+     * @param identifier Identifier which will uniquely identify the data model. For example, in Experiment_Basic_Type,
+     *                   identifier will be generated experimentID
+     */
     @Override
     public void remove(DataType dataType, Object identifier) {
         switch (dataType){
@@ -216,8 +266,22 @@ public class RegistryImpl implements Registry {
         }
     }
 
+    /**
+     * This method will check whether a given data type which can be identified with the identifier exists or not
+     * @param dataType Data type is a predefined type which the programmer should choose according to the object he
+     *                 is going to save in to registry
+     * @param identifier Identifier which will uniquely identify the data model. For example, in Experiment_Basic_Type,
+     *                   identifier will be generated experimentID
+     * @return whether the given data type exists or not
+     */
     @Override
     public boolean isExist(DataType dataType, Object identifier) {
+        switch (dataType){
+            case EXPERIMENT_BASIC_DATA:
+                return experimentRegistry.isExperimentBasicDataExist((String)identifier);
+            case EXPERIMENT_CONFIGURATION_DATA:
+                return experimentRegistry.isExperimentConfigDataExist((String)identifier);
+        }
         return false;
     }
 }

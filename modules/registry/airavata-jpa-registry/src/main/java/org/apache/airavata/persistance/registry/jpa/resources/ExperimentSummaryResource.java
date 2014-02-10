@@ -95,11 +95,13 @@ public class ExperimentSummaryResource extends AbstractResource {
         exSummary.setStatus(status);
         Experiment_Metadata metadata = em.find(Experiment_Metadata.class, experimentMetadataResource.getExpID());
         exSummary.setExperiment_metadata(metadata);
+        exSummary.setExperimentID(metadata.getExperiment_id());
 
         if (existingExSummary != null){
             existingExSummary.setLast_update_time(lastUpdateTime);
             existingExSummary.setStatus(status);
             existingExSummary.setExperiment_metadata(metadata);
+            existingExSummary.setExperimentID(metadata.getExperiment_id());
             exSummary = em.merge(existingExSummary);
         }  else {
             em.persist(exSummary);

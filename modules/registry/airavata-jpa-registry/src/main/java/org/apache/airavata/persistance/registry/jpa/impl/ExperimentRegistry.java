@@ -28,7 +28,6 @@ import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.apache.airavata.persistance.registry.jpa.utils.ThriftDataModelConversion;
-import org.apache.airavata.registry.cpi.DependentDataType;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -236,7 +235,7 @@ public class ExperimentRegistry {
                 exConfigData.setNumberOfRetries(qosParams.getNumberofRetries());
                 exConfigData.save();
             }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.EXPERIMENT_INPUTS)){
-                if (value instanceof HashMap){
+                if (value instanceof Map){
                     Map<String, String> experimentInputs = (HashMap<String, String>)value;
                     List<Resource> exInputs = exBasicData.get(ResourceType.EXPERIMENT_INPUT);
                     int i = 0;
@@ -349,7 +348,7 @@ public class ExperimentRegistry {
         try {
             if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.USER_NAME)){
                 UserReg userRegistry = new UserReg();
-                WorkerResource worker = userRegistry.getSysteUser();
+                WorkerResource worker = userRegistry.getExistingUser(ServerSettings.getSystemUserGateway(), (String)value);
                 List<Resource> resources = worker.get(ResourceType.EXPERIMENT_METADATA);
                 for (Resource resource : resources){
                     ExperimentMetadataResource ex =  (ExperimentMetadataResource)resource;
@@ -372,7 +371,7 @@ public class ExperimentRegistry {
             gatewayRegistry = new GatewayRegistry();
             GatewayResource gateway = gatewayRegistry.getDefaultGateway();
             if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.EXPERIMENT_ID)){
-                ExperimentMetadataResource exBasicData = (ExperimentMetadataResource) gateway.get(ResourceType.EXPERIMENT_METADATA, (String)value);
+                ExperimentMetadataResource exBasicData = (ExperimentMetadataResource) gateway.get(ResourceType.EXPERIMENT_METADATA, value);
                 List<Resource> resources = exBasicData.get(ResourceType.EXPERIMENT_CONFIG_DATA);
                 for (Resource resource : resources){
                     ExperimentConfigDataResource configDataResource = (ExperimentConfigDataResource)resource;
@@ -501,7 +500,26 @@ public class ExperimentRegistry {
         }
     }
 
-    public boolean isExist(DependentDataType dataType, Object identifier) {
+    public boolean isExperimentBasicDataExist(String expID) {
+        try{
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            defaultGateway.isExists(ResourceType.EXPERIMENT_METADATA, expID);
+            return true;
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean isExperimentConfigDataExist(String expID) {
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            ExperimentMetadataResource exBasicData = (ExperimentMetadataResource)defaultGateway.get(ResourceType.EXPERIMENT_METADATA, expID);
+            exBasicData.isExists(ResourceType.EXPERIMENT_CONFIG_DATA, expID);
+            return true;
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        }
         return false;
     }
 
