@@ -482,8 +482,23 @@ public class ExperimentRegistry {
     }
 
 
-    public void remove(DependentDataType dataType, Object identifier) {
+    public void removeExperiment(String experimentId) {
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            defaultGateway.remove(ResourceType.EXPERIMENT_METADATA, experimentId);
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        }
+    }
 
+    public void removeExperimentConfigData(String experimentId) {
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            ExperimentMetadataResource exBasicData = (ExperimentMetadataResource)defaultGateway.get(ResourceType.EXPERIMENT_METADATA, experimentId);
+            exBasicData.remove(ResourceType.EXPERIMENT_CONFIG_DATA, experimentId);
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        }
     }
 
     public boolean isExist(DependentDataType dataType, Object identifier) {

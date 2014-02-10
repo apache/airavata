@@ -38,7 +38,7 @@ public class Experiment_Input {
     @Column(name = "VALUE")
     private String value;
 
-    @ManyToOne(cascade= CascadeType.MERGE)
+    @ManyToOne
     @JoinColumn(name = "EXPERIMENT_ID")
     private Experiment_Metadata experiment_metadata;
 
