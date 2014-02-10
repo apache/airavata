@@ -66,14 +66,6 @@ public interface Orchestrator {
     void startJobSubmitter() throws OrchestratorException;
 
     /**
-     * This method will get called during graceful shutdown of Orchestrator
-     * This can be used to handle the shutdown of orchestrator gracefully.
-     * @return
-     * @throws OrchestratorException
-     */
-    void shutdown() throws OrchestratorException;
-
-    /**
      * This method can be used to parse the current job data configured in
      * Registry and validate its status, if it has minimum required parameters to
      * submit the job this method returns true otherwise this returns false
