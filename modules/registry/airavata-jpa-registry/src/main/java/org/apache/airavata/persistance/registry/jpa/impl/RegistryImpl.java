@@ -100,7 +100,6 @@ public class RegistryImpl implements Registry {
         }
     }
 
-    @Override
     /**
      * This method is to retrieve list of objects according to a given criteria
      * @param dataType Data type is a predefined type which the programmer should choose according to the object he
@@ -110,6 +109,7 @@ public class RegistryImpl implements Registry {
      * @param value value for the filtering field. In the experiment case, value for "userName" can be "admin"
      * @return List of objects according to the given criteria
      */
+    @Override
     public List<Object> get(DataType dataType, String fieldName, Object value) {
         List<Object> result = new ArrayList<Object>();
         switch (dataType){

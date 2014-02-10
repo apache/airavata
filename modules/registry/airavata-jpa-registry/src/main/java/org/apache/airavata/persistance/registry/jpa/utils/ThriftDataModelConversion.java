@@ -54,8 +54,10 @@ public class ThriftDataModelConversion {
         configData.setWorkflowTemplateId(excd.getWorkflowTemplateId());
         configData.setWorklfowTemplateVersion(excd.getWorkflowTemplateVersion());
         configData.setExperimentInputs(getExperimentInputs(excd.getExMetadata()));
-
-
+        configData.setAdvanceInputDataHandling(getAdvanceInputDataHandling(excd));
+        configData.setAdvanceOutputDataHandling(getAdvanceOutputDataHandling(excd));
+        configData.setComputationalResourceScheduling(getComputationalResourceScheduling(excd));
+        configData.setQosParams(getQOSParams(excd));
         return configData;
     }
 
