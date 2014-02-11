@@ -111,6 +111,7 @@ public abstract class AbstractOrchestrator implements Orchestrator {
             }
             orchestratorContext = new OrchestratorContext();
             orchestratorContext.setOrchestratorConfiguration(orchestratorConfiguration);
+            AiravataAPI airavataAPI = getAiravataAPI();
             orchestratorConfiguration.setAiravataAPI(getAiravataAPI());
             orchestratorContext.setRegistry(airavataRegistry);
 
