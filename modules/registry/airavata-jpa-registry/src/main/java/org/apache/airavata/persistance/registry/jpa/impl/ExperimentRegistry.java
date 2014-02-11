@@ -423,7 +423,7 @@ public class ExperimentRegistry {
             ExperimentMetadataResource exBasicData = (ExperimentMetadataResource) gateway.get(ResourceType.EXPERIMENT_METADATA, expId);
             ExperimentConfigDataResource exCongfig = (ExperimentConfigDataResource)exBasicData.get(ResourceType.EXPERIMENT_CONFIG_DATA, expId);
             if (fieldName == null){
-                return ThriftDataModelConversion.getAdvanceInputDataHandling(exCongfig);
+                return ThriftDataModelConversion.getConfigurationData(exCongfig);
             }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.APPLICATION_ID)){
                 return exCongfig.getApplicationID();
             }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.APPLICATION_VERSION)){
