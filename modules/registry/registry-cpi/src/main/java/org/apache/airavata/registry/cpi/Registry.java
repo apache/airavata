@@ -1,8 +1,5 @@
 package org.apache.airavata.registry.cpi;
 
-import org.apache.airavata.registry.cpi.utils.Constants;
-
-import javax.xml.crypto.Data;
 import java.util.List;
 
 /**
@@ -19,7 +16,7 @@ public interface Registry {
      *                       etc
      * @return return the identifier to identify the object
      */
-    public Object add(TopLevelDataType dataType, Object newObjectToAdd);
+    public Object add(ParentDataType dataType, Object newObjectToAdd);
 
     /**
      * This method is to add an object in to the registry
@@ -32,7 +29,7 @@ public interface Registry {
      *                            level object in the data model. If it is a top level object, programmer can pass it as
      *                            null
      */
-    public void add(DependentDataType dataType, Object newObjectToAdd, Object dependentIdentifier);
+    public void add(ChildDataType dataType, Object newObjectToAdd, Object dependentIdentifier);
 
     /**
      * This method is to update the whole object in registry
@@ -46,20 +43,6 @@ public interface Registry {
      */
     public void update(DataType dataType, Object newObjectToUpdate, Object identifier);
 
-//    /**
-//     * This method is to update the whole object in registry
-//     * @param dataType Data type is a predefined type which the programmer should choose according to the object he
-//     *                 is going to save in to registry
-//     * @param newObjectToUpdate Object which contains the fields that need to be updated in to registry. This object is a
-//     *                       thrift model object. In experiment case this object can be BasicMetadata, ConfigurationData
-//     *                       etc. CPI programmer can only fill necessary fields that need to be updated. He does not
-//     *                       have to fill the whole object. He needs to only fill the mandatory fields and whatever the
-//     *                       other fields that need to be updated.
-//     * @param dependentIdentifier Object which contains the identifier if the object that is going to add is not a top
-//     *                            level object in the data model. If it is a top level object, programmer can pass it as
-//     *                            null
-//     */
-//    public void update(DependentDataType dataType, Object newObjectToUpdate, Object dependentIdentifier);
 
     /**
      * This method is to update a specific field of the data model
