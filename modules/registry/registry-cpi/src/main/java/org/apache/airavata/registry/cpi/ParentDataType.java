@@ -1,6 +1,6 @@
 package org.apache.airavata.registry.cpi;
 
-public enum TopLevelDataType {
+public enum ParentDataType {
     APPLiCATION_CATALOG,
     GROUP,
     USER,

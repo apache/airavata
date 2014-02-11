@@ -48,8 +48,6 @@ import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.JobRequest;
 import org.apache.airavata.registry.cpi.DataType;
-import org.apache.airavata.registry.cpi.DependentDataType;
-import org.apache.airavata.registry.cpi.TopLevelDataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
