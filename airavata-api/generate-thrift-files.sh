@@ -23,8 +23,8 @@
 REQUIRED_THRIFT_VERSION='0.9.1'
 THRIFT_IDL_DIR='thrift-interface-descriptions'
 BASE_TARGET_DIR='target'
-DATAMODEL_SRC_DIR='data-models/src/main/java'
-JAVA_API_SDK_DIR='airavata-api-sdk/src/main/java'
+DATAMODEL_SRC_DIR='airavata-data-models/src/main/java'
+JAVA_API_SDK_DIR='airavata-api-stubs/src/main/java'
 
 # The Funcation fail prints error messages on failure and quits the script.
 fail() {
