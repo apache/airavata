@@ -21,14 +21,22 @@
 
 package org.apache.airavata.gfac;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.context.JobExecutionContext;
@@ -37,6 +45,8 @@ import org.apache.airavata.gfac.provider.GFacProviderConfig;
 import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 
 /**
@@ -66,12 +76,27 @@ public class Scheduler {
     private static GFacProvider getProvider(JobExecutionContext jobExecutionContext) throws GFacException {
         HostDescription hostDescription = jobExecutionContext.getApplicationContext().getHostDescription();
         String applicationName = jobExecutionContext.getServiceName();
+
+        URL resource = Scheduler.class.getClassLoader().getResource("gfac-config.xml");
+        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = null;
+        Document handlerDoc = null;
+        try {
+            docBuilder = docBuilderFactory.newDocumentBuilder();
+            handlerDoc = docBuilder.parse(new File(resource.getPath()));
+        } catch (ParserConfigurationException e) {
+            throw new GFacException(e);
+        } catch (SAXException e) {
+            throw new GFacException(e);
+        } catch (IOException e) {
+            throw new GFacException(e);
+        }
         GFacProviderConfig s = null;
         GFacProvider provider = null;
         List<GFacProviderConfig> aClass = null;
         String providerClassName = null;
         try {
-            aClass = GFacConfiguration.getProviderConfig(GFacConfiguration.getHandlerDoc(),
+            aClass = GFacConfiguration.getProviderConfig(handlerDoc,
                     Constants.XPATH_EXPR_APPLICATION_HANDLERS_START + applicationName + "']", Constants.GFAC_CONFIG_APPLICATION_NAME_ATTRIBUTE);
             // This should be have a single element only.
             if (aClass != null && !aClass.isEmpty()) {
