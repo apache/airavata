@@ -1,6 +1,6 @@
 package org.apache.airavata.registry.cpi;
 
-public enum DependentDataType {
+public enum ChildDataType {
     EXPERIMENT_SUMMARY,
     EXPERIMENT_CONFIGURATION_DATA,
     EXPERIMENT_GENERATED_DATA,
