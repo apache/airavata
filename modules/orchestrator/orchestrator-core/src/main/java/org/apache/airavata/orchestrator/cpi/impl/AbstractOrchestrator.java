@@ -42,6 +42,7 @@ import org.apache.airavata.orchestrator.core.model.ExperimentRequest;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorConstants;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
 import org.apache.airavata.orchestrator.cpi.Orchestrator;
+import org.apache.airavata.persistance.registry.jpa.impl.RegistryImpl;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataRegistryFactory;
 import org.apache.airavata.registry.api.AiravataUser;
@@ -112,6 +113,9 @@ public abstract class AbstractOrchestrator implements Orchestrator {
             orchestratorContext.setOrchestratorConfiguration(orchestratorConfiguration);
             orchestratorConfiguration.setAiravataAPI(getAiravataAPI());
             orchestratorContext.setRegistry(airavataRegistry);
+
+            /* initializing registry cpi */
+            orchestratorContext.setNewRegistry(new RegistryImpl());
         } catch (RegistryException e) {
             logger.error("Failed to initializing Orchestrator");
             OrchestratorException orchestratorException = new OrchestratorException(e);
