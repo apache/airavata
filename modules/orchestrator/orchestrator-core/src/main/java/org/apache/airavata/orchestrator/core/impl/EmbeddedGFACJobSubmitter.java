@@ -45,6 +45,7 @@ import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.JobRequest;
 import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.DependentDataType;
@@ -82,6 +83,7 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
                 launchGfacWithJobRequest(jobRequest);
             } catch (Exception e) {
                 logger.error("Error getting job related information");
+                throw new OrchestratorException(e);
             }
         }
         return true;
@@ -99,9 +101,6 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
         if (serviceName == null) {
             throw new OrchestratorException("Error executing the job because there is not Application Name in this Experiment");
         }
-
-        //todo submit the jobs
-
         AiravataAPI airavataAPI = null;
         try {
 
@@ -109,11 +108,12 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
             //FIXME: (MEP) Why do all of this validation here?  Is it needed?  Why would you get an empty job request?
             //FIXME: (MEP) If you do need this, it should go into a utility class or something similar that does the validation.
             HostDescription hostDescription = jobRequest.getHostDescription();
+            AiravataRegistry2 registry = orchestratorContext.getRegistry();
             if (hostDescription == null) {
                 List<HostDescription> registeredHosts = new ArrayList<HostDescription>();
-                Map<String, ApplicationDescription> applicationDescriptors = airavataAPI.getApplicationManager().getApplicationDescriptors(serviceName);
+                Map<String, ApplicationDescription> applicationDescriptors = registry.getApplicationDescriptors(serviceName);
                 for (String hostDescName : applicationDescriptors.keySet()) {
-                    registeredHosts.add(airavataAPI.getApplicationManager().getHostDescription(hostDescName));
+                    registeredHosts.add(registry.getHostDescriptor(hostDescName));
                 }
                 Class<? extends HostScheduler> aClass = Class.forName(ServerSettings.getHostScheduler()).asSubclass(HostScheduler.class);
                 HostScheduler hostScheduler = aClass.newInstance();
@@ -122,17 +122,12 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
 
             ServiceDescription serviceDescription = jobRequest.getServiceDescription();
             if (serviceDescription == null) {
-                try {
-                    serviceDescription = airavataAPI.getApplicationManager().getServiceDescription(jobRequest.getServiceName());
-                } catch (AiravataAPIInvocationException e) {
-                    String error = "Error retrieving document from Registry: " + jobRequest.getServiceName();
-                    throw new OrchestratorException(error, e);
-                }
+                    serviceDescription = registry.getServiceDescriptor(serviceName);
             }
 
             ApplicationDescription applicationDescription = jobRequest.getApplicationDescription();
             if (applicationDescription == null) {
-                applicationDescription = airavataAPI.getApplicationManager().getApplicationDescription(serviceName, hostDescription.getType().getHostName());
+                applicationDescription = registry.getApplicationDescriptors(serviceName, hostDescription.getType().getHostName());
             }
             // When we run getInParameters we set the actualParameter object, this has to be fixed
             //FIXME: will these class loaders work correctly in Thrift?

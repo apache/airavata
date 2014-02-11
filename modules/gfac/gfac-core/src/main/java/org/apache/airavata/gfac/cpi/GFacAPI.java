@@ -63,7 +63,6 @@ public class GFacAPI {
         // the job.
         String experimentID = jobExecutionContext.getExperimentID();
         try {
-            AiravataRegistry2 registry2 = ((AiravataClient)jobExecutionContext.getGFacConfiguration().getAiravataAPI()).getRegistryClient();
             Scheduler.schedule(jobExecutionContext);
 
             // Executing in handlers in the order as they have configured in GFac configuration
