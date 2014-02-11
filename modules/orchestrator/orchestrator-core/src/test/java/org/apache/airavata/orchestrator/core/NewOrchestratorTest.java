@@ -35,9 +35,9 @@ import org.apache.airavata.orchestrator.cpi.Orchestrator;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryImpl;
 import org.apache.airavata.registry.api.JobRequest;
-import org.apache.airavata.registry.cpi.DependentDataType;
+import org.apache.airavata.registry.cpi.ChildDataType;
+import org.apache.airavata.registry.cpi.ParentDataType;
 import org.apache.airavata.registry.cpi.Registry;
-import org.apache.airavata.registry.cpi.TopLevelDataType;
 import org.apache.airavata.schemas.gfac.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,8 +144,8 @@ public class NewOrchestratorTest extends AbstractOrchestratorTest{
            configurationData.setApplicationId("Echo");
 
            Registry registry = new RegistryImpl();
-           experimentID = (String) registry.add(TopLevelDataType.EXPERIMENT_BASIC_DATA, basicMetadata);
-           registry.add(DependentDataType.EXPERIMENT_CONFIGURATION_DATA, configurationData, experimentID);
+           experimentID = (String) registry.add(ParentDataType.EXPERIMENT_BASIC_DATA, basicMetadata);
+           registry.add(ChildDataType.EXPERIMENT_CONFIGURATION_DATA, configurationData, experimentID);
        }
 
        @Test

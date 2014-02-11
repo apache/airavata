@@ -23,9 +23,9 @@ package org.apache.airavata.persistance.registry.jpa.impl;
 
 import org.apache.airavata.model.experiment.BasicMetadata;
 import org.apache.airavata.model.experiment.ConfigurationData;
+import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.registry.cpi.DataType;
-import org.apache.airavata.registry.cpi.TopLevelDataType;
-import org.apache.airavata.registry.cpi.DependentDataType;
+import org.apache.airavata.registry.cpi.ParentDataType;
 import org.apache.airavata.registry.cpi.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +47,7 @@ public class RegistryImpl implements Registry {
      * @return return the identifier to identify the object
      */
     @Override
-    public Object add(TopLevelDataType dataType, Object newObjectToAdd) {
+    public Object add(ParentDataType dataType, Object newObjectToAdd) {
         switch (dataType){
             case EXPERIMENT_BASIC_DATA:
                 return experimentRegistry.add((BasicMetadata) newObjectToAdd);
@@ -69,7 +69,7 @@ public class RegistryImpl implements Registry {
      *                            null
      */
     @Override
-    public void add(DependentDataType dataType, Object newObjectToAdd, Object dependentIdentifier) {
+    public void add(ChildDataType dataType, Object newObjectToAdd, Object dependentIdentifier) {
         switch (dataType){
             case EXPERIMENT_CONFIGURATION_DATA:
                 experimentRegistry.add((ConfigurationData)newObjectToAdd, (String)dependentIdentifier);

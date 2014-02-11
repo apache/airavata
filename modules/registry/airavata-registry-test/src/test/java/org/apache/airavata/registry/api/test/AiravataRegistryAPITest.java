@@ -855,7 +855,7 @@ public class AiravataRegistryAPITest extends TestCase {
         registry.addWorkspaceProject(workspaceProject2);
 
         List<WorkspaceProject> workspaceProjects = registry.getWorkspaceProjects();
-        assertTrue("workspace projects retrieved successfully", workspaceProjects.size() == 2);
+        assertTrue("workspace projects retrieved successfully", workspaceProjects.size() == 3);
 
         registry.deleteWorkspaceProject("testProject1");
         registry.deleteWorkspaceProject("testProject2");
