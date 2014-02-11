@@ -87,24 +87,27 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
         return true;
     }
 
-	 //FIXME: (MEP) This method is pretty gruesome.  If we really expect multiple implementations of the JobSubmitter interface and at least some of them will need to do the stuff in this method, then we need a parent class GenericJobSubmitterImpl.java (maybe abstract) that includes launchGfacWithJobRequest() so that subclasses can inherit it.
+	 //FIXME: (MEP) This method is pretty gruesome.  If we really expect multiple implementations of the JobSubmitter
+	 // interface and at least some of them will need to do the stuff in this method, then we need a parent class GenericJobSubmitterImpl.java (maybe abstract) that includes launchGfacWithJobRequest() so that subclasses can inherit it.
     private void launchGfacWithJobRequest(JobRequest jobRequest) throws OrchestratorException {
-        String serviceName = jobRequest.getServiceName();
-        if(serviceName == null){
-            serviceName = jobRequest.getServiceDescription().getType().getName();
-        }
+        String experimentID = OrchestratorUtils.getUniqueID(jobRequest);
+        ConfigurationData configurationData = (ConfigurationData)
+                orchestratorContext.getNewRegistry().get(DataType.EXPERIMENT_CONFIGURATION_DATA, experimentID);
 
+        String serviceName = configurationData.getApplicationId();
+
+        if (serviceName == null) {
+            throw new OrchestratorException("Error executing the job because there is not Application Name in this Experiment");
+        }
 
         //todo submit the jobs
 
-        //after successfully submitting the jobs set the status of the job to submitted
-        String experimentID = OrchestratorUtils.getUniqueID(jobRequest);
         AiravataAPI airavataAPI = null;
         try {
 
             airavataAPI = orchestratorContext.getOrchestratorConfiguration().getAiravataAPI();
-				//FIXME: (MEP) Why do all of this validation here?  Is it needed?  Why would you get an empty job request?
-				//FIXME: (MEP) If you do need this, it should go into a utility class or something similar that does the validation.
+            //FIXME: (MEP) Why do all of this validation here?  Is it needed?  Why would you get an empty job request?
+            //FIXME: (MEP) If you do need this, it should go into a utility class or something similar that does the validation.
             HostDescription hostDescription = jobRequest.getHostDescription();
             if (hostDescription == null) {
                 List<HostDescription> registeredHosts = new ArrayList<HostDescription>();
@@ -129,11 +132,11 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
 
             ApplicationDescription applicationDescription = jobRequest.getApplicationDescription();
             if (applicationDescription == null) {
-                 applicationDescription = airavataAPI.getApplicationManager().getApplicationDescription(serviceName, hostDescription.getType().getHostName());
+                applicationDescription = airavataAPI.getApplicationManager().getApplicationDescription(serviceName, hostDescription.getType().getHostName());
             }
             // When we run getInParameters we set the actualParameter object, this has to be fixed
-				//FIXME: will these class loaders work correctly in Thrift?
-				//FIXME: gfac-config.xml is only under src/test.
+            //FIXME: will these class loaders work correctly in Thrift?
+            //FIXME: gfac-config.xml is only under src/test.
             URL resource = EmbeddedGFACJobSubmitter.class.getClassLoader().getResource("gfac-config.xml");
             Properties configurationProperties = ServerSettings.getProperties();
             GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, configurationProperties);
@@ -151,7 +154,6 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
             jobExecutionContext.setApplicationContext(applicationContext);
 
 
-            ConfigurationData configurationData = (ConfigurationData) orchestratorContext.getNewRegistry().get(DataType.EXPERIMENT_CONFIGURATION_DATA, experimentID);
             Map<String, String> experimentInputs = configurationData.getExperimentInputs();
 
             jobExecutionContext.setInMessageContext(new MessageContext(OrchestratorUtils.getMessageContext(experimentInputs,
@@ -162,10 +164,10 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
 
             jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
             jobExecutionContext.setExperimentID(experimentID);
-				//FIXME: (MEP) GFacAPI.submitJob() throws a GFacException that isn't caught here. You want to catch this before updating the registry.
+            //FIXME: (MEP) GFacAPI.submitJob() throws a GFacException that isn't caught here. You want to catch this before updating the registry.
             GFacAPI gfacAPI1 = new GFacAPI();
             gfacAPI1.submitJob(jobExecutionContext);
-				//FIXME: (MEP) It may be better to change the registry status in GFacAPI rather then here.
+            //FIXME: (MEP) It may be better to change the registry status in GFacAPI rather then here.
             orchestratorContext.getRegistry().changeStatus(experimentID, AiravataJobState.State.SUBMITTED);
         } catch (Exception e) {
             throw new OrchestratorException("Error launching the Job", e);

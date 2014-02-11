@@ -27,14 +27,11 @@ import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.model.experiment.*;
-import org.apache.airavata.orchestrator.core.model.ExperimentRequest;
 import org.apache.airavata.orchestrator.cpi.Orchestrator;
-import org.apache.airavata.orchestrator.cpi.impl.AbstractOrchestrator;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryImpl;
 import org.apache.airavata.registry.api.JobRequest;
@@ -50,10 +47,9 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 public class NewOrchestratorTest extends AbstractOrchestratorTest{
-    private static final Logger log = LoggerFactory.getLogger(SimpleOrchestratorTest.class);
+    private static final Logger log = LoggerFactory.getLogger(NewOrchestratorTest.class);
 
        private Orchestrator orchestrator;
        private String experimentID;
@@ -145,6 +141,7 @@ public class NewOrchestratorTest extends AbstractOrchestratorTest{
            configurationData.setAdvanceOutputDataHandling(advancedOutputDataHandling);
            configurationData.setComputationalResourceScheduling(computationalResourceScheduling);
            configurationData.setQosParams(qualityOfServiceParams);
+           configurationData.setApplicationId("Echo");
 
            Registry registry = new RegistryImpl();
            experimentID = (String) registry.add(TopLevelDataType.EXPERIMENT_BASIC_DATA, basicMetadata);
