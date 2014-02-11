@@ -394,7 +394,7 @@ public class ExperimentRegistry {
             GatewayResource gateway = gatewayRegistry.getDefaultGateway();
             ExperimentMetadataResource exBasicData = (ExperimentMetadataResource) gateway.get(ResourceType.EXPERIMENT_METADATA, expId);
             if (fieldName == null){
-                return exBasicData;
+                return ThriftDataModelConversion.getBasicMetadata(exBasicData);
             }else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.USER_NAME)){
                 return exBasicData.getExecutionUser();
             }else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.EXPERIMENT_NAME)){
