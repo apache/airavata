@@ -60,18 +60,5 @@ public class OrchestratorUtils {
     }
 
 
-    public static Map<String, Object> getMessageContext(Map<String, String> experimentData,
-                                                        Parameter[] parameters) throws OrchestratorException {
-        HashMap<String, Object> stringObjectHashMap = new HashMap<String, Object>();
 
-        for (int i = 0; i < parameters.length; i++) {
-            String input = experimentData.get(parameters[i].getParameterName());
-            if (input != null) {
-                stringObjectHashMap.put(parameters[i].getParameterName(), GFacUtils.getInputActualParameter(parameters[i], input));
-            } else {
-                throw new OrchestratorException("Parameter:" + input + "is missing");
-            }
-        }
-        return stringObjectHashMap;
-    }
 }
