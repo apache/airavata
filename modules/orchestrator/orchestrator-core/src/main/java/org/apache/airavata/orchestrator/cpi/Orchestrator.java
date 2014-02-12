@@ -21,8 +21,6 @@
 package org.apache.airavata.orchestrator.cpi;
 
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
-import org.apache.airavata.orchestrator.core.model.ExperimentRequest;
-import org.apache.airavata.registry.api.JobRequest;
 
 /*
    This is the interface for orchestrator functionality exposed to the out side of the
@@ -30,47 +28,18 @@ import org.apache.airavata.registry.api.JobRequest;
 */
 public interface Orchestrator {
 
-
     /**
-     * This method will initialize the Orchestrator, during restart this will
-     * get called and do init tasks
-     * @return
-     * @throws OrchestratorException
-     */
-    boolean initialize() throws OrchestratorException;
-
-    /**
-     * After creating the experiment user has the experimentID, then user
-     * can create the JobRequest and send the Job input parameters to Orchestrator
-     * @param request
-     * @return
-     * @throws OrchestratorException
-     */
-    boolean launchExperiment(JobRequest request) throws OrchestratorException;
-
-    /**
-     * This method can be used to cancel a running experiment, if job is already finished it
-     * throws an exception. If job is not yet submitted it will just change the status to cancelled,
-     * if Job is running it will be killed from the resource and make the status to cancelled
+     * After creating the experiment Data user have the
+     * experimentID as the handler to the experiment, during the launchExperiment
+     * We just have to give the experimentID
+     *
      * @param experimentID
      * @return
      * @throws OrchestratorException
      */
-    boolean terminateExperiment(String experimentID)throws OrchestratorException;
+    boolean launchExperiment(String experimentID) throws OrchestratorException;
 
-    /**
-     * This is like a cron job which runs continuously and take available jobs to
-     * submit to GFAC and submit them to GFAC
-     * @throws OrchestratorException
-     */
-    void startJobSubmitter() throws OrchestratorException;
+    //todo have to add another method to handle failed or jobs to be recovered by orchestrator
+    //todo if you don't add these this is not an orchestrator, its just an intemediate component which invoke gfac
 
-    /**
-     * This method can be used to parse the current job data configured in
-     * Registry and validate its status, if it has minimum required parameters to
-     * submit the job this method returns true otherwise this returns false
-     * @param experimentID
-     * @return
-     */
-    boolean validateExperiment(String experimentID)throws OrchestratorException;
 }

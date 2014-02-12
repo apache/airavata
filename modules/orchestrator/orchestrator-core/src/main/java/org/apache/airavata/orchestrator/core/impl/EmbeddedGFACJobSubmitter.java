@@ -46,7 +46,6 @@ import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
 import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.JobRequest;
 import org.apache.airavata.registry.cpi.DataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,14 +70,12 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
     }
 
 
-	 //FIXME: (MEP) why are you passing in a GFACInstance?  It isn't used. 
     public boolean submitJob(GFACInstance gfac, List<String> experimentIDList) throws OrchestratorException {
 
         for (int i = 0; i < experimentIDList.size(); i++) {
             try {
                 // once its fetched it's status will changed to fetched state
-                JobRequest jobRequest = orchestratorContext.getRegistry().fetchAcceptedJob(experimentIDList.get(i));
-                launchGfacWithJobRequest(jobRequest);
+                launchGfacWithJobRequest(experimentIDList.get(i));
             } catch (Exception e) {
                 logger.error("Error getting job related information");
                 throw new OrchestratorException(e);
@@ -87,10 +84,9 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
         return true;
     }
 
-	 //FIXME: (MEP) This method is pretty gruesome.  If we really expect multiple implementations of the JobSubmitter
-	 // interface and at least some of them will need to do the stuff in this method, then we need a parent class GenericJobSubmitterImpl.java (maybe abstract) that includes launchGfacWithJobRequest() so that subclasses can inherit it.
-    private void launchGfacWithJobRequest(JobRequest jobRequest) throws OrchestratorException {
-        String experimentID = OrchestratorUtils.getUniqueID(jobRequest);
+    //FIXME: (MEP) This method is pretty gruesome.  If we really expect multiple implementations of the JobSubmitter
+    // interface and at least some of them will need to do the stuff in this method, then we need a parent class GenericJobSubmitterImpl.java (maybe abstract) that includes launchGfacWithJobRequest() so that subclasses can inherit it.
+    private void launchGfacWithJobRequest(String experimentID) throws OrchestratorException {
         ConfigurationData configurationData = (ConfigurationData)
                 orchestratorContext.getNewRegistry().get(DataType.EXPERIMENT_CONFIGURATION_DATA, experimentID);
 
@@ -101,32 +97,20 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
         }
         AiravataAPI airavataAPI = null;
         try {
-
             airavataAPI = orchestratorContext.getOrchestratorConfiguration().getAiravataAPI();
-            //FIXME: (MEP) Why do all of this validation here?  Is it needed?  Why would you get an empty job request?
-            //FIXME: (MEP) If you do need this, it should go into a utility class or something similar that does the validation.
-            HostDescription hostDescription = jobRequest.getHostDescription();
             AiravataRegistry2 registry = orchestratorContext.getRegistry();
-            if (hostDescription == null) {
-                List<HostDescription> registeredHosts = new ArrayList<HostDescription>();
-                Map<String, ApplicationDescription> applicationDescriptors = registry.getApplicationDescriptors(serviceName);
-                for (String hostDescName : applicationDescriptors.keySet()) {
-                    registeredHosts.add(registry.getHostDescriptor(hostDescName));
-                }
-                Class<? extends HostScheduler> aClass = Class.forName(ServerSettings.getHostScheduler()).asSubclass(HostScheduler.class);
-                HostScheduler hostScheduler = aClass.newInstance();
-                hostDescription = hostScheduler.schedule(registeredHosts);
+            List<HostDescription> registeredHosts = new ArrayList<HostDescription>();
+            Map<String, ApplicationDescription> applicationDescriptors = registry.getApplicationDescriptors(serviceName);
+            for (String hostDescName : applicationDescriptors.keySet()) {
+                registeredHosts.add(registry.getHostDescriptor(hostDescName));
             }
+            Class<? extends HostScheduler> aClass = Class.forName(ServerSettings.getHostScheduler()).asSubclass(HostScheduler.class);
+            HostScheduler hostScheduler = aClass.newInstance();
+            HostDescription hostDescription = hostScheduler.schedule(registeredHosts);
 
-            ServiceDescription serviceDescription = jobRequest.getServiceDescription();
-            if (serviceDescription == null) {
-                    serviceDescription = registry.getServiceDescriptor(serviceName);
-            }
+            ServiceDescription serviceDescription = registry.getServiceDescriptor(serviceName);
 
-            ApplicationDescription applicationDescription = jobRequest.getApplicationDescription();
-            if (applicationDescription == null) {
-                applicationDescription = registry.getApplicationDescriptors(serviceName, hostDescription.getType().getHostName());
-            }
+            ApplicationDescription applicationDescription = registry.getApplicationDescriptors(serviceName, hostDescription.getType().getHostName());
             // When we run getInParameters we set the actualParameter object, this has to be fixed
             //FIXME: will these class loaders work correctly in Thrift?
             //FIXME: gfac-config.xml is only under src/test.
@@ -167,12 +151,11 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
         }
     }
 
-	 //FIXME: (MEP) I suggest putting this into a separate JobSubmitter implementation.  If so, launchGfacWithJobRequest() needs to be in an inherited parent.
-    public boolean directJobSubmit(JobRequest request) throws OrchestratorException {
+    public boolean directJobSubmit(String experimentID) throws OrchestratorException {
         try {
-            launchGfacWithJobRequest(request);
+            launchGfacWithJobRequest(experimentID);
         } catch (Exception e) {
-            String error = "Error launching the job : " + OrchestratorUtils.getUniqueID(request);
+            String error = "Error launching the job : " + experimentID;
             logger.error(error);
             throw new OrchestratorException(error);
         }

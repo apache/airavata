@@ -48,6 +48,8 @@ public class OrchestratorConfiguration {
 
     private String validatorClass;
 
+    private boolean enableValidation;
+
 
     public String getValidatorClass() {
         return validatorClass;
@@ -119,5 +121,13 @@ public class OrchestratorConfiguration {
 
     public void setHangedJobSubmitterClass(String hangedJobSubmitterClass) {
         this.hangedJobSubmitterClass = hangedJobSubmitterClass;
+    }
+
+    public boolean isEnableValidation() {
+        return enableValidation;
+    }
+
+    public void setEnableValidation(boolean enableValidation) {
+        this.enableValidation = enableValidation;
     }
 }
