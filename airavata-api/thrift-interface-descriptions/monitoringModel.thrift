@@ -55,9 +55,9 @@ enum STATUS {
 struct ApplicationDetails {
  	1: optional string name,
  	2: optional string instanceid,
- 	3: optional STATUS status,
+ 	3: optional string status,
  	4: optional string currentAction,
- 	5: optional string errormessage
+ 	5: optional string apperror
 }
  
  /**
@@ -83,8 +83,8 @@ struct MonitoringRequest {
  	1: optional string experimentID,
   	2: optional string userName,
   	3: optional string filter = "all",
-  	4: optional i32 startDateTime,
-  	5: optional i32 endDateTime,
+  	4: optional i64 startDateTime,
+  	5: optional i64 endDateTime,
   	6: optional bool applicationdetails = false
 }
 
