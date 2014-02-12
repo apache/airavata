@@ -31,10 +31,10 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
-                <module>airavata-api-sdk</module>
+                <module>airavata-api-stubs</module>
+                <module>airavata-data-models</module>
                 <module>airavata-api-server</module>
                 <module>airavata-client-sdks</module>
-                <module>airavata-data-models</module>
             </modules>
         </profile>
     </profiles>
