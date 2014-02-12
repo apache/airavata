@@ -34,7 +34,6 @@ import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.orchestrator.cpi.Orchestrator;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryImpl;
-import org.apache.airavata.registry.api.JobRequest;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.registry.cpi.ParentDataType;
 import org.apache.airavata.registry.cpi.Registry;
@@ -48,156 +47,133 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class NewOrchestratorTest extends AbstractOrchestratorTest{
+public class NewOrchestratorTest extends AbstractOrchestratorTest {
     private static final Logger log = LoggerFactory.getLogger(NewOrchestratorTest.class);
 
-       private Orchestrator orchestrator;
-       private String experimentID;
-       @BeforeTest
-       public void setUp() throws Exception {
-           AiravataUtils.setExecutionAsServer();
-           super.setUp();
-           orchestrator = new SimpleOrchestratorImpl();
-           orchestrator.initialize();
-           createJobRequestWithDocuments(getAiravataAPI());
-       }
+    private Orchestrator orchestrator;
+    private String experimentID;
 
-       private void createJobRequestWithDocuments(AiravataAPI airavataAPI) {
-           // creating host description
-           HostDescription descriptor = new HostDescription();
-           descriptor.getType().setHostName("localhost");
-           descriptor.getType().setHostAddress("127.0.0.1");
-           try {
-               airavataAPI.getApplicationManager().saveHostDescription(descriptor);
-           } catch (AiravataAPIInvocationException e) {
-               e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-           }
+    @BeforeTest
+    public void setUp() throws Exception {
+        AiravataUtils.setExecutionAsServer();
+        super.setUp();
+        orchestrator = new SimpleOrchestratorImpl();
+        createJobRequestWithDocuments(getAiravataAPI());
+    }
 
-           ServiceDescription serviceDescription = new ServiceDescription();
-           List<InputParameterType> inputParameters = new ArrayList<InputParameterType>();
-           List<OutputParameterType> outputParameters = new ArrayList<OutputParameterType>();
-           serviceDescription.getType().setName("Echo");
-           serviceDescription.getType().setDescription("Echo service");
-           // Creating input parameters
-           InputParameterType parameter = InputParameterType.Factory.newInstance();
-           parameter.setParameterName("echo_input");
-           parameter.setParameterDescription("echo input");
-           ParameterType parameterType = parameter.addNewParameterType();
-           parameterType.setType(DataType.STRING);
-           parameterType.setName("String");
-           inputParameters.add(parameter);
+    private void createJobRequestWithDocuments(AiravataAPI airavataAPI) {
+        // creating host description
+        HostDescription descriptor = new HostDescription();
+        descriptor.getType().setHostName("localhost");
+        descriptor.getType().setHostAddress("127.0.0.1");
+        try {
+            airavataAPI.getApplicationManager().saveHostDescription(descriptor);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
 
-           // Creating output parameters
-           OutputParameterType outputParameter = OutputParameterType.Factory.newInstance();
-           outputParameter.setParameterName("echo_output");
-           outputParameter.setParameterDescription("Echo output");
-           ParameterType outputParaType = outputParameter.addNewParameterType();
-           outputParaType.setType(DataType.STRING);
-           outputParaType.setName("String");
-           outputParameters.add(outputParameter);
+        ServiceDescription serviceDescription = new ServiceDescription();
+        List<InputParameterType> inputParameters = new ArrayList<InputParameterType>();
+        List<OutputParameterType> outputParameters = new ArrayList<OutputParameterType>();
+        serviceDescription.getType().setName("Echo");
+        serviceDescription.getType().setDescription("Echo service");
+        // Creating input parameters
+        InputParameterType parameter = InputParameterType.Factory.newInstance();
+        parameter.setParameterName("echo_input");
+        parameter.setParameterDescription("echo input");
+        ParameterType parameterType = parameter.addNewParameterType();
+        parameterType.setType(DataType.STRING);
+        parameterType.setName("String");
+        inputParameters.add(parameter);
 
-           // Setting input and output parameters to serviceDescriptor
-           serviceDescription.getType().setInputParametersArray(inputParameters.toArray(new InputParameterType[]{}));
-           serviceDescription.getType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[]{}));
+        // Creating output parameters
+        OutputParameterType outputParameter = OutputParameterType.Factory.newInstance();
+        outputParameter.setParameterName("echo_output");
+        outputParameter.setParameterDescription("Echo output");
+        ParameterType outputParaType = outputParameter.addNewParameterType();
+        outputParaType.setType(DataType.STRING);
+        outputParaType.setName("String");
+        outputParameters.add(outputParameter);
 
-           try {
-               airavataAPI.getApplicationManager().saveServiceDescription(serviceDescription);
-           } catch (AiravataAPIInvocationException e) {
-               e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-           }
+        // Setting input and output parameters to serviceDescriptor
+        serviceDescription.getType().setInputParametersArray(inputParameters.toArray(new InputParameterType[]{}));
+        serviceDescription.getType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[]{}));
 
-           ApplicationDescription applicationDeploymentDescription = new ApplicationDescription();
-           ApplicationDeploymentDescriptionType applicationDeploymentDescriptionType = applicationDeploymentDescription
-                   .getType();
-           applicationDeploymentDescriptionType.addNewApplicationName().setStringValue("EchoApplication");
-           applicationDeploymentDescriptionType.setExecutableLocation("/bin/echo");
-           applicationDeploymentDescriptionType.setScratchWorkingDirectory("/tmp");
+        try {
+            airavataAPI.getApplicationManager().saveServiceDescription(serviceDescription);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
 
-           try {
-               airavataAPI.getApplicationManager().saveApplicationDescription("Echo", "localhost", applicationDeploymentDescription);
-           } catch (AiravataAPIInvocationException e) {
-               e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-           }
+        ApplicationDescription applicationDeploymentDescription = new ApplicationDescription();
+        ApplicationDeploymentDescriptionType applicationDeploymentDescriptionType = applicationDeploymentDescription
+                .getType();
+        applicationDeploymentDescriptionType.addNewApplicationName().setStringValue("EchoApplication");
+        applicationDeploymentDescriptionType.setExecutableLocation("/bin/echo");
+        applicationDeploymentDescriptionType.setScratchWorkingDirectory("/tmp");
 
-           //Using new airavata-api methods to store experiment metadata
-           BasicMetadata basicMetadata = new BasicMetadata();
-           basicMetadata.setExperimentName("test123");
-           basicMetadata.setUserName("admin");
-           basicMetadata.setUserNameIsSet(true);
-           basicMetadata.setProjectID("default");
+        try {
+            airavataAPI.getApplicationManager().saveApplicationDescription("Echo", "localhost", applicationDeploymentDescription);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
 
-           AdvancedInputDataHandling advancedInputDataHandling = new AdvancedInputDataHandling();
-           AdvancedOutputDataHandling advancedOutputDataHandling = new AdvancedOutputDataHandling();
-           ComputationalResourceScheduling computationalResourceScheduling = new ComputationalResourceScheduling();
-           QualityOfServiceParams qualityOfServiceParams = new QualityOfServiceParams();
-           ConfigurationData configurationData = new ConfigurationData();
+        //Using new airavata-api methods to store experiment metadata
+        BasicMetadata basicMetadata = new BasicMetadata();
+        basicMetadata.setExperimentName("test123");
+        basicMetadata.setUserName("admin");
+        basicMetadata.setUserNameIsSet(true);
+        basicMetadata.setProjectID("default");
 
-
-           HashMap<String, String> exInputs = new HashMap<String, String>();
-           exInputs.put("echo_input", "echo_output=hello");
-
-           configurationData.setExperimentInputs(exInputs);
-           configurationData.setAdvanceInputDataHandling(advancedInputDataHandling);
-           configurationData.setAdvanceOutputDataHandling(advancedOutputDataHandling);
-           configurationData.setComputationalResourceScheduling(computationalResourceScheduling);
-           configurationData.setQosParams(qualityOfServiceParams);
-           configurationData.setApplicationId("Echo");
-
-           Registry registry = new RegistryImpl();
-           experimentID = (String) registry.add(ParentDataType.EXPERIMENT_BASIC_DATA, basicMetadata);
-           registry.add(ChildDataType.EXPERIMENT_CONFIGURATION_DATA, configurationData, experimentID);
-       }
-
-       @Test
-       public void noDescriptorTest() throws Exception {
-
-           JobRequest jobRequest = createJobRequestWithoutDocuments(experimentID);
-
-           boolean b = orchestrator.launchExperiment(jobRequest);
-
-           if (b) {
-               // This means orchestrator successfully accepted the job
-               Assert.assertTrue(true);
-           } else {
-               Assert.assertFalse(true);
-           }
-       }
+        AdvancedInputDataHandling advancedInputDataHandling = new AdvancedInputDataHandling();
+        AdvancedOutputDataHandling advancedOutputDataHandling = new AdvancedOutputDataHandling();
+        ComputationalResourceScheduling computationalResourceScheduling = new ComputationalResourceScheduling();
+        QualityOfServiceParams qualityOfServiceParams = new QualityOfServiceParams();
+        ConfigurationData configurationData = new ConfigurationData();
 
 
-       private JobRequest createJobRequestWithoutDocuments(String systemExpID) {
-           JobRequest jobRequest = new JobRequest();
-           jobRequest.setServiceName("Echo");
-//
-//           HashMap<String, Object> inputData = new HashMap<String, Object>();
-//           ActualParameter echo_input = new ActualParameter();
-//           ((StringParameterType) echo_input.getType()).setValue("echo_output=hello");
-//           inputData.put("echo_input", echo_input);
+        HashMap<String, String> exInputs = new HashMap<String, String>();
+        exInputs.put("echo_input", "echo_output=hello");
 
-           HashMap<String, Object> outputData = new HashMap<String, Object>();
+        configurationData.setExperimentInputs(exInputs);
+        configurationData.setAdvanceInputDataHandling(advancedInputDataHandling);
+        configurationData.setAdvanceOutputDataHandling(advancedOutputDataHandling);
+        configurationData.setComputationalResourceScheduling(computationalResourceScheduling);
+        configurationData.setQosParams(qualityOfServiceParams);
+        configurationData.setApplicationId("Echo");
 
+        Registry registry = new RegistryImpl();
+        experimentID = (String) registry.add(ParentDataType.EXPERIMENT_BASIC_DATA, basicMetadata);
+        registry.add(ChildDataType.EXPERIMENT_CONFIGURATION_DATA, configurationData, experimentID);
+    }
 
-           // setting all the parameters to jobRequest
-           jobRequest.setSystemExperimentID(systemExpID);
-//           jobRequest.setInputParameters(inputData);
-           jobRequest.setOutputParameters(outputData);
+    @Test
+    public void noDescriptorTest() throws Exception {
 
-           return jobRequest;
-       }
+        boolean b = orchestrator.launchExperiment(experimentID);
 
-       private AiravataAPI getAiravataAPI() {
-           AiravataAPI airavataAPI = null;
-           if (airavataAPI == null) {
-               try {
-                   String systemUserName = ServerSettings.getSystemUser();
-                   String gateway = ServerSettings.getSystemUserGateway();
-                   airavataAPI = AiravataAPIFactory.getAPI(gateway, systemUserName);
-               } catch (ApplicationSettingsException e) {
-                   e.printStackTrace();
-               } catch (AiravataAPIInvocationException e) {
-                   e.printStackTrace();
-               }
-           }
-           return airavataAPI;
-       }
+        if (b) {
+            // This means orchestrator successfully accepted the job
+            Assert.assertTrue(true);
+        } else {
+            Assert.assertFalse(true);
+        }
+    }
+
+    private AiravataAPI getAiravataAPI() {
+        AiravataAPI airavataAPI = null;
+        if (airavataAPI == null) {
+            try {
+                String systemUserName = ServerSettings.getSystemUser();
+                String gateway = ServerSettings.getSystemUserGateway();
+                airavataAPI = AiravataAPIFactory.getAPI(gateway, systemUserName);
+            } catch (ApplicationSettingsException e) {
+                e.printStackTrace();
+            } catch (AiravataAPIInvocationException e) {
+                e.printStackTrace();
+            }
+        }
+        return airavataAPI;
+    }
 
 }

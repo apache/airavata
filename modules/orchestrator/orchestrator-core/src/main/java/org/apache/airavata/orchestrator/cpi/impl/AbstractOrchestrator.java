@@ -84,7 +84,7 @@ public abstract class AbstractOrchestrator implements Orchestrator {
 	public void setAiravataUserName(String airavataUserName) {
 		this.airavataUserName = airavataUserName;
 	}
-	public boolean initialize() throws OrchestratorException {
+	public AbstractOrchestrator() throws OrchestratorException {
         try {
             /* Initializing the OrchestratorConfiguration object */
         	orchestratorConfiguration = OrchestratorUtils.loadOrchestratorConfiguration();
@@ -102,6 +102,7 @@ public abstract class AbstractOrchestrator implements Orchestrator {
                 }
                 Set<String> uriList = gfacNodeList.keySet();
                 Iterator<String> iterator = uriList.iterator();
+                // todo consume these data to
                 List<GFACInstance> gfacInstanceList = new ArrayList<GFACInstance>();
                 while (iterator.hasNext()) {
                     String uri = iterator.next();
@@ -111,7 +112,6 @@ public abstract class AbstractOrchestrator implements Orchestrator {
             }
             orchestratorContext = new OrchestratorContext();
             orchestratorContext.setOrchestratorConfiguration(orchestratorConfiguration);
-            AiravataAPI airavataAPI = getAiravataAPI();
             orchestratorConfiguration.setAiravataAPI(getAiravataAPI());
             orchestratorContext.setRegistry(airavataRegistry);
 
@@ -130,7 +130,6 @@ public abstract class AbstractOrchestrator implements Orchestrator {
             OrchestratorException orchestratorException = new OrchestratorException(e);
             throw orchestratorException;
         }
-        return true;
     }
 	
 	//get the registry URL and the credentials from the property file
@@ -146,24 +145,7 @@ public abstract class AbstractOrchestrator implements Orchestrator {
         setGatewayName(properties.getProperty("system.gateway"));
         setRegistryURL(properties.getProperty("airavata.server.url"));
     }
-    //todo decide whether to return an error or do what
-	 //FIXME: (MEP) as posted on dev list, I think this should return a JobRequest with the experimentID set. This would simplify some of the validation in EmbeddedGFACJobSubmitter's launcGfacWithJobRequest--just throw the job away if the JobRequest is incomplete or malformed.
-   public String createExperiment(ExperimentRequest request) throws OrchestratorException {
-       //todo use a consistent method to create the experiment ID
-		  //FIXME: (MEP) Should you trust the user to do this?  What if the same experimentID is sent twice by the same gateway?
-       String experimentID = request.getUserExperimentID();
-       if(experimentID == null){
-       	experimentID = UUID.randomUUID().toString(); 
-       }
-       try {
-           airavataRegistry.storeExperiment(request.getSubmitterUserName(), experimentID, null, null);
-       } catch (RegistryException e) {
-           //todo put more meaningful error  message
-           logger.error("Failed to create experiment for the request from " + request.getSubmitterUserName());
-           throw new OrchestratorException(e);
-       }
-       return experimentID;
-   }
+
    private AiravataAPI getAiravataAPI() {
        if (airavataAPI == null) {
            try {

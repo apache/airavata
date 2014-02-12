@@ -8,7 +8,8 @@
     ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
     the License. -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>gfac</artifactId>
@@ -72,7 +73,16 @@
             <artifactId>airavata-workflow-execution-context</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-registry-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-registry-cpi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- Workflow Tracking -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
@@ -146,22 +156,22 @@
             <scope>test</scope>
         </dependency>
         <!-- Unicore dependencies -->
-          <dependency>
-			<groupId>eu.unicore</groupId>
-			<artifactId>ogsabes-client</artifactId>
-			<version>1.7.0-rc</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.santuario</groupId>
-					<artifactId>xmlsec</artifactId>
-				</exclusion>
-			    <exclusion>
+        <dependency>
+            <groupId>eu.unicore</groupId>
+            <artifactId>ogsabes-client</artifactId>
+            <version>1.7.0-rc</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.santuario</groupId>
+                    <artifactId>xmlsec</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>org.bouncycastle</groupId>
                     <artifactId>bcprov-jdk16</artifactId>
                 </exclusion>
             </exclusions>
-		</dependency>
- 
+        </dependency>
+
 
         <!-- Hadoop provider related dependencies -->
         <dependency>
@@ -211,18 +221,23 @@
             <version>12.0</version>
         </dependency>
 
-	<!-- gsi-ssh api dependencies -->
-	<dependency>
-		<groupId>org.apache.airavata</groupId>
-    		<artifactId>gsissh</artifactId>
-    		<version>${project.version}</version>
-	</dependency>
- 	<dependency>
+        <!-- gsi-ssh api dependencies -->
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>gsissh</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-data-models</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.jcraft</groupId>
             <artifactId>jsch</artifactId>
             <version>0.1.50</version>
         </dependency>
-	<dependency>
+        <dependency>
             <groupId>org.ogce</groupId>
             <artifactId>bcgss</artifactId>
             <version>146</version>
@@ -250,24 +265,24 @@
                     <failIfNoTests>false</failIfNoTests>
                 </configuration>
             </plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-dependencies</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>target/lib</outputDirectory>
-							<overWriteReleases>false</overWriteReleases>
-							<overWriteSnapshots>true</overWriteSnapshots>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/lib</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

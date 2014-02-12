@@ -46,15 +46,6 @@ public interface OrchestratorRegistry extends AiravataSubRegistry {
      */
     boolean addGFACNode(String uri, int nodeID)throws RegistryException;
 
-    /**
-     * This method will add an entry to job management table in database
-     * With the default initial status of ACCEPTED
-     * @param userName
-     * @param experimentID
-     * @return
-     * @throws RegistryException
-     */
-    boolean storeExperiment(String userName,String experimentID, String applicationName, String jobRequest)throws RegistryException;
 
     /**
      * This can be used to change the status to any valid status
@@ -100,13 +91,6 @@ public interface OrchestratorRegistry extends AiravataSubRegistry {
      */
     List<String> getAllAcceptedJobs()throws RegistryException;
 
-    /**
-     * This will pick one job from jobs in ACCEPTED state and change its status to
-     * FETCHED
-     * @return experimentID
-     * @throws RegistryException
-     */
-    JobRequest fetchAcceptedJob(String experimentID)throws RegistryException;
 
     /**
      * This will return all the hanged jobs, the logic to determine
