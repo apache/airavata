@@ -37,12 +37,19 @@ import org.apache.airavata.model.experiment.ConfigurationData;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.Registry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URL;
 import java.util.*;
 
+/**
+ * This is the GFac CPI class for external usage, this simply have a single method to submit a job to
+ * the resource, required data for the job has to be stored in registry prior to invoke this object.
+ */
 public class GFac {
+    private static final Logger log = LoggerFactory.getLogger(GFac.class);
 
     private Registry registry;
 
@@ -50,15 +57,28 @@ public class GFac {
 
     private AiravataRegistry2 airavataRegistry2;
 
+    /**
+     * Constructor for GFac
+     * @param registry
+     * @param airavataAPI
+     * @param airavataRegistry2
+     */
     public GFac(Registry registry, AiravataAPI airavataAPI, AiravataRegistry2 airavataRegistry2) {
         this.registry = registry;
         this.airavataAPI = airavataAPI;
         this.airavataRegistry2 = airavataRegistry2;
     }
 
-
+    /**
+     * This is the job launching method outsiders of GFac can use, this will invoke the GFac handler chain and providers
+     * And update the registry occordingly, so the users can query the database to retrieve status and output from Registry
+     *
+     * @param experimentID
+     * @return
+     * @throws GFacException
+     */
     public boolean submitJob(String experimentID) throws GFacException {
-                  ConfigurationData configurationData = (ConfigurationData)registry.get(DataType.EXPERIMENT_CONFIGURATION_DATA, experimentID);
+        ConfigurationData configurationData = (ConfigurationData) registry.get(DataType.EXPERIMENT_CONFIGURATION_DATA, experimentID);
         String serviceName = configurationData.getApplicationId();
 
         if (serviceName == null) {
@@ -77,28 +97,20 @@ public class GFac {
             ServiceDescription serviceDescription = airavataRegistry2.getServiceDescriptor(serviceName);
 
             ApplicationDescription applicationDescription = airavataRegistry2.getApplicationDescriptors(serviceName, hostDescription.getType().getHostName());
-            // When we run getInParameters we set the actualParameter object, this has to be fixed
-            //FIXME: will these class loaders work correctly in Thrift?
-            //FIXME: gfac-config.xml is only under src/test.
             URL resource = GFac.class.getClassLoader().getResource("gfac-config.xml");
             Properties configurationProperties = ServerSettings.getProperties();
             GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, configurationProperties);
 
             JobExecutionContext jobExecutionContext = new JobExecutionContext(gFacConfiguration, serviceName);
-            //Here we get only the contextheader information sent specific for this node
-            //Add security context
-
 
             ApplicationContext applicationContext = new ApplicationContext();
             applicationContext.setApplicationDeploymentDescription(applicationDescription);
             applicationContext.setHostDescription(hostDescription);
             applicationContext.setServiceDescription(serviceDescription);
-
             jobExecutionContext.setApplicationContext(applicationContext);
 
 
             Map<String, String> experimentInputs = configurationData.getExperimentInputs();
-
             jobExecutionContext.setInMessageContext(new MessageContext(GFacUtils.getMessageContext(experimentInputs,
                     serviceDescription.getType().getInputParametersArray())));
 
@@ -107,11 +119,13 @@ public class GFac {
 
             jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
             jobExecutionContext.setExperimentID(experimentID);
-            //FIXME: (MEP) GFacAPI.submitJob() throws a GFacException that isn't caught here. You want to catch this before updating the registry.
+
+
             GFacAPI gfacAPI1 = new GFacAPI();
             gfacAPI1.submitJob(jobExecutionContext);
-        }catch (Exception e){
-
+        } catch (Exception e) {
+            log.error("Error inovoking the job with experiment ID: " + experimentID);
+            throw new GFacException(e);
         }
         return true;
     }
