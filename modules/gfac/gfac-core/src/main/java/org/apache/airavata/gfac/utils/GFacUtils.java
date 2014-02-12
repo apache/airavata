@@ -29,19 +29,14 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.gfac.Constants;
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.registry.api.workflow.ApplicationJob;
 import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
@@ -158,7 +153,7 @@ public class GFacUtils {
         buf.append(localPath);
         return new URI(buf.toString());
     }
-    
+
     public static String createGsiftpURIAsString(String host, String localPath) throws URISyntaxException {
         StringBuffer buf = new StringBuffer();
         if (!host.startsWith("gsiftp://"))
@@ -432,19 +427,19 @@ public class GFacUtils {
         }
         return actualParameter;
     }
-    
 
-	public static ApplicationJob createApplicationJob(
-			JobExecutionContext jobExecutionContext) {
-		ApplicationJob appJob = new ApplicationJob();
-		appJob.setExperimentId((String) jobExecutionContext.getProperty(Constants.PROP_TOPIC));
-		appJob.setWorkflowExecutionId(appJob.getExperimentId());
-		appJob.setNodeId((String)jobExecutionContext.getProperty(Constants.PROP_WORKFLOW_NODE_ID));
-		appJob.setServiceDescriptionId(jobExecutionContext.getApplicationContext().getServiceDescription().getType().getName());
-		appJob.setHostDescriptionId(jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostName());
-		appJob.setApplicationDescriptionId(jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType().getApplicationName().getStringValue());
-		return appJob;
-	}
+
+    public static ApplicationJob createApplicationJob(
+            JobExecutionContext jobExecutionContext) {
+        ApplicationJob appJob = new ApplicationJob();
+        appJob.setExperimentId((String) jobExecutionContext.getProperty(Constants.PROP_TOPIC));
+        appJob.setWorkflowExecutionId(appJob.getExperimentId());
+        appJob.setNodeId((String) jobExecutionContext.getProperty(Constants.PROP_WORKFLOW_NODE_ID));
+        appJob.setServiceDescriptionId(jobExecutionContext.getApplicationContext().getServiceDescription().getType().getName());
+        appJob.setHostDescriptionId(jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostName());
+        appJob.setApplicationDescriptionId(jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType().getApplicationName().getStringValue());
+        return appJob;
+    }
 
     public static void updateApplicationJobStatusUpdateTime(JobExecutionContext context, String jobId, Date statusUpdateTime) {
         AiravataAPI airavataAPI = context.getGFacConfiguration().getAiravataAPI();
@@ -562,8 +557,8 @@ public class GFacUtils {
         updateApplicationJobStatus(context, jobId, status, Calendar.getInstance().getTime());
     }
 
-    public static ApplicationJobStatus getApplicationJobStatus(int gramStatus){
-        switch(gramStatus){
+    public static ApplicationJobStatus getApplicationJobStatus(int gramStatus) {
+        switch (gramStatus) {
             case GramJob.STATUS_UNSUBMITTED:
                 return ApplicationJobStatus.UN_SUBMITTED;
             case GramJob.STATUS_ACTIVE:
@@ -583,5 +578,20 @@ public class GFacUtils {
             default:
                 return ApplicationJobStatus.UNKNOWN;
         }
+    }
+
+    public static Map<String, Object> getMessageContext(Map<String, String> experimentData,
+                                                        Parameter[] parameters) throws GFacException {
+        HashMap<String, Object> stringObjectHashMap = new HashMap<String, Object>();
+
+        for (int i = 0; i < parameters.length; i++) {
+            String input = experimentData.get(parameters[i].getParameterName());
+            if (input != null) {
+                stringObjectHashMap.put(parameters[i].getParameterName(), GFacUtils.getInputActualParameter(parameters[i], input));
+            } else {
+                throw new GFacException("Parameter:" + input + "is missing");
+            }
+        }
+        return stringObjectHashMap;
     }
 }
