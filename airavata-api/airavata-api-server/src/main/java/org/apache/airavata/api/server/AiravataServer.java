@@ -41,6 +41,7 @@ public class AiravataServer {
     //FIXME: Read the port from airavata-server.config file
     private static final int THRIFT_SERVER_PORT = 8930;
 
+
     public static void StartAiravataServer(Airavata.Processor<MockAiravataServerHandler> mockAiravataServer) throws AiravataSystemException {
         try {
             RegistryInitUtil.initializeDB();

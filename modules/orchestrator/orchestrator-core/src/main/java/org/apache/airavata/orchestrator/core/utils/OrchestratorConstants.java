@@ -34,4 +34,5 @@ public class OrchestratorConstants {
     public static final String THREAD_POOL_SIZE = "threadpool.size";
     public static final String START_SUBMITTER = "start.submitter";
     public static final String EMBEDDED_MODE = "embedded.mode";
+    public static final String ENABLE_VALIDATION = "enable.validation";
 }

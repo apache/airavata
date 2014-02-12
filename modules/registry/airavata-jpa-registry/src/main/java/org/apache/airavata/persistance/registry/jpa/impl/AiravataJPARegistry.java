@@ -2642,20 +2642,6 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         return acceptedJobIds;
     }
 
-    /**
-     * TODO: Not fully implemented
-     * @param experimentID
-     * @return
-     * @throws RegistryException
-     */
-    public JobRequest fetchAcceptedJob(String experimentID) throws RegistryException {
-        GatewayResource gatewayResource = jpa.getGateway();
-        OrchestratorDataResource orchestratorResource = (OrchestratorDataResource)gatewayResource.get(ResourceType.ORCHESTRATOR, experimentID);
-        JobRequest jobRequest = new JobRequest();
-        jobRequest.setUserName(orchestratorResource.getUserName());
-        jobRequest.setSystemExperimentID(orchestratorResource.getExperimentID());
-        return jobRequest;
-    }
 
     public List<String> getAllHangedJobs() throws RegistryException {
         List<Resource> hangedJobs = ResourceUtils.getOrchestratorDataWithStatus(AiravataJobState.State.UNKNOWN.toString());
