@@ -140,3 +140,45 @@ struct ConfigurationData {
   9: optional AdvancedOutputDataHandling advanceOutputDataHandling,
   10: optional QualityOfServiceParams qosParams
 }
+
+/**
+* A structure holding the node data.
+*
+*
+*/
+struct NodeData {
+    1: required string nodeName,
+    2: required string nodeInstanceId = "DO_NOT_SET",
+    3: required string executionIndex,
+    4: optional string nodeType,
+    5: optional string nodeInput,
+    6: optional string nodeOutput,
+    7: optional string nodeStatus,
+    8: optional int32 startTime,
+    9: optional int32 lastUpdateTime
+}
+
+/**
+* A structure to hold experiment output
+*
+*/
+struct ExperimentOutput {
+    1: required string outputKey,
+    2: optional string outputType,
+    3: optional string outputkeyValue
+}
+
+/**
+* A structure to hold generated data
+*
+*/
+struct GeneratedData {
+    1: required string experimentId,
+    2: required string workflowTemplateId,
+    3: optional string workflowTemplateName,
+    4: optional string status,
+    5: optional int32 startTime,
+    6: optional int32 lastUpdateTime,
+    7: optional list<ExperimentOutput> experimentOutputs,
+    8: optional list<NodeData> nodes
+}

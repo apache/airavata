@@ -29,7 +29,7 @@ public interface Registry {
      *                            level object in the data model. If it is a top level object, programmer can pass it as
      *                            null
      */
-    public void add(ChildDataType dataType, Object newObjectToAdd, Object dependentIdentifier);
+    public void add(ChildDataType dataType, Object newObjectToAdd, String dependentIdentifier);
 
     /**
      * This method is to update the whole object in registry
@@ -41,7 +41,7 @@ public interface Registry {
      *                       have to fill the whole object. He needs to only fill the mandatory fields and whatever the
      *                       other fields that need to be updated.
      */
-    public void update(DataType dataType, Object newObjectToUpdate, Object identifier);
+    public void update(DataType dataType, Object newObjectToUpdate, String identifier);
 
 
     /**
@@ -56,7 +56,7 @@ public interface Registry {
      * @param value Value by which the given field need to be updated. If the field is "description", that field will be
      *              updated by given value
      */
-    public void update(DataType dataType, Object identifier, String fieldName, Object value);
+    public void update(DataType dataType, String identifier, String fieldName, Object value);
 
     /**
      * This method is to retrieve object according to the identifier. In the experiment basic data type, if you give the
@@ -67,7 +67,7 @@ public interface Registry {
      *                   identifier will be generated experimentID
      * @return object according to the given identifier.
      */
-    public Object get(DataType dataType, Object identifier);
+    public Object get(DataType dataType, String identifier);
 
     /**
      * This method is to retrieve list of objects according to a given criteria
@@ -91,7 +91,7 @@ public interface Registry {
      * @return return the value for the specific field where data model is identified by the unique identifier that has
      *         given
      */
-    public Object getValue (DataType dataType, Object identifier, String field);
+    public Object getValue (DataType dataType, String identifier, String field);
 
     /**
      * This method is to retrieve all the identifiers according to given filtering criteria. For an example, if you want
@@ -113,7 +113,7 @@ public interface Registry {
      * @param identifier Identifier which will uniquely identify the data model. For example, in Experiment_Basic_Type,
      *                   identifier will be generated experimentID
      */
-    public void remove (DataType dataType, Object identifier);
+    public void remove (DataType dataType, String identifier);
 
     /**
      * This method will check whether a given data type which can be identified with the identifier exists or not
@@ -123,7 +123,7 @@ public interface Registry {
      *                   identifier will be generated experimentID
      * @return whether the given data type exists or not
      */
-    public boolean isExist(DataType dataType, Object identifier);
+    public boolean isExist(DataType dataType, String identifier);
 
 
 }

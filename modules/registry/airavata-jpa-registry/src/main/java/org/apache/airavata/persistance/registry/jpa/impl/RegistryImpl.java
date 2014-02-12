@@ -30,6 +30,7 @@ import org.apache.airavata.registry.cpi.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.rowset.serial.SerialStruct;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,7 +70,7 @@ public class RegistryImpl implements Registry {
      *                            null
      */
     @Override
-    public void add(ChildDataType dataType, Object newObjectToAdd, Object dependentIdentifier) {
+    public void add(ChildDataType dataType, Object newObjectToAdd, String dependentIdentifier) {
         switch (dataType){
             case EXPERIMENT_CONFIGURATION_DATA:
                 experimentRegistry.add((ConfigurationData)newObjectToAdd, (String)dependentIdentifier);
@@ -101,13 +102,13 @@ public class RegistryImpl implements Registry {
      *                       other fields that need to be updated.
      */
     @Override
-    public void update(DataType dataType, Object newObjectToUpdate, Object identifier) {
+    public void update(DataType dataType, Object newObjectToUpdate, String identifier) {
         switch (dataType){
             case EXPERIMENT_BASIC_DATA:
-                experimentRegistry.update(newObjectToUpdate, (String)identifier);
+                experimentRegistry.update(newObjectToUpdate, identifier);
                 break;
             case EXPERIMENT_CONFIGURATION_DATA:
-                experimentRegistry.update(newObjectToUpdate, (String)identifier);
+                experimentRegistry.update(newObjectToUpdate, identifier);
                 break;
             default:
                 logger.error("Unsupported data type...", new UnsupportedOperationException());
@@ -129,13 +130,13 @@ public class RegistryImpl implements Registry {
      *              updated by given value
      */
     @Override
-    public void update(DataType dataType, Object identifier, String fieldName, Object value) {
+    public void update(DataType dataType, String identifier, String fieldName, Object value) {
         switch (dataType){
             case EXPERIMENT_BASIC_DATA:
-                experimentRegistry.updateExpBasicMetadataField((String) identifier, fieldName, value);
+                experimentRegistry.updateExpBasicMetadataField(identifier, fieldName, value);
                 break;
             case EXPERIMENT_CONFIGURATION_DATA:
-                experimentRegistry.updateExpConfigDataField((String) identifier, fieldName, value);
+                experimentRegistry.updateExpConfigDataField(identifier, fieldName, value);
                 break;
             default:
                 logger.error("Unsupported data type...", new UnsupportedOperationException());
@@ -153,13 +154,13 @@ public class RegistryImpl implements Registry {
      * @return object according to the given identifier.
      */
     @Override
-    public Object get(DataType dataType, Object identifier) {
+    public Object get(DataType dataType, String identifier) {
 
         switch (dataType){
             case EXPERIMENT_BASIC_DATA:
-                return experimentRegistry.getBasicMetaData((String)identifier, null);
+                return experimentRegistry.getBasicMetaData(identifier, null);
             case EXPERIMENT_CONFIGURATION_DATA:
-                return experimentRegistry.getConfigData((String)identifier, null);
+                return experimentRegistry.getConfigData(identifier, null);
             default:
                 logger.error("Unsupported data type...", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
@@ -209,12 +210,12 @@ public class RegistryImpl implements Registry {
      *         given
      */
     @Override
-    public Object getValue(DataType dataType, Object identifier, String field) {
+    public Object getValue(DataType dataType, String identifier, String field) {
         switch (dataType){
             case EXPERIMENT_BASIC_DATA:
-                return experimentRegistry.getBasicMetaData((String) identifier, field);
+                return experimentRegistry.getBasicMetaData(identifier, field);
             case EXPERIMENT_CONFIGURATION_DATA:
-                return experimentRegistry.getConfigData((String) identifier, field);
+                return experimentRegistry.getConfigData(identifier, field);
             default:
                 logger.error("Unsupported data type...", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
@@ -253,13 +254,13 @@ public class RegistryImpl implements Registry {
      *                   identifier will be generated experimentID
      */
     @Override
-    public void remove(DataType dataType, Object identifier) {
+    public void remove(DataType dataType, String identifier) {
         switch (dataType){
             case EXPERIMENT_BASIC_DATA:
-                experimentRegistry.removeExperiment((String)identifier);
+                experimentRegistry.removeExperiment(identifier);
                 break;
             case EXPERIMENT_CONFIGURATION_DATA:
-                experimentRegistry.removeExperimentConfigData((String)identifier);
+                experimentRegistry.removeExperimentConfigData(identifier);
             default:
                 logger.error("Unsupported data type...", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
@@ -275,12 +276,12 @@ public class RegistryImpl implements Registry {
      * @return whether the given data type exists or not
      */
     @Override
-    public boolean isExist(DataType dataType, Object identifier) {
+    public boolean isExist(DataType dataType, String identifier) {
         switch (dataType){
             case EXPERIMENT_BASIC_DATA:
-                return experimentRegistry.isExperimentBasicDataExist((String)identifier);
+                return experimentRegistry.isExperimentBasicDataExist(identifier);
             case EXPERIMENT_CONFIGURATION_DATA:
-                return experimentRegistry.isExperimentConfigDataExist((String)identifier);
+                return experimentRegistry.isExperimentConfigDataExist(identifier);
         }
         return false;
     }
