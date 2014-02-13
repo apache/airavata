@@ -21,18 +21,24 @@
 package org.apache.airavata.orchestrator.core;
 
 
+import org.apache.airavata.client.AiravataAPIFactory;
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.orchestrator.core.util.Initialize;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 
-public class AbstractOrchestratorTest {
+public class BaseOrchestratorTest {
 
     private GatewayResource gatewayResource;
     private WorkerResource workerResource;
     private UserResource userResource;
     private OrchestratorDataResource orchestratorDataResource;
     private Initialize initialize;
+    private DocumentCreator documentCreator;
 
     public void setUp() throws Exception {
         initialize = new Initialize("airavata-registry-derby.sql");
@@ -43,6 +49,11 @@ public class AbstractOrchestratorTest {
         orchestratorDataResource = (OrchestratorDataResource) gatewayResource.create(ResourceType.ORCHESTRATOR);
         userResource.setUserName("admin");
         userResource.setPassword("admin");
+
+        documentCreator = new DocumentCreator(getAiravataAPI());
+        documentCreator.createLocalHostDocs();
+        documentCreator.createGramDocs();
+        documentCreator.createGSISSHDocs();
     }
 
     public void tearDown() throws Exception {
@@ -61,5 +72,27 @@ public class AbstractOrchestratorTest {
         return userResource;
     }
 
+    private AiravataAPI getAiravataAPI() {
+        AiravataAPI airavataAPI = null;
+        if (airavataAPI == null) {
+            try {
+                String systemUserName = ServerSettings.getSystemUser();
+                String gateway = ServerSettings.getSystemUserGateway();
+                airavataAPI = AiravataAPIFactory.getAPI(gateway, systemUserName);
+            } catch (ApplicationSettingsException e) {
+                e.printStackTrace();
+            } catch (AiravataAPIInvocationException e) {
+                e.printStackTrace();
+            }
+        }
+        return airavataAPI;
+    }
 
+    public DocumentCreator getDocumentCreator() {
+        return documentCreator;
+    }
+
+    public void setDocumentCreator(DocumentCreator documentCreator) {
+        this.documentCreator = documentCreator;
+    }
 }
