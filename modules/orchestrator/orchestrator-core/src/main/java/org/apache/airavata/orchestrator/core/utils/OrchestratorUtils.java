@@ -56,9 +56,10 @@ public class OrchestratorUtils {
         orchestratorConfiguration.setStartSubmitter(Boolean.valueOf(orchestratorProps.getProperty(OrchestratorConstants.START_SUBMITTER)));
         orchestratorConfiguration.setEmbeddedMode(Boolean.valueOf(orchestratorProps.getProperty(OrchestratorConstants.EMBEDDED_MODE)));
         orchestratorConfiguration.setEnableValidation(Boolean.valueOf(orchestratorProps.getProperty(OrchestratorConstants.ENABLE_VALIDATION)));
+        if(orchestratorConfiguration.isEnableValidation()){
+            orchestratorConfiguration.setValidatorClass((String) orchestratorProps.get(OrchestratorConstants.JOB_VALIDATOR));
+        }
         return orchestratorConfiguration;
     }
-
-
 
 }
