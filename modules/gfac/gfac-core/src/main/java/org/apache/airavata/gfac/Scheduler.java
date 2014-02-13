@@ -77,7 +77,7 @@ public class Scheduler {
         HostDescription hostDescription = jobExecutionContext.getApplicationContext().getHostDescription();
         String applicationName = jobExecutionContext.getServiceName();
 
-        URL resource = Scheduler.class.getClassLoader().getResource("gfac-config.xml");
+        URL resource = Scheduler.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = null;
         Document handlerDoc = null;

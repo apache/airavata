@@ -32,13 +32,13 @@ import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.gfac.cpi.GFacAPI;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
+import org.apache.airavata.gfac.cpi.GFacImpl;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
@@ -70,7 +70,7 @@ public class GramProviderTest extends GFacBaseTestCase {
 
     @Before
     public void setUp() throws Exception {
-        URL resource = GramProviderTest.class.getClassLoader().getResource("gfac-config.xml");
+        URL resource = GramProviderTest.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         assert resource != null;
         System.out.println(resource.getFile());
         GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()),null,null);
@@ -212,7 +212,7 @@ public class GramProviderTest extends GFacBaseTestCase {
 
     @Test
     public void testGramProvider() throws GFacException {
-        GFacAPI gFacAPI = new GFacAPI();
+        GFacImpl gFacAPI = new GFacImpl();
         gFacAPI.submitJob(jobExecutionContext);
         MessageContext outMessageContext = jobExecutionContext.getOutMessageContext();
         Assert.assertEquals(MappingFactory.toString((ActualParameter)outMessageContext.getParameter("echo_output")), "hello");

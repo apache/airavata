@@ -21,17 +21,16 @@
 package org.apache.airavata.orchestrator.core.impl;
 
 
-import java.io.File;
-import java.net.URL;
 import java.util.*;
 
 import org.apache.airavata.common.utils.AiravataJobState;
+import org.apache.airavata.gfac.cpi.GFac;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.airavata.registry.cpi.Registry;
-import org.apache.airavata.gfac.cpi.GFac;
+import org.apache.airavata.gfac.cpi.GFacImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,9 +73,8 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
         Registry newRegistry = orchestratorContext.getNewRegistry();
         try {
             //todo init this during submitter init
-            GFac gFac = new GFac(newRegistry, orchestratorContext.getOrchestratorConfiguration().getAiravataAPI(), orchestratorContext.getRegistry());
+            GFac gFac = new GFacImpl(newRegistry, orchestratorContext.getOrchestratorConfiguration().getAiravataAPI(), orchestratorContext.getRegistry());
             gFac.submitJob(experimentID);
-            //FIXME: (MEP) It may be better to change the registry status in GFacAPI rather then here.
             orchestratorContext.getRegistry().changeStatus(experimentID, AiravataJobState.State.SUBMITTED);
         } catch (Exception e)
         {

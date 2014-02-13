@@ -24,7 +24,6 @@ import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.gfac.cpi.GFacAPI;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.SecurityContext;
@@ -32,6 +31,7 @@ import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
+import org.apache.airavata.gfac.cpi.GFacImpl;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.ServerInfo;
@@ -66,7 +66,7 @@ public class BigRed2Test {
         }
         userName = System.getProperty("bigred2.username");
         password = System.getProperty("bigred2.password");
-        URL resource = GramProviderTest.class.getClassLoader().getResource("gfac-config.xml");
+        URL resource = GramProviderTest.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         assert resource != null;
         System.out.println(resource.getFile());
         GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), null, null);
@@ -204,7 +204,7 @@ public class BigRed2Test {
 
     @Test
     public void testGramProvider() throws GFacException {
-        GFacAPI gFacAPI = new GFacAPI();
+        GFacImpl gFacAPI = new GFacImpl();
         gFacAPI.submitJob(jobExecutionContext);
     }
 

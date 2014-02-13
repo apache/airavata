@@ -25,9 +25,9 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
-import org.apache.airavata.gfac.cpi.GFacAPI;
 import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.MessageContext;
+import org.apache.airavata.gfac.cpi.GFacImpl;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.ExtendedKeyValueType;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
@@ -51,7 +51,7 @@ public class BESParallelJobTest extends AbstractBESTest{
 		ApplicationContext appContext = getApplicationContext();
 		appContext.setApplicationDeploymentDescription(getApplicationDesc(jobType));
 		jobExecutionContext.setApplicationContext(appContext);
-		GFacAPI gFacAPI = new GFacAPI();
+        GFacImpl gFacAPI = new GFacImpl();
 		gFacAPI.submitJob(jobExecutionContext);
 	}
 	

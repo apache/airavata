@@ -32,13 +32,13 @@ import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.gfac.cpi.GFacAPI;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
+import org.apache.airavata.gfac.cpi.GFacImpl;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
@@ -54,7 +54,7 @@ public class SSHProviderTest {
     @Before
     public void setUp() throws Exception {
 
-    	URL resource = GramProviderTest.class.getClassLoader().getResource("gfac-config.xml");
+    	URL resource = GramProviderTest.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()),null,null);
 //        gFacConfiguration.s
         //have to set InFlwo Handlers and outFlowHandlers
@@ -164,7 +164,7 @@ public class SSHProviderTest {
 
     @Test
     public void testLocalProvider() throws GFacException {
-        GFacAPI gFacAPI = new GFacAPI();
+        GFacImpl gFacAPI = new GFacImpl();
         gFacAPI.submitJob(jobExecutionContext);
         MessageContext outMessageContext = jobExecutionContext.getOutMessageContext();
         Assert.assertEquals(MappingFactory.toString((ActualParameter)outMessageContext.getParameter("echo_output")), "hello");

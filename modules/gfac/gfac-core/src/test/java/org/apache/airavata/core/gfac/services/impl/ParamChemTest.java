@@ -297,7 +297,7 @@ public class ParamChemTest extends GFacBaseTestCase {
 
     @Test
     public void testGramProvider() throws GFacException {
-//        GFacAPI gFacAPI = new GFacAPI();
+//        GFacImpl gFacAPI = new GFacImpl();
 //        gFacAPI.submitJob(jobExecutionContext);
 //        MessageContext outMessageContext = jobExecutionContext.getOutMessageContext();
 //        Assert.assertFalse(outMessageContext.getParameters().isEmpty());
