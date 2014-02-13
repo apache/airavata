@@ -21,12 +21,12 @@
 package org.apache.airavata.core.gfac.services.impl;
 
 import org.apache.airavata.commons.gfac.type.*;
-import org.apache.airavata.gfac.cpi.GFacAPI;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
+import org.apache.airavata.gfac.cpi.GFacImpl;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
@@ -46,7 +46,7 @@ public class LocalProviderTest {
     @Before
     public void setUp() throws Exception {
 
-        URL resource = this.getClass().getClassLoader().getResource("gfac-config.xml");
+        URL resource = this.getClass().getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         File configFile = new File(resource.getPath());
         GFacConfiguration gFacConfiguration = GFacConfiguration.create(configFile, null, null);
         //have to set InFlwo Handlers and outFlowHandlers
@@ -142,7 +142,7 @@ public class LocalProviderTest {
 
     @Test
     public void testLocalProvider() throws GFacException {
-        GFacAPI gFacAPI = new GFacAPI();
+        GFacImpl gFacAPI = new GFacImpl();
         gFacAPI.submitJob(jobExecutionContext);
         MessageContext outMessageContext = jobExecutionContext.getOutMessageContext();
         Assert.assertEquals(MappingFactory.toString((ActualParameter)outMessageContext.getParameter("echo_output")), "hello");

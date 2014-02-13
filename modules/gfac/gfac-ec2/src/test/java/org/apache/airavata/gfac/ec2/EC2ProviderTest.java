@@ -22,12 +22,12 @@
 package org.apache.airavata.gfac.ec2;
 
 import org.apache.airavata.commons.gfac.type.*;
-import org.apache.airavata.gfac.cpi.GFacAPI;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
+import org.apache.airavata.gfac.cpi.GFacImpl;
 import org.apache.airavata.schemas.gfac.*;
 import org.junit.Assert;
 import org.junit.Before;
@@ -80,7 +80,7 @@ public class EC2ProviderTest {
 
     @Before
     public void setUp() throws Exception {
-        URL resource = EC2ProviderTest.class.getClassLoader().getResource("gfac-config.xml");
+        URL resource = EC2ProviderTest.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         assert resource != null;
         System.out.println(resource.getFile());
         GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), null, null);
@@ -160,7 +160,7 @@ public class EC2ProviderTest {
 
     @Test
     public void testGramProvider() throws GFacException {
-        GFacAPI gFacAPI = new GFacAPI();
+        GFacImpl gFacAPI = new GFacImpl();
         gFacAPI.submitJob(jobExecutionContext);
         MessageContext outMessageContext = jobExecutionContext.getOutMessageContext();
         Assert.assertEquals(MappingFactory.

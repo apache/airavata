@@ -112,7 +112,7 @@ public abstract class AbstractBESTest extends GFacBaseTestCase {
 
 	protected GFacConfiguration getGFACConfig() throws Exception {
 		URL resource = this.getClass().getClassLoader()
-				.getResource("gfac-config.xml");
+				.getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
 		System.out.println(resource.getFile());
 		return GFacConfiguration.create(new File(resource.getPath()), null,
 				null);

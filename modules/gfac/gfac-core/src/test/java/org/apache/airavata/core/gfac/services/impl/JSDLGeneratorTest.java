@@ -138,7 +138,7 @@ public class JSDLGeneratorTest {
 	}
 
 	protected GFacConfiguration getGFACConfig() throws Exception{
-        URL resource = BESProviderTest.class.getClassLoader().getResource("gfac-config.xml");
+        URL resource = BESProviderTest.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         System.out.println(resource.getFile());
         GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()),null,null);
 		return gFacConfiguration;

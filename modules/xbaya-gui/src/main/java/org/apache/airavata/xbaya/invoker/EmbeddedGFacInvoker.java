@@ -41,7 +41,6 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.credential.store.store.CredentialReaderFactory;
 import org.apache.airavata.gfac.Constants;
-import org.apache.airavata.gfac.cpi.GFacAPI;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.RequestData;
 import org.apache.airavata.gfac.context.ApplicationContext;
@@ -49,6 +48,7 @@ import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
+import org.apache.airavata.gfac.cpi.GFacImpl;
 import org.apache.airavata.gfac.ec2.AmazonSecurityContext;
 import org.apache.airavata.gfac.scheduler.HostScheduler;
 import org.apache.airavata.gfac.utils.GFacUtils;
@@ -84,8 +84,7 @@ import xsul.wsif.WSIFMessage;
 import xsul.wsif.impl.WSIFMessageElement;
 import xsul.xwsif_runtime.WSIFClient;
 
-public class
-        EmbeddedGFacInvoker implements Invoker {
+public class EmbeddedGFacInvoker implements Invoker {
 
     private static final Logger logger = LoggerFactory.getLogger(EmbeddedGFacInvoker.class);
 
@@ -297,7 +296,7 @@ public class
                     airavataAPI.getApplicationManager().getApplicationDescription(serviceName, registeredHost.getType().getHostName());
 
             // When we run getInParameters we set the actualParameter object, this has to be fixed
-            URL resource = EmbeddedGFacInvoker.class.getClassLoader().getResource("gfac-config.xml");
+            URL resource = EmbeddedGFacInvoker.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
             OMElement inputMessage = getInParameters();
             Object wsifMessageElement = new WSIFMessageElement(XMLUtil.stringToXmlElement3(inputMessage.toStringWithConsume()));
             this.notifier.invokingService(new WSIFMessageElement((XmlElement) wsifMessageElement));
@@ -329,7 +328,7 @@ public class
 
             addSecurityContext(registeredHost, configurationProperties, jobExecutionContext,
                     configuration.getContextHeader());
-            GFacAPI gfacAPI1 = new GFacAPI();
+            GFacImpl gfacAPI1 = new GFacImpl();
             gfacAPI1.submitJob(jobExecutionContext);
 
             OMFactory fac = OMAbstractFactory.getOMFactory();
@@ -422,7 +421,7 @@ public class
 
                 requestData = new RequestData(tokenId, portalUser, gatewayId);
             } else {
-               requestData = new RequestData("default");
+                requestData = new RequestData("default");
             }
 
             try {
@@ -446,7 +445,7 @@ public class
 
                 context.setPbsCluster(pbsCluster);
             }
-            
+
             jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT, context);
         } else if (registeredHost.getType() instanceof Ec2HostType) {
             if (this.configuration.getAmazonSecurityContext() != null) {
