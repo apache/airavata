@@ -39,7 +39,6 @@ import org.apache.airavata.registry.api.AiravataExperiment;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.ExecutionErrors.Source;
-import org.apache.airavata.registry.api.JobRequest;
 import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.registry.api.ResourceMetadata;
 import org.apache.airavata.registry.api.WorkspaceProject;
@@ -1056,13 +1055,6 @@ public class RegistryClient extends AiravataRegistry2 {
     }
 
 	@Override
-	public boolean storeExperiment(String userName, String experimentID,
-			String applicationName, String jobRequest) throws RegistryException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public boolean changeStatus(String experimentID, State state, String gfacEPR)
 			throws RegistryException {
 		// TODO Auto-generated method stub
@@ -1089,12 +1081,6 @@ public class RegistryClient extends AiravataRegistry2 {
 		return null;
 	}
 
-	@Override
-	public JobRequest fetchAcceptedJob(String experimentID)
-			throws RegistryException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public List<String> getAllHangedJobs() throws RegistryException {
