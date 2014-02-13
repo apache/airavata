@@ -26,6 +26,7 @@ import java.util.concurrent.Executors;
 import org.apache.airavata.common.utils.AiravataJobState;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
+import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.slf4j.Logger;
@@ -44,15 +45,20 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
     public SimpleOrchestratorImpl() throws OrchestratorException {
         try {
-             try {
+            try {
                 String submitterClass = this.orchestratorContext.getOrchestratorConfiguration().getNewJobSubmitterClass();
                 Class<? extends JobSubmitter> aClass = Class.forName(submitterClass.trim()).asSubclass(JobSubmitter.class);
                 jobSubmitter = aClass.newInstance();
                 jobSubmitter.initialize(this.orchestratorContext);
 
                 String validatorClzz = this.orchestratorContext.getOrchestratorConfiguration().getValidatorClass();
-                Class<? extends JobMetadataValidator> vClass = Class.forName(validatorClzz.trim()).asSubclass(JobMetadataValidator.class);
-                jobMetadataValidator = vClass.newInstance();
+                if (this.orchestratorConfiguration.isEnableValidation()) {
+                    if (validatorClzz == null) {
+                        logger.error("Job validation class is not properly set, so Validation will be turned off !");
+                    }
+                    Class<? extends JobMetadataValidator> vClass = Class.forName(validatorClzz.trim()).asSubclass(JobMetadataValidator.class);
+                    jobMetadataValidator = vClass.newInstance();
+                }
             } catch (Exception e) {
                 String error = "Error creating JobSubmitter in non threaded mode ";
                 logger.error(error);
@@ -66,17 +72,19 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
     public boolean launchExperiment(String experimentID) throws OrchestratorException {
         // we give higher priority to userExperimentID
-        if (experimentID == null) {
-            logger.error("Invalid Experiment ID given: " + experimentID);
-            return false;
+        if (this.orchestratorConfiguration.isEnableValidation()) {
+            if(jobMetadataValidator.validate(experimentID)){
+                logger.info("validation Successful for the experiment: " +  experimentID);
+            }else {
+                throw new OrchestratorException("Validation Failed, so Job will not be submitted to GFAC");
+            }
         }
         try {
             airavataRegistry.changeStatus(experimentID, AiravataJobState.State.ACCEPTED);
             if (orchestratorContext.getOrchestratorConfiguration().getThreadPoolSize() == 0) {
                 jobSubmitter.directJobSubmit(experimentID);
             }
-        } catch (RegistryException e)
-        {
+        } catch (RegistryException e) {
             //todo put more meaningful error message
             logger.error("Failed to create experiment for the request from " + experimentID);
             return false;
