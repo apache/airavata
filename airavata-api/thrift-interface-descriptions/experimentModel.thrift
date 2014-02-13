@@ -143,8 +143,9 @@ struct ConfigurationData {
 
 /**
 * A structure holding the node data.
-*
-*
+* nodeInstanceId - unique node identifier for each run
+* executionIndex - auto incrementing index for each run.
+* nodeType - type of the node, whether it is an input node, output node or service node
 */
 struct NodeData {
     1: required string nodeName,
@@ -173,12 +174,9 @@ struct ExperimentOutput {
 *
 */
 struct GeneratedData {
-    1: required string experimentId,
-    2: required string workflowTemplateId,
-    3: optional string workflowTemplateName,
-    4: optional string status,
-    5: optional int32 startTime,
-    6: optional int32 lastUpdateTime,
-    7: optional list<ExperimentOutput> experimentOutputs,
-    8: optional list<NodeData> nodes
+    1: required string workflowTemplateId,
+    2: optional string workflowTemplateName,
+    3: optional int32 startTime,
+    4: optional list<ExperimentOutput> experimentOutputs,
+    5: optional list<NodeData> nodes
 }
