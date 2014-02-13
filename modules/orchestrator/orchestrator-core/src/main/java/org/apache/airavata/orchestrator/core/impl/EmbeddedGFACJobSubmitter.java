@@ -58,7 +58,7 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
         for (int i = 0; i < experimentIDList.size(); i++) {
             try {
                 // once its fetched it's status will changed to fetched state
-                launchGfacWithJobRequest(experimentIDList.get(i));
+                launchGfacWithExperimentID(experimentIDList.get(i));
             } catch (Exception e) {
                 logger.error("Error getting job related information");
                 throw new OrchestratorException(e);
@@ -68,8 +68,8 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
     }
 
     //FIXME: (MEP) This method is pretty gruesome.  If we really expect multiple implementations of the JobSubmitter
-    // interface and at least some of them will need to do the stuff in this method, then we need a parent class GenericJobSubmitterImpl.java (maybe abstract) that includes launchGfacWithJobRequest() so that subclasses can inherit it.
-    private void launchGfacWithJobRequest(String experimentID) throws OrchestratorException {
+    // interface and at least some of them will need to do the stuff in this method, then we need a parent class GenericJobSubmitterImpl.java (maybe abstract) that includes launchGfacWithExperimentID() so that subclasses can inherit it.
+    private void launchGfacWithExperimentID(String experimentID) throws OrchestratorException {
         Registry newRegistry = orchestratorContext.getNewRegistry();
         try {
             //todo init this during submitter init
@@ -85,7 +85,7 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
 
     public boolean directJobSubmit(String experimentID) throws OrchestratorException {
         try {
-            launchGfacWithJobRequest(experimentID);
+            launchGfacWithExperimentID(experimentID);
         } catch (Exception e) {
             String error = "Error launching the job : " + experimentID;
             logger.error(error);

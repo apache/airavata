@@ -72,6 +72,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
     public boolean launchExperiment(String experimentID) throws OrchestratorException {
         // we give higher priority to userExperimentID
+        //todo support multiple validators
         if (this.orchestratorConfiguration.isEnableValidation()) {
             if(jobMetadataValidator.validate(experimentID)){
                 logger.info("validation Successful for the experiment: " +  experimentID);
