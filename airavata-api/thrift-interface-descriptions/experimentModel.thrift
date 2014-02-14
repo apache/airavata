@@ -265,11 +265,12 @@ struct DataTransferDetails {
 
 /**
  * A structure holding the actual execution context decided based on user provided configuration data or system inferred
- *   information from scheduling and QoS parameters. One experiment can have multiple tasks. Each tasks results in data transsfers and jobs
+ *   information from scheduling and QoS parameters. One experiment can have multiple tasks. Each tasks results in
+ *   data transfers and jobs
  *
 */
 struct TaskDetails {
-    1: required string taskID
+    1: required string taskID,
     2: optional i64 creationTime,
     3: optional string applicationId,
     4: optional string applicationVersion,
