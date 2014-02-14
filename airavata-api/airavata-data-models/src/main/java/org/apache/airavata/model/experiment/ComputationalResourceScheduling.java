@@ -55,17 +55,15 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("all") public class ComputationalResourceScheduling implements org.apache.thrift.TBase<ComputationalResourceScheduling, ComputationalResourceScheduling._Fields>, java.io.Serializable, Cloneable, Comparable<ComputationalResourceScheduling> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ComputationalResourceScheduling");
 
-  private static final org.apache.thrift.protocol.TField AIRAVATA_AUTO_SCHEDULE_FIELD_DESC = new org.apache.thrift.protocol.TField("airavataAutoSchedule", org.apache.thrift.protocol.TType.BOOL, (short)1);
-  private static final org.apache.thrift.protocol.TField OVERRIDE_MANUAL_SCHEDULED_PARAMS_FIELD_DESC = new org.apache.thrift.protocol.TField("overrideManualScheduledParams", org.apache.thrift.protocol.TType.BOOL, (short)2);
-  private static final org.apache.thrift.protocol.TField RESOURCE_HOST_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceHostId", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField TOTAL_CPUCOUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("totalCPUCount", org.apache.thrift.protocol.TType.I32, (short)4);
-  private static final org.apache.thrift.protocol.TField NODE_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("nodeCount", org.apache.thrift.protocol.TType.I32, (short)5);
-  private static final org.apache.thrift.protocol.TField NUMBER_OF_THREADS_FIELD_DESC = new org.apache.thrift.protocol.TField("numberOfThreads", org.apache.thrift.protocol.TType.I32, (short)6);
-  private static final org.apache.thrift.protocol.TField QUEUE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("queueName", org.apache.thrift.protocol.TType.STRING, (short)7);
-  private static final org.apache.thrift.protocol.TField WALL_TIME_LIMIT_FIELD_DESC = new org.apache.thrift.protocol.TField("wallTimeLimit", org.apache.thrift.protocol.TType.I32, (short)8);
-  private static final org.apache.thrift.protocol.TField JOB_START_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("jobStartTime", org.apache.thrift.protocol.TType.I32, (short)9);
-  private static final org.apache.thrift.protocol.TField TOTAL_PHYSICAL_MEMORY_FIELD_DESC = new org.apache.thrift.protocol.TField("totalPhysicalMemory", org.apache.thrift.protocol.TType.I32, (short)10);
-  private static final org.apache.thrift.protocol.TField COMPUTATIONAL_PROJECT_ACCOUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("ComputationalProjectAccount", org.apache.thrift.protocol.TType.STRING, (short)11);
+  private static final org.apache.thrift.protocol.TField RESOURCE_HOST_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceHostId", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField TOTAL_CPUCOUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("totalCPUCount", org.apache.thrift.protocol.TType.I32, (short)2);
+  private static final org.apache.thrift.protocol.TField NODE_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("nodeCount", org.apache.thrift.protocol.TType.I32, (short)3);
+  private static final org.apache.thrift.protocol.TField NUMBER_OF_THREADS_FIELD_DESC = new org.apache.thrift.protocol.TField("numberOfThreads", org.apache.thrift.protocol.TType.I32, (short)4);
+  private static final org.apache.thrift.protocol.TField QUEUE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("queueName", org.apache.thrift.protocol.TType.STRING, (short)5);
+  private static final org.apache.thrift.protocol.TField WALL_TIME_LIMIT_FIELD_DESC = new org.apache.thrift.protocol.TField("wallTimeLimit", org.apache.thrift.protocol.TType.I32, (short)6);
+  private static final org.apache.thrift.protocol.TField JOB_START_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("jobStartTime", org.apache.thrift.protocol.TType.I32, (short)7);
+  private static final org.apache.thrift.protocol.TField TOTAL_PHYSICAL_MEMORY_FIELD_DESC = new org.apache.thrift.protocol.TField("totalPhysicalMemory", org.apache.thrift.protocol.TType.I32, (short)8);
+  private static final org.apache.thrift.protocol.TField COMPUTATIONAL_PROJECT_ACCOUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("ComputationalProjectAccount", org.apache.thrift.protocol.TType.STRING, (short)9);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -73,8 +71,6 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new ComputationalResourceSchedulingTupleSchemeFactory());
   }
 
-  private boolean airavataAutoSchedule; // required
-  private boolean overrideManualScheduledParams; // required
   private String resourceHostId; // optional
   private int totalCPUCount; // optional
   private int nodeCount; // optional
@@ -87,17 +83,15 @@ import org.slf4j.LoggerFactory;
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    AIRAVATA_AUTO_SCHEDULE((short)1, "airavataAutoSchedule"),
-    OVERRIDE_MANUAL_SCHEDULED_PARAMS((short)2, "overrideManualScheduledParams"),
-    RESOURCE_HOST_ID((short)3, "resourceHostId"),
-    TOTAL_CPUCOUNT((short)4, "totalCPUCount"),
-    NODE_COUNT((short)5, "nodeCount"),
-    NUMBER_OF_THREADS((short)6, "numberOfThreads"),
-    QUEUE_NAME((short)7, "queueName"),
-    WALL_TIME_LIMIT((short)8, "wallTimeLimit"),
-    JOB_START_TIME((short)9, "jobStartTime"),
-    TOTAL_PHYSICAL_MEMORY((short)10, "totalPhysicalMemory"),
-    COMPUTATIONAL_PROJECT_ACCOUNT((short)11, "ComputationalProjectAccount");
+    RESOURCE_HOST_ID((short)1, "resourceHostId"),
+    TOTAL_CPUCOUNT((short)2, "totalCPUCount"),
+    NODE_COUNT((short)3, "nodeCount"),
+    NUMBER_OF_THREADS((short)4, "numberOfThreads"),
+    QUEUE_NAME((short)5, "queueName"),
+    WALL_TIME_LIMIT((short)6, "wallTimeLimit"),
+    JOB_START_TIME((short)7, "jobStartTime"),
+    TOTAL_PHYSICAL_MEMORY((short)8, "totalPhysicalMemory"),
+    COMPUTATIONAL_PROJECT_ACCOUNT((short)9, "ComputationalProjectAccount");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -112,27 +106,23 @@ import org.slf4j.LoggerFactory;
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // AIRAVATA_AUTO_SCHEDULE
-          return AIRAVATA_AUTO_SCHEDULE;
-        case 2: // OVERRIDE_MANUAL_SCHEDULED_PARAMS
-          return OVERRIDE_MANUAL_SCHEDULED_PARAMS;
-        case 3: // RESOURCE_HOST_ID
+        case 1: // RESOURCE_HOST_ID
           return RESOURCE_HOST_ID;
-        case 4: // TOTAL_CPUCOUNT
+        case 2: // TOTAL_CPUCOUNT
           return TOTAL_CPUCOUNT;
-        case 5: // NODE_COUNT
+        case 3: // NODE_COUNT
           return NODE_COUNT;
-        case 6: // NUMBER_OF_THREADS
+        case 4: // NUMBER_OF_THREADS
           return NUMBER_OF_THREADS;
-        case 7: // QUEUE_NAME
+        case 5: // QUEUE_NAME
           return QUEUE_NAME;
-        case 8: // WALL_TIME_LIMIT
+        case 6: // WALL_TIME_LIMIT
           return WALL_TIME_LIMIT;
-        case 9: // JOB_START_TIME
+        case 7: // JOB_START_TIME
           return JOB_START_TIME;
-        case 10: // TOTAL_PHYSICAL_MEMORY
+        case 8: // TOTAL_PHYSICAL_MEMORY
           return TOTAL_PHYSICAL_MEMORY;
-        case 11: // COMPUTATIONAL_PROJECT_ACCOUNT
+        case 9: // COMPUTATIONAL_PROJECT_ACCOUNT
           return COMPUTATIONAL_PROJECT_ACCOUNT;
         default:
           return null;
@@ -174,23 +164,17 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
-  private static final int __AIRAVATAAUTOSCHEDULE_ISSET_ID = 0;
-  private static final int __OVERRIDEMANUALSCHEDULEDPARAMS_ISSET_ID = 1;
-  private static final int __TOTALCPUCOUNT_ISSET_ID = 2;
-  private static final int __NODECOUNT_ISSET_ID = 3;
-  private static final int __NUMBEROFTHREADS_ISSET_ID = 4;
-  private static final int __WALLTIMELIMIT_ISSET_ID = 5;
-  private static final int __JOBSTARTTIME_ISSET_ID = 6;
-  private static final int __TOTALPHYSICALMEMORY_ISSET_ID = 7;
+  private static final int __TOTALCPUCOUNT_ISSET_ID = 0;
+  private static final int __NODECOUNT_ISSET_ID = 1;
+  private static final int __NUMBEROFTHREADS_ISSET_ID = 2;
+  private static final int __WALLTIMELIMIT_ISSET_ID = 3;
+  private static final int __JOBSTARTTIME_ISSET_ID = 4;
+  private static final int __TOTALPHYSICALMEMORY_ISSET_ID = 5;
   private byte __isset_bitfield = 0;
   private _Fields optionals[] = {_Fields.RESOURCE_HOST_ID,_Fields.TOTAL_CPUCOUNT,_Fields.NODE_COUNT,_Fields.NUMBER_OF_THREADS,_Fields.QUEUE_NAME,_Fields.WALL_TIME_LIMIT,_Fields.JOB_START_TIME,_Fields.TOTAL_PHYSICAL_MEMORY,_Fields.COMPUTATIONAL_PROJECT_ACCOUNT};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.AIRAVATA_AUTO_SCHEDULE, new org.apache.thrift.meta_data.FieldMetaData("airavataAutoSchedule", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
-    tmpMap.put(_Fields.OVERRIDE_MANUAL_SCHEDULED_PARAMS, new org.apache.thrift.meta_data.FieldMetaData("overrideManualScheduledParams", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.RESOURCE_HOST_ID, new org.apache.thrift.meta_data.FieldMetaData("resourceHostId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.TOTAL_CPUCOUNT, new org.apache.thrift.meta_data.FieldMetaData("totalCPUCount", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -214,21 +198,6 @@ import org.slf4j.LoggerFactory;
   }
 
   public ComputationalResourceScheduling() {
-    this.airavataAutoSchedule = true;
-
-    this.overrideManualScheduledParams = false;
-
-  }
-
-  public ComputationalResourceScheduling(
-    boolean airavataAutoSchedule,
-    boolean overrideManualScheduledParams)
-  {
-    this();
-    this.airavataAutoSchedule = airavataAutoSchedule;
-    setAiravataAutoScheduleIsSet(true);
-    this.overrideManualScheduledParams = overrideManualScheduledParams;
-    setOverrideManualScheduledParamsIsSet(true);
   }
 
   /**
@@ -236,8 +205,6 @@ import org.slf4j.LoggerFactory;
    */
   public ComputationalResourceScheduling(ComputationalResourceScheduling other) {
     __isset_bitfield = other.__isset_bitfield;
-    this.airavataAutoSchedule = other.airavataAutoSchedule;
-    this.overrideManualScheduledParams = other.overrideManualScheduledParams;
     if (other.isSetResourceHostId()) {
       this.resourceHostId = other.resourceHostId;
     }
@@ -261,10 +228,6 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public void clear() {
-    this.airavataAutoSchedule = true;
-
-    this.overrideManualScheduledParams = false;
-
     this.resourceHostId = null;
     setTotalCPUCountIsSet(false);
     this.totalCPUCount = 0;
@@ -280,50 +243,6 @@ import org.slf4j.LoggerFactory;
     setTotalPhysicalMemoryIsSet(false);
     this.totalPhysicalMemory = 0;
     this.ComputationalProjectAccount = null;
-  }
-
-  public boolean isAiravataAutoSchedule() {
-    return this.airavataAutoSchedule;
-  }
-
-  public void setAiravataAutoSchedule(boolean airavataAutoSchedule) {
-    this.airavataAutoSchedule = airavataAutoSchedule;
-    setAiravataAutoScheduleIsSet(true);
-  }
-
-  public void unsetAiravataAutoSchedule() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __AIRAVATAAUTOSCHEDULE_ISSET_ID);
-  }
-
-  /** Returns true if field airavataAutoSchedule is set (has been assigned a value) and false otherwise */
-  public boolean isSetAiravataAutoSchedule() {
-    return EncodingUtils.testBit(__isset_bitfield, __AIRAVATAAUTOSCHEDULE_ISSET_ID);
-  }
-
-  public void setAiravataAutoScheduleIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __AIRAVATAAUTOSCHEDULE_ISSET_ID, value);
-  }
-
-  public boolean isOverrideManualScheduledParams() {
-    return this.overrideManualScheduledParams;
-  }
-
-  public void setOverrideManualScheduledParams(boolean overrideManualScheduledParams) {
-    this.overrideManualScheduledParams = overrideManualScheduledParams;
-    setOverrideManualScheduledParamsIsSet(true);
-  }
-
-  public void unsetOverrideManualScheduledParams() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __OVERRIDEMANUALSCHEDULEDPARAMS_ISSET_ID);
-  }
-
-  /** Returns true if field overrideManualScheduledParams is set (has been assigned a value) and false otherwise */
-  public boolean isSetOverrideManualScheduledParams() {
-    return EncodingUtils.testBit(__isset_bitfield, __OVERRIDEMANUALSCHEDULEDPARAMS_ISSET_ID);
-  }
-
-  public void setOverrideManualScheduledParamsIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __OVERRIDEMANUALSCHEDULEDPARAMS_ISSET_ID, value);
   }
 
   public String getResourceHostId() {
@@ -529,22 +448,6 @@ import org.slf4j.LoggerFactory;
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case AIRAVATA_AUTO_SCHEDULE:
-      if (value == null) {
-        unsetAiravataAutoSchedule();
-      } else {
-        setAiravataAutoSchedule((Boolean)value);
-      }
-      break;
-
-    case OVERRIDE_MANUAL_SCHEDULED_PARAMS:
-      if (value == null) {
-        unsetOverrideManualScheduledParams();
-      } else {
-        setOverrideManualScheduledParams((Boolean)value);
-      }
-      break;
-
     case RESOURCE_HOST_ID:
       if (value == null) {
         unsetResourceHostId();
@@ -622,12 +525,6 @@ import org.slf4j.LoggerFactory;
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case AIRAVATA_AUTO_SCHEDULE:
-      return Boolean.valueOf(isAiravataAutoSchedule());
-
-    case OVERRIDE_MANUAL_SCHEDULED_PARAMS:
-      return Boolean.valueOf(isOverrideManualScheduledParams());
-
     case RESOURCE_HOST_ID:
       return getResourceHostId();
 
@@ -666,10 +563,6 @@ import org.slf4j.LoggerFactory;
     }
 
     switch (field) {
-    case AIRAVATA_AUTO_SCHEDULE:
-      return isSetAiravataAutoSchedule();
-    case OVERRIDE_MANUAL_SCHEDULED_PARAMS:
-      return isSetOverrideManualScheduledParams();
     case RESOURCE_HOST_ID:
       return isSetResourceHostId();
     case TOTAL_CPUCOUNT:
@@ -704,24 +597,6 @@ import org.slf4j.LoggerFactory;
   public boolean equals(ComputationalResourceScheduling that) {
     if (that == null)
       return false;
-
-    boolean this_present_airavataAutoSchedule = true;
-    boolean that_present_airavataAutoSchedule = true;
-    if (this_present_airavataAutoSchedule || that_present_airavataAutoSchedule) {
-      if (!(this_present_airavataAutoSchedule && that_present_airavataAutoSchedule))
-        return false;
-      if (this.airavataAutoSchedule != that.airavataAutoSchedule)
-        return false;
-    }
-
-    boolean this_present_overrideManualScheduledParams = true;
-    boolean that_present_overrideManualScheduledParams = true;
-    if (this_present_overrideManualScheduledParams || that_present_overrideManualScheduledParams) {
-      if (!(this_present_overrideManualScheduledParams && that_present_overrideManualScheduledParams))
-        return false;
-      if (this.overrideManualScheduledParams != that.overrideManualScheduledParams)
-        return false;
-    }
 
     boolean this_present_resourceHostId = true && this.isSetResourceHostId();
     boolean that_present_resourceHostId = true && that.isSetResourceHostId();
@@ -820,26 +695,6 @@ import org.slf4j.LoggerFactory;
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetAiravataAutoSchedule()).compareTo(other.isSetAiravataAutoSchedule());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetAiravataAutoSchedule()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.airavataAutoSchedule, other.airavataAutoSchedule);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetOverrideManualScheduledParams()).compareTo(other.isSetOverrideManualScheduledParams());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetOverrideManualScheduledParams()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.overrideManualScheduledParams, other.overrideManualScheduledParams);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     lastComparison = Boolean.valueOf(isSetResourceHostId()).compareTo(other.isSetResourceHostId());
     if (lastComparison != 0) {
       return lastComparison;
@@ -950,15 +805,7 @@ import org.slf4j.LoggerFactory;
     StringBuilder sb = new StringBuilder("ComputationalResourceScheduling(");
     boolean first = true;
 
-    sb.append("airavataAutoSchedule:");
-    sb.append(this.airavataAutoSchedule);
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("overrideManualScheduledParams:");
-    sb.append(this.overrideManualScheduledParams);
-    first = false;
     if (isSetResourceHostId()) {
-      if (!first) sb.append(", ");
       sb.append("resourceHostId:");
       if (this.resourceHostId == null) {
         sb.append("null");
@@ -1029,14 +876,6 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetAiravataAutoSchedule()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'airavataAutoSchedule' is unset! Struct:" + toString());
-    }
-
-    if (!isSetOverrideManualScheduledParams()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'overrideManualScheduledParams' is unset! Struct:" + toString());
-    }
-
     // check for sub-struct validity
   }
 
@@ -1076,23 +915,7 @@ import org.slf4j.LoggerFactory;
           break;
         }
         switch (schemeField.id) {
-          case 1: // AIRAVATA_AUTO_SCHEDULE
-            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
-              struct.airavataAutoSchedule = iprot.readBool();
-              struct.setAiravataAutoScheduleIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 2: // OVERRIDE_MANUAL_SCHEDULED_PARAMS
-            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
-              struct.overrideManualScheduledParams = iprot.readBool();
-              struct.setOverrideManualScheduledParamsIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 3: // RESOURCE_HOST_ID
+          case 1: // RESOURCE_HOST_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.resourceHostId = iprot.readString();
               struct.setResourceHostIdIsSet(true);
@@ -1100,7 +923,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // TOTAL_CPUCOUNT
+          case 2: // TOTAL_CPUCOUNT
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.totalCPUCount = iprot.readI32();
               struct.setTotalCPUCountIsSet(true);
@@ -1108,7 +931,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // NODE_COUNT
+          case 3: // NODE_COUNT
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.nodeCount = iprot.readI32();
               struct.setNodeCountIsSet(true);
@@ -1116,7 +939,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // NUMBER_OF_THREADS
+          case 4: // NUMBER_OF_THREADS
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.numberOfThreads = iprot.readI32();
               struct.setNumberOfThreadsIsSet(true);
@@ -1124,7 +947,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // QUEUE_NAME
+          case 5: // QUEUE_NAME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.queueName = iprot.readString();
               struct.setQueueNameIsSet(true);
@@ -1132,7 +955,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 8: // WALL_TIME_LIMIT
+          case 6: // WALL_TIME_LIMIT
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.wallTimeLimit = iprot.readI32();
               struct.setWallTimeLimitIsSet(true);
@@ -1140,7 +963,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 9: // JOB_START_TIME
+          case 7: // JOB_START_TIME
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.jobStartTime = iprot.readI32();
               struct.setJobStartTimeIsSet(true);
@@ -1148,7 +971,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 10: // TOTAL_PHYSICAL_MEMORY
+          case 8: // TOTAL_PHYSICAL_MEMORY
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.totalPhysicalMemory = iprot.readI32();
               struct.setTotalPhysicalMemoryIsSet(true);
@@ -1156,7 +979,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 11: // COMPUTATIONAL_PROJECT_ACCOUNT
+          case 9: // COMPUTATIONAL_PROJECT_ACCOUNT
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.ComputationalProjectAccount = iprot.readString();
               struct.setComputationalProjectAccountIsSet(true);
@@ -1177,12 +1000,6 @@ import org.slf4j.LoggerFactory;
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      oprot.writeFieldBegin(AIRAVATA_AUTO_SCHEDULE_FIELD_DESC);
-      oprot.writeBool(struct.airavataAutoSchedule);
-      oprot.writeFieldEnd();
-      oprot.writeFieldBegin(OVERRIDE_MANUAL_SCHEDULED_PARAMS_FIELD_DESC);
-      oprot.writeBool(struct.overrideManualScheduledParams);
-      oprot.writeFieldEnd();
       if (struct.resourceHostId != null) {
         if (struct.isSetResourceHostId()) {
           oprot.writeFieldBegin(RESOURCE_HOST_ID_FIELD_DESC);
@@ -1251,8 +1068,6 @@ import org.slf4j.LoggerFactory;
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, ComputationalResourceScheduling struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeBool(struct.airavataAutoSchedule);
-      oprot.writeBool(struct.overrideManualScheduledParams);
       BitSet optionals = new BitSet();
       if (struct.isSetResourceHostId()) {
         optionals.set(0);
@@ -1314,10 +1129,6 @@ import org.slf4j.LoggerFactory;
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ComputationalResourceScheduling struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.airavataAutoSchedule = iprot.readBool();
-      struct.setAiravataAutoScheduleIsSet(true);
-      struct.overrideManualScheduledParams = iprot.readBool();
-      struct.setOverrideManualScheduledParamsIsSet(true);
       BitSet incoming = iprot.readBitSet(9);
       if (incoming.get(0)) {
         struct.resourceHostId = iprot.readString();
