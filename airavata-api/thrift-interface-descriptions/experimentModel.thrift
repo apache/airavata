@@ -133,7 +133,7 @@ struct TransferStatus {
 }
 
 struct ApplicationStatus {
-    1: required ApplicationState applicationState,
+    1: required string applicationState,
     2: optional i64 timeOfStateChange
 }
 
@@ -168,9 +168,9 @@ enum CorrectiveAction {
 */
 struct DataObjectType {
     1: required string key,
-    2: optional string type,
-    3: optional string metaData,
-    3: optional string value
+    2: optional string value,
+    3: optional string type,
+    4: optional string metaData
 }
 
 /**

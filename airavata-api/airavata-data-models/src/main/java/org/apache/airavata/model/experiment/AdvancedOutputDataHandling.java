@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("all") public class AdvancedOutputDataHandling implements org.apache.thrift.TBase<AdvancedOutputDataHandling, AdvancedOutputDataHandling._Fields>, java.io.Serializable, Cloneable, Comparable<AdvancedOutputDataHandling> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("AdvancedOutputDataHandling");
 
-  private static final org.apache.thrift.protocol.TField OUTPUTDATA_DIR_FIELD_DESC = new org.apache.thrift.protocol.TField("outputdataDir", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField OUTPUT_DATA_DIR_FIELD_DESC = new org.apache.thrift.protocol.TField("outputDataDir", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField DATA_REGISTRY_URL_FIELD_DESC = new org.apache.thrift.protocol.TField("dataRegistryURL", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField PERSIST_OUTPUT_DATA_FIELD_DESC = new org.apache.thrift.protocol.TField("persistOutputData", org.apache.thrift.protocol.TType.BOOL, (short)4);
 
@@ -65,13 +65,13 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new AdvancedOutputDataHandlingTupleSchemeFactory());
   }
 
-  private String outputdataDir; // optional
+  private String outputDataDir; // optional
   private String dataRegistryURL; // optional
   private boolean persistOutputData; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    OUTPUTDATA_DIR((short)2, "outputdataDir"),
+    OUTPUT_DATA_DIR((short)2, "outputDataDir"),
     DATA_REGISTRY_URL((short)3, "dataRegistryURL"),
     PERSIST_OUTPUT_DATA((short)4, "persistOutputData");
 
@@ -88,8 +88,8 @@ import org.slf4j.LoggerFactory;
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 2: // OUTPUTDATA_DIR
-          return OUTPUTDATA_DIR;
+        case 2: // OUTPUT_DATA_DIR
+          return OUTPUT_DATA_DIR;
         case 3: // DATA_REGISTRY_URL
           return DATA_REGISTRY_URL;
         case 4: // PERSIST_OUTPUT_DATA
@@ -136,11 +136,11 @@ import org.slf4j.LoggerFactory;
   // isset id assignments
   private static final int __PERSISTOUTPUTDATA_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.OUTPUTDATA_DIR,_Fields.DATA_REGISTRY_URL,_Fields.PERSIST_OUTPUT_DATA};
+  private _Fields optionals[] = {_Fields.OUTPUT_DATA_DIR,_Fields.DATA_REGISTRY_URL,_Fields.PERSIST_OUTPUT_DATA};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.OUTPUTDATA_DIR, new org.apache.thrift.meta_data.FieldMetaData("outputdataDir", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.OUTPUT_DATA_DIR, new org.apache.thrift.meta_data.FieldMetaData("outputDataDir", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.DATA_REGISTRY_URL, new org.apache.thrift.meta_data.FieldMetaData("dataRegistryURL", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
@@ -160,8 +160,8 @@ import org.slf4j.LoggerFactory;
    */
   public AdvancedOutputDataHandling(AdvancedOutputDataHandling other) {
     __isset_bitfield = other.__isset_bitfield;
-    if (other.isSetOutputdataDir()) {
-      this.outputdataDir = other.outputdataDir;
+    if (other.isSetOutputDataDir()) {
+      this.outputDataDir = other.outputDataDir;
     }
     if (other.isSetDataRegistryURL()) {
       this.dataRegistryURL = other.dataRegistryURL;
@@ -175,32 +175,32 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public void clear() {
-    this.outputdataDir = null;
+    this.outputDataDir = null;
     this.dataRegistryURL = null;
     this.persistOutputData = true;
 
   }
 
-  public String getOutputdataDir() {
-    return this.outputdataDir;
+  public String getOutputDataDir() {
+    return this.outputDataDir;
   }
 
-  public void setOutputdataDir(String outputdataDir) {
-    this.outputdataDir = outputdataDir;
+  public void setOutputDataDir(String outputDataDir) {
+    this.outputDataDir = outputDataDir;
   }
 
-  public void unsetOutputdataDir() {
-    this.outputdataDir = null;
+  public void unsetOutputDataDir() {
+    this.outputDataDir = null;
   }
 
-  /** Returns true if field outputdataDir is set (has been assigned a value) and false otherwise */
-  public boolean isSetOutputdataDir() {
-    return this.outputdataDir != null;
+  /** Returns true if field outputDataDir is set (has been assigned a value) and false otherwise */
+  public boolean isSetOutputDataDir() {
+    return this.outputDataDir != null;
   }
 
-  public void setOutputdataDirIsSet(boolean value) {
+  public void setOutputDataDirIsSet(boolean value) {
     if (!value) {
-      this.outputdataDir = null;
+      this.outputDataDir = null;
     }
   }
 
@@ -251,11 +251,11 @@ import org.slf4j.LoggerFactory;
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case OUTPUTDATA_DIR:
+    case OUTPUT_DATA_DIR:
       if (value == null) {
-        unsetOutputdataDir();
+        unsetOutputDataDir();
       } else {
-        setOutputdataDir((String)value);
+        setOutputDataDir((String)value);
       }
       break;
 
@@ -280,8 +280,8 @@ import org.slf4j.LoggerFactory;
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case OUTPUTDATA_DIR:
-      return getOutputdataDir();
+    case OUTPUT_DATA_DIR:
+      return getOutputDataDir();
 
     case DATA_REGISTRY_URL:
       return getDataRegistryURL();
@@ -300,8 +300,8 @@ import org.slf4j.LoggerFactory;
     }
 
     switch (field) {
-    case OUTPUTDATA_DIR:
-      return isSetOutputdataDir();
+    case OUTPUT_DATA_DIR:
+      return isSetOutputDataDir();
     case DATA_REGISTRY_URL:
       return isSetDataRegistryURL();
     case PERSIST_OUTPUT_DATA:
@@ -323,12 +323,12 @@ import org.slf4j.LoggerFactory;
     if (that == null)
       return false;
 
-    boolean this_present_outputdataDir = true && this.isSetOutputdataDir();
-    boolean that_present_outputdataDir = true && that.isSetOutputdataDir();
-    if (this_present_outputdataDir || that_present_outputdataDir) {
-      if (!(this_present_outputdataDir && that_present_outputdataDir))
+    boolean this_present_outputDataDir = true && this.isSetOutputDataDir();
+    boolean that_present_outputDataDir = true && that.isSetOutputDataDir();
+    if (this_present_outputDataDir || that_present_outputDataDir) {
+      if (!(this_present_outputDataDir && that_present_outputDataDir))
         return false;
-      if (!this.outputdataDir.equals(that.outputdataDir))
+      if (!this.outputDataDir.equals(that.outputDataDir))
         return false;
     }
 
@@ -366,12 +366,12 @@ import org.slf4j.LoggerFactory;
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetOutputdataDir()).compareTo(other.isSetOutputdataDir());
+    lastComparison = Boolean.valueOf(isSetOutputDataDir()).compareTo(other.isSetOutputDataDir());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetOutputdataDir()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.outputdataDir, other.outputdataDir);
+    if (isSetOutputDataDir()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.outputDataDir, other.outputDataDir);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -416,12 +416,12 @@ import org.slf4j.LoggerFactory;
     StringBuilder sb = new StringBuilder("AdvancedOutputDataHandling(");
     boolean first = true;
 
-    if (isSetOutputdataDir()) {
-      sb.append("outputdataDir:");
-      if (this.outputdataDir == null) {
+    if (isSetOutputDataDir()) {
+      sb.append("outputDataDir:");
+      if (this.outputDataDir == null) {
         sb.append("null");
       } else {
-        sb.append(this.outputdataDir);
+        sb.append(this.outputDataDir);
       }
       first = false;
     }
@@ -486,10 +486,10 @@ import org.slf4j.LoggerFactory;
           break;
         }
         switch (schemeField.id) {
-          case 2: // OUTPUTDATA_DIR
+          case 2: // OUTPUT_DATA_DIR
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.outputdataDir = iprot.readString();
-              struct.setOutputdataDirIsSet(true);
+              struct.outputDataDir = iprot.readString();
+              struct.setOutputDataDirIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -523,10 +523,10 @@ import org.slf4j.LoggerFactory;
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.outputdataDir != null) {
-        if (struct.isSetOutputdataDir()) {
-          oprot.writeFieldBegin(OUTPUTDATA_DIR_FIELD_DESC);
-          oprot.writeString(struct.outputdataDir);
+      if (struct.outputDataDir != null) {
+        if (struct.isSetOutputDataDir()) {
+          oprot.writeFieldBegin(OUTPUT_DATA_DIR_FIELD_DESC);
+          oprot.writeString(struct.outputDataDir);
           oprot.writeFieldEnd();
         }
       }
@@ -560,7 +560,7 @@ import org.slf4j.LoggerFactory;
     public void write(org.apache.thrift.protocol.TProtocol prot, AdvancedOutputDataHandling struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       BitSet optionals = new BitSet();
-      if (struct.isSetOutputdataDir()) {
+      if (struct.isSetOutputDataDir()) {
         optionals.set(0);
       }
       if (struct.isSetDataRegistryURL()) {
@@ -570,8 +570,8 @@ import org.slf4j.LoggerFactory;
         optionals.set(2);
       }
       oprot.writeBitSet(optionals, 3);
-      if (struct.isSetOutputdataDir()) {
-        oprot.writeString(struct.outputdataDir);
+      if (struct.isSetOutputDataDir()) {
+        oprot.writeString(struct.outputDataDir);
       }
       if (struct.isSetDataRegistryURL()) {
         oprot.writeString(struct.dataRegistryURL);
@@ -586,8 +586,8 @@ import org.slf4j.LoggerFactory;
       TTupleProtocol iprot = (TTupleProtocol) prot;
       BitSet incoming = iprot.readBitSet(3);
       if (incoming.get(0)) {
-        struct.outputdataDir = iprot.readString();
-        struct.setOutputdataDirIsSet(true);
+        struct.outputDataDir = iprot.readString();
+        struct.setOutputDataDirIsSet(true);
       }
       if (incoming.get(1)) {
         struct.dataRegistryURL = iprot.readString();
