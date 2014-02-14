@@ -265,11 +265,11 @@ struct DataTransferDetails {
 
 /**
  * A structure holding the actual execution context decided based on user provided configuration data or system inferred
- *   information from scheduling and QoS parameters .
+ *   information from scheduling and QoS parameters. One experiment can have multiple tasks. Each tasks results in data transsfers and jobs
  *
 */
-struct AiravataExecutionDetails {
-    1: required string executionID
+struct TaskDetails {
+    1: required string taskID
     2: optional i64 creationTime,
     3: optional string applicationId,
     4: optional string applicationVersion,
@@ -295,7 +295,7 @@ struct WorkflowNodeDetails {
     4: optional list<DataObjectType> nodeInputs,
     5: optional list<DataObjectType> nodeOutputs,
     6: optional WorkflowNodeStatus workflowNodeStatus,
-    7: optional list<AiravataExecutionDetails> executionDetailsList,
+    7: optional list<TaskDetails> taskDetailsList,
     8: optional list<ErrorDetails> errors
 }
 
