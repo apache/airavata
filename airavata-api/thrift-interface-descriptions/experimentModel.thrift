@@ -49,7 +49,7 @@ namespace php Airavata.Model.Experiment
  *
 */
 
-enum ExperimentStatus {
+enum ExperimentState {
     CREATED,
     VALIDATED,
     SCHEDULED,
@@ -61,7 +61,12 @@ enum ExperimentStatus {
     UNKNOWN
 }
 
-enum WorkflowNodeStatus {
+struct ExperimentStatus {
+    1: required ExperimentState experimentState,
+    2: optional i64 timeOfStateChange
+}
+
+enum WorkflowNodeState {
     INVOKED,
     EXECUTING,
     CANCELED,
@@ -70,7 +75,12 @@ enum WorkflowNodeStatus {
     UNKNOWN
 }
 
-enum ExecutionStatus {
+struct WorkflowNodeStatus {
+    1: required WorkflowNodeState workflowNodeState,
+    2: optional i64 timeOfStateChange
+}
+
+enum ExecutionState {
     AUTHENTICATED,
     PRE_PROCESSING,
     CONFIGURING_WORKSPACE,
@@ -83,7 +93,12 @@ enum ExecutionStatus {
     UNKNOWN
 }
 
-enum JobStatus {
+struct ExecutionStatus {
+    1: required ExecutionState executionState,
+    2: optional i64 timeOfStateChange
+}
+
+enum JobState {
     SUBMITTED,
     QUEUED,
     ACTIVE,
@@ -95,7 +110,12 @@ enum JobStatus {
     UNKNOWN
 }
 
-enum TransferStatus {
+struct JobStatus {
+    1: required JobState jobState,
+    2: optional i64 timeOfStateChange
+}
+
+enum TransferState {
     SUBMITTED,
     QUEUED,
     ACTIVE,
@@ -105,6 +125,16 @@ enum TransferStatus {
     HELD,
     SUSPENDED,
     UNKNOWN
+}
+
+struct TransferStatus {
+    1: required TransferState transferState,
+    2: optional i64 timeOfStateChange
+}
+
+struct ApplicationStatus {
+    1: required ApplicationState applicationState,
+    2: optional i64 timeOfStateChange
 }
 
 enum ActionableGroup {
@@ -139,6 +169,7 @@ enum CorrectiveAction {
 struct DataObjectType {
     1: required string key,
     2: optional string type,
+    3: optional string metaData,
     3: optional string value
 }
 
@@ -205,29 +236,31 @@ struct UserConfigurationData {
 }
 
 struct ErrorDetails {
-    1: optional string actualErrorMessage,
-    2: optional bool transientOrPersistant = 0,
-    3: optional CorrectiveAction correctiveAction,
-    4: optional ActionableGroup actionableGroup,
-    5: optional string userFriendlyMessage,
-    6: optional ErrorCategory errorCategory
+    1: required string errorID = "DO_NO_SET_BY_CLIENT",
+    2: optional i64 creationTime,
+    3: optional string actualErrorMessage,
+    4: optional string userFriendlyMessage,
+    5: optional ErrorCategory errorCategory,
+    6: optional bool transientOrPersistent = 0,
+    7: optional CorrectiveAction correctiveAction,
+    8: optional ActionableGroup actionableGroup,
+    9: optional list<string> rootCauseErrorIdList
 }
 
 struct JobDetails {
     1: required string jobID,
     2: required string jobDescription,
-    3: optional JobStatus jobStatus,
-    4: optional i64 lastUpdateTime,
-    5: optional string applicationStatus,
-    6: optional i64 applicationLastUpdateTime,
-    7: optional list<ErrorDetails> errors
+    3: optional i64 creationTime,
+    4: optional JobStatus jobStatus,
+    5: optional ApplicationStatus applicationStatus,
+    6: optional list<ErrorDetails> errors
 }
 
 struct DataTransferDetails {
     1: required string transferID,
-    2: required string transferDescription,
-    3: optional TransferStatus transferStatus,
-    4: optional i64 lastUpdateTime
+    2: optional i64 creationTime,
+    3: required string transferDescription,
+    4: optional TransferStatus transferStatus,
 }
 
 /**
@@ -237,19 +270,18 @@ struct DataTransferDetails {
 */
 struct AiravataExecutionDetails {
     1: required string executionID
-    2: optional string applicationId,
-    3: optional string applicationVersion,
-    4: optional list<DataObjectType> applicationInputs,
-    5: optional list<DataObjectType> applicationOoutputs,
-    6: optional ComputationalResourceScheduling executionScheduling,
-    7: optional AdvancedInputDataHandling advancedInputDataHandling,
-    8: optional AdvancedOutputDataHandling advancedOutputDataHandling,
-    9: optional i64 creationTime,
+    2: optional i64 creationTime,
+    3: optional string applicationId,
+    4: optional string applicationVersion,
+    5: optional list<DataObjectType> applicationInputs,
+    6: optional list<DataObjectType> applicationOutputs,
+    7: optional ComputationalResourceScheduling executionScheduling,
+    8: optional AdvancedInputDataHandling advancedInputDataHandling,
+    9: optional AdvancedOutputDataHandling advancedOutputDataHandling,
     10: optional ExecutionStatus executionStatus,
-    11: optional i64 lastUpdateTime,
-    12: optional list<JobDetails> jobDetailsList,
-    13: optional list<DataTransferDetails> dataTransferDetailsList,
-    14: optional list<ErrorDetails> errors
+    11: optional list<JobDetails> jobDetailsList,
+    12: optional list<DataTransferDetails> dataTransferDetailsList,
+    13: optional list<ErrorDetails> errors
 }
 
 /**
@@ -257,15 +289,14 @@ struct AiravataExecutionDetails {
 * nodeInstanceId - unique node identifier for each run
 */
 struct WorkflowNodeDetails {
-    1: required string nodeInstanceId = "DO_NOT_SET",
-    2: required string nodeName = "SIMPLE_APP_NODE",
-    3: optional list<DataObjectType> nodeInputs,
-    4: optional list<DataObjectType> nodeOutputs,
-    5: optional i64 startTime,
+    1: required string nodeInstanceId = "DO_NO_SET_BY_CLIENT",
+    2: optional i64 creationTime,
+    3: required string nodeName = "SIMPLE_APP_NODE",
+    4: optional list<DataObjectType> nodeInputs,
+    5: optional list<DataObjectType> nodeOutputs,
     6: optional WorkflowNodeStatus workflowNodeStatus,
-    7: optional i64 lastUpdateTime,
-    8: optional list<AiravataExecutionDetails> executionDetailsList
-    9: optional list<ErrorDetails> errors
+    7: optional list<AiravataExecutionDetails> executionDetailsList,
+    8: optional list<ErrorDetails> errors
 }
 
 /**
@@ -286,12 +317,12 @@ struct WorkflowNodeDetails {
 */
 
 struct Experiment {
-    1: required string experimentID = "DO_NOT_SET"
+    1: required string experimentID = "DO_NO_SET_BY_CLIENT"
     2: required string projectID = "DEFAULT",
     3: optional i64 creationTime,
     4: required string userName,
-    5: required string experimentName,
-    6: optional string experimentDescription,
+    5: required string name,
+    6: optional string description,
     7: optional string applicationId,
     8: optional string applicationVersion,
     9: optional string workflowTemplateId,
@@ -300,7 +331,7 @@ struct Experiment {
     12: optional list<DataObjectType> experimentInputs,
     13: optional list<DataObjectType> experimentOutputs,
     14: optional ExecutionStatus experimentStatus,
-    15: optional i64 lastUpdateTime,
+    15: optional list<ExecutionStatus> stateChangeList,
     16: optional list<WorkflowNodeDetails> workflowNodeDetailsList,
     17: optional list<ErrorDetails> errors
 }
