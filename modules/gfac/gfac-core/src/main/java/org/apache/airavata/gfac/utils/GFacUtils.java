@@ -344,7 +344,7 @@ public class GFacUtils {
         return actualParameter;
     }
 
-    public static ActualParameter getInputActualParameter(Parameter parameter, String inputVal) {
+    public static ActualParameter getInputActualParameter(Parameter parameter, String inputVal) throws GFacException{
         OMElement innerelement = null;
         ActualParameter actualParameter = new ActualParameter();
         if ("String".equals(parameter.getParameterType().getName())) {
@@ -424,6 +424,8 @@ public class GFacUtils {
                 innerelement = (OMElement) value.next();
                 ((URIArrayType) actualParameter.getType()).insertValue(i++, innerelement.getText());
             }
+        } else{
+            throw new GFacException("Input parameters are not configured properly ");
         }
         return actualParameter;
     }

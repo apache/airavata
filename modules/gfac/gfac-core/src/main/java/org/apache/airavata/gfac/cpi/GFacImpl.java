@@ -25,13 +25,15 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.gfac.Constants;
-import org.apache.airavata.gfac.GFacConfiguration;
-import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.Scheduler;
+import org.apache.airavata.credential.store.store.CredentialReader;
+import org.apache.airavata.credential.store.store.CredentialReaderFactory;
+import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
+import org.apache.airavata.gfac.*;
 import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
+import org.apache.airavata.gfac.context.security.GSISecurityContext;
+import org.apache.airavata.gfac.context.security.SSHSecurityContext;
 import org.apache.airavata.gfac.handler.GFacHandler;
 import org.apache.airavata.gfac.handler.GFacHandlerConfig;
 import org.apache.airavata.gfac.handler.GFacHandlerException;
@@ -41,10 +43,23 @@ import org.apache.airavata.gfac.notification.listeners.WorkflowTrackingListener;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.scheduler.HostScheduler;
 import org.apache.airavata.gfac.utils.GFacUtils;
+import org.apache.airavata.gsi.ssh.api.Cluster;
+import org.apache.airavata.gsi.ssh.api.SSHApiException;
+import org.apache.airavata.gsi.ssh.api.ServerInfo;
+import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
+import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
+import org.apache.airavata.gsi.ssh.impl.PBSCluster;
+import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
+import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
+import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
 import org.apache.airavata.model.experiment.ConfigurationData;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.schemas.gfac.*;
+import org.apache.airavata.schemas.wec.ContextHeaderDocument;
+import org.apache.airavata.schemas.wec.SecurityContextDocument;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +71,7 @@ import java.util.*;
  * This is the GFac CPI class for external usage, this simply have a single method to submit a job to
  * the resource, required data for the job has to be stored in registry prior to invoke this object.
  */
-public class GFacImpl implements GFac{
+public class GFacImpl implements GFac {
     private static final Logger log = LoggerFactory.getLogger(GFacImpl.class);
     public static final String ERROR_SENT = "ErrorSent";
 
@@ -68,6 +83,7 @@ public class GFacImpl implements GFac{
 
     /**
      * Constructor for GFac
+     *
      * @param registry
      * @param airavataAPI
      * @param airavataRegistry2
@@ -136,6 +152,7 @@ public class GFacImpl implements GFac{
             jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
             jobExecutionContext.setExperimentID(experimentID);
 
+            addSecurityContext(hostDescription, configurationProperties, jobExecutionContext);
             submitJob(jobExecutionContext);
         } catch (Exception e) {
             log.error("Error inovoking the job with experiment ID: " + experimentID);
@@ -183,10 +200,10 @@ public class GFacImpl implements GFac{
 //            if (experimentID != null){
 //                registry2.changeStatus(jobExecutionContext.getExperimentID(),AiravataJobState.State.OUTHANDLERSDONE);
 //            }
-        }catch (Exception e){
-            jobExecutionContext.setProperty(ERROR_SENT,"true");
+        } catch (Exception e) {
+            jobExecutionContext.setProperty(ERROR_SENT, "true");
             jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
-            throw new GFacException(e.getMessage(),e);
+            throw new GFacException(e.getMessage(), e);
         }
     }
 
@@ -254,7 +271,7 @@ public class GFacImpl implements GFac{
             Class<? extends GFacHandler> handlerClass;
             GFacHandler handler;
             try {
-                 handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
+                handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
                 handler = handlerClass.newInstance();
                 handler.initProperties(handlerClassName.getProperties());
             } catch (ClassNotFoundException e) {
@@ -271,8 +288,118 @@ public class GFacImpl implements GFac{
                 handler.invoke(jobExecutionContext);
             } catch (Exception e) {
                 // TODO: Better error reporting.
-                throw new GFacException("Error Executing a OutFlow Handler" , e);
+                throw new GFacException("Error Executing a OutFlow Handler", e);
             }
         }
     }
+
+    private void addSecurityContext(HostDescription registeredHost, Properties configurationProperties,
+                                    JobExecutionContext jobExecutionContext) throws GFacException {
+        RequestData requestData;
+        if (registeredHost.getType() instanceof GlobusHostType || registeredHost.getType() instanceof UnicoreHostType
+                || registeredHost.getType() instanceof GsisshHostType) {
+
+            //todo implement a way to get credential management service from configurationData
+            SecurityContextDocument.SecurityContext.CredentialManagementService credentialManagementService = null;
+            GSISecurityContext context = null;
+
+            /*
+            if (credentialManagementService != null) {
+                String gatewayId = credentialManagementService.getGatewayId();
+                String tokenId
+                        = credentialManagementService.getTokenId();
+                String portalUser = credentialManagementService.getPortalUser();
+
+                requestData = new RequestData(tokenId, portalUser, gatewayId);
+            } else {
+                requestData = new RequestData("default");
+            }
+
+            try {
+                context = new GSISecurityContext(CredentialReaderFactory.createCredentialStoreReader(), requestData);
+            } catch (Exception e) {
+                   throw new WorkflowException("An error occurred while creating GSI security context", e);
+            }
+
+            if (registeredHost.getType() instanceof GsisshHostType) {
+                GSIAuthenticationInfo authenticationInfo
+                        = new MyProxyAuthenticationInfo(requestData.getMyProxyUserName(), requestData.getMyProxyPassword(), requestData.getMyProxyServerUrl(),
+                        requestData.getMyProxyPort(), requestData.getMyProxyLifeTime(), System.getProperty(Constants.TRUSTED_CERTIFICATE_SYSTEM_PROPERTY));
+                ServerInfo serverInfo = new ServerInfo(requestData.getMyProxyUserName(), registeredHost.getType().getHostAddress());
+
+                Cluster pbsCluster = null;
+                try {
+                    pbsCluster = new PBSCluster(serverInfo, authenticationInfo,
+                            (((HpcApplicationDeploymentType) jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath()));
+                } catch (SSHApiException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+
+                context.setPbsCluster(pbsCluster);
+            }        */
+
+            requestData = new RequestData("default");
+            try {
+                context = new GSISecurityContext(CredentialReaderFactory.createCredentialStoreReader(), requestData);
+            } catch (Exception e) {
+                throw new GFacException("An error occurred while creating GSI security context", e);
+            }
+            if (registeredHost.getType() instanceof GsisshHostType) {
+                GSIAuthenticationInfo authenticationInfo
+                        = new MyProxyAuthenticationInfo(requestData.getMyProxyUserName(), requestData.getMyProxyPassword(), requestData.getMyProxyServerUrl(),
+                        requestData.getMyProxyPort(), requestData.getMyProxyLifeTime(), System.getProperty(Constants.TRUSTED_CERTIFICATE_SYSTEM_PROPERTY));
+                ServerInfo serverInfo = new ServerInfo(requestData.getMyProxyUserName(), registeredHost.getType().getHostAddress());
+
+                Cluster pbsCluster = null;
+                try {
+                    pbsCluster = new PBSCluster(serverInfo, authenticationInfo,
+                            (((HpcApplicationDeploymentType) jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath()));
+                } catch (SSHApiException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+
+                context.setPbsCluster(pbsCluster);
+            }
+            jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT, context);
+        } else if (registeredHost.getType() instanceof Ec2HostType) {
+            //todo fixthis amazon securitycontext
+//               if (this.configuration.getAmazonSecurityContext() != null) {
+//                   jobExecutionContext.addSecurityContext(AmazonSecurityContext.AMAZON_SECURITY_CONTEXT,
+//                           this.configuration.getAmazonSecurityContext());
+        } else if (registeredHost.getType() instanceof SSHHostType) {
+            String sshUserName = configurationProperties.getProperty(Constants.SSH_USER_NAME);
+            String sshPrivateKey = configurationProperties.getProperty(Constants.SSH_PRIVATE_KEY);
+            String sshPrivateKeyPass = configurationProperties.getProperty(Constants.SSH_PRIVATE_KEY_PASS);
+            String sshPassword = configurationProperties.getProperty(Constants.SSH_PASSWORD);
+            String sshPublicKey = configurationProperties.getProperty(Constants.SSH_PUBLIC_KEY);
+            SSHSecurityContext sshSecurityContext = new SSHSecurityContext();
+            if (((SSHHostType) registeredHost.getType()).getHpcResource()) {
+                AuthenticationInfo authenticationInfo = null;
+                // we give higher preference to the password over keypair ssh authentication
+                if (sshPassword != null) {
+                    authenticationInfo = new DefaultPasswordAuthenticationInfo(sshPassword);
+                } else {
+                    authenticationInfo = new DefaultPublicKeyFileAuthentication(sshPublicKey, sshPrivateKey, sshPrivateKeyPass);
+                }
+                ServerInfo serverInfo = new ServerInfo(sshUserName, registeredHost.getType().getHostAddress());
+
+                Cluster pbsCluster = null;
+                try {
+                    pbsCluster = new PBSCluster(serverInfo, authenticationInfo,
+                            (((HpcApplicationDeploymentType) jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath()));
+                } catch (SSHApiException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+                sshSecurityContext.setPbsCluster(pbsCluster);
+                sshSecurityContext.setUsername(sshUserName);
+            } else {
+                sshSecurityContext = new SSHSecurityContext();
+                sshSecurityContext.setUsername(sshUserName);
+                sshSecurityContext.setPrivateKeyLoc(sshPrivateKey);
+                sshSecurityContext.setKeyPass(sshPrivateKeyPass);
+            }
+            jobExecutionContext.addSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT, sshSecurityContext);
+        }
+    }
+
 }
