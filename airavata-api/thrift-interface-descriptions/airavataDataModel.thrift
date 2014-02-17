@@ -18,7 +18,7 @@
  *
  */
 
-include "experimentModel.thrift"
+include "workspaceModel.thrift"
 
 namespace java org.apache.airavata.model
 namespace php Airavata.Model
@@ -28,3 +28,6 @@ namespace php Airavata.Model
  *   language specific Airavata Client SDK's will translate this neutral data model into an
  *   appropriate form for passing to the Airavata Server Execution API Calls.
 */
+
+
+
