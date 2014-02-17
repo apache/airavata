@@ -78,8 +78,8 @@ public class ExperimentModelUtil {
                                                        String projectAccount){
 
         ComputationalResourceScheduling cmRS = new ComputationalResourceScheduling();
-        cmRS.setAiravataAutoSchedule(airavataAutoSchedule);
-        cmRS.setOverrideManualScheduledParams(overrideManualSchedulingParams);
+//        cmRS.setAiravataAutoSchedule(airavataAutoSchedule);
+//        cmRS.setOverrideManualScheduledParams(overrideManualSchedulingParams);
         cmRS.setResourceHostId(resourceHostId);
         cmRS.setTotalCPUCount(cpuCount);
         cmRS.setNodeCount(nodeCount);
@@ -98,7 +98,7 @@ public class ExperimentModelUtil {
                                                                          boolean cleanupAfterJob){
         AdvancedInputDataHandling inputDataHandling = new AdvancedInputDataHandling();
         inputDataHandling.setStageInputFilesToWorkingDir(stageInputFilesToWorkingDir);
-        inputDataHandling.setWorkingDirectoryParent(workingDirParent);
+//        inputDataHandling.setWorkingDirectoryParent(workingDirParent);
         inputDataHandling.setUniqueWorkingDirectory(uniqueWorkingDir);
         inputDataHandling.setCleanUpWorkingDirAfterJob(cleanupAfterJob);
         return inputDataHandling;
@@ -108,7 +108,7 @@ public class ExperimentModelUtil {
                                                                        String dataRegUrl,
                                                                        boolean persistOutput){
         AdvancedOutputDataHandling outputDataHandling = new AdvancedOutputDataHandling();
-        outputDataHandling.setOutputdataDir(outputDatadir);
+//        outputDataHandling.setOutputdataDir(outputDatadir);
         outputDataHandling.setDataRegistryURL(dataRegUrl);
         outputDataHandling.setPersistOutputData(persistOutput);
         return outputDataHandling;
