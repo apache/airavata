@@ -263,14 +263,14 @@ public class GramProvider implements GFacProvider {
         }
 
         currentlyExecutingJobCache.put(job.getIDAsString(), job);
-        
-        // for provider test
+
+        /* these will be removed and used new status structure
         if (applicationSaved){
         	GFacUtils.updateApplicationJobStatus(jobExecutionContext, job.getIDAsString(), ApplicationJobStatus.SUBMITTED);
         }else{
 	        saveApplicationJob(jobExecutionContext, ApplicationJobStatus.SUBMITTED);
 	        applicationSaved=true;
-        }
+        }*/
 
         /*
         * Wait until job is done
