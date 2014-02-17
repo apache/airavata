@@ -64,16 +64,16 @@ public class ProjectResource extends AbstractResource {
      * @return child resource
      */
     public Resource create(ResourceType type) {
-        if (type == ResourceType.EXPERIMENT_METADATA) {
-            ExperimentMetadataResource experimentResource = new ExperimentMetadataResource();
-            experimentResource.setGateway(getGateway());
-            experimentResource.setExecutionUser(getWorker().getUser());
-            experimentResource.setProject(this);
-            return experimentResource;
-        } else {
+//        if (type == ResourceType.EXPERIMENT_METADATA) {
+//            ExperimentMetadataResource experimentResource = new ExperimentMetadataResource();
+//            experimentResource.setGateway(getGateway());
+//            experimentResource.setExecutionUser(getWorker().getUser());
+//            experimentResource.setProject(this);
+//            return experimentResource;
+//        } else {
             logger.error("Unsupported resource type for project resource.", new IllegalArgumentException());
             throw new IllegalArgumentException("Unsupported resource type for project resource.");
-        }
+//        }
     }
 
     /**
@@ -104,22 +104,22 @@ public class ProjectResource extends AbstractResource {
      * @return child resource
      */
     public Resource get(ResourceType type, Object name) {
-        if (type == ResourceType.EXPERIMENT_METADATA) {
-            EntityManager em = ResourceUtils.getEntityManager();
-            em.getTransaction().begin();
-        	QueryGenerator generator = new QueryGenerator(EXPERIMENT_METADATA);
-        	generator.setParameter(ExperimentMetadataConstants.EXPERIMENT_ID, name);
-        	Query q = generator.selectQuery(em);
-            Experiment_Metadata experiment = (Experiment_Metadata) q.getSingleResult();
-            ExperimentMetadataResource experimentResource = (ExperimentMetadataResource)
-                    Utils.getResource(ResourceType.EXPERIMENT_METADATA, experiment);
-            em.getTransaction().commit();
-            em.close();
-            return experimentResource;
-        }else{
+//        if (type == ResourceType.EXPERIMENT_METADATA) {
+//            EntityManager em = ResourceUtils.getEntityManager();
+//            em.getTransaction().begin();
+//        	QueryGenerator generator = new QueryGenerator(EXPERIMENT_METADATA);
+//        	generator.setParameter(ExperimentMetadataConstants.EXPERIMENT_ID, name);
+//        	Query q = generator.selectQuery(em);
+//            Experiment_Metadata experiment = (Experiment_Metadata) q.getSingleResult();
+//            ExperimentMetadataResource experimentResource = (ExperimentMetadataResource)
+//                    Utils.getResource(ResourceType.EXPERIMENT_METADATA, experiment);
+//            em.getTransaction().commit();
+//            em.close();
+//            return experimentResource;
+//        }else{
             logger.error("Unsupported resource type for project resource.", new IllegalArgumentException());
             throw new IllegalArgumentException("Unsupported resource type for project resource.");
-        }
+//        }
 
     }
 
@@ -157,28 +157,28 @@ public class ProjectResource extends AbstractResource {
     public List<Resource> get(ResourceType type) {
         List<Resource> resourceList = new ArrayList<Resource>();
 
-        if (type == ResourceType.EXPERIMENT_METADATA) {
-            EntityManager em = ResourceUtils.getEntityManager();
-            em.getTransaction().begin();
-        	QueryGenerator generator = new QueryGenerator(EXPERIMENT_METADATA);
-        	generator.setParameter(ExperimentMetadataConstants.PROJECT_NAME, name);
-        	Query q = generator.selectQuery(em);
-            List<?> results = q.getResultList();
-            if (results.size() != 0) {
-                for (Object result : results) {
-                    Experiment_Metadata experiment = (Experiment_Metadata) result;
-                    ExperimentMetadataResource experimentResource = (ExperimentMetadataResource)
-                            Utils.getResource(ResourceType.EXPERIMENT_METADATA, experiment);
-                    resourceList.add(experimentResource);
-                }
-            }
-            em.getTransaction().commit();
-            em.close();
-        } else {
+//        if (type == ResourceType.EXPERIMENT_METADATA) {
+//            EntityManager em = ResourceUtils.getEntityManager();
+//            em.getTransaction().begin();
+//        	QueryGenerator generator = new QueryGenerator(EXPERIMENT_METADATA);
+//        	generator.setParameter(ExperimentMetadataConstants.PROJECT_NAME, name);
+//        	Query q = generator.selectQuery(em);
+//            List<?> results = q.getResultList();
+//            if (results.size() != 0) {
+//                for (Object result : results) {
+//                    Experiment_Metadata experiment = (Experiment_Metadata) result;
+//                    ExperimentMetadataResource experimentResource = (ExperimentMetadataResource)
+//                            Utils.getResource(ResourceType.EXPERIMENT_METADATA, experiment);
+//                    resourceList.add(experimentResource);
+//                }
+//            }
+//            em.getTransaction().commit();
+//            em.close();
+//        } else {
             logger.error("Unsupported resource type for project resource.", new IllegalArgumentException());
             throw new IllegalArgumentException("Unsupported resource type for project resource.");
-        }
-        return resourceList;
+//        }
+//        return resourceList;
     }
 
     /**
@@ -273,33 +273,33 @@ public class ProjectResource extends AbstractResource {
      * @param experimentId experiment ID
      * @return  experiment resource
      */
-    public ExperimentMetadataResource createExperiment(String experimentId){
-		ExperimentMetadataResource experimentResource = (ExperimentMetadataResource)create(ResourceType.EXPERIMENT_METADATA);
-		experimentResource.setExpID(experimentId);
-		return experimentResource;
-	}
+//    public ExperimentMetadataResource createExperiment(String experimentId){
+//		ExperimentMetadataResource experimentResource = (ExperimentMetadataResource)create(ResourceType.EXPERIMENT_METADATA);
+//		experimentResource.setExpID(experimentId);
+//		return experimentResource;
+//	}
 
     /**
      *
      * @param experimentId experiment ID
      * @return experiment resource
      */
-	public ExperimentMetadataResource getExperiment(String experimentId){
-		return (ExperimentMetadataResource)get(ResourceType.EXPERIMENT_METADATA,experimentId);
-	}
+//	public ExperimentMetadataResource getExperiment(String experimentId){
+//		return (ExperimentMetadataResource)get(ResourceType.EXPERIMENT_METADATA,experimentId);
+//	}
 
     /**
      *
      * @return  list of experiments
      */
-    public List<ExperimentMetadataResource> getExperiments(){
-		List<Resource> list = get(ResourceType.EXPERIMENT_METADATA);
-		List<ExperimentMetadataResource> result=new ArrayList<ExperimentMetadataResource>();
-		for (Resource resource : list) {
-			result.add((ExperimentMetadataResource) resource);
-		}
-		return result;
-	}
+//    public List<ExperimentMetadataResource> getExperiments(){
+//		List<Resource> list = get(ResourceType.EXPERIMENT_METADATA);
+//		List<ExperimentMetadataResource> result=new ArrayList<ExperimentMetadataResource>();
+//		for (Resource resource : list) {
+//			result.add((ExperimentMetadataResource) resource);
+//		}
+//		return result;
+//	}
 
     /**
      *

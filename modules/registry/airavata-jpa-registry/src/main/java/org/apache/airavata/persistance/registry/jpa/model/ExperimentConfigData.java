@@ -24,68 +24,52 @@ package org.apache.airavata.persistance.registry.jpa.model;
 import javax.persistence.*;
 
 @Entity
-@Table(name ="EXPERIMENT_INPUT")
-@IdClass(Experiment_Input_PK.class)
-public class Experiment_Input {
+@Table(name = "CONFIG_DATA")
+public class ExperimentConfigData {
     @Id
     @Column(name = "EXPERIMENT_ID")
-    private String experiment_id;
+    private String expId;
+    @Column(name = "AIRAVATA_AUTO_SCHEDULE")
+    private boolean airavataAutoSchedule;
+    @Column(name = "OVERRIDE_MANUAL_SCHEDULE_PARAMS")
+    private boolean overrideManualParams;
+    @Column(name = "SHARE_EXPERIMENT")
+    private boolean shareExp;
 
-    @Id
-    @Column(name = "INPUT_KEY")
-    private String ex_key;
-
-    @Column(name = "VALUE")
-    private String value;
-
-    @Column(name = "INPUT_TYPE")
-    private String inputType;
-
-    @Column(name = "METADATA")
-    private String metadata;
-
-    @ManyToOne
+    @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "EXPERIMENT_ID")
     private Experiment experiment;
 
-    public String getExperiment_id() {
-        return experiment_id;
+    public String getExpId() {
+        return expId;
     }
 
-    public void setExperiment_id(String experiment_id) {
-        this.experiment_id = experiment_id;
+    public void setExpId(String expId) {
+        this.expId = expId;
     }
 
-    public String getEx_key() {
-        return ex_key;
+    public boolean isAiravataAutoSchedule() {
+        return airavataAutoSchedule;
     }
 
-    public void setEx_key(String ex_key) {
-        this.ex_key = ex_key;
+    public void setAiravataAutoSchedule(boolean airavataAutoSchedule) {
+        this.airavataAutoSchedule = airavataAutoSchedule;
     }
 
-    public String getValue() {
-        return value;
+    public boolean isOverrideManualParams() {
+        return overrideManualParams;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setOverrideManualParams(boolean overrideManualParams) {
+        this.overrideManualParams = overrideManualParams;
     }
 
-    public String getInputType() {
-        return inputType;
+    public boolean isShareExp() {
+        return shareExp;
     }
 
-    public void setInputType(String inputType) {
-        this.inputType = inputType;
-    }
-
-    public String getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(String metadata) {
-        this.metadata = metadata;
+    public void setShareExp(boolean shareExp) {
+        this.shareExp = shareExp;
     }
 
     public Experiment getExperiment() {

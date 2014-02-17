@@ -79,10 +79,10 @@ public class WorkerResource extends AbstractResource {
 				result=userWorkflowResource;
                 break;
             case EXPERIMENT_METADATA:
-                ExperimentMetadataResource experimentResource = new ExperimentMetadataResource();
-                experimentResource.setExecutionUser(user);
-                experimentResource.setGateway(gateway);
-                result=experimentResource;
+//                ExperimentMetadataResource experimentResource = new ExperimentMetadataResource();
+//                experimentResource.setExecutionUser(user);
+//                experimentResource.setGateway(gateway);
+//                result=experimentResource;
                 break;
 			default:
                 logger.error("Unsupported resource type for worker resource.", new IllegalArgumentException());
@@ -167,28 +167,28 @@ public class WorkerResource extends AbstractResource {
                 result= Utils.getResource(ResourceType.USER_WORKFLOW, userWorkflow);
 	            break;
 			case EXPERIMENT_METADATA:
-                generator = new QueryGenerator(EXPERIMENT_METADATA);
-                generator.setParameter(ExperimentMetadataConstants.EXPERIMENT_ID, name);
-                q = generator.selectQuery(em);
-	            Experiment_Metadata experiment = (Experiment_Metadata) q.getSingleResult();
-                result= Utils.getResource(ResourceType.EXPERIMENT_METADATA, experiment);
-				break;
+//                generator = new QueryGenerator(EXPERIMENT_METADATA);
+//                generator.setParameter(ExperimentMetadataConstants.EXPERIMENT_ID, name);
+//                q = generator.selectQuery(em);
+//	            Experiment_Metadata experiment = (Experiment_Metadata) q.getSingleResult();
+//                result= Utils.getResource(ResourceType.EXPERIMENT_METADATA, experiment);
+//				break;
 			case WORKFLOW_DATA:
-                generator = new QueryGenerator(WORKFLOW_DATA);
-                generator.setParameter(WorkflowDataConstants.WORKFLOW_INSTANCE_ID, name);
-                q = generator.selectQuery(em);
-                Workflow_Data eworkflowData = (Workflow_Data)q.getSingleResult();
-                WorkflowDataResource workflowDataResource = (WorkflowDataResource)Utils.getResource(ResourceType.WORKFLOW_DATA, eworkflowData);
-                result= workflowDataResource;
-                break;
+//                generator = new QueryGenerator(WORKFLOW_DATA);
+//                generator.setParameter(WorkflowDataConstants.WORKFLOW_INSTANCE_ID, name);
+//                q = generator.selectQuery(em);
+//                Workflow_Data eworkflowData = (Workflow_Data)q.getSingleResult();
+//                WorkflowDataResource workflowDataResource = (WorkflowDataResource)Utils.getResource(ResourceType.WORKFLOW_DATA, eworkflowData);
+//                result= workflowDataResource;
+//                break;
             case GFAC_JOB_DATA:
-                generator = new QueryGenerator(GFAC_JOB_DATA);
-                generator.setParameter(GFacJobDataConstants.LOCAL_JOB_ID, name);
-                q = generator.selectQuery(em);
-                GFac_Job_Data gFacJobData = (GFac_Job_Data)q.getSingleResult();
-                GFacJobDataResource gFacJobDataResource = (GFacJobDataResource)Utils.getResource(ResourceType.GFAC_JOB_DATA, gFacJobData);
-                result= gFacJobDataResource;
-                break;
+//                generator = new QueryGenerator(GFAC_JOB_DATA);
+//                generator.setParameter(GFacJobDataConstants.LOCAL_JOB_ID, name);
+//                q = generator.selectQuery(em);
+//                GFac_Job_Data gFacJobData = (GFac_Job_Data)q.getSingleResult();
+//                GFacJobDataResource gFacJobDataResource = (GFacJobDataResource)Utils.getResource(ResourceType.GFAC_JOB_DATA, gFacJobData);
+//                result= gFacJobDataResource;
+//                break;
 			default:
                 logger.error("Unsupported resource type for worker resource.", new IllegalArgumentException());
                 break;
@@ -198,43 +198,43 @@ public class WorkerResource extends AbstractResource {
 		return result;
 	}
 	
-	public List<GFacJobDataResource> getGFacJobs(String serviceDescriptionId, String hostDescriptionId, String applicationDescriptionId){
-		List<GFacJobDataResource> result = new ArrayList<GFacJobDataResource>();
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        QueryGenerator generator;
-        Query q;
-        generator = new QueryGenerator(GFAC_JOB_DATA);
-        generator.setParameter(GFacJobDataConstants.SERVICE_DESC_ID, serviceDescriptionId);
-        generator.setParameter(GFacJobDataConstants.HOST_DESC_ID, hostDescriptionId);
-        generator.setParameter(GFacJobDataConstants.APP_DESC_ID, applicationDescriptionId);
-        q = generator.selectQuery(em);
-        for (Object o : q.getResultList()) {
-            GFac_Job_Data gFacJobData = (GFac_Job_Data)o;
-            result.add((GFacJobDataResource)Utils.getResource(ResourceType.GFAC_JOB_DATA, gFacJobData));
-        }
-        em.getTransaction().commit();
-        em.close();
-		return result;
-	}
-	
-	public List<GFacJobStatusResource> getGFacJobStatuses(String jobId){
-		List<GFacJobStatusResource> resourceList = new ArrayList<GFacJobStatusResource>();
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        QueryGenerator generator;
-        Query q;
-        generator = new QueryGenerator(GFAC_JOB_STATUS);
-        generator.setParameter(GFacJobStatusConstants.LOCAL_JOB_ID, jobId);
-        q = generator.selectQuery(em);
-        for (Object result : q.getResultList()) {
-            GFac_Job_Status gFacJobStatus = (GFac_Job_Status) result;
-            GFacJobStatusResource gFacJobStatusResource =
-                    (GFacJobStatusResource)Utils.getResource(ResourceType.GFAC_JOB_STATUS, gFacJobStatus);
-            resourceList.add(gFacJobStatusResource);
-        }
-        return resourceList;
-	}
+//	public List<GFacJobDataResource> getGFacJobs(String serviceDescriptionId, String hostDescriptionId, String applicationDescriptionId){
+//		List<GFacJobDataResource> result = new ArrayList<GFacJobDataResource>();
+//        EntityManager em = ResourceUtils.getEntityManager();
+//        em.getTransaction().begin();
+//        QueryGenerator generator;
+//        Query q;
+//        generator = new QueryGenerator(GFAC_JOB_DATA);
+//        generator.setParameter(GFacJobDataConstants.SERVICE_DESC_ID, serviceDescriptionId);
+//        generator.setParameter(GFacJobDataConstants.HOST_DESC_ID, hostDescriptionId);
+//        generator.setParameter(GFacJobDataConstants.APP_DESC_ID, applicationDescriptionId);
+//        q = generator.selectQuery(em);
+//        for (Object o : q.getResultList()) {
+//            GFac_Job_Data gFacJobData = (GFac_Job_Data)o;
+//            result.add((GFacJobDataResource)Utils.getResource(ResourceType.GFAC_JOB_DATA, gFacJobData));
+//        }
+//        em.getTransaction().commit();
+//        em.close();
+//		return result;
+//	}
+//
+//	public List<GFacJobStatusResource> getGFacJobStatuses(String jobId){
+//		List<GFacJobStatusResource> resourceList = new ArrayList<GFacJobStatusResource>();
+//        EntityManager em = ResourceUtils.getEntityManager();
+//        em.getTransaction().begin();
+//        QueryGenerator generator;
+//        Query q;
+//        generator = new QueryGenerator(GFAC_JOB_STATUS);
+//        generator.setParameter(GFacJobStatusConstants.LOCAL_JOB_ID, jobId);
+//        q = generator.selectQuery(em);
+//        for (Object result : q.getResultList()) {
+//            GFac_Job_Status gFacJobStatus = (GFac_Job_Status) result;
+//            GFacJobStatusResource gFacJobStatusResource =
+//                    (GFacJobStatusResource)Utils.getResource(ResourceType.GFAC_JOB_STATUS, gFacJobStatus);
+//            resourceList.add(gFacJobStatusResource);
+//        }
+//        return resourceList;
+//	}
 
     /**
      *
@@ -275,16 +275,16 @@ public class WorkerResource extends AbstractResource {
 	            }
 	            break;
 			case EXPERIMENT_METADATA:
-                generator = new QueryGenerator(EXPERIMENT_METADATA);
-                generator.setParameter(ExperimentMetadataConstants.GATEWAY_NAME, gateway.getGatewayName());
-                generator.setParameter(ExperimentMetadataConstants.EXECUTION_USER, user);
-                q = generator.selectQuery(em);
-	            for (Object o : q.getResultList()) {
-	            	Experiment_Metadata experiment = (Experiment_Metadata) o;
-	            	ExperimentMetadataResource experimentResource = (ExperimentMetadataResource)Utils.getResource(ResourceType.EXPERIMENT_METADATA, experiment);
-		            result.add(experimentResource);
-	            }
-	            break;
+//                generator = new QueryGenerator(EXPERIMENT_METADATA);
+//                generator.setParameter(ExperimentMetadataConstants.GATEWAY_NAME, gateway.getGatewayName());
+//                generator.setParameter(ExperimentMetadataConstants.EXECUTION_USER, user);
+//                q = generator.selectQuery(em);
+//	            for (Object o : q.getResultList()) {
+//	            	Experiment_Metadata experiment = (Experiment_Metadata) o;
+//	            	ExperimentMetadataResource experimentResource = (ExperimentMetadataResource)Utils.getResource(ResourceType.EXPERIMENT_METADATA, experiment);
+//		            result.add(experimentResource);
+//	            }
+//	            break;
 			default:
                 logger.error("Unsupported resource type for worker resource.", new IllegalArgumentException());
                 break;
@@ -476,26 +476,26 @@ public class WorkerResource extends AbstractResource {
      * @param name experiment name
      * @return experiment resource
      */
-    public ExperimentMetadataResource getExperiment(String name){
-		return (ExperimentMetadataResource)get(ResourceType.EXPERIMENT_METADATA, name);
-	}
-    
-    public GFacJobDataResource getGFacJob(String jobId){
-    	return (GFacJobDataResource)get(ResourceType.GFAC_JOB_DATA,jobId);
-    }
+//    public ExperimentMetadataResource getExperiment(String name){
+//		return (ExperimentMetadataResource)get(ResourceType.EXPERIMENT_METADATA, name);
+//	}
+//
+//    public GFacJobDataResource getGFacJob(String jobId){
+//    	return (GFacJobDataResource)get(ResourceType.GFAC_JOB_DATA,jobId);
+//    }
 
     /**
      *
      * @return list of experiments for the user
      */
-	public List<ExperimentMetadataResource> getExperiments(){
-		List<ExperimentMetadataResource> result=new ArrayList<ExperimentMetadataResource>();
-		List<Resource> list = get(ResourceType.EXPERIMENT_METADATA);
-		for (Resource resource : list) {
-			result.add((ExperimentMetadataResource) resource);
-		}
-		return result;
-	}
+//	public List<ExperimentMetadataResource> getExperiments(){
+//		List<ExperimentMetadataResource> result=new ArrayList<ExperimentMetadataResource>();
+//		List<Resource> list = get(ResourceType.EXPERIMENT_METADATA);
+//		for (Resource resource : list) {
+//			result.add((ExperimentMetadataResource) resource);
+//		}
+//		return result;
+//	}
 
     /**
      *

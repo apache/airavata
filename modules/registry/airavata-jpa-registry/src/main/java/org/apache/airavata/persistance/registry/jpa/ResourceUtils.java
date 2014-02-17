@@ -311,26 +311,26 @@ public class ResourceUtils {
         }
     }
 
-    public static List<Resource> getOrchestratorDataWithStatus(String status) {
-        List<Resource> resourceList = new ArrayList<Resource>();
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        QueryGenerator generator = new QueryGenerator(AbstractResource.ORCHESTRATOR);
-        generator.setParameter(AbstractResource.OrchestratorDataConstants.STATUS, status);
-        Query q = generator.selectQuery(em);
-        List<?> results = q.getResultList();
-        if (results.size() != 0) {
-            for (Object result : results) {
-                Orchestrator orchestratorData = (Orchestrator) result;
-                OrchestratorDataResource orchestratorDataResource = (OrchestratorDataResource)
-                        Utils.getResource(ResourceType.ORCHESTRATOR, orchestratorData);
-                resourceList.add(orchestratorDataResource);
-            }
-        }
-        em.getTransaction().commit();
-        em.close();
-        return resourceList;
-    }
+//    public static List<Resource> getOrchestratorDataWithStatus(String status) {
+//        List<Resource> resourceList = new ArrayList<Resource>();
+//        EntityManager em = ResourceUtils.getEntityManager();
+//        em.getTransaction().begin();
+//        QueryGenerator generator = new QueryGenerator(AbstractResource.ORCHESTRATOR);
+//        generator.setParameter(AbstractResource.OrchestratorDataConstants.STATUS, status);
+//        Query q = generator.selectQuery(em);
+//        List<?> results = q.getResultList();
+//        if (results.size() != 0) {
+//            for (Object result : results) {
+//                Orchestrator orchestratorData = (Orchestrator) result;
+//                OrchestratorDataResource orchestratorDataResource = (OrchestratorDataResource)
+//                        Utils.getResource(ResourceType.ORCHESTRATOR, orchestratorData);
+//                resourceList.add(orchestratorDataResource);
+//            }
+//        }
+//        em.getTransaction().commit();
+//        em.close();
+//        return resourceList;
+//    }
 
     public static Lock getLock() {
         return lock;

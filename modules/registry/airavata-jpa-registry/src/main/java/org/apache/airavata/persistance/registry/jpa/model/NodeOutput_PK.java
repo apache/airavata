@@ -17,21 +17,21 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
-public class Gram_DataPK {
-    private String workflow_instanceID;
-    private String node_id;
+public class NodeOutput_PK {
+    private String nodeId;
+    private String outputKey;
 
-    public Gram_DataPK() {
-        ;
+    public NodeOutput_PK(String nodeId, String outputKey) {
+        this.nodeId = nodeId;
+        this.outputKey = outputKey;
     }
 
-    public Gram_DataPK(String workflow_instanceID, String node_id) {
-        this.workflow_instanceID = workflow_instanceID;
-        this.node_id = node_id;
+    public NodeOutput_PK() {
+        ;
     }
 
     @Override
@@ -44,19 +44,19 @@ public class Gram_DataPK {
         return 1;
     }
 
-    public String getWorkflow_instanceID() {
-        return workflow_instanceID;
+    public String getNodeId() {
+        return nodeId;
     }
 
-    public void setWorkflow_instanceID(String workflow_instanceID) {
-        this.workflow_instanceID = workflow_instanceID;
+    public void setNodeId(String nodeId) {
+        this.nodeId = nodeId;
     }
 
-    public String getNode_id() {
-        return node_id;
+    public String getOutputKey() {
+        return outputKey;
     }
 
-    public void setNode_id(String node_id) {
-        this.node_id = node_id;
+    public void setOutputKey(String outputKey) {
+        this.outputKey = outputKey;
     }
 }

@@ -24,60 +24,32 @@ package org.apache.airavata.persistance.registry.jpa.model;
 import javax.persistence.*;
 
 @Entity
-@Table(name ="EXPERIMENT_INPUT")
-@IdClass(Experiment_Input_PK.class)
-public class Experiment_Input {
+@Table(name = "APPLICATION_OUTPUT")
+@IdClass(ApplicationOutput_PK.class)
+public class ApplicationOutput {
     @Id
-    @Column(name = "EXPERIMENT_ID")
-    private String experiment_id;
-
+    @Column(name = "TASK_ID")
+    private String taskId;
     @Id
-    @Column(name = "INPUT_KEY")
-    private String ex_key;
-
+    @Column(name = "OUTPUT_KEY")
+    private String outputKey;
+    @Column(name = "OUTPUT_KEY_TYPE")
+    private String outputKeyType;
+    @Column(name = "METADATA")
+    private String metadata;
     @Column(name = "VALUE")
     private String value;
 
-    @Column(name = "INPUT_TYPE")
-    private String inputType;
+    @ManyToOne(cascade= CascadeType.MERGE)
+    @JoinColumn(name = "TASK_ID")
+    private TaskDetail task;
 
-    @Column(name = "METADATA")
-    private String metadata;
-
-    @ManyToOne
-    @JoinColumn(name = "EXPERIMENT_ID")
-    private Experiment experiment;
-
-    public String getExperiment_id() {
-        return experiment_id;
+    public String getTaskId() {
+        return taskId;
     }
 
-    public void setExperiment_id(String experiment_id) {
-        this.experiment_id = experiment_id;
-    }
-
-    public String getEx_key() {
-        return ex_key;
-    }
-
-    public void setEx_key(String ex_key) {
-        this.ex_key = ex_key;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public String getInputType() {
-        return inputType;
-    }
-
-    public void setInputType(String inputType) {
-        this.inputType = inputType;
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
     public String getMetadata() {
@@ -88,11 +60,35 @@ public class Experiment_Input {
         this.metadata = metadata;
     }
 
-    public Experiment getExperiment() {
-        return experiment;
+    public String getValue() {
+        return value;
     }
 
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public TaskDetail getTask() {
+        return task;
+    }
+
+    public void setTask(TaskDetail task) {
+        this.task = task;
+    }
+
+    public String getOutputKey() {
+        return outputKey;
+    }
+
+    public void setOutputKey(String outputKey) {
+        this.outputKey = outputKey;
+    }
+
+    public String getOutputKeyType() {
+        return outputKeyType;
+    }
+
+    public void setOutputKeyType(String outputKeyType) {
+        this.outputKeyType = outputKeyType;
     }
 }

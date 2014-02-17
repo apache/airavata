@@ -23,17 +23,20 @@ package org.apache.airavata.persistance.registry.jpa.impl;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.model.experiment.*;
+import org.apache.airavata.model.experiment.BasicMetadata;
+import org.apache.airavata.model.experiment.ConfigurationData;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
-import org.apache.airavata.persistance.registry.jpa.resources.*;
-import org.apache.airavata.persistance.registry.jpa.utils.ThriftDataModelConversion;
+import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
+import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.util.*;
+
+//import org.apache.airavata.persistance.registry.jpa.utils.ThriftDataModelConversion;
 
 public class ExperimentRegistry {
     private GatewayRegistry gatewayRegistry;
@@ -48,15 +51,15 @@ public class ExperimentRegistry {
             userReg = new UserReg();
             WorkerResource worker = userReg.getSysteUser();
             experimentID = getExperimentID(basicMetadata.getExperimentName());
-            ExperimentMetadataResource exBasicData = gateway.createBasicMetada(experimentID);
-            exBasicData.setExperimentName(basicMetadata.getExperimentName());
-            exBasicData.setDescription(basicMetadata.getExperimentDescription());
-            exBasicData.setExecutionUser(basicMetadata.getUserName());
-            exBasicData.setSubmittedDate(getCurrentTimestamp());
-            exBasicData.setShareExp(basicMetadata.isSetShareExperimentPublicly());
-            ProjectResource projectResource = worker.getProject(basicMetadata.getProjectID());
-            exBasicData.setProject(projectResource);
-            exBasicData.save();
+//            ExperimentMetadataResource exBasicData = gateway.createBasicMetada(experimentID);
+//            exBasicData.setExperimentName(basicMetadata.getExperimentName());
+//            exBasicData.setDescription(basicMetadata.getExperimentDescription());
+//            exBasicData.setExecutionUser(basicMetadata.getUserName());
+//            exBasicData.setSubmittedDate(getCurrentTimestamp());
+//            exBasicData.setShareExp(basicMetadata.isSetShareExperimentPublicly());
+//            ProjectResource projectResource = worker.getProject(basicMetadata.getProjectID());
+//            exBasicData.setProject(projectResource);
+//            exBasicData.save();
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read airavata-server properties", e.getMessage());
         }
@@ -67,75 +70,75 @@ public class ExperimentRegistry {
         try {
             gatewayRegistry = new GatewayRegistry();
             GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentMetadataResource exBasicData = (ExperimentMetadataResource) gateway.get(ResourceType.EXPERIMENT_METADATA, experimentID);
-            ExperimentConfigDataResource exConfigData = (ExperimentConfigDataResource) exBasicData.create(ResourceType.EXPERIMENT_CONFIG_DATA);
-            BasicMetadata updatedBasicMetadata = configurationData.getBasicMetadata();
-            if (updatedBasicMetadata != null) {
-                if (updatedBasicMetadata.getExperimentName() != null && !updatedBasicMetadata.getExperimentName().equals("")) {
-                    exBasicData.setExperimentName(updatedBasicMetadata.getExperimentName());
-                }
-                if (updatedBasicMetadata.getExperimentDescription() != null && !updatedBasicMetadata.getExperimentDescription().equals("")) {
-                    exBasicData.setDescription(updatedBasicMetadata.getExperimentDescription());
-                }
-                if (updatedBasicMetadata.getUserName() != null && !updatedBasicMetadata.getUserName().equals("")) {
-                    exBasicData.setExecutionUser(updatedBasicMetadata.getUserName());
-                }
-                exBasicData.setShareExp(updatedBasicMetadata.isSetShareExperimentPublicly());
-                exBasicData.save();
-            }
-            exConfigData.setExMetadata(exBasicData);
-            exConfigData.setApplicationID(configurationData.getApplicationId());
-            exConfigData.setApplicationVersion(configurationData.getApplicationVersion());
-            exConfigData.setWorkflowTemplateId(configurationData.getWorkflowTemplateId());
-            exConfigData.setWorkflowTemplateVersion(configurationData.getWorklfowTemplateVersion());
-
-            ComputationalResourceScheduling resourceScheduling = configurationData.getComputationalResourceScheduling();
-            if (resourceScheduling != null) {
-                exConfigData.setCpuCount(resourceScheduling.getTotalCPUCount());
-                exConfigData.setAiravataAutoSchedule(resourceScheduling.isAiravataAutoSchedule());
-                exConfigData.setOverrideManualSchedule(resourceScheduling.isOverrideManualScheduledParams());
-                exConfigData.setResourceHostID(resourceScheduling.getResourceHostId());
-                exConfigData.setNodeCount(resourceScheduling.getNodeCount());
-                exConfigData.setNumberOfThreads(resourceScheduling.getNumberOfThreads());
-                exConfigData.setQueueName(resourceScheduling.getQueueName());
-                exConfigData.setWallTimeLimit(resourceScheduling.getWallTimeLimit());
-                exConfigData.setJobStartTime(getTime(resourceScheduling.getJobStartTime()));
-                exConfigData.setPhysicalMemory(resourceScheduling.getTotalPhysicalMemory());
-                exConfigData.setProjectAccount(resourceScheduling.getComputationalProjectAccount());
-            }
-
-            AdvancedInputDataHandling inputDataHandling = configurationData.getAdvanceInputDataHandling();
-            if (inputDataHandling != null) {
-                exConfigData.setStageInputsToWDir(inputDataHandling.isStageInputFilesToWorkingDir());
-                exConfigData.setWorkingDirParent(inputDataHandling.getWorkingDirectoryParent());
-                exConfigData.setWorkingDir(inputDataHandling.getUniqueWorkingDirectory());
-                exConfigData.setCleanAfterJob(inputDataHandling.isCleanUpWorkingDirAfterJob());
-            }
-
-            AdvancedOutputDataHandling outputDataHandling = configurationData.getAdvanceOutputDataHandling();
-            if (outputDataHandling != null) {
-                exConfigData.setOutputDataDir(outputDataHandling.getOutputdataDir());
-                exConfigData.setDataRegURL(outputDataHandling.getDataRegistryURL());
-                exConfigData.setPersistOutputData(outputDataHandling.isPersistOutputData());
-            }
-
-            QualityOfServiceParams qosParams = configurationData.getQosParams();
-            if (qosParams != null) {
-                exConfigData.setStartExecutionAt(qosParams.getStartExecutionAt());
-                exConfigData.setExecuteBefore(qosParams.getExecuteBefore());
-                exConfigData.setNumberOfRetries(qosParams.getNumberofRetries());
-            }
-
-            Map<String, String> experimentInputs = configurationData.getExperimentInputs();
-            for (String inputKey : experimentInputs.keySet()) {
-                ExperimentInputResource exInputResource = (ExperimentInputResource) exBasicData.create(ResourceType.EXPERIMENT_INPUT);
-                String value = experimentInputs.get(inputKey);
-                exInputResource.setExperimentKey(inputKey);
-                exInputResource.setValue(value);
-                exInputResource.setExperimentMetadataResource(exBasicData);
-                exInputResource.save();
-            }
-            exConfigData.save();
+//            ExperimentMetadataResource exBasicData = (ExperimentMetadataResource) gateway.get(ResourceType.EXPERIMENT_METADATA, experimentID);
+//            ExperimentConfigDataResource exConfigData = (ExperimentConfigDataResource) exBasicData.create(ResourceType.EXPERIMENT_CONFIG_DATA);
+//            BasicMetadata updatedBasicMetadata = configurationData.getBasicMetadata();
+//            if (updatedBasicMetadata != null) {
+//                if (updatedBasicMetadata.getExperimentName() != null && !updatedBasicMetadata.getExperimentName().equals("")) {
+//                    exBasicData.setExperimentName(updatedBasicMetadata.getExperimentName());
+//                }
+//                if (updatedBasicMetadata.getExperimentDescription() != null && !updatedBasicMetadata.getExperimentDescription().equals("")) {
+//                    exBasicData.setDescription(updatedBasicMetadata.getExperimentDescription());
+//                }
+//                if (updatedBasicMetadata.getUserName() != null && !updatedBasicMetadata.getUserName().equals("")) {
+//                    exBasicData.setExecutionUser(updatedBasicMetadata.getUserName());
+//                }
+//                exBasicData.setShareExp(updatedBasicMetadata.isSetShareExperimentPublicly());
+//                exBasicData.save();
+//            }
+//            exConfigData.setExMetadata(exBasicData);
+//            exConfigData.setApplicationID(configurationData.getApplicationId());
+//            exConfigData.setApplicationVersion(configurationData.getApplicationVersion());
+//            exConfigData.setWorkflowTemplateId(configurationData.getWorkflowTemplateId());
+//            exConfigData.setWorkflowTemplateVersion(configurationData.getWorklfowTemplateVersion());
+//
+//            ComputationalResourceScheduling resourceScheduling = configurationData.getComputationalResourceScheduling();
+//            if (resourceScheduling != null) {
+//                exConfigData.setCpuCount(resourceScheduling.getTotalCPUCount());
+//                exConfigData.setAiravataAutoSchedule(resourceScheduling.isAiravataAutoSchedule());
+//                exConfigData.setOverrideManualSchedule(resourceScheduling.isOverrideManualScheduledParams());
+//                exConfigData.setResourceHostID(resourceScheduling.getResourceHostId());
+//                exConfigData.setNodeCount(resourceScheduling.getNodeCount());
+//                exConfigData.setNumberOfThreads(resourceScheduling.getNumberOfThreads());
+//                exConfigData.setQueueName(resourceScheduling.getQueueName());
+//                exConfigData.setWallTimeLimit(resourceScheduling.getWallTimeLimit());
+//                exConfigData.setJobStartTime(getTime(resourceScheduling.getJobStartTime()));
+//                exConfigData.setPhysicalMemory(resourceScheduling.getTotalPhysicalMemory());
+//                exConfigData.setProjectAccount(resourceScheduling.getComputationalProjectAccount());
+//            }
+//
+//            AdvancedInputDataHandling inputDataHandling = configurationData.getAdvanceInputDataHandling();
+//            if (inputDataHandling != null) {
+//                exConfigData.setStageInputsToWDir(inputDataHandling.isStageInputFilesToWorkingDir());
+//                exConfigData.setWorkingDirParent(inputDataHandling.getWorkingDirectoryParent());
+//                exConfigData.setWorkingDir(inputDataHandling.getUniqueWorkingDirectory());
+//                exConfigData.setCleanAfterJob(inputDataHandling.isCleanUpWorkingDirAfterJob());
+//            }
+//
+//            AdvancedOutputDataHandling outputDataHandling = configurationData.getAdvanceOutputDataHandling();
+//            if (outputDataHandling != null) {
+//                exConfigData.setOutputDataDir(outputDataHandling.getOutputdataDir());
+//                exConfigData.setDataRegURL(outputDataHandling.getDataRegistryURL());
+//                exConfigData.setPersistOutputData(outputDataHandling.isPersistOutputData());
+//            }
+//
+//            QualityOfServiceParams qosParams = configurationData.getQosParams();
+//            if (qosParams != null) {
+//                exConfigData.setStartExecutionAt(qosParams.getStartExecutionAt());
+//                exConfigData.setExecuteBefore(qosParams.getExecuteBefore());
+//                exConfigData.setNumberOfRetries(qosParams.getNumberofRetries());
+//            }
+//
+//            Map<String, String> experimentInputs = configurationData.getExperimentInputs();
+//            for (String inputKey : experimentInputs.keySet()) {
+//                ExperimentInputResource exInputResource = (ExperimentInputResource) exBasicData.create(ResourceType.EXPERIMENT_INPUT);
+//                String value = experimentInputs.get(inputKey);
+//                exInputResource.setExperimentKey(inputKey);
+//                exInputResource.setValue(value);
+//                exInputResource.setExperimentMetadataResource(exBasicData);
+//                exInputResource.save();
+//            }
+//            exConfigData.save();
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read airavata-server properties", e.getMessage());
         }
@@ -162,22 +165,22 @@ public class ExperimentRegistry {
     public void updateExpBasicMetadataField(String expID, String fieldName, Object value) {
         try {
             GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentMetadataResource exBasicData = (ExperimentMetadataResource) gateway.get(ResourceType.EXPERIMENT_METADATA, expID);
-            if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.EXPERIMENT_NAME)) {
-                exBasicData.setExperimentName((String) value);
-                exBasicData.save();
-            } else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.USER_NAME)) {
-                exBasicData.setExecutionUser((String) value);
-                exBasicData.save();
-            } else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.EXPERIMENT_DESC)) {
-                exBasicData.setDescription((String) value);
-                exBasicData.save();
-            } else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.SHARE_EXP_PUBLIC)) {
-                exBasicData.setShareExp((Boolean) value);
-                exBasicData.save();
-            }else {
+//            ExperimentMetadataResource exBasicData = (ExperimentMetadataResource) gateway.get(ResourceType.EXPERIMENT_METADATA, expID);
+//            if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.EXPERIMENT_NAME)) {
+//                exBasicData.setExperimentName((String) value);
+//                exBasicData.save();
+//            } else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.USER_NAME)) {
+//                exBasicData.setExecutionUser((String) value);
+//                exBasicData.save();
+//            } else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.EXPERIMENT_DESC)) {
+//                exBasicData.setDescription((String) value);
+//                exBasicData.save();
+//            } else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.SHARE_EXP_PUBLIC)) {
+//                exBasicData.setShareExp((Boolean) value);
+//                exBasicData.save();
+//            }else {
                 logger.error("Unsupported field type for Experiment basic metadata");
-            }
+//            }
 
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read airavata-server properties", e.getMessage());
@@ -187,70 +190,70 @@ public class ExperimentRegistry {
     public void updateExpConfigDataField(String expID, String fieldName, Object value) {
         try {
             GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentMetadataResource exBasicData = (ExperimentMetadataResource) gateway.get(ResourceType.EXPERIMENT_METADATA, expID);
-            ExperimentConfigDataResource exConfigData = (ExperimentConfigDataResource)exBasicData.get(ResourceType.EXPERIMENT_CONFIG_DATA, expID);
-            if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.APPLICATION_ID)) {
-                exConfigData.setApplicationID((String) value);
-                exConfigData.save();
-            } else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.APPLICATION_VERSION)) {
-                exConfigData.setApplicationVersion((String) value);
-                exConfigData.save();
-            } else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.WORKFLOW_TEMPLATE_ID)) {
-                exConfigData.setWorkflowTemplateId((String) value);
-                exConfigData.save();
-            } else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.WORKFLOW_TEMPLATE_VERSION)) {
-                exConfigData.setWorkflowTemplateVersion((String) value);
-                exConfigData.save();
-            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.COMPUTATIONAL_RESOURCE_SCHEDULING)){
-                ComputationalResourceScheduling resourceScheduling = (ComputationalResourceScheduling)value;
-                exConfigData.setCpuCount(resourceScheduling.getTotalCPUCount());
-                exConfigData.setAiravataAutoSchedule(resourceScheduling.isAiravataAutoSchedule());
-                exConfigData.setOverrideManualSchedule(resourceScheduling.isOverrideManualScheduledParams());
-                exConfigData.setResourceHostID(resourceScheduling.getResourceHostId());
-                exConfigData.setNodeCount(resourceScheduling.getNodeCount());
-                exConfigData.setNumberOfThreads(resourceScheduling.getNumberOfThreads());
-                exConfigData.setQueueName(resourceScheduling.getQueueName());
-                exConfigData.setWallTimeLimit(resourceScheduling.getWallTimeLimit());
-                exConfigData.setJobStartTime(getTime(resourceScheduling.getJobStartTime()));
-                exConfigData.setPhysicalMemory(resourceScheduling.getTotalPhysicalMemory());
-                exConfigData.setProjectAccount(resourceScheduling.getComputationalProjectAccount());
-                exConfigData.save();
-            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.ADVANCED_INPUT_HANDLING)){
-                AdvancedInputDataHandling adInputHandling = (AdvancedInputDataHandling)value;
-                exConfigData.setStageInputsToWDir(adInputHandling.isStageInputFilesToWorkingDir());
-                exConfigData.setWorkingDirParent(adInputHandling.getWorkingDirectoryParent());
-                exConfigData.setWorkingDir(adInputHandling.getUniqueWorkingDirectory());
-                exConfigData.setCleanAfterJob(adInputHandling.isCleanUpWorkingDirAfterJob());
-                exConfigData.save();
-            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.ADVANCED_OUTPUT_HANDLING)){
-                AdvancedOutputDataHandling adOutputHandling = (AdvancedOutputDataHandling)value;
-                exConfigData.setOutputDataDir(adOutputHandling.getOutputdataDir());
-                exConfigData.setDataRegURL(adOutputHandling.getDataRegistryURL());
-                exConfigData.setPersistOutputData(adOutputHandling.isPersistOutputData());
-                exConfigData.save();
-            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.QOS_PARAMS)){
-                QualityOfServiceParams qosParams = (QualityOfServiceParams)value;
-                exConfigData.setStartExecutionAt(qosParams.getStartExecutionAt());
-                exConfigData.setExecuteBefore(qosParams.getExecuteBefore());
-                exConfigData.setNumberOfRetries(qosParams.getNumberofRetries());
-                exConfigData.save();
-            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.EXPERIMENT_INPUTS)){
-                if (value instanceof Map){
-                    Map<String, String> experimentInputs = (HashMap<String, String>)value;
-                    List<Resource> exInputs = exBasicData.get(ResourceType.EXPERIMENT_INPUT);
-                    int i = 0;
-                    for (String exInputKey : experimentInputs.keySet()){
-                        ExperimentInputResource exInput = (ExperimentInputResource)exInputs.get(i);
-                        if (exInput.getExperimentKey().equals(exInputKey)){
-                            exInput.setValue(experimentInputs.get(exInputKey));
-                            exInput.save();
-                        }
-                        i++;
-                    }
-                }
-            }else {
-                logger.error("Unsupported field type for Experiment config data");
-            }
+//            ExperimentMetadataResource exBasicData = (ExperimentMetadataResource) gateway.get(ResourceType.EXPERIMENT_METADATA, expID);
+//            ExperimentConfigDataResource exConfigData = (ExperimentConfigDataResource)exBasicData.get(ResourceType.EXPERIMENT_CONFIG_DATA, expID);
+//            if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.APPLICATION_ID)) {
+//                exConfigData.setApplicationID((String) value);
+//                exConfigData.save();
+//            } else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.APPLICATION_VERSION)) {
+//                exConfigData.setApplicationVersion((String) value);
+//                exConfigData.save();
+//            } else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.WORKFLOW_TEMPLATE_ID)) {
+//                exConfigData.setWorkflowTemplateId((String) value);
+//                exConfigData.save();
+//            } else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.WORKFLOW_TEMPLATE_VERSION)) {
+//                exConfigData.setWorkflowTemplateVersion((String) value);
+//                exConfigData.save();
+//            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.COMPUTATIONAL_RESOURCE_SCHEDULING)){
+//                ComputationalResourceScheduling resourceScheduling = (ComputationalResourceScheduling)value;
+//                exConfigData.setCpuCount(resourceScheduling.getTotalCPUCount());
+//                exConfigData.setAiravataAutoSchedule(resourceScheduling.isAiravataAutoSchedule());
+//                exConfigData.setOverrideManualSchedule(resourceScheduling.isOverrideManualScheduledParams());
+//                exConfigData.setResourceHostID(resourceScheduling.getResourceHostId());
+//                exConfigData.setNodeCount(resourceScheduling.getNodeCount());
+//                exConfigData.setNumberOfThreads(resourceScheduling.getNumberOfThreads());
+//                exConfigData.setQueueName(resourceScheduling.getQueueName());
+//                exConfigData.setWallTimeLimit(resourceScheduling.getWallTimeLimit());
+//                exConfigData.setJobStartTime(getTime(resourceScheduling.getJobStartTime()));
+//                exConfigData.setPhysicalMemory(resourceScheduling.getTotalPhysicalMemory());
+//                exConfigData.setProjectAccount(resourceScheduling.getComputationalProjectAccount());
+//                exConfigData.save();
+//            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.ADVANCED_INPUT_HANDLING)){
+//                AdvancedInputDataHandling adInputHandling = (AdvancedInputDataHandling)value;
+//                exConfigData.setStageInputsToWDir(adInputHandling.isStageInputFilesToWorkingDir());
+//                exConfigData.setWorkingDirParent(adInputHandling.getWorkingDirectoryParent());
+//                exConfigData.setWorkingDir(adInputHandling.getUniqueWorkingDirectory());
+//                exConfigData.setCleanAfterJob(adInputHandling.isCleanUpWorkingDirAfterJob());
+//                exConfigData.save();
+//            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.ADVANCED_OUTPUT_HANDLING)){
+//                AdvancedOutputDataHandling adOutputHandling = (AdvancedOutputDataHandling)value;
+//                exConfigData.setOutputDataDir(adOutputHandling.getOutputdataDir());
+//                exConfigData.setDataRegURL(adOutputHandling.getDataRegistryURL());
+//                exConfigData.setPersistOutputData(adOutputHandling.isPersistOutputData());
+//                exConfigData.save();
+//            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.QOS_PARAMS)){
+//                QualityOfServiceParams qosParams = (QualityOfServiceParams)value;
+//                exConfigData.setStartExecutionAt(qosParams.getStartExecutionAt());
+//                exConfigData.setExecuteBefore(qosParams.getExecuteBefore());
+//                exConfigData.setNumberOfRetries(qosParams.getNumberofRetries());
+//                exConfigData.save();
+//            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.EXPERIMENT_INPUTS)){
+//                if (value instanceof Map){
+//                    Map<String, String> experimentInputs = (HashMap<String, String>)value;
+//                    List<Resource> exInputs = exBasicData.get(ResourceType.EXPERIMENT_INPUT);
+//                    int i = 0;
+//                    for (String exInputKey : experimentInputs.keySet()){
+//                        ExperimentInputResource exInput = (ExperimentInputResource)exInputs.get(i);
+//                        if (exInput.getExperimentKey().equals(exInputKey)){
+//                            exInput.setValue(experimentInputs.get(exInputKey));
+//                            exInput.save();
+//                        }
+//                        i++;
+//                    }
+//                }
+//            }else {
+//                logger.error("Unsupported field type for Experiment config data");
+//            }
 
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read airavata-server properties", e.getMessage());
@@ -260,87 +263,87 @@ public class ExperimentRegistry {
     public void updateBasicData(BasicMetadata basicMetadata, String expId) throws ApplicationSettingsException {
         GatewayResource gateway = gatewayRegistry.getDefaultGateway();
         WorkerResource worker = userReg.getSysteUser();
-        ExperimentMetadataResource exBasicData = (ExperimentMetadataResource) gateway.get(ResourceType.EXPERIMENT_METADATA, expId);
-        exBasicData.setExperimentName(basicMetadata.getExperimentName());
-        exBasicData.setDescription(basicMetadata.getExperimentDescription());
-        exBasicData.setExecutionUser(basicMetadata.getUserName());
-        exBasicData.setSubmittedDate(getCurrentTimestamp());
-        exBasicData.setShareExp(basicMetadata.isSetShareExperimentPublicly());
-        exBasicData.setProject(worker.getProject(basicMetadata.getProjectID()));
-        exBasicData.save();
+//        ExperimentMetadataResource exBasicData = (ExperimentMetadataResource) gateway.get(ResourceType.EXPERIMENT_METADATA, expId);
+//        exBasicData.setExperimentName(basicMetadata.getExperimentName());
+//        exBasicData.setDescription(basicMetadata.getExperimentDescription());
+//        exBasicData.setExecutionUser(basicMetadata.getUserName());
+//        exBasicData.setSubmittedDate(getCurrentTimestamp());
+//        exBasicData.setShareExp(basicMetadata.isSetShareExperimentPublicly());
+//        exBasicData.setProject(worker.getProject(basicMetadata.getProjectID()));
+//        exBasicData.save();
     }
 
     public void updateExpConfigData(ConfigurationData configData, String expId) throws ApplicationSettingsException {
         GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-        ExperimentMetadataResource exBasicData = (ExperimentMetadataResource) gateway.get(ResourceType.EXPERIMENT_METADATA, expId);
-        ExperimentConfigDataResource exConfigResource = (ExperimentConfigDataResource) exBasicData.get(ResourceType.EXPERIMENT_CONFIG_DATA, expId);
-        BasicMetadata updatedBasicMetadata = configData.getBasicMetadata();
-        if (updatedBasicMetadata != null) {
-            if (updatedBasicMetadata.getExperimentName() != null && !updatedBasicMetadata.getExperimentName().equals("")) {
-                exBasicData.setExperimentName(updatedBasicMetadata.getExperimentName());
-            }
-            if (updatedBasicMetadata.getExperimentDescription() != null && !updatedBasicMetadata.getExperimentDescription().equals("")) {
-                exBasicData.setDescription(updatedBasicMetadata.getExperimentDescription());
-            }
-            if (updatedBasicMetadata.getUserName() != null && !updatedBasicMetadata.getUserName().equals("")) {
-                exBasicData.setExecutionUser(updatedBasicMetadata.getUserName());
-            }
-            exBasicData.setShareExp(updatedBasicMetadata.isSetShareExperimentPublicly());
-            exBasicData.save();
-        }
-        exConfigResource.setExMetadata(exBasicData);
-        exConfigResource.setApplicationID(configData.getApplicationId());
-        exConfigResource.setApplicationVersion(configData.getApplicationVersion());
-        exConfigResource.setWorkflowTemplateId(configData.getWorkflowTemplateId());
-        exConfigResource.setWorkflowTemplateVersion(configData.getWorklfowTemplateVersion());
-
-        ComputationalResourceScheduling resourceScheduling = configData.getComputationalResourceScheduling();
-        if (resourceScheduling != null) {
-            exConfigResource.setCpuCount(resourceScheduling.getTotalCPUCount());
-            exConfigResource.setAiravataAutoSchedule(resourceScheduling.isAiravataAutoSchedule());
-            exConfigResource.setOverrideManualSchedule(resourceScheduling.isOverrideManualScheduledParams());
-            exConfigResource.setResourceHostID(resourceScheduling.getResourceHostId());
-            exConfigResource.setNodeCount(resourceScheduling.getNodeCount());
-            exConfigResource.setNumberOfThreads(resourceScheduling.getNumberOfThreads());
-            exConfigResource.setQueueName(resourceScheduling.getQueueName());
-            exConfigResource.setWallTimeLimit(resourceScheduling.getWallTimeLimit());
-            exConfigResource.setJobStartTime(getTime(resourceScheduling.getJobStartTime()));
-            exConfigResource.setPhysicalMemory(resourceScheduling.getTotalPhysicalMemory());
-            exConfigResource.setProjectAccount(resourceScheduling.getComputationalProjectAccount());
-        }
-
-        AdvancedInputDataHandling inputDataHandling = configData.getAdvanceInputDataHandling();
-        if (inputDataHandling != null) {
-            exConfigResource.setStageInputsToWDir(inputDataHandling.isStageInputFilesToWorkingDir());
-            exConfigResource.setWorkingDirParent(inputDataHandling.getWorkingDirectoryParent());
-            exConfigResource.setWorkingDir(inputDataHandling.getUniqueWorkingDirectory());
-            exConfigResource.setCleanAfterJob(inputDataHandling.isCleanUpWorkingDirAfterJob());
-        }
-
-        AdvancedOutputDataHandling outputDataHandling = configData.getAdvanceOutputDataHandling();
-        if (outputDataHandling != null) {
-            exConfigResource.setOutputDataDir(outputDataHandling.getOutputdataDir());
-            exConfigResource.setDataRegURL(outputDataHandling.getDataRegistryURL());
-            exConfigResource.setPersistOutputData(outputDataHandling.isPersistOutputData());
-        }
-
-        QualityOfServiceParams qosParams = configData.getQosParams();
-        if (qosParams != null) {
-            exConfigResource.setStartExecutionAt(qosParams.getStartExecutionAt());
-            exConfigResource.setExecuteBefore(qosParams.getExecuteBefore());
-            exConfigResource.setNumberOfRetries(qosParams.getNumberofRetries());
-        }
-
-        Map<String, String> experimentInputs = configData.getExperimentInputs();
-        for (String inputKey : experimentInputs.keySet()) {
-            ExperimentInputResource exInputResource = (ExperimentInputResource) exBasicData.create(ResourceType.EXPERIMENT_INPUT);
-            String value = experimentInputs.get(inputKey);
-            exInputResource.setExperimentKey(inputKey);
-            exInputResource.setValue(value);
-            exInputResource.setExperimentMetadataResource(exBasicData);
-            exInputResource.save();
-        }
-        exConfigResource.save();
+//        ExperimentMetadataResource exBasicData = (ExperimentMetadataResource) gateway.get(ResourceType.EXPERIMENT_METADATA, expId);
+//        ExperimentConfigDataResource exConfigResource = (ExperimentConfigDataResource) exBasicData.get(ResourceType.EXPERIMENT_CONFIG_DATA, expId);
+//        BasicMetadata updatedBasicMetadata = configData.getBasicMetadata();
+//        if (updatedBasicMetadata != null) {
+//            if (updatedBasicMetadata.getExperimentName() != null && !updatedBasicMetadata.getExperimentName().equals("")) {
+//                exBasicData.setExperimentName(updatedBasicMetadata.getExperimentName());
+//            }
+//            if (updatedBasicMetadata.getExperimentDescription() != null && !updatedBasicMetadata.getExperimentDescription().equals("")) {
+//                exBasicData.setDescription(updatedBasicMetadata.getExperimentDescription());
+//            }
+//            if (updatedBasicMetadata.getUserName() != null && !updatedBasicMetadata.getUserName().equals("")) {
+//                exBasicData.setExecutionUser(updatedBasicMetadata.getUserName());
+//            }
+//            exBasicData.setShareExp(updatedBasicMetadata.isSetShareExperimentPublicly());
+//            exBasicData.save();
+//        }
+//        exConfigResource.setExMetadata(exBasicData);
+//        exConfigResource.setApplicationID(configData.getApplicationId());
+//        exConfigResource.setApplicationVersion(configData.getApplicationVersion());
+//        exConfigResource.setWorkflowTemplateId(configData.getWorkflowTemplateId());
+//        exConfigResource.setWorkflowTemplateVersion(configData.getWorklfowTemplateVersion());
+//
+//        ComputationalResourceScheduling resourceScheduling = configData.getComputationalResourceScheduling();
+//        if (resourceScheduling != null) {
+//            exConfigResource.setCpuCount(resourceScheduling.getTotalCPUCount());
+//            exConfigResource.setAiravataAutoSchedule(resourceScheduling.isAiravataAutoSchedule());
+//            exConfigResource.setOverrideManualSchedule(resourceScheduling.isOverrideManualScheduledParams());
+//            exConfigResource.setResourceHostID(resourceScheduling.getResourceHostId());
+//            exConfigResource.setNodeCount(resourceScheduling.getNodeCount());
+//            exConfigResource.setNumberOfThreads(resourceScheduling.getNumberOfThreads());
+//            exConfigResource.setQueueName(resourceScheduling.getQueueName());
+//            exConfigResource.setWallTimeLimit(resourceScheduling.getWallTimeLimit());
+//            exConfigResource.setJobStartTime(getTime(resourceScheduling.getJobStartTime()));
+//            exConfigResource.setPhysicalMemory(resourceScheduling.getTotalPhysicalMemory());
+//            exConfigResource.setProjectAccount(resourceScheduling.getComputationalProjectAccount());
+//        }
+//
+//        AdvancedInputDataHandling inputDataHandling = configData.getAdvanceInputDataHandling();
+//        if (inputDataHandling != null) {
+//            exConfigResource.setStageInputsToWDir(inputDataHandling.isStageInputFilesToWorkingDir());
+//            exConfigResource.setWorkingDirParent(inputDataHandling.getWorkingDirectoryParent());
+//            exConfigResource.setWorkingDir(inputDataHandling.getUniqueWorkingDirectory());
+//            exConfigResource.setCleanAfterJob(inputDataHandling.isCleanUpWorkingDirAfterJob());
+//        }
+//
+//        AdvancedOutputDataHandling outputDataHandling = configData.getAdvanceOutputDataHandling();
+//        if (outputDataHandling != null) {
+//            exConfigResource.setOutputDataDir(outputDataHandling.getOutputdataDir());
+//            exConfigResource.setDataRegURL(outputDataHandling.getDataRegistryURL());
+//            exConfigResource.setPersistOutputData(outputDataHandling.isPersistOutputData());
+//        }
+//
+//        QualityOfServiceParams qosParams = configData.getQosParams();
+//        if (qosParams != null) {
+//            exConfigResource.setStartExecutionAt(qosParams.getStartExecutionAt());
+//            exConfigResource.setExecuteBefore(qosParams.getExecuteBefore());
+//            exConfigResource.setNumberOfRetries(qosParams.getNumberofRetries());
+//        }
+//
+//        Map<String, String> experimentInputs = configData.getExperimentInputs();
+//        for (String inputKey : experimentInputs.keySet()) {
+//            ExperimentInputResource exInputResource = (ExperimentInputResource) exBasicData.create(ResourceType.EXPERIMENT_INPUT);
+//            String value = experimentInputs.get(inputKey);
+//            exInputResource.setExperimentKey(inputKey);
+//            exInputResource.setValue(value);
+//            exInputResource.setExperimentMetadataResource(exBasicData);
+//            exInputResource.save();
+//        }
+//        exConfigResource.save();
     }
 
     public List<BasicMetadata> getExperimentMetaDataList (String fieldName, Object value){
@@ -351,9 +354,9 @@ public class ExperimentRegistry {
                 WorkerResource worker = userRegistry.getExistingUser(ServerSettings.getSystemUserGateway(), (String)value);
                 List<Resource> resources = worker.get(ResourceType.EXPERIMENT_METADATA);
                 for (Resource resource : resources){
-                    ExperimentMetadataResource ex =  (ExperimentMetadataResource)resource;
-                    BasicMetadata basicMetadata = ThriftDataModelConversion.getBasicMetadata(ex);
-                    metadataList.add(basicMetadata);
+//                    ExperimentMetadataResource ex =  (ExperimentMetadataResource)resource;
+//                    BasicMetadata basicMetadata = ThriftDataModelConversion.getBasicMetadata(ex);
+//                    metadataList.add(basicMetadata);
                 }
                 return metadataList;
             }else {
@@ -371,13 +374,13 @@ public class ExperimentRegistry {
             gatewayRegistry = new GatewayRegistry();
             GatewayResource gateway = gatewayRegistry.getDefaultGateway();
             if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.EXPERIMENT_ID)){
-                ExperimentMetadataResource exBasicData = (ExperimentMetadataResource) gateway.get(ResourceType.EXPERIMENT_METADATA, value);
-                List<Resource> resources = exBasicData.get(ResourceType.EXPERIMENT_CONFIG_DATA);
-                for (Resource resource : resources){
-                    ExperimentConfigDataResource configDataResource = (ExperimentConfigDataResource)resource;
-                    ConfigurationData conData = ThriftDataModelConversion.getConfigurationData(configDataResource);
-                    configDataList.add(conData);
-                }
+//                ExperimentMetadataResource exBasicData = (ExperimentMetadataResource) gateway.get(ResourceType.EXPERIMENT_METADATA, value);
+//                List<Resource> resources = exBasicData.get(ResourceType.EXPERIMENT_CONFIG_DATA);
+//                for (Resource resource : resources){
+//                    ExperimentConfigDataResource configDataResource = (ExperimentConfigDataResource)resource;
+//                    ConfigurationData conData = ThriftDataModelConversion.getConfigurationData(configDataResource);
+//                    configDataList.add(conData);
+//                }
                 return configDataList;
             }else {
                 logger.error("Unsupported field type for Experiment meta data");
@@ -392,24 +395,24 @@ public class ExperimentRegistry {
         try {
             gatewayRegistry = new GatewayRegistry();
             GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentMetadataResource exBasicData = (ExperimentMetadataResource) gateway.get(ResourceType.EXPERIMENT_METADATA, expId);
-            if (fieldName == null){
-                return ThriftDataModelConversion.getBasicMetadata(exBasicData);
-            }else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.USER_NAME)){
-                return exBasicData.getExecutionUser();
-            }else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.EXPERIMENT_NAME)){
-                return exBasicData.getExperimentName();
-            }else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.EXPERIMENT_DESC)){
-                return exBasicData.getDescription();
-            }else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.SHARE_EXP_PUBLIC)){
-                return exBasicData.isShareExp();
-            }else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.PROJECT_NAME)){
-                return exBasicData.getProject().getName();
-            }else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.SUBMITTED_DATE)){
-                return exBasicData.getSubmittedDate();
-            }else {
-                logger.error("Unsupported field name for experiment basic data..");
-            }
+//            ExperimentMetadataResource exBasicData = (ExperimentMetadataResource) gateway.get(ResourceType.EXPERIMENT_METADATA, expId);
+//            if (fieldName == null){
+//                return ThriftDataModelConversion.getBasicMetadata(exBasicData);
+//            }else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.USER_NAME)){
+//                return exBasicData.getExecutionUser();
+//            }else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.EXPERIMENT_NAME)){
+//                return exBasicData.getExperimentName();
+//            }else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.EXPERIMENT_DESC)){
+//                return exBasicData.getDescription();
+//            }else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.SHARE_EXP_PUBLIC)){
+//                return exBasicData.isShareExp();
+//            }else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.PROJECT_NAME)){
+//                return exBasicData.getProject().getName();
+//            }else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.SUBMITTED_DATE)){
+//                return exBasicData.getSubmittedDate();
+//            }else {
+//                logger.error("Unsupported field name for experiment basic data..");
+//            }
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read airavata-server properties", e.getMessage());
         }
@@ -420,31 +423,31 @@ public class ExperimentRegistry {
         try {
             gatewayRegistry = new GatewayRegistry();
             GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentMetadataResource exBasicData = (ExperimentMetadataResource) gateway.get(ResourceType.EXPERIMENT_METADATA, expId);
-            ExperimentConfigDataResource exCongfig = (ExperimentConfigDataResource)exBasicData.get(ResourceType.EXPERIMENT_CONFIG_DATA, expId);
-            if (fieldName == null){
-                return ThriftDataModelConversion.getConfigurationData(exCongfig);
-            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.APPLICATION_ID)){
-                return exCongfig.getApplicationID();
-            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.APPLICATION_VERSION)){
-                return exCongfig.getApplicationVersion();
-            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.WORKFLOW_TEMPLATE_ID)){
-                return exCongfig.getWorkflowTemplateId();
-            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.WORKFLOW_TEMPLATE_VERSION)){
-                return exCongfig.getWorkflowTemplateVersion();
-            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.EXPERIMENT_INPUTS)){
-                return ThriftDataModelConversion.getExperimentInputs(exBasicData);
-            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.COMPUTATIONAL_RESOURCE_SCHEDULING)){
-                return ThriftDataModelConversion.getComputationalResourceScheduling(exCongfig);
-            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.ADVANCED_INPUT_HANDLING)){
-                return ThriftDataModelConversion.getAdvanceInputDataHandling(exCongfig);
-            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.ADVANCED_OUTPUT_HANDLING)){
-                return ThriftDataModelConversion.getAdvanceOutputDataHandling(exCongfig);
-            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.QOS_PARAMS)){
-                return ThriftDataModelConversion.getQOSParams(exCongfig);
-            }else {
-                logger.error("Unsupported field name for experiment configuration data..");
-            }
+//            ExperimentMetadataResource exBasicData = (ExperimentMetadataResource) gateway.get(ResourceType.EXPERIMENT_METADATA, expId);
+//            ExperimentConfigDataResource exCongfig = (ExperimentConfigDataResource)exBasicData.get(ResourceType.EXPERIMENT_CONFIG_DATA, expId);
+//            if (fieldName == null){
+//                return ThriftDataModelConversion.getConfigurationData(exCongfig);
+//            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.APPLICATION_ID)){
+//                return exCongfig.getApplicationID();
+//            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.APPLICATION_VERSION)){
+//                return exCongfig.getApplicationVersion();
+//            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.WORKFLOW_TEMPLATE_ID)){
+//                return exCongfig.getWorkflowTemplateId();
+//            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.WORKFLOW_TEMPLATE_VERSION)){
+//                return exCongfig.getWorkflowTemplateVersion();
+//            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.EXPERIMENT_INPUTS)){
+//                return ThriftDataModelConversion.getExperimentInputs(exBasicData);
+//            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.COMPUTATIONAL_RESOURCE_SCHEDULING)){
+//                return ThriftDataModelConversion.getComputationalResourceScheduling(exCongfig);
+//            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.ADVANCED_INPUT_HANDLING)){
+//                return ThriftDataModelConversion.getAdvanceInputDataHandling(exCongfig);
+//            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.ADVANCED_OUTPUT_HANDLING)){
+//                return ThriftDataModelConversion.getAdvanceOutputDataHandling(exCongfig);
+//            }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.QOS_PARAMS)){
+//                return ThriftDataModelConversion.getQOSParams(exCongfig);
+//            }else {
+//                logger.error("Unsupported field name for experiment configuration data..");
+//            }
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read airavata-server properties..", e.getMessage());
         }
@@ -460,18 +463,18 @@ public class ExperimentRegistry {
                     logger.error("You should use an existing gateway in order to retrieve experiments..");
                     return null;
                 } else {
-                    List<Resource> resources = gateway.get(ResourceType.EXPERIMENT_METADATA);
-                    for (Resource resource : resources) {
-                        String expID = ((ExperimentMetadataResource) resource).getExpID();
-                        expIDs.add(expID);
-                    }
+//                    List<Resource> resources = gateway.get(ResourceType.EXPERIMENT_METADATA);
+//                    for (Resource resource : resources) {
+//                        String expID = ((ExperimentMetadataResource) resource).getExpID();
+//                        expIDs.add(expID);
+//                    }
                 }
             } else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.USER_NAME)) {
                 WorkerResource workerResource = userReg.getExistingUser(ServerSettings.getSystemUserGateway(), (String)value);
                 List<Resource> resources = workerResource.get(ResourceType.EXPERIMENT_METADATA);
                 for (Resource resource : resources) {
-                    String expID = ((ExperimentMetadataResource) resource).getExpID();
-                    expIDs.add(expID);
+//                    String expID = ((ExperimentMetadataResource) resource).getExpID();
+//                    expIDs.add(expID);
                 }
             }
         } catch (ApplicationSettingsException e) {
@@ -493,8 +496,8 @@ public class ExperimentRegistry {
     public void removeExperimentConfigData(String experimentId) {
         try {
             GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
-            ExperimentMetadataResource exBasicData = (ExperimentMetadataResource)defaultGateway.get(ResourceType.EXPERIMENT_METADATA, experimentId);
-            exBasicData.remove(ResourceType.EXPERIMENT_CONFIG_DATA, experimentId);
+//            ExperimentMetadataResource exBasicData = (ExperimentMetadataResource)defaultGateway.get(ResourceType.EXPERIMENT_METADATA, experimentId);
+//            exBasicData.remove(ResourceType.EXPERIMENT_CONFIG_DATA, experimentId);
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read airavata-server properties..", e.getMessage());
         }
@@ -514,8 +517,8 @@ public class ExperimentRegistry {
     public boolean isExperimentConfigDataExist(String expID) {
         try {
             GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
-            ExperimentMetadataResource exBasicData = (ExperimentMetadataResource)defaultGateway.get(ResourceType.EXPERIMENT_METADATA, expID);
-            exBasicData.isExists(ResourceType.EXPERIMENT_CONFIG_DATA, expID);
+//            ExperimentMetadataResource exBasicData = (ExperimentMetadataResource)defaultGateway.get(ResourceType.EXPERIMENT_METADATA, expID);
+//            exBasicData.isExists(ResourceType.EXPERIMENT_CONFIG_DATA, expID);
             return true;
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read airavata-server properties..", e.getMessage());

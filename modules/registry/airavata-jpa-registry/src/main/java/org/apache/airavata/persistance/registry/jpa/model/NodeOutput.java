@@ -24,60 +24,32 @@ package org.apache.airavata.persistance.registry.jpa.model;
 import javax.persistence.*;
 
 @Entity
-@Table(name ="EXPERIMENT_INPUT")
-@IdClass(Experiment_Input_PK.class)
-public class Experiment_Input {
+@Table(name = "NODE_OUTPUT")
+@IdClass(NodeOutput_PK.class)
+public class NodeOutput {
     @Id
-    @Column(name = "EXPERIMENT_ID")
-    private String experiment_id;
-
+    @Column(name = "NODE_INSTANCE_ID")
+    private String nodeId;
     @Id
-    @Column(name = "INPUT_KEY")
-    private String ex_key;
-
+    @Column(name = "OUTPUT_KEY")
+    private String outputKey;
+    @Column(name = "OUTPUT_KEY_TYPE")
+    private String outputKeyType;
+    @Column(name = "METADATA")
+    private String metadata;
     @Column(name = "VALUE")
     private String value;
 
-    @Column(name = "INPUT_TYPE")
-    private String inputType;
+    @ManyToOne(cascade= CascadeType.MERGE)
+    @JoinColumn(name = "NODE_INSTANCE_ID")
+    private WorkflowNodeDetail node;
 
-    @Column(name = "METADATA")
-    private String metadata;
-
-    @ManyToOne
-    @JoinColumn(name = "EXPERIMENT_ID")
-    private Experiment experiment;
-
-    public String getExperiment_id() {
-        return experiment_id;
+    public String getNodeId() {
+        return nodeId;
     }
 
-    public void setExperiment_id(String experiment_id) {
-        this.experiment_id = experiment_id;
-    }
-
-    public String getEx_key() {
-        return ex_key;
-    }
-
-    public void setEx_key(String ex_key) {
-        this.ex_key = ex_key;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public String getInputType() {
-        return inputType;
-    }
-
-    public void setInputType(String inputType) {
-        this.inputType = inputType;
+    public void setNodeId(String nodeId) {
+        this.nodeId = nodeId;
     }
 
     public String getMetadata() {
@@ -88,11 +60,35 @@ public class Experiment_Input {
         this.metadata = metadata;
     }
 
-    public Experiment getExperiment() {
-        return experiment;
+    public String getValue() {
+        return value;
     }
 
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public WorkflowNodeDetail getNode() {
+        return node;
+    }
+
+    public void setNode(WorkflowNodeDetail node) {
+        this.node = node;
+    }
+
+    public String getOutputKey() {
+        return outputKey;
+    }
+
+    public void setOutputKey(String outputKey) {
+        this.outputKey = outputKey;
+    }
+
+    public String getOutputKeyType() {
+        return outputKeyType;
+    }
+
+    public void setOutputKeyType(String outputKeyType) {
+        this.outputKeyType = outputKeyType;
     }
 }

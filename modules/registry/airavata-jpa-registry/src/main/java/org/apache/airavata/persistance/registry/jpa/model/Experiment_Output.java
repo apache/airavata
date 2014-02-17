@@ -32,14 +32,18 @@ public class Experiment_Output {
     private String experiment_id;
 
     @Id
-    @Column(name = "EX_KEY")
+    @Column(name = "OUTPUT_KEY")
     private String ex_key;
     @Column(name = "VALUE")
     private String value;
+    @Column(name = "METADATA")
+    private String metadata;
+    @Column(name = "OUTPUT_KEY_TYPE")
+    private String outputKeyType;
 
     @ManyToOne
     @JoinColumn(name = "EXPERIMENT_ID")
-    private Experiment_Metadata experiment_metadata;
+    private Experiment experiment;
 
     public String getExperiment_id() {
         return experiment_id;
@@ -47,14 +51,6 @@ public class Experiment_Output {
 
     public void setExperiment_id(String experiment_id) {
         this.experiment_id = experiment_id;
-    }
-
-    public Experiment_Metadata getExperiment_metadata() {
-        return experiment_metadata;
-    }
-
-    public void setExperiment_metadata(Experiment_Metadata experiment_metadata) {
-        this.experiment_metadata = experiment_metadata;
     }
 
     public String getEx_key() {
@@ -71,5 +67,29 @@ public class Experiment_Output {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public String getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(String metadata) {
+        this.metadata = metadata;
+    }
+
+    public String getOutputKeyType() {
+        return outputKeyType;
+    }
+
+    public void setOutputKeyType(String outputKeyType) {
+        this.outputKeyType = outputKeyType;
+    }
+
+    public Experiment getExperiment() {
+        return experiment;
+    }
+
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
     }
 }

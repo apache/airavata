@@ -17,23 +17,21 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
-public class Node_DataPK {
-    private String workflow_instanceID;
-    private String node_id;
-    private int execution_index;
+public class ApplicationInput_PK {
+    private String taskId;
+    private String inputKey;
 
-    public Node_DataPK() {
-        ;
+    public ApplicationInput_PK(String inputKey, String taskId) {
+        this.inputKey = inputKey;
+        this.taskId = taskId;
     }
 
-    public Node_DataPK(String workflow_instanceID, String node_id, int execution_index) {
-        this.workflow_instanceID = workflow_instanceID;
-        this.node_id = node_id;
-        this.execution_index = execution_index;
+    public ApplicationInput_PK() {
+        ;
     }
 
     @Override
@@ -46,27 +44,20 @@ public class Node_DataPK {
         return 1;
     }
 
-    public String getWorkflow_instanceID() {
-        return workflow_instanceID;
+
+    public String getTaskId() {
+        return taskId;
     }
 
-    public void setWorkflow_instanceID(String workflow_instanceID) {
-        this.workflow_instanceID = workflow_instanceID;
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
-    public String getNode_id() {
-        return node_id;
+    public String getInputKey() {
+        return inputKey;
     }
 
-    public void setNode_id(String node_id) {
-        this.node_id = node_id;
-    }
-
-    public int getExecution_index() {
-        return execution_index;
-    }
-
-    public void setExecution_index(int execution_index) {
-        this.execution_index = execution_index;
+    public void setInputKey(String inputKey) {
+        this.inputKey = inputKey;
     }
 }
