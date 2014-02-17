@@ -68,7 +68,8 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
     }
 
     //FIXME: (MEP) This method is pretty gruesome.  If we really expect multiple implementations of the JobSubmitter
-    // interface and at least some of them will need to do the stuff in this method, then we need a parent class GenericJobSubmitterImpl.java (maybe abstract) that includes launchGfacWithExperimentID() so that subclasses can inherit it.
+    // interface and at least some of them will need to do the stuff in this method, then we need a parent class
+    // GenericJobSubmitterImpl.java (maybe abstract) that includes launchGfacWithExperimentID() so that subclasses can inherit it.
     private void launchGfacWithExperimentID(String experimentID) throws OrchestratorException {
         Registry newRegistry = orchestratorContext.getNewRegistry();
         try {

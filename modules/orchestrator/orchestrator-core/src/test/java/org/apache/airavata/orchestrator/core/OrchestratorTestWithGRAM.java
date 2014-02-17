@@ -20,7 +20,6 @@
 */
 package org.apache.airavata.orchestrator.core;
 
-import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.orchestrator.cpi.Orchestrator;
@@ -29,6 +28,7 @@ import org.apache.airavata.persistance.registry.jpa.impl.RegistryImpl;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.registry.cpi.ParentDataType;
 import org.apache.airavata.registry.cpi.Registry;
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeTest;
@@ -37,9 +37,10 @@ import org.testng.annotations.Test;
 import java.util.*;
 
 public class OrchestratorTestWithGRAM extends BaseOrchestratorTest {
-    private static final Logger log = LoggerFactory.getLogger(NewOrchestratorTest.class);
+    private static final Logger log = LoggerFactory.getLogger(OrchestratorTestWithGRAM.class);
 
     private Orchestrator orchestrator;
+
     private String experimentID;
 
     @BeforeTest
@@ -47,12 +48,10 @@ public class OrchestratorTestWithGRAM extends BaseOrchestratorTest {
         AiravataUtils.setExecutionAsServer();
         super.setUp();
         orchestrator = new SimpleOrchestratorImpl();
-        createJobRequestWithDocuments(super.getDocumentCreator().getAiravataAPI());
+        createJobRequestWithDocuments();
     }
 
-    private void createJobRequestWithDocuments(AiravataAPI airavataAPI) {
-
-
+    private void createJobRequestWithDocuments() {
         //Using new airavata-api methods to store experiment metadata
         BasicMetadata basicMetadata = new BasicMetadata();
         basicMetadata.setExperimentName("test-trestles");
@@ -68,8 +67,6 @@ public class OrchestratorTestWithGRAM extends BaseOrchestratorTest {
 
         HashMap<String, String> exInputs = new HashMap<String, String>();
         exInputs.put("echo_input", "echo_output=hello");
-        exInputs.put("copy_input", "file:///tmp/tmpstrace");
-        exInputs.put("outputlocation", "./outputData/.");
 
         configurationData.setExperimentInputs(exInputs);
         configurationData.setAdvanceInputDataHandling(advancedInputDataHandling);
@@ -86,14 +83,14 @@ public class OrchestratorTestWithGRAM extends BaseOrchestratorTest {
     @Test
     public void noDescriptorTest() throws Exception {
 
-//        boolean b = orchestrator.launchExperiment(experimentID);
+        boolean b = orchestrator.launchExperiment(experimentID);
 
-//        if (b) {
-//            This means orchestrator successfully accepted the job
-//            Assert.assertTrue(true);
-//        } else {
-//            Assert.assertFalse(true);
-//        }
+        Thread.sleep(100000);
+        if (b) {
+            Assert.assertTrue(true);
+        } else {
+            Assert.assertFalse(true);
+        }
     }
 
 

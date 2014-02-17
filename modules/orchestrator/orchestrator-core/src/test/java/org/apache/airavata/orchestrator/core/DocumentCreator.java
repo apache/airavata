@@ -39,8 +39,8 @@ public class DocumentCreator {
     private String hpcHostAddress = "trestles.sdsc.edu";
     private String gramHostName = "gram-trestles";
     private String gsiSshHostName = "gsissh-trestles";
-    private String gridftpAddress = "gsiftp://trestles.sdsc.edu:2811/";
-    private String gramAddress = "trestles-login2.sdsc.edu:2119/jobmanager-pbstest2";
+    private String gridftpAddress = "gsiftp://trestles-dm1.sdsc.edu:2811";
+    private String gramAddress = "trestles-login1.sdsc.edu:2119/jobmanager-pbstest2";
 
 
     public DocumentCreator(AiravataAPI airavataAPI) {
@@ -129,36 +129,32 @@ public class DocumentCreator {
         serv.getType().setName(serviceName);
 
         List<InputParameterType> inputList = new ArrayList<InputParameterType>();
+        List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
 
         InputParameterType input = InputParameterType.Factory.newInstance();
         input.setParameterName("echo_input");
-        input.setParameterType(StringParameterType.Factory.newInstance());
-        inputList.add(input);
+        ParameterType parameterType = input.addNewParameterType();
+        parameterType.setType(DataType.STRING);
+        parameterType.setName("String");
 
-        InputParameterType input1 = InputParameterType.Factory.newInstance();
-        input.setParameterName("myinput");
-        URIParameterType uriType = URIParameterType.Factory.newInstance();
-        uriType.setValue("gsiftp://gridftp1.ls4.tacc.utexas.edu:2811//home1/01437/ogce/gram_20130215.log");
-        input.setParameterType(uriType);
-        inputList.add(input1);
-
-
-        InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList.size()]);
-        List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
         OutputParameterType output = OutputParameterType.Factory.newInstance();
         output.setParameterName("echo_output");
-        output.setParameterType(StringParameterType.Factory.newInstance());
+        ParameterType parameterType1 = output.addNewParameterType();
+        parameterType1.setType(DataType.STRING);
+        parameterType1.setName("String");
+
+        inputList.add(input);
         outputList.add(output);
 
-        OutputParameterType[] outputParamList = outputList
-                .toArray(new OutputParameterType[outputList.size()]);
+        InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList.size()]);
+        OutputParameterType[] outputParamList = outputList.toArray(new OutputParameterType[outputList.size()]);
 
         serv.getType().setInputParametersArray(inputParamList);
         serv.getType().setOutputParametersArray(outputParamList);
         try {
             airavataAPI.getApplicationManager().saveServiceDescription(serv);
         } catch (AiravataAPIInvocationException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
 
         /*
@@ -188,7 +184,7 @@ public class DocumentCreator {
         /*
            * Default tmp location
            */
-        String tempDir = "/scratch/01437/ogce/test/";
+        String tempDir = "/home/ogce/scratch";
         String date = (new Date()).toString();
         date = date.replaceAll(" ", "_");
         date = date.replaceAll(":", "_");
@@ -196,7 +192,6 @@ public class DocumentCreator {
         tempDir = tempDir + File.separator
                 + "SimpleEcho" + "_" + date + "_" + UUID.randomUUID();
 
-        System.out.println(tempDir);
         app.setScratchWorkingDirectory(tempDir);
         app.setStaticWorkingDirectory(tempDir);
         app.setInputDataDirectory(tempDir + File.separator + "inputData");
@@ -230,29 +225,26 @@ public class DocumentCreator {
         serv.getType().setName(serviceName);
 
         List<InputParameterType> inputList = new ArrayList<InputParameterType>();
+        List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
+
 
         InputParameterType input = InputParameterType.Factory.newInstance();
         input.setParameterName("echo_input");
-        input.setParameterType(StringParameterType.Factory.newInstance());
-        inputList.add(input);
+        ParameterType parameterType = input.addNewParameterType();
+        parameterType.setType(DataType.STRING);
+        parameterType.setName("String");
 
-        InputParameterType input1 = InputParameterType.Factory.newInstance();
-        input.setParameterName("myinput");
-        URIParameterType uriType = URIParameterType.Factory.newInstance();
-        uriType.setValue("gsiftp://gridftp1.ls4.tacc.utexas.edu:2811//home1/01437/ogce/gram_20130215.log");
-        input.setParameterType(uriType);
-        inputList.add(input1);
-
-
-        InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList.size()]);
-        List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
         OutputParameterType output = OutputParameterType.Factory.newInstance();
         output.setParameterName("echo_output");
-        output.setParameterType(StringParameterType.Factory.newInstance());
+        ParameterType parameterType1 = output.addNewParameterType();
+        parameterType1.setType(DataType.STRING);
+        parameterType1.setName("String");
+
+        inputList.add(input);
         outputList.add(output);
 
-        OutputParameterType[] outputParamList = outputList
-                .toArray(new OutputParameterType[outputList.size()]);
+        InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList.size()]);
+        OutputParameterType[] outputParamList = outputList.toArray(new OutputParameterType[outputList.size()]);
 
         serv.getType().setInputParametersArray(inputParamList);
         serv.getType().setOutputParametersArray(outputParamList);
@@ -289,7 +281,7 @@ public class DocumentCreator {
         /*
            * Default tmp location
            */
-        String tempDir = "/scratch/01437/ogce/test/";
+        String tempDir = "/home/ogce/scratch";
         String date = (new Date()).toString();
         date = date.replaceAll(" ", "_");
         date = date.replaceAll(":", "_");
@@ -297,17 +289,16 @@ public class DocumentCreator {
         tempDir = tempDir + File.separator
                 + "SimpleEcho" + "_" + date + "_" + UUID.randomUUID();
 
-        System.out.println(tempDir);
         app.setScratchWorkingDirectory(tempDir);
         app.setStaticWorkingDirectory(tempDir);
         app.setInputDataDirectory(tempDir + File.separator + "inputData");
         app.setOutputDataDirectory(tempDir + File.separator + "outputData");
         app.setStandardOutput(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stdout");
         app.setStandardError(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stderr");
-
+        app.setInstalledParentPath("/opt/torque/bin/");
 
         try {
-            airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, gramHostName, appDesc);
+            airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, gsiSshHostName, appDesc);
         } catch (AiravataAPIInvocationException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
