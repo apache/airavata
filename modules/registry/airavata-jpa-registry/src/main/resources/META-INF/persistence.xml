@@ -33,18 +33,24 @@
         <class>org.apache.airavata.persistance.registry.jpa.model.Host_Descriptor</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.Service_Descriptor</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.Application_Descriptor</class>
-        <class>org.apache.airavata.persistance.registry.jpa.model.Experiment_Metadata</class>
-        <class>org.apache.airavata.persistance.registry.jpa.model.Experiment_Configuration_Data</class>
-        <class>org.apache.airavata.persistance.registry.jpa.model.Experiment_Summary</class>
+        <class>org.apache.airavata.persistance.registry.jpa.model.Experiment</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.Experiment_Input</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.Experiment_Output</class>
-		<class>org.apache.airavata.persistance.registry.jpa.model.Workflow_Data</class>
-		<class>org.apache.airavata.persistance.registry.jpa.model.Node_Data</class>
-		<class>org.apache.airavata.persistance.registry.jpa.model.Gram_Data</class>
-		<class>org.apache.airavata.persistance.registry.jpa.model.Execution_Error</class>
-		<class>org.apache.airavata.persistance.registry.jpa.model.GFac_Job_Data</class>
-		<class>org.apache.airavata.persistance.registry.jpa.model.GFac_Job_Status</class>
-		<class>org.apache.airavata.persistance.registry.jpa.model.Orchestrator</class>
+        <class>org.apache.airavata.persistance.registry.jpa.model.WorkflowNodeDetail</class>
+        <class>org.apache.airavata.persistance.registry.jpa.model.TaskDetail</class>
+		<class>org.apache.airavata.persistance.registry.jpa.model.ErrorDetails</class>
+		<class>org.apache.airavata.persistance.registry.jpa.model.ApplicationInput</class>
+		<class>org.apache.airavata.persistance.registry.jpa.model.ApplicationOutput</class>
+		<class>org.apache.airavata.persistance.registry.jpa.model.NodeInput</class>
+		<class>org.apache.airavata.persistance.registry.jpa.model.NodeOutput</class>
+		<class>org.apache.airavata.persistance.registry.jpa.model.JobDetail</class>
+		<class>org.apache.airavata.persistance.registry.jpa.model.DataTransferDetail</class>
+		<class>org.apache.airavata.persistance.registry.jpa.model.Status</class>
+		<class>org.apache.airavata.persistance.registry.jpa.model.ExperimentConfigData</class>
+		<class>org.apache.airavata.persistance.registry.jpa.model.Computational_Resource_Scheduling</class>
+		<class>org.apache.airavata.persistance.registry.jpa.model.AdvancedInputDataHandling</class>
+		<class>org.apache.airavata.persistance.registry.jpa.model.AdvancedOutputDataHandling</class>
+		<class>org.apache.airavata.persistance.registry.jpa.model.QosParam</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <!--properties>
             <property name="openjpa.ConnectionURL"

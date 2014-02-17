@@ -22,70 +22,65 @@
 package org.apache.airavata.persistance.registry.jpa.model;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 @Entity
-@Table(name ="EXPERIMENT_INPUT")
-@IdClass(Experiment_Input_PK.class)
-public class Experiment_Input {
+@Table(name = "TASK_DETAIL")
+public class TaskDetail {
     @Id
-    @Column(name = "EXPERIMENT_ID")
-    private String experiment_id;
+    @Column(name = "TASK_ID")
+    private String taskId;
+    @Column(name = "NODE_INSTANCE_ID")
+    private String nodeId;
+    @Column(name = "CREATION_TIME")
+    private Timestamp creationTime;
+    @Column(name = "APPLICATION_ID")
+    private String appId;
+    @Column(name = "APPLICATION_VERSION")
+    private String appVersion;
 
-    @Id
-    @Column(name = "INPUT_KEY")
-    private String ex_key;
-
-    @Column(name = "VALUE")
-    private String value;
-
-    @Column(name = "INPUT_TYPE")
-    private String inputType;
-
-    @Column(name = "METADATA")
-    private String metadata;
-
-    @ManyToOne
+    @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "EXPERIMENT_ID")
     private Experiment experiment;
 
-    public String getExperiment_id() {
-        return experiment_id;
+    public String getTaskId() {
+        return taskId;
     }
 
-    public void setExperiment_id(String experiment_id) {
-        this.experiment_id = experiment_id;
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
-    public String getEx_key() {
-        return ex_key;
+    public String getNodeId() {
+        return nodeId;
     }
 
-    public void setEx_key(String ex_key) {
-        this.ex_key = ex_key;
+    public void setNodeId(String nodeId) {
+        this.nodeId = nodeId;
     }
 
-    public String getValue() {
-        return value;
+    public Timestamp getCreationTime() {
+        return creationTime;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setCreationTime(Timestamp creationTime) {
+        this.creationTime = creationTime;
     }
 
-    public String getInputType() {
-        return inputType;
+    public String getAppId() {
+        return appId;
     }
 
-    public void setInputType(String inputType) {
-        this.inputType = inputType;
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 
-    public String getMetadata() {
-        return metadata;
+    public String getAppVersion() {
+        return appVersion;
     }
 
-    public void setMetadata(String metadata) {
-        this.metadata = metadata;
+    public void setAppVersion(String appVersion) {
+        this.appVersion = appVersion;
     }
 
     public Experiment getExperiment() {

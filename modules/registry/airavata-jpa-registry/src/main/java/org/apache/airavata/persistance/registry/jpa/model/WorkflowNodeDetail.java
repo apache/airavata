@@ -22,70 +22,55 @@
 package org.apache.airavata.persistance.registry.jpa.model;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 @Entity
-@Table(name ="EXPERIMENT_INPUT")
-@IdClass(Experiment_Input_PK.class)
-public class Experiment_Input {
-    @Id
+@Table(name = "WORKFLOW_NODE_DETAIL")
+public class WorkflowNodeDetail {
     @Column(name = "EXPERIMENT_ID")
-    private String experiment_id;
-
+    private String expId;
     @Id
-    @Column(name = "INPUT_KEY")
-    private String ex_key;
+    @Column(name = "NODE_INSTANCE_ID")
+    private String nodeId;
+    @Column(name = "CREATION_TIME")
+    private Timestamp creationTime;
+    @Column(name = "NODE_NAME")
+    private String nodeName;
 
-    @Column(name = "VALUE")
-    private String value;
-
-    @Column(name = "INPUT_TYPE")
-    private String inputType;
-
-    @Column(name = "METADATA")
-    private String metadata;
-
-    @ManyToOne
+    @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "EXPERIMENT_ID")
     private Experiment experiment;
 
-    public String getExperiment_id() {
-        return experiment_id;
+    public String getExpId() {
+        return expId;
     }
 
-    public void setExperiment_id(String experiment_id) {
-        this.experiment_id = experiment_id;
+    public void setExpId(String expId) {
+        this.expId = expId;
     }
 
-    public String getEx_key() {
-        return ex_key;
+    public String getNodeId() {
+        return nodeId;
     }
 
-    public void setEx_key(String ex_key) {
-        this.ex_key = ex_key;
+    public void setNodeId(String nodeId) {
+        this.nodeId = nodeId;
     }
 
-    public String getValue() {
-        return value;
+    public Timestamp getCreationTime() {
+        return creationTime;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setCreationTime(Timestamp creationTime) {
+        this.creationTime = creationTime;
     }
 
-    public String getInputType() {
-        return inputType;
+    public String getNodeName() {
+        return nodeName;
     }
 
-    public void setInputType(String inputType) {
-        this.inputType = inputType;
-    }
-
-    public String getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(String metadata) {
-        this.metadata = metadata;
+    public void setNodeName(String nodeName) {
+        this.nodeName = nodeName;
     }
 
     public Experiment getExperiment() {
