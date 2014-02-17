@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("AdvancedInputDataHandling");
 
   private static final org.apache.thrift.protocol.TField STAGE_INPUT_FILES_TO_WORKING_DIR_FIELD_DESC = new org.apache.thrift.protocol.TField("stageInputFilesToWorkingDir", org.apache.thrift.protocol.TType.BOOL, (short)1);
-  private static final org.apache.thrift.protocol.TField WORKING_DIRECTORY_PARENT_FIELD_DESC = new org.apache.thrift.protocol.TField("workingDirectoryParent", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField PARENT_WORKING_DIRECTORY_FIELD_DESC = new org.apache.thrift.protocol.TField("parentWorkingDirectory", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField UNIQUE_WORKING_DIRECTORY_FIELD_DESC = new org.apache.thrift.protocol.TField("uniqueWorkingDirectory", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField CLEAN_UP_WORKING_DIR_AFTER_JOB_FIELD_DESC = new org.apache.thrift.protocol.TField("cleanUpWorkingDirAfterJob", org.apache.thrift.protocol.TType.BOOL, (short)4);
 
@@ -67,14 +67,14 @@ import org.slf4j.LoggerFactory;
   }
 
   private boolean stageInputFilesToWorkingDir; // optional
-  private String workingDirectoryParent; // optional
+  private String parentWorkingDirectory; // optional
   private String uniqueWorkingDirectory; // optional
   private boolean cleanUpWorkingDirAfterJob; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     STAGE_INPUT_FILES_TO_WORKING_DIR((short)1, "stageInputFilesToWorkingDir"),
-    WORKING_DIRECTORY_PARENT((short)2, "workingDirectoryParent"),
+    PARENT_WORKING_DIRECTORY((short)2, "parentWorkingDirectory"),
     UNIQUE_WORKING_DIRECTORY((short)3, "uniqueWorkingDirectory"),
     CLEAN_UP_WORKING_DIR_AFTER_JOB((short)4, "cleanUpWorkingDirAfterJob");
 
@@ -93,8 +93,8 @@ import org.slf4j.LoggerFactory;
       switch(fieldId) {
         case 1: // STAGE_INPUT_FILES_TO_WORKING_DIR
           return STAGE_INPUT_FILES_TO_WORKING_DIR;
-        case 2: // WORKING_DIRECTORY_PARENT
-          return WORKING_DIRECTORY_PARENT;
+        case 2: // PARENT_WORKING_DIRECTORY
+          return PARENT_WORKING_DIRECTORY;
         case 3: // UNIQUE_WORKING_DIRECTORY
           return UNIQUE_WORKING_DIRECTORY;
         case 4: // CLEAN_UP_WORKING_DIR_AFTER_JOB
@@ -142,13 +142,13 @@ import org.slf4j.LoggerFactory;
   private static final int __STAGEINPUTFILESTOWORKINGDIR_ISSET_ID = 0;
   private static final int __CLEANUPWORKINGDIRAFTERJOB_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.STAGE_INPUT_FILES_TO_WORKING_DIR,_Fields.WORKING_DIRECTORY_PARENT,_Fields.UNIQUE_WORKING_DIRECTORY,_Fields.CLEAN_UP_WORKING_DIR_AFTER_JOB};
+  private _Fields optionals[] = {_Fields.STAGE_INPUT_FILES_TO_WORKING_DIR,_Fields.PARENT_WORKING_DIRECTORY,_Fields.UNIQUE_WORKING_DIRECTORY,_Fields.CLEAN_UP_WORKING_DIR_AFTER_JOB};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.STAGE_INPUT_FILES_TO_WORKING_DIR, new org.apache.thrift.meta_data.FieldMetaData("stageInputFilesToWorkingDir", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
-    tmpMap.put(_Fields.WORKING_DIRECTORY_PARENT, new org.apache.thrift.meta_data.FieldMetaData("workingDirectoryParent", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.PARENT_WORKING_DIRECTORY, new org.apache.thrift.meta_data.FieldMetaData("parentWorkingDirectory", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.UNIQUE_WORKING_DIRECTORY, new org.apache.thrift.meta_data.FieldMetaData("uniqueWorkingDirectory", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
@@ -171,8 +171,8 @@ import org.slf4j.LoggerFactory;
   public AdvancedInputDataHandling(AdvancedInputDataHandling other) {
     __isset_bitfield = other.__isset_bitfield;
     this.stageInputFilesToWorkingDir = other.stageInputFilesToWorkingDir;
-    if (other.isSetWorkingDirectoryParent()) {
-      this.workingDirectoryParent = other.workingDirectoryParent;
+    if (other.isSetParentWorkingDirectory()) {
+      this.parentWorkingDirectory = other.parentWorkingDirectory;
     }
     if (other.isSetUniqueWorkingDirectory()) {
       this.uniqueWorkingDirectory = other.uniqueWorkingDirectory;
@@ -188,7 +188,7 @@ import org.slf4j.LoggerFactory;
   public void clear() {
     this.stageInputFilesToWorkingDir = false;
 
-    this.workingDirectoryParent = null;
+    this.parentWorkingDirectory = null;
     this.uniqueWorkingDirectory = null;
     this.cleanUpWorkingDirAfterJob = false;
 
@@ -216,26 +216,26 @@ import org.slf4j.LoggerFactory;
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __STAGEINPUTFILESTOWORKINGDIR_ISSET_ID, value);
   }
 
-  public String getWorkingDirectoryParent() {
-    return this.workingDirectoryParent;
+  public String getParentWorkingDirectory() {
+    return this.parentWorkingDirectory;
   }
 
-  public void setWorkingDirectoryParent(String workingDirectoryParent) {
-    this.workingDirectoryParent = workingDirectoryParent;
+  public void setParentWorkingDirectory(String parentWorkingDirectory) {
+    this.parentWorkingDirectory = parentWorkingDirectory;
   }
 
-  public void unsetWorkingDirectoryParent() {
-    this.workingDirectoryParent = null;
+  public void unsetParentWorkingDirectory() {
+    this.parentWorkingDirectory = null;
   }
 
-  /** Returns true if field workingDirectoryParent is set (has been assigned a value) and false otherwise */
-  public boolean isSetWorkingDirectoryParent() {
-    return this.workingDirectoryParent != null;
+  /** Returns true if field parentWorkingDirectory is set (has been assigned a value) and false otherwise */
+  public boolean isSetParentWorkingDirectory() {
+    return this.parentWorkingDirectory != null;
   }
 
-  public void setWorkingDirectoryParentIsSet(boolean value) {
+  public void setParentWorkingDirectoryIsSet(boolean value) {
     if (!value) {
-      this.workingDirectoryParent = null;
+      this.parentWorkingDirectory = null;
     }
   }
 
@@ -294,11 +294,11 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
-    case WORKING_DIRECTORY_PARENT:
+    case PARENT_WORKING_DIRECTORY:
       if (value == null) {
-        unsetWorkingDirectoryParent();
+        unsetParentWorkingDirectory();
       } else {
-        setWorkingDirectoryParent((String)value);
+        setParentWorkingDirectory((String)value);
       }
       break;
 
@@ -326,8 +326,8 @@ import org.slf4j.LoggerFactory;
     case STAGE_INPUT_FILES_TO_WORKING_DIR:
       return Boolean.valueOf(isStageInputFilesToWorkingDir());
 
-    case WORKING_DIRECTORY_PARENT:
-      return getWorkingDirectoryParent();
+    case PARENT_WORKING_DIRECTORY:
+      return getParentWorkingDirectory();
 
     case UNIQUE_WORKING_DIRECTORY:
       return getUniqueWorkingDirectory();
@@ -348,8 +348,8 @@ import org.slf4j.LoggerFactory;
     switch (field) {
     case STAGE_INPUT_FILES_TO_WORKING_DIR:
       return isSetStageInputFilesToWorkingDir();
-    case WORKING_DIRECTORY_PARENT:
-      return isSetWorkingDirectoryParent();
+    case PARENT_WORKING_DIRECTORY:
+      return isSetParentWorkingDirectory();
     case UNIQUE_WORKING_DIRECTORY:
       return isSetUniqueWorkingDirectory();
     case CLEAN_UP_WORKING_DIR_AFTER_JOB:
@@ -380,12 +380,12 @@ import org.slf4j.LoggerFactory;
         return false;
     }
 
-    boolean this_present_workingDirectoryParent = true && this.isSetWorkingDirectoryParent();
-    boolean that_present_workingDirectoryParent = true && that.isSetWorkingDirectoryParent();
-    if (this_present_workingDirectoryParent || that_present_workingDirectoryParent) {
-      if (!(this_present_workingDirectoryParent && that_present_workingDirectoryParent))
+    boolean this_present_parentWorkingDirectory = true && this.isSetParentWorkingDirectory();
+    boolean that_present_parentWorkingDirectory = true && that.isSetParentWorkingDirectory();
+    if (this_present_parentWorkingDirectory || that_present_parentWorkingDirectory) {
+      if (!(this_present_parentWorkingDirectory && that_present_parentWorkingDirectory))
         return false;
-      if (!this.workingDirectoryParent.equals(that.workingDirectoryParent))
+      if (!this.parentWorkingDirectory.equals(that.parentWorkingDirectory))
         return false;
     }
 
@@ -433,12 +433,12 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetWorkingDirectoryParent()).compareTo(other.isSetWorkingDirectoryParent());
+    lastComparison = Boolean.valueOf(isSetParentWorkingDirectory()).compareTo(other.isSetParentWorkingDirectory());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetWorkingDirectoryParent()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.workingDirectoryParent, other.workingDirectoryParent);
+    if (isSetParentWorkingDirectory()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.parentWorkingDirectory, other.parentWorkingDirectory);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -488,13 +488,13 @@ import org.slf4j.LoggerFactory;
       sb.append(this.stageInputFilesToWorkingDir);
       first = false;
     }
-    if (isSetWorkingDirectoryParent()) {
+    if (isSetParentWorkingDirectory()) {
       if (!first) sb.append(", ");
-      sb.append("workingDirectoryParent:");
-      if (this.workingDirectoryParent == null) {
+      sb.append("parentWorkingDirectory:");
+      if (this.parentWorkingDirectory == null) {
         sb.append("null");
       } else {
-        sb.append(this.workingDirectoryParent);
+        sb.append(this.parentWorkingDirectory);
       }
       first = false;
     }
@@ -567,10 +567,10 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // WORKING_DIRECTORY_PARENT
+          case 2: // PARENT_WORKING_DIRECTORY
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.workingDirectoryParent = iprot.readString();
-              struct.setWorkingDirectoryParentIsSet(true);
+              struct.parentWorkingDirectory = iprot.readString();
+              struct.setParentWorkingDirectoryIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -609,10 +609,10 @@ import org.slf4j.LoggerFactory;
         oprot.writeBool(struct.stageInputFilesToWorkingDir);
         oprot.writeFieldEnd();
       }
-      if (struct.workingDirectoryParent != null) {
-        if (struct.isSetWorkingDirectoryParent()) {
-          oprot.writeFieldBegin(WORKING_DIRECTORY_PARENT_FIELD_DESC);
-          oprot.writeString(struct.workingDirectoryParent);
+      if (struct.parentWorkingDirectory != null) {
+        if (struct.isSetParentWorkingDirectory()) {
+          oprot.writeFieldBegin(PARENT_WORKING_DIRECTORY_FIELD_DESC);
+          oprot.writeString(struct.parentWorkingDirectory);
           oprot.writeFieldEnd();
         }
       }
@@ -649,7 +649,7 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetStageInputFilesToWorkingDir()) {
         optionals.set(0);
       }
-      if (struct.isSetWorkingDirectoryParent()) {
+      if (struct.isSetParentWorkingDirectory()) {
         optionals.set(1);
       }
       if (struct.isSetUniqueWorkingDirectory()) {
@@ -662,8 +662,8 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetStageInputFilesToWorkingDir()) {
         oprot.writeBool(struct.stageInputFilesToWorkingDir);
       }
-      if (struct.isSetWorkingDirectoryParent()) {
-        oprot.writeString(struct.workingDirectoryParent);
+      if (struct.isSetParentWorkingDirectory()) {
+        oprot.writeString(struct.parentWorkingDirectory);
       }
       if (struct.isSetUniqueWorkingDirectory()) {
         oprot.writeString(struct.uniqueWorkingDirectory);
@@ -682,8 +682,8 @@ import org.slf4j.LoggerFactory;
         struct.setStageInputFilesToWorkingDirIsSet(true);
       }
       if (incoming.get(1)) {
-        struct.workingDirectoryParent = iprot.readString();
-        struct.setWorkingDirectoryParentIsSet(true);
+        struct.parentWorkingDirectory = iprot.readString();
+        struct.setParentWorkingDirectoryIsSet(true);
       }
       if (incoming.get(2)) {
         struct.uniqueWorkingDirectory = iprot.readString();

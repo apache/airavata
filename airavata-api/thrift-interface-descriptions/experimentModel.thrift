@@ -49,8 +49,259 @@ namespace php Airavata.Model.Experiment
  *
 */
 
+enum ExperimentState {
+    CREATED,
+    VALIDATED,
+    SCHEDULED,
+    LAUNCHED,
+    EXECUTING,
+    CANCELED,
+    COMPLETED,
+    FAILED,
+    UNKNOWN
+}
+
+struct ExperimentStatus {
+    1: required ExperimentState experimentState,
+    2: optional i64 timeOfStateChange
+}
+
+enum WorkflowNodeState {
+    INVOKED,
+    EXECUTING,
+    CANCELED,
+    COMPLETED,
+    FAILED,
+    UNKNOWN
+}
+
+struct WorkflowNodeStatus {
+    1: required WorkflowNodeState workflowNodeState,
+    2: optional i64 timeOfStateChange
+}
+
+enum ExecutionState {
+    AUTHENTICATED,
+    PRE_PROCESSING,
+    CONFIGURING_WORKSPACE,
+    INPUT_DATA_STAGING,
+    OUTPUT_DATA_STAGING,
+    POST_PROCESSING,
+    CANCELED,
+    COMPLETED,
+    FAILED,
+    UNKNOWN
+}
+
+struct ExecutionStatus {
+    1: required ExecutionState executionState,
+    2: optional i64 timeOfStateChange
+}
+
+enum JobState {
+    SUBMITTED,
+    QUEUED,
+    ACTIVE,
+    COMPLETE,
+    CANCELED,
+    FAILED,
+    HELD,
+    SUSPENDED,
+    UNKNOWN
+}
+
+struct JobStatus {
+    1: required JobState jobState,
+    2: optional i64 timeOfStateChange
+}
+
+enum TransferState {
+    SUBMITTED,
+    QUEUED,
+    ACTIVE,
+    COMPLETE,
+    CANCELED,
+    FAILED,
+    HELD,
+    SUSPENDED,
+    UNKNOWN
+}
+
+struct TransferStatus {
+    1: required TransferState transferState,
+    2: optional i64 timeOfStateChange
+}
+
+struct ApplicationStatus {
+    1: required string applicationState,
+    2: optional i64 timeOfStateChange
+}
+
+enum ActionableGroup {
+    RESOURCE_ADMINS,
+    AIRAVATA_ADMINS,
+    GATEWAYS_ADMINS,
+    USER,
+    CANNOT_BE_DETERMINED
+}
+
+enum ErrorCategory {
+    FILE_SYSTEM_FAILURE,
+    APPLICATION_FAILURE,
+    RESOURCE_NODE_FAILURE,
+    DISK_FULL,
+    INSUFFICIENT_ALLOCATION,
+    SYSTEM_MAINTENANCE,
+    AIRAVATA_INTERNAL_ERROR,
+    CANNOT_BE_DETERMINED
+}
+
+enum CorrectiveAction {
+    RETRY_SUBMISSION,
+    CONTACT_SUPPORT,
+    CANNOT_BE_DETERMINED
+}
+
 /**
- * A structure holding the basic experiment metadata.
+* A structure  hold experiment input output
+*
+*/
+struct DataObjectType {
+    1: required string key,
+    2: optional string value,
+    3: optional string type,
+    4: optional string metaData
+}
+
+/**
+ * A structure holding the Computational Resource Scheduling.
+ *
+*/
+struct ComputationalResourceScheduling {
+    1: optional string resourceHostId,
+    2: optional i32 totalCPUCount,
+    3: optional i32 nodeCount,
+    4: optional i32 numberOfThreads,
+    5: optional string queueName,
+    6: optional i32 wallTimeLimit,
+    7: optional i32 jobStartTime,
+    8: optional i32 totalPhysicalMemory,
+    9: optional string ComputationalProjectAccount
+}
+
+/**
+ * A structure holding specified input data handling.
+ *
+*/
+struct AdvancedInputDataHandling {
+    1: optional bool stageInputFilesToWorkingDir = 0,
+    2: optional string parentWorkingDirectory,
+    3: optional string uniqueWorkingDirectory,
+    4: optional bool cleanUpWorkingDirAfterJob = 0
+}
+
+/**
+ * A structure holding specified output data handling.
+ *
+*/
+struct AdvancedOutputDataHandling {
+    2: optional string outputDataDir,
+    3: optional string dataRegistryURL,
+    4: optional bool persistOutputData = 1
+}
+
+/**
+ * A structure holding Quality of Service Parameters.
+ *
+*/
+struct QualityOfServiceParams {
+    1: optional string startExecutionAt,
+    2: optional string executeBefore,
+    3: optional i32 numberofRetries
+}
+
+/**
+ * A structure holding the experiment configuration.
+ *
+ *
+*/
+struct UserConfigurationData {
+    1: required bool airavataAutoSchedule = 0,
+    2: required bool overrideManualScheduledParams = 0,
+    3: optional bool shareExperimentPublicly = 0,
+    4: optional ComputationalResourceScheduling computationalResourceScheduling,
+    5: optional AdvancedInputDataHandling advanceInputDataHandling,
+    6: optional AdvancedOutputDataHandling advanceOutputDataHandling,
+    7: optional QualityOfServiceParams qosParams
+}
+
+struct ErrorDetails {
+    1: required string errorID = "DO_NO_SET_BY_CLIENT",
+    2: optional i64 creationTime,
+    3: optional string actualErrorMessage,
+    4: optional string userFriendlyMessage,
+    5: optional ErrorCategory errorCategory,
+    6: optional bool transientOrPersistent = 0,
+    7: optional CorrectiveAction correctiveAction,
+    8: optional ActionableGroup actionableGroup,
+    9: optional list<string> rootCauseErrorIdList
+}
+
+struct JobDetails {
+    1: required string jobID,
+    2: required string jobDescription,
+    3: optional i64 creationTime,
+    4: optional JobStatus jobStatus,
+    5: optional ApplicationStatus applicationStatus,
+    6: optional list<ErrorDetails> errors
+}
+
+struct DataTransferDetails {
+    1: required string transferID,
+    2: optional i64 creationTime,
+    3: required string transferDescription,
+    4: optional TransferStatus transferStatus,
+}
+
+/**
+ * A structure holding the actual execution context decided based on user provided configuration data or system inferred
+ *   information from scheduling and QoS parameters. One experiment can have multiple tasks. Each tasks results in
+ *   data transfers and jobs
+ *
+*/
+struct TaskDetails {
+    1: required string taskID,
+    2: optional i64 creationTime,
+    3: optional string applicationId,
+    4: optional string applicationVersion,
+    5: optional list<DataObjectType> applicationInputs,
+    6: optional list<DataObjectType> applicationOutputs,
+    7: optional ComputationalResourceScheduling executionScheduling,
+    8: optional AdvancedInputDataHandling advancedInputDataHandling,
+    9: optional AdvancedOutputDataHandling advancedOutputDataHandling,
+    10: optional ExecutionStatus executionStatus,
+    11: optional list<JobDetails> jobDetailsList,
+    12: optional list<DataTransferDetails> dataTransferDetailsList,
+    13: optional list<ErrorDetails> errors
+}
+
+/**
+* A structure holding the node data.
+* nodeInstanceId - unique node identifier for each run
+*/
+struct WorkflowNodeDetails {
+    1: required string nodeInstanceId = "DO_NO_SET_BY_CLIENT",
+    2: optional i64 creationTime,
+    3: required string nodeName = "SIMPLE_APP_NODE",
+    4: optional list<DataObjectType> nodeInputs,
+    5: optional list<DataObjectType> nodeOutputs,
+    6: optional WorkflowNodeStatus workflowNodeStatus,
+    7: optional list<TaskDetails> taskDetailsList,
+    8: optional list<ErrorDetails> errors
+}
+
+/**
+ * A structure holding the experiment metadata and its child models.
  *
  * userName:
  *   The user name of the targeted gateway end user on whose behalf the experiment is being created.
@@ -65,118 +316,23 @@ namespace php Airavata.Model.Experiment
  * experimentDescription:
  *    The verbose description of the experiment. This is an optional parameter.
 */
-struct BasicMetadata {
-  1: required string userName,
-  2: required string experimentName,
-  3: required string projectID = "default",
-  4: optional string experimentDescription,
-  5: optional bool shareExperimentPublicly = 0,
-  6: required string experimentID = "DO_NOT_SET"
-}
 
-/**
- * A structure holding the Computational Resource Scheduling.
- *
-*/
-struct ComputationalResourceScheduling {
-  1:required bool airavataAutoSchedule = 1
-  2:required bool overrideManualScheduledParams = 0,
-  3:optional string resourceHostId,
-  4:optional i32 totalCPUCount,
-  5:optional i32 nodeCount,
-  6:optional i32 numberOfThreads,
-  7:optional string queueName,
-  8:optional i32 wallTimeLimit,
-  9:optional i32 jobStartTime,
-  10:optional i32 totalPhysicalMemory,
-  11:optional string ComputationalProjectAccount
-}
-
-/**
- * A structure holding specified input data handling.
- *
-*/
-struct AdvancedInputDataHandling {
-    1:optional bool stageInputFilesToWorkingDir = 0,
-    2: optional string workingDirectoryParent,
-    3: optional string uniqueWorkingDirectory,
-    4: optional bool cleanUpWorkingDirAfterJob = 0
-}
-
-/**
- * A structure holding specified output data handling.
- *
-*/
-struct AdvancedOutputDataHandling {
-    2:optional string outputdataDir,
-    3:optional string dataRegistryURL,
-    4:optional bool persistOutputData = 1
-}
-
-/**
- * A structure holding Quality of Service Parameters.
- *
-*/
-struct QualityOfServiceParams {
-    1:optional string startExecutionAt,
-    2:optional string executeBefore,
-    3:optional i32 numberofRetries,
-}
-
-/**
- * A structure holding the experiment configuration.
- *
- *
-*/
-struct ConfigurationData {
-  1: optional BasicMetadata basicMetadata,
-  2: optional string applicationId,
-  3: optional string applicationVersion,
-  4: optional string workflowTemplateId,
-  5: optional string worklfowTemplateVersion,
-  6: optional map<string,string> experimentInputs,
-  7: optional ComputationalResourceScheduling computationalResourceScheduling,
-  8: optional AdvancedInputDataHandling advanceInputDataHandling,
-  9: optional AdvancedOutputDataHandling advanceOutputDataHandling,
-  10: optional QualityOfServiceParams qosParams
-}
-
-/**
-* A structure holding the node data.
-* nodeInstanceId - unique node identifier for each run
-* executionIndex - auto incrementing index for each run.
-* nodeType - type of the node, whether it is an input node, output node or service node
-*/
-struct NodeData {
-    1: required string nodeName,
-    2: required string nodeInstanceId = "DO_NOT_SET",
-    3: required string executionIndex,
-    4: optional string nodeType,
-    5: optional string nodeInput,
-    6: optional string nodeOutput,
-    7: optional string nodeStatus,
-    8: optional int32 startTime,
-    9: optional int32 lastUpdateTime
-}
-
-/**
-* A structure to hold experiment output
-*
-*/
-struct ExperimentOutput {
-    1: required string outputKey,
-    2: optional string outputType,
-    3: optional string outputkeyValue
-}
-
-/**
-* A structure to hold generated data
-*
-*/
-struct GeneratedData {
-    1: required string workflowTemplateId,
-    2: optional string workflowTemplateName,
-    3: optional int32 startTime,
-    4: optional list<ExperimentOutput> experimentOutputs,
-    5: optional list<NodeData> nodes
+struct Experiment {
+    1: required string experimentID = "DO_NO_SET_BY_CLIENT"
+    2: required string projectID = "DEFAULT",
+    3: optional i64 creationTime,
+    4: required string userName,
+    5: required string name,
+    6: optional string description,
+    7: optional string applicationId,
+    8: optional string applicationVersion,
+    9: optional string workflowTemplateId,
+    10: optional string workflowTemplateVersion,
+    11: optional string workflowExecutionInstanceId,
+    12: optional list<DataObjectType> experimentInputs,
+    13: optional list<DataObjectType> experimentOutputs,
+    14: optional ExecutionStatus experimentStatus,
+    15: optional list<ExecutionStatus> stateChangeList,
+    16: optional list<WorkflowNodeDetails> workflowNodeDetailsList,
+    17: optional list<ErrorDetails> errors
 }
