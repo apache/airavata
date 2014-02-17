@@ -94,7 +94,7 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  string createExperiment(1: experimentModel.BasicMetadata basicExperimentMetadata)
+  string createExperiment(1: experimentModel.Experiment experiment)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
@@ -132,7 +132,7 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  experimentModel.BasicMetadata getBasicExperimentMetadata(1: string airavataExperimentId)
+  experimentModel.Experiment getBasicExperiment(1: string airavataExperimentId)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.ExperimentNotFoundException enf,
             3: airavataErrors.AiravataClientException ace,
@@ -177,8 +177,8 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  void configureExperiment(1: string airavataExperimentId,
-                           2: experimentModel.ConfigurationData experimentConfigurationData)
+  void updateExperiment(1: string airavataExperimentId,
+                           2: experimentModel.Experiment experiment)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.ExperimentNotFoundException enf,
             3: airavataErrors.AiravataClientException ace,
@@ -217,7 +217,7 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  experimentModel.ConfigurationData getExperimentConfiguration(1: string airavataExperimentId)
+  experimentModel.ExperimentStatus getExperimentStatus(1: string airavataExperimentId)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.ExperimentNotFoundException enf,
             3: airavataErrors.AiravataClientException ace,
@@ -266,7 +266,7 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  void launchConfiguredExperiment(1: string airavataExperimentId
+  void launchExperiment(1: string airavataExperimentId
                                   2: string airavataCredStoreToken)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.ExperimentNotFoundException enf,
@@ -317,8 +317,8 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  string configureAndLaunchExperiment (1: string airavataExperimentId
-                                       2: experimentModel.ConfigurationData experimentConfigurationData,
+  string updateAndLaunchExperiment (1: string airavataExperimentId
+                                       2: experimentModel.Experiment experiment,
                                        3: string airavataCredStoreToken)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.ExperimentNotFoundException enf,
@@ -364,8 +364,8 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  string cloneExperimentConfiguration(1: string airavataExperimentIdToBeCloned,
-                                      2: experimentModel.BasicMetadata basicExperimentMetadata)
+  string cloneExperiment(1: string airavataExperimentIdToBeCloned,
+                                      2: experimentModel.Experiment updatedExperiment)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.ExperimentNotFoundException enf,
             3: airavataErrors.AiravataClientException ace,
@@ -409,5 +409,15 @@ service Airavata {
             2: airavataErrors.ExperimentNotFoundException enf,
             3: airavataErrors.AiravataClientException ace,
             4: airavataErrors.AiravataSystemException ase)
+
+    string registerGateway (1: string gatewayName)
+        throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.ExperimentNotFoundException enf,
+                3: airavataErrors.AiravataClientException ace,
+                4: airavataErrors.AiravataSystemException ase)
+
+    bool registerUser(1: string userName, 2: string gatewayName)
+
+    string createProject (1: string projectName, string userName)
 
 }

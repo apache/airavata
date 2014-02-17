@@ -18,8 +18,8 @@
  *
  */
 
-namespace java org.apache.airavata.model.experiment
-namespace php Airavata.Model.Experiment
+namespace java org.apache.airavata.model.workspace.experiment
+namespace php Airavata.Model.Workspace.Experiment
 
 /*
  * This file describes the definitions of the Airavata Experiment Data Structures. Each of the
@@ -48,6 +48,10 @@ namespace php Airavata.Model.Experiment
  *     this is derived information from all experiment objects to provide a quick summary.
  *
 */
+
+const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
+const string DEFAULT_PROJECT_NAME = "DEFAULT"
+const string SINGLE_APP_NODE_NAME = "SINGLE_APP_NODE"
 
 enum ExperimentState {
     CREATED,
@@ -80,21 +84,23 @@ struct WorkflowNodeStatus {
     2: optional i64 timeOfStateChange
 }
 
-enum ExecutionState {
-    AUTHENTICATED,
+enum TaskState {
+    WAITING,
+    STARTED,
     PRE_PROCESSING,
     CONFIGURING_WORKSPACE,
     INPUT_DATA_STAGING,
     OUTPUT_DATA_STAGING,
     POST_PROCESSING,
+    EXECUTING,
     CANCELED,
     COMPLETED,
     FAILED,
     UNKNOWN
 }
 
-struct ExecutionStatus {
-    1: required ExecutionState executionState,
+struct TaskStatus {
+    1: required TaskState executionState,
     2: optional i64 timeOfStateChange
 }
 
@@ -236,7 +242,7 @@ struct UserConfigurationData {
 }
 
 struct ErrorDetails {
-    1: required string errorID = "DO_NO_SET_BY_CLIENT",
+    1: required string errorID = DEFAULT_ID,
     2: optional i64 creationTime,
     3: optional string actualErrorMessage,
     4: optional string userFriendlyMessage,
@@ -248,7 +254,7 @@ struct ErrorDetails {
 }
 
 struct JobDetails {
-    1: required string jobID,
+    1: required string jobID = DEFAULT_ID,
     2: required string jobDescription,
     3: optional i64 creationTime,
     4: optional JobStatus jobStatus,
@@ -257,7 +263,7 @@ struct JobDetails {
 }
 
 struct DataTransferDetails {
-    1: required string transferID,
+    1: required string transferID = DEFAULT_ID,
     2: optional i64 creationTime,
     3: required string transferDescription,
     4: optional TransferStatus transferStatus,
@@ -270,16 +276,16 @@ struct DataTransferDetails {
  *
 */
 struct TaskDetails {
-    1: required string taskID,
+    1: required string taskID = DEFAULT_ID,
     2: optional i64 creationTime,
     3: optional string applicationId,
     4: optional string applicationVersion,
     5: optional list<DataObjectType> applicationInputs,
     6: optional list<DataObjectType> applicationOutputs,
-    7: optional ComputationalResourceScheduling executionScheduling,
+    7: optional ComputationalResourceScheduling taskScheduling,
     8: optional AdvancedInputDataHandling advancedInputDataHandling,
     9: optional AdvancedOutputDataHandling advancedOutputDataHandling,
-    10: optional ExecutionStatus executionStatus,
+    10: optional TaskStatus taskStatus,
     11: optional list<JobDetails> jobDetailsList,
     12: optional list<DataTransferDetails> dataTransferDetailsList,
     13: optional list<ErrorDetails> errors
@@ -290,9 +296,9 @@ struct TaskDetails {
 * nodeInstanceId - unique node identifier for each run
 */
 struct WorkflowNodeDetails {
-    1: required string nodeInstanceId = "DO_NO_SET_BY_CLIENT",
+    1: required string nodeInstanceId = DEFAULT_ID,
     2: optional i64 creationTime,
-    3: required string nodeName = "SIMPLE_APP_NODE",
+    3: required string nodeName = SINGLE_APP_NODE_NAME,
     4: optional list<DataObjectType> nodeInputs,
     5: optional list<DataObjectType> nodeOutputs,
     6: optional WorkflowNodeStatus workflowNodeStatus,
@@ -318,8 +324,8 @@ struct WorkflowNodeDetails {
 */
 
 struct Experiment {
-    1: required string experimentID = "DO_NO_SET_BY_CLIENT"
-    2: required string projectID = "DEFAULT",
+    1: required string experimentID = DEFAULT_ID,
+    2: required string projectID = DEFAULT_PROJECT_NAME
     3: optional i64 creationTime,
     4: required string userName,
     5: required string name,
@@ -328,11 +334,12 @@ struct Experiment {
     8: optional string applicationVersion,
     9: optional string workflowTemplateId,
     10: optional string workflowTemplateVersion,
-    11: optional string workflowExecutionInstanceId,
-    12: optional list<DataObjectType> experimentInputs,
-    13: optional list<DataObjectType> experimentOutputs,
-    14: optional ExecutionStatus experimentStatus,
-    15: optional list<ExecutionStatus> stateChangeList,
-    16: optional list<WorkflowNodeDetails> workflowNodeDetailsList,
-    17: optional list<ErrorDetails> errors
+    11: optional UserConfigurationData userConfigurationData,
+    12: optional string workflowExecutionInstanceId,
+    13: optional list<DataObjectType> experimentInputs,
+    14: optional list<DataObjectType> experimentOutputs,
+    15: optional ExperimentStatus experimentStatus,
+    16: optional list<WorkflowNodeStatus> stateChangeList,
+    17: optional list<WorkflowNodeDetails> workflowNodeDetailsList,
+    18: optional list<ErrorDetails> errors
 }
