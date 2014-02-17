@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.orchestrator.core;
 
+import junit.framework.Assert;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.experiment.*;
@@ -48,10 +49,10 @@ public class OrchestratorTestWithGSISSH extends BaseOrchestratorTest {
          AiravataUtils.setExecutionAsServer();
          super.setUp();
          orchestrator = new SimpleOrchestratorImpl();
-         createJobRequestWithDocuments(super.getDocumentCreator().getAiravataAPI());
+         createJobRequestWithDocuments();
      }
 
-     private void createJobRequestWithDocuments(AiravataAPI airavataAPI) {
+     private void createJobRequestWithDocuments() {
 
 
          //Using new airavata-api methods to store experiment metadata
@@ -69,8 +70,6 @@ public class OrchestratorTestWithGSISSH extends BaseOrchestratorTest {
 
          HashMap<String, String> exInputs = new HashMap<String, String>();
          exInputs.put("echo_input", "echo_output=hello");
-         exInputs.put("copy_input", "file:///tmp/tmpstrace");
-         exInputs.put("outputlocation", "./outputData/.");
 
          configurationData.setExperimentInputs(exInputs);
          configurationData.setAdvanceInputDataHandling(advancedInputDataHandling);
@@ -86,15 +85,13 @@ public class OrchestratorTestWithGSISSH extends BaseOrchestratorTest {
 
      @Test
      public void noDescriptorTest() throws Exception {
-
-//        boolean b = orchestrator.launchExperiment(experimentID);
-
-//        if (b) {
+        boolean b = orchestrator.launchExperiment(experimentID);
+        if (b) {
 //            This means orchestrator successfully accepted the job
-//            Assert.assertTrue(true);
-//        } else {
-//            Assert.assertFalse(true);
-//        }
+            Assert.assertTrue(true);
+        } else {
+            Assert.assertFalse(true);
+        }
      }
 
 
