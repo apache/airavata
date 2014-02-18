@@ -36,20 +36,11 @@ import org.slf4j.LoggerFactory;
 
 public class ApplicationInputResource extends AbstractResource {
 	private static final Logger logger = LoggerFactory.getLogger(ApplicationInputResource.class);
-
-	private String taskId;
+    private TaskDetailResource taskDetailResource;
     private String inputKey;
     private String inputType;
     private String metadata;
     private String value;
-
-    public String getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(String taskId) {
-        this.taskId = taskId;
-    }
 
     public String getInputKey() {
         return inputKey;
@@ -83,6 +74,14 @@ public class ApplicationInputResource extends AbstractResource {
         this.value = value;
     }
 
+    public TaskDetailResource getTaskDetailResource() {
+        return taskDetailResource;
+    }
+
+    public void setTaskDetailResource(TaskDetailResource taskDetailResource) {
+        this.taskDetailResource = taskDetailResource;
+    }
+
     @Override
     public Resource create(ResourceType type) {
         logger.error("Unsupported resource type for application input data resource.", new UnsupportedOperationException());
@@ -110,13 +109,13 @@ public class ApplicationInputResource extends AbstractResource {
     @Override
     public void save() {
         EntityManager em = ResourceUtils.getEntityManager();
-        ApplicationInput existingInput = em.find(ApplicationInput.class, new ApplicationInput_PK(inputKey, taskId));
+        ApplicationInput existingInput = em.find(ApplicationInput.class, new ApplicationInput_PK(inputKey, taskDetailResource.getTaskId()));
         em.close();
 
         em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
         ApplicationInput applicationInput = new ApplicationInput();
-        TaskDetail taskDetail = em.find(TaskDetail.class, taskId);
+        TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
         applicationInput.setTask(taskDetail);
         applicationInput.setTaskId(taskDetail.getTaskId());
         applicationInput.setInputKey(inputKey);

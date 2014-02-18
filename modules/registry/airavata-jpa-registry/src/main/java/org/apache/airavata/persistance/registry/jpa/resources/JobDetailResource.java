@@ -29,7 +29,7 @@ import java.util.List;
 
 public class JobDetailResource extends AbstractResource {
     private String jobId;
-    private String taskId;
+    private TaskDetailResource taskDetailResource;
     private String jobDescription;
     private Timestamp creationTime;
 
@@ -41,12 +41,12 @@ public class JobDetailResource extends AbstractResource {
         this.jobId = jobId;
     }
 
-    public String getTaskId() {
-        return taskId;
+    public TaskDetailResource getTaskDetailResource() {
+        return taskDetailResource;
     }
 
-    public void setTaskId(String taskId) {
-        this.taskId = taskId;
+    public void setTaskDetailResource(TaskDetailResource taskDetailResource) {
+        this.taskDetailResource = taskDetailResource;
     }
 
     public String getJobDescription() {

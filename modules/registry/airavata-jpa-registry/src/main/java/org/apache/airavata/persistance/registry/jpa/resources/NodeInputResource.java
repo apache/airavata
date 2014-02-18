@@ -30,24 +30,25 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.NodeInput;
 import org.apache.airavata.persistance.registry.jpa.model.NodeInput_PK;
+import org.apache.airavata.persistance.registry.jpa.model.WorkflowNodeDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class NodeInputResource extends AbstractResource {
 	private static final Logger logger = LoggerFactory.getLogger(NodeInputResource.class);
 
-    private String nodeInstanceId;
+    private WorkflowNodeDetailResource nodeDetailResource;
     private String inputKey;
     private String inputType;
     private String metadata;
     private String value;
 
-    public String getNodeInstanceId() {
-        return nodeInstanceId;
+    public WorkflowNodeDetailResource getNodeDetailResource() {
+        return nodeDetailResource;
     }
 
-    public void setNodeInstanceId(String nodeInstanceId) {
-        this.nodeInstanceId = nodeInstanceId;
+    public void setNodeDetailResource(WorkflowNodeDetailResource nodeDetailResource) {
+        this.nodeDetailResource = nodeDetailResource;
     }
 
     public String getInputKey() {
@@ -109,11 +110,32 @@ public class NodeInputResource extends AbstractResource {
     @Override
     public void save() {
         EntityManager em = ResourceUtils.getEntityManager();
-        NodeInput existingInput = em.find(NodeInput.class, new NodeInput_PK(inputKey, nodeInstanceId));
+        NodeInput existingInput = em.find(NodeInput.class, new NodeInput_PK(inputKey, nodeDetailResource.getNodeInstanceId()));
         em.close();
 
         em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
-       
+        NodeInput nodeInput = new NodeInput();
+        WorkflowNodeDetail nodeDetail = em.find(WorkflowNodeDetail.class, nodeDetailResource.getNodeInstanceId());
+        nodeInput.setNodeDetails(nodeDetail);
+        nodeInput.setNodeId(nodeDetail.getNodeId());
+        nodeInput.setInputKey(inputKey);
+        nodeInput.setInputKeyType(inputType);
+        nodeInput.setValue(value);
+        nodeInput.setMetadata(metadata);
+        
+        if (existingInput != null){
+            existingInput.setNodeDetails(nodeDetail);
+            existingInput.setNodeId(nodeDetail.getNodeId());
+            existingInput.setInputKey(inputKey);
+            existingInput.setInputKeyType(inputType);
+            existingInput.setValue(value);
+            existingInput.setMetadata(metadata);
+            nodeInput = em.merge(existingInput);
+        }else {
+            em.persist(nodeInput);
+        }
+        em.getTransaction().commit();
+        em.close();
     }
 }

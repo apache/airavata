@@ -23,22 +23,34 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
+import org.apache.airavata.persistance.registry.jpa.model.NodeInput;
+import org.apache.airavata.persistance.registry.jpa.model.NodeInput_PK;
+import org.apache.airavata.persistance.registry.jpa.model.NodeOutput;
+import org.apache.airavata.persistance.registry.jpa.model.NodeOutput_PK;
+import org.apache.airavata.persistance.registry.jpa.model.WorkflowNodeDetail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
+
 public class NodeOutputResource extends AbstractResource {
-    private String nodeInstanceId;
+	private static final Logger logger = LoggerFactory.getLogger(NodeOutputResource.class);
+	
+    private WorkflowNodeDetailResource nodeDetailResource;
     private String outputKey;
     private String outputType;
     private String metadata;
     private String value;
 
-    public String getNodeInstanceId() {
-        return nodeInstanceId;
+    public WorkflowNodeDetailResource getNodeDetailResource() {
+        return nodeDetailResource;
     }
 
-    public void setNodeInstanceId(String nodeInstanceId) {
-        this.nodeInstanceId = nodeInstanceId;
+    public void setNodeDetailResource(WorkflowNodeDetailResource nodeDetailResource) {
+        this.nodeDetailResource = nodeDetailResource;
     }
 
     public String getOutputKey() {
@@ -75,26 +87,58 @@ public class NodeOutputResource extends AbstractResource {
 
     @Override
     public Resource create(ResourceType type) {
-        return null;
+        logger.error("Unsupported resource type for node output data resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void remove(ResourceType type, Object name) {
-
+        logger.error("Unsupported resource type for node output data resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Resource get(ResourceType type, Object name) {
-        return null;
+        logger.error("Unsupported resource type for node output data resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public List<Resource> get(ResourceType type) {
-        return null;
+        logger.error("Unsupported resource type for node output data resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void save() {
 
+        EntityManager em = ResourceUtils.getEntityManager();
+        NodeOutput existingOutput = em.find(NodeOutput.class, new NodeOutput_PK(outputKey, nodeDetailResource.getNodeInstanceId()));
+        em.close();
+
+        em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        NodeOutput nodeOutput = new NodeOutput();
+        WorkflowNodeDetail nodeDetail = em.find(WorkflowNodeDetail.class, nodeDetailResource.getNodeInstanceId());
+        nodeOutput.setNode(nodeDetail);
+        nodeOutput.setNodeId(nodeDetail.getNodeId());
+        nodeOutput.setOutputKey(outputKey);
+        nodeOutput.setOutputKeyType(outputType);
+        nodeOutput.setValue(value);
+        nodeOutput.setMetadata(metadata);
+        
+        if (existingOutput != null){
+            existingOutput.setNode(nodeDetail);
+            existingOutput.setNodeId(nodeDetail.getNodeId());
+            existingOutput.setOutputKey(outputKey);
+            existingOutput.setOutputKeyType(outputType);
+            existingOutput.setValue(value);
+            existingOutput.setMetadata(metadata);
+            nodeOutput = em.merge(existingOutput);
+        }else {
+            em.persist(nodeOutput);
+        }
+        em.getTransaction().commit();
+        em.close();
     }
 }

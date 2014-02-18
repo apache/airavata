@@ -29,9 +29,9 @@ import java.util.List;
 
 public class ErrorDetailResource extends AbstractResource {
     private int errorId;
-    private String expId;
-    private String taskId;
-    private String nodeInstanceId;
+    private ExperimentResource experimentResource;
+    private TaskDetailResource taskDetailResource;
+    private WorkflowNodeDetailResource nodeDetail;
     private Timestamp creationTime;
     private String actualErrorMsg;
     private String userFriendlyErrorMsg;
@@ -46,30 +46,6 @@ public class ErrorDetailResource extends AbstractResource {
 
     public void setErrorId(int errorId) {
         this.errorId = errorId;
-    }
-
-    public String getExpId() {
-        return expId;
-    }
-
-    public void setExpId(String expId) {
-        this.expId = expId;
-    }
-
-    public String getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(String taskId) {
-        this.taskId = taskId;
-    }
-
-    public String getNodeInstanceId() {
-        return nodeInstanceId;
-    }
-
-    public void setNodeInstanceId(String nodeInstanceId) {
-        this.nodeInstanceId = nodeInstanceId;
     }
 
     public Timestamp getCreationTime() {
@@ -126,6 +102,30 @@ public class ErrorDetailResource extends AbstractResource {
 
     public void setActionableGroup(String actionableGroup) {
         this.actionableGroup = actionableGroup;
+    }
+
+    public ExperimentResource getExperimentResource() {
+        return experimentResource;
+    }
+
+    public void setExperimentResource(ExperimentResource experimentResource) {
+        this.experimentResource = experimentResource;
+    }
+
+    public TaskDetailResource getTaskDetailResource() {
+        return taskDetailResource;
+    }
+
+    public void setTaskDetailResource(TaskDetailResource taskDetailResource) {
+        this.taskDetailResource = taskDetailResource;
+    }
+
+    public WorkflowNodeDetailResource getNodeDetail() {
+        return nodeDetail;
+    }
+
+    public void setNodeDetail(WorkflowNodeDetailResource nodeDetail) {
+        this.nodeDetail = nodeDetail;
     }
 
     @Override
