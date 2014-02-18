@@ -31,8 +31,6 @@ import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
-import org.apache.airavata.persistance.registry.jpa.resources.AbstractResource.GFacJobStatusConstants;
-import org.apache.airavata.persistance.registry.jpa.resources.AbstractResource.WorkflowDataConstants;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,12 +76,6 @@ public class WorkerResource extends AbstractResource {
 				userWorkflowResource.setGateway(gateway);
 				result=userWorkflowResource;
                 break;
-            case EXPERIMENT_METADATA:
-//                ExperimentMetadataResource experimentResource = new ExperimentMetadataResource();
-//                experimentResource.setExecutionUser(user);
-//                experimentResource.setGateway(gateway);
-//                result=experimentResource;
-                break;
 			default:
                 logger.error("Unsupported resource type for worker resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported resource type for worker resource.");
@@ -117,18 +109,6 @@ public class WorkerResource extends AbstractResource {
                 q = generator.deleteQuery(em);
 	            q.executeUpdate();
 	            break;
-			case EXPERIMENT_METADATA:
-                generator = new QueryGenerator(EXPERIMENT_METADATA);
-                generator.setParameter(ExperimentMetadataConstants.EXPERIMENT_ID, name);
-                q = generator.deleteQuery(em);
-	            q.executeUpdate();
-	            break;
-            case WORKFLOW_DATA:
-                generator = new QueryGenerator(WORKFLOW_DATA);
-                generator.setParameter(WorkflowDataConstants.WORKFLOW_INSTANCE_ID, name);
-                q = generator.deleteQuery(em);
-                q.executeUpdate();
-                break;
 			default:
                 logger.error("Unsupported resource type for worker resource.", new IllegalArgumentException());
                 break;
@@ -166,29 +146,6 @@ public class WorkerResource extends AbstractResource {
 	            User_Workflow userWorkflow = (User_Workflow) q.getSingleResult();
                 result= Utils.getResource(ResourceType.USER_WORKFLOW, userWorkflow);
 	            break;
-			case EXPERIMENT_METADATA:
-//                generator = new QueryGenerator(EXPERIMENT_METADATA);
-//                generator.setParameter(ExperimentMetadataConstants.EXPERIMENT_ID, name);
-//                q = generator.selectQuery(em);
-//	            Experiment_Metadata experiment = (Experiment_Metadata) q.getSingleResult();
-//                result= Utils.getResource(ResourceType.EXPERIMENT_METADATA, experiment);
-//				break;
-			case WORKFLOW_DATA:
-//                generator = new QueryGenerator(WORKFLOW_DATA);
-//                generator.setParameter(WorkflowDataConstants.WORKFLOW_INSTANCE_ID, name);
-//                q = generator.selectQuery(em);
-//                Workflow_Data eworkflowData = (Workflow_Data)q.getSingleResult();
-//                WorkflowDataResource workflowDataResource = (WorkflowDataResource)Utils.getResource(ResourceType.WORKFLOW_DATA, eworkflowData);
-//                result= workflowDataResource;
-//                break;
-            case GFAC_JOB_DATA:
-//                generator = new QueryGenerator(GFAC_JOB_DATA);
-//                generator.setParameter(GFacJobDataConstants.LOCAL_JOB_ID, name);
-//                q = generator.selectQuery(em);
-//                GFac_Job_Data gFacJobData = (GFac_Job_Data)q.getSingleResult();
-//                GFacJobDataResource gFacJobDataResource = (GFacJobDataResource)Utils.getResource(ResourceType.GFAC_JOB_DATA, gFacJobData);
-//                result= gFacJobDataResource;
-//                break;
 			default:
                 logger.error("Unsupported resource type for worker resource.", new IllegalArgumentException());
                 break;
@@ -274,17 +231,6 @@ public class WorkerResource extends AbstractResource {
 		            result.add(userWorkflowResource);
 	            }
 	            break;
-			case EXPERIMENT_METADATA:
-//                generator = new QueryGenerator(EXPERIMENT_METADATA);
-//                generator.setParameter(ExperimentMetadataConstants.GATEWAY_NAME, gateway.getGatewayName());
-//                generator.setParameter(ExperimentMetadataConstants.EXECUTION_USER, user);
-//                q = generator.selectQuery(em);
-//	            for (Object o : q.getResultList()) {
-//	            	Experiment_Metadata experiment = (Experiment_Metadata) o;
-//	            	ExperimentMetadataResource experimentResource = (ExperimentMetadataResource)Utils.getResource(ResourceType.EXPERIMENT_METADATA, experiment);
-//		            result.add(experimentResource);
-//	            }
-//	            break;
 			default:
                 logger.error("Unsupported resource type for worker resource.", new IllegalArgumentException());
                 break;
@@ -459,17 +405,9 @@ public class WorkerResource extends AbstractResource {
      * @return whether experiment is already exist for the given user
      */
 	public boolean isExperimentExists(String name){
-		return isExists(ResourceType.EXPERIMENT_METADATA, name);
+		return isExists(ResourceType.EXPERIMENT, name);
 	}
 	
-	/**
-	 * Returns of the gfac job record is present for the job id
-	 * @param jobId
-	 * @return
-	 */
-	public boolean isGFacJobExists(String jobId){
-		return isExists(ResourceType.GFAC_JOB_DATA, jobId);
-	}
 
     /**
      *
@@ -502,18 +440,6 @@ public class WorkerResource extends AbstractResource {
      * @param experimentId  experiment name
      */
 	public void removeExperiment(String experimentId){
-		remove(ResourceType.EXPERIMENT_METADATA, experimentId);
+		remove(ResourceType.EXPERIMENT, experimentId);
 	}
-	
-    public boolean isWorkflowInstancePresent(String workflowInstanceId){
-		return isExists(ResourceType.WORKFLOW_DATA, workflowInstanceId);
-    }
-    
-    public WorkflowDataResource getWorkflowInstance(String workflowInstanceId){
-    	return (WorkflowDataResource)get(ResourceType.WORKFLOW_DATA, workflowInstanceId);
-    }
-    
-    public void removeWorkflowInstance(String workflowInstanceId){
-    	remove(ResourceType.WORKFLOW_DATA, workflowInstanceId);
-    }
 }

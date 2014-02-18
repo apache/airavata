@@ -38,16 +38,26 @@ public abstract class AbstractResource implements Resource {
 	public static final String HOST_DESCRIPTOR = "Host_Descriptor";
 	public static final String SERVICE_DESCRIPTOR = "Service_Descriptor";
 	public static final String APPLICATION_DESCRIPTOR = "Application_Descriptor";
-	public static final String EXPERIMENT_METADATA = "Experiment_Metadata";
-	public static final String EXPERIMENT_CONFIG_DATA = "Experiment_Configuration_Data";
-	public static final String EXPERIMENT_SUMMARY = "Experiment_Summary";
+	public static final String EXPERIMENT = "Experiment";
+	public static final String EXPERIMENT_CONFIG_DATA = "Configuration_Data";
 	public static final String EXPERIMENT_INPUT = "Experiment_Input";
 	public static final String EXPERIMENT_OUTPUT = "Experiment_Output";
-	public static final String WORKFLOW_DATA = "Workflow_Data";
-	public static final String EXECUTION_ERROR = "Execution_Error";
-	public static final String GFAC_JOB_DATA = "GFac_Job_Data";
-	public static final String GFAC_JOB_STATUS = "GFac_Job_Status";
-	public static final String ORCHESTRATOR = "Orchestrator";
+	public static final String WORKFLOW_NODE_DETAIL = "Workflow_Node_Details";
+	public static final String TASK_DETAIL = "Task_Detail";
+	public static final String ERROR_DETAIL = "Error_Detail";
+	public static final String APPLICATION_INPUT = "Application_Input";
+	public static final String APPLICATION_OUTPUT = "Application_Output";
+	public static final String NODE_INPUT = "Node_Input";
+	public static final String NODE_OUTPUT = "Node_Output";
+	public static final String JOB_DETAIL = "Job_Detail";
+	public static final String DATA_TRANSFER_DETAIL = "Data_Transfer_Detail";
+	public static final String STATUS = "Status";
+	public static final String CONFIG_DATA = "Config_Data";
+	public static final String COMPUTATIONAL_RESOURCE_SCHEDULING = "Computation_Resource_Scheduling";
+	public static final String ADVANCE_INPUT_DATA_HANDLING = "Advance_Input_Data_Handling";
+	public static final String ADVANCE_OUTPUT_DATA_HANDLING = "Advance_Output_Data_Handling";
+	public static final String QOS_PARAMS = "Qos_Params";
+
 
 	// Gateway Table
 	public final class GatewayConstants {
@@ -131,138 +141,188 @@ public abstract class AbstractResource implements Resource {
 		public static final String APPLICATION_DESC_XML = "application_descriptor_xml";
 	}
 
-	// Experiment Metadata table
-	public final class ExperimentMetadataConstants {
+	// Experiment table
+	public final class ExperimentConstants {
 		public static final String PROJECT_NAME = "project_name";
 		public static final String EXECUTION_USER = "execution_user";
 		public static final String GATEWAY_NAME = "gateway_name";
 		public static final String EXPERIMENT_ID = "experiment_id";
 		public static final String EXPERIMENT_NAME = "experiment_name";
-		public static final String DESCRIPTION = "description";
-		public static final String SUBMITTED_DATE = "submitted_date";
-		public static final String SHARE_EXPERIMENT = "share_experiment";
-
+		public static final String DESCRIPTION = "experiment_description";
+		public static final String CREATION_TIME = "creation_time";
+		public static final String APPLICATION_ID = "application_id";
+		public static final String APPLICATION_VERSION = "application_version";
+		public static final String WORKFLOW_TEMPLATE_ID = "workflow_template_id";
+		public static final String WORKFLOW_TEMPLATE_VERSION = "workflow_template_version";
+		public static final String WORKFLOW_EXECUTION_ID = "workflow_execution_id";
 	}
 
     // Experiment Configuration Data table
     public final class ExperimentConfigurationDataConstants {
         public static final String EXPERIMENT_ID = "experiment_id";
-        public static final String RESOURCE_HOST_ID = "resource_host_id";
-        public static final String TOTAL_CPU_COUNT = "total_cpu_count";
-        public static final String NODE_COUNT = "node_count";
-        public static final String NUMBER_OF_THREADS = "number_of_threads";
-        public static final String QUEUE_NAME = "queue_name";
-        public static final String WALLTIME_LIMIT = "walltime_limit";
-        public static final String JOB_START_TIME = "job_start_time";
-        public static final String TOTAL_PHYSICAL_MEMORY = "total_physical_memory";
-        public static final String COMP_PROJECT_ACCOUNT = "computational_project_account";
         public static final String AIRAVATA_AUTO_SCHEDULE = "airavata_auto_schedule";
         public static final String OVERRIDE_MANUAL_SCHEDULE = "override_manual_schedule";
-        public static final String WORKING_DIR = "working_dir";
-        public static final String STAGE_INPUT_FILES_TO_WORKING_DIR = "stage_input_files_to_working_dir";
-        public static final String OUTPUT_DATA_DIR = "output_data_dir";
-        public static final String DATA_REG_URL = "data_reg_url";
-        public static final String PERSIST_OUTPUT_DATA = "persist_output_data";
-        public static final String CLEAN_AFTER_JOB = "clean_after_job";
-    }
-
-    //Experiment Summary table
-    public final class ExperimentSummaryConstants {
-        public static final String EXPERIMENT_ID = "experiment_id";
-        public static final String STATUS = "status";
-        public static final String LAST_UPDATE_TIME = "last_update_time";
-
+        public static final String SHARE_EXPERIMENT = "share_experiment";
     }
 
     //Experiment Input table
     public final class ExperimentInputConstants {
         public static final String EXPERIMENT_ID = "experiment_id";
-        public static final String EXPERIMENT_INPUT_KEY = "ex_key";
+        public static final String EXPERIMENT_INPUT_KEY = "input_key";
         public static final String EXPERIMENT_INPUT_VAL = "value";
+        public static final String INPUT_TYPE = "input_type";
+        public static final String METADATA = "metadata";
     }
 
     //Experiment Output table
     public final class ExperimentOutputConstants {
         public static final String EXPERIMENT_ID = "experiment_id";
-        public static final String EXPERIMENT_OUTPUT_KEY = "ex_key";
+        public static final String EXPERIMENT_OUTPUT_KEY = "output_key";
         public static final String EXPERIMENT_OUTPUT_VAL = "value";
+        public static final String OUTPUT_TYPE = "output_type";
+        public static final String METADATA = "metadata";
     }
 
 	// Workflow_Data table
-	public final class WorkflowDataConstants {
+	public final class WorkflowNodeDetailsConstants {
 		public static final String EXPERIMENT_ID = "experiment_ID";
-		public static final String WORKFLOW_INSTANCE_ID = "workflow_instanceID";
-		public static final String TEMPLATE_NAME = "template_name";
-		public static final String STATUS = "status";
-		public static final String START_TIME = "start_time";
-		public static final String LAST_UPDATE_TIME = "last_update_time";
+		public static final String NODE_INSTANCE_ID = "node_instance_id";
+		public static final String CREATION_TIME = "creation_time";
+		public static final String NODE_NAME = "node_name";
 	}
 
-	// Node_Data table
-	public final class NodeDataConstants {
-		public static final String WORKFLOW_INSTANCE_ID = "workflow_instanceID";
-		public static final String NODE_ID = "node_id";
-		public static final String NODE_TYPE = "node_type";
-		public static final String INPUTS = "inputs";
-		public static final String OUTPUTS = "outputs";
-		public static final String STATUS = "status";
-		public static final String START_TIME = "start_time";
-		public static final String LAST_UPDATE_TIME = "last_update_time";
+	// TaskDetail table
+	public final class TaskDetailConstants {
+		public static final String TASK_ID = "task_id";
+		public static final String NODE_INSTANCE_ID = "node_instance_id";
+		public static final String CREATION_TIME = "creation_type";
+		public static final String APPLICATION_ID = "application_id";
+		public static final String APPLICATION_VERSION = "application_version";
 	}
 
-	// Gram_Data table
-	public final class GramDataConstants {
-		public static final String WORKFLOW_INSTANCE_ID = "workflow_instanceID";
-		public static final String NODE_ID = "node_id";
-		public static final String RSL = "rsl";
-		public static final String INVOKED_HOST = "invoked_host";
-		public static final String LOCAL_JOB_ID = "local_Job_ID";
-	}
-
-	public final class ExecutionErrorConstants {
+	// ErrorDetails table
+	public final class ErrorDetailConstants {
 		public static final String ERROR_ID = "error_id";
-		public static final String EXPERIMENT_ID = "experiment_ID";
-		public static final String WORKFLOW_ID = "workflow_instanceID";
-		public static final String NODE_ID = "node_id";
-		public static final String GFAC_JOB_ID = "gfacJobID";
-		public static final String SOURCE_TYPE = "source_type";
-		public static final String ERROR_DATE = "error_date";
-		public static final String ERROR_MSG = "error_msg";
-		public static final String ERROR_DES = "error_des";
-		public static final String ERROR_CODE = "error_code";
+		public static final String EXPERIMENT_ID = "experiment_id";
+		public static final String TASK_ID = "task_id";
+		public static final String NODE_INSTANCE_ID = "node_instance_id";
+		public static final String CREATION_TIME = "creation_time";
+		public static final String ACTUAL_ERROR_MESSAGE = "actual_error_message";
+		public static final String USER_FRIEDNLY_ERROR_MSG = "user_friendly_error_msg";
+		public static final String TRANSIENT_OR_PERSISTENT = "transient_or_persistent";
+		public static final String ERROR_CATEGORY = "error_category";
+		public static final String CORRECTIVE_ACTION = "corrective_action";
+		public static final String ACTIONABLE_GROUP = "actionable_group";
 	}
 
-	public final class GFacJobDataConstants {
-		public static final String EXPERIMENT_ID = "experiment_ID";
-		public static final String WORKFLOW_INSTANCE_ID = "workflow_instanceID";
-		public static final String NODE_ID = "node_id";
-		public static final String APP_DESC_ID = "application_descriptor_ID";
-		public static final String HOST_DESC_ID = "host_descriptor_ID";
-		public static final String SERVICE_DESC_ID = "service_descriptor_ID";
-		public static final String JOB_DATA = "job_data";
-		public static final String LOCAL_JOB_ID = "local_Job_ID";
-		public static final String SUBMITTED_TIME = "submitted_time";
-		public static final String STATUS_UPDATE_TIME = "status_update_time";
-		public static final String STATUS = "status";
+    // ApplicationInput table
+	public final class ApplicationInputConstants {
+		public static final String TASK_ID = "task_id";
+		public static final String INPUT_KEY = "input_key";
+		public static final String INPUT_KEY_TYPE = "input_key_type";
 		public static final String METADATA = "metadata";
+		public static final String VALUE = "value";
 	}
 
-	public final class GFacJobStatusConstants {
-		public static final String LOCAL_JOB_ID = "local_Job_ID";
-		public static final String STATUS = "status";
-		public static final String STATUS_UPDATE_TIME = "status_update_time";
-	}
+    // ApplicationOutput table
+    public final class ApplicationOutputConstants {
+        public static final String TASK_ID = "task_id";
+        public static final String OUTPUT_KEY = "output_key";
+        public static final String OUTPUT_KEY_TYPE = "output_key_type";
+        public static final String METADATA = "metadata";
+        public static final String VALUE = "value";
+    }
 
-	// Orchestrator_Data table
-	public final class OrchestratorDataConstants {
-		public static final String EXPERIMENT_ID = "experiment_ID";
-		public static final String USERNAME = "username";
-		public static final String STATUS = "status";
-		public static final String STATE = "state";
-		public static final String APPLICATION_NAME = "applicationName";
-		public static final String JOB_REQUEST = "jobRequest";
-		
-	}
+    // NodeInput table
+    public final class NodeInputConstants {
+        public static final String NODE_INSTANCE_ID = "node_instance_id";
+        public static final String INPUT_KEY = "input_key";
+        public static final String INPUT_KEY_TYPE = "input_key_type";
+        public static final String METADATA = "metadata";
+        public static final String VALUE = "value";
+    }
+
+    // NodeOutput table
+    public final class NodeOutputConstants {
+        public static final String NODE_INSTANCE_ID = "node_instance_id";
+        public static final String OUTPUT_KEY = "output_key";
+        public static final String OUTPUT_KEY_TYPE = "output_key_type";
+        public static final String METADATA = "metadata";
+        public static final String VALUE = "value";
+    }
+
+    // Job Details table constants
+    public final class JobDetailConstants{
+        public static final String JOB_ID = "job_id";
+        public static final String TASK_ID = "task_id";
+        public static final String JOB_DESCRIPTION = "job_description";
+        public static final String CREATION_TIME = "creation_time";
+    }
+
+    // Data transfer Details table constants
+    public final class DataTransferDetailConstants{
+        public static final String TRANSFER_ID = "transfer_id";
+        public static final String TASK_ID = "task_id";
+        public static final String TRANSFER_DESC = "transfer_description";
+        public static final String CREATION_TIME = "creation_time";
+    }
+
+    // Status table constants
+    public final class StatusConstants {
+        public static final String STATUS_ID = "status_id";
+        public static final String EXPERIMENT_ID = "experiment_id";
+        public static final String NODE_INSTANCE_ID = "node_instance_id";
+        public static final String TRANSFER_ID = "transfer_id";
+        public static final String TASK_ID = "task_id";
+        public static final String JOB_ID = "job_id";
+        public static final String STATE = "state";
+        public static final String STATUS_UPDATE_TIME = "status_update_time";
+        public static final String STATUS_TYPE = "status_type";
+    }
+
+    public static final class ComputationalResourceSchedulingConstants{
+        public static final String RESOURCE_SCHEDULING_ID = "resource_scheduling_id";
+        public static final String EXPERIMENT_ID = "experiment_id";
+        public static final String TASK_ID = "task_id";
+        public static final String RESOURCE_HOST_ID = "resource_host_id";
+        public static final String CPU_COUNT = "cpu_count";
+        public static final String NODE_COUNT = "node_count";
+        public static final String NO_OF_THREADS = "no_of_threads";
+        public static final String QUEUE_NAME = "queue_name";
+        public static final String WALLTIME_LIMIT = "walltime_limit";
+        public static final String JOB_START_TIME = "job_start_time";
+        public static final String TOTAL_PHYSICAL_MEMORY = "total_physical_memory";
+        public static final String COMPUTATIONAL_PROJECT_ACCOUNT = "computational_project_accont";
+    }
+
+    public static final class AdvancedInputDataHandlingConstants {
+        public static final String INPUT_DATA_HANDLING_ID = "input_data_handling_id";
+        public static final String EXPERIMENT_ID = "experiment_id";
+        public static final String TASK_ID = "task_id";
+        public static final String WORKING_DIR_PARENT = "working_dir_parent";
+        public static final String UNIQUE_WORKING_DIR = "unique_working_dir";
+        public static final String STAGE_INPUT_FILES_TO_WORKING_DIR = "stage_input_files_to_working_dir";
+        public static final String CLEAN_AFTER_JOB = "clean_after_job";
+    }
+
+    public static final class AdvancedOutputDataHandlingConstants {
+        public static final String OUTPUT_DATA_HANDLING_ID = "output_data_handling_id";
+        public static final String EXPERIMENT_ID = "experiment_id";
+        public static final String TASK_ID = "task_id";
+        public static final String OUTPUT_DATA_DIR = "output_data_dir";
+        public static final String DATA_REG_URL = "data_reg_url";
+        public static final String PERSIST_OUTPUT_DATA = "persist_output_data";
+    }
+
+    public static final class QosParamsConstants {
+        public static final String QOS_ID = "qos_id";
+        public static final String EXPERIMENT_ID = "experiment_id";
+        public static final String TASK_ID = "task_id";
+        public static final String START_EXECUTION_AT = "start_execution_at";
+        public static final String EXECUTE_BEFORE = "execute_before";
+        public static final String NO_OF_RETRIES = "no_of_retries";
+    }
+
 
 	protected AbstractResource() {
 	}

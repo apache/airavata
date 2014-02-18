@@ -82,19 +82,19 @@ public class ProjectResource extends AbstractResource {
      * @param name child resource name
      */
     public void remove(ResourceType type, Object name) {
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        if (type == ResourceType.EXPERIMENT_METADATA) {
-        	QueryGenerator generator = new QueryGenerator(EXPERIMENT_METADATA);
-        	generator.setParameter(ExperimentMetadataConstants.EXPERIMENT_ID, name);
-        	Query q = generator.deleteQuery(em);
-        	q.executeUpdate();
-        }else {
+//        EntityManager em = ResourceUtils.getEntityManager();
+//        em.getTransaction().begin();
+//        if (type == ResourceType.EXPERIMENT_METADATA) {
+//        	QueryGenerator generator = new QueryGenerator(EXPERIMENT_METADATA);
+//        	generator.setParameter(ExperimentMetadataConstants.EXPERIMENT_ID, name);
+//        	Query q = generator.deleteQuery(em);
+//        	q.executeUpdate();
+//        }else {
             logger.error("Unsupported resource type for project resource.", new IllegalArgumentException());
             throw new IllegalArgumentException("Unsupported resource type for project resource.");
-        }
-        em.getTransaction().commit();
-        em.close();
+//        }
+//        em.getTransaction().commit();
+//        em.close();
     }
 
     /**
@@ -265,7 +265,8 @@ public class ProjectResource extends AbstractResource {
      * @return whether the experiment exist
      */
     public boolean isExperimentExists(String experimentId){
-		return isExists(ResourceType.EXPERIMENT_METADATA, experimentId);
+//		return isExists(ResourceType.EXPERIMENT_METADATA, experimentId);
+        return true;
 	}
 
     /**
@@ -306,7 +307,7 @@ public class ProjectResource extends AbstractResource {
      * @param experimentId experiment ID
      */
     public void removeExperiment(String experimentId){
-		remove(ResourceType.EXPERIMENT_METADATA, experimentId);
+//		remove(ResourceType.EXPERIMENT_METADATA, experimentId);
 	}
 
 }
