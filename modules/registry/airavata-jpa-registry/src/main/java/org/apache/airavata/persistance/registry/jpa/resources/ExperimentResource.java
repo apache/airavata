@@ -30,10 +30,7 @@ import javax.persistence.Query;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
-import org.apache.airavata.persistance.registry.jpa.model.Experiment;
-import org.apache.airavata.persistance.registry.jpa.model.Gateway;
-import org.apache.airavata.persistance.registry.jpa.model.Project;
-import org.apache.airavata.persistance.registry.jpa.model.Users;
+import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 import org.bouncycastle.jce.provider.JDKPSSSigner;
 import org.slf4j.Logger;
@@ -47,6 +44,7 @@ public class ExperimentResource extends AbstractResource {
     private GatewayResource gateway;
     private ProjectResource project;
     private String expName;
+    private String description;
     private String applicationId;
     private String applicationVersion;
     private String workflowTemplateId;
@@ -117,6 +115,14 @@ public class ExperimentResource extends AbstractResource {
         this.workflowExecutionId = workflowExecutionId;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     /**
      * Since experiments are at the leaf level, this method is not
      * valid for an experiment
@@ -135,6 +141,36 @@ public class ExperimentResource extends AbstractResource {
                 return experimentOutputResource;
             case WORKFLOW_NODE_DETAIL:
                 WorkflowNodeDetailResource nodeDetailResource = new WorkflowNodeDetailResource();
+                nodeDetailResource.setExperimentResource(this);
+                return nodeDetailResource;
+            case ERROR_DETAIL:
+                ErrorDetailResource errorDetailResource = new ErrorDetailResource();
+                errorDetailResource.setExperimentResource(this);
+                return errorDetailResource;
+            case STATUS:
+                StatusResource statusResource = new StatusResource();
+                statusResource.setExperimentResource(this);
+                return statusResource;
+            case CONFIG_DATA:
+                ConfigDataResource configDataResource = new ConfigDataResource();
+                configDataResource.setExperimentResource(this);
+                return configDataResource;
+            case COMPUTATIONAL_RESOURCE_SCHEDULING:
+                ComputationSchedulingResource schedulingResource = new ComputationSchedulingResource();
+                schedulingResource.setExperimentResource(this);
+                return schedulingResource;
+            case ADVANCE_INPUT_DATA_HANDLING:
+                AdvanceInputDataHandlingResource dataHandlingResource = new AdvanceInputDataHandlingResource();
+                dataHandlingResource.setExperimentResource(this);
+                return dataHandlingResource;
+            case ADVANCE_OUTPUT_DATA_HANDLING:
+                AdvancedOutputDataHandlingResource outputDataHandlingResource = new AdvancedOutputDataHandlingResource();
+                outputDataHandlingResource.setExperimentResource(this);
+                return outputDataHandlingResource;
+            case QOS_PARAM:
+                QosParamResource qosParamResource = new QosParamResource();
+                qosParamResource.setExperimentResource(this);
+                return qosParamResource;
 	        default:
                 logger.error("Unsupported resource type for experiment resource.", new IllegalArgumentException());
 	            throw new IllegalArgumentException("Unsupported resource type for experiment resource.");
@@ -148,21 +184,77 @@ public class ExperimentResource extends AbstractResource {
      * @return UnsupportedOperationException
      */
     public void remove(ResourceType type, Object name) {
-//        EntityManager em = ResourceUtils.getEntityManager();
-//        em.getTransaction().begin();
-//        Query q;
-//        QueryGenerator generator;
-//        switch (type){
-//            case EXPERIMENT_DATA:
-//                generator = new QueryGenerator(EXPERIMENT_DATA);
-//                generator.setParameter(ExperimentDataConstants.EXPERIMENT_ID, name);
-//                q = generator.deleteQuery(em);
-//                q.executeUpdate();
-//                break;
-//        }
-//        em.getTransaction().commit();
-//        em.close();
-
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        Query q;
+        QueryGenerator generator;
+        switch (type){
+            case EXPERIMENT_INPUT:
+                generator = new QueryGenerator(EXPERIMENT_INPUT);
+                generator.setParameter(ExperimentInputConstants.EXPERIMENT_ID, name);
+                q = generator.deleteQuery(em);
+                q.executeUpdate();
+                break;
+            case EXPERIMENT_OUTPUT:
+                generator = new QueryGenerator(EXPERIMENT_OUTPUT);
+                generator.setParameter(ExperimentOutputConstants.EXPERIMENT_ID, name);
+                q = generator.deleteQuery(em);
+                q.executeUpdate();
+                break;
+            case WORKFLOW_NODE_DETAIL:
+                generator = new QueryGenerator(WORKFLOW_NODE_DETAIL);
+                generator.setParameter(WorkflowNodeDetailsConstants.EXPERIMENT_ID, name);
+                q = generator.deleteQuery(em);
+                q.executeUpdate();
+                break;
+            case ERROR_DETAIL:
+                generator = new QueryGenerator(ERROR_DETAIL);
+                generator.setParameter(ErrorDetailConstants.EXPERIMENT_ID, name);
+                q = generator.deleteQuery(em);
+                q.executeUpdate();
+                break;
+            case STATUS:
+                generator = new QueryGenerator(STATUS);
+                generator.setParameter(StatusConstants.EXPERIMENT_ID, name);
+                q = generator.deleteQuery(em);
+                q.executeUpdate();
+                break;
+            case CONFIG_DATA:
+                generator = new QueryGenerator(CONFIG_DATA);
+                generator.setParameter(ExperimentConfigurationDataConstants.EXPERIMENT_ID, name);
+                q = generator.deleteQuery(em);
+                q.executeUpdate();
+                break;
+            case COMPUTATIONAL_RESOURCE_SCHEDULING:
+                generator = new QueryGenerator(COMPUTATIONAL_RESOURCE_SCHEDULING);
+                generator.setParameter(ComputationalResourceSchedulingConstants.EXPERIMENT_ID, name);
+                q = generator.deleteQuery(em);
+                q.executeUpdate();
+                break;
+            case ADVANCE_INPUT_DATA_HANDLING:
+                generator = new QueryGenerator(ADVANCE_INPUT_DATA_HANDLING);
+                generator.setParameter(AdvancedInputDataHandlingConstants.EXPERIMENT_ID, name);
+                q = generator.deleteQuery(em);
+                q.executeUpdate();
+                break;
+            case ADVANCE_OUTPUT_DATA_HANDLING:
+                generator = new QueryGenerator(ADVANCE_OUTPUT_DATA_HANDLING);
+                generator.setParameter(AdvancedOutputDataHandlingConstants.EXPERIMENT_ID, name);
+                q = generator.deleteQuery(em);
+                q.executeUpdate();
+                break;
+            case QOS_PARAM:
+                generator = new QueryGenerator(QOS_PARAMS);
+                generator.setParameter(QosParamsConstants.EXPERIMENT_ID, name);
+                q = generator.deleteQuery(em);
+                q.executeUpdate();
+                break;
+            default:
+                logger.error("Unsupported resource type for experiment resource.", new IllegalArgumentException());
+                break;
+        }
+        em.getTransaction().commit();
+        em.close();
     }
 
     /**
@@ -177,15 +269,15 @@ public class ExperimentResource extends AbstractResource {
         QueryGenerator generator;
         Query q;
         switch (type) {
-//            case EXPERIMENT_DATA:
-//                generator = new QueryGenerator(EXPERIMENT_DATA);
-//                generator.setParameter(ExperimentDataConstants.EXPERIMENT_ID, name);
-//                q = generator.selectQuery(em);
-//                Experiment_Data experimentData = (Experiment_Data)q.getSingleResult();
-//                ExperimentDataResource experimentDataResource = (ExperimentDataResource)Utils.getResource(ResourceType.EXPERIMENT_DATA, experimentData);
-//                em.getTransaction().commit();
-//                em.close();
-//                return experimentDataResource;
+            case EXPERIMENT_INPUT:
+                generator = new QueryGenerator(EXPERIMENT_INPUT);
+                generator.setParameter(ExperimentInputConstants.EXPERIMENT_ID, name);
+                q = generator.selectQuery(em);
+                Experiment_Input experimentInput = (Experiment_Input)q.getSingleResult();
+                ExperimentInputResource inputResource = (ExperimentInputResource)Utils.getResource(ResourceType.EXPERIMENT_INPUT, experimentInput);
+                em.getTransaction().commit();
+                em.close();
+                return inputResource;
             default:
                 em.getTransaction().commit();
                 em.close();

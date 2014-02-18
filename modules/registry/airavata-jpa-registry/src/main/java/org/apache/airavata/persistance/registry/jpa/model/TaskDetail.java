@@ -21,6 +21,8 @@
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
+import org.apache.airavata.registry.api.workflow.WorkflowNodeType;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 
@@ -40,8 +42,8 @@ public class TaskDetail {
     private String appVersion;
 
     @ManyToOne(cascade= CascadeType.MERGE)
-    @JoinColumn(name = "EXPERIMENT_ID")
-    private Experiment experiment;
+    @JoinColumn(name = "NODE_INSTANCE_ID")
+    private WorkflowNodeDetail nodeDetail;
 
     public String getTaskId() {
         return taskId;
@@ -83,11 +85,11 @@ public class TaskDetail {
         this.appVersion = appVersion;
     }
 
-    public Experiment getExperiment() {
-        return experiment;
+    public WorkflowNodeDetail getNodeDetail() {
+        return nodeDetail;
     }
 
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
+    public void setNodeDetail(WorkflowNodeDetail nodeDetail) {
+        this.nodeDetail = nodeDetail;
     }
 }

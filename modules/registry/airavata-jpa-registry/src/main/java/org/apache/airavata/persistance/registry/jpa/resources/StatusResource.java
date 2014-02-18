@@ -23,8 +23,6 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
-import org.apache.airavata.persistance.registry.jpa.model.DataTransferDetail;
-import org.apache.airavata.persistance.registry.jpa.model.WorkflowNodeDetail;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -32,8 +30,8 @@ import java.util.List;
 public class StatusResource extends AbstractResource {
     private int statusId;
     private ExperimentResource experimentResource;
-    private WorkflowNodeDetail workflowNodeDetail;
-    private DataTransferDetail dataTransferDetail;
+    private WorkflowNodeDetailResource workflowNodeDetail;
+    private DataTransferDetailResource dataTransferDetail;
     private TaskDetailResource taskDetailResource;
     private String jobId;
     private String state;
@@ -56,19 +54,19 @@ public class StatusResource extends AbstractResource {
         this.experimentResource = experimentResource;
     }
 
-    public WorkflowNodeDetail getWorkflowNodeDetail() {
+    public WorkflowNodeDetailResource getWorkflowNodeDetail() {
         return workflowNodeDetail;
     }
 
-    public void setWorkflowNodeDetail(WorkflowNodeDetail workflowNodeDetail) {
+    public void setWorkflowNodeDetail(WorkflowNodeDetailResource workflowNodeDetail) {
         this.workflowNodeDetail = workflowNodeDetail;
     }
 
-    public DataTransferDetail getDataTransferDetail() {
+    public DataTransferDetailResource getDataTransferDetail() {
         return dataTransferDetail;
     }
 
-    public void setDataTransferDetail(DataTransferDetail dataTransferDetail) {
+    public void setDataTransferDetail(DataTransferDetailResource dataTransferDetail) {
         this.dataTransferDetail = dataTransferDetail;
     }
 
