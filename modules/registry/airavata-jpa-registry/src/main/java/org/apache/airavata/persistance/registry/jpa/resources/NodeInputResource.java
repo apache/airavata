@@ -27,18 +27,18 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import java.util.List;
 
 public class NodeInputResource extends AbstractResource {
-    private String nodeInstanceId;
+    private WorkflowNodeDetailResource nodeDetailResource;
     private String inputKey;
     private String inputType;
     private String metadata;
     private String value;
 
-    public String getNodeInstanceId() {
-        return nodeInstanceId;
+    public WorkflowNodeDetailResource getNodeDetailResource() {
+        return nodeDetailResource;
     }
 
-    public void setNodeInstanceId(String nodeInstanceId) {
-        this.nodeInstanceId = nodeInstanceId;
+    public void setNodeDetailResource(WorkflowNodeDetailResource nodeDetailResource) {
+        this.nodeDetailResource = nodeDetailResource;
     }
 
     public String getInputKey() {

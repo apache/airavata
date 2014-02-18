@@ -26,7 +26,7 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "ERROR_DETAIL")
-public class ErrorDetails {
+public class ErrorDetail {
     @Id
     @GeneratedValue
     @Column(name = "ERROR_ID")
