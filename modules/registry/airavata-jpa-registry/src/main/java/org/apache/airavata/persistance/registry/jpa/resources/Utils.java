@@ -268,27 +268,6 @@ public class Utils {
                     logger.error("Object should be a Gateway Worker.", new IllegalArgumentException());
                     throw  new IllegalArgumentException("Object should be a Gateway Worker.");
                 }
-            case EXPERIMENT_METADATA:
-//                if (o instanceof  Experiment_Metadata){
-//                    return createExperimentMetadata((Experiment_Metadata)o);
-//                }else {
-//                    logger.error("Object should be a Experiment MetaData.", new IllegalArgumentException());
-//                    throw new IllegalArgumentException("Object should be a Experiment MetaData.");
-//                }
-            case EXPERIMENT_CONFIG_DATA:
-//                if (o instanceof  Experiment_Configuration_Data){
-//                    return createExperimentConfigData((Experiment_Configuration_Data)o);
-//                }else {
-//                    logger.error("Object should be a Experiment Config data.", new IllegalArgumentException());
-//                    throw new IllegalArgumentException("Object should be a Experiment Config data.");
-//                }
-            case EXPERIMENT_SUMMARY:
-//                if (o instanceof  Experiment_Summary){
-//                    return createExperimentSummary((Experiment_Summary)o);
-//                }else {
-//                    logger.error("Object should be a Experiment Summary data.", new IllegalArgumentException());
-//                    throw new IllegalArgumentException("Object should be a Experiment Summary data.");
-//                }
             case EXPERIMENT_INPUT:
 //                if (o instanceof  Experiment_Input){
 //                    return createExperimentInput((Experiment_Input)o);
@@ -303,55 +282,6 @@ public class Utils {
 //                    logger.error("Object should be a Experiment output data.", new IllegalArgumentException());
 //                    throw new IllegalArgumentException("Object should be a Experiment output data.");
 //                }
-            case WORKFLOW_DATA:
-//                if (o instanceof  Workflow_Data){
-//                    return createWorkflowData((Workflow_Data) o);
-//                }else {
-//                    logger.error("Object should be a Workflow Data.", new IllegalArgumentException());
-//                    throw new IllegalArgumentException("Object should be a Workflow Data.");
-//                }
-            case NODE_DATA:
-//                if (o instanceof  Node_Data){
-//                    return createNodeData((Node_Data) o);
-//                }else {
-//                    logger.error("Object should be a Node Data.", new IllegalArgumentException());
-//                    throw new IllegalArgumentException("Object should be a Node Data.");
-//                }
-            case GRAM_DATA:
-//                if (o instanceof  Gram_Data){
-//                    return createGramData((Gram_Data) o);
-//                }else {
-//                    logger.error("Object should be a Gram Data.", new IllegalArgumentException());
-//                    throw new IllegalArgumentException("Object should be a Gram Data.");
-//                }
-            case EXECUTION_ERROR:
-//                if (o instanceof Execution_Error){
-//                    return createExecutionError((Execution_Error) o);
-//                }else {
-//                    logger.error("Object should be a Node Error type.", new IllegalArgumentException());
-//                    throw new IllegalArgumentException("Object should be a Node Error.");
-//                }
-            case GFAC_JOB_DATA:
-//                if (o instanceof GFac_Job_Data){
-//                    return createGfacJobData((GFac_Job_Data) o);
-//                }else {
-//                    logger.error("Object should be a GFac Job Data type.", new IllegalArgumentException());
-//                    throw new IllegalArgumentException("Object should be a GFac Job Data.");
-//                }
-            case GFAC_JOB_STATUS:
-//                if (o instanceof GFac_Job_Status){
-//                    return createGfacJobStatus((GFac_Job_Status) o);
-//                }else {
-//                    logger.error("Object should be a GFac Job Status type.", new IllegalArgumentException());
-//                    throw new IllegalArgumentException("Object should be a GFac Job Status.");
-//                }
-            case ORCHESTRATOR:
-//            	if(o instanceof Orchestrator){
-//            		return createOrchestratorData((Orchestrator)o);
-//            	}else{
-//            		 logger.error("Object should be orchestrator data.", new IllegalArgumentException());
-//                     throw new IllegalArgumentException("Object should be orchestrator data.");
-//            	}
             default:
         }
         return null;

@@ -132,10 +132,6 @@ public class GatewayResource extends AbstractResource {
                 WorkerResource workerResource = new WorkerResource();
                 workerResource.setGateway(this);
                 return workerResource;
-            case ORCHESTRATOR:
-//                OrchestratorDataResource orchestratorDataResource = new OrchestratorDataResource();
-//                orchestratorDataResource.setGateway(this);
-//                return orchestratorDataResource;
             default:
                 logger.error("Unsupported resource type for gateway resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported resource type for gateway resource.");
@@ -180,23 +176,17 @@ public class GatewayResource extends AbstractResource {
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
                 break;
-            case EXPERIMENT_METADATA:
-                generator = new QueryGenerator(EXPERIMENT_METADATA);
-                generator.setParameter(ExperimentMetadataConstants.EXPERIMENT_ID, name);
-                generator.setParameter(ExperimentMetadataConstants.GATEWAY_NAME, gatewayName);
-                q = generator.deleteQuery(em);
-                q.executeUpdate();
-                break;
+//            case EXPERIMENT_METADATA:
+//                generator = new QueryGenerator(EXPERIMENT_METADATA);
+//                generator.setParameter(ExperimentMetadataConstants.EXPERIMENT_ID, name);
+//                generator.setParameter(ExperimentMetadataConstants.GATEWAY_NAME, gatewayName);
+//                q = generator.deleteQuery(em);
+//                q.executeUpdate();
+//                break;
             case APPLICATION_DESCRIPTOR:
                 generator = new QueryGenerator(APPLICATION_DESCRIPTOR);
                 generator.setParameter(ApplicationDescriptorConstants.APPLICATION_DESC_ID, name);
                 generator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, gatewayName);
-                q = generator.deleteQuery(em);
-                q.executeUpdate();
-                break;
-            case ORCHESTRATOR:
-                generator = new QueryGenerator(ORCHESTRATOR);
-                generator.setParameter(OrchestratorDataConstants.EXPERIMENT_ID, name);
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
                 break;
@@ -254,7 +244,7 @@ public class GatewayResource extends AbstractResource {
                 em.getTransaction().commit();
                 em.close();
                 return hostDescriptorResource;
-            case EXPERIMENT_METADATA:
+//            case EXPERIMENT_METADATA:
 //                generator = new QueryGenerator(EXPERIMENT_METADATA);
 //                generator.setParameter(ExperimentMetadataConstants.EXPERIMENT_ID, name);
 ////                generator.setParameter(ExperimentMetadataConstants.GATEWAY_NAME, gatewayName);
@@ -287,16 +277,6 @@ public class GatewayResource extends AbstractResource {
                 em.getTransaction().commit();
                 em.close();
                 return applicationDescriptorResource;
-            case ORCHESTRATOR:
-//                generator = new QueryGenerator(ORCHESTRATOR);
-//                generator.setParameter(OrchestratorDataConstants.EXPERIMENT_ID, name);
-//                q = generator.selectQuery(em);
-//                Orchestrator orchData = (Orchestrator) q.getSingleResult();
-//                OrchestratorDataResource orchestratorDataResource =
-//                        (OrchestratorDataResource)Utils.getResource(ResourceType.ORCHESTRATOR, orchData);
-//                em.getTransaction().commit();
-//                em.close();
-//                return orchestratorDataResource;
             default:
                 em.getTransaction().commit();
                 em.close();

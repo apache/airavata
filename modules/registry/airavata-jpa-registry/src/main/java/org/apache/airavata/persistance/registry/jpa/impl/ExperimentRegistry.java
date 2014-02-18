@@ -352,7 +352,7 @@ public class ExperimentRegistry {
             if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.USER_NAME)){
                 UserReg userRegistry = new UserReg();
                 WorkerResource worker = userRegistry.getExistingUser(ServerSettings.getSystemUserGateway(), (String)value);
-                List<Resource> resources = worker.get(ResourceType.EXPERIMENT_METADATA);
+                List<Resource> resources = worker.get(ResourceType.EXPERIMENT);
                 for (Resource resource : resources){
 //                    ExperimentMetadataResource ex =  (ExperimentMetadataResource)resource;
 //                    BasicMetadata basicMetadata = ThriftDataModelConversion.getBasicMetadata(ex);
@@ -471,7 +471,7 @@ public class ExperimentRegistry {
                 }
             } else if (fieldName.equals(Constants.FieldConstants.BasicMetadataConstants.USER_NAME)) {
                 WorkerResource workerResource = userReg.getExistingUser(ServerSettings.getSystemUserGateway(), (String)value);
-                List<Resource> resources = workerResource.get(ResourceType.EXPERIMENT_METADATA);
+                List<Resource> resources = workerResource.get(ResourceType.EXPERIMENT);
                 for (Resource resource : resources) {
 //                    String expID = ((ExperimentMetadataResource) resource).getExpID();
 //                    expIDs.add(expID);
@@ -487,7 +487,7 @@ public class ExperimentRegistry {
     public void removeExperiment(String experimentId) {
         try {
             GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
-            defaultGateway.remove(ResourceType.EXPERIMENT_METADATA, experimentId);
+            defaultGateway.remove(ResourceType.EXPERIMENT, experimentId);
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read airavata-server properties..", e.getMessage());
         }
@@ -506,7 +506,7 @@ public class ExperimentRegistry {
     public boolean isExperimentBasicDataExist(String expID) {
         try{
             GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
-            defaultGateway.isExists(ResourceType.EXPERIMENT_METADATA, expID);
+            defaultGateway.isExists(ResourceType.EXPERIMENT, expID);
             return true;
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read airavata-server properties..", e.getMessage());

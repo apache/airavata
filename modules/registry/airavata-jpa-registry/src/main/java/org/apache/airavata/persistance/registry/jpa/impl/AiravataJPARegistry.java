@@ -45,7 +45,6 @@ import org.apache.airavata.registry.api.ExecutionErrors.Source;
 import org.apache.airavata.registry.api.exception.*;
 import org.apache.airavata.registry.api.exception.gateway.*;
 import org.apache.airavata.registry.api.exception.worker.*;
-import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
 import org.apache.airavata.registry.api.util.RegistryConstants;
 import org.apache.airavata.registry.api.util.RegistrySettings;
 import org.apache.airavata.registry.api.workflow.*;
@@ -1372,8 +1371,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		if (!isWorkflowInstanceExists(workflowInstanceId, true)){
 			throw new WorkflowInstanceDoesNotExistsException(workflowInstanceId);
 		}
-		WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(workflowInstanceId);
-		return wi.getTemplateName();
+//		WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(workflowInstanceId);
+//		return wi.getTemplateName();
+        return null;
 	}
 
 
@@ -1386,9 +1386,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             if (!isWorkflowInstanceExists(workflowInstanceId, true)){
                 throw new WorkflowInstanceDoesNotExistsException(workflowInstanceId);
             }
-            WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(workflowInstanceId);
-            wi.setTemplateName(templateName);
-            wi.save();
+//            WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(workflowInstanceId);
+//            wi.setTemplateName(templateName);
+//            wi.save();
         }
 	}
 
@@ -1420,19 +1420,20 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         if (provenanceRegistry != null){
             return provenanceRegistry.isWorkflowInstanceExists(instanceId, createIfNotPresent);
         }
-        if (jpa.getWorker().isWorkflowInstancePresent(instanceId)){
-			return true;
-		}else if (createIfNotPresent){
+//        if (jpa.getWorker().isWorkflowInstancePresent(instanceId)){
+//			return true;
+//		}else if (createIfNotPresent){
 			//we are using the same id for the experiment id for backward compatibility
 			//for up to airavata 0.5
-			if (!isExperimentExists(instanceId, true)){
-				throw new ExperimentDoesNotExistsException(instanceId);
-			}
-			addWorkflowInstance(instanceId, instanceId, null);
-			return isWorkflowInstanceExists(instanceId);
-		}else{
-			return false;
-		}
+//			if (!isExperimentExists(instanceId, true)){
+//				throw new ExperimentDoesNotExistsException(instanceId);
+//			}
+//			addWorkflowInstance(instanceId, instanceId, null);
+//			return isWorkflowInstanceExists(instanceId);
+//		}else{
+//			return false;
+//		}
+        return false;
 	}
 
 	@Override
@@ -1454,14 +1455,14 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             if (!isWorkflowInstanceExists(instanceId, true)){
                 throw new WorkflowInstanceDoesNotExistsException(instanceId);
             }
-            WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(instanceId);
-            Timestamp currentTime = new Timestamp(Calendar.getInstance().getTime().getTime());
-            wi.setStatus(status.toString());
-            if (status==State.STARTED){
-                wi.setStartTime(currentTime);
-            }
-            wi.setLastUpdatedTime(currentTime);
-            wi.save();
+//            WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(instanceId);
+//            Timestamp currentTime = new Timestamp(Calendar.getInstance().getTime().getTime());
+//            wi.setStatus(status.toString());
+//            if (status==State.STARTED){
+//                wi.setStartTime(currentTime);
+//            }
+//            wi.setLastUpdatedTime(currentTime);
+//            wi.save();
         }
 	}
 
@@ -1475,17 +1476,17 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             if (!isWorkflowInstanceExists(status.getWorkflowInstance().getWorkflowExecutionId(), true)){
                 throw new WorkflowInstanceDoesNotExistsException(status.getWorkflowInstance().getWorkflowExecutionId());
             }
-            WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(status.getWorkflowInstance().getWorkflowExecutionId());
-            Timestamp currentTime = new Timestamp(status.getStatusUpdateTime().getTime());
-            if(status.getExecutionStatus() != null){
-                wi.setStatus(status.getExecutionStatus().toString());
-            }
-
-            if (status.getExecutionStatus()==State.STARTED){
-                wi.setStartTime(currentTime);
-            }
-            wi.setLastUpdatedTime(currentTime);
-            wi.save();
+//            WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(status.getWorkflowInstance().getWorkflowExecutionId());
+//            Timestamp currentTime = new Timestamp(status.getStatusUpdateTime().getTime());
+//            if(status.getExecutionStatus() != null){
+//                wi.setStatus(status.getExecutionStatus().toString());
+//            }
+//
+//            if (status.getExecutionStatus()==State.STARTED){
+//                wi.setStartTime(currentTime);
+//            }
+//            wi.setLastUpdatedTime(currentTime);
+//            wi.save();
         }
 	}
 
@@ -1499,9 +1500,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         if (!isWorkflowInstanceExists(instanceId, true)){
 			throw new WorkflowInstanceDoesNotExistsException(instanceId);
 		}
-		WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(instanceId);
-		return new WorkflowExecutionStatus(new WorkflowExecution(wi.getExperimentID(),wi.getWorkflowInstanceID()),wi.getStatus()==null?null:State.valueOf(wi.getStatus()),wi.getLastUpdatedTime());
-	}
+//		WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(instanceId);
+//		return new WorkflowExecutionStatus(new WorkflowExecution(wi.getExperimentID(),wi.getWorkflowInstanceID()),wi.getStatus()==null?null:State.valueOf(wi.getStatus()),wi.getLastUpdatedTime());
+	    return null;
+    }
 
 
 	@Override
@@ -1760,7 +1762,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		if (!isWorkflowInstanceNodePresent(id, nodeId)){
 			throw new WorkflowInstanceNodeDoesNotExistsException(id, nodeId);
 		}
-		WorkflowDataResource workflowInstance = jpa.getWorker().getWorkflowInstance(id);
+//		WorkflowDataResource workflowInstance = jpa.getWorker().getWorkflowInstance(id);
 //		NodeDataResource nodeData = workflowInstance.getNodeData(nodeId);
 //		return new NodeExecutionStatus(new WorkflowInstanceNode(new WorkflowExecution(workflowInstance.getExperimentID(), workflowInstance.getWorkflowInstanceID()), nodeData.getNodeID()), nodeData.getStatus()==null?null:State.valueOf(nodeData.getStatus()),nodeData.getLastUpdateTime());
 	    return null;
@@ -1778,7 +1780,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		if (!isWorkflowInstanceNodePresent(id, nodeId)){
 			throw new WorkflowInstanceNodeDoesNotExistsException(id, nodeId);
 		}
-		WorkflowDataResource workflowInstance = jpa.getWorker().getWorkflowInstance(id);
+//		WorkflowDataResource workflowInstance = jpa.getWorker().getWorkflowInstance(id);
 //		NodeDataResource nodeData = workflowInstance.getNodeData(nodeId);
 //		return nodeData.getStartTime();
         return null;
@@ -1794,8 +1796,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         if (!isWorkflowInstanceExists(workflowInstance.getWorkflowExecutionId(),true)){
 			throw new WorkflowInstanceDoesNotExistsException(workflowInstance.getWorkflowExecutionId());
 		}
-		WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(workflowInstance.getWorkflowExecutionId());
-		return wi.getStartTime();
+//		WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(workflowInstance.getWorkflowExecutionId());
+//		return wi.getStartTime();
+        return null;
 	}
 
 
@@ -1831,20 +1834,20 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 			throw new WorkflowInstanceDoesNotExistsException(workflowInstanceId);
 		}
 		try{
-            WorkflowDataResource resource = jpa.getWorker().getWorkflowInstance(workflowInstanceId);
-            WorkflowExecution workflowInstance = new WorkflowExecution(resource.getExperimentID(), resource.getWorkflowInstanceID());
-            workflowInstance.setTemplateName(resource.getTemplateName());
-            WorkflowExecutionData workflowInstanceData = new WorkflowExecutionDataImpl(null, workflowInstance, new WorkflowExecutionStatus(workflowInstance, resource.getStatus()==null? null:State.valueOf(resource.getStatus()),resource.getLastUpdatedTime()), null);
+//            WorkflowDataResource resource = jpa.getWorker().getWorkflowInstance(workflowInstanceId);
+//            WorkflowExecution workflowInstance = new WorkflowExecution(resource.getExperimentID(), resource.getWorkflowInstanceID());
+//            workflowInstance.setTemplateName(resource.getTemplateName());
+//            WorkflowExecutionData workflowInstanceData = new WorkflowExecutionDataImpl(null, workflowInstance, new WorkflowExecutionStatus(workflowInstance, resource.getStatus()==null? null:State.valueOf(resource.getStatus()),resource.getLastUpdatedTime()), null);
 //            List<NodeDataResource> nodeData = resource.getNodeData();
 //            for (NodeDataResource nodeDataResource : nodeData) {
 //                workflowInstanceData.getNodeDataList().add(getWorkflowInstanceNodeData(workflowInstanceId, nodeDataResource.getNodeID()));
 //            }
-            return workflowInstanceData;
+//            return workflowInstanceData;
 //        } catch (ExperimentLazyLoadedException e) {
         } catch (Exception e) {
             throw new RegistryException(e);
         }
-
+        return null;
     }
 
 
@@ -1887,14 +1890,14 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		if (!isWorkflowInstanceExists(workflowInstanceId, true)){
 			throw new WorkflowInstanceDoesNotExistsException(workflowInstanceId);
 		}
-		if (jpa.getWorker().getWorkflowInstance(workflowInstanceId).isNodeExists(nodeId)){
-			return true;
-		}else if (createIfNotPresent){
-			addWorkflowInstanceNode(workflowInstanceId, nodeId);
-			return isWorkflowInstanceNodePresent(workflowInstanceId, nodeId);
-		}else{
+//		if (jpa.getWorker().getWorkflowInstance(workflowInstanceId).isNodeExists(nodeId)){
+//			return true;
+//		}else if (createIfNotPresent){
+//			addWorkflowInstanceNode(workflowInstanceId, nodeId);
+//			return isWorkflowInstanceNodePresent(workflowInstanceId, nodeId);
+//		}else{
 			return false;
-		}
+//		}
 	}
 
 
@@ -2401,7 +2404,8 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
 	@Override
 	public boolean isApplicationJobExists(String gfacJobId) throws RegistryException {
-		return jpa.getWorker().isGFacJobExists(gfacJobId);
+//		return jpa.getWorker().isGFacJobExists(gfacJobId);
+        return false;
 	}
 
 	@Override
