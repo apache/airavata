@@ -92,9 +92,9 @@ import org.slf4j.LoggerFactory;
      *       rather an Airavata Administrator will be notified to take corrective action.
      * 
      * 
-     * @param basicExperimentMetadata
+     * @param experiment
      */
-    public String createExperiment(org.apache.airavata.model.experiment.BasicMetadata basicExperimentMetadata) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
+    public String createExperiment(org.apache.airavata.model.workspace.experiment.Experiment experiment) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Fetch previously created experiment metadata.
@@ -131,7 +131,7 @@ import org.slf4j.LoggerFactory;
      * 
      * @param airavataExperimentId
      */
-    public org.apache.airavata.model.experiment.BasicMetadata getBasicExperimentMetadata(String airavataExperimentId) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
+    public org.apache.airavata.model.workspace.experiment.Experiment getBasicExperiment(String airavataExperimentId) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Configure a previously created experiment with required inputs, scheduling and other quality of service
@@ -173,9 +173,9 @@ import org.slf4j.LoggerFactory;
      * 
      * 
      * @param airavataExperimentId
-     * @param experimentConfigurationData
+     * @param experiment
      */
-    public void configureExperiment(String airavataExperimentId, org.apache.airavata.model.experiment.ConfigurationData experimentConfigurationData) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
+    public void updateExperiment(String airavataExperimentId, org.apache.airavata.model.workspace.experiment.Experiment experiment) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Fetch the previously configured experiment configuration information.
@@ -212,7 +212,7 @@ import org.slf4j.LoggerFactory;
      * 
      * @param airavataExperimentId
      */
-    public org.apache.airavata.model.experiment.ConfigurationData getExperimentConfiguration(String airavataExperimentId) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
+    public org.apache.airavata.model.workspace.experiment.ExperimentStatus getExperimentStatus(String airavataExperimentId) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Launch a previously created and configured experiment. Airavata Server will then start processing the request and appropriate
@@ -260,7 +260,7 @@ import org.slf4j.LoggerFactory;
      * @param airavataExperimentId
      * @param airavataCredStoreToken
      */
-    public void launchConfiguredExperiment(String airavataExperimentId, String airavataCredStoreToken) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
+    public void launchExperiment(String airavataExperimentId, String airavataCredStoreToken) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Configure and Launch a previously created experiment with required inputs, scheduling, security and other quality of service
@@ -307,10 +307,10 @@ import org.slf4j.LoggerFactory;
      * 
      * 
      * @param airavataExperimentId
-     * @param experimentConfigurationData
+     * @param experiment
      * @param airavataCredStoreToken
      */
-    public String configureAndLaunchExperiment(String airavataExperimentId, org.apache.airavata.model.experiment.ConfigurationData experimentConfigurationData, String airavataCredStoreToken) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
+    public String updateAndLaunchExperiment(String airavataExperimentId, org.apache.airavata.model.workspace.experiment.Experiment experiment, String airavataCredStoreToken) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.
@@ -352,9 +352,9 @@ import org.slf4j.LoggerFactory;
      * 
      * 
      * @param airavataExperimentIdToBeCloned
-     * @param basicExperimentMetadata
+     * @param updatedExperiment
      */
-    public String cloneExperimentConfiguration(String airavataExperimentIdToBeCloned, org.apache.airavata.model.experiment.BasicMetadata basicExperimentMetadata) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
+    public String cloneExperiment(String airavataExperimentIdToBeCloned, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Terminate a running experiment.
@@ -393,27 +393,31 @@ import org.slf4j.LoggerFactory;
      */
     public void terminateExperiment(String airavataExperimentId) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
 
+    public String createProject(String projectName, String userName) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
+
   }
 
   public interface AsyncIface {
 
     public void GetAPIVersion(org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void createExperiment(org.apache.airavata.model.experiment.BasicMetadata basicExperimentMetadata, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void createExperiment(org.apache.airavata.model.workspace.experiment.Experiment experiment, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void getBasicExperimentMetadata(String airavataExperimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void getBasicExperiment(String airavataExperimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void configureExperiment(String airavataExperimentId, org.apache.airavata.model.experiment.ConfigurationData experimentConfigurationData, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void updateExperiment(String airavataExperimentId, org.apache.airavata.model.workspace.experiment.Experiment experiment, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void getExperimentConfiguration(String airavataExperimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void getExperimentStatus(String airavataExperimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void launchConfiguredExperiment(String airavataExperimentId, String airavataCredStoreToken, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void launchExperiment(String airavataExperimentId, String airavataCredStoreToken, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void configureAndLaunchExperiment(String airavataExperimentId, org.apache.airavata.model.experiment.ConfigurationData experimentConfigurationData, String airavataCredStoreToken, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void updateAndLaunchExperiment(String airavataExperimentId, org.apache.airavata.model.workspace.experiment.Experiment experiment, String airavataCredStoreToken, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void cloneExperimentConfiguration(String airavataExperimentIdToBeCloned, org.apache.airavata.model.experiment.BasicMetadata basicExperimentMetadata, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void cloneExperiment(String airavataExperimentIdToBeCloned, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void terminateExperiment(String airavataExperimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void createProject(String projectName, String userName, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -459,16 +463,16 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "GetAPIVersion failed: unknown result");
     }
 
-    public String createExperiment(org.apache.airavata.model.experiment.BasicMetadata basicExperimentMetadata) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public String createExperiment(org.apache.airavata.model.workspace.experiment.Experiment experiment) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
     {
-      send_createExperiment(basicExperimentMetadata);
+      send_createExperiment(experiment);
       return recv_createExperiment();
     }
 
-    public void send_createExperiment(org.apache.airavata.model.experiment.BasicMetadata basicExperimentMetadata) throws org.apache.thrift.TException
+    public void send_createExperiment(org.apache.airavata.model.workspace.experiment.Experiment experiment) throws org.apache.thrift.TException
     {
       createExperiment_args args = new createExperiment_args();
-      args.setBasicExperimentMetadata(basicExperimentMetadata);
+      args.setExperiment(experiment);
       sendBase("createExperiment", args);
     }
 
@@ -491,23 +495,23 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "createExperiment failed: unknown result");
     }
 
-    public org.apache.airavata.model.experiment.BasicMetadata getBasicExperimentMetadata(String airavataExperimentId) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public org.apache.airavata.model.workspace.experiment.Experiment getBasicExperiment(String airavataExperimentId) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
     {
-      send_getBasicExperimentMetadata(airavataExperimentId);
-      return recv_getBasicExperimentMetadata();
+      send_getBasicExperiment(airavataExperimentId);
+      return recv_getBasicExperiment();
     }
 
-    public void send_getBasicExperimentMetadata(String airavataExperimentId) throws org.apache.thrift.TException
+    public void send_getBasicExperiment(String airavataExperimentId) throws org.apache.thrift.TException
     {
-      getBasicExperimentMetadata_args args = new getBasicExperimentMetadata_args();
+      getBasicExperiment_args args = new getBasicExperiment_args();
       args.setAiravataExperimentId(airavataExperimentId);
-      sendBase("getBasicExperimentMetadata", args);
+      sendBase("getBasicExperiment", args);
     }
 
-    public org.apache.airavata.model.experiment.BasicMetadata recv_getBasicExperimentMetadata() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public org.apache.airavata.model.workspace.experiment.Experiment recv_getBasicExperiment() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
     {
-      getBasicExperimentMetadata_result result = new getBasicExperimentMetadata_result();
-      receiveBase(result, "getBasicExperimentMetadata");
+      getBasicExperiment_result result = new getBasicExperiment_result();
+      receiveBase(result, "getBasicExperiment");
       if (result.isSetSuccess()) {
         return result.success;
       }
@@ -523,27 +527,27 @@ import org.slf4j.LoggerFactory;
       if (result.ase != null) {
         throw result.ase;
       }
-      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getBasicExperimentMetadata failed: unknown result");
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getBasicExperiment failed: unknown result");
     }
 
-    public void configureExperiment(String airavataExperimentId, org.apache.airavata.model.experiment.ConfigurationData experimentConfigurationData) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public void updateExperiment(String airavataExperimentId, org.apache.airavata.model.workspace.experiment.Experiment experiment) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
     {
-      send_configureExperiment(airavataExperimentId, experimentConfigurationData);
-      recv_configureExperiment();
+      send_updateExperiment(airavataExperimentId, experiment);
+      recv_updateExperiment();
     }
 
-    public void send_configureExperiment(String airavataExperimentId, org.apache.airavata.model.experiment.ConfigurationData experimentConfigurationData) throws org.apache.thrift.TException
+    public void send_updateExperiment(String airavataExperimentId, org.apache.airavata.model.workspace.experiment.Experiment experiment) throws org.apache.thrift.TException
     {
-      configureExperiment_args args = new configureExperiment_args();
+      updateExperiment_args args = new updateExperiment_args();
       args.setAiravataExperimentId(airavataExperimentId);
-      args.setExperimentConfigurationData(experimentConfigurationData);
-      sendBase("configureExperiment", args);
+      args.setExperiment(experiment);
+      sendBase("updateExperiment", args);
     }
 
-    public void recv_configureExperiment() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public void recv_updateExperiment() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
     {
-      configureExperiment_result result = new configureExperiment_result();
-      receiveBase(result, "configureExperiment");
+      updateExperiment_result result = new updateExperiment_result();
+      receiveBase(result, "updateExperiment");
       if (result.ire != null) {
         throw result.ire;
       }
@@ -559,23 +563,23 @@ import org.slf4j.LoggerFactory;
       return;
     }
 
-    public org.apache.airavata.model.experiment.ConfigurationData getExperimentConfiguration(String airavataExperimentId) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public org.apache.airavata.model.workspace.experiment.ExperimentStatus getExperimentStatus(String airavataExperimentId) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
     {
-      send_getExperimentConfiguration(airavataExperimentId);
-      return recv_getExperimentConfiguration();
+      send_getExperimentStatus(airavataExperimentId);
+      return recv_getExperimentStatus();
     }
 
-    public void send_getExperimentConfiguration(String airavataExperimentId) throws org.apache.thrift.TException
+    public void send_getExperimentStatus(String airavataExperimentId) throws org.apache.thrift.TException
     {
-      getExperimentConfiguration_args args = new getExperimentConfiguration_args();
+      getExperimentStatus_args args = new getExperimentStatus_args();
       args.setAiravataExperimentId(airavataExperimentId);
-      sendBase("getExperimentConfiguration", args);
+      sendBase("getExperimentStatus", args);
     }
 
-    public org.apache.airavata.model.experiment.ConfigurationData recv_getExperimentConfiguration() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public org.apache.airavata.model.workspace.experiment.ExperimentStatus recv_getExperimentStatus() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
     {
-      getExperimentConfiguration_result result = new getExperimentConfiguration_result();
-      receiveBase(result, "getExperimentConfiguration");
+      getExperimentStatus_result result = new getExperimentStatus_result();
+      receiveBase(result, "getExperimentStatus");
       if (result.isSetSuccess()) {
         return result.success;
       }
@@ -591,27 +595,27 @@ import org.slf4j.LoggerFactory;
       if (result.ase != null) {
         throw result.ase;
       }
-      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getExperimentConfiguration failed: unknown result");
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getExperimentStatus failed: unknown result");
     }
 
-    public void launchConfiguredExperiment(String airavataExperimentId, String airavataCredStoreToken) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public void launchExperiment(String airavataExperimentId, String airavataCredStoreToken) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
     {
-      send_launchConfiguredExperiment(airavataExperimentId, airavataCredStoreToken);
-      recv_launchConfiguredExperiment();
+      send_launchExperiment(airavataExperimentId, airavataCredStoreToken);
+      recv_launchExperiment();
     }
 
-    public void send_launchConfiguredExperiment(String airavataExperimentId, String airavataCredStoreToken) throws org.apache.thrift.TException
+    public void send_launchExperiment(String airavataExperimentId, String airavataCredStoreToken) throws org.apache.thrift.TException
     {
-      launchConfiguredExperiment_args args = new launchConfiguredExperiment_args();
+      launchExperiment_args args = new launchExperiment_args();
       args.setAiravataExperimentId(airavataExperimentId);
       args.setAiravataCredStoreToken(airavataCredStoreToken);
-      sendBase("launchConfiguredExperiment", args);
+      sendBase("launchExperiment", args);
     }
 
-    public void recv_launchConfiguredExperiment() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public void recv_launchExperiment() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
     {
-      launchConfiguredExperiment_result result = new launchConfiguredExperiment_result();
-      receiveBase(result, "launchConfiguredExperiment");
+      launchExperiment_result result = new launchExperiment_result();
+      receiveBase(result, "launchExperiment");
       if (result.ire != null) {
         throw result.ire;
       }
@@ -627,25 +631,25 @@ import org.slf4j.LoggerFactory;
       return;
     }
 
-    public String configureAndLaunchExperiment(String airavataExperimentId, org.apache.airavata.model.experiment.ConfigurationData experimentConfigurationData, String airavataCredStoreToken) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public String updateAndLaunchExperiment(String airavataExperimentId, org.apache.airavata.model.workspace.experiment.Experiment experiment, String airavataCredStoreToken) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
     {
-      send_configureAndLaunchExperiment(airavataExperimentId, experimentConfigurationData, airavataCredStoreToken);
-      return recv_configureAndLaunchExperiment();
+      send_updateAndLaunchExperiment(airavataExperimentId, experiment, airavataCredStoreToken);
+      return recv_updateAndLaunchExperiment();
     }
 
-    public void send_configureAndLaunchExperiment(String airavataExperimentId, org.apache.airavata.model.experiment.ConfigurationData experimentConfigurationData, String airavataCredStoreToken) throws org.apache.thrift.TException
+    public void send_updateAndLaunchExperiment(String airavataExperimentId, org.apache.airavata.model.workspace.experiment.Experiment experiment, String airavataCredStoreToken) throws org.apache.thrift.TException
     {
-      configureAndLaunchExperiment_args args = new configureAndLaunchExperiment_args();
+      updateAndLaunchExperiment_args args = new updateAndLaunchExperiment_args();
       args.setAiravataExperimentId(airavataExperimentId);
-      args.setExperimentConfigurationData(experimentConfigurationData);
+      args.setExperiment(experiment);
       args.setAiravataCredStoreToken(airavataCredStoreToken);
-      sendBase("configureAndLaunchExperiment", args);
+      sendBase("updateAndLaunchExperiment", args);
     }
 
-    public String recv_configureAndLaunchExperiment() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public String recv_updateAndLaunchExperiment() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
     {
-      configureAndLaunchExperiment_result result = new configureAndLaunchExperiment_result();
-      receiveBase(result, "configureAndLaunchExperiment");
+      updateAndLaunchExperiment_result result = new updateAndLaunchExperiment_result();
+      receiveBase(result, "updateAndLaunchExperiment");
       if (result.isSetSuccess()) {
         return result.success;
       }
@@ -661,27 +665,27 @@ import org.slf4j.LoggerFactory;
       if (result.ase != null) {
         throw result.ase;
       }
-      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "configureAndLaunchExperiment failed: unknown result");
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "updateAndLaunchExperiment failed: unknown result");
     }
 
-    public String cloneExperimentConfiguration(String airavataExperimentIdToBeCloned, org.apache.airavata.model.experiment.BasicMetadata basicExperimentMetadata) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public String cloneExperiment(String airavataExperimentIdToBeCloned, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
     {
-      send_cloneExperimentConfiguration(airavataExperimentIdToBeCloned, basicExperimentMetadata);
-      return recv_cloneExperimentConfiguration();
+      send_cloneExperiment(airavataExperimentIdToBeCloned, updatedExperiment);
+      return recv_cloneExperiment();
     }
 
-    public void send_cloneExperimentConfiguration(String airavataExperimentIdToBeCloned, org.apache.airavata.model.experiment.BasicMetadata basicExperimentMetadata) throws org.apache.thrift.TException
+    public void send_cloneExperiment(String airavataExperimentIdToBeCloned, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment) throws org.apache.thrift.TException
     {
-      cloneExperimentConfiguration_args args = new cloneExperimentConfiguration_args();
+      cloneExperiment_args args = new cloneExperiment_args();
       args.setAiravataExperimentIdToBeCloned(airavataExperimentIdToBeCloned);
-      args.setBasicExperimentMetadata(basicExperimentMetadata);
-      sendBase("cloneExperimentConfiguration", args);
+      args.setUpdatedExperiment(updatedExperiment);
+      sendBase("cloneExperiment", args);
     }
 
-    public String recv_cloneExperimentConfiguration() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public String recv_cloneExperiment() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
     {
-      cloneExperimentConfiguration_result result = new cloneExperimentConfiguration_result();
-      receiveBase(result, "cloneExperimentConfiguration");
+      cloneExperiment_result result = new cloneExperiment_result();
+      receiveBase(result, "cloneExperiment");
       if (result.isSetSuccess()) {
         return result.success;
       }
@@ -697,7 +701,7 @@ import org.slf4j.LoggerFactory;
       if (result.ase != null) {
         throw result.ase;
       }
-      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "cloneExperimentConfiguration failed: unknown result");
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "cloneExperiment failed: unknown result");
     }
 
     public void terminateExperiment(String airavataExperimentId) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
@@ -730,6 +734,42 @@ import org.slf4j.LoggerFactory;
         throw result.ase;
       }
       return;
+    }
+
+    public String createProject(String projectName, String userName) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      send_createProject(projectName, userName);
+      return recv_createProject();
+    }
+
+    public void send_createProject(String projectName, String userName) throws org.apache.thrift.TException
+    {
+      createProject_args args = new createProject_args();
+      args.setProjectName(projectName);
+      args.setUserName(userName);
+      sendBase("createProject", args);
+    }
+
+    public String recv_createProject() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      createProject_result result = new createProject_result();
+      receiveBase(result, "createProject");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.ire != null) {
+        throw result.ire;
+      }
+      if (result.enf != null) {
+        throw result.enf;
+      }
+      if (result.ace != null) {
+        throw result.ace;
+      }
+      if (result.ase != null) {
+        throw result.ase;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "createProject failed: unknown result");
     }
 
   }
@@ -779,24 +819,24 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public void createExperiment(org.apache.airavata.model.experiment.BasicMetadata basicExperimentMetadata, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void createExperiment(org.apache.airavata.model.workspace.experiment.Experiment experiment, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      createExperiment_call method_call = new createExperiment_call(basicExperimentMetadata, resultHandler, this, ___protocolFactory, ___transport);
+      createExperiment_call method_call = new createExperiment_call(experiment, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class createExperiment_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private org.apache.airavata.model.experiment.BasicMetadata basicExperimentMetadata;
-      public createExperiment_call(org.apache.airavata.model.experiment.BasicMetadata basicExperimentMetadata, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private org.apache.airavata.model.workspace.experiment.Experiment experiment;
+      public createExperiment_call(org.apache.airavata.model.workspace.experiment.Experiment experiment, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
-        this.basicExperimentMetadata = basicExperimentMetadata;
+        this.experiment = experiment;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("createExperiment", org.apache.thrift.protocol.TMessageType.CALL, 0));
         createExperiment_args args = new createExperiment_args();
-        args.setBasicExperimentMetadata(basicExperimentMetadata);
+        args.setExperiment(experiment);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -811,59 +851,59 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public void getBasicExperimentMetadata(String airavataExperimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void getBasicExperiment(String airavataExperimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      getBasicExperimentMetadata_call method_call = new getBasicExperimentMetadata_call(airavataExperimentId, resultHandler, this, ___protocolFactory, ___transport);
+      getBasicExperiment_call method_call = new getBasicExperiment_call(airavataExperimentId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
-    public static class getBasicExperimentMetadata_call extends org.apache.thrift.async.TAsyncMethodCall {
+    public static class getBasicExperiment_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String airavataExperimentId;
-      public getBasicExperimentMetadata_call(String airavataExperimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public getBasicExperiment_call(String airavataExperimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.airavataExperimentId = airavataExperimentId;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
-        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getBasicExperimentMetadata", org.apache.thrift.protocol.TMessageType.CALL, 0));
-        getBasicExperimentMetadata_args args = new getBasicExperimentMetadata_args();
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getBasicExperiment", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getBasicExperiment_args args = new getBasicExperiment_args();
         args.setAiravataExperimentId(airavataExperimentId);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public org.apache.airavata.model.experiment.BasicMetadata getResult() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException {
+      public org.apache.airavata.model.workspace.experiment.Experiment getResult() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        return (new Client(prot)).recv_getBasicExperimentMetadata();
+        return (new Client(prot)).recv_getBasicExperiment();
       }
     }
 
-    public void configureExperiment(String airavataExperimentId, org.apache.airavata.model.experiment.ConfigurationData experimentConfigurationData, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void updateExperiment(String airavataExperimentId, org.apache.airavata.model.workspace.experiment.Experiment experiment, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      configureExperiment_call method_call = new configureExperiment_call(airavataExperimentId, experimentConfigurationData, resultHandler, this, ___protocolFactory, ___transport);
+      updateExperiment_call method_call = new updateExperiment_call(airavataExperimentId, experiment, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
-    public static class configureExperiment_call extends org.apache.thrift.async.TAsyncMethodCall {
+    public static class updateExperiment_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String airavataExperimentId;
-      private org.apache.airavata.model.experiment.ConfigurationData experimentConfigurationData;
-      public configureExperiment_call(String airavataExperimentId, org.apache.airavata.model.experiment.ConfigurationData experimentConfigurationData, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private org.apache.airavata.model.workspace.experiment.Experiment experiment;
+      public updateExperiment_call(String airavataExperimentId, org.apache.airavata.model.workspace.experiment.Experiment experiment, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.airavataExperimentId = airavataExperimentId;
-        this.experimentConfigurationData = experimentConfigurationData;
+        this.experiment = experiment;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
-        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("configureExperiment", org.apache.thrift.protocol.TMessageType.CALL, 0));
-        configureExperiment_args args = new configureExperiment_args();
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("updateExperiment", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        updateExperiment_args args = new updateExperiment_args();
         args.setAiravataExperimentId(airavataExperimentId);
-        args.setExperimentConfigurationData(experimentConfigurationData);
+        args.setExperiment(experiment);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -874,61 +914,61 @@ import org.slf4j.LoggerFactory;
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        (new Client(prot)).recv_configureExperiment();
+        (new Client(prot)).recv_updateExperiment();
       }
     }
 
-    public void getExperimentConfiguration(String airavataExperimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void getExperimentStatus(String airavataExperimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      getExperimentConfiguration_call method_call = new getExperimentConfiguration_call(airavataExperimentId, resultHandler, this, ___protocolFactory, ___transport);
+      getExperimentStatus_call method_call = new getExperimentStatus_call(airavataExperimentId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
-    public static class getExperimentConfiguration_call extends org.apache.thrift.async.TAsyncMethodCall {
+    public static class getExperimentStatus_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String airavataExperimentId;
-      public getExperimentConfiguration_call(String airavataExperimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public getExperimentStatus_call(String airavataExperimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.airavataExperimentId = airavataExperimentId;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
-        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getExperimentConfiguration", org.apache.thrift.protocol.TMessageType.CALL, 0));
-        getExperimentConfiguration_args args = new getExperimentConfiguration_args();
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getExperimentStatus", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getExperimentStatus_args args = new getExperimentStatus_args();
         args.setAiravataExperimentId(airavataExperimentId);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public org.apache.airavata.model.experiment.ConfigurationData getResult() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException {
+      public org.apache.airavata.model.workspace.experiment.ExperimentStatus getResult() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        return (new Client(prot)).recv_getExperimentConfiguration();
+        return (new Client(prot)).recv_getExperimentStatus();
       }
     }
 
-    public void launchConfiguredExperiment(String airavataExperimentId, String airavataCredStoreToken, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void launchExperiment(String airavataExperimentId, String airavataCredStoreToken, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      launchConfiguredExperiment_call method_call = new launchConfiguredExperiment_call(airavataExperimentId, airavataCredStoreToken, resultHandler, this, ___protocolFactory, ___transport);
+      launchExperiment_call method_call = new launchExperiment_call(airavataExperimentId, airavataCredStoreToken, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
-    public static class launchConfiguredExperiment_call extends org.apache.thrift.async.TAsyncMethodCall {
+    public static class launchExperiment_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String airavataExperimentId;
       private String airavataCredStoreToken;
-      public launchConfiguredExperiment_call(String airavataExperimentId, String airavataCredStoreToken, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public launchExperiment_call(String airavataExperimentId, String airavataCredStoreToken, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.airavataExperimentId = airavataExperimentId;
         this.airavataCredStoreToken = airavataCredStoreToken;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
-        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("launchConfiguredExperiment", org.apache.thrift.protocol.TMessageType.CALL, 0));
-        launchConfiguredExperiment_args args = new launchConfiguredExperiment_args();
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("launchExperiment", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        launchExperiment_args args = new launchExperiment_args();
         args.setAiravataExperimentId(airavataExperimentId);
         args.setAiravataCredStoreToken(airavataCredStoreToken);
         args.write(prot);
@@ -941,33 +981,33 @@ import org.slf4j.LoggerFactory;
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        (new Client(prot)).recv_launchConfiguredExperiment();
+        (new Client(prot)).recv_launchExperiment();
       }
     }
 
-    public void configureAndLaunchExperiment(String airavataExperimentId, org.apache.airavata.model.experiment.ConfigurationData experimentConfigurationData, String airavataCredStoreToken, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void updateAndLaunchExperiment(String airavataExperimentId, org.apache.airavata.model.workspace.experiment.Experiment experiment, String airavataCredStoreToken, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      configureAndLaunchExperiment_call method_call = new configureAndLaunchExperiment_call(airavataExperimentId, experimentConfigurationData, airavataCredStoreToken, resultHandler, this, ___protocolFactory, ___transport);
+      updateAndLaunchExperiment_call method_call = new updateAndLaunchExperiment_call(airavataExperimentId, experiment, airavataCredStoreToken, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
-    public static class configureAndLaunchExperiment_call extends org.apache.thrift.async.TAsyncMethodCall {
+    public static class updateAndLaunchExperiment_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String airavataExperimentId;
-      private org.apache.airavata.model.experiment.ConfigurationData experimentConfigurationData;
+      private org.apache.airavata.model.workspace.experiment.Experiment experiment;
       private String airavataCredStoreToken;
-      public configureAndLaunchExperiment_call(String airavataExperimentId, org.apache.airavata.model.experiment.ConfigurationData experimentConfigurationData, String airavataCredStoreToken, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public updateAndLaunchExperiment_call(String airavataExperimentId, org.apache.airavata.model.workspace.experiment.Experiment experiment, String airavataCredStoreToken, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.airavataExperimentId = airavataExperimentId;
-        this.experimentConfigurationData = experimentConfigurationData;
+        this.experiment = experiment;
         this.airavataCredStoreToken = airavataCredStoreToken;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
-        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("configureAndLaunchExperiment", org.apache.thrift.protocol.TMessageType.CALL, 0));
-        configureAndLaunchExperiment_args args = new configureAndLaunchExperiment_args();
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("updateAndLaunchExperiment", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        updateAndLaunchExperiment_args args = new updateAndLaunchExperiment_args();
         args.setAiravataExperimentId(airavataExperimentId);
-        args.setExperimentConfigurationData(experimentConfigurationData);
+        args.setExperiment(experiment);
         args.setAiravataCredStoreToken(airavataCredStoreToken);
         args.write(prot);
         prot.writeMessageEnd();
@@ -979,31 +1019,31 @@ import org.slf4j.LoggerFactory;
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        return (new Client(prot)).recv_configureAndLaunchExperiment();
+        return (new Client(prot)).recv_updateAndLaunchExperiment();
       }
     }
 
-    public void cloneExperimentConfiguration(String airavataExperimentIdToBeCloned, org.apache.airavata.model.experiment.BasicMetadata basicExperimentMetadata, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void cloneExperiment(String airavataExperimentIdToBeCloned, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      cloneExperimentConfiguration_call method_call = new cloneExperimentConfiguration_call(airavataExperimentIdToBeCloned, basicExperimentMetadata, resultHandler, this, ___protocolFactory, ___transport);
+      cloneExperiment_call method_call = new cloneExperiment_call(airavataExperimentIdToBeCloned, updatedExperiment, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
-    public static class cloneExperimentConfiguration_call extends org.apache.thrift.async.TAsyncMethodCall {
+    public static class cloneExperiment_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String airavataExperimentIdToBeCloned;
-      private org.apache.airavata.model.experiment.BasicMetadata basicExperimentMetadata;
-      public cloneExperimentConfiguration_call(String airavataExperimentIdToBeCloned, org.apache.airavata.model.experiment.BasicMetadata basicExperimentMetadata, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment;
+      public cloneExperiment_call(String airavataExperimentIdToBeCloned, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.airavataExperimentIdToBeCloned = airavataExperimentIdToBeCloned;
-        this.basicExperimentMetadata = basicExperimentMetadata;
+        this.updatedExperiment = updatedExperiment;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
-        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("cloneExperimentConfiguration", org.apache.thrift.protocol.TMessageType.CALL, 0));
-        cloneExperimentConfiguration_args args = new cloneExperimentConfiguration_args();
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("cloneExperiment", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        cloneExperiment_args args = new cloneExperiment_args();
         args.setAiravataExperimentIdToBeCloned(airavataExperimentIdToBeCloned);
-        args.setBasicExperimentMetadata(basicExperimentMetadata);
+        args.setUpdatedExperiment(updatedExperiment);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -1014,7 +1054,7 @@ import org.slf4j.LoggerFactory;
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        return (new Client(prot)).recv_cloneExperimentConfiguration();
+        return (new Client(prot)).recv_cloneExperiment();
       }
     }
 
@@ -1050,6 +1090,41 @@ import org.slf4j.LoggerFactory;
       }
     }
 
+    public void createProject(String projectName, String userName, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      createProject_call method_call = new createProject_call(projectName, userName, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class createProject_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String projectName;
+      private String userName;
+      public createProject_call(String projectName, String userName, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.projectName = projectName;
+        this.userName = userName;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("createProject", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        createProject_args args = new createProject_args();
+        args.setProjectName(projectName);
+        args.setUserName(userName);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public String getResult() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_createProject();
+      }
+    }
+
   }
 
   public static class Processor<I extends Iface> extends org.apache.thrift.TBaseProcessor<I> implements org.apache.thrift.TProcessor {
@@ -1065,13 +1140,14 @@ import org.slf4j.LoggerFactory;
     private static <I extends Iface> Map<String,  org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> getProcessMap(Map<String,  org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> processMap) {
       processMap.put("GetAPIVersion", new GetAPIVersion());
       processMap.put("createExperiment", new createExperiment());
-      processMap.put("getBasicExperimentMetadata", new getBasicExperimentMetadata());
-      processMap.put("configureExperiment", new configureExperiment());
-      processMap.put("getExperimentConfiguration", new getExperimentConfiguration());
-      processMap.put("launchConfiguredExperiment", new launchConfiguredExperiment());
-      processMap.put("configureAndLaunchExperiment", new configureAndLaunchExperiment());
-      processMap.put("cloneExperimentConfiguration", new cloneExperimentConfiguration());
+      processMap.put("getBasicExperiment", new getBasicExperiment());
+      processMap.put("updateExperiment", new updateExperiment());
+      processMap.put("getExperimentStatus", new getExperimentStatus());
+      processMap.put("launchExperiment", new launchExperiment());
+      processMap.put("updateAndLaunchExperiment", new updateAndLaunchExperiment());
+      processMap.put("cloneExperiment", new cloneExperiment());
       processMap.put("terminateExperiment", new terminateExperiment());
+      processMap.put("createProject", new createProject());
       return processMap;
     }
 
@@ -1111,7 +1187,7 @@ import org.slf4j.LoggerFactory;
       public createExperiment_result getResult(I iface, createExperiment_args args) throws org.apache.thrift.TException {
         createExperiment_result result = new createExperiment_result();
         try {
-          result.success = iface.createExperiment(args.basicExperimentMetadata);
+          result.success = iface.createExperiment(args.experiment);
         } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.api.error.AiravataClientException ace) {
@@ -1123,53 +1199,23 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public static class getBasicExperimentMetadata<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getBasicExperimentMetadata_args> {
-      public getBasicExperimentMetadata() {
-        super("getBasicExperimentMetadata");
+    public static class getBasicExperiment<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getBasicExperiment_args> {
+      public getBasicExperiment() {
+        super("getBasicExperiment");
       }
 
-      public getBasicExperimentMetadata_args getEmptyArgsInstance() {
-        return new getBasicExperimentMetadata_args();
-      }
-
-      protected boolean isOneway() {
-        return false;
-      }
-
-      public getBasicExperimentMetadata_result getResult(I iface, getBasicExperimentMetadata_args args) throws org.apache.thrift.TException {
-        getBasicExperimentMetadata_result result = new getBasicExperimentMetadata_result();
-        try {
-          result.success = iface.getBasicExperimentMetadata(args.airavataExperimentId);
-        } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
-          result.ire = ire;
-        } catch (org.apache.airavata.api.error.ExperimentNotFoundException enf) {
-          result.enf = enf;
-        } catch (org.apache.airavata.api.error.AiravataClientException ace) {
-          result.ace = ace;
-        } catch (org.apache.airavata.api.error.AiravataSystemException ase) {
-          result.ase = ase;
-        }
-        return result;
-      }
-    }
-
-    public static class configureExperiment<I extends Iface> extends org.apache.thrift.ProcessFunction<I, configureExperiment_args> {
-      public configureExperiment() {
-        super("configureExperiment");
-      }
-
-      public configureExperiment_args getEmptyArgsInstance() {
-        return new configureExperiment_args();
+      public getBasicExperiment_args getEmptyArgsInstance() {
+        return new getBasicExperiment_args();
       }
 
       protected boolean isOneway() {
         return false;
       }
 
-      public configureExperiment_result getResult(I iface, configureExperiment_args args) throws org.apache.thrift.TException {
-        configureExperiment_result result = new configureExperiment_result();
+      public getBasicExperiment_result getResult(I iface, getBasicExperiment_args args) throws org.apache.thrift.TException {
+        getBasicExperiment_result result = new getBasicExperiment_result();
         try {
-          iface.configureExperiment(args.airavataExperimentId, args.experimentConfigurationData);
+          result.success = iface.getBasicExperiment(args.airavataExperimentId);
         } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.api.error.ExperimentNotFoundException enf) {
@@ -1183,23 +1229,23 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public static class getExperimentConfiguration<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getExperimentConfiguration_args> {
-      public getExperimentConfiguration() {
-        super("getExperimentConfiguration");
+    public static class updateExperiment<I extends Iface> extends org.apache.thrift.ProcessFunction<I, updateExperiment_args> {
+      public updateExperiment() {
+        super("updateExperiment");
       }
 
-      public getExperimentConfiguration_args getEmptyArgsInstance() {
-        return new getExperimentConfiguration_args();
+      public updateExperiment_args getEmptyArgsInstance() {
+        return new updateExperiment_args();
       }
 
       protected boolean isOneway() {
         return false;
       }
 
-      public getExperimentConfiguration_result getResult(I iface, getExperimentConfiguration_args args) throws org.apache.thrift.TException {
-        getExperimentConfiguration_result result = new getExperimentConfiguration_result();
+      public updateExperiment_result getResult(I iface, updateExperiment_args args) throws org.apache.thrift.TException {
+        updateExperiment_result result = new updateExperiment_result();
         try {
-          result.success = iface.getExperimentConfiguration(args.airavataExperimentId);
+          iface.updateExperiment(args.airavataExperimentId, args.experiment);
         } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.api.error.ExperimentNotFoundException enf) {
@@ -1213,23 +1259,23 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public static class launchConfiguredExperiment<I extends Iface> extends org.apache.thrift.ProcessFunction<I, launchConfiguredExperiment_args> {
-      public launchConfiguredExperiment() {
-        super("launchConfiguredExperiment");
+    public static class getExperimentStatus<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getExperimentStatus_args> {
+      public getExperimentStatus() {
+        super("getExperimentStatus");
       }
 
-      public launchConfiguredExperiment_args getEmptyArgsInstance() {
-        return new launchConfiguredExperiment_args();
+      public getExperimentStatus_args getEmptyArgsInstance() {
+        return new getExperimentStatus_args();
       }
 
       protected boolean isOneway() {
         return false;
       }
 
-      public launchConfiguredExperiment_result getResult(I iface, launchConfiguredExperiment_args args) throws org.apache.thrift.TException {
-        launchConfiguredExperiment_result result = new launchConfiguredExperiment_result();
+      public getExperimentStatus_result getResult(I iface, getExperimentStatus_args args) throws org.apache.thrift.TException {
+        getExperimentStatus_result result = new getExperimentStatus_result();
         try {
-          iface.launchConfiguredExperiment(args.airavataExperimentId, args.airavataCredStoreToken);
+          result.success = iface.getExperimentStatus(args.airavataExperimentId);
         } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.api.error.ExperimentNotFoundException enf) {
@@ -1243,23 +1289,23 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public static class configureAndLaunchExperiment<I extends Iface> extends org.apache.thrift.ProcessFunction<I, configureAndLaunchExperiment_args> {
-      public configureAndLaunchExperiment() {
-        super("configureAndLaunchExperiment");
+    public static class launchExperiment<I extends Iface> extends org.apache.thrift.ProcessFunction<I, launchExperiment_args> {
+      public launchExperiment() {
+        super("launchExperiment");
       }
 
-      public configureAndLaunchExperiment_args getEmptyArgsInstance() {
-        return new configureAndLaunchExperiment_args();
+      public launchExperiment_args getEmptyArgsInstance() {
+        return new launchExperiment_args();
       }
 
       protected boolean isOneway() {
         return false;
       }
 
-      public configureAndLaunchExperiment_result getResult(I iface, configureAndLaunchExperiment_args args) throws org.apache.thrift.TException {
-        configureAndLaunchExperiment_result result = new configureAndLaunchExperiment_result();
+      public launchExperiment_result getResult(I iface, launchExperiment_args args) throws org.apache.thrift.TException {
+        launchExperiment_result result = new launchExperiment_result();
         try {
-          result.success = iface.configureAndLaunchExperiment(args.airavataExperimentId, args.experimentConfigurationData, args.airavataCredStoreToken);
+          iface.launchExperiment(args.airavataExperimentId, args.airavataCredStoreToken);
         } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.api.error.ExperimentNotFoundException enf) {
@@ -1273,23 +1319,53 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public static class cloneExperimentConfiguration<I extends Iface> extends org.apache.thrift.ProcessFunction<I, cloneExperimentConfiguration_args> {
-      public cloneExperimentConfiguration() {
-        super("cloneExperimentConfiguration");
+    public static class updateAndLaunchExperiment<I extends Iface> extends org.apache.thrift.ProcessFunction<I, updateAndLaunchExperiment_args> {
+      public updateAndLaunchExperiment() {
+        super("updateAndLaunchExperiment");
       }
 
-      public cloneExperimentConfiguration_args getEmptyArgsInstance() {
-        return new cloneExperimentConfiguration_args();
+      public updateAndLaunchExperiment_args getEmptyArgsInstance() {
+        return new updateAndLaunchExperiment_args();
       }
 
       protected boolean isOneway() {
         return false;
       }
 
-      public cloneExperimentConfiguration_result getResult(I iface, cloneExperimentConfiguration_args args) throws org.apache.thrift.TException {
-        cloneExperimentConfiguration_result result = new cloneExperimentConfiguration_result();
+      public updateAndLaunchExperiment_result getResult(I iface, updateAndLaunchExperiment_args args) throws org.apache.thrift.TException {
+        updateAndLaunchExperiment_result result = new updateAndLaunchExperiment_result();
         try {
-          result.success = iface.cloneExperimentConfiguration(args.airavataExperimentIdToBeCloned, args.basicExperimentMetadata);
+          result.success = iface.updateAndLaunchExperiment(args.airavataExperimentId, args.experiment, args.airavataCredStoreToken);
+        } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
+          result.ire = ire;
+        } catch (org.apache.airavata.api.error.ExperimentNotFoundException enf) {
+          result.enf = enf;
+        } catch (org.apache.airavata.api.error.AiravataClientException ace) {
+          result.ace = ace;
+        } catch (org.apache.airavata.api.error.AiravataSystemException ase) {
+          result.ase = ase;
+        }
+        return result;
+      }
+    }
+
+    public static class cloneExperiment<I extends Iface> extends org.apache.thrift.ProcessFunction<I, cloneExperiment_args> {
+      public cloneExperiment() {
+        super("cloneExperiment");
+      }
+
+      public cloneExperiment_args getEmptyArgsInstance() {
+        return new cloneExperiment_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public cloneExperiment_result getResult(I iface, cloneExperiment_args args) throws org.apache.thrift.TException {
+        cloneExperiment_result result = new cloneExperiment_result();
+        try {
+          result.success = iface.cloneExperiment(args.airavataExperimentIdToBeCloned, args.updatedExperiment);
         } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.api.error.ExperimentNotFoundException enf) {
@@ -1333,6 +1409,36 @@ import org.slf4j.LoggerFactory;
       }
     }
 
+    public static class createProject<I extends Iface> extends org.apache.thrift.ProcessFunction<I, createProject_args> {
+      public createProject() {
+        super("createProject");
+      }
+
+      public createProject_args getEmptyArgsInstance() {
+        return new createProject_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public createProject_result getResult(I iface, createProject_args args) throws org.apache.thrift.TException {
+        createProject_result result = new createProject_result();
+        try {
+          result.success = iface.createProject(args.projectName, args.userName);
+        } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
+          result.ire = ire;
+        } catch (org.apache.airavata.api.error.ExperimentNotFoundException enf) {
+          result.enf = enf;
+        } catch (org.apache.airavata.api.error.AiravataClientException ace) {
+          result.ace = ace;
+        } catch (org.apache.airavata.api.error.AiravataSystemException ase) {
+          result.ase = ase;
+        }
+        return result;
+      }
+    }
+
   }
 
   public static class AsyncProcessor<I extends AsyncIface> extends org.apache.thrift.TBaseAsyncProcessor<I> {
@@ -1348,13 +1454,14 @@ import org.slf4j.LoggerFactory;
     private static <I extends AsyncIface> Map<String,  org.apache.thrift.AsyncProcessFunction<I, ? extends  org.apache.thrift.TBase,?>> getProcessMap(Map<String,  org.apache.thrift.AsyncProcessFunction<I, ? extends  org.apache.thrift.TBase, ?>> processMap) {
       processMap.put("GetAPIVersion", new GetAPIVersion());
       processMap.put("createExperiment", new createExperiment());
-      processMap.put("getBasicExperimentMetadata", new getBasicExperimentMetadata());
-      processMap.put("configureExperiment", new configureExperiment());
-      processMap.put("getExperimentConfiguration", new getExperimentConfiguration());
-      processMap.put("launchConfiguredExperiment", new launchConfiguredExperiment());
-      processMap.put("configureAndLaunchExperiment", new configureAndLaunchExperiment());
-      processMap.put("cloneExperimentConfiguration", new cloneExperimentConfiguration());
+      processMap.put("getBasicExperiment", new getBasicExperiment());
+      processMap.put("updateExperiment", new updateExperiment());
+      processMap.put("getExperimentStatus", new getExperimentStatus());
+      processMap.put("launchExperiment", new launchExperiment());
+      processMap.put("updateAndLaunchExperiment", new updateAndLaunchExperiment());
+      processMap.put("cloneExperiment", new cloneExperiment());
       processMap.put("terminateExperiment", new terminateExperiment());
+      processMap.put("createProject", new createProject());
       return processMap;
     }
 
@@ -1472,24 +1579,24 @@ import org.slf4j.LoggerFactory;
       }
 
       public void start(I iface, createExperiment_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
-        iface.createExperiment(args.basicExperimentMetadata,resultHandler);
+        iface.createExperiment(args.experiment,resultHandler);
       }
     }
 
-    public static class getBasicExperimentMetadata<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getBasicExperimentMetadata_args, org.apache.airavata.model.experiment.BasicMetadata> {
-      public getBasicExperimentMetadata() {
-        super("getBasicExperimentMetadata");
+    public static class getBasicExperiment<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getBasicExperiment_args, org.apache.airavata.model.workspace.experiment.Experiment> {
+      public getBasicExperiment() {
+        super("getBasicExperiment");
       }
 
-      public getBasicExperimentMetadata_args getEmptyArgsInstance() {
-        return new getBasicExperimentMetadata_args();
+      public getBasicExperiment_args getEmptyArgsInstance() {
+        return new getBasicExperiment_args();
       }
 
-      public AsyncMethodCallback<org.apache.airavata.model.experiment.BasicMetadata> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<org.apache.airavata.model.workspace.experiment.Experiment> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<org.apache.airavata.model.experiment.BasicMetadata>() { 
-          public void onComplete(org.apache.airavata.model.experiment.BasicMetadata o) {
-            getBasicExperimentMetadata_result result = new getBasicExperimentMetadata_result();
+        return new AsyncMethodCallback<org.apache.airavata.model.workspace.experiment.Experiment>() { 
+          public void onComplete(org.apache.airavata.model.workspace.experiment.Experiment o) {
+            getBasicExperiment_result result = new getBasicExperiment_result();
             result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
@@ -1502,7 +1609,7 @@ import org.slf4j.LoggerFactory;
           public void onError(Exception e) {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
-            getBasicExperimentMetadata_result result = new getBasicExperimentMetadata_result();
+            getBasicExperiment_result result = new getBasicExperiment_result();
             if (e instanceof org.apache.airavata.api.error.InvalidRequestException) {
                         result.ire = (org.apache.airavata.api.error.InvalidRequestException) e;
                         result.setIreIsSet(true);
@@ -1543,25 +1650,25 @@ import org.slf4j.LoggerFactory;
         return false;
       }
 
-      public void start(I iface, getBasicExperimentMetadata_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.experiment.BasicMetadata> resultHandler) throws TException {
-        iface.getBasicExperimentMetadata(args.airavataExperimentId,resultHandler);
+      public void start(I iface, getBasicExperiment_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.workspace.experiment.Experiment> resultHandler) throws TException {
+        iface.getBasicExperiment(args.airavataExperimentId,resultHandler);
       }
     }
 
-    public static class configureExperiment<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, configureExperiment_args, Void> {
-      public configureExperiment() {
-        super("configureExperiment");
+    public static class updateExperiment<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, updateExperiment_args, Void> {
+      public updateExperiment() {
+        super("updateExperiment");
       }
 
-      public configureExperiment_args getEmptyArgsInstance() {
-        return new configureExperiment_args();
+      public updateExperiment_args getEmptyArgsInstance() {
+        return new updateExperiment_args();
       }
 
       public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
         return new AsyncMethodCallback<Void>() { 
           public void onComplete(Void o) {
-            configureExperiment_result result = new configureExperiment_result();
+            updateExperiment_result result = new updateExperiment_result();
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
               return;
@@ -1573,7 +1680,7 @@ import org.slf4j.LoggerFactory;
           public void onError(Exception e) {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
-            configureExperiment_result result = new configureExperiment_result();
+            updateExperiment_result result = new updateExperiment_result();
             if (e instanceof org.apache.airavata.api.error.InvalidRequestException) {
                         result.ire = (org.apache.airavata.api.error.InvalidRequestException) e;
                         result.setIreIsSet(true);
@@ -1614,25 +1721,25 @@ import org.slf4j.LoggerFactory;
         return false;
       }
 
-      public void start(I iface, configureExperiment_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
-        iface.configureExperiment(args.airavataExperimentId, args.experimentConfigurationData,resultHandler);
+      public void start(I iface, updateExperiment_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
+        iface.updateExperiment(args.airavataExperimentId, args.experiment,resultHandler);
       }
     }
 
-    public static class getExperimentConfiguration<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getExperimentConfiguration_args, org.apache.airavata.model.experiment.ConfigurationData> {
-      public getExperimentConfiguration() {
-        super("getExperimentConfiguration");
+    public static class getExperimentStatus<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getExperimentStatus_args, org.apache.airavata.model.workspace.experiment.ExperimentStatus> {
+      public getExperimentStatus() {
+        super("getExperimentStatus");
       }
 
-      public getExperimentConfiguration_args getEmptyArgsInstance() {
-        return new getExperimentConfiguration_args();
+      public getExperimentStatus_args getEmptyArgsInstance() {
+        return new getExperimentStatus_args();
       }
 
-      public AsyncMethodCallback<org.apache.airavata.model.experiment.ConfigurationData> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<org.apache.airavata.model.workspace.experiment.ExperimentStatus> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<org.apache.airavata.model.experiment.ConfigurationData>() { 
-          public void onComplete(org.apache.airavata.model.experiment.ConfigurationData o) {
-            getExperimentConfiguration_result result = new getExperimentConfiguration_result();
+        return new AsyncMethodCallback<org.apache.airavata.model.workspace.experiment.ExperimentStatus>() { 
+          public void onComplete(org.apache.airavata.model.workspace.experiment.ExperimentStatus o) {
+            getExperimentStatus_result result = new getExperimentStatus_result();
             result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
@@ -1645,7 +1752,7 @@ import org.slf4j.LoggerFactory;
           public void onError(Exception e) {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
-            getExperimentConfiguration_result result = new getExperimentConfiguration_result();
+            getExperimentStatus_result result = new getExperimentStatus_result();
             if (e instanceof org.apache.airavata.api.error.InvalidRequestException) {
                         result.ire = (org.apache.airavata.api.error.InvalidRequestException) e;
                         result.setIreIsSet(true);
@@ -1686,25 +1793,25 @@ import org.slf4j.LoggerFactory;
         return false;
       }
 
-      public void start(I iface, getExperimentConfiguration_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.experiment.ConfigurationData> resultHandler) throws TException {
-        iface.getExperimentConfiguration(args.airavataExperimentId,resultHandler);
+      public void start(I iface, getExperimentStatus_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.workspace.experiment.ExperimentStatus> resultHandler) throws TException {
+        iface.getExperimentStatus(args.airavataExperimentId,resultHandler);
       }
     }
 
-    public static class launchConfiguredExperiment<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, launchConfiguredExperiment_args, Void> {
-      public launchConfiguredExperiment() {
-        super("launchConfiguredExperiment");
+    public static class launchExperiment<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, launchExperiment_args, Void> {
+      public launchExperiment() {
+        super("launchExperiment");
       }
 
-      public launchConfiguredExperiment_args getEmptyArgsInstance() {
-        return new launchConfiguredExperiment_args();
+      public launchExperiment_args getEmptyArgsInstance() {
+        return new launchExperiment_args();
       }
 
       public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
         return new AsyncMethodCallback<Void>() { 
           public void onComplete(Void o) {
-            launchConfiguredExperiment_result result = new launchConfiguredExperiment_result();
+            launchExperiment_result result = new launchExperiment_result();
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
               return;
@@ -1716,7 +1823,7 @@ import org.slf4j.LoggerFactory;
           public void onError(Exception e) {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
-            launchConfiguredExperiment_result result = new launchConfiguredExperiment_result();
+            launchExperiment_result result = new launchExperiment_result();
             if (e instanceof org.apache.airavata.api.error.InvalidRequestException) {
                         result.ire = (org.apache.airavata.api.error.InvalidRequestException) e;
                         result.setIreIsSet(true);
@@ -1757,25 +1864,25 @@ import org.slf4j.LoggerFactory;
         return false;
       }
 
-      public void start(I iface, launchConfiguredExperiment_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
-        iface.launchConfiguredExperiment(args.airavataExperimentId, args.airavataCredStoreToken,resultHandler);
+      public void start(I iface, launchExperiment_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
+        iface.launchExperiment(args.airavataExperimentId, args.airavataCredStoreToken,resultHandler);
       }
     }
 
-    public static class configureAndLaunchExperiment<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, configureAndLaunchExperiment_args, String> {
-      public configureAndLaunchExperiment() {
-        super("configureAndLaunchExperiment");
+    public static class updateAndLaunchExperiment<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, updateAndLaunchExperiment_args, String> {
+      public updateAndLaunchExperiment() {
+        super("updateAndLaunchExperiment");
       }
 
-      public configureAndLaunchExperiment_args getEmptyArgsInstance() {
-        return new configureAndLaunchExperiment_args();
+      public updateAndLaunchExperiment_args getEmptyArgsInstance() {
+        return new updateAndLaunchExperiment_args();
       }
 
       public AsyncMethodCallback<String> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
         return new AsyncMethodCallback<String>() { 
           public void onComplete(String o) {
-            configureAndLaunchExperiment_result result = new configureAndLaunchExperiment_result();
+            updateAndLaunchExperiment_result result = new updateAndLaunchExperiment_result();
             result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
@@ -1788,7 +1895,7 @@ import org.slf4j.LoggerFactory;
           public void onError(Exception e) {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
-            configureAndLaunchExperiment_result result = new configureAndLaunchExperiment_result();
+            updateAndLaunchExperiment_result result = new updateAndLaunchExperiment_result();
             if (e instanceof org.apache.airavata.api.error.InvalidRequestException) {
                         result.ire = (org.apache.airavata.api.error.InvalidRequestException) e;
                         result.setIreIsSet(true);
@@ -1829,25 +1936,25 @@ import org.slf4j.LoggerFactory;
         return false;
       }
 
-      public void start(I iface, configureAndLaunchExperiment_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
-        iface.configureAndLaunchExperiment(args.airavataExperimentId, args.experimentConfigurationData, args.airavataCredStoreToken,resultHandler);
+      public void start(I iface, updateAndLaunchExperiment_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
+        iface.updateAndLaunchExperiment(args.airavataExperimentId, args.experiment, args.airavataCredStoreToken,resultHandler);
       }
     }
 
-    public static class cloneExperimentConfiguration<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, cloneExperimentConfiguration_args, String> {
-      public cloneExperimentConfiguration() {
-        super("cloneExperimentConfiguration");
+    public static class cloneExperiment<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, cloneExperiment_args, String> {
+      public cloneExperiment() {
+        super("cloneExperiment");
       }
 
-      public cloneExperimentConfiguration_args getEmptyArgsInstance() {
-        return new cloneExperimentConfiguration_args();
+      public cloneExperiment_args getEmptyArgsInstance() {
+        return new cloneExperiment_args();
       }
 
       public AsyncMethodCallback<String> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
         return new AsyncMethodCallback<String>() { 
           public void onComplete(String o) {
-            cloneExperimentConfiguration_result result = new cloneExperimentConfiguration_result();
+            cloneExperiment_result result = new cloneExperiment_result();
             result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
@@ -1860,7 +1967,7 @@ import org.slf4j.LoggerFactory;
           public void onError(Exception e) {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
-            cloneExperimentConfiguration_result result = new cloneExperimentConfiguration_result();
+            cloneExperiment_result result = new cloneExperiment_result();
             if (e instanceof org.apache.airavata.api.error.InvalidRequestException) {
                         result.ire = (org.apache.airavata.api.error.InvalidRequestException) e;
                         result.setIreIsSet(true);
@@ -1901,8 +2008,8 @@ import org.slf4j.LoggerFactory;
         return false;
       }
 
-      public void start(I iface, cloneExperimentConfiguration_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
-        iface.cloneExperimentConfiguration(args.airavataExperimentIdToBeCloned, args.basicExperimentMetadata,resultHandler);
+      public void start(I iface, cloneExperiment_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
+        iface.cloneExperiment(args.airavataExperimentIdToBeCloned, args.updatedExperiment,resultHandler);
       }
     }
 
@@ -1974,6 +2081,78 @@ import org.slf4j.LoggerFactory;
 
       public void start(I iface, terminateExperiment_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
         iface.terminateExperiment(args.airavataExperimentId,resultHandler);
+      }
+    }
+
+    public static class createProject<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, createProject_args, String> {
+      public createProject() {
+        super("createProject");
+      }
+
+      public createProject_args getEmptyArgsInstance() {
+        return new createProject_args();
+      }
+
+      public AsyncMethodCallback<String> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<String>() { 
+          public void onComplete(String o) {
+            createProject_result result = new createProject_result();
+            result.success = o;
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            createProject_result result = new createProject_result();
+            if (e instanceof org.apache.airavata.api.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.api.error.InvalidRequestException) e;
+                        result.setIreIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.api.error.ExperimentNotFoundException) {
+                        result.enf = (org.apache.airavata.api.error.ExperimentNotFoundException) e;
+                        result.setEnfIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.api.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.api.error.AiravataClientException) e;
+                        result.setAceIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.api.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.api.error.AiravataSystemException) e;
+                        result.setAseIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, createProject_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
+        iface.createProject(args.projectName, args.userName,resultHandler);
       }
     }
 
@@ -2582,7 +2761,7 @@ import org.slf4j.LoggerFactory;
   public static class createExperiment_args implements org.apache.thrift.TBase<createExperiment_args, createExperiment_args._Fields>, java.io.Serializable, Cloneable, Comparable<createExperiment_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("createExperiment_args");
 
-    private static final org.apache.thrift.protocol.TField BASIC_EXPERIMENT_METADATA_FIELD_DESC = new org.apache.thrift.protocol.TField("basicExperimentMetadata", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField EXPERIMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("experiment", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -2590,11 +2769,11 @@ import org.slf4j.LoggerFactory;
       schemes.put(TupleScheme.class, new createExperiment_argsTupleSchemeFactory());
     }
 
-    public org.apache.airavata.model.experiment.BasicMetadata basicExperimentMetadata; // required
+    public org.apache.airavata.model.workspace.experiment.Experiment experiment; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      BASIC_EXPERIMENT_METADATA((short)1, "basicExperimentMetadata");
+      EXPERIMENT((short)1, "experiment");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -2609,8 +2788,8 @@ import org.slf4j.LoggerFactory;
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // BASIC_EXPERIMENT_METADATA
-            return BASIC_EXPERIMENT_METADATA;
+          case 1: // EXPERIMENT
+            return EXPERIMENT;
           default:
             return null;
         }
@@ -2654,8 +2833,8 @@ import org.slf4j.LoggerFactory;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.BASIC_EXPERIMENT_METADATA, new org.apache.thrift.meta_data.FieldMetaData("basicExperimentMetadata", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.experiment.BasicMetadata.class)));
+      tmpMap.put(_Fields.EXPERIMENT, new org.apache.thrift.meta_data.FieldMetaData("experiment", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.workspace.experiment.Experiment.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(createExperiment_args.class, metaDataMap);
     }
@@ -2664,18 +2843,18 @@ import org.slf4j.LoggerFactory;
     }
 
     public createExperiment_args(
-      org.apache.airavata.model.experiment.BasicMetadata basicExperimentMetadata)
+      org.apache.airavata.model.workspace.experiment.Experiment experiment)
     {
       this();
-      this.basicExperimentMetadata = basicExperimentMetadata;
+      this.experiment = experiment;
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
     public createExperiment_args(createExperiment_args other) {
-      if (other.isSetBasicExperimentMetadata()) {
-        this.basicExperimentMetadata = new org.apache.airavata.model.experiment.BasicMetadata(other.basicExperimentMetadata);
+      if (other.isSetExperiment()) {
+        this.experiment = new org.apache.airavata.model.workspace.experiment.Experiment(other.experiment);
       }
     }
 
@@ -2685,40 +2864,40 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public void clear() {
-      this.basicExperimentMetadata = null;
+      this.experiment = null;
     }
 
-    public org.apache.airavata.model.experiment.BasicMetadata getBasicExperimentMetadata() {
-      return this.basicExperimentMetadata;
+    public org.apache.airavata.model.workspace.experiment.Experiment getExperiment() {
+      return this.experiment;
     }
 
-    public createExperiment_args setBasicExperimentMetadata(org.apache.airavata.model.experiment.BasicMetadata basicExperimentMetadata) {
-      this.basicExperimentMetadata = basicExperimentMetadata;
+    public createExperiment_args setExperiment(org.apache.airavata.model.workspace.experiment.Experiment experiment) {
+      this.experiment = experiment;
       return this;
     }
 
-    public void unsetBasicExperimentMetadata() {
-      this.basicExperimentMetadata = null;
+    public void unsetExperiment() {
+      this.experiment = null;
     }
 
-    /** Returns true if field basicExperimentMetadata is set (has been assigned a value) and false otherwise */
-    public boolean isSetBasicExperimentMetadata() {
-      return this.basicExperimentMetadata != null;
+    /** Returns true if field experiment is set (has been assigned a value) and false otherwise */
+    public boolean isSetExperiment() {
+      return this.experiment != null;
     }
 
-    public void setBasicExperimentMetadataIsSet(boolean value) {
+    public void setExperimentIsSet(boolean value) {
       if (!value) {
-        this.basicExperimentMetadata = null;
+        this.experiment = null;
       }
     }
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
-      case BASIC_EXPERIMENT_METADATA:
+      case EXPERIMENT:
         if (value == null) {
-          unsetBasicExperimentMetadata();
+          unsetExperiment();
         } else {
-          setBasicExperimentMetadata((org.apache.airavata.model.experiment.BasicMetadata)value);
+          setExperiment((org.apache.airavata.model.workspace.experiment.Experiment)value);
         }
         break;
 
@@ -2727,8 +2906,8 @@ import org.slf4j.LoggerFactory;
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
-      case BASIC_EXPERIMENT_METADATA:
-        return getBasicExperimentMetadata();
+      case EXPERIMENT:
+        return getExperiment();
 
       }
       throw new IllegalStateException();
@@ -2741,8 +2920,8 @@ import org.slf4j.LoggerFactory;
       }
 
       switch (field) {
-      case BASIC_EXPERIMENT_METADATA:
-        return isSetBasicExperimentMetadata();
+      case EXPERIMENT:
+        return isSetExperiment();
       }
       throw new IllegalStateException();
     }
@@ -2760,12 +2939,12 @@ import org.slf4j.LoggerFactory;
       if (that == null)
         return false;
 
-      boolean this_present_basicExperimentMetadata = true && this.isSetBasicExperimentMetadata();
-      boolean that_present_basicExperimentMetadata = true && that.isSetBasicExperimentMetadata();
-      if (this_present_basicExperimentMetadata || that_present_basicExperimentMetadata) {
-        if (!(this_present_basicExperimentMetadata && that_present_basicExperimentMetadata))
+      boolean this_present_experiment = true && this.isSetExperiment();
+      boolean that_present_experiment = true && that.isSetExperiment();
+      if (this_present_experiment || that_present_experiment) {
+        if (!(this_present_experiment && that_present_experiment))
           return false;
-        if (!this.basicExperimentMetadata.equals(that.basicExperimentMetadata))
+        if (!this.experiment.equals(that.experiment))
           return false;
       }
 
@@ -2785,12 +2964,12 @@ import org.slf4j.LoggerFactory;
 
       int lastComparison = 0;
 
-      lastComparison = Boolean.valueOf(isSetBasicExperimentMetadata()).compareTo(other.isSetBasicExperimentMetadata());
+      lastComparison = Boolean.valueOf(isSetExperiment()).compareTo(other.isSetExperiment());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetBasicExperimentMetadata()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.basicExperimentMetadata, other.basicExperimentMetadata);
+      if (isSetExperiment()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.experiment, other.experiment);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -2815,11 +2994,11 @@ import org.slf4j.LoggerFactory;
       StringBuilder sb = new StringBuilder("createExperiment_args(");
       boolean first = true;
 
-      sb.append("basicExperimentMetadata:");
-      if (this.basicExperimentMetadata == null) {
+      sb.append("experiment:");
+      if (this.experiment == null) {
         sb.append("null");
       } else {
-        sb.append(this.basicExperimentMetadata);
+        sb.append(this.experiment);
       }
       first = false;
       sb.append(")");
@@ -2829,8 +3008,8 @@ import org.slf4j.LoggerFactory;
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
       // check for sub-struct validity
-      if (basicExperimentMetadata != null) {
-        basicExperimentMetadata.validate();
+      if (experiment != null) {
+        experiment.validate();
       }
     }
 
@@ -2868,11 +3047,11 @@ import org.slf4j.LoggerFactory;
             break;
           }
           switch (schemeField.id) {
-            case 1: // BASIC_EXPERIMENT_METADATA
+            case 1: // EXPERIMENT
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.basicExperimentMetadata = new org.apache.airavata.model.experiment.BasicMetadata();
-                struct.basicExperimentMetadata.read(iprot);
-                struct.setBasicExperimentMetadataIsSet(true);
+                struct.experiment = new org.apache.airavata.model.workspace.experiment.Experiment();
+                struct.experiment.read(iprot);
+                struct.setExperimentIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -2892,9 +3071,9 @@ import org.slf4j.LoggerFactory;
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
-        if (struct.basicExperimentMetadata != null) {
-          oprot.writeFieldBegin(BASIC_EXPERIMENT_METADATA_FIELD_DESC);
-          struct.basicExperimentMetadata.write(oprot);
+        if (struct.experiment != null) {
+          oprot.writeFieldBegin(EXPERIMENT_FIELD_DESC);
+          struct.experiment.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -2915,12 +3094,12 @@ import org.slf4j.LoggerFactory;
       public void write(org.apache.thrift.protocol.TProtocol prot, createExperiment_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetBasicExperimentMetadata()) {
+        if (struct.isSetExperiment()) {
           optionals.set(0);
         }
         oprot.writeBitSet(optionals, 1);
-        if (struct.isSetBasicExperimentMetadata()) {
-          struct.basicExperimentMetadata.write(oprot);
+        if (struct.isSetExperiment()) {
+          struct.experiment.write(oprot);
         }
       }
 
@@ -2929,9 +3108,9 @@ import org.slf4j.LoggerFactory;
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
-          struct.basicExperimentMetadata = new org.apache.airavata.model.experiment.BasicMetadata();
-          struct.basicExperimentMetadata.read(iprot);
-          struct.setBasicExperimentMetadataIsSet(true);
+          struct.experiment = new org.apache.airavata.model.workspace.experiment.Experiment();
+          struct.experiment.read(iprot);
+          struct.setExperimentIsSet(true);
         }
       }
     }
@@ -3598,15 +3777,15 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  public static class getBasicExperimentMetadata_args implements org.apache.thrift.TBase<getBasicExperimentMetadata_args, getBasicExperimentMetadata_args._Fields>, java.io.Serializable, Cloneable, Comparable<getBasicExperimentMetadata_args>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getBasicExperimentMetadata_args");
+  public static class getBasicExperiment_args implements org.apache.thrift.TBase<getBasicExperiment_args, getBasicExperiment_args._Fields>, java.io.Serializable, Cloneable, Comparable<getBasicExperiment_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getBasicExperiment_args");
 
     private static final org.apache.thrift.protocol.TField AIRAVATA_EXPERIMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("airavataExperimentId", org.apache.thrift.protocol.TType.STRING, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new getBasicExperimentMetadata_argsStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new getBasicExperimentMetadata_argsTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new getBasicExperiment_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getBasicExperiment_argsTupleSchemeFactory());
     }
 
     public String airavataExperimentId; // required
@@ -3676,13 +3855,13 @@ import org.slf4j.LoggerFactory;
       tmpMap.put(_Fields.AIRAVATA_EXPERIMENT_ID, new org.apache.thrift.meta_data.FieldMetaData("airavataExperimentId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getBasicExperimentMetadata_args.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getBasicExperiment_args.class, metaDataMap);
     }
 
-    public getBasicExperimentMetadata_args() {
+    public getBasicExperiment_args() {
     }
 
-    public getBasicExperimentMetadata_args(
+    public getBasicExperiment_args(
       String airavataExperimentId)
     {
       this();
@@ -3692,14 +3871,14 @@ import org.slf4j.LoggerFactory;
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public getBasicExperimentMetadata_args(getBasicExperimentMetadata_args other) {
+    public getBasicExperiment_args(getBasicExperiment_args other) {
       if (other.isSetAiravataExperimentId()) {
         this.airavataExperimentId = other.airavataExperimentId;
       }
     }
 
-    public getBasicExperimentMetadata_args deepCopy() {
-      return new getBasicExperimentMetadata_args(this);
+    public getBasicExperiment_args deepCopy() {
+      return new getBasicExperiment_args(this);
     }
 
     @Override
@@ -3711,7 +3890,7 @@ import org.slf4j.LoggerFactory;
       return this.airavataExperimentId;
     }
 
-    public getBasicExperimentMetadata_args setAiravataExperimentId(String airavataExperimentId) {
+    public getBasicExperiment_args setAiravataExperimentId(String airavataExperimentId) {
       this.airavataExperimentId = airavataExperimentId;
       return this;
     }
@@ -3770,12 +3949,12 @@ import org.slf4j.LoggerFactory;
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof getBasicExperimentMetadata_args)
-        return this.equals((getBasicExperimentMetadata_args)that);
+      if (that instanceof getBasicExperiment_args)
+        return this.equals((getBasicExperiment_args)that);
       return false;
     }
 
-    public boolean equals(getBasicExperimentMetadata_args that) {
+    public boolean equals(getBasicExperiment_args that) {
       if (that == null)
         return false;
 
@@ -3797,7 +3976,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public int compareTo(getBasicExperimentMetadata_args other) {
+    public int compareTo(getBasicExperiment_args other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -3831,7 +4010,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("getBasicExperimentMetadata_args(");
+      StringBuilder sb = new StringBuilder("getBasicExperiment_args(");
       boolean first = true;
 
       sb.append("airavataExperimentId:");
@@ -3866,15 +4045,15 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    private static class getBasicExperimentMetadata_argsStandardSchemeFactory implements SchemeFactory {
-      public getBasicExperimentMetadata_argsStandardScheme getScheme() {
-        return new getBasicExperimentMetadata_argsStandardScheme();
+    private static class getBasicExperiment_argsStandardSchemeFactory implements SchemeFactory {
+      public getBasicExperiment_argsStandardScheme getScheme() {
+        return new getBasicExperiment_argsStandardScheme();
       }
     }
 
-    private static class getBasicExperimentMetadata_argsStandardScheme extends StandardScheme<getBasicExperimentMetadata_args> {
+    private static class getBasicExperiment_argsStandardScheme extends StandardScheme<getBasicExperiment_args> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, getBasicExperimentMetadata_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getBasicExperiment_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -3903,7 +4082,7 @@ import org.slf4j.LoggerFactory;
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, getBasicExperimentMetadata_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getBasicExperiment_args struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -3918,16 +4097,16 @@ import org.slf4j.LoggerFactory;
 
     }
 
-    private static class getBasicExperimentMetadata_argsTupleSchemeFactory implements SchemeFactory {
-      public getBasicExperimentMetadata_argsTupleScheme getScheme() {
-        return new getBasicExperimentMetadata_argsTupleScheme();
+    private static class getBasicExperiment_argsTupleSchemeFactory implements SchemeFactory {
+      public getBasicExperiment_argsTupleScheme getScheme() {
+        return new getBasicExperiment_argsTupleScheme();
       }
     }
 
-    private static class getBasicExperimentMetadata_argsTupleScheme extends TupleScheme<getBasicExperimentMetadata_args> {
+    private static class getBasicExperiment_argsTupleScheme extends TupleScheme<getBasicExperiment_args> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, getBasicExperimentMetadata_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, getBasicExperiment_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
         if (struct.isSetAiravataExperimentId()) {
@@ -3940,7 +4119,7 @@ import org.slf4j.LoggerFactory;
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, getBasicExperimentMetadata_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, getBasicExperiment_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
@@ -3952,8 +4131,8 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  public static class getBasicExperimentMetadata_result implements org.apache.thrift.TBase<getBasicExperimentMetadata_result, getBasicExperimentMetadata_result._Fields>, java.io.Serializable, Cloneable, Comparable<getBasicExperimentMetadata_result>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getBasicExperimentMetadata_result");
+  public static class getBasicExperiment_result implements org.apache.thrift.TBase<getBasicExperiment_result, getBasicExperiment_result._Fields>, java.io.Serializable, Cloneable, Comparable<getBasicExperiment_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getBasicExperiment_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
     private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
@@ -3963,11 +4142,11 @@ import org.slf4j.LoggerFactory;
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new getBasicExperimentMetadata_resultStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new getBasicExperimentMetadata_resultTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new getBasicExperiment_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getBasicExperiment_resultTupleSchemeFactory());
     }
 
-    public org.apache.airavata.model.experiment.BasicMetadata success; // required
+    public org.apache.airavata.model.workspace.experiment.Experiment success; // required
     public org.apache.airavata.api.error.InvalidRequestException ire; // required
     public org.apache.airavata.api.error.ExperimentNotFoundException enf; // required
     public org.apache.airavata.api.error.AiravataClientException ace; // required
@@ -4048,7 +4227,7 @@ import org.slf4j.LoggerFactory;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.experiment.BasicMetadata.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.workspace.experiment.Experiment.class)));
       tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.ENF, new org.apache.thrift.meta_data.FieldMetaData("enf", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -4058,14 +4237,14 @@ import org.slf4j.LoggerFactory;
       tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getBasicExperimentMetadata_result.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getBasicExperiment_result.class, metaDataMap);
     }
 
-    public getBasicExperimentMetadata_result() {
+    public getBasicExperiment_result() {
     }
 
-    public getBasicExperimentMetadata_result(
-      org.apache.airavata.model.experiment.BasicMetadata success,
+    public getBasicExperiment_result(
+      org.apache.airavata.model.workspace.experiment.Experiment success,
       org.apache.airavata.api.error.InvalidRequestException ire,
       org.apache.airavata.api.error.ExperimentNotFoundException enf,
       org.apache.airavata.api.error.AiravataClientException ace,
@@ -4082,9 +4261,9 @@ import org.slf4j.LoggerFactory;
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public getBasicExperimentMetadata_result(getBasicExperimentMetadata_result other) {
+    public getBasicExperiment_result(getBasicExperiment_result other) {
       if (other.isSetSuccess()) {
-        this.success = new org.apache.airavata.model.experiment.BasicMetadata(other.success);
+        this.success = new org.apache.airavata.model.workspace.experiment.Experiment(other.success);
       }
       if (other.isSetIre()) {
         this.ire = new org.apache.airavata.api.error.InvalidRequestException(other.ire);
@@ -4100,8 +4279,8 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public getBasicExperimentMetadata_result deepCopy() {
-      return new getBasicExperimentMetadata_result(this);
+    public getBasicExperiment_result deepCopy() {
+      return new getBasicExperiment_result(this);
     }
 
     @Override
@@ -4113,11 +4292,11 @@ import org.slf4j.LoggerFactory;
       this.ase = null;
     }
 
-    public org.apache.airavata.model.experiment.BasicMetadata getSuccess() {
+    public org.apache.airavata.model.workspace.experiment.Experiment getSuccess() {
       return this.success;
     }
 
-    public getBasicExperimentMetadata_result setSuccess(org.apache.airavata.model.experiment.BasicMetadata success) {
+    public getBasicExperiment_result setSuccess(org.apache.airavata.model.workspace.experiment.Experiment success) {
       this.success = success;
       return this;
     }
@@ -4141,7 +4320,7 @@ import org.slf4j.LoggerFactory;
       return this.ire;
     }
 
-    public getBasicExperimentMetadata_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
+    public getBasicExperiment_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
       this.ire = ire;
       return this;
     }
@@ -4165,7 +4344,7 @@ import org.slf4j.LoggerFactory;
       return this.enf;
     }
 
-    public getBasicExperimentMetadata_result setEnf(org.apache.airavata.api.error.ExperimentNotFoundException enf) {
+    public getBasicExperiment_result setEnf(org.apache.airavata.api.error.ExperimentNotFoundException enf) {
       this.enf = enf;
       return this;
     }
@@ -4189,7 +4368,7 @@ import org.slf4j.LoggerFactory;
       return this.ace;
     }
 
-    public getBasicExperimentMetadata_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
+    public getBasicExperiment_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
       this.ace = ace;
       return this;
     }
@@ -4213,7 +4392,7 @@ import org.slf4j.LoggerFactory;
       return this.ase;
     }
 
-    public getBasicExperimentMetadata_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
+    public getBasicExperiment_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
       this.ase = ase;
       return this;
     }
@@ -4239,7 +4418,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((org.apache.airavata.model.experiment.BasicMetadata)value);
+          setSuccess((org.apache.airavata.model.workspace.experiment.Experiment)value);
         }
         break;
 
@@ -4324,12 +4503,12 @@ import org.slf4j.LoggerFactory;
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof getBasicExperimentMetadata_result)
-        return this.equals((getBasicExperimentMetadata_result)that);
+      if (that instanceof getBasicExperiment_result)
+        return this.equals((getBasicExperiment_result)that);
       return false;
     }
 
-    public boolean equals(getBasicExperimentMetadata_result that) {
+    public boolean equals(getBasicExperiment_result that) {
       if (that == null)
         return false;
 
@@ -4387,7 +4566,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public int compareTo(getBasicExperimentMetadata_result other) {
+    public int compareTo(getBasicExperiment_result other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -4461,7 +4640,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("getBasicExperimentMetadata_result(");
+      StringBuilder sb = new StringBuilder("getBasicExperiment_result(");
       boolean first = true;
 
       sb.append("success:");
@@ -4531,15 +4710,15 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    private static class getBasicExperimentMetadata_resultStandardSchemeFactory implements SchemeFactory {
-      public getBasicExperimentMetadata_resultStandardScheme getScheme() {
-        return new getBasicExperimentMetadata_resultStandardScheme();
+    private static class getBasicExperiment_resultStandardSchemeFactory implements SchemeFactory {
+      public getBasicExperiment_resultStandardScheme getScheme() {
+        return new getBasicExperiment_resultStandardScheme();
       }
     }
 
-    private static class getBasicExperimentMetadata_resultStandardScheme extends StandardScheme<getBasicExperimentMetadata_result> {
+    private static class getBasicExperiment_resultStandardScheme extends StandardScheme<getBasicExperiment_result> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, getBasicExperimentMetadata_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getBasicExperiment_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -4551,7 +4730,7 @@ import org.slf4j.LoggerFactory;
           switch (schemeField.id) {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.success = new org.apache.airavata.model.experiment.BasicMetadata();
+                struct.success = new org.apache.airavata.model.workspace.experiment.Experiment();
                 struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
               } else { 
@@ -4605,7 +4784,7 @@ import org.slf4j.LoggerFactory;
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, getBasicExperimentMetadata_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getBasicExperiment_result struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -4640,16 +4819,16 @@ import org.slf4j.LoggerFactory;
 
     }
 
-    private static class getBasicExperimentMetadata_resultTupleSchemeFactory implements SchemeFactory {
-      public getBasicExperimentMetadata_resultTupleScheme getScheme() {
-        return new getBasicExperimentMetadata_resultTupleScheme();
+    private static class getBasicExperiment_resultTupleSchemeFactory implements SchemeFactory {
+      public getBasicExperiment_resultTupleScheme getScheme() {
+        return new getBasicExperiment_resultTupleScheme();
       }
     }
 
-    private static class getBasicExperimentMetadata_resultTupleScheme extends TupleScheme<getBasicExperimentMetadata_result> {
+    private static class getBasicExperiment_resultTupleScheme extends TupleScheme<getBasicExperiment_result> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, getBasicExperimentMetadata_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, getBasicExperiment_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
         if (struct.isSetSuccess()) {
@@ -4686,11 +4865,11 @@ import org.slf4j.LoggerFactory;
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, getBasicExperimentMetadata_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, getBasicExperiment_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(5);
         if (incoming.get(0)) {
-          struct.success = new org.apache.airavata.model.experiment.BasicMetadata();
+          struct.success = new org.apache.airavata.model.workspace.experiment.Experiment();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
@@ -4719,25 +4898,25 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  public static class configureExperiment_args implements org.apache.thrift.TBase<configureExperiment_args, configureExperiment_args._Fields>, java.io.Serializable, Cloneable, Comparable<configureExperiment_args>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("configureExperiment_args");
+  public static class updateExperiment_args implements org.apache.thrift.TBase<updateExperiment_args, updateExperiment_args._Fields>, java.io.Serializable, Cloneable, Comparable<updateExperiment_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateExperiment_args");
 
     private static final org.apache.thrift.protocol.TField AIRAVATA_EXPERIMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("airavataExperimentId", org.apache.thrift.protocol.TType.STRING, (short)1);
-    private static final org.apache.thrift.protocol.TField EXPERIMENT_CONFIGURATION_DATA_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentConfigurationData", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField EXPERIMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("experiment", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new configureExperiment_argsStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new configureExperiment_argsTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new updateExperiment_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new updateExperiment_argsTupleSchemeFactory());
     }
 
     public String airavataExperimentId; // required
-    public org.apache.airavata.model.experiment.ConfigurationData experimentConfigurationData; // required
+    public org.apache.airavata.model.workspace.experiment.Experiment experiment; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       AIRAVATA_EXPERIMENT_ID((short)1, "airavataExperimentId"),
-      EXPERIMENT_CONFIGURATION_DATA((short)2, "experimentConfigurationData");
+      EXPERIMENT((short)2, "experiment");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -4754,8 +4933,8 @@ import org.slf4j.LoggerFactory;
         switch(fieldId) {
           case 1: // AIRAVATA_EXPERIMENT_ID
             return AIRAVATA_EXPERIMENT_ID;
-          case 2: // EXPERIMENT_CONFIGURATION_DATA
-            return EXPERIMENT_CONFIGURATION_DATA;
+          case 2: // EXPERIMENT
+            return EXPERIMENT;
           default:
             return null;
         }
@@ -4801,51 +4980,51 @@ import org.slf4j.LoggerFactory;
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.AIRAVATA_EXPERIMENT_ID, new org.apache.thrift.meta_data.FieldMetaData("airavataExperimentId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-      tmpMap.put(_Fields.EXPERIMENT_CONFIGURATION_DATA, new org.apache.thrift.meta_data.FieldMetaData("experimentConfigurationData", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.experiment.ConfigurationData.class)));
+      tmpMap.put(_Fields.EXPERIMENT, new org.apache.thrift.meta_data.FieldMetaData("experiment", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.workspace.experiment.Experiment.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(configureExperiment_args.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateExperiment_args.class, metaDataMap);
     }
 
-    public configureExperiment_args() {
+    public updateExperiment_args() {
     }
 
-    public configureExperiment_args(
+    public updateExperiment_args(
       String airavataExperimentId,
-      org.apache.airavata.model.experiment.ConfigurationData experimentConfigurationData)
+      org.apache.airavata.model.workspace.experiment.Experiment experiment)
     {
       this();
       this.airavataExperimentId = airavataExperimentId;
-      this.experimentConfigurationData = experimentConfigurationData;
+      this.experiment = experiment;
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public configureExperiment_args(configureExperiment_args other) {
+    public updateExperiment_args(updateExperiment_args other) {
       if (other.isSetAiravataExperimentId()) {
         this.airavataExperimentId = other.airavataExperimentId;
       }
-      if (other.isSetExperimentConfigurationData()) {
-        this.experimentConfigurationData = new org.apache.airavata.model.experiment.ConfigurationData(other.experimentConfigurationData);
+      if (other.isSetExperiment()) {
+        this.experiment = new org.apache.airavata.model.workspace.experiment.Experiment(other.experiment);
       }
     }
 
-    public configureExperiment_args deepCopy() {
-      return new configureExperiment_args(this);
+    public updateExperiment_args deepCopy() {
+      return new updateExperiment_args(this);
     }
 
     @Override
     public void clear() {
       this.airavataExperimentId = null;
-      this.experimentConfigurationData = null;
+      this.experiment = null;
     }
 
     public String getAiravataExperimentId() {
       return this.airavataExperimentId;
     }
 
-    public configureExperiment_args setAiravataExperimentId(String airavataExperimentId) {
+    public updateExperiment_args setAiravataExperimentId(String airavataExperimentId) {
       this.airavataExperimentId = airavataExperimentId;
       return this;
     }
@@ -4865,27 +5044,27 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.model.experiment.ConfigurationData getExperimentConfigurationData() {
-      return this.experimentConfigurationData;
+    public org.apache.airavata.model.workspace.experiment.Experiment getExperiment() {
+      return this.experiment;
     }
 
-    public configureExperiment_args setExperimentConfigurationData(org.apache.airavata.model.experiment.ConfigurationData experimentConfigurationData) {
-      this.experimentConfigurationData = experimentConfigurationData;
+    public updateExperiment_args setExperiment(org.apache.airavata.model.workspace.experiment.Experiment experiment) {
+      this.experiment = experiment;
       return this;
     }
 
-    public void unsetExperimentConfigurationData() {
-      this.experimentConfigurationData = null;
+    public void unsetExperiment() {
+      this.experiment = null;
     }
 
-    /** Returns true if field experimentConfigurationData is set (has been assigned a value) and false otherwise */
-    public boolean isSetExperimentConfigurationData() {
-      return this.experimentConfigurationData != null;
+    /** Returns true if field experiment is set (has been assigned a value) and false otherwise */
+    public boolean isSetExperiment() {
+      return this.experiment != null;
     }
 
-    public void setExperimentConfigurationDataIsSet(boolean value) {
+    public void setExperimentIsSet(boolean value) {
       if (!value) {
-        this.experimentConfigurationData = null;
+        this.experiment = null;
       }
     }
 
@@ -4899,11 +5078,11 @@ import org.slf4j.LoggerFactory;
         }
         break;
 
-      case EXPERIMENT_CONFIGURATION_DATA:
+      case EXPERIMENT:
         if (value == null) {
-          unsetExperimentConfigurationData();
+          unsetExperiment();
         } else {
-          setExperimentConfigurationData((org.apache.airavata.model.experiment.ConfigurationData)value);
+          setExperiment((org.apache.airavata.model.workspace.experiment.Experiment)value);
         }
         break;
 
@@ -4915,8 +5094,8 @@ import org.slf4j.LoggerFactory;
       case AIRAVATA_EXPERIMENT_ID:
         return getAiravataExperimentId();
 
-      case EXPERIMENT_CONFIGURATION_DATA:
-        return getExperimentConfigurationData();
+      case EXPERIMENT:
+        return getExperiment();
 
       }
       throw new IllegalStateException();
@@ -4931,8 +5110,8 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case AIRAVATA_EXPERIMENT_ID:
         return isSetAiravataExperimentId();
-      case EXPERIMENT_CONFIGURATION_DATA:
-        return isSetExperimentConfigurationData();
+      case EXPERIMENT:
+        return isSetExperiment();
       }
       throw new IllegalStateException();
     }
@@ -4941,12 +5120,12 @@ import org.slf4j.LoggerFactory;
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof configureExperiment_args)
-        return this.equals((configureExperiment_args)that);
+      if (that instanceof updateExperiment_args)
+        return this.equals((updateExperiment_args)that);
       return false;
     }
 
-    public boolean equals(configureExperiment_args that) {
+    public boolean equals(updateExperiment_args that) {
       if (that == null)
         return false;
 
@@ -4959,12 +5138,12 @@ import org.slf4j.LoggerFactory;
           return false;
       }
 
-      boolean this_present_experimentConfigurationData = true && this.isSetExperimentConfigurationData();
-      boolean that_present_experimentConfigurationData = true && that.isSetExperimentConfigurationData();
-      if (this_present_experimentConfigurationData || that_present_experimentConfigurationData) {
-        if (!(this_present_experimentConfigurationData && that_present_experimentConfigurationData))
+      boolean this_present_experiment = true && this.isSetExperiment();
+      boolean that_present_experiment = true && that.isSetExperiment();
+      if (this_present_experiment || that_present_experiment) {
+        if (!(this_present_experiment && that_present_experiment))
           return false;
-        if (!this.experimentConfigurationData.equals(that.experimentConfigurationData))
+        if (!this.experiment.equals(that.experiment))
           return false;
       }
 
@@ -4977,7 +5156,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public int compareTo(configureExperiment_args other) {
+    public int compareTo(updateExperiment_args other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -4994,12 +5173,12 @@ import org.slf4j.LoggerFactory;
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetExperimentConfigurationData()).compareTo(other.isSetExperimentConfigurationData());
+      lastComparison = Boolean.valueOf(isSetExperiment()).compareTo(other.isSetExperiment());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetExperimentConfigurationData()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.experimentConfigurationData, other.experimentConfigurationData);
+      if (isSetExperiment()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.experiment, other.experiment);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -5021,7 +5200,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("configureExperiment_args(");
+      StringBuilder sb = new StringBuilder("updateExperiment_args(");
       boolean first = true;
 
       sb.append("airavataExperimentId:");
@@ -5032,11 +5211,11 @@ import org.slf4j.LoggerFactory;
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("experimentConfigurationData:");
-      if (this.experimentConfigurationData == null) {
+      sb.append("experiment:");
+      if (this.experiment == null) {
         sb.append("null");
       } else {
-        sb.append(this.experimentConfigurationData);
+        sb.append(this.experiment);
       }
       first = false;
       sb.append(")");
@@ -5046,8 +5225,8 @@ import org.slf4j.LoggerFactory;
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
       // check for sub-struct validity
-      if (experimentConfigurationData != null) {
-        experimentConfigurationData.validate();
+      if (experiment != null) {
+        experiment.validate();
       }
     }
 
@@ -5067,15 +5246,15 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    private static class configureExperiment_argsStandardSchemeFactory implements SchemeFactory {
-      public configureExperiment_argsStandardScheme getScheme() {
-        return new configureExperiment_argsStandardScheme();
+    private static class updateExperiment_argsStandardSchemeFactory implements SchemeFactory {
+      public updateExperiment_argsStandardScheme getScheme() {
+        return new updateExperiment_argsStandardScheme();
       }
     }
 
-    private static class configureExperiment_argsStandardScheme extends StandardScheme<configureExperiment_args> {
+    private static class updateExperiment_argsStandardScheme extends StandardScheme<updateExperiment_args> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, configureExperiment_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, updateExperiment_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -5093,11 +5272,11 @@ import org.slf4j.LoggerFactory;
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 2: // EXPERIMENT_CONFIGURATION_DATA
+            case 2: // EXPERIMENT
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.experimentConfigurationData = new org.apache.airavata.model.experiment.ConfigurationData();
-                struct.experimentConfigurationData.read(iprot);
-                struct.setExperimentConfigurationDataIsSet(true);
+                struct.experiment = new org.apache.airavata.model.workspace.experiment.Experiment();
+                struct.experiment.read(iprot);
+                struct.setExperimentIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -5113,7 +5292,7 @@ import org.slf4j.LoggerFactory;
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, configureExperiment_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, updateExperiment_args struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -5122,9 +5301,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeString(struct.airavataExperimentId);
           oprot.writeFieldEnd();
         }
-        if (struct.experimentConfigurationData != null) {
-          oprot.writeFieldBegin(EXPERIMENT_CONFIGURATION_DATA_FIELD_DESC);
-          struct.experimentConfigurationData.write(oprot);
+        if (struct.experiment != null) {
+          oprot.writeFieldBegin(EXPERIMENT_FIELD_DESC);
+          struct.experiment.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -5133,35 +5312,35 @@ import org.slf4j.LoggerFactory;
 
     }
 
-    private static class configureExperiment_argsTupleSchemeFactory implements SchemeFactory {
-      public configureExperiment_argsTupleScheme getScheme() {
-        return new configureExperiment_argsTupleScheme();
+    private static class updateExperiment_argsTupleSchemeFactory implements SchemeFactory {
+      public updateExperiment_argsTupleScheme getScheme() {
+        return new updateExperiment_argsTupleScheme();
       }
     }
 
-    private static class configureExperiment_argsTupleScheme extends TupleScheme<configureExperiment_args> {
+    private static class updateExperiment_argsTupleScheme extends TupleScheme<updateExperiment_args> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, configureExperiment_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, updateExperiment_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
         if (struct.isSetAiravataExperimentId()) {
           optionals.set(0);
         }
-        if (struct.isSetExperimentConfigurationData()) {
+        if (struct.isSetExperiment()) {
           optionals.set(1);
         }
         oprot.writeBitSet(optionals, 2);
         if (struct.isSetAiravataExperimentId()) {
           oprot.writeString(struct.airavataExperimentId);
         }
-        if (struct.isSetExperimentConfigurationData()) {
-          struct.experimentConfigurationData.write(oprot);
+        if (struct.isSetExperiment()) {
+          struct.experiment.write(oprot);
         }
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, configureExperiment_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, updateExperiment_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
@@ -5169,17 +5348,17 @@ import org.slf4j.LoggerFactory;
           struct.setAiravataExperimentIdIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.experimentConfigurationData = new org.apache.airavata.model.experiment.ConfigurationData();
-          struct.experimentConfigurationData.read(iprot);
-          struct.setExperimentConfigurationDataIsSet(true);
+          struct.experiment = new org.apache.airavata.model.workspace.experiment.Experiment();
+          struct.experiment.read(iprot);
+          struct.setExperimentIsSet(true);
         }
       }
     }
 
   }
 
-  public static class configureExperiment_result implements org.apache.thrift.TBase<configureExperiment_result, configureExperiment_result._Fields>, java.io.Serializable, Cloneable, Comparable<configureExperiment_result>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("configureExperiment_result");
+  public static class updateExperiment_result implements org.apache.thrift.TBase<updateExperiment_result, updateExperiment_result._Fields>, java.io.Serializable, Cloneable, Comparable<updateExperiment_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateExperiment_result");
 
     private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField ENF_FIELD_DESC = new org.apache.thrift.protocol.TField("enf", org.apache.thrift.protocol.TType.STRUCT, (short)2);
@@ -5188,8 +5367,8 @@ import org.slf4j.LoggerFactory;
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new configureExperiment_resultStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new configureExperiment_resultTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new updateExperiment_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new updateExperiment_resultTupleSchemeFactory());
     }
 
     public org.apache.airavata.api.error.InvalidRequestException ire; // required
@@ -5277,13 +5456,13 @@ import org.slf4j.LoggerFactory;
       tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(configureExperiment_result.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateExperiment_result.class, metaDataMap);
     }
 
-    public configureExperiment_result() {
+    public updateExperiment_result() {
     }
 
-    public configureExperiment_result(
+    public updateExperiment_result(
       org.apache.airavata.api.error.InvalidRequestException ire,
       org.apache.airavata.api.error.ExperimentNotFoundException enf,
       org.apache.airavata.api.error.AiravataClientException ace,
@@ -5299,7 +5478,7 @@ import org.slf4j.LoggerFactory;
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public configureExperiment_result(configureExperiment_result other) {
+    public updateExperiment_result(updateExperiment_result other) {
       if (other.isSetIre()) {
         this.ire = new org.apache.airavata.api.error.InvalidRequestException(other.ire);
       }
@@ -5314,8 +5493,8 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public configureExperiment_result deepCopy() {
-      return new configureExperiment_result(this);
+    public updateExperiment_result deepCopy() {
+      return new updateExperiment_result(this);
     }
 
     @Override
@@ -5330,7 +5509,7 @@ import org.slf4j.LoggerFactory;
       return this.ire;
     }
 
-    public configureExperiment_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
+    public updateExperiment_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
       this.ire = ire;
       return this;
     }
@@ -5354,7 +5533,7 @@ import org.slf4j.LoggerFactory;
       return this.enf;
     }
 
-    public configureExperiment_result setEnf(org.apache.airavata.api.error.ExperimentNotFoundException enf) {
+    public updateExperiment_result setEnf(org.apache.airavata.api.error.ExperimentNotFoundException enf) {
       this.enf = enf;
       return this;
     }
@@ -5378,7 +5557,7 @@ import org.slf4j.LoggerFactory;
       return this.ace;
     }
 
-    public configureExperiment_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
+    public updateExperiment_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
       this.ace = ace;
       return this;
     }
@@ -5402,7 +5581,7 @@ import org.slf4j.LoggerFactory;
       return this.ase;
     }
 
-    public configureExperiment_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
+    public updateExperiment_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
       this.ase = ase;
       return this;
     }
@@ -5500,12 +5679,12 @@ import org.slf4j.LoggerFactory;
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof configureExperiment_result)
-        return this.equals((configureExperiment_result)that);
+      if (that instanceof updateExperiment_result)
+        return this.equals((updateExperiment_result)that);
       return false;
     }
 
-    public boolean equals(configureExperiment_result that) {
+    public boolean equals(updateExperiment_result that) {
       if (that == null)
         return false;
 
@@ -5554,7 +5733,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public int compareTo(configureExperiment_result other) {
+    public int compareTo(updateExperiment_result other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -5618,7 +5797,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("configureExperiment_result(");
+      StringBuilder sb = new StringBuilder("updateExperiment_result(");
       boolean first = true;
 
       sb.append("ire:");
@@ -5677,15 +5856,15 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    private static class configureExperiment_resultStandardSchemeFactory implements SchemeFactory {
-      public configureExperiment_resultStandardScheme getScheme() {
-        return new configureExperiment_resultStandardScheme();
+    private static class updateExperiment_resultStandardSchemeFactory implements SchemeFactory {
+      public updateExperiment_resultStandardScheme getScheme() {
+        return new updateExperiment_resultStandardScheme();
       }
     }
 
-    private static class configureExperiment_resultStandardScheme extends StandardScheme<configureExperiment_result> {
+    private static class updateExperiment_resultStandardScheme extends StandardScheme<updateExperiment_result> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, configureExperiment_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, updateExperiment_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -5742,7 +5921,7 @@ import org.slf4j.LoggerFactory;
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, configureExperiment_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, updateExperiment_result struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -5772,16 +5951,16 @@ import org.slf4j.LoggerFactory;
 
     }
 
-    private static class configureExperiment_resultTupleSchemeFactory implements SchemeFactory {
-      public configureExperiment_resultTupleScheme getScheme() {
-        return new configureExperiment_resultTupleScheme();
+    private static class updateExperiment_resultTupleSchemeFactory implements SchemeFactory {
+      public updateExperiment_resultTupleScheme getScheme() {
+        return new updateExperiment_resultTupleScheme();
       }
     }
 
-    private static class configureExperiment_resultTupleScheme extends TupleScheme<configureExperiment_result> {
+    private static class updateExperiment_resultTupleScheme extends TupleScheme<updateExperiment_result> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, configureExperiment_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, updateExperiment_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
         if (struct.isSetIre()) {
@@ -5812,7 +5991,7 @@ import org.slf4j.LoggerFactory;
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, configureExperiment_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, updateExperiment_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
@@ -5840,15 +6019,15 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  public static class getExperimentConfiguration_args implements org.apache.thrift.TBase<getExperimentConfiguration_args, getExperimentConfiguration_args._Fields>, java.io.Serializable, Cloneable, Comparable<getExperimentConfiguration_args>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getExperimentConfiguration_args");
+  public static class getExperimentStatus_args implements org.apache.thrift.TBase<getExperimentStatus_args, getExperimentStatus_args._Fields>, java.io.Serializable, Cloneable, Comparable<getExperimentStatus_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getExperimentStatus_args");
 
     private static final org.apache.thrift.protocol.TField AIRAVATA_EXPERIMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("airavataExperimentId", org.apache.thrift.protocol.TType.STRING, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new getExperimentConfiguration_argsStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new getExperimentConfiguration_argsTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new getExperimentStatus_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getExperimentStatus_argsTupleSchemeFactory());
     }
 
     public String airavataExperimentId; // required
@@ -5918,13 +6097,13 @@ import org.slf4j.LoggerFactory;
       tmpMap.put(_Fields.AIRAVATA_EXPERIMENT_ID, new org.apache.thrift.meta_data.FieldMetaData("airavataExperimentId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getExperimentConfiguration_args.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getExperimentStatus_args.class, metaDataMap);
     }
 
-    public getExperimentConfiguration_args() {
+    public getExperimentStatus_args() {
     }
 
-    public getExperimentConfiguration_args(
+    public getExperimentStatus_args(
       String airavataExperimentId)
     {
       this();
@@ -5934,14 +6113,14 @@ import org.slf4j.LoggerFactory;
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public getExperimentConfiguration_args(getExperimentConfiguration_args other) {
+    public getExperimentStatus_args(getExperimentStatus_args other) {
       if (other.isSetAiravataExperimentId()) {
         this.airavataExperimentId = other.airavataExperimentId;
       }
     }
 
-    public getExperimentConfiguration_args deepCopy() {
-      return new getExperimentConfiguration_args(this);
+    public getExperimentStatus_args deepCopy() {
+      return new getExperimentStatus_args(this);
     }
 
     @Override
@@ -5953,7 +6132,7 @@ import org.slf4j.LoggerFactory;
       return this.airavataExperimentId;
     }
 
-    public getExperimentConfiguration_args setAiravataExperimentId(String airavataExperimentId) {
+    public getExperimentStatus_args setAiravataExperimentId(String airavataExperimentId) {
       this.airavataExperimentId = airavataExperimentId;
       return this;
     }
@@ -6012,12 +6191,12 @@ import org.slf4j.LoggerFactory;
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof getExperimentConfiguration_args)
-        return this.equals((getExperimentConfiguration_args)that);
+      if (that instanceof getExperimentStatus_args)
+        return this.equals((getExperimentStatus_args)that);
       return false;
     }
 
-    public boolean equals(getExperimentConfiguration_args that) {
+    public boolean equals(getExperimentStatus_args that) {
       if (that == null)
         return false;
 
@@ -6039,7 +6218,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public int compareTo(getExperimentConfiguration_args other) {
+    public int compareTo(getExperimentStatus_args other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -6073,7 +6252,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("getExperimentConfiguration_args(");
+      StringBuilder sb = new StringBuilder("getExperimentStatus_args(");
       boolean first = true;
 
       sb.append("airavataExperimentId:");
@@ -6108,15 +6287,15 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    private static class getExperimentConfiguration_argsStandardSchemeFactory implements SchemeFactory {
-      public getExperimentConfiguration_argsStandardScheme getScheme() {
-        return new getExperimentConfiguration_argsStandardScheme();
+    private static class getExperimentStatus_argsStandardSchemeFactory implements SchemeFactory {
+      public getExperimentStatus_argsStandardScheme getScheme() {
+        return new getExperimentStatus_argsStandardScheme();
       }
     }
 
-    private static class getExperimentConfiguration_argsStandardScheme extends StandardScheme<getExperimentConfiguration_args> {
+    private static class getExperimentStatus_argsStandardScheme extends StandardScheme<getExperimentStatus_args> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, getExperimentConfiguration_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getExperimentStatus_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -6145,7 +6324,7 @@ import org.slf4j.LoggerFactory;
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, getExperimentConfiguration_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getExperimentStatus_args struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -6160,16 +6339,16 @@ import org.slf4j.LoggerFactory;
 
     }
 
-    private static class getExperimentConfiguration_argsTupleSchemeFactory implements SchemeFactory {
-      public getExperimentConfiguration_argsTupleScheme getScheme() {
-        return new getExperimentConfiguration_argsTupleScheme();
+    private static class getExperimentStatus_argsTupleSchemeFactory implements SchemeFactory {
+      public getExperimentStatus_argsTupleScheme getScheme() {
+        return new getExperimentStatus_argsTupleScheme();
       }
     }
 
-    private static class getExperimentConfiguration_argsTupleScheme extends TupleScheme<getExperimentConfiguration_args> {
+    private static class getExperimentStatus_argsTupleScheme extends TupleScheme<getExperimentStatus_args> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, getExperimentConfiguration_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, getExperimentStatus_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
         if (struct.isSetAiravataExperimentId()) {
@@ -6182,7 +6361,7 @@ import org.slf4j.LoggerFactory;
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, getExperimentConfiguration_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, getExperimentStatus_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
@@ -6194,8 +6373,8 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  public static class getExperimentConfiguration_result implements org.apache.thrift.TBase<getExperimentConfiguration_result, getExperimentConfiguration_result._Fields>, java.io.Serializable, Cloneable, Comparable<getExperimentConfiguration_result>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getExperimentConfiguration_result");
+  public static class getExperimentStatus_result implements org.apache.thrift.TBase<getExperimentStatus_result, getExperimentStatus_result._Fields>, java.io.Serializable, Cloneable, Comparable<getExperimentStatus_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getExperimentStatus_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
     private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
@@ -6205,11 +6384,11 @@ import org.slf4j.LoggerFactory;
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new getExperimentConfiguration_resultStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new getExperimentConfiguration_resultTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new getExperimentStatus_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getExperimentStatus_resultTupleSchemeFactory());
     }
 
-    public org.apache.airavata.model.experiment.ConfigurationData success; // required
+    public org.apache.airavata.model.workspace.experiment.ExperimentStatus success; // required
     public org.apache.airavata.api.error.InvalidRequestException ire; // required
     public org.apache.airavata.api.error.ExperimentNotFoundException enf; // required
     public org.apache.airavata.api.error.AiravataClientException ace; // required
@@ -6290,7 +6469,7 @@ import org.slf4j.LoggerFactory;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.experiment.ConfigurationData.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.workspace.experiment.ExperimentStatus.class)));
       tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.ENF, new org.apache.thrift.meta_data.FieldMetaData("enf", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -6300,14 +6479,14 @@ import org.slf4j.LoggerFactory;
       tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getExperimentConfiguration_result.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getExperimentStatus_result.class, metaDataMap);
     }
 
-    public getExperimentConfiguration_result() {
+    public getExperimentStatus_result() {
     }
 
-    public getExperimentConfiguration_result(
-      org.apache.airavata.model.experiment.ConfigurationData success,
+    public getExperimentStatus_result(
+      org.apache.airavata.model.workspace.experiment.ExperimentStatus success,
       org.apache.airavata.api.error.InvalidRequestException ire,
       org.apache.airavata.api.error.ExperimentNotFoundException enf,
       org.apache.airavata.api.error.AiravataClientException ace,
@@ -6324,9 +6503,9 @@ import org.slf4j.LoggerFactory;
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public getExperimentConfiguration_result(getExperimentConfiguration_result other) {
+    public getExperimentStatus_result(getExperimentStatus_result other) {
       if (other.isSetSuccess()) {
-        this.success = new org.apache.airavata.model.experiment.ConfigurationData(other.success);
+        this.success = new org.apache.airavata.model.workspace.experiment.ExperimentStatus(other.success);
       }
       if (other.isSetIre()) {
         this.ire = new org.apache.airavata.api.error.InvalidRequestException(other.ire);
@@ -6342,8 +6521,8 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public getExperimentConfiguration_result deepCopy() {
-      return new getExperimentConfiguration_result(this);
+    public getExperimentStatus_result deepCopy() {
+      return new getExperimentStatus_result(this);
     }
 
     @Override
@@ -6355,11 +6534,11 @@ import org.slf4j.LoggerFactory;
       this.ase = null;
     }
 
-    public org.apache.airavata.model.experiment.ConfigurationData getSuccess() {
+    public org.apache.airavata.model.workspace.experiment.ExperimentStatus getSuccess() {
       return this.success;
     }
 
-    public getExperimentConfiguration_result setSuccess(org.apache.airavata.model.experiment.ConfigurationData success) {
+    public getExperimentStatus_result setSuccess(org.apache.airavata.model.workspace.experiment.ExperimentStatus success) {
       this.success = success;
       return this;
     }
@@ -6383,7 +6562,7 @@ import org.slf4j.LoggerFactory;
       return this.ire;
     }
 
-    public getExperimentConfiguration_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
+    public getExperimentStatus_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
       this.ire = ire;
       return this;
     }
@@ -6407,7 +6586,7 @@ import org.slf4j.LoggerFactory;
       return this.enf;
     }
 
-    public getExperimentConfiguration_result setEnf(org.apache.airavata.api.error.ExperimentNotFoundException enf) {
+    public getExperimentStatus_result setEnf(org.apache.airavata.api.error.ExperimentNotFoundException enf) {
       this.enf = enf;
       return this;
     }
@@ -6431,7 +6610,7 @@ import org.slf4j.LoggerFactory;
       return this.ace;
     }
 
-    public getExperimentConfiguration_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
+    public getExperimentStatus_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
       this.ace = ace;
       return this;
     }
@@ -6455,7 +6634,7 @@ import org.slf4j.LoggerFactory;
       return this.ase;
     }
 
-    public getExperimentConfiguration_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
+    public getExperimentStatus_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
       this.ase = ase;
       return this;
     }
@@ -6481,7 +6660,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((org.apache.airavata.model.experiment.ConfigurationData)value);
+          setSuccess((org.apache.airavata.model.workspace.experiment.ExperimentStatus)value);
         }
         break;
 
@@ -6566,12 +6745,12 @@ import org.slf4j.LoggerFactory;
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof getExperimentConfiguration_result)
-        return this.equals((getExperimentConfiguration_result)that);
+      if (that instanceof getExperimentStatus_result)
+        return this.equals((getExperimentStatus_result)that);
       return false;
     }
 
-    public boolean equals(getExperimentConfiguration_result that) {
+    public boolean equals(getExperimentStatus_result that) {
       if (that == null)
         return false;
 
@@ -6629,7 +6808,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public int compareTo(getExperimentConfiguration_result other) {
+    public int compareTo(getExperimentStatus_result other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -6703,7 +6882,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("getExperimentConfiguration_result(");
+      StringBuilder sb = new StringBuilder("getExperimentStatus_result(");
       boolean first = true;
 
       sb.append("success:");
@@ -6773,15 +6952,15 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    private static class getExperimentConfiguration_resultStandardSchemeFactory implements SchemeFactory {
-      public getExperimentConfiguration_resultStandardScheme getScheme() {
-        return new getExperimentConfiguration_resultStandardScheme();
+    private static class getExperimentStatus_resultStandardSchemeFactory implements SchemeFactory {
+      public getExperimentStatus_resultStandardScheme getScheme() {
+        return new getExperimentStatus_resultStandardScheme();
       }
     }
 
-    private static class getExperimentConfiguration_resultStandardScheme extends StandardScheme<getExperimentConfiguration_result> {
+    private static class getExperimentStatus_resultStandardScheme extends StandardScheme<getExperimentStatus_result> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, getExperimentConfiguration_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getExperimentStatus_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -6793,7 +6972,7 @@ import org.slf4j.LoggerFactory;
           switch (schemeField.id) {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.success = new org.apache.airavata.model.experiment.ConfigurationData();
+                struct.success = new org.apache.airavata.model.workspace.experiment.ExperimentStatus();
                 struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
               } else { 
@@ -6847,7 +7026,7 @@ import org.slf4j.LoggerFactory;
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, getExperimentConfiguration_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getExperimentStatus_result struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -6882,16 +7061,16 @@ import org.slf4j.LoggerFactory;
 
     }
 
-    private static class getExperimentConfiguration_resultTupleSchemeFactory implements SchemeFactory {
-      public getExperimentConfiguration_resultTupleScheme getScheme() {
-        return new getExperimentConfiguration_resultTupleScheme();
+    private static class getExperimentStatus_resultTupleSchemeFactory implements SchemeFactory {
+      public getExperimentStatus_resultTupleScheme getScheme() {
+        return new getExperimentStatus_resultTupleScheme();
       }
     }
 
-    private static class getExperimentConfiguration_resultTupleScheme extends TupleScheme<getExperimentConfiguration_result> {
+    private static class getExperimentStatus_resultTupleScheme extends TupleScheme<getExperimentStatus_result> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, getExperimentConfiguration_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, getExperimentStatus_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
         if (struct.isSetSuccess()) {
@@ -6928,11 +7107,11 @@ import org.slf4j.LoggerFactory;
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, getExperimentConfiguration_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, getExperimentStatus_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(5);
         if (incoming.get(0)) {
-          struct.success = new org.apache.airavata.model.experiment.ConfigurationData();
+          struct.success = new org.apache.airavata.model.workspace.experiment.ExperimentStatus();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
@@ -6961,16 +7140,16 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  public static class launchConfiguredExperiment_args implements org.apache.thrift.TBase<launchConfiguredExperiment_args, launchConfiguredExperiment_args._Fields>, java.io.Serializable, Cloneable, Comparable<launchConfiguredExperiment_args>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("launchConfiguredExperiment_args");
+  public static class launchExperiment_args implements org.apache.thrift.TBase<launchExperiment_args, launchExperiment_args._Fields>, java.io.Serializable, Cloneable, Comparable<launchExperiment_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("launchExperiment_args");
 
     private static final org.apache.thrift.protocol.TField AIRAVATA_EXPERIMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("airavataExperimentId", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField AIRAVATA_CRED_STORE_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("airavataCredStoreToken", org.apache.thrift.protocol.TType.STRING, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new launchConfiguredExperiment_argsStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new launchConfiguredExperiment_argsTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new launchExperiment_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new launchExperiment_argsTupleSchemeFactory());
     }
 
     public String airavataExperimentId; // required
@@ -7046,13 +7225,13 @@ import org.slf4j.LoggerFactory;
       tmpMap.put(_Fields.AIRAVATA_CRED_STORE_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("airavataCredStoreToken", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(launchConfiguredExperiment_args.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(launchExperiment_args.class, metaDataMap);
     }
 
-    public launchConfiguredExperiment_args() {
+    public launchExperiment_args() {
     }
 
-    public launchConfiguredExperiment_args(
+    public launchExperiment_args(
       String airavataExperimentId,
       String airavataCredStoreToken)
     {
@@ -7064,7 +7243,7 @@ import org.slf4j.LoggerFactory;
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public launchConfiguredExperiment_args(launchConfiguredExperiment_args other) {
+    public launchExperiment_args(launchExperiment_args other) {
       if (other.isSetAiravataExperimentId()) {
         this.airavataExperimentId = other.airavataExperimentId;
       }
@@ -7073,8 +7252,8 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public launchConfiguredExperiment_args deepCopy() {
-      return new launchConfiguredExperiment_args(this);
+    public launchExperiment_args deepCopy() {
+      return new launchExperiment_args(this);
     }
 
     @Override
@@ -7087,7 +7266,7 @@ import org.slf4j.LoggerFactory;
       return this.airavataExperimentId;
     }
 
-    public launchConfiguredExperiment_args setAiravataExperimentId(String airavataExperimentId) {
+    public launchExperiment_args setAiravataExperimentId(String airavataExperimentId) {
       this.airavataExperimentId = airavataExperimentId;
       return this;
     }
@@ -7111,7 +7290,7 @@ import org.slf4j.LoggerFactory;
       return this.airavataCredStoreToken;
     }
 
-    public launchConfiguredExperiment_args setAiravataCredStoreToken(String airavataCredStoreToken) {
+    public launchExperiment_args setAiravataCredStoreToken(String airavataCredStoreToken) {
       this.airavataCredStoreToken = airavataCredStoreToken;
       return this;
     }
@@ -7183,12 +7362,12 @@ import org.slf4j.LoggerFactory;
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof launchConfiguredExperiment_args)
-        return this.equals((launchConfiguredExperiment_args)that);
+      if (that instanceof launchExperiment_args)
+        return this.equals((launchExperiment_args)that);
       return false;
     }
 
-    public boolean equals(launchConfiguredExperiment_args that) {
+    public boolean equals(launchExperiment_args that) {
       if (that == null)
         return false;
 
@@ -7219,7 +7398,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public int compareTo(launchConfiguredExperiment_args other) {
+    public int compareTo(launchExperiment_args other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -7263,7 +7442,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("launchConfiguredExperiment_args(");
+      StringBuilder sb = new StringBuilder("launchExperiment_args(");
       boolean first = true;
 
       sb.append("airavataExperimentId:");
@@ -7306,15 +7485,15 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    private static class launchConfiguredExperiment_argsStandardSchemeFactory implements SchemeFactory {
-      public launchConfiguredExperiment_argsStandardScheme getScheme() {
-        return new launchConfiguredExperiment_argsStandardScheme();
+    private static class launchExperiment_argsStandardSchemeFactory implements SchemeFactory {
+      public launchExperiment_argsStandardScheme getScheme() {
+        return new launchExperiment_argsStandardScheme();
       }
     }
 
-    private static class launchConfiguredExperiment_argsStandardScheme extends StandardScheme<launchConfiguredExperiment_args> {
+    private static class launchExperiment_argsStandardScheme extends StandardScheme<launchExperiment_args> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, launchConfiguredExperiment_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, launchExperiment_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -7351,7 +7530,7 @@ import org.slf4j.LoggerFactory;
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, launchConfiguredExperiment_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, launchExperiment_args struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -7371,16 +7550,16 @@ import org.slf4j.LoggerFactory;
 
     }
 
-    private static class launchConfiguredExperiment_argsTupleSchemeFactory implements SchemeFactory {
-      public launchConfiguredExperiment_argsTupleScheme getScheme() {
-        return new launchConfiguredExperiment_argsTupleScheme();
+    private static class launchExperiment_argsTupleSchemeFactory implements SchemeFactory {
+      public launchExperiment_argsTupleScheme getScheme() {
+        return new launchExperiment_argsTupleScheme();
       }
     }
 
-    private static class launchConfiguredExperiment_argsTupleScheme extends TupleScheme<launchConfiguredExperiment_args> {
+    private static class launchExperiment_argsTupleScheme extends TupleScheme<launchExperiment_args> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, launchConfiguredExperiment_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, launchExperiment_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
         if (struct.isSetAiravataExperimentId()) {
@@ -7399,7 +7578,7 @@ import org.slf4j.LoggerFactory;
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, launchConfiguredExperiment_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, launchExperiment_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
@@ -7415,8 +7594,8 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  public static class launchConfiguredExperiment_result implements org.apache.thrift.TBase<launchConfiguredExperiment_result, launchConfiguredExperiment_result._Fields>, java.io.Serializable, Cloneable, Comparable<launchConfiguredExperiment_result>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("launchConfiguredExperiment_result");
+  public static class launchExperiment_result implements org.apache.thrift.TBase<launchExperiment_result, launchExperiment_result._Fields>, java.io.Serializable, Cloneable, Comparable<launchExperiment_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("launchExperiment_result");
 
     private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField ENF_FIELD_DESC = new org.apache.thrift.protocol.TField("enf", org.apache.thrift.protocol.TType.STRUCT, (short)2);
@@ -7425,8 +7604,8 @@ import org.slf4j.LoggerFactory;
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new launchConfiguredExperiment_resultStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new launchConfiguredExperiment_resultTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new launchExperiment_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new launchExperiment_resultTupleSchemeFactory());
     }
 
     public org.apache.airavata.api.error.InvalidRequestException ire; // required
@@ -7514,13 +7693,13 @@ import org.slf4j.LoggerFactory;
       tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(launchConfiguredExperiment_result.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(launchExperiment_result.class, metaDataMap);
     }
 
-    public launchConfiguredExperiment_result() {
+    public launchExperiment_result() {
     }
 
-    public launchConfiguredExperiment_result(
+    public launchExperiment_result(
       org.apache.airavata.api.error.InvalidRequestException ire,
       org.apache.airavata.api.error.ExperimentNotFoundException enf,
       org.apache.airavata.api.error.AiravataClientException ace,
@@ -7536,7 +7715,7 @@ import org.slf4j.LoggerFactory;
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public launchConfiguredExperiment_result(launchConfiguredExperiment_result other) {
+    public launchExperiment_result(launchExperiment_result other) {
       if (other.isSetIre()) {
         this.ire = new org.apache.airavata.api.error.InvalidRequestException(other.ire);
       }
@@ -7551,8 +7730,8 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public launchConfiguredExperiment_result deepCopy() {
-      return new launchConfiguredExperiment_result(this);
+    public launchExperiment_result deepCopy() {
+      return new launchExperiment_result(this);
     }
 
     @Override
@@ -7567,7 +7746,7 @@ import org.slf4j.LoggerFactory;
       return this.ire;
     }
 
-    public launchConfiguredExperiment_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
+    public launchExperiment_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
       this.ire = ire;
       return this;
     }
@@ -7591,7 +7770,7 @@ import org.slf4j.LoggerFactory;
       return this.enf;
     }
 
-    public launchConfiguredExperiment_result setEnf(org.apache.airavata.api.error.ExperimentNotFoundException enf) {
+    public launchExperiment_result setEnf(org.apache.airavata.api.error.ExperimentNotFoundException enf) {
       this.enf = enf;
       return this;
     }
@@ -7615,7 +7794,7 @@ import org.slf4j.LoggerFactory;
       return this.ace;
     }
 
-    public launchConfiguredExperiment_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
+    public launchExperiment_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
       this.ace = ace;
       return this;
     }
@@ -7639,7 +7818,7 @@ import org.slf4j.LoggerFactory;
       return this.ase;
     }
 
-    public launchConfiguredExperiment_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
+    public launchExperiment_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
       this.ase = ase;
       return this;
     }
@@ -7737,12 +7916,12 @@ import org.slf4j.LoggerFactory;
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof launchConfiguredExperiment_result)
-        return this.equals((launchConfiguredExperiment_result)that);
+      if (that instanceof launchExperiment_result)
+        return this.equals((launchExperiment_result)that);
       return false;
     }
 
-    public boolean equals(launchConfiguredExperiment_result that) {
+    public boolean equals(launchExperiment_result that) {
       if (that == null)
         return false;
 
@@ -7791,7 +7970,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public int compareTo(launchConfiguredExperiment_result other) {
+    public int compareTo(launchExperiment_result other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -7855,7 +8034,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("launchConfiguredExperiment_result(");
+      StringBuilder sb = new StringBuilder("launchExperiment_result(");
       boolean first = true;
 
       sb.append("ire:");
@@ -7914,15 +8093,15 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    private static class launchConfiguredExperiment_resultStandardSchemeFactory implements SchemeFactory {
-      public launchConfiguredExperiment_resultStandardScheme getScheme() {
-        return new launchConfiguredExperiment_resultStandardScheme();
+    private static class launchExperiment_resultStandardSchemeFactory implements SchemeFactory {
+      public launchExperiment_resultStandardScheme getScheme() {
+        return new launchExperiment_resultStandardScheme();
       }
     }
 
-    private static class launchConfiguredExperiment_resultStandardScheme extends StandardScheme<launchConfiguredExperiment_result> {
+    private static class launchExperiment_resultStandardScheme extends StandardScheme<launchExperiment_result> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, launchConfiguredExperiment_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, launchExperiment_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -7979,7 +8158,7 @@ import org.slf4j.LoggerFactory;
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, launchConfiguredExperiment_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, launchExperiment_result struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -8009,16 +8188,16 @@ import org.slf4j.LoggerFactory;
 
     }
 
-    private static class launchConfiguredExperiment_resultTupleSchemeFactory implements SchemeFactory {
-      public launchConfiguredExperiment_resultTupleScheme getScheme() {
-        return new launchConfiguredExperiment_resultTupleScheme();
+    private static class launchExperiment_resultTupleSchemeFactory implements SchemeFactory {
+      public launchExperiment_resultTupleScheme getScheme() {
+        return new launchExperiment_resultTupleScheme();
       }
     }
 
-    private static class launchConfiguredExperiment_resultTupleScheme extends TupleScheme<launchConfiguredExperiment_result> {
+    private static class launchExperiment_resultTupleScheme extends TupleScheme<launchExperiment_result> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, launchConfiguredExperiment_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, launchExperiment_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
         if (struct.isSetIre()) {
@@ -8049,7 +8228,7 @@ import org.slf4j.LoggerFactory;
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, launchConfiguredExperiment_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, launchExperiment_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
@@ -8077,27 +8256,27 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  public static class configureAndLaunchExperiment_args implements org.apache.thrift.TBase<configureAndLaunchExperiment_args, configureAndLaunchExperiment_args._Fields>, java.io.Serializable, Cloneable, Comparable<configureAndLaunchExperiment_args>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("configureAndLaunchExperiment_args");
+  public static class updateAndLaunchExperiment_args implements org.apache.thrift.TBase<updateAndLaunchExperiment_args, updateAndLaunchExperiment_args._Fields>, java.io.Serializable, Cloneable, Comparable<updateAndLaunchExperiment_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateAndLaunchExperiment_args");
 
     private static final org.apache.thrift.protocol.TField AIRAVATA_EXPERIMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("airavataExperimentId", org.apache.thrift.protocol.TType.STRING, (short)1);
-    private static final org.apache.thrift.protocol.TField EXPERIMENT_CONFIGURATION_DATA_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentConfigurationData", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField EXPERIMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("experiment", org.apache.thrift.protocol.TType.STRUCT, (short)2);
     private static final org.apache.thrift.protocol.TField AIRAVATA_CRED_STORE_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("airavataCredStoreToken", org.apache.thrift.protocol.TType.STRING, (short)3);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new configureAndLaunchExperiment_argsStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new configureAndLaunchExperiment_argsTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new updateAndLaunchExperiment_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new updateAndLaunchExperiment_argsTupleSchemeFactory());
     }
 
     public String airavataExperimentId; // required
-    public org.apache.airavata.model.experiment.ConfigurationData experimentConfigurationData; // required
+    public org.apache.airavata.model.workspace.experiment.Experiment experiment; // required
     public String airavataCredStoreToken; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       AIRAVATA_EXPERIMENT_ID((short)1, "airavataExperimentId"),
-      EXPERIMENT_CONFIGURATION_DATA((short)2, "experimentConfigurationData"),
+      EXPERIMENT((short)2, "experiment"),
       AIRAVATA_CRED_STORE_TOKEN((short)3, "airavataCredStoreToken");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
@@ -8115,8 +8294,8 @@ import org.slf4j.LoggerFactory;
         switch(fieldId) {
           case 1: // AIRAVATA_EXPERIMENT_ID
             return AIRAVATA_EXPERIMENT_ID;
-          case 2: // EXPERIMENT_CONFIGURATION_DATA
-            return EXPERIMENT_CONFIGURATION_DATA;
+          case 2: // EXPERIMENT
+            return EXPERIMENT;
           case 3: // AIRAVATA_CRED_STORE_TOKEN
             return AIRAVATA_CRED_STORE_TOKEN;
           default:
@@ -8164,51 +8343,51 @@ import org.slf4j.LoggerFactory;
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.AIRAVATA_EXPERIMENT_ID, new org.apache.thrift.meta_data.FieldMetaData("airavataExperimentId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-      tmpMap.put(_Fields.EXPERIMENT_CONFIGURATION_DATA, new org.apache.thrift.meta_data.FieldMetaData("experimentConfigurationData", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.experiment.ConfigurationData.class)));
+      tmpMap.put(_Fields.EXPERIMENT, new org.apache.thrift.meta_data.FieldMetaData("experiment", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.workspace.experiment.Experiment.class)));
       tmpMap.put(_Fields.AIRAVATA_CRED_STORE_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("airavataCredStoreToken", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(configureAndLaunchExperiment_args.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateAndLaunchExperiment_args.class, metaDataMap);
     }
 
-    public configureAndLaunchExperiment_args() {
+    public updateAndLaunchExperiment_args() {
     }
 
-    public configureAndLaunchExperiment_args(
+    public updateAndLaunchExperiment_args(
       String airavataExperimentId,
-      org.apache.airavata.model.experiment.ConfigurationData experimentConfigurationData,
+      org.apache.airavata.model.workspace.experiment.Experiment experiment,
       String airavataCredStoreToken)
     {
       this();
       this.airavataExperimentId = airavataExperimentId;
-      this.experimentConfigurationData = experimentConfigurationData;
+      this.experiment = experiment;
       this.airavataCredStoreToken = airavataCredStoreToken;
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public configureAndLaunchExperiment_args(configureAndLaunchExperiment_args other) {
+    public updateAndLaunchExperiment_args(updateAndLaunchExperiment_args other) {
       if (other.isSetAiravataExperimentId()) {
         this.airavataExperimentId = other.airavataExperimentId;
       }
-      if (other.isSetExperimentConfigurationData()) {
-        this.experimentConfigurationData = new org.apache.airavata.model.experiment.ConfigurationData(other.experimentConfigurationData);
+      if (other.isSetExperiment()) {
+        this.experiment = new org.apache.airavata.model.workspace.experiment.Experiment(other.experiment);
       }
       if (other.isSetAiravataCredStoreToken()) {
         this.airavataCredStoreToken = other.airavataCredStoreToken;
       }
     }
 
-    public configureAndLaunchExperiment_args deepCopy() {
-      return new configureAndLaunchExperiment_args(this);
+    public updateAndLaunchExperiment_args deepCopy() {
+      return new updateAndLaunchExperiment_args(this);
     }
 
     @Override
     public void clear() {
       this.airavataExperimentId = null;
-      this.experimentConfigurationData = null;
+      this.experiment = null;
       this.airavataCredStoreToken = null;
     }
 
@@ -8216,7 +8395,7 @@ import org.slf4j.LoggerFactory;
       return this.airavataExperimentId;
     }
 
-    public configureAndLaunchExperiment_args setAiravataExperimentId(String airavataExperimentId) {
+    public updateAndLaunchExperiment_args setAiravataExperimentId(String airavataExperimentId) {
       this.airavataExperimentId = airavataExperimentId;
       return this;
     }
@@ -8236,27 +8415,27 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.model.experiment.ConfigurationData getExperimentConfigurationData() {
-      return this.experimentConfigurationData;
+    public org.apache.airavata.model.workspace.experiment.Experiment getExperiment() {
+      return this.experiment;
     }
 
-    public configureAndLaunchExperiment_args setExperimentConfigurationData(org.apache.airavata.model.experiment.ConfigurationData experimentConfigurationData) {
-      this.experimentConfigurationData = experimentConfigurationData;
+    public updateAndLaunchExperiment_args setExperiment(org.apache.airavata.model.workspace.experiment.Experiment experiment) {
+      this.experiment = experiment;
       return this;
     }
 
-    public void unsetExperimentConfigurationData() {
-      this.experimentConfigurationData = null;
+    public void unsetExperiment() {
+      this.experiment = null;
     }
 
-    /** Returns true if field experimentConfigurationData is set (has been assigned a value) and false otherwise */
-    public boolean isSetExperimentConfigurationData() {
-      return this.experimentConfigurationData != null;
+    /** Returns true if field experiment is set (has been assigned a value) and false otherwise */
+    public boolean isSetExperiment() {
+      return this.experiment != null;
     }
 
-    public void setExperimentConfigurationDataIsSet(boolean value) {
+    public void setExperimentIsSet(boolean value) {
       if (!value) {
-        this.experimentConfigurationData = null;
+        this.experiment = null;
       }
     }
 
@@ -8264,7 +8443,7 @@ import org.slf4j.LoggerFactory;
       return this.airavataCredStoreToken;
     }
 
-    public configureAndLaunchExperiment_args setAiravataCredStoreToken(String airavataCredStoreToken) {
+    public updateAndLaunchExperiment_args setAiravataCredStoreToken(String airavataCredStoreToken) {
       this.airavataCredStoreToken = airavataCredStoreToken;
       return this;
     }
@@ -8294,11 +8473,11 @@ import org.slf4j.LoggerFactory;
         }
         break;
 
-      case EXPERIMENT_CONFIGURATION_DATA:
+      case EXPERIMENT:
         if (value == null) {
-          unsetExperimentConfigurationData();
+          unsetExperiment();
         } else {
-          setExperimentConfigurationData((org.apache.airavata.model.experiment.ConfigurationData)value);
+          setExperiment((org.apache.airavata.model.workspace.experiment.Experiment)value);
         }
         break;
 
@@ -8318,8 +8497,8 @@ import org.slf4j.LoggerFactory;
       case AIRAVATA_EXPERIMENT_ID:
         return getAiravataExperimentId();
 
-      case EXPERIMENT_CONFIGURATION_DATA:
-        return getExperimentConfigurationData();
+      case EXPERIMENT:
+        return getExperiment();
 
       case AIRAVATA_CRED_STORE_TOKEN:
         return getAiravataCredStoreToken();
@@ -8337,8 +8516,8 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case AIRAVATA_EXPERIMENT_ID:
         return isSetAiravataExperimentId();
-      case EXPERIMENT_CONFIGURATION_DATA:
-        return isSetExperimentConfigurationData();
+      case EXPERIMENT:
+        return isSetExperiment();
       case AIRAVATA_CRED_STORE_TOKEN:
         return isSetAiravataCredStoreToken();
       }
@@ -8349,12 +8528,12 @@ import org.slf4j.LoggerFactory;
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof configureAndLaunchExperiment_args)
-        return this.equals((configureAndLaunchExperiment_args)that);
+      if (that instanceof updateAndLaunchExperiment_args)
+        return this.equals((updateAndLaunchExperiment_args)that);
       return false;
     }
 
-    public boolean equals(configureAndLaunchExperiment_args that) {
+    public boolean equals(updateAndLaunchExperiment_args that) {
       if (that == null)
         return false;
 
@@ -8367,12 +8546,12 @@ import org.slf4j.LoggerFactory;
           return false;
       }
 
-      boolean this_present_experimentConfigurationData = true && this.isSetExperimentConfigurationData();
-      boolean that_present_experimentConfigurationData = true && that.isSetExperimentConfigurationData();
-      if (this_present_experimentConfigurationData || that_present_experimentConfigurationData) {
-        if (!(this_present_experimentConfigurationData && that_present_experimentConfigurationData))
+      boolean this_present_experiment = true && this.isSetExperiment();
+      boolean that_present_experiment = true && that.isSetExperiment();
+      if (this_present_experiment || that_present_experiment) {
+        if (!(this_present_experiment && that_present_experiment))
           return false;
-        if (!this.experimentConfigurationData.equals(that.experimentConfigurationData))
+        if (!this.experiment.equals(that.experiment))
           return false;
       }
 
@@ -8394,7 +8573,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public int compareTo(configureAndLaunchExperiment_args other) {
+    public int compareTo(updateAndLaunchExperiment_args other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -8411,12 +8590,12 @@ import org.slf4j.LoggerFactory;
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetExperimentConfigurationData()).compareTo(other.isSetExperimentConfigurationData());
+      lastComparison = Boolean.valueOf(isSetExperiment()).compareTo(other.isSetExperiment());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetExperimentConfigurationData()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.experimentConfigurationData, other.experimentConfigurationData);
+      if (isSetExperiment()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.experiment, other.experiment);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -8448,7 +8627,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("configureAndLaunchExperiment_args(");
+      StringBuilder sb = new StringBuilder("updateAndLaunchExperiment_args(");
       boolean first = true;
 
       sb.append("airavataExperimentId:");
@@ -8459,11 +8638,11 @@ import org.slf4j.LoggerFactory;
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("experimentConfigurationData:");
-      if (this.experimentConfigurationData == null) {
+      sb.append("experiment:");
+      if (this.experiment == null) {
         sb.append("null");
       } else {
-        sb.append(this.experimentConfigurationData);
+        sb.append(this.experiment);
       }
       first = false;
       if (!first) sb.append(", ");
@@ -8481,8 +8660,8 @@ import org.slf4j.LoggerFactory;
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
       // check for sub-struct validity
-      if (experimentConfigurationData != null) {
-        experimentConfigurationData.validate();
+      if (experiment != null) {
+        experiment.validate();
       }
     }
 
@@ -8502,15 +8681,15 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    private static class configureAndLaunchExperiment_argsStandardSchemeFactory implements SchemeFactory {
-      public configureAndLaunchExperiment_argsStandardScheme getScheme() {
-        return new configureAndLaunchExperiment_argsStandardScheme();
+    private static class updateAndLaunchExperiment_argsStandardSchemeFactory implements SchemeFactory {
+      public updateAndLaunchExperiment_argsStandardScheme getScheme() {
+        return new updateAndLaunchExperiment_argsStandardScheme();
       }
     }
 
-    private static class configureAndLaunchExperiment_argsStandardScheme extends StandardScheme<configureAndLaunchExperiment_args> {
+    private static class updateAndLaunchExperiment_argsStandardScheme extends StandardScheme<updateAndLaunchExperiment_args> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, configureAndLaunchExperiment_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, updateAndLaunchExperiment_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -8528,11 +8707,11 @@ import org.slf4j.LoggerFactory;
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 2: // EXPERIMENT_CONFIGURATION_DATA
+            case 2: // EXPERIMENT
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.experimentConfigurationData = new org.apache.airavata.model.experiment.ConfigurationData();
-                struct.experimentConfigurationData.read(iprot);
-                struct.setExperimentConfigurationDataIsSet(true);
+                struct.experiment = new org.apache.airavata.model.workspace.experiment.Experiment();
+                struct.experiment.read(iprot);
+                struct.setExperimentIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -8556,7 +8735,7 @@ import org.slf4j.LoggerFactory;
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, configureAndLaunchExperiment_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, updateAndLaunchExperiment_args struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -8565,9 +8744,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeString(struct.airavataExperimentId);
           oprot.writeFieldEnd();
         }
-        if (struct.experimentConfigurationData != null) {
-          oprot.writeFieldBegin(EXPERIMENT_CONFIGURATION_DATA_FIELD_DESC);
-          struct.experimentConfigurationData.write(oprot);
+        if (struct.experiment != null) {
+          oprot.writeFieldBegin(EXPERIMENT_FIELD_DESC);
+          struct.experiment.write(oprot);
           oprot.writeFieldEnd();
         }
         if (struct.airavataCredStoreToken != null) {
@@ -8581,22 +8760,22 @@ import org.slf4j.LoggerFactory;
 
     }
 
-    private static class configureAndLaunchExperiment_argsTupleSchemeFactory implements SchemeFactory {
-      public configureAndLaunchExperiment_argsTupleScheme getScheme() {
-        return new configureAndLaunchExperiment_argsTupleScheme();
+    private static class updateAndLaunchExperiment_argsTupleSchemeFactory implements SchemeFactory {
+      public updateAndLaunchExperiment_argsTupleScheme getScheme() {
+        return new updateAndLaunchExperiment_argsTupleScheme();
       }
     }
 
-    private static class configureAndLaunchExperiment_argsTupleScheme extends TupleScheme<configureAndLaunchExperiment_args> {
+    private static class updateAndLaunchExperiment_argsTupleScheme extends TupleScheme<updateAndLaunchExperiment_args> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, configureAndLaunchExperiment_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, updateAndLaunchExperiment_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
         if (struct.isSetAiravataExperimentId()) {
           optionals.set(0);
         }
-        if (struct.isSetExperimentConfigurationData()) {
+        if (struct.isSetExperiment()) {
           optionals.set(1);
         }
         if (struct.isSetAiravataCredStoreToken()) {
@@ -8606,8 +8785,8 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetAiravataExperimentId()) {
           oprot.writeString(struct.airavataExperimentId);
         }
-        if (struct.isSetExperimentConfigurationData()) {
-          struct.experimentConfigurationData.write(oprot);
+        if (struct.isSetExperiment()) {
+          struct.experiment.write(oprot);
         }
         if (struct.isSetAiravataCredStoreToken()) {
           oprot.writeString(struct.airavataCredStoreToken);
@@ -8615,7 +8794,7 @@ import org.slf4j.LoggerFactory;
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, configureAndLaunchExperiment_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, updateAndLaunchExperiment_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
@@ -8623,9 +8802,9 @@ import org.slf4j.LoggerFactory;
           struct.setAiravataExperimentIdIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.experimentConfigurationData = new org.apache.airavata.model.experiment.ConfigurationData();
-          struct.experimentConfigurationData.read(iprot);
-          struct.setExperimentConfigurationDataIsSet(true);
+          struct.experiment = new org.apache.airavata.model.workspace.experiment.Experiment();
+          struct.experiment.read(iprot);
+          struct.setExperimentIsSet(true);
         }
         if (incoming.get(2)) {
           struct.airavataCredStoreToken = iprot.readString();
@@ -8636,8 +8815,8 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  public static class configureAndLaunchExperiment_result implements org.apache.thrift.TBase<configureAndLaunchExperiment_result, configureAndLaunchExperiment_result._Fields>, java.io.Serializable, Cloneable, Comparable<configureAndLaunchExperiment_result>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("configureAndLaunchExperiment_result");
+  public static class updateAndLaunchExperiment_result implements org.apache.thrift.TBase<updateAndLaunchExperiment_result, updateAndLaunchExperiment_result._Fields>, java.io.Serializable, Cloneable, Comparable<updateAndLaunchExperiment_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateAndLaunchExperiment_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
     private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
@@ -8647,8 +8826,8 @@ import org.slf4j.LoggerFactory;
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new configureAndLaunchExperiment_resultStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new configureAndLaunchExperiment_resultTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new updateAndLaunchExperiment_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new updateAndLaunchExperiment_resultTupleSchemeFactory());
     }
 
     public String success; // required
@@ -8742,13 +8921,13 @@ import org.slf4j.LoggerFactory;
       tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(configureAndLaunchExperiment_result.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateAndLaunchExperiment_result.class, metaDataMap);
     }
 
-    public configureAndLaunchExperiment_result() {
+    public updateAndLaunchExperiment_result() {
     }
 
-    public configureAndLaunchExperiment_result(
+    public updateAndLaunchExperiment_result(
       String success,
       org.apache.airavata.api.error.InvalidRequestException ire,
       org.apache.airavata.api.error.ExperimentNotFoundException enf,
@@ -8766,7 +8945,7 @@ import org.slf4j.LoggerFactory;
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public configureAndLaunchExperiment_result(configureAndLaunchExperiment_result other) {
+    public updateAndLaunchExperiment_result(updateAndLaunchExperiment_result other) {
       if (other.isSetSuccess()) {
         this.success = other.success;
       }
@@ -8784,8 +8963,8 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public configureAndLaunchExperiment_result deepCopy() {
-      return new configureAndLaunchExperiment_result(this);
+    public updateAndLaunchExperiment_result deepCopy() {
+      return new updateAndLaunchExperiment_result(this);
     }
 
     @Override
@@ -8801,7 +8980,7 @@ import org.slf4j.LoggerFactory;
       return this.success;
     }
 
-    public configureAndLaunchExperiment_result setSuccess(String success) {
+    public updateAndLaunchExperiment_result setSuccess(String success) {
       this.success = success;
       return this;
     }
@@ -8825,7 +9004,7 @@ import org.slf4j.LoggerFactory;
       return this.ire;
     }
 
-    public configureAndLaunchExperiment_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
+    public updateAndLaunchExperiment_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
       this.ire = ire;
       return this;
     }
@@ -8849,7 +9028,7 @@ import org.slf4j.LoggerFactory;
       return this.enf;
     }
 
-    public configureAndLaunchExperiment_result setEnf(org.apache.airavata.api.error.ExperimentNotFoundException enf) {
+    public updateAndLaunchExperiment_result setEnf(org.apache.airavata.api.error.ExperimentNotFoundException enf) {
       this.enf = enf;
       return this;
     }
@@ -8873,7 +9052,7 @@ import org.slf4j.LoggerFactory;
       return this.ace;
     }
 
-    public configureAndLaunchExperiment_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
+    public updateAndLaunchExperiment_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
       this.ace = ace;
       return this;
     }
@@ -8897,7 +9076,7 @@ import org.slf4j.LoggerFactory;
       return this.ase;
     }
 
-    public configureAndLaunchExperiment_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
+    public updateAndLaunchExperiment_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
       this.ase = ase;
       return this;
     }
@@ -9008,12 +9187,12 @@ import org.slf4j.LoggerFactory;
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof configureAndLaunchExperiment_result)
-        return this.equals((configureAndLaunchExperiment_result)that);
+      if (that instanceof updateAndLaunchExperiment_result)
+        return this.equals((updateAndLaunchExperiment_result)that);
       return false;
     }
 
-    public boolean equals(configureAndLaunchExperiment_result that) {
+    public boolean equals(updateAndLaunchExperiment_result that) {
       if (that == null)
         return false;
 
@@ -9071,7 +9250,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public int compareTo(configureAndLaunchExperiment_result other) {
+    public int compareTo(updateAndLaunchExperiment_result other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -9145,7 +9324,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("configureAndLaunchExperiment_result(");
+      StringBuilder sb = new StringBuilder("updateAndLaunchExperiment_result(");
       boolean first = true;
 
       sb.append("success:");
@@ -9212,15 +9391,15 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    private static class configureAndLaunchExperiment_resultStandardSchemeFactory implements SchemeFactory {
-      public configureAndLaunchExperiment_resultStandardScheme getScheme() {
-        return new configureAndLaunchExperiment_resultStandardScheme();
+    private static class updateAndLaunchExperiment_resultStandardSchemeFactory implements SchemeFactory {
+      public updateAndLaunchExperiment_resultStandardScheme getScheme() {
+        return new updateAndLaunchExperiment_resultStandardScheme();
       }
     }
 
-    private static class configureAndLaunchExperiment_resultStandardScheme extends StandardScheme<configureAndLaunchExperiment_result> {
+    private static class updateAndLaunchExperiment_resultStandardScheme extends StandardScheme<updateAndLaunchExperiment_result> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, configureAndLaunchExperiment_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, updateAndLaunchExperiment_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -9285,7 +9464,7 @@ import org.slf4j.LoggerFactory;
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, configureAndLaunchExperiment_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, updateAndLaunchExperiment_result struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -9320,16 +9499,16 @@ import org.slf4j.LoggerFactory;
 
     }
 
-    private static class configureAndLaunchExperiment_resultTupleSchemeFactory implements SchemeFactory {
-      public configureAndLaunchExperiment_resultTupleScheme getScheme() {
-        return new configureAndLaunchExperiment_resultTupleScheme();
+    private static class updateAndLaunchExperiment_resultTupleSchemeFactory implements SchemeFactory {
+      public updateAndLaunchExperiment_resultTupleScheme getScheme() {
+        return new updateAndLaunchExperiment_resultTupleScheme();
       }
     }
 
-    private static class configureAndLaunchExperiment_resultTupleScheme extends TupleScheme<configureAndLaunchExperiment_result> {
+    private static class updateAndLaunchExperiment_resultTupleScheme extends TupleScheme<updateAndLaunchExperiment_result> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, configureAndLaunchExperiment_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, updateAndLaunchExperiment_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
         if (struct.isSetSuccess()) {
@@ -9366,7 +9545,7 @@ import org.slf4j.LoggerFactory;
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, configureAndLaunchExperiment_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, updateAndLaunchExperiment_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(5);
         if (incoming.get(0)) {
@@ -9398,25 +9577,25 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  public static class cloneExperimentConfiguration_args implements org.apache.thrift.TBase<cloneExperimentConfiguration_args, cloneExperimentConfiguration_args._Fields>, java.io.Serializable, Cloneable, Comparable<cloneExperimentConfiguration_args>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("cloneExperimentConfiguration_args");
+  public static class cloneExperiment_args implements org.apache.thrift.TBase<cloneExperiment_args, cloneExperiment_args._Fields>, java.io.Serializable, Cloneable, Comparable<cloneExperiment_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("cloneExperiment_args");
 
     private static final org.apache.thrift.protocol.TField AIRAVATA_EXPERIMENT_ID_TO_BE_CLONED_FIELD_DESC = new org.apache.thrift.protocol.TField("airavataExperimentIdToBeCloned", org.apache.thrift.protocol.TType.STRING, (short)1);
-    private static final org.apache.thrift.protocol.TField BASIC_EXPERIMENT_METADATA_FIELD_DESC = new org.apache.thrift.protocol.TField("basicExperimentMetadata", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField UPDATED_EXPERIMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("updatedExperiment", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new cloneExperimentConfiguration_argsStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new cloneExperimentConfiguration_argsTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new cloneExperiment_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new cloneExperiment_argsTupleSchemeFactory());
     }
 
     public String airavataExperimentIdToBeCloned; // required
-    public org.apache.airavata.model.experiment.BasicMetadata basicExperimentMetadata; // required
+    public org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       AIRAVATA_EXPERIMENT_ID_TO_BE_CLONED((short)1, "airavataExperimentIdToBeCloned"),
-      BASIC_EXPERIMENT_METADATA((short)2, "basicExperimentMetadata");
+      UPDATED_EXPERIMENT((short)2, "updatedExperiment");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -9433,8 +9612,8 @@ import org.slf4j.LoggerFactory;
         switch(fieldId) {
           case 1: // AIRAVATA_EXPERIMENT_ID_TO_BE_CLONED
             return AIRAVATA_EXPERIMENT_ID_TO_BE_CLONED;
-          case 2: // BASIC_EXPERIMENT_METADATA
-            return BASIC_EXPERIMENT_METADATA;
+          case 2: // UPDATED_EXPERIMENT
+            return UPDATED_EXPERIMENT;
           default:
             return null;
         }
@@ -9480,51 +9659,51 @@ import org.slf4j.LoggerFactory;
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.AIRAVATA_EXPERIMENT_ID_TO_BE_CLONED, new org.apache.thrift.meta_data.FieldMetaData("airavataExperimentIdToBeCloned", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-      tmpMap.put(_Fields.BASIC_EXPERIMENT_METADATA, new org.apache.thrift.meta_data.FieldMetaData("basicExperimentMetadata", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.experiment.BasicMetadata.class)));
+      tmpMap.put(_Fields.UPDATED_EXPERIMENT, new org.apache.thrift.meta_data.FieldMetaData("updatedExperiment", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.workspace.experiment.Experiment.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(cloneExperimentConfiguration_args.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(cloneExperiment_args.class, metaDataMap);
     }
 
-    public cloneExperimentConfiguration_args() {
+    public cloneExperiment_args() {
     }
 
-    public cloneExperimentConfiguration_args(
+    public cloneExperiment_args(
       String airavataExperimentIdToBeCloned,
-      org.apache.airavata.model.experiment.BasicMetadata basicExperimentMetadata)
+      org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment)
     {
       this();
       this.airavataExperimentIdToBeCloned = airavataExperimentIdToBeCloned;
-      this.basicExperimentMetadata = basicExperimentMetadata;
+      this.updatedExperiment = updatedExperiment;
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public cloneExperimentConfiguration_args(cloneExperimentConfiguration_args other) {
+    public cloneExperiment_args(cloneExperiment_args other) {
       if (other.isSetAiravataExperimentIdToBeCloned()) {
         this.airavataExperimentIdToBeCloned = other.airavataExperimentIdToBeCloned;
       }
-      if (other.isSetBasicExperimentMetadata()) {
-        this.basicExperimentMetadata = new org.apache.airavata.model.experiment.BasicMetadata(other.basicExperimentMetadata);
+      if (other.isSetUpdatedExperiment()) {
+        this.updatedExperiment = new org.apache.airavata.model.workspace.experiment.Experiment(other.updatedExperiment);
       }
     }
 
-    public cloneExperimentConfiguration_args deepCopy() {
-      return new cloneExperimentConfiguration_args(this);
+    public cloneExperiment_args deepCopy() {
+      return new cloneExperiment_args(this);
     }
 
     @Override
     public void clear() {
       this.airavataExperimentIdToBeCloned = null;
-      this.basicExperimentMetadata = null;
+      this.updatedExperiment = null;
     }
 
     public String getAiravataExperimentIdToBeCloned() {
       return this.airavataExperimentIdToBeCloned;
     }
 
-    public cloneExperimentConfiguration_args setAiravataExperimentIdToBeCloned(String airavataExperimentIdToBeCloned) {
+    public cloneExperiment_args setAiravataExperimentIdToBeCloned(String airavataExperimentIdToBeCloned) {
       this.airavataExperimentIdToBeCloned = airavataExperimentIdToBeCloned;
       return this;
     }
@@ -9544,27 +9723,27 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.model.experiment.BasicMetadata getBasicExperimentMetadata() {
-      return this.basicExperimentMetadata;
+    public org.apache.airavata.model.workspace.experiment.Experiment getUpdatedExperiment() {
+      return this.updatedExperiment;
     }
 
-    public cloneExperimentConfiguration_args setBasicExperimentMetadata(org.apache.airavata.model.experiment.BasicMetadata basicExperimentMetadata) {
-      this.basicExperimentMetadata = basicExperimentMetadata;
+    public cloneExperiment_args setUpdatedExperiment(org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment) {
+      this.updatedExperiment = updatedExperiment;
       return this;
     }
 
-    public void unsetBasicExperimentMetadata() {
-      this.basicExperimentMetadata = null;
+    public void unsetUpdatedExperiment() {
+      this.updatedExperiment = null;
     }
 
-    /** Returns true if field basicExperimentMetadata is set (has been assigned a value) and false otherwise */
-    public boolean isSetBasicExperimentMetadata() {
-      return this.basicExperimentMetadata != null;
+    /** Returns true if field updatedExperiment is set (has been assigned a value) and false otherwise */
+    public boolean isSetUpdatedExperiment() {
+      return this.updatedExperiment != null;
     }
 
-    public void setBasicExperimentMetadataIsSet(boolean value) {
+    public void setUpdatedExperimentIsSet(boolean value) {
       if (!value) {
-        this.basicExperimentMetadata = null;
+        this.updatedExperiment = null;
       }
     }
 
@@ -9578,11 +9757,11 @@ import org.slf4j.LoggerFactory;
         }
         break;
 
-      case BASIC_EXPERIMENT_METADATA:
+      case UPDATED_EXPERIMENT:
         if (value == null) {
-          unsetBasicExperimentMetadata();
+          unsetUpdatedExperiment();
         } else {
-          setBasicExperimentMetadata((org.apache.airavata.model.experiment.BasicMetadata)value);
+          setUpdatedExperiment((org.apache.airavata.model.workspace.experiment.Experiment)value);
         }
         break;
 
@@ -9594,8 +9773,8 @@ import org.slf4j.LoggerFactory;
       case AIRAVATA_EXPERIMENT_ID_TO_BE_CLONED:
         return getAiravataExperimentIdToBeCloned();
 
-      case BASIC_EXPERIMENT_METADATA:
-        return getBasicExperimentMetadata();
+      case UPDATED_EXPERIMENT:
+        return getUpdatedExperiment();
 
       }
       throw new IllegalStateException();
@@ -9610,8 +9789,8 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case AIRAVATA_EXPERIMENT_ID_TO_BE_CLONED:
         return isSetAiravataExperimentIdToBeCloned();
-      case BASIC_EXPERIMENT_METADATA:
-        return isSetBasicExperimentMetadata();
+      case UPDATED_EXPERIMENT:
+        return isSetUpdatedExperiment();
       }
       throw new IllegalStateException();
     }
@@ -9620,12 +9799,12 @@ import org.slf4j.LoggerFactory;
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof cloneExperimentConfiguration_args)
-        return this.equals((cloneExperimentConfiguration_args)that);
+      if (that instanceof cloneExperiment_args)
+        return this.equals((cloneExperiment_args)that);
       return false;
     }
 
-    public boolean equals(cloneExperimentConfiguration_args that) {
+    public boolean equals(cloneExperiment_args that) {
       if (that == null)
         return false;
 
@@ -9638,12 +9817,12 @@ import org.slf4j.LoggerFactory;
           return false;
       }
 
-      boolean this_present_basicExperimentMetadata = true && this.isSetBasicExperimentMetadata();
-      boolean that_present_basicExperimentMetadata = true && that.isSetBasicExperimentMetadata();
-      if (this_present_basicExperimentMetadata || that_present_basicExperimentMetadata) {
-        if (!(this_present_basicExperimentMetadata && that_present_basicExperimentMetadata))
+      boolean this_present_updatedExperiment = true && this.isSetUpdatedExperiment();
+      boolean that_present_updatedExperiment = true && that.isSetUpdatedExperiment();
+      if (this_present_updatedExperiment || that_present_updatedExperiment) {
+        if (!(this_present_updatedExperiment && that_present_updatedExperiment))
           return false;
-        if (!this.basicExperimentMetadata.equals(that.basicExperimentMetadata))
+        if (!this.updatedExperiment.equals(that.updatedExperiment))
           return false;
       }
 
@@ -9656,7 +9835,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public int compareTo(cloneExperimentConfiguration_args other) {
+    public int compareTo(cloneExperiment_args other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -9673,12 +9852,12 @@ import org.slf4j.LoggerFactory;
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetBasicExperimentMetadata()).compareTo(other.isSetBasicExperimentMetadata());
+      lastComparison = Boolean.valueOf(isSetUpdatedExperiment()).compareTo(other.isSetUpdatedExperiment());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetBasicExperimentMetadata()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.basicExperimentMetadata, other.basicExperimentMetadata);
+      if (isSetUpdatedExperiment()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.updatedExperiment, other.updatedExperiment);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -9700,7 +9879,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("cloneExperimentConfiguration_args(");
+      StringBuilder sb = new StringBuilder("cloneExperiment_args(");
       boolean first = true;
 
       sb.append("airavataExperimentIdToBeCloned:");
@@ -9711,11 +9890,11 @@ import org.slf4j.LoggerFactory;
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("basicExperimentMetadata:");
-      if (this.basicExperimentMetadata == null) {
+      sb.append("updatedExperiment:");
+      if (this.updatedExperiment == null) {
         sb.append("null");
       } else {
-        sb.append(this.basicExperimentMetadata);
+        sb.append(this.updatedExperiment);
       }
       first = false;
       sb.append(")");
@@ -9725,8 +9904,8 @@ import org.slf4j.LoggerFactory;
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
       // check for sub-struct validity
-      if (basicExperimentMetadata != null) {
-        basicExperimentMetadata.validate();
+      if (updatedExperiment != null) {
+        updatedExperiment.validate();
       }
     }
 
@@ -9746,15 +9925,15 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    private static class cloneExperimentConfiguration_argsStandardSchemeFactory implements SchemeFactory {
-      public cloneExperimentConfiguration_argsStandardScheme getScheme() {
-        return new cloneExperimentConfiguration_argsStandardScheme();
+    private static class cloneExperiment_argsStandardSchemeFactory implements SchemeFactory {
+      public cloneExperiment_argsStandardScheme getScheme() {
+        return new cloneExperiment_argsStandardScheme();
       }
     }
 
-    private static class cloneExperimentConfiguration_argsStandardScheme extends StandardScheme<cloneExperimentConfiguration_args> {
+    private static class cloneExperiment_argsStandardScheme extends StandardScheme<cloneExperiment_args> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, cloneExperimentConfiguration_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, cloneExperiment_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -9772,11 +9951,11 @@ import org.slf4j.LoggerFactory;
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 2: // BASIC_EXPERIMENT_METADATA
+            case 2: // UPDATED_EXPERIMENT
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.basicExperimentMetadata = new org.apache.airavata.model.experiment.BasicMetadata();
-                struct.basicExperimentMetadata.read(iprot);
-                struct.setBasicExperimentMetadataIsSet(true);
+                struct.updatedExperiment = new org.apache.airavata.model.workspace.experiment.Experiment();
+                struct.updatedExperiment.read(iprot);
+                struct.setUpdatedExperimentIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -9792,7 +9971,7 @@ import org.slf4j.LoggerFactory;
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, cloneExperimentConfiguration_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, cloneExperiment_args struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -9801,9 +9980,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeString(struct.airavataExperimentIdToBeCloned);
           oprot.writeFieldEnd();
         }
-        if (struct.basicExperimentMetadata != null) {
-          oprot.writeFieldBegin(BASIC_EXPERIMENT_METADATA_FIELD_DESC);
-          struct.basicExperimentMetadata.write(oprot);
+        if (struct.updatedExperiment != null) {
+          oprot.writeFieldBegin(UPDATED_EXPERIMENT_FIELD_DESC);
+          struct.updatedExperiment.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -9812,35 +9991,35 @@ import org.slf4j.LoggerFactory;
 
     }
 
-    private static class cloneExperimentConfiguration_argsTupleSchemeFactory implements SchemeFactory {
-      public cloneExperimentConfiguration_argsTupleScheme getScheme() {
-        return new cloneExperimentConfiguration_argsTupleScheme();
+    private static class cloneExperiment_argsTupleSchemeFactory implements SchemeFactory {
+      public cloneExperiment_argsTupleScheme getScheme() {
+        return new cloneExperiment_argsTupleScheme();
       }
     }
 
-    private static class cloneExperimentConfiguration_argsTupleScheme extends TupleScheme<cloneExperimentConfiguration_args> {
+    private static class cloneExperiment_argsTupleScheme extends TupleScheme<cloneExperiment_args> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, cloneExperimentConfiguration_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, cloneExperiment_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
         if (struct.isSetAiravataExperimentIdToBeCloned()) {
           optionals.set(0);
         }
-        if (struct.isSetBasicExperimentMetadata()) {
+        if (struct.isSetUpdatedExperiment()) {
           optionals.set(1);
         }
         oprot.writeBitSet(optionals, 2);
         if (struct.isSetAiravataExperimentIdToBeCloned()) {
           oprot.writeString(struct.airavataExperimentIdToBeCloned);
         }
-        if (struct.isSetBasicExperimentMetadata()) {
-          struct.basicExperimentMetadata.write(oprot);
+        if (struct.isSetUpdatedExperiment()) {
+          struct.updatedExperiment.write(oprot);
         }
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, cloneExperimentConfiguration_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, cloneExperiment_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
@@ -9848,17 +10027,17 @@ import org.slf4j.LoggerFactory;
           struct.setAiravataExperimentIdToBeClonedIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.basicExperimentMetadata = new org.apache.airavata.model.experiment.BasicMetadata();
-          struct.basicExperimentMetadata.read(iprot);
-          struct.setBasicExperimentMetadataIsSet(true);
+          struct.updatedExperiment = new org.apache.airavata.model.workspace.experiment.Experiment();
+          struct.updatedExperiment.read(iprot);
+          struct.setUpdatedExperimentIsSet(true);
         }
       }
     }
 
   }
 
-  public static class cloneExperimentConfiguration_result implements org.apache.thrift.TBase<cloneExperimentConfiguration_result, cloneExperimentConfiguration_result._Fields>, java.io.Serializable, Cloneable, Comparable<cloneExperimentConfiguration_result>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("cloneExperimentConfiguration_result");
+  public static class cloneExperiment_result implements org.apache.thrift.TBase<cloneExperiment_result, cloneExperiment_result._Fields>, java.io.Serializable, Cloneable, Comparable<cloneExperiment_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("cloneExperiment_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
     private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
@@ -9868,8 +10047,8 @@ import org.slf4j.LoggerFactory;
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new cloneExperimentConfiguration_resultStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new cloneExperimentConfiguration_resultTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new cloneExperiment_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new cloneExperiment_resultTupleSchemeFactory());
     }
 
     public String success; // required
@@ -9963,13 +10142,13 @@ import org.slf4j.LoggerFactory;
       tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(cloneExperimentConfiguration_result.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(cloneExperiment_result.class, metaDataMap);
     }
 
-    public cloneExperimentConfiguration_result() {
+    public cloneExperiment_result() {
     }
 
-    public cloneExperimentConfiguration_result(
+    public cloneExperiment_result(
       String success,
       org.apache.airavata.api.error.InvalidRequestException ire,
       org.apache.airavata.api.error.ExperimentNotFoundException enf,
@@ -9987,7 +10166,7 @@ import org.slf4j.LoggerFactory;
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public cloneExperimentConfiguration_result(cloneExperimentConfiguration_result other) {
+    public cloneExperiment_result(cloneExperiment_result other) {
       if (other.isSetSuccess()) {
         this.success = other.success;
       }
@@ -10005,8 +10184,8 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public cloneExperimentConfiguration_result deepCopy() {
-      return new cloneExperimentConfiguration_result(this);
+    public cloneExperiment_result deepCopy() {
+      return new cloneExperiment_result(this);
     }
 
     @Override
@@ -10022,7 +10201,7 @@ import org.slf4j.LoggerFactory;
       return this.success;
     }
 
-    public cloneExperimentConfiguration_result setSuccess(String success) {
+    public cloneExperiment_result setSuccess(String success) {
       this.success = success;
       return this;
     }
@@ -10046,7 +10225,7 @@ import org.slf4j.LoggerFactory;
       return this.ire;
     }
 
-    public cloneExperimentConfiguration_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
+    public cloneExperiment_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
       this.ire = ire;
       return this;
     }
@@ -10070,7 +10249,7 @@ import org.slf4j.LoggerFactory;
       return this.enf;
     }
 
-    public cloneExperimentConfiguration_result setEnf(org.apache.airavata.api.error.ExperimentNotFoundException enf) {
+    public cloneExperiment_result setEnf(org.apache.airavata.api.error.ExperimentNotFoundException enf) {
       this.enf = enf;
       return this;
     }
@@ -10094,7 +10273,7 @@ import org.slf4j.LoggerFactory;
       return this.ace;
     }
 
-    public cloneExperimentConfiguration_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
+    public cloneExperiment_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
       this.ace = ace;
       return this;
     }
@@ -10118,7 +10297,7 @@ import org.slf4j.LoggerFactory;
       return this.ase;
     }
 
-    public cloneExperimentConfiguration_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
+    public cloneExperiment_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
       this.ase = ase;
       return this;
     }
@@ -10229,12 +10408,12 @@ import org.slf4j.LoggerFactory;
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof cloneExperimentConfiguration_result)
-        return this.equals((cloneExperimentConfiguration_result)that);
+      if (that instanceof cloneExperiment_result)
+        return this.equals((cloneExperiment_result)that);
       return false;
     }
 
-    public boolean equals(cloneExperimentConfiguration_result that) {
+    public boolean equals(cloneExperiment_result that) {
       if (that == null)
         return false;
 
@@ -10292,7 +10471,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public int compareTo(cloneExperimentConfiguration_result other) {
+    public int compareTo(cloneExperiment_result other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -10366,7 +10545,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("cloneExperimentConfiguration_result(");
+      StringBuilder sb = new StringBuilder("cloneExperiment_result(");
       boolean first = true;
 
       sb.append("success:");
@@ -10433,15 +10612,15 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    private static class cloneExperimentConfiguration_resultStandardSchemeFactory implements SchemeFactory {
-      public cloneExperimentConfiguration_resultStandardScheme getScheme() {
-        return new cloneExperimentConfiguration_resultStandardScheme();
+    private static class cloneExperiment_resultStandardSchemeFactory implements SchemeFactory {
+      public cloneExperiment_resultStandardScheme getScheme() {
+        return new cloneExperiment_resultStandardScheme();
       }
     }
 
-    private static class cloneExperimentConfiguration_resultStandardScheme extends StandardScheme<cloneExperimentConfiguration_result> {
+    private static class cloneExperiment_resultStandardScheme extends StandardScheme<cloneExperiment_result> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, cloneExperimentConfiguration_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, cloneExperiment_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -10506,7 +10685,7 @@ import org.slf4j.LoggerFactory;
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, cloneExperimentConfiguration_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, cloneExperiment_result struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -10541,16 +10720,16 @@ import org.slf4j.LoggerFactory;
 
     }
 
-    private static class cloneExperimentConfiguration_resultTupleSchemeFactory implements SchemeFactory {
-      public cloneExperimentConfiguration_resultTupleScheme getScheme() {
-        return new cloneExperimentConfiguration_resultTupleScheme();
+    private static class cloneExperiment_resultTupleSchemeFactory implements SchemeFactory {
+      public cloneExperiment_resultTupleScheme getScheme() {
+        return new cloneExperiment_resultTupleScheme();
       }
     }
 
-    private static class cloneExperimentConfiguration_resultTupleScheme extends TupleScheme<cloneExperimentConfiguration_result> {
+    private static class cloneExperiment_resultTupleScheme extends TupleScheme<cloneExperiment_result> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, cloneExperimentConfiguration_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, cloneExperiment_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
         if (struct.isSetSuccess()) {
@@ -10587,7 +10766,7 @@ import org.slf4j.LoggerFactory;
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, cloneExperimentConfiguration_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, cloneExperiment_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(5);
         if (incoming.get(0)) {
@@ -11626,6 +11805,1222 @@ import org.slf4j.LoggerFactory;
           struct.setAceIsSet(true);
         }
         if (incoming.get(3)) {
+          struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+          struct.ase.read(iprot);
+          struct.setAseIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class createProject_args implements org.apache.thrift.TBase<createProject_args, createProject_args._Fields>, java.io.Serializable, Cloneable, Comparable<createProject_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("createProject_args");
+
+    private static final org.apache.thrift.protocol.TField PROJECT_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("projectName", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userName", org.apache.thrift.protocol.TType.STRING, (short)2);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new createProject_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new createProject_argsTupleSchemeFactory());
+    }
+
+    public String projectName; // required
+    public String userName; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      PROJECT_NAME((short)1, "projectName"),
+      USER_NAME((short)2, "userName");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // PROJECT_NAME
+            return PROJECT_NAME;
+          case 2: // USER_NAME
+            return USER_NAME;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.PROJECT_NAME, new org.apache.thrift.meta_data.FieldMetaData("projectName", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.USER_NAME, new org.apache.thrift.meta_data.FieldMetaData("userName", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(createProject_args.class, metaDataMap);
+    }
+
+    public createProject_args() {
+    }
+
+    public createProject_args(
+      String projectName,
+      String userName)
+    {
+      this();
+      this.projectName = projectName;
+      this.userName = userName;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public createProject_args(createProject_args other) {
+      if (other.isSetProjectName()) {
+        this.projectName = other.projectName;
+      }
+      if (other.isSetUserName()) {
+        this.userName = other.userName;
+      }
+    }
+
+    public createProject_args deepCopy() {
+      return new createProject_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.projectName = null;
+      this.userName = null;
+    }
+
+    public String getProjectName() {
+      return this.projectName;
+    }
+
+    public createProject_args setProjectName(String projectName) {
+      this.projectName = projectName;
+      return this;
+    }
+
+    public void unsetProjectName() {
+      this.projectName = null;
+    }
+
+    /** Returns true if field projectName is set (has been assigned a value) and false otherwise */
+    public boolean isSetProjectName() {
+      return this.projectName != null;
+    }
+
+    public void setProjectNameIsSet(boolean value) {
+      if (!value) {
+        this.projectName = null;
+      }
+    }
+
+    public String getUserName() {
+      return this.userName;
+    }
+
+    public createProject_args setUserName(String userName) {
+      this.userName = userName;
+      return this;
+    }
+
+    public void unsetUserName() {
+      this.userName = null;
+    }
+
+    /** Returns true if field userName is set (has been assigned a value) and false otherwise */
+    public boolean isSetUserName() {
+      return this.userName != null;
+    }
+
+    public void setUserNameIsSet(boolean value) {
+      if (!value) {
+        this.userName = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case PROJECT_NAME:
+        if (value == null) {
+          unsetProjectName();
+        } else {
+          setProjectName((String)value);
+        }
+        break;
+
+      case USER_NAME:
+        if (value == null) {
+          unsetUserName();
+        } else {
+          setUserName((String)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case PROJECT_NAME:
+        return getProjectName();
+
+      case USER_NAME:
+        return getUserName();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case PROJECT_NAME:
+        return isSetProjectName();
+      case USER_NAME:
+        return isSetUserName();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof createProject_args)
+        return this.equals((createProject_args)that);
+      return false;
+    }
+
+    public boolean equals(createProject_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_projectName = true && this.isSetProjectName();
+      boolean that_present_projectName = true && that.isSetProjectName();
+      if (this_present_projectName || that_present_projectName) {
+        if (!(this_present_projectName && that_present_projectName))
+          return false;
+        if (!this.projectName.equals(that.projectName))
+          return false;
+      }
+
+      boolean this_present_userName = true && this.isSetUserName();
+      boolean that_present_userName = true && that.isSetUserName();
+      if (this_present_userName || that_present_userName) {
+        if (!(this_present_userName && that_present_userName))
+          return false;
+        if (!this.userName.equals(that.userName))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(createProject_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetProjectName()).compareTo(other.isSetProjectName());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetProjectName()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.projectName, other.projectName);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetUserName()).compareTo(other.isSetUserName());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetUserName()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userName, other.userName);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("createProject_args(");
+      boolean first = true;
+
+      sb.append("projectName:");
+      if (this.projectName == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.projectName);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("userName:");
+      if (this.userName == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.userName);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class createProject_argsStandardSchemeFactory implements SchemeFactory {
+      public createProject_argsStandardScheme getScheme() {
+        return new createProject_argsStandardScheme();
+      }
+    }
+
+    private static class createProject_argsStandardScheme extends StandardScheme<createProject_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, createProject_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // PROJECT_NAME
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.projectName = iprot.readString();
+                struct.setProjectNameIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // USER_NAME
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.userName = iprot.readString();
+                struct.setUserNameIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, createProject_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.projectName != null) {
+          oprot.writeFieldBegin(PROJECT_NAME_FIELD_DESC);
+          oprot.writeString(struct.projectName);
+          oprot.writeFieldEnd();
+        }
+        if (struct.userName != null) {
+          oprot.writeFieldBegin(USER_NAME_FIELD_DESC);
+          oprot.writeString(struct.userName);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class createProject_argsTupleSchemeFactory implements SchemeFactory {
+      public createProject_argsTupleScheme getScheme() {
+        return new createProject_argsTupleScheme();
+      }
+    }
+
+    private static class createProject_argsTupleScheme extends TupleScheme<createProject_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, createProject_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetProjectName()) {
+          optionals.set(0);
+        }
+        if (struct.isSetUserName()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetProjectName()) {
+          oprot.writeString(struct.projectName);
+        }
+        if (struct.isSetUserName()) {
+          oprot.writeString(struct.userName);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, createProject_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(2);
+        if (incoming.get(0)) {
+          struct.projectName = iprot.readString();
+          struct.setProjectNameIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.userName = iprot.readString();
+          struct.setUserNameIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class createProject_result implements org.apache.thrift.TBase<createProject_result, createProject_result._Fields>, java.io.Serializable, Cloneable, Comparable<createProject_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("createProject_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
+    private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField ENF_FIELD_DESC = new org.apache.thrift.protocol.TField("enf", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+    private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)4);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new createProject_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new createProject_resultTupleSchemeFactory());
+    }
+
+    public String success; // required
+    public org.apache.airavata.api.error.InvalidRequestException ire; // required
+    public org.apache.airavata.api.error.ExperimentNotFoundException enf; // required
+    public org.apache.airavata.api.error.AiravataClientException ace; // required
+    public org.apache.airavata.api.error.AiravataSystemException ase; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      IRE((short)1, "ire"),
+      ENF((short)2, "enf"),
+      ACE((short)3, "ace"),
+      ASE((short)4, "ase");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // IRE
+            return IRE;
+          case 2: // ENF
+            return ENF;
+          case 3: // ACE
+            return ACE;
+          case 4: // ASE
+            return ASE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ENF, new org.apache.thrift.meta_data.FieldMetaData("enf", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(createProject_result.class, metaDataMap);
+    }
+
+    public createProject_result() {
+    }
+
+    public createProject_result(
+      String success,
+      org.apache.airavata.api.error.InvalidRequestException ire,
+      org.apache.airavata.api.error.ExperimentNotFoundException enf,
+      org.apache.airavata.api.error.AiravataClientException ace,
+      org.apache.airavata.api.error.AiravataSystemException ase)
+    {
+      this();
+      this.success = success;
+      this.ire = ire;
+      this.enf = enf;
+      this.ace = ace;
+      this.ase = ase;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public createProject_result(createProject_result other) {
+      if (other.isSetSuccess()) {
+        this.success = other.success;
+      }
+      if (other.isSetIre()) {
+        this.ire = new org.apache.airavata.api.error.InvalidRequestException(other.ire);
+      }
+      if (other.isSetEnf()) {
+        this.enf = new org.apache.airavata.api.error.ExperimentNotFoundException(other.enf);
+      }
+      if (other.isSetAce()) {
+        this.ace = new org.apache.airavata.api.error.AiravataClientException(other.ace);
+      }
+      if (other.isSetAse()) {
+        this.ase = new org.apache.airavata.api.error.AiravataSystemException(other.ase);
+      }
+    }
+
+    public createProject_result deepCopy() {
+      return new createProject_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.ire = null;
+      this.enf = null;
+      this.ace = null;
+      this.ase = null;
+    }
+
+    public String getSuccess() {
+      return this.success;
+    }
+
+    public createProject_result setSuccess(String success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public org.apache.airavata.api.error.InvalidRequestException getIre() {
+      return this.ire;
+    }
+
+    public createProject_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
+      this.ire = ire;
+      return this;
+    }
+
+    public void unsetIre() {
+      this.ire = null;
+    }
+
+    /** Returns true if field ire is set (has been assigned a value) and false otherwise */
+    public boolean isSetIre() {
+      return this.ire != null;
+    }
+
+    public void setIreIsSet(boolean value) {
+      if (!value) {
+        this.ire = null;
+      }
+    }
+
+    public org.apache.airavata.api.error.ExperimentNotFoundException getEnf() {
+      return this.enf;
+    }
+
+    public createProject_result setEnf(org.apache.airavata.api.error.ExperimentNotFoundException enf) {
+      this.enf = enf;
+      return this;
+    }
+
+    public void unsetEnf() {
+      this.enf = null;
+    }
+
+    /** Returns true if field enf is set (has been assigned a value) and false otherwise */
+    public boolean isSetEnf() {
+      return this.enf != null;
+    }
+
+    public void setEnfIsSet(boolean value) {
+      if (!value) {
+        this.enf = null;
+      }
+    }
+
+    public org.apache.airavata.api.error.AiravataClientException getAce() {
+      return this.ace;
+    }
+
+    public createProject_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
+      this.ace = ace;
+      return this;
+    }
+
+    public void unsetAce() {
+      this.ace = null;
+    }
+
+    /** Returns true if field ace is set (has been assigned a value) and false otherwise */
+    public boolean isSetAce() {
+      return this.ace != null;
+    }
+
+    public void setAceIsSet(boolean value) {
+      if (!value) {
+        this.ace = null;
+      }
+    }
+
+    public org.apache.airavata.api.error.AiravataSystemException getAse() {
+      return this.ase;
+    }
+
+    public createProject_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
+      this.ase = ase;
+      return this;
+    }
+
+    public void unsetAse() {
+      this.ase = null;
+    }
+
+    /** Returns true if field ase is set (has been assigned a value) and false otherwise */
+    public boolean isSetAse() {
+      return this.ase != null;
+    }
+
+    public void setAseIsSet(boolean value) {
+      if (!value) {
+        this.ase = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((String)value);
+        }
+        break;
+
+      case IRE:
+        if (value == null) {
+          unsetIre();
+        } else {
+          setIre((org.apache.airavata.api.error.InvalidRequestException)value);
+        }
+        break;
+
+      case ENF:
+        if (value == null) {
+          unsetEnf();
+        } else {
+          setEnf((org.apache.airavata.api.error.ExperimentNotFoundException)value);
+        }
+        break;
+
+      case ACE:
+        if (value == null) {
+          unsetAce();
+        } else {
+          setAce((org.apache.airavata.api.error.AiravataClientException)value);
+        }
+        break;
+
+      case ASE:
+        if (value == null) {
+          unsetAse();
+        } else {
+          setAse((org.apache.airavata.api.error.AiravataSystemException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case IRE:
+        return getIre();
+
+      case ENF:
+        return getEnf();
+
+      case ACE:
+        return getAce();
+
+      case ASE:
+        return getAse();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case IRE:
+        return isSetIre();
+      case ENF:
+        return isSetEnf();
+      case ACE:
+        return isSetAce();
+      case ASE:
+        return isSetAse();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof createProject_result)
+        return this.equals((createProject_result)that);
+      return false;
+    }
+
+    public boolean equals(createProject_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_ire = true && this.isSetIre();
+      boolean that_present_ire = true && that.isSetIre();
+      if (this_present_ire || that_present_ire) {
+        if (!(this_present_ire && that_present_ire))
+          return false;
+        if (!this.ire.equals(that.ire))
+          return false;
+      }
+
+      boolean this_present_enf = true && this.isSetEnf();
+      boolean that_present_enf = true && that.isSetEnf();
+      if (this_present_enf || that_present_enf) {
+        if (!(this_present_enf && that_present_enf))
+          return false;
+        if (!this.enf.equals(that.enf))
+          return false;
+      }
+
+      boolean this_present_ace = true && this.isSetAce();
+      boolean that_present_ace = true && that.isSetAce();
+      if (this_present_ace || that_present_ace) {
+        if (!(this_present_ace && that_present_ace))
+          return false;
+        if (!this.ace.equals(that.ace))
+          return false;
+      }
+
+      boolean this_present_ase = true && this.isSetAse();
+      boolean that_present_ase = true && that.isSetAse();
+      if (this_present_ase || that_present_ase) {
+        if (!(this_present_ase && that_present_ase))
+          return false;
+        if (!this.ase.equals(that.ase))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(createProject_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetIre()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ire, other.ire);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetEnf()).compareTo(other.isSetEnf());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetEnf()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.enf, other.enf);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAce()).compareTo(other.isSetAce());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAce()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ace, other.ace);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAse()).compareTo(other.isSetAse());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAse()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ase, other.ase);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("createProject_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ire:");
+      if (this.ire == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ire);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("enf:");
+      if (this.enf == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.enf);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ace:");
+      if (this.ace == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ace);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ase:");
+      if (this.ase == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ase);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class createProject_resultStandardSchemeFactory implements SchemeFactory {
+      public createProject_resultStandardScheme getScheme() {
+        return new createProject_resultStandardScheme();
+      }
+    }
+
+    private static class createProject_resultStandardScheme extends StandardScheme<createProject_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, createProject_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.success = iprot.readString();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // IRE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+                struct.ire.read(iprot);
+                struct.setIreIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ENF
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.enf = new org.apache.airavata.api.error.ExperimentNotFoundException();
+                struct.enf.read(iprot);
+                struct.setEnfIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // ACE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+                struct.ace.read(iprot);
+                struct.setAceIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 4: // ASE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+                struct.ase.read(iprot);
+                struct.setAseIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, createProject_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeString(struct.success);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ire != null) {
+          oprot.writeFieldBegin(IRE_FIELD_DESC);
+          struct.ire.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.enf != null) {
+          oprot.writeFieldBegin(ENF_FIELD_DESC);
+          struct.enf.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ace != null) {
+          oprot.writeFieldBegin(ACE_FIELD_DESC);
+          struct.ace.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ase != null) {
+          oprot.writeFieldBegin(ASE_FIELD_DESC);
+          struct.ase.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class createProject_resultTupleSchemeFactory implements SchemeFactory {
+      public createProject_resultTupleScheme getScheme() {
+        return new createProject_resultTupleScheme();
+      }
+    }
+
+    private static class createProject_resultTupleScheme extends TupleScheme<createProject_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, createProject_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetIre()) {
+          optionals.set(1);
+        }
+        if (struct.isSetEnf()) {
+          optionals.set(2);
+        }
+        if (struct.isSetAce()) {
+          optionals.set(3);
+        }
+        if (struct.isSetAse()) {
+          optionals.set(4);
+        }
+        oprot.writeBitSet(optionals, 5);
+        if (struct.isSetSuccess()) {
+          oprot.writeString(struct.success);
+        }
+        if (struct.isSetIre()) {
+          struct.ire.write(oprot);
+        }
+        if (struct.isSetEnf()) {
+          struct.enf.write(oprot);
+        }
+        if (struct.isSetAce()) {
+          struct.ace.write(oprot);
+        }
+        if (struct.isSetAse()) {
+          struct.ase.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, createProject_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(5);
+        if (incoming.get(0)) {
+          struct.success = iprot.readString();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+          struct.ire.read(iprot);
+          struct.setIreIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.enf = new org.apache.airavata.api.error.ExperimentNotFoundException();
+          struct.enf.read(iprot);
+          struct.setEnfIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+          struct.ace.read(iprot);
+          struct.setAceIsSet(true);
+        }
+        if (incoming.get(4)) {
           struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);

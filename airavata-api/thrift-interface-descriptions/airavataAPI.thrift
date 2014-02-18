@@ -410,14 +410,10 @@ service Airavata {
             3: airavataErrors.AiravataClientException ace,
             4: airavataErrors.AiravataSystemException ase)
 
-    string registerGateway (1: string gatewayName)
-        throws (1: airavataErrors.InvalidRequestException ire,
-                2: airavataErrors.ExperimentNotFoundException enf,
-                3: airavataErrors.AiravataClientException ace,
-                4: airavataErrors.AiravataSystemException ase)
-
-    bool registerUser(1: string userName, 2: string gatewayName)
-
-    string createProject (1: string projectName, string userName)
+    string createProject (1: string projectName, 2: string userName)
+            throws (1: airavataErrors.InvalidRequestException ire,
+                    2: airavataErrors.ExperimentNotFoundException enf,
+                    3: airavataErrors.AiravataClientException ace,
+                    4: airavataErrors.AiravataSystemException ase)
 
 }

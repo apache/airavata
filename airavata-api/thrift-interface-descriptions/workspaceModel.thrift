@@ -39,7 +39,7 @@ struct Group {
 }
 
 struct Project {
-    1: required string projectID = experimentModel.DEFUALT_PROJECT_NAME,
+    1: required string projectID = experimentModel.DEFAULT_PROJECT_NAME,
     2: required string owner,
     3: required string name,
     4: optional string description
@@ -54,6 +54,6 @@ struct User {
 }
 
 struct Gateway {
-    1: required string gatewayId = DEFUALT_ID
+    1: required string gatewayId = experimentModel.DEFAULT_ID
     2: required string name,
 }

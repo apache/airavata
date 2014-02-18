@@ -18,30 +18,38 @@ Gateway
   |- Groups (Groups is explicitly defined with a set of users within it)
   |   |-Users
   |
-  |- User
-  |   |- Group Ids (A user can be in one or more groups)
-  |   |- Workspace
+  |-Workspace
+  |   |- User
+  |   |   |- Group Ids (A user can be in one or more groups)
   |   |   |-Project
   |   |   |   |- Experiment
   |   |   |   |   |- Summary (Derived Information)
-  |   |   |   |   |- Configuration Data
-  |   |   |   |   |   |- Basic Metadata
-  |   |   |   |   |   |- Application/Workflow Id
-  |   |   |   |   |   |- Experiment Inputs
+  |   |   |   |   |- Name
+  |   |   |   |   |- Description
+  |   |   |   |   |- Application/Workflow Template Id
+  |   |   |   |   |- Workflow Instance Id
+  |   |   |   |   |- User Configuration Data
   |   |   |   |   |   |- Scheduling Information
   |   |   |   |   |   |- Quality of Service Parameters
-  |   |   |   |   |- Generated Data
+  |   |   |   |   |- Experiment Inputs
+  |   |   |   |   |- Experiment Outputs
+  |   |   |   |   |- Experiment Status
+  |   |   |   |   |- Workflow Nodes
+  |   |   |   |   |   |- Node Inputs
+  |   |   |   |   |   |- Node Outputs
+  |   |   |   |   |   |- Node Status
+  |   |   |   |   |   |- Tasks
+  |   |   |   |   |   |   |- Application Id
+  |   |   |   |   |   |   |- Application Inputs
+  |   |   |   |   |   |   |- Application Outputs
   |   |   |   |   |   |- Intermediate Data
   |   |   |   |   |   |- Final Output Data
-  |   |   |   |   |- Monitoring Data
-  |   |   |   |   |- Provenance Data
-  |   |   |   |   |- Execution Errors
+  |   |   |   |   |- Experiment Errors
   |   |   |   |   |   |- User Friendly Message
   |   |   |   |   |   |- Raw Exception
   |   |   |   |   |   |- Error Category
   |   |   |   |   |   |- Actionable Information (what action can be taken and by one of End User, Gateway Admins, Airavata Admins)
   |   |   |   |   |   |- Error Category
-
 
 
 
