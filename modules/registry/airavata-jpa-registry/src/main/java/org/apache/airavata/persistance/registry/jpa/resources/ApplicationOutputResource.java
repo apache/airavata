@@ -27,19 +27,11 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import java.util.List;
 
 public class ApplicationOutputResource extends AbstractResource {
-    private String taskId;
+    private TaskDetailResource taskDetailResource;
     private String outputKey;
     private String outputType;
     private String metadata;
     private String value;
-
-    public String getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(String taskId) {
-        this.taskId = taskId;
-    }
 
     public String getOutputKey() {
         return outputKey;
@@ -71,6 +63,14 @@ public class ApplicationOutputResource extends AbstractResource {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public TaskDetailResource getTaskDetailResource() {
+        return taskDetailResource;
+    }
+
+    public void setTaskDetailResource(TaskDetailResource taskDetailResource) {
+        this.taskDetailResource = taskDetailResource;
     }
 
     @Override

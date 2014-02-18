@@ -269,19 +269,19 @@ public class Utils {
                     throw  new IllegalArgumentException("Object should be a Gateway Worker.");
                 }
             case EXPERIMENT_INPUT:
-//                if (o instanceof  Experiment_Input){
-//                    return createExperimentInput((Experiment_Input)o);
-//                }else {
-//                    logger.error("Object should be a Experiment input data.", new IllegalArgumentException());
-//                    throw new IllegalArgumentException("Object should be a Experiment input data.");
-//                }
+                if (o instanceof  Experiment_Input){
+                    return createExperimentInput((Experiment_Input)o);
+                }else {
+                    logger.error("Object should be a Experiment input data.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Experiment input data.");
+                }
             case EXPERIMENT_OUTPUT:
-//                if (o instanceof  Experiment_Output){
-//                    return createExperimentOutput((Experiment_Output)o);
-//                }else {
-//                    logger.error("Object should be a Experiment output data.", new IllegalArgumentException());
-//                    throw new IllegalArgumentException("Object should be a Experiment output data.");
-//                }
+                if (o instanceof  Experiment_Output){
+                    return createExperimentOutput((Experiment_Output)o);
+                }else {
+                    logger.error("Object should be a Experiment output data.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Experiment output data.");
+                }
             default:
         }
         return null;
@@ -347,26 +347,7 @@ public class Utils {
         return applicationDescriptorResource;
     }
 
-    /**
-     * @deprecated
-     * @param o Experiment model object
-     * @return  Experiment resource object
-     */
-//    private static Resource createExperiment(Experiment o) {
-//        ExperimentResource experimentResource = new ExperimentResource();
-//        GatewayResource gatewayResource = (GatewayResource)createGateway(o.getGateway());
-//        experimentResource.setGateway(gatewayResource);
-//        Gateway_Worker gateway_worker = new Gateway_Worker();
-//        gateway_worker.setGateway(o.getGateway());
-//        gateway_worker.setUser(o.getUser());
-//        WorkerResource workerResource = (WorkerResource) createGatewayWorker(gateway_worker);
-//        experimentResource.setWorker(workerResource);
-//        ProjectResource projectResource = (ProjectResource)createProject(o.getProject());
-//        experimentResource.setProject(projectResource);
-//        experimentResource.setExpID(o.getExperiment_ID());
-//        experimentResource.setSubmittedDate(o.getSubmitted_date());
-//        return experimentResource;
-//    }
+
 
     /**
      *
@@ -466,102 +447,207 @@ public class Utils {
     }
 
     /**
-     * @param o Experiment Data model object
-     * @return Experiment Data resource object
+     * @param o Experiment model object
+     * @return  Experiment resource object
      */
-//    private static Resource createExperimentData(Experiment_Data o){
-//        ExperimentDataResource experimentDataResource = new ExperimentDataResource();
-//        experimentDataResource.setExperimentID(o.getExperiment_ID());
-//        experimentDataResource.setExpName(o.getName());
-//        experimentDataResource.setUserName(o.getUsername());
-//        return experimentDataResource;
-//    }
+    private static Resource createExperiment(Experiment o) {
+        ExperimentResource experimentResource = new ExperimentResource();
+        GatewayResource gatewayResource = (GatewayResource)createGateway(o.getGateway());
+        experimentResource.setGateway(gatewayResource);
+        Gateway_Worker gateway_worker = new Gateway_Worker();
+        gateway_worker.setGateway(o.getGateway());
+        gateway_worker.setUser(o.getUser());
+        WorkerResource workerResource = (WorkerResource) createGatewayWorker(gateway_worker);
+        experimentResource.setWorker(workerResource);
+        ProjectResource projectResource = (ProjectResource)createProject(o.getProject());
+        experimentResource.setProject(projectResource);
+        experimentResource.setExpID(o.getExpId());
+        experimentResource.setCreationTime(o.getCreationTime());
+        experimentResource.setDescription(o.getExpDesc());
+        experimentResource.setApplicationId(o.getApplicationId());
+        experimentResource.setApplicationVersion(o.getAppVersion());
+        experimentResource.setWorkflowTemplateId(o.getWorkflowTemplateId());
+        experimentResource.setWorkflowTemplateVersion(o.getWorkflowTemplateVersion());
+        experimentResource.setWorkflowExecutionId(o.getWorkflowExecutionId());
+        return experimentResource;
+    }
 
-//    private static Resource createExperimentConfigData(Experiment_Configuration_Data o){
-//        ExperimentConfigDataResource exConfigDataResource = new ExperimentConfigDataResource();
-//        ExperimentMetadataResource experimentMetadata = (ExperimentMetadataResource)createExperimentMetadata(o.getExperiment_metadata());
-//        exConfigDataResource.setExMetadata(experimentMetadata);
-//        exConfigDataResource.setAiravataAutoSchedule(o.isAiravata_auto_schedule());
-//        exConfigDataResource.setCleanAfterJob(o.isClean_after_job());
-//        exConfigDataResource.setCpuCount(o.getTotal_cpu_count());
-//        exConfigDataResource.setDataRegURL(o.getData_reg_url());
-//        exConfigDataResource.setJobStartTime(o.getJob_start_time());
-//        exConfigDataResource.setNodeCount(o.getNode_count());
-//        exConfigDataResource.setNumberOfThreads(o.getNumber_of_threads());
-//        exConfigDataResource.setOutputDataDir(o.getOutput_data_dir());
-//        exConfigDataResource.setOverrideManualSchedule(o.isOverride_manual_schedule());
-//        exConfigDataResource.setPersistOutputData(o.isPersist_output_data());
-//        exConfigDataResource.setPhysicalMemory(o.getTotal_physical_memory());
-//        exConfigDataResource.setProjectAccount(o.getComputational_project_account());
-//        exConfigDataResource.setQueueName(o.getQueue_name());
-//        exConfigDataResource.setResourceHostID(o.getResource_host_id());
-//        exConfigDataResource.setStageInputsToWDir(o.isStage_input_files_to_working_dir());
-//        exConfigDataResource.setWallTimeLimit(o.getWalltime_limit());
-//        exConfigDataResource.setOverrideManualSchedule(o.isOverride_manual_schedule());
-//        exConfigDataResource.setWorkingDir(o.getUnique_working_dir());
-//        exConfigDataResource.setWorkingDirParent(o.getWorking_dir_parent());
-//        exConfigDataResource.setApplicationID(o.getApplication_id());
-//        exConfigDataResource.setApplicationVersion(o.getApplication_version());
-//        exConfigDataResource.setWorkflowTemplateId(o.getWorkflow_template_id());
-//        exConfigDataResource.setWorkflowTemplateVersion(o.getWorkflow_template_version());
-//        exConfigDataResource.setStartExecutionAt(o.getStart_execution_at());
-//        exConfigDataResource.setExecuteBefore(o.getExecute_before());
-//        exConfigDataResource.setNumberOfRetries(o.getNumber_of_retries());
-//        return exConfigDataResource;
-//    }
+    private static Resource createExperimentInput (Experiment_Input o){
+        ExperimentInputResource eInputResource = new ExperimentInputResource();
+        ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
+        eInputResource.setExperimentResource(experimentResource);
+        eInputResource.setInputType(o.getInputType());
+        eInputResource.setMetadata(o.getMetadata());
+        eInputResource.setExperimentKey(o.getEx_key());
+        eInputResource.setValue(o.getValue());
+        return eInputResource;
+    }
 
-    /**
-     *
-     * @param o Experiment MetaData model object
-     * @return Experiment MetaData resource object
-     */
-//    private static Resource createExperimentMetadata(Experiment_Metadata o) {
-//        ExperimentMetadataResource experimentMetadataResource = new ExperimentMetadataResource();
-//        experimentMetadataResource.setExpID(o.getExperiment_id());
-//        experimentMetadataResource.setDescription(o.getDescription());
-//        Gateway_Worker gw = new Gateway_Worker();
-//        gw.setGateway(o.getGateway());
-//        experimentMetadataResource.setExecutionUser(o.getExecution_user());
-//        experimentMetadataResource.setShareExp(o.isShare_experiment());
-//        experimentMetadataResource.setSubmittedDate(o.getSubmitted_date());
-//        GatewayResource gResource = (GatewayResource)createGateway(o.getGateway());
-//        experimentMetadataResource.setGateway(gResource);
-//        ProjectResource pResource = (ProjectResource)createProject(o.getProject());
-//        experimentMetadataResource.setProject(pResource);
-//        experimentMetadataResource.setExperimentName(o.getExperiment_name());
-//        return experimentMetadataResource;
-//    }
+    private static Resource createExperimentOutput (Experiment_Output o){
+        ExperimentOutputResource eOutputResource = new ExperimentOutputResource();
+        ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
+        eOutputResource.setExperimentResource(experimentResource);
+        eOutputResource.setExperimentKey(o.getEx_key());
+        eOutputResource.setValue(o.getValue());
+        eOutputResource.setOutputType(o.getOutputKeyType());
+        eOutputResource.setMetadata(o.getMetadata());
+        return eOutputResource;
+    }
 
-//    private static Resource createExperimentSummary (Experiment_Summary o){
-//        ExperimentSummaryResource summaryResource = new ExperimentSummaryResource();
-//        ExperimentMetadataResource metadata = (ExperimentMetadataResource)createExperimentMetadata(o.getExperiment_metadata());
-//        summaryResource.setExperimentMetadataResource(metadata);
-//        summaryResource.setLastUpdateTime(o.getLast_update_time());
-//        summaryResource.setStatus(o.getStatus());
-//        return summaryResource;
-//    }
+    private static Resource createWorkflowNodeDetail (WorkflowNodeDetail o){
+        WorkflowNodeDetailResource nodeDetailResource = new WorkflowNodeDetailResource();
+        ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
+        nodeDetailResource.setExperimentResource(experimentResource);
+        nodeDetailResource.setCreationTime(o.getCreationTime());
+        nodeDetailResource.setNodeInstanceId(o.getNodeId());
+        nodeDetailResource.setNodeName(o.getNodeName());
+        return nodeDetailResource;
+    }
 
-//    private static Resource createExperimentInput (Experiment_Input o){
-//        ExperimentInputResource eInputResource = new ExperimentInputResource();
-//        ExperimentMetadataResource metadata = (ExperimentMetadataResource)createExperimentMetadata(o.getExperiment_metadata());
-//        eInputResource.setExperimentMetadataResource(metadata);
-//        eInputResource.setExperimentKey(o.getEx_key());
-//        eInputResource.setValue(o.getValue());
-//        return eInputResource;
-//    }
+    private static Resource createTaskDetail(TaskDetail o){
+        TaskDetailResource taskDetailResource = new TaskDetailResource();
+        WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)createWorkflowNodeDetail(o.getNodeDetail());
+        taskDetailResource.setWorkflowNodeDetailResource(nodeDetailResource);
+        taskDetailResource.setCreationTime(o.getCreationTime());
+        taskDetailResource.setTaskId(o.getTaskId());
+        taskDetailResource.setApplicationId(o.getAppId());
+        taskDetailResource.setApplicationVersion(o.getAppVersion());
+        return taskDetailResource;
+    }
 
-//    private static Resource createExperimentOutput (Experiment_Output o){
-//        ExperimentOutputResource eOutputResource = new ExperimentOutputResource();
-//        ExperimentMetadataResource metadata = (ExperimentMetadataResource)createExperimentMetadata(o.getExperiment_metadata());
-//        eOutputResource.setExperimentMetadataResource(metadata);
-//        eOutputResource.setExperimentKey(o.getEx_key());
-//        eOutputResource.setValue(o.getValue());
-//        return eOutputResource;
-//    }
+    private static Resource createErrorDetail (ErrorDetail o){
+        ErrorDetailResource errorDetailResource = new ErrorDetailResource();
+        ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
+        errorDetailResource.setExperimentResource(experimentResource);
+        TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
+        errorDetailResource.setTaskDetailResource(taskDetailResource);
+        WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)createWorkflowNodeDetail(o.getNodeDetails());
+        errorDetailResource.setNodeDetail(nodeDetailResource);
+        errorDetailResource.setErrorId(o.getErrorID());
+        errorDetailResource.setCreationTime(o.getCreationTime());
+        errorDetailResource.setActualErrorMsg(o.getActualErrorMsg());
+        errorDetailResource.setUserFriendlyErrorMsg(o.getUserFriendlyErrorMsg());
+        errorDetailResource.setTransientPersistent(o.isTransientPersistent());
+        errorDetailResource.setErrorCategory(o.getErrorCategory());
+        errorDetailResource.setCorrectiveAction(o.getCorrectiveAction());
+        errorDetailResource.setActionableGroup(o.getActionableGroup());
+        return errorDetailResource;
+    }
 
-    /**
-     *
-     * @param o  Workflow_Data model object
+    private static Resource createApplicationInput (ApplicationInput o){
+        ApplicationInputResource inputResource = new ApplicationInputResource();
+        TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
+        inputResource.setTaskDetailResource(taskDetailResource);
+        inputResource.setInputKey(o.getInputKey());
+        inputResource.setInputType(o.getInputKeyType());
+        inputResource.setValue(o.getValue());
+        inputResource.setMetadata(o.getMetadata());
+        return inputResource;
+    }
+
+    private static Resource createApplicationOutput (ApplicationOutput o){
+        ApplicationOutputResource outputResource = new ApplicationOutputResource();
+        TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
+        outputResource.setTaskDetailResource(taskDetailResource);
+        outputResource.setOutputType(o.getOutputKeyType());
+        outputResource.setOutputKey(o.getOutputKey());
+        outputResource.setValue(o.getValue());
+        outputResource.setMetadata(o.getMetadata());
+        return outputResource;
+    }
+
+    private static Resource createNodeInput (NodeInput o){
+        NodeInputResource inputResource = new NodeInputResource();
+        WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)createWorkflowNodeDetail(o.getNodeDetails());
+        inputResource.setNodeDetailResource(nodeDetailResource);
+        inputResource.setInputKey(o.getInputKey());
+        inputResource.setInputType(o.getInputKeyType());
+        inputResource.setValue(o.getValue());
+        inputResource.setMetadata(o.getMetadata());
+        return inputResource;
+    }
+
+    private static Resource createNodeOutput (NodeOutput o){
+        NodeOutputResource outputResource = new NodeOutputResource();
+        WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)createWorkflowNodeDetail(o.getNode());
+        outputResource.setNodeDetailResource(nodeDetailResource);
+        outputResource.setOutputType(o.getOutputKeyType());
+        outputResource.setOutputKey(o.getOutputKey());
+        outputResource.setValue(o.getValue());
+        outputResource.setMetadata(o.getMetadata());
+        return outputResource;
+    }
+
+    private static Resource createJobDetail (JobDetail o){
+        JobDetailResource jobDetailResource = new JobDetailResource();
+        TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
+        jobDetailResource.setTaskDetailResource(taskDetailResource);
+        jobDetailResource.setJobDescription(o.getJobDescription());
+        jobDetailResource.setJobId(o.getJobId());
+        jobDetailResource.setCreationTime(o.getCreationTime());
+        return jobDetailResource;
+    }
+
+    private static Resource createDataTransferResource (DataTransferDetail o){
+        DataTransferDetailResource transferDetailResource = new DataTransferDetailResource();
+        TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
+        transferDetailResource.setTaskDetailResource(taskDetailResource);
+        transferDetailResource.setTransferId(o.getTransferId());
+        transferDetailResource.setCreationTime(o.getCreationTime());
+        transferDetailResource.setTransferDescription(o.getTransferDesc());
+        return transferDetailResource;
+    }
+
+    private static Resource createStatusResource (Status o){
+        StatusResource statusResource = new StatusResource();
+        ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
+        statusResource.setExperimentResource(experimentResource);
+        TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
+        statusResource.setTaskDetailResource(taskDetailResource);
+        WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)createWorkflowNodeDetail(o.getNode());
+        statusResource.setWorkflowNodeDetail(nodeDetailResource);
+        DataTransferDetailResource transferDetailResource = (DataTransferDetailResource)createDataTransferResource(o.getTransferDetail());
+        statusResource.setDataTransferDetail(transferDetailResource);
+        statusResource.setStatusId(o.getStatusId());
+        statusResource.setJobId(o.getJobId());
+        statusResource.setState(o.getState());
+        statusResource.setStatusUpdateTime(o.getStatusUpdateTime());
+        statusResource.setStatusType(o.getStatusType());
+        return statusResource;
+    }
+
+    private static Resource createExConfigDataResource (ExperimentConfigData o){
+        ConfigDataResource configDataResource = new ConfigDataResource();
+        ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
+        configDataResource.setExperimentResource(experimentResource);
+        configDataResource.setAiravataAutoSchedule(o.isAiravataAutoSchedule());
+        configDataResource.setOverrideManualParams(o.isOverrideManualParams());
+        configDataResource.setShareExp(o.isShareExp());
+        return configDataResource;
+    }
+
+    private static Resource createComputationalScheduling (Computational_Resource_Scheduling o){
+        ComputationSchedulingResource schedulingResource = new ComputationSchedulingResource();
+        ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
+        schedulingResource.setExperimentResource(experimentResource);
+        TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
+        schedulingResource.setTaskDetailResource(taskDetailResource);
+        schedulingResource.setSchedulingId(o.getSchedulingId());
+        schedulingResource.setResourceHostId(o.getResourceHostId());
+        schedulingResource.setCpuCount(o.getCpuCount());
+        schedulingResource.setNodeCount(o.getNodeCount());
+        schedulingResource.setNumberOfThreads(o.getNumberOfThreads());
+        schedulingResource.setQueueName(o.getQueueName());
+        schedulingResource.setWalltimeLimit(o.getWallTimeLimit());
+        schedulingResource.setJobStartTime(o.getJobStartTime());
+        schedulingResource.setPhysicalMemory(o.getTotalPhysicalmemory());
+        schedulingResource.setProjectName(o.getProjectName());
+        return schedulingResource;
+    }
+
+        /**
+         *
+         * @param o  Workflow_Data model object
      * @return  WorkflowDataResource object
      */
 //    private static Resource createWorkflowData(Workflow_Data o){
