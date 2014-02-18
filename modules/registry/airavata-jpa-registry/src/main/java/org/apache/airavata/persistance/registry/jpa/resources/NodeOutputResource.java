@@ -21,20 +21,18 @@
 
 package org.apache.airavata.persistance.registry.jpa.resources;
 
+import java.util.List;
+
+import javax.persistence.EntityManager;
+
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
-import org.apache.airavata.persistance.registry.jpa.model.NodeInput;
-import org.apache.airavata.persistance.registry.jpa.model.NodeInput_PK;
 import org.apache.airavata.persistance.registry.jpa.model.NodeOutput;
 import org.apache.airavata.persistance.registry.jpa.model.NodeOutput_PK;
 import org.apache.airavata.persistance.registry.jpa.model.WorkflowNodeDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
-
-import javax.persistence.EntityManager;
 
 public class NodeOutputResource extends AbstractResource {
 	private static final Logger logger = LoggerFactory.getLogger(NodeOutputResource.class);
