@@ -21,12 +21,21 @@
 
 package org.apache.airavata.persistance.registry.jpa.resources;
 
-import org.apache.airavata.persistance.registry.jpa.Resource;
-import org.apache.airavata.persistance.registry.jpa.ResourceType;
-
 import java.util.List;
 
+import javax.persistence.EntityManager;
+
+import org.apache.airavata.persistance.registry.jpa.Resource;
+import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
+import org.apache.airavata.persistance.registry.jpa.model.NodeInput;
+import org.apache.airavata.persistance.registry.jpa.model.NodeInput_PK;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class NodeInputResource extends AbstractResource {
+	private static final Logger logger = LoggerFactory.getLogger(NodeInputResource.class);
+
     private String nodeInstanceId;
     private String inputKey;
     private String inputType;
@@ -75,26 +84,36 @@ public class NodeInputResource extends AbstractResource {
 
     @Override
     public Resource create(ResourceType type) {
-        return null;
+        logger.error("Unsupported resource type for node input data resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void remove(ResourceType type, Object name) {
-
+        logger.error("Unsupported resource type for node input data resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Resource get(ResourceType type, Object name) {
-        return null;
+        logger.error("Unsupported resource type for node input data resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public List<Resource> get(ResourceType type) {
-        return null;
+        logger.error("Unsupported resource type for node input data resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void save() {
+        EntityManager em = ResourceUtils.getEntityManager();
+        NodeInput existingInput = em.find(NodeInput.class, new NodeInput_PK(inputKey, nodeInstanceId));
+        em.close();
 
+        em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+       
     }
 }

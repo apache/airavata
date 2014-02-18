@@ -21,13 +21,23 @@
 
 package org.apache.airavata.persistance.registry.jpa.resources;
 
-import org.apache.airavata.persistance.registry.jpa.Resource;
-import org.apache.airavata.persistance.registry.jpa.ResourceType;
-
 import java.util.List;
 
+import javax.persistence.EntityManager;
+
+import org.apache.airavata.persistance.registry.jpa.Resource;
+import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
+import org.apache.airavata.persistance.registry.jpa.model.ApplicationInput;
+import org.apache.airavata.persistance.registry.jpa.model.ApplicationInput_PK;
+import org.apache.airavata.persistance.registry.jpa.model.TaskDetail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ApplicationInputResource extends AbstractResource {
-    private String taskId;
+	private static final Logger logger = LoggerFactory.getLogger(ApplicationInputResource.class);
+
+	private String taskId;
     private String inputKey;
     private String inputType;
     private String metadata;
@@ -75,26 +85,57 @@ public class ApplicationInputResource extends AbstractResource {
 
     @Override
     public Resource create(ResourceType type) {
-        return null;
+        logger.error("Unsupported resource type for application input data resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void remove(ResourceType type, Object name) {
-
+        logger.error("Unsupported resource type for application input data resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Resource get(ResourceType type, Object name) {
-        return null;
+        logger.error("Unsupported resource type for application input data resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public List<Resource> get(ResourceType type) {
-        return null;
+        logger.error("Unsupported resource type for application input data resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void save() {
+        EntityManager em = ResourceUtils.getEntityManager();
+        ApplicationInput existingInput = em.find(ApplicationInput.class, new ApplicationInput_PK(inputKey, taskId));
+        em.close();
 
+        em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        ApplicationInput applicationInput = new ApplicationInput();
+        TaskDetail taskDetail = em.find(TaskDetail.class, taskId);
+        applicationInput.setTask(taskDetail);
+        applicationInput.setTaskId(taskDetail.getTaskId());
+        applicationInput.setInputKey(inputKey);
+        applicationInput.setInputKeyType(inputType);
+        applicationInput.setValue(value);
+        applicationInput.setMetadata(metadata);
+        
+        if (existingInput != null){
+            existingInput.setTask(taskDetail);
+            existingInput.setTaskId(taskDetail.getTaskId());
+            existingInput.setInputKey(inputKey);
+            existingInput.setInputKeyType(inputType);
+            existingInput.setValue(value);
+            existingInput.setMetadata(metadata);
+            applicationInput = em.merge(existingInput);
+        }else {
+            em.persist(applicationInput);
+        }
+        em.getTransaction().commit();
+        em.close();
     }
 }
