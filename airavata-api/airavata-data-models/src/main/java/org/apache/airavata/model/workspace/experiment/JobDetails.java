@@ -57,6 +57,7 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField JOB_STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("jobStatus", org.apache.thrift.protocol.TType.STRUCT, (short)4);
   private static final org.apache.thrift.protocol.TField APPLICATION_STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationStatus", org.apache.thrift.protocol.TType.STRUCT, (short)5);
   private static final org.apache.thrift.protocol.TField ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("errors", org.apache.thrift.protocol.TType.LIST, (short)6);
+  private static final org.apache.thrift.protocol.TField COMPUTE_RESOURCE_CONSUMED_FIELD_DESC = new org.apache.thrift.protocol.TField("computeResourceConsumed", org.apache.thrift.protocol.TType.STRING, (short)7);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -70,6 +71,7 @@ import org.slf4j.LoggerFactory;
   private JobStatus jobStatus; // optional
   private ApplicationStatus applicationStatus; // optional
   private List<ErrorDetails> errors; // optional
+  private String computeResourceConsumed; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -78,7 +80,8 @@ import org.slf4j.LoggerFactory;
     CREATION_TIME((short)3, "creationTime"),
     JOB_STATUS((short)4, "jobStatus"),
     APPLICATION_STATUS((short)5, "applicationStatus"),
-    ERRORS((short)6, "errors");
+    ERRORS((short)6, "errors"),
+    COMPUTE_RESOURCE_CONSUMED((short)7, "computeResourceConsumed");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -105,6 +108,8 @@ import org.slf4j.LoggerFactory;
           return APPLICATION_STATUS;
         case 6: // ERRORS
           return ERRORS;
+        case 7: // COMPUTE_RESOURCE_CONSUMED
+          return COMPUTE_RESOURCE_CONSUMED;
         default:
           return null;
       }
@@ -147,7 +152,7 @@ import org.slf4j.LoggerFactory;
   // isset id assignments
   private static final int __CREATIONTIME_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.JOB_STATUS,_Fields.APPLICATION_STATUS,_Fields.ERRORS};
+  private _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.JOB_STATUS,_Fields.APPLICATION_STATUS,_Fields.ERRORS,_Fields.COMPUTE_RESOURCE_CONSUMED};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -164,6 +169,8 @@ import org.slf4j.LoggerFactory;
     tmpMap.put(_Fields.ERRORS, new org.apache.thrift.meta_data.FieldMetaData("errors", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ErrorDetails.class))));
+    tmpMap.put(_Fields.COMPUTE_RESOURCE_CONSUMED, new org.apache.thrift.meta_data.FieldMetaData("computeResourceConsumed", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(JobDetails.class, metaDataMap);
   }
@@ -207,6 +214,9 @@ import org.slf4j.LoggerFactory;
       }
       this.errors = __this__errors;
     }
+    if (other.isSetComputeResourceConsumed()) {
+      this.computeResourceConsumed = other.computeResourceConsumed;
+    }
   }
 
   public JobDetails deepCopy() {
@@ -223,6 +233,7 @@ import org.slf4j.LoggerFactory;
     this.jobStatus = null;
     this.applicationStatus = null;
     this.errors = null;
+    this.computeResourceConsumed = null;
   }
 
   public String getJobID() {
@@ -377,6 +388,29 @@ import org.slf4j.LoggerFactory;
     }
   }
 
+  public String getComputeResourceConsumed() {
+    return this.computeResourceConsumed;
+  }
+
+  public void setComputeResourceConsumed(String computeResourceConsumed) {
+    this.computeResourceConsumed = computeResourceConsumed;
+  }
+
+  public void unsetComputeResourceConsumed() {
+    this.computeResourceConsumed = null;
+  }
+
+  /** Returns true if field computeResourceConsumed is set (has been assigned a value) and false otherwise */
+  public boolean isSetComputeResourceConsumed() {
+    return this.computeResourceConsumed != null;
+  }
+
+  public void setComputeResourceConsumedIsSet(boolean value) {
+    if (!value) {
+      this.computeResourceConsumed = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case JOB_ID:
@@ -427,6 +461,14 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case COMPUTE_RESOURCE_CONSUMED:
+      if (value == null) {
+        unsetComputeResourceConsumed();
+      } else {
+        setComputeResourceConsumed((String)value);
+      }
+      break;
+
     }
   }
 
@@ -449,6 +491,9 @@ import org.slf4j.LoggerFactory;
 
     case ERRORS:
       return getErrors();
+
+    case COMPUTE_RESOURCE_CONSUMED:
+      return getComputeResourceConsumed();
 
     }
     throw new IllegalStateException();
@@ -473,6 +518,8 @@ import org.slf4j.LoggerFactory;
       return isSetApplicationStatus();
     case ERRORS:
       return isSetErrors();
+    case COMPUTE_RESOURCE_CONSUMED:
+      return isSetComputeResourceConsumed();
     }
     throw new IllegalStateException();
   }
@@ -541,6 +588,15 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_errors && that_present_errors))
         return false;
       if (!this.errors.equals(that.errors))
+        return false;
+    }
+
+    boolean this_present_computeResourceConsumed = true && this.isSetComputeResourceConsumed();
+    boolean that_present_computeResourceConsumed = true && that.isSetComputeResourceConsumed();
+    if (this_present_computeResourceConsumed || that_present_computeResourceConsumed) {
+      if (!(this_present_computeResourceConsumed && that_present_computeResourceConsumed))
+        return false;
+      if (!this.computeResourceConsumed.equals(that.computeResourceConsumed))
         return false;
     }
 
@@ -620,6 +676,16 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetComputeResourceConsumed()).compareTo(other.isSetComputeResourceConsumed());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetComputeResourceConsumed()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.computeResourceConsumed, other.computeResourceConsumed);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -688,6 +754,16 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.errors);
+      }
+      first = false;
+    }
+    if (isSetComputeResourceConsumed()) {
+      if (!first) sb.append(", ");
+      sb.append("computeResourceConsumed:");
+      if (this.computeResourceConsumed == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.computeResourceConsumed);
       }
       first = false;
     }
@@ -811,6 +887,14 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 7: // COMPUTE_RESOURCE_CONSUMED
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.computeResourceConsumed = iprot.readString();
+              struct.setComputeResourceConsumedIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -867,6 +951,13 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
+      if (struct.computeResourceConsumed != null) {
+        if (struct.isSetComputeResourceConsumed()) {
+          oprot.writeFieldBegin(COMPUTE_RESOURCE_CONSUMED_FIELD_DESC);
+          oprot.writeString(struct.computeResourceConsumed);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -899,7 +990,10 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetErrors()) {
         optionals.set(3);
       }
-      oprot.writeBitSet(optionals, 4);
+      if (struct.isSetComputeResourceConsumed()) {
+        optionals.set(4);
+      }
+      oprot.writeBitSet(optionals, 5);
       if (struct.isSetCreationTime()) {
         oprot.writeI64(struct.creationTime);
       }
@@ -918,6 +1012,9 @@ import org.slf4j.LoggerFactory;
           }
         }
       }
+      if (struct.isSetComputeResourceConsumed()) {
+        oprot.writeString(struct.computeResourceConsumed);
+      }
     }
 
     @Override
@@ -927,7 +1024,7 @@ import org.slf4j.LoggerFactory;
       struct.setJobIDIsSet(true);
       struct.jobDescription = iprot.readString();
       struct.setJobDescriptionIsSet(true);
-      BitSet incoming = iprot.readBitSet(4);
+      BitSet incoming = iprot.readBitSet(5);
       if (incoming.get(0)) {
         struct.creationTime = iprot.readI64();
         struct.setCreationTimeIsSet(true);
@@ -955,6 +1052,10 @@ import org.slf4j.LoggerFactory;
           }
         }
         struct.setErrorsIsSet(true);
+      }
+      if (incoming.get(4)) {
+        struct.computeResourceConsumed = iprot.readString();
+        struct.setComputeResourceConsumedIsSet(true);
       }
     }
   }
