@@ -33,6 +33,7 @@
             <modules>
                 <module>airavata-api-stubs</module>
                 <module>airavata-data-models</module>
+                <module>airavata-model-utils</module>
                 <module>airavata-api-server</module>
                 <module>airavata-client-sdks</module>
             </modules>
