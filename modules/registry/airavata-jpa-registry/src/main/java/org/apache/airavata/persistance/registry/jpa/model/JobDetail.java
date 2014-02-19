@@ -38,6 +38,9 @@ public class JobDetail {
     private String jobDescription;
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
+    @Column(name = "COMPUTE_RESOURCE_CONSUMED")
+    private String computeResourceConsumed;
+
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "TASK_ID")
@@ -81,5 +84,13 @@ public class JobDetail {
 
     public void setTask(TaskDetail task) {
         this.task = task;
+    }
+
+    public String getComputeResourceConsumed() {
+        return computeResourceConsumed;
+    }
+
+    public void setComputeResourceConsumed(String computeResourceConsumed) {
+        this.computeResourceConsumed = computeResourceConsumed;
     }
 }

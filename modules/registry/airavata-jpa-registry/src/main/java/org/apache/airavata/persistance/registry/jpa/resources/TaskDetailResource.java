@@ -26,6 +26,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.apache.airavata.registry.cpi.utils.StatusType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -446,4 +447,78 @@ public class TaskDetailResource extends AbstractResource {
         em.getTransaction().commit();
         em.close();
     }
+
+    public List<ApplicationInputResource> getApplicationInputs() {
+        List<ApplicationInputResource> applicationInputResources = new ArrayList<ApplicationInputResource>();
+        List<Resource> resources = get(ResourceType.APPLICATION_INPUT);
+        for (Resource resource : resources) {
+            ApplicationInputResource inputResource = (ApplicationInputResource) resource;
+            applicationInputResources.add(inputResource);
+        }
+        return applicationInputResources;
+    }
+
+    public List<ApplicationOutputResource> getApplicationOutputs(){
+        List<ApplicationOutputResource> outputResources = new ArrayList<ApplicationOutputResource>();
+        List<Resource> resources = get(ResourceType.APPLICATION_OUTPUT);
+        for (Resource resource : resources) {
+            ApplicationOutputResource outputResource = (ApplicationOutputResource) resource;
+            outputResources.add(outputResource);
+        }
+        return outputResources;
+    }
+
+    public StatusResource getTaskStatus(){
+        List<Resource> resources = get(ResourceType.STATUS);
+        for (Resource resource : resources) {
+            StatusResource taskStatus = (StatusResource) resource;
+            if(taskStatus.getStatusType().equals(StatusType.TASK)){
+                return taskStatus;
+            }
+        }
+        return null;
+    }
+
+    public List<JobDetailResource> getJobDetailList(){
+        List<JobDetailResource> jobDetailResources = new ArrayList<JobDetailResource>();
+        List<Resource> resources = get(ResourceType.JOB_DETAIL);
+        for (Resource resource : resources) {
+            JobDetailResource jobDetailResource = (JobDetailResource) resource;
+            jobDetailResources.add(jobDetailResource);
+        }
+        return jobDetailResources;
+    }
+
+    public List<DataTransferDetailResource> getDataTransferDetailList(){
+        List<DataTransferDetailResource> transferDetails = new ArrayList<DataTransferDetailResource>();
+        List<Resource> resources = get(ResourceType.DATA_TRANSFER_DETAIL);
+        for (Resource resource : resources) {
+            DataTransferDetailResource transferDetailResource = (DataTransferDetailResource) resource;
+            transferDetails.add(transferDetailResource);
+        }
+        return transferDetails;
+    }
+
+    public List<ErrorDetailResource> getErrorDetailList(){
+        List<ErrorDetailResource> errorDetailResources = new ArrayList<ErrorDetailResource>();
+        List<Resource> resources = get(ResourceType.ERROR_DETAIL);
+        for (Resource resource : resources) {
+            ErrorDetailResource errorDetailResource = (ErrorDetailResource) resource;
+            errorDetailResources.add(errorDetailResource);
+        }
+        return errorDetailResources;
+    }
+
+    public ComputationSchedulingResource getComputationScheduling (String taskId){
+        return  (ComputationSchedulingResource)get(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, taskId);
+    }
+
+    public AdvanceInputDataHandlingResource getInputDataHandling (String taskId){
+        return  (AdvanceInputDataHandlingResource)get(ResourceType.ADVANCE_INPUT_DATA_HANDLING, taskId);
+    }
+
+    public AdvancedOutputDataHandlingResource getOutputDataHandling (String taskId){
+        return  (AdvancedOutputDataHandlingResource)get(ResourceType.ADVANCE_OUTPUT_DATA_HANDLING, taskId);
+    }
+
 }
