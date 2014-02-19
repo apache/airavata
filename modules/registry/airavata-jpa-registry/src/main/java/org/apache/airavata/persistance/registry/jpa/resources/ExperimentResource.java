@@ -32,7 +32,6 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
-import org.bouncycastle.jce.provider.JDKPSSSigner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

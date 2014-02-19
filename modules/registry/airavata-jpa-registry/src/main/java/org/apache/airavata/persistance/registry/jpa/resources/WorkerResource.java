@@ -76,6 +76,12 @@ public class WorkerResource extends AbstractResource {
 				userWorkflowResource.setGateway(gateway);
 				result=userWorkflowResource;
                 break;
+            case EXPERIMENT:
+                ExperimentResource experimentResource = new ExperimentResource();
+                experimentResource.setWorker(this);
+                experimentResource.setGateway(gateway);
+                result = experimentResource;
+                break;
 			default:
                 logger.error("Unsupported resource type for worker resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported resource type for worker resource.");
@@ -109,6 +115,12 @@ public class WorkerResource extends AbstractResource {
                 q = generator.deleteQuery(em);
 	            q.executeUpdate();
 	            break;
+            case EXPERIMENT:
+                generator = new QueryGenerator(EXPERIMENT);
+                generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
+                q = generator.deleteQuery(em);
+                q.executeUpdate();
+                break;
 			default:
                 logger.error("Unsupported resource type for worker resource.", new IllegalArgumentException());
                 break;
@@ -146,6 +158,13 @@ public class WorkerResource extends AbstractResource {
 	            User_Workflow userWorkflow = (User_Workflow) q.getSingleResult();
                 result= Utils.getResource(ResourceType.USER_WORKFLOW, userWorkflow);
 	            break;
+            case EXPERIMENT:
+                generator = new QueryGenerator(EXPERIMENT);
+                generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
+                q = generator.selectQuery(em);
+                Experiment experiment = (Experiment) q.getSingleResult();
+                result= Utils.getResource(ResourceType.EXPERIMENT, experiment);
+                break;
 			default:
                 logger.error("Unsupported resource type for worker resource.", new IllegalArgumentException());
                 break;
@@ -231,6 +250,16 @@ public class WorkerResource extends AbstractResource {
 		            result.add(userWorkflowResource);
 	            }
 	            break;
+            case EXPERIMENT:
+                generator = new QueryGenerator(EXPERIMENT);
+                generator.setParameter(ExperimentConstants.EXECUTION_USER, getUser());
+                q = generator.selectQuery(em);
+                for (Object o : q.getResultList()) {
+                    Experiment experiment = (Experiment) o;
+                    ExperimentResource experimentResource = (ExperimentResource)Utils.getResource(ResourceType.EXPERIMENT, experiment);
+                    result.add(experimentResource);
+                }
+                break;
 			default:
                 logger.error("Unsupported resource type for worker resource.", new IllegalArgumentException());
                 break;
@@ -414,9 +443,9 @@ public class WorkerResource extends AbstractResource {
      * @param name experiment name
      * @return experiment resource
      */
-//    public ExperimentMetadataResource getExperiment(String name){
-//		return (ExperimentMetadataResource)get(ResourceType.EXPERIMENT_METADATA, name);
-//	}
+    public ExperimentResource getExperiment(String name){
+		return (ExperimentResource)get(ResourceType.EXPERIMENT, name);
+	}
 //
 //    public GFacJobDataResource getGFacJob(String jobId){
 //    	return (GFacJobDataResource)get(ResourceType.GFAC_JOB_DATA,jobId);
@@ -426,14 +455,14 @@ public class WorkerResource extends AbstractResource {
      *
      * @return list of experiments for the user
      */
-//	public List<ExperimentMetadataResource> getExperiments(){
-//		List<ExperimentMetadataResource> result=new ArrayList<ExperimentMetadataResource>();
-//		List<Resource> list = get(ResourceType.EXPERIMENT_METADATA);
-//		for (Resource resource : list) {
-//			result.add((ExperimentMetadataResource) resource);
-//		}
-//		return result;
-//	}
+	public List<ExperimentResource> getExperiments(){
+		List<ExperimentResource> result=new ArrayList<ExperimentResource>();
+		List<Resource> list = get(ResourceType.EXPERIMENT);
+		for (Resource resource : list) {
+			result.add((ExperimentResource) resource);
+		}
+		return result;
+	}
 
     /**
      *

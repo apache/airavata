@@ -23,11 +23,19 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
+import org.apache.airavata.persistance.registry.jpa.model.Computational_Resource_Scheduling;
+import org.apache.airavata.persistance.registry.jpa.model.Experiment;
+import org.apache.airavata.persistance.registry.jpa.model.TaskDetail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityManager;
 import java.sql.Timestamp;
 import java.util.List;
 
 public class ComputationSchedulingResource extends AbstractResource {
+    private static final Logger logger = LoggerFactory.getLogger(ComputationSchedulingResource.class);
     private int schedulingId;
     private ExperimentResource experimentResource;
     private TaskDetailResource taskDetailResource;
@@ -139,26 +147,52 @@ public class ComputationSchedulingResource extends AbstractResource {
 
     @Override
     public Resource create(ResourceType type) {
-        return null;
+        logger.error("Unsupported resource type for computational scheduling resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void remove(ResourceType type, Object name) {
-
+        logger.error("Unsupported resource type for computational scheduling resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Resource get(ResourceType type, Object name) {
-        return null;
+        logger.error("Unsupported resource type for computational scheduling resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public List<Resource> get(ResourceType type) {
-        return null;
+        logger.error("Unsupported resource type for computational scheduling resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void save() {
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
 
+        Computational_Resource_Scheduling scheduling = new Computational_Resource_Scheduling();
+        Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
+        TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+        scheduling.setExpId(experimentResource.getExpID());
+        scheduling.setExperiment(experiment);
+        scheduling.setTaskId(taskDetailResource.getTaskId());
+        scheduling.setTask(taskDetail);
+        scheduling.setResourceHostId(resourceHostId);
+        scheduling.setCpuCount(cpuCount);
+        scheduling.setNodeCount(nodeCount);
+        scheduling.setNumberOfThreads(numberOfThreads);
+        scheduling.setQueueName(queueName);
+        scheduling.setWallTimeLimit(walltimeLimit);
+        scheduling.setJobStartTime(jobStartTime);
+        scheduling.setTotalPhysicalmemory(physicalMemory);
+        scheduling.setProjectName(projectName);
+        em.persist(scheduling);
+        schedulingId = scheduling.getSchedulingId();
+        em.getTransaction().commit();
+        em.close();
     }
 }

@@ -23,11 +23,18 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
+import org.apache.airavata.persistance.registry.jpa.model.Experiment;
+import org.apache.airavata.persistance.registry.jpa.model.ExperimentConfigData;
 import org.apache.airavata.schemas.gfac.BooleanParameterType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 
 public class ConfigDataResource extends AbstractResource {
+    private static final Logger logger = LoggerFactory.getLogger(ConfigDataResource.class);
     private ExperimentResource experimentResource;
     private boolean airavataAutoSchedule;
     private boolean overrideManualParams;
@@ -67,26 +74,54 @@ public class ConfigDataResource extends AbstractResource {
 
     @Override
     public Resource create(ResourceType type) {
-        return null;
+        logger.error("Unsupported resource type for config data resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void remove(ResourceType type, Object name) {
-
+        logger.error("Unsupported resource type for config data resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Resource get(ResourceType type, Object name) {
-        return null;
+        logger.error("Unsupported resource type for config data resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public List<Resource> get(ResourceType type) {
-        return null;
+        logger.error("Unsupported resource type for config data resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void save() {
+        EntityManager em = ResourceUtils.getEntityManager();
+        ExperimentConfigData existingConfig = em.find(ExperimentConfigData.class, experimentResource.getExpID());
+        em.close();
 
+        em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        ExperimentConfigData configData = new ExperimentConfigData();
+        Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
+        configData.setExpId(experimentResource.getExpID());
+        configData.setExperiment(experiment);
+        configData.setAiravataAutoSchedule(airavataAutoSchedule);
+        configData.setOverrideManualParams(overrideManualParams);
+        configData.setShareExp(shareExp);
+        if (existingConfig != null){
+            existingConfig.setExpId(experimentResource.getExpID());
+            existingConfig.setExperiment(experiment);
+            existingConfig.setAiravataAutoSchedule(airavataAutoSchedule);
+            existingConfig.setOverrideManualParams(overrideManualParams);
+            existingConfig.setShareExp(shareExp);
+            configData = em.merge(existingConfig);
+        }else {
+            em.merge(configData);
+        }
+        em.getTransaction().commit();
+        em.close();
     }
 }
