@@ -23,11 +23,20 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
+import org.apache.airavata.persistance.registry.jpa.model.ErrorDetail;
+import org.apache.airavata.persistance.registry.jpa.model.Experiment;
+import org.apache.airavata.persistance.registry.jpa.model.TaskDetail;
+import org.apache.airavata.persistance.registry.jpa.model.WorkflowNodeDetail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityManager;
 import java.sql.Timestamp;
 import java.util.List;
 
 public class ErrorDetailResource extends AbstractResource {
+    private static final Logger logger = LoggerFactory.getLogger(ErrorDetailResource.class);
     private int errorId;
     private ExperimentResource experimentResource;
     private TaskDetailResource taskDetailResource;
@@ -130,26 +139,68 @@ public class ErrorDetailResource extends AbstractResource {
 
     @Override
     public Resource create(ResourceType type) {
-        return null;
+        logger.error("Unsupported resource type for error details data resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void remove(ResourceType type, Object name) {
-
+        logger.error("Unsupported resource type for error details data resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Resource get(ResourceType type, Object name) {
-        return null;
+        logger.error("Unsupported resource type for error details data resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public List<Resource> get(ResourceType type) {
-        return null;
+        logger.error("Unsupported resource type for error details data resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void save() {
+        EntityManager em = ResourceUtils.getEntityManager();
+        ErrorDetail existingErrorDetail = em.find(ErrorDetail.class, errorId);
+        em.close();
 
+        em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        ErrorDetail errorDetail = new ErrorDetail();
+        errorDetail.setErrorID(errorId);
+        Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
+        errorDetail.setExperiment(experiment);
+        TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+        errorDetail.setTask(taskDetail);
+        WorkflowNodeDetail workflowNodeDetail = em.find(WorkflowNodeDetail.class, nodeDetail.getNodeInstanceId());
+        errorDetail.setNodeDetails(workflowNodeDetail);
+        errorDetail.setCreationTime(creationTime);
+        errorDetail.setActualErrorMsg(actualErrorMsg);
+        errorDetail.setUserFriendlyErrorMsg(userFriendlyErrorMsg);
+        errorDetail.setTransientPersistent(transientPersistent);
+        errorDetail.setErrorCategory(errorCategory);
+        errorDetail.setCorrectiveAction(correctiveAction);
+        errorDetail.setActionableGroup(actionableGroup);
+        if (existingErrorDetail != null){
+            existingErrorDetail.setErrorID(errorId);
+            existingErrorDetail.setExperiment(experiment);
+            existingErrorDetail.setTask(taskDetail);
+            existingErrorDetail.setNodeDetails(workflowNodeDetail);
+            existingErrorDetail.setCreationTime(creationTime);
+            existingErrorDetail.setActualErrorMsg(actualErrorMsg);
+            existingErrorDetail.setUserFriendlyErrorMsg(userFriendlyErrorMsg);
+            existingErrorDetail.setTransientPersistent(transientPersistent);
+            existingErrorDetail.setErrorCategory(errorCategory);
+            existingErrorDetail.setCorrectiveAction(correctiveAction);
+            existingErrorDetail.setActionableGroup(actionableGroup);
+            errorDetail = em.merge(existingErrorDetail);
+        }else {
+            em.merge(errorDetail);
+        }
+        em.getTransaction().commit();
+        em.close();
     }
 }
