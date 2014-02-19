@@ -21,8 +21,8 @@
 
 package org.apache.airavata.persistance.registry.jpa.impl;
 
-import org.apache.airavata.model.experiment.BasicMetadata;
-import org.apache.airavata.model.experiment.ConfigurationData;
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.ParentDataType;
@@ -30,7 +30,6 @@ import org.apache.airavata.registry.cpi.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sql.rowset.serial.SerialStruct;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,8 +49,8 @@ public class RegistryImpl implements Registry {
     @Override
     public Object add(ParentDataType dataType, Object newObjectToAdd) {
         switch (dataType){
-            case EXPERIMENT_BASIC_DATA:
-                return experimentRegistry.add((BasicMetadata) newObjectToAdd);
+            case EXPERIMENT:
+                return experimentRegistry.add((Experiment) newObjectToAdd);
             default:
                 logger.error("Unsupported top level type..", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
@@ -73,15 +72,48 @@ public class RegistryImpl implements Registry {
     public void add(ChildDataType dataType, Object newObjectToAdd, String dependentIdentifier) {
         switch (dataType){
             case EXPERIMENT_CONFIGURATION_DATA:
-                experimentRegistry.add((ConfigurationData)newObjectToAdd, (String)dependentIdentifier);
+                experimentRegistry.add((UserConfigurationData)newObjectToAdd, (String)dependentIdentifier);
                 break;
-            case EXPERIMENT_SUMMARY:
+            case EXPERIMENT_INPUT:
                 // no thrift model yet
                 break;
-            case EXPERIMENT_GENERATED_DATA:
+            case EXPERIMENT_OUTPUT:
                 // no thrift model yet
                 break;
-            case EXECUTION_ERROR:
+            case TASK_DETAIL:
+                // no thrift model yet
+                break;
+            case ERROR_DETAIL:
+                // no thrift model yet
+                break;
+            case APPLICATION_INPUT:
+                // no thrift model yet
+                break;
+            case APPLICATION_OUTPUT:
+                // no thrift model yet
+                break;
+            case NODE_INPUT:
+                // no thrift model yet
+                break;
+            case JOB_DETAIL:
+                // no thrift model yet
+                break;
+            case DATA_TRANSFER_DETAIL:
+                // no thrift model yet
+                break;
+            case STATUS:
+                // no thrift model yet
+                break;
+            case ADVANCE_INPUT_DATA_HANDLING:
+                // no thrift model yet
+                break;
+            case COMPUTATIONAL_RESOURCE_SCHEDULING:
+                // no thrift model yet
+                break;
+            case ADVANCE_OUTPUT_DATA_HANDLING:
+                // no thrift model yet
+                break;
+            case QOS_PARAM:
                 // no thrift model yet
                 break;
             default:
@@ -104,7 +136,7 @@ public class RegistryImpl implements Registry {
     @Override
     public void update(DataType dataType, Object newObjectToUpdate, String identifier) {
         switch (dataType){
-            case EXPERIMENT_BASIC_DATA:
+            case EXPERIMENT:
                 experimentRegistry.update(newObjectToUpdate, identifier);
                 break;
             case EXPERIMENT_CONFIGURATION_DATA:
@@ -132,7 +164,7 @@ public class RegistryImpl implements Registry {
     @Override
     public void update(DataType dataType, String identifier, String fieldName, Object value) {
         switch (dataType){
-            case EXPERIMENT_BASIC_DATA:
+            case EXPERIMENT:
                 experimentRegistry.updateExpBasicMetadataField(identifier, fieldName, value);
                 break;
             case EXPERIMENT_CONFIGURATION_DATA:
@@ -157,7 +189,7 @@ public class RegistryImpl implements Registry {
     public Object get(DataType dataType, String identifier) {
 
         switch (dataType){
-            case EXPERIMENT_BASIC_DATA:
+            case EXPERIMENT:
                 return experimentRegistry.getBasicMetaData(identifier, null);
             case EXPERIMENT_CONFIGURATION_DATA:
                 return experimentRegistry.getConfigData(identifier, null);
@@ -180,15 +212,15 @@ public class RegistryImpl implements Registry {
     public List<Object> get(DataType dataType, String fieldName, Object value) {
         List<Object> result = new ArrayList<Object>();
         switch (dataType){
-            case EXPERIMENT_BASIC_DATA:
-                List<BasicMetadata> experimentMetaDataList = experimentRegistry.getExperimentMetaDataList(fieldName, value);
-                for (BasicMetadata basicMetadata : experimentMetaDataList){
-                    result.add(basicMetadata);
+            case EXPERIMENT:
+                List<Experiment> experimentMetaDataList = experimentRegistry.getExperimentMetaDataList(fieldName, value);
+                for (Experiment experiment : experimentMetaDataList){
+                    result.add(experiment);
                 }
                 return result;
             case EXPERIMENT_CONFIGURATION_DATA:
-                List<ConfigurationData> configurationDataList = experimentRegistry.getConfigurationDataList(fieldName, value);
-                for (ConfigurationData configData : configurationDataList){
+                List<UserConfigurationData> configurationDataList = experimentRegistry.getConfigurationDataList(fieldName, value);
+                for (UserConfigurationData configData : configurationDataList){
                     result.add(configData);
                 }
                 return result;
@@ -212,7 +244,7 @@ public class RegistryImpl implements Registry {
     @Override
     public Object getValue(DataType dataType, String identifier, String field) {
         switch (dataType){
-            case EXPERIMENT_BASIC_DATA:
+            case EXPERIMENT:
                 return experimentRegistry.getBasicMetaData(identifier, field);
             case EXPERIMENT_CONFIGURATION_DATA:
                 return experimentRegistry.getConfigData(identifier, field);
@@ -236,7 +268,7 @@ public class RegistryImpl implements Registry {
     @Override
     public List<String> getIds(DataType dataType, String fieldName, Object value) {
         switch (dataType){
-            case EXPERIMENT_BASIC_DATA:
+            case EXPERIMENT:
                 return experimentRegistry.getExperimentIDs(fieldName, value);
             case EXPERIMENT_CONFIGURATION_DATA:
                 return experimentRegistry.getExperimentIDs(fieldName, value);
@@ -256,7 +288,7 @@ public class RegistryImpl implements Registry {
     @Override
     public void remove(DataType dataType, String identifier) {
         switch (dataType){
-            case EXPERIMENT_BASIC_DATA:
+            case EXPERIMENT:
                 experimentRegistry.removeExperiment(identifier);
                 break;
             case EXPERIMENT_CONFIGURATION_DATA:
@@ -278,7 +310,7 @@ public class RegistryImpl implements Registry {
     @Override
     public boolean isExist(DataType dataType, String identifier) {
         switch (dataType){
-            case EXPERIMENT_BASIC_DATA:
+            case EXPERIMENT:
                 return experimentRegistry.isExperimentBasicDataExist(identifier);
             case EXPERIMENT_CONFIGURATION_DATA:
                 return experimentRegistry.isExperimentConfigDataExist(identifier);

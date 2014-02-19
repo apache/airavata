@@ -636,6 +636,7 @@ public class Utils {
         WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)createWorkflowNodeDetail(o.getNodeDetails());
         errorDetailResource.setNodeDetail(nodeDetailResource);
         errorDetailResource.setErrorId(o.getErrorID());
+        errorDetailResource.setJobId(o.getJobId());
         errorDetailResource.setCreationTime(o.getCreationTime());
         errorDetailResource.setActualErrorMsg(o.getActualErrorMsg());
         errorDetailResource.setUserFriendlyErrorMsg(o.getUserFriendlyErrorMsg());
@@ -697,6 +698,7 @@ public class Utils {
         jobDetailResource.setJobDescription(o.getJobDescription());
         jobDetailResource.setJobId(o.getJobId());
         jobDetailResource.setCreationTime(o.getCreationTime());
+        jobDetailResource.setComputeResourceConsumed(o.getComputeResourceConsumed());
         return jobDetailResource;
     }
 
