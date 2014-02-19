@@ -23,10 +23,18 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
+import org.apache.airavata.persistance.registry.jpa.model.AdvancedOutputDataHandling;
+import org.apache.airavata.persistance.registry.jpa.model.Experiment;
+import org.apache.airavata.persistance.registry.jpa.model.TaskDetail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 
 public class AdvancedOutputDataHandlingResource extends AbstractResource {
+    private static final Logger logger = LoggerFactory.getLogger(AdvancedOutputDataHandlingResource.class);
     private int outputDataHandlingId;
     private ExperimentResource experimentResource;
     private TaskDetailResource taskDetailResource;
@@ -84,26 +92,45 @@ public class AdvancedOutputDataHandlingResource extends AbstractResource {
 
     @Override
     public Resource create(ResourceType type) {
-        return null;
+        logger.error("Unsupported resource type for output data handling resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void remove(ResourceType type, Object name) {
-
+        logger.error("Unsupported resource type for output data handling resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Resource get(ResourceType type, Object name) {
-        return null;
+        logger.error("Unsupported resource type for output data handling resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public List<Resource> get(ResourceType type) {
-        return null;
+        logger.error("Unsupported resource type for output data handling resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void save() {
-
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
+        Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
+        TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+        dataHandling.setExpId(experimentResource.getExpID());
+        dataHandling.setExperiment(experiment);
+        dataHandling.setTaskId(taskDetailResource.getTaskId());
+        dataHandling.setTask(taskDetail);
+        dataHandling.setDataRegUrl(dataRegUrl);
+        dataHandling.setOutputDataDir(outputDataDir);
+        dataHandling.setPersistOutputData(persistOutputData);
+        em.persist(dataHandling);
+        outputDataHandlingId = dataHandling.getOutputDataHandlingId();
+        em.getTransaction().commit();
+        em.close();
     }
 }

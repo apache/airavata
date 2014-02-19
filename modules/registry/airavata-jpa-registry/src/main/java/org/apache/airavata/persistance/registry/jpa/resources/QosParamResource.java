@@ -23,10 +23,18 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
+import org.apache.airavata.persistance.registry.jpa.model.Experiment;
+import org.apache.airavata.persistance.registry.jpa.model.QosParam;
+import org.apache.airavata.persistance.registry.jpa.model.TaskDetail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 
 public class QosParamResource extends AbstractResource {
+    private static final Logger logger = LoggerFactory.getLogger(QosParamResource.class);
     private int  qosId;
     private ExperimentResource experimentResource;
     private TaskDetailResource taskDetailResource;
@@ -84,26 +92,45 @@ public class QosParamResource extends AbstractResource {
 
     @Override
     public Resource create(ResourceType type) {
-        return null;
+        logger.error("Unsupported resource type for qos params resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void remove(ResourceType type, Object name) {
-
+        logger.error("Unsupported resource type for qos params resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Resource get(ResourceType type, Object name) {
-        return null;
+        logger.error("Unsupported resource type for qos params resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public List<Resource> get(ResourceType type) {
-        return null;
+        logger.error("Unsupported resource type for qos params resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void save() {
-
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        QosParam qosParam = new QosParam();
+        Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
+        TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+        qosParam.setExpId(experimentResource.getExpID());
+        qosParam.setExperiment(experiment);
+        qosParam.setTaskId(taskDetailResource.getTaskId());
+        qosParam.setTask(taskDetail);
+        qosParam.setStartExecutionAt(startExecutionAt);
+        qosParam.setExecuteBefore(executeBefore);
+        qosParam.setNoOfRetries(noOfRetries);
+        em.persist(qosParam);
+        qosId = qosParam.getQosId();
+        em.getTransaction().commit();
+        em.close();
     }
 }
