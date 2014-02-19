@@ -23,11 +23,23 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
+import org.apache.airavata.persistance.registry.jpa.model.JobDetail;
+import org.apache.airavata.persistance.registry.jpa.model.JobDetails_PK;
+import org.apache.airavata.persistance.registry.jpa.model.Status;
+import org.apache.airavata.persistance.registry.jpa.model.TaskDetail;
+import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 public class JobDetailResource extends AbstractResource {
+    private static final Logger logger = LoggerFactory.getLogger(JobDetailResource.class);
     private String jobId;
     private TaskDetailResource taskDetailResource;
     private String jobDescription;
@@ -67,26 +79,122 @@ public class JobDetailResource extends AbstractResource {
 
     @Override
     public Resource create(ResourceType type) {
-        return null;
+        switch (type){
+            case STATUS:
+                StatusResource statusResource = new StatusResource();
+                statusResource.setJobId(jobId);
+                return statusResource;
+            default:
+                logger.error("Unsupported resource type for job details data resource.", new UnsupportedOperationException());
+                throw new UnsupportedOperationException();
+        }
     }
 
     @Override
     public void remove(ResourceType type, Object name) {
-
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        Query q;
+        QueryGenerator generator;
+        switch (type){
+            case STATUS:
+                generator = new QueryGenerator(STATUS);
+                generator.setParameter(StatusConstants.JOB_ID, name);
+                q = generator.deleteQuery(em);
+                q.executeUpdate();
+                break;
+            default:
+                logger.error("Unsupported resource type for job details resource.", new IllegalArgumentException());
+                break;
+        }
+        em.getTransaction().commit();
+        em.close();
     }
 
     @Override
     public Resource get(ResourceType type, Object name) {
-        return null;
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        QueryGenerator generator;
+        Query q;
+        switch (type) {
+            case STATUS:
+                generator = new QueryGenerator(STATUS);
+                generator.setParameter(StatusConstants.JOB_ID, name);
+                q = generator.selectQuery(em);
+                Status status = (Status)q.getSingleResult();
+                StatusResource statusResource = (StatusResource)Utils.getResource(ResourceType.STATUS, status);
+                em.getTransaction().commit();
+                em.close();
+                return statusResource;
+            default:
+                em.getTransaction().commit();
+                em.close();
+                logger.error("Unsupported resource type for job details resource.", new IllegalArgumentException());
+                throw new IllegalArgumentException("Unsupported resource type for job details resource.");
+        }
     }
 
     @Override
     public List<Resource> get(ResourceType type) {
-        return null;
+        List<Resource> resourceList = new ArrayList<Resource>();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        Query q;
+        QueryGenerator generator;
+        List results;
+        switch (type){
+            case STATUS:
+                generator = new QueryGenerator(STATUS);
+                generator.setParameter(StatusConstants.JOB_ID, jobId);
+                q = generator.selectQuery(em);
+                results = q.getResultList();
+                if (results.size() != 0) {
+                    for (Object result : results) {
+                        Status status = (Status) result;
+                        StatusResource statusResource =
+                                (StatusResource)Utils.getResource(ResourceType.STATUS, status);
+                        resourceList.add(statusResource);
+                    }
+                }
+                break;
+            default:
+                em.getTransaction().commit();
+                em.close();
+                logger.error("Unsupported resource type for workflow node details resource.", new UnsupportedOperationException());
+                throw new UnsupportedOperationException();
+        }
+        em.getTransaction().commit();
+        em.close();
+        return resourceList;
     }
 
     @Override
     public void save() {
+        EntityManager em = ResourceUtils.getEntityManager();
+        JobDetail existingJobDetail = em.find(JobDetail.class, new JobDetails_PK(jobId, taskDetailResource.getTaskId()));
+        em.close();
 
+        em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        JobDetail jobDetail = new JobDetail();
+        TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+        jobDetail.setJobId(jobId);
+        jobDetail.setTask(taskDetail);
+        jobDetail.setTaskId(taskDetailResource.getTaskId());
+        jobDetail.setCreationTime(creationTime);
+        jobDetail.setJobDescription(jobDescription);
+        if (existingJobDetail != null){
+            existingJobDetail.setJobId(jobId);
+            existingJobDetail.setTask(taskDetail);
+            existingJobDetail.setTaskId(taskDetailResource.getTaskId());
+            existingJobDetail.setCreationTime(creationTime);
+            existingJobDetail.setJobDescription(jobDescription);
+            jobDetail = em.merge(existingJobDetail);
+        }else {
+            em.merge(jobDetail);
+        }
+        em.getTransaction().commit();
+        em.close();
     }
 }

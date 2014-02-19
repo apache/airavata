@@ -23,11 +23,17 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
+import org.apache.airavata.persistance.registry.jpa.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityManager;
 import java.sql.Timestamp;
 import java.util.List;
 
 public class StatusResource extends AbstractResource {
+    private static final Logger logger = LoggerFactory.getLogger(StatusResource.class);
     private int statusId;
     private ExperimentResource experimentResource;
     private WorkflowNodeDetailResource workflowNodeDetail;
@@ -112,26 +118,73 @@ public class StatusResource extends AbstractResource {
 
     @Override
     public Resource create(ResourceType type) {
-        return null;
+        logger.error("Unsupported resource type for status resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void remove(ResourceType type, Object name) {
-
+        logger.error("Unsupported resource type for status resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Resource get(ResourceType type, Object name) {
-        return null;
+        logger.error("Unsupported resource type for status resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public List<Resource> get(ResourceType type) {
-        return null;
+        logger.error("Unsupported resource type for status resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void save() {
+        EntityManager em = ResourceUtils.getEntityManager();
+        Status existingStatus = em.find(Status.class, statusId);
+        em.close();
 
+        em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        Status status = new Status();
+        Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
+        TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+        WorkflowNodeDetail nodeDetail = em.find(WorkflowNodeDetail.class, workflowNodeDetail.getNodeInstanceId());
+        DataTransferDetail transferDetail = em.find(DataTransferDetail.class, dataTransferDetail.getTransferId());
+        status.setStatusId(statusId);
+        status.setExperiment(experiment);
+        status.setTask(taskDetail);
+        status.setNode(nodeDetail);
+        status.setTransferDetail(transferDetail);
+        status.setJobId(jobId);
+        status.setExpId(experimentResource.getExpID());
+        status.setTaskId(taskDetailResource.getTaskId());
+        status.setNodeId(workflowNodeDetail.getNodeInstanceId());
+        status.setTransferId(dataTransferDetail.getTransferId());
+        status.setState(state);
+        status.setStatusUpdateTime(statusUpdateTime);
+        status.setStatusType(statusType);
+        if (existingStatus != null){
+            existingStatus.setStatusId(statusId);
+            existingStatus.setExperiment(experiment);
+            existingStatus.setTask(taskDetail);
+            existingStatus.setNode(nodeDetail);
+            existingStatus.setTransferDetail(transferDetail);
+            existingStatus.setJobId(jobId);
+            existingStatus.setExpId(experimentResource.getExpID());
+            existingStatus.setTaskId(taskDetailResource.getTaskId());
+            existingStatus.setNodeId(workflowNodeDetail.getNodeInstanceId());
+            existingStatus.setTransferId(dataTransferDetail.getTransferId());
+            existingStatus.setState(state);
+            existingStatus.setStatusUpdateTime(statusUpdateTime);
+            existingStatus.setStatusType(statusType);
+            status = em.merge(existingStatus);
+        }else {
+            em.merge(status);
+        }
+        em.getTransaction().commit();
+        em.close();
     }
 }

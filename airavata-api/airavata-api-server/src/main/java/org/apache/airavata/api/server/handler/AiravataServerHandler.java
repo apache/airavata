@@ -22,24 +22,22 @@
 package org.apache.airavata.api.server.handler;
 
 import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.airavataAPIConstants;
 import org.apache.airavata.api.error.AiravataClientException;
 import org.apache.airavata.api.error.AiravataSystemException;
 import org.apache.airavata.api.error.ExperimentNotFoundException;
 import org.apache.airavata.api.error.InvalidRequestException;
-import org.apache.airavata.model.experiment.BasicMetadata;
-import org.apache.airavata.model.experiment.ConfigurationData;
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.ExperimentStatus;
 import org.apache.thrift.TException;
 
-import java.util.UUID;
+public class AiravataServerHandler implements Airavata.Iface {
 
-public class MockAiravataServerHandler implements Airavata.Iface{
     /**
      * Query Airavata to fetch the API version
      */
     @Override
     public String GetAPIVersion() throws TException {
-        return airavataAPIConstants.AIRAVATA_API_VERSION;
+        return null;
     }
 
     /**
@@ -48,10 +46,7 @@ public class MockAiravataServerHandler implements Airavata.Iface{
      * has to subsequently configure and launch the created experiment. No action is taken on Airavata Server except
      * registering the experiment in a persistent store.
      *
-     * @param basicExperimentMetadata The create experiment will require the basic experiment metadata like the name and description, intended user,
-     *                                the gateway identifer and if the experiment should be shared public by defualt. During the creation of an experiment
-     *                                the ExperimentMetadata is a required field.
-     * @return The server-side generated airavata experiment globally unique identifier.
+     * @param experiment@return The server-side generated airavata experiment globally unique identifier.
      * @throws org.apache.airavata.api.error.InvalidRequestException For any incorrect forming of the request itself.
      * @throws org.apache.airavata.api.error.AiravataClientException The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      *                                                               <p/>
@@ -68,9 +63,8 @@ public class MockAiravataServerHandler implements Airavata.Iface{
      *                                                               rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
-    public String createExperiment(BasicMetadata basicExperimentMetadata) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        //FIXME: this should be generated at the registry CPI level.
-        return UUID.randomUUID().toString();
+    public String createExperiment(Experiment experiment) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
     }
 
     /**
@@ -96,7 +90,7 @@ public class MockAiravataServerHandler implements Airavata.Iface{
      *                                                                   rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
-    public BasicMetadata getBasicExperimentMetadata(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+    public Experiment getBasicExperiment(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
         return null;
     }
 
@@ -105,9 +99,8 @@ public class MockAiravataServerHandler implements Airavata.Iface{
      * parameters. This method only updates the experiment object within the registry. The experiment has to be launched
      * to make it actionable by the server.
      *
-     * @param airavataExperimentId        The identifier for the requested experiment. This is returned during the create experiment step.
-     * @param experimentConfigurationData The configuration information of the experiment with application input parameters, computational resource scheduling
-     *                                    information, special input output handling and additional quality of service parameters.
+     * @param airavataExperimentId The identifier for the requested experiment. This is returned during the create experiment step.
+     * @param experiment
      * @return This method call does not have a return value.
      * @throws org.apache.airavata.api.error.InvalidRequestException     For any incorrect forming of the request itself.
      * @throws org.apache.airavata.api.error.ExperimentNotFoundException If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
@@ -126,7 +119,7 @@ public class MockAiravataServerHandler implements Airavata.Iface{
      *                                                                   rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
-    public void configureExperiment(String airavataExperimentId, ConfigurationData experimentConfigurationData) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+    public void updateExperiment(String airavataExperimentId, Experiment experiment) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
 
     }
 
@@ -152,7 +145,7 @@ public class MockAiravataServerHandler implements Airavata.Iface{
      *                                                                   rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
-    public ConfigurationData getExperimentConfiguration(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+    public ExperimentStatus getExperimentStatus(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
         return null;
     }
 
@@ -187,7 +180,7 @@ public class MockAiravataServerHandler implements Airavata.Iface{
      *                                                                   rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
-    public void launchConfiguredExperiment(String airavataExperimentId, String airavataCredStoreToken) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+    public void launchExperiment(String airavataExperimentId, String airavataCredStoreToken) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
 
     }
 
@@ -196,16 +189,15 @@ public class MockAiravataServerHandler implements Airavata.Iface{
      * parameters. This method also launches the experiment after it is configured. If you would like to configure only
      * and launch at a later time or partially configure then ConfigureExperiment should be used.
      *
-     * @param airavataExperimentId        The identifier for the requested experiment. This is returned during the create experiment step.
-     * @param experimentConfigurationData The configuration information of the experiment with application input parameters, computational resource scheduling
-     *                                    information, special input output handling and additional quality of service parameters.
-     * @param airavataCredStoreToken      :
-     *                                    A requirement to execute experiments within Airavata is to first register the targeted remote computational account
-     *                                    credentials with Airavata Credential Store. The administrative API (related to credential store) will return a
-     *                                    generated token associated with the registered credentials. The client has to security posses this token id and is
-     *                                    required to pass it to Airavata Server for all execution requests.
-     *                                    Note: At this point only the credential store token is required so the string is directly passed here. In future if
-     *                                    if more security credentials are enables, then the structure ExecutionSecurityParameters should be used.
+     * @param airavataExperimentId   The identifier for the requested experiment. This is returned during the create experiment step.
+     * @param experiment
+     * @param airavataCredStoreToken :
+     *                               A requirement to execute experiments within Airavata is to first register the targeted remote computational account
+     *                               credentials with Airavata Credential Store. The administrative API (related to credential store) will return a
+     *                               generated token associated with the registered credentials. The client has to security posses this token id and is
+     *                               required to pass it to Airavata Server for all execution requests.
+     *                               Note: At this point only the credential store token is required so the string is directly passed here. In future if
+     *                               if more security credentials are enables, then the structure ExecutionSecurityParameters should be used.
      * @return The server-side generated experiment GUID.
      * @throws org.apache.airavata.api.error.InvalidRequestException For any incorrect forming of the request itself.
      * @throws org.apache.airavata.api.error.AiravataClientException The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
@@ -223,7 +215,7 @@ public class MockAiravataServerHandler implements Airavata.Iface{
      *                                                               rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
-    public String configureAndLaunchExperiment(String airavataExperimentId, ConfigurationData experimentConfigurationData, String airavataCredStoreToken) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+    public String updateAndLaunchExperiment(String airavataExperimentId, Experiment experiment, String airavataCredStoreToken) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
         return null;
     }
 
@@ -232,9 +224,7 @@ public class MockAiravataServerHandler implements Airavata.Iface{
      * The client has to subsequently update this configuration if needed and launch the cloned experiment.
      *
      * @param airavataExperimentIdToBeCloned This is the experiment identifier that is to be cloned.
-     * @param basicExperimentMetadata        Once an experiment is cloned, to disambiguate, the users are suggested to provide new metadata. This will again require
-     *                                       the basic experiment metadata like the name and description, intended user, the gateway identifier and if the experiment
-     *                                       should be shared public by default.
+     * @param updatedExperiment
      * @return The server-side generated airavata experiment globally unique identifier for the newly cloned experiment.
      * @throws org.apache.airavata.api.error.InvalidRequestException     For any incorrect forming of the request itself.
      * @throws org.apache.airavata.api.error.ExperimentNotFoundException If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
@@ -253,7 +243,7 @@ public class MockAiravataServerHandler implements Airavata.Iface{
      *                                                                   rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
-    public String cloneExperimentConfiguration(String airavataExperimentIdToBeCloned, BasicMetadata basicExperimentMetadata) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+    public String cloneExperiment(String airavataExperimentIdToBeCloned, Experiment updatedExperiment) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
         return null;
     }
 
@@ -281,5 +271,10 @@ public class MockAiravataServerHandler implements Airavata.Iface{
     @Override
     public void terminateExperiment(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
 
+    }
+
+    @Override
+    public String createProject(String projectName, String userName) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+        return null;
     }
 }

@@ -23,10 +23,19 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
+import org.apache.airavata.persistance.registry.jpa.model.AdvancedInputDataHandling;
+import org.apache.airavata.persistance.registry.jpa.model.AdvancedOutputDataHandling;
+import org.apache.airavata.persistance.registry.jpa.model.Experiment;
+import org.apache.airavata.persistance.registry.jpa.model.TaskDetail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 
 public class AdvanceInputDataHandlingResource extends AbstractResource {
+    private static final Logger logger = LoggerFactory.getLogger(AdvanceInputDataHandlingResource.class);
     private int dataHandlingId;
     private ExperimentResource experimentResource;
     private TaskDetailResource taskDetailResource;
@@ -93,26 +102,46 @@ public class AdvanceInputDataHandlingResource extends AbstractResource {
 
     @Override
     public Resource create(ResourceType type) {
-        return null;
+        logger.error("Unsupported resource type for input data handling resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void remove(ResourceType type, Object name) {
-
+        logger.error("Unsupported resource type for input data handling resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Resource get(ResourceType type, Object name) {
-        return null;
+        logger.error("Unsupported resource type for input data handling resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public List<Resource> get(ResourceType type) {
-        return null;
+        logger.error("Unsupported resource type for input data handling resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void save() {
-
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        AdvancedInputDataHandling dataHandling = new AdvancedInputDataHandling();
+        Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
+        TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+        dataHandling.setExpId(experimentResource.getExpID());
+        dataHandling.setExperiment(experiment);
+        dataHandling.setTaskId(taskDetailResource.getTaskId());
+        dataHandling.setTask(taskDetail);
+        dataHandling.setWorkingDir(workingDir);
+        dataHandling.setParentWorkingDir(workingDirParent);
+        dataHandling.setStageInputsToWorkingDir(stageInputFiles);
+        dataHandling.setCleanAfterJob(cleanAfterJob);
+        em.persist(dataHandling);
+        dataHandlingId = dataHandling.getDataHandlingId();
+        em.getTransaction().commit();
+        em.close();
     }
 }
