@@ -103,7 +103,26 @@ public class ResourceUtils {
 
     }
 
-    public static Resource getWorker(String gatewayName, String userName){
+    public static void addUser (String userName, String password){
+        UserResource resource = new UserResource();
+        resource.setUserName(userName);
+        resource.setPassword(password);
+        resource.save();
+    }
+
+    public static boolean isUserExist (String username){
+        EntityManager em = getEntityManager();
+        em.getTransaction().begin();
+        QueryGenerator generator = new QueryGenerator(AbstractResource.USERS);
+        generator.setParameter(AbstractResource.UserConstants.USERNAME, username);
+        Query q = generator.selectQuery(em);
+        int size = q.getResultList().size();
+        em.getTransaction().commit();
+        em.close();
+        return size>0;
+    }
+
+    public static Resource getWorker(String gatewayName, String userName) {
         EntityManager em = getEntityManager();
         Gateway_Worker gatewayWorker = em.find(Gateway_Worker.class, new Gateway_Worker_PK(gatewayName, userName));
         WorkerResource workerResource = (WorkerResource) Utils.getResource(ResourceType.GATEWAY_WORKER, gatewayWorker);
@@ -160,10 +179,14 @@ public class ResourceUtils {
         try {
             EntityManager em = getEntityManager();
             em.getTransaction().begin();
-            Gateway gateway = new Gateway();
-            gateway.setGateway_name(gatewayResource.getGatewayName());
-            Users user = new Users();
-            user.setUser_name(userResource.getUserName());
+            if (!isGatewayExist(gatewayResource.getGatewayName())){
+                gatewayResource.save();
+            }
+            if (!isUserExist(userResource.getUserName())){
+                userResource.save();
+            }
+            Gateway gateway = em.find(Gateway.class, gatewayResource.getGatewayName());
+            Users user = em.find(Users.class, userResource.getUserName());
             Gateway_Worker gatewayWorker = new Gateway_Worker();
             gatewayWorker.setGateway(gateway);
             gatewayWorker.setUser(user);
@@ -310,27 +333,6 @@ public class ResourceUtils {
             throw new EntityNotFoundException();
         }
     }
-
-//    public static List<Resource> getOrchestratorDataWithStatus(String status) {
-//        List<Resource> resourceList = new ArrayList<Resource>();
-//        EntityManager em = ResourceUtils.getEntityManager();
-//        em.getTransaction().begin();
-//        QueryGenerator generator = new QueryGenerator(AbstractResource.ORCHESTRATOR);
-//        generator.setParameter(AbstractResource.OrchestratorDataConstants.STATUS, status);
-//        Query q = generator.selectQuery(em);
-//        List<?> results = q.getResultList();
-//        if (results.size() != 0) {
-//            for (Object result : results) {
-//                Orchestrator orchestratorData = (Orchestrator) result;
-//                OrchestratorDataResource orchestratorDataResource = (OrchestratorDataResource)
-//                        Utils.getResource(ResourceType.ORCHESTRATOR, orchestratorData);
-//                resourceList.add(orchestratorDataResource);
-//            }
-//        }
-//        em.getTransaction().commit();
-//        em.close();
-//        return resourceList;
-//    }
 
     public static Lock getLock() {
         return lock;
