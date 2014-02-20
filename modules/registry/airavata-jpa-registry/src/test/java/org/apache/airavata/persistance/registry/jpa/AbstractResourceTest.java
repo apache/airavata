@@ -28,6 +28,7 @@ import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 import org.apache.airavata.persistance.registry.jpa.util.Initialize;
+import org.apache.airavata.registry.api.util.RegistrySettings;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -46,15 +47,12 @@ public abstract class AbstractResourceTest extends TestCase {
         initialize.initializeDB();
         gatewayResource = (GatewayResource)ResourceUtils.getGateway("default");
         workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayName(), "admin");
+        userResource = (UserResource)ResourceUtils.getUser(RegistrySettings.getSetting("default.registry.user"));
         projectResource = (ProjectResource)workerResource.create(ResourceType.PROJECT);
         projectResource.setGateway(gatewayResource);
         projectResource.setName("default");
         projectResource.setWorker(workerResource);
         projectResource.save();
-        userResource = (UserResource)gatewayResource.create(ResourceType.USER);
-        userResource.setUserName("admin");
-        userResource.setPassword("admin");
-        userResource.save();
     }
 
     public Timestamp getCurrentTimestamp() {

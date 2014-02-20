@@ -625,4 +625,20 @@ public class ExperimentResource extends AbstractResource {
         }
         return errorDetailResources;
     }
+
+    public ComputationSchedulingResource getComputationScheduling (String expId){
+        return  (ComputationSchedulingResource)get(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, expId);
+    }
+
+    public AdvanceInputDataHandlingResource getInputDataHandling (String expId){
+        return  (AdvanceInputDataHandlingResource)get(ResourceType.ADVANCE_INPUT_DATA_HANDLING, expId);
+    }
+
+    public AdvancedOutputDataHandlingResource getOutputDataHandling (String expId){
+        return  (AdvancedOutputDataHandlingResource)get(ResourceType.ADVANCE_OUTPUT_DATA_HANDLING, expId);
+    }
+
+    public QosParamResource getQOSparams (String expId){
+        return  (QosParamResource)get(ResourceType.QOS_PARAM, expId);
+    }
 }
