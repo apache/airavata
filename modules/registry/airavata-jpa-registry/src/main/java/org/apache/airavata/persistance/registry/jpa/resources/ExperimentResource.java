@@ -32,6 +32,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.apache.airavata.registry.cpi.utils.StatusType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -564,13 +565,64 @@ public class ExperimentResource extends AbstractResource {
 		this.project = project;
 	}
 
-//    public ExperimentDataResource getData(){
-//    	if (isExists(ResourceType.EXPERIMENT_DATA, getExpID())){
-//    		return (ExperimentDataResource) get(ResourceType.EXPERIMENT_DATA, getExpID());
-//    	}else{
-//    		ExperimentDataResource data = (ExperimentDataResource) create(ResourceType.EXPERIMENT_DATA);
-//            data.save();
-//			return data;
-//    	}
-//    }
+    public List<ExperimentInputResource> getExperimentInputs (){
+        List<ExperimentInputResource> expInputs = new ArrayList<ExperimentInputResource>();
+        List<Resource> resources = get(ResourceType.EXPERIMENT_INPUT);
+        for (Resource resource : resources) {
+            expInputs.add((ExperimentInputResource) resource);
+        }
+        return expInputs;
+    }
+
+    public List<ExperimentOutputResource> getExperimentOutputs (){
+        List<ExperimentOutputResource> expOutputs = new ArrayList<ExperimentOutputResource>();
+        List<Resource> resources = get(ResourceType.EXPERIMENT_OUTPUT);
+        for (Resource resource : resources) {
+            expOutputs.add((ExperimentOutputResource) resource);
+        }
+        return expOutputs;
+    }
+
+    public StatusResource getExperimentStatus(){
+        List<Resource> resources = get(ResourceType.STATUS);
+        for (Resource resource : resources) {
+            StatusResource expStatus = (StatusResource) resource;
+            if(expStatus.getStatusType().equals(StatusType.EXPERIMENT)){
+                return expStatus;
+            }
+        }
+        return null;
+    }
+
+    public List<StatusResource> getWorkflowNodeStatuses(){
+        List<StatusResource> statuses = new ArrayList<StatusResource>();
+        List<Resource> resources = get(ResourceType.STATUS);
+        for (Resource resource : resources) {
+            StatusResource workflowNodeStatus = (StatusResource) resource;
+            if(workflowNodeStatus.getStatusType().equals(StatusType.WORKFLOW_NODE)){
+                statuses.add(workflowNodeStatus);
+            }
+        }
+        return statuses;
+    }
+
+    public List<WorkflowNodeDetailResource> getWorkflowNodeDetails (){
+        List<WorkflowNodeDetailResource> workflowNodeDetailResourceList = new ArrayList<WorkflowNodeDetailResource>();
+        List<Resource> resources = get(ResourceType.WORKFLOW_NODE_DETAIL);
+        for (Resource resource : resources) {
+            WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource) resource;
+            workflowNodeDetailResourceList.add(nodeDetailResource);
+        }
+        return workflowNodeDetailResourceList;
+    }
+
+    public List<ErrorDetailResource> getErrorDetails (){
+        List<ErrorDetailResource> errorDetailResources = new ArrayList<ErrorDetailResource>();
+        List<Resource> resources = get(ResourceType.ERROR_DETAIL);
+        for (Resource resource : resources) {
+            ErrorDetailResource errorDetailResource = (ErrorDetailResource) resource;
+            errorDetailResources.add(errorDetailResource);
+        }
+        return errorDetailResources;
+    }
 }
