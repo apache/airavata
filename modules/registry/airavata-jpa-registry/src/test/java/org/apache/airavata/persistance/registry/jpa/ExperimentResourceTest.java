@@ -27,22 +27,16 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 
 public class ExperimentResourceTest extends AbstractResourceTest {
-    private GatewayResource gatewayResource;
     private ExperimentResource experimentResource;
-    private WorkerResource workerResource;
+    private String experimentID = "testExpID";
  
     @Override
     public void setUp() throws Exception {
     	super.setUp();
-        gatewayResource = super.getGatewayResource();
-        workerResource = super.getWorkerResource();
-    }
-
-    public void testCreate() throws Exception {
-        experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-        experimentResource.setExpID("testExpID");
-        experimentResource.setWorker(workerResource);
-        experimentResource.setProject(new ProjectResource(workerResource, gatewayResource, "testProject"));
+        experimentResource = (ExperimentResource) getGatewayResource().create(ResourceType.EXPERIMENT);
+        experimentResource.setExpID(experimentID);
+        experimentResource.setWorker(getWorkerResource());
+        experimentResource.setProject(getProjectResource());
         Calendar calender = Calendar.getInstance();
         java.util.Date d = calender.getTime();
         Timestamp currentDate = new Timestamp(d.getTime());
@@ -51,24 +45,24 @@ public class ExperimentResourceTest extends AbstractResourceTest {
         experimentResource.setApplicationVersion("1.0");
         experimentResource.setDescription("Test Application");
         experimentResource.setExpName("TestExperiment");
-        experimentResource.save();
+    	experimentResource.save();
+    }
+    
+
+    public void testCreate() throws Exception {
     	assertNotNull("experiment data resource has being created ", experimentResource);
     }
 
-    public void testGet() throws Exception {
-      //  assertNotNull("experiment data retrieved successfully", experimentResource.get(ResourceType.EXPERIMENT_DATA, "testExpID"));
-    }
-
     public void testSave() throws Exception {
-      //  experimentResource.save();
-      //  assertTrue("experiment save successfully", gatewayResource.isExists(ResourceType.EXPERIMENT, "testExpID"));
+        assertTrue("experiment save successfully", getGatewayResource().isExists(ResourceType.EXPERIMENT, experimentID));
+    }
+    public void testGet() throws Exception {
+        assertNotNull("experiment data retrieved successfully", getGatewayResource().get(ResourceType.EXPERIMENT, experimentID));
     }
 
     public void testRemove() throws Exception {
-//        if (!experimentDataResource.isWorkflowInstancePresent("testWFInstance")){
-//            experimentResource.remove(ResourceType.EXPERIMENT_DATA, "testExpID");
-//            assertTrue("experiment data removed successfully", !experimentResource.isExists(ResourceType.EXPERIMENT_DATA, "testExpID"));
-//        }
+    	getGatewayResource().remove(ResourceType.EXPERIMENT, experimentID);
+      assertTrue("experiment data removed successfully", !getGatewayResource().isExists(ResourceType.EXPERIMENT, experimentID));        
     }
 
     @Override

@@ -22,7 +22,9 @@
 package org.apache.airavata.persistance.registry.jpa;
 
 import junit.framework.TestCase;
+
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 import org.apache.airavata.persistance.registry.jpa.util.Initialize;
@@ -35,6 +37,7 @@ public abstract class AbstractResourceTest extends TestCase {
     private GatewayResource gatewayResource;
     private WorkerResource workerResource;
     private UserResource userResource;
+    private ProjectResource projectResource;
 
     private Initialize initialize;
     @Override
@@ -43,9 +46,15 @@ public abstract class AbstractResourceTest extends TestCase {
         initialize.initializeDB();
         gatewayResource = (GatewayResource)ResourceUtils.getGateway("default");
         workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayName(), "admin");
+        projectResource = (ProjectResource)workerResource.create(ResourceType.PROJECT);
+        projectResource.setGateway(gatewayResource);
+        projectResource.setName("default");
+        projectResource.setWorker(workerResource);
+        projectResource.save();
         userResource = (UserResource)gatewayResource.create(ResourceType.USER);
         userResource.setUserName("admin");
         userResource.setPassword("admin");
+        userResource.save();
     }
 
     public Timestamp getCurrentTimestamp() {
@@ -70,6 +79,14 @@ public abstract class AbstractResourceTest extends TestCase {
     public UserResource getUserResource() {
         return userResource;
     }
+
+	public ProjectResource getProjectResource() {
+		return projectResource;
+	}
+
+	public void setProjectResource(ProjectResource projectResource) {
+		this.projectResource = projectResource;
+	}
 
 
 }
