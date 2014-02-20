@@ -187,7 +187,7 @@ public class RegistryImpl implements Registry {
 
         switch (dataType){
             case EXPERIMENT:
-                return experimentRegistry.getBasicMetaData(identifier, null);
+                return experimentRegistry.getExperiment(identifier, null);
             case EXPERIMENT_CONFIGURATION_DATA:
                 return experimentRegistry.getConfigData(identifier, null);
             default:
@@ -210,15 +210,9 @@ public class RegistryImpl implements Registry {
         List<Object> result = new ArrayList<Object>();
         switch (dataType){
             case EXPERIMENT:
-                List<Experiment> experimentMetaDataList = experimentRegistry.getExperimentMetaDataList(fieldName, value);
+                List<Experiment> experimentMetaDataList = experimentRegistry.getExperimentList(fieldName, value);
                 for (Experiment experiment : experimentMetaDataList){
                     result.add(experiment);
-                }
-                return result;
-            case EXPERIMENT_CONFIGURATION_DATA:
-                List<UserConfigurationData> configurationDataList = experimentRegistry.getConfigurationDataList(fieldName, value);
-                for (UserConfigurationData configData : configurationDataList){
-                    result.add(configData);
                 }
                 return result;
             default:
@@ -242,7 +236,7 @@ public class RegistryImpl implements Registry {
     public Object getValue(DataType dataType, String identifier, String field) throws Exception {
         switch (dataType){
             case EXPERIMENT:
-                return experimentRegistry.getBasicMetaData(identifier, field);
+                return experimentRegistry.getExperiment(identifier, field);
             case EXPERIMENT_CONFIGURATION_DATA:
                 return experimentRegistry.getConfigData(identifier, field);
             default:
@@ -308,7 +302,7 @@ public class RegistryImpl implements Registry {
     public boolean isExist(DataType dataType, String identifier) throws Exception {
         switch (dataType){
             case EXPERIMENT:
-                return experimentRegistry.isExperimentBasicDataExist(identifier);
+                return experimentRegistry.isExperimentExist(identifier);
             case EXPERIMENT_CONFIGURATION_DATA:
                 return experimentRegistry.isExperimentConfigDataExist(identifier);
         }
