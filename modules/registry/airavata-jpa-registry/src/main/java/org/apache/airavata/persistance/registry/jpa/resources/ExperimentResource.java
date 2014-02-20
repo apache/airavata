@@ -480,6 +480,7 @@ public class ExperimentResource extends AbstractResource {
         experiment.setProject(projectmodel);
         experiment.setExpId(expID);
         experiment.setUser(user);
+        experiment.setExecutionUser(worker.getUser());
         experiment.setGateway(gateway);
         experiment.setCreationTime(creationTime);
         experiment.setExpName(expName);
@@ -493,6 +494,7 @@ public class ExperimentResource extends AbstractResource {
             existingExp.setGateway(gateway);
             existingExp.setProject(projectmodel);
             existingExp.setUser(user);
+            existingExp.setExecutionUser(worker.getUser());
             existingExp.setCreationTime(creationTime);
             existingExp.setExpName(expName);
             existingExp.setExpDesc(description);
@@ -624,5 +626,21 @@ public class ExperimentResource extends AbstractResource {
             errorDetailResources.add(errorDetailResource);
         }
         return errorDetailResources;
+    }
+
+    public ComputationSchedulingResource getComputationScheduling (String expId){
+        return  (ComputationSchedulingResource)get(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, expId);
+    }
+
+    public AdvanceInputDataHandlingResource getInputDataHandling (String expId){
+        return  (AdvanceInputDataHandlingResource)get(ResourceType.ADVANCE_INPUT_DATA_HANDLING, expId);
+    }
+
+    public AdvancedOutputDataHandlingResource getOutputDataHandling (String expId){
+        return  (AdvancedOutputDataHandlingResource)get(ResourceType.ADVANCE_OUTPUT_DATA_HANDLING, expId);
+    }
+
+    public QosParamResource getQOSparams (String expId){
+        return  (QosParamResource)get(ResourceType.QOS_PARAM, expId);
     }
 }
