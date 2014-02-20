@@ -39,7 +39,7 @@ public abstract class AbstractResourceTest extends TestCase {
     private Initialize initialize;
     @Override
     public void setUp() throws Exception {
-        initialize = new Initialize("airavata-registry-derby.sql");
+        initialize = new Initialize("registry-derby.sql");
         initialize.initializeDB();
         gatewayResource = (GatewayResource)ResourceUtils.getGateway("default");
         workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayName(), "admin");
