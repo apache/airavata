@@ -39,9 +39,6 @@ public class UserResource extends AbstractResource {
     private final static Logger logger = LoggerFactory.getLogger(UserResource.class);
     private String userName;
     private String password;
-    private String gatewayName;
-    private ProjectResource projectResource;
-
     /**
      *
      */
@@ -64,21 +61,6 @@ public class UserResource extends AbstractResource {
         return userName;
     }
 
-    /**
-     *
-     * @return gateway name
-     */
-    public String getGatewayName() {
-        return gatewayName;
-    }
-
-    /**
-     *
-     * @param gatewayName gateway name
-     */
-    public void setGatewayName(String gatewayName) {
-        this.gatewayName = gatewayName;
-    }
 
     /**
      * User is a hypothical data structure.
@@ -168,22 +150,6 @@ public class UserResource extends AbstractResource {
     public boolean isExists(ResourceType type, Object name) {
         logger.error("Unsupported resource type for user resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
-    }
-
-    /**
-     *
-     * @return project resource
-     */
-    public ProjectResource getProjectResource() {
-        return projectResource;
-    }
-
-    /**
-     *
-     * @param projectResource project resource
-     */
-    public void setProjectResource(ProjectResource projectResource) {
-        this.projectResource = projectResource;
     }
 
     /**

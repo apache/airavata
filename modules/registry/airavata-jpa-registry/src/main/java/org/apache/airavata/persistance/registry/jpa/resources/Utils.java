@@ -568,7 +568,7 @@ public class Utils {
         experimentResource.setGateway(gatewayResource);
         Gateway_Worker gateway_worker = new Gateway_Worker();
         gateway_worker.setGateway(o.getGateway());
-        gateway_worker.setUser(o.getUser());
+        gateway_worker.setUser_name(o.getExecutionUser());
         WorkerResource workerResource = (WorkerResource) createGatewayWorker(gateway_worker);
         experimentResource.setWorker(workerResource);
         ProjectResource projectResource = (ProjectResource)createProject(o.getProject());

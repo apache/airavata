@@ -53,9 +53,9 @@ public class ThriftDataModelConversion {
         List<StatusResource> changeList = experimentResource.getWorkflowNodeStatuses();
         experiment.setStateChangeList(getWorkflowNodeStatusList(changeList));
         List<WorkflowNodeDetailResource> workflowNodeDetails = experimentResource.getWorkflowNodeDetails();
-
-//        experiment.setWorkflowNodeDetailsList();
-
+        experiment.setWorkflowNodeDetailsList(getWfNodeList(workflowNodeDetails));
+        List<ErrorDetailResource> errorDetails = experimentResource.getErrorDetails();
+        experiment.setErrors(getErrorDetailList(errorDetails));
         return experiment;
     }
 
@@ -190,6 +190,13 @@ public class ThriftDataModelConversion {
         return jobStatus;
     }
 
+    public static TransferStatus getTransferStatus (StatusResource status){
+        TransferStatus transferStatus = new TransferStatus();
+        transferStatus.setTransferState(TransferState.valueOf(status.getState()));
+        transferStatus.setTimeOfStateChange(status.getStatusUpdateTime().getTime());
+        return transferStatus;
+    }
+
     public static ApplicationStatus getApplicationStatus (StatusResource status){
         ApplicationStatus applicationStatus = new ApplicationStatus();
         applicationStatus.setApplicationState(status.getState());
@@ -215,11 +222,19 @@ public class ThriftDataModelConversion {
         List<NodeOutputResource> nodeOutputs = nodeDetailResource.getNodeOutputs();
         wfNode.setNodeOutputs(getNodeOutputs(nodeOutputs));
         List<TaskDetailResource> taskDetails = nodeDetailResource.getTaskDetails();
-
-        //get taskdetails
-        //get workflownodestatus
-        //geterrordetails
+        wfNode.setTaskDetailsList(getTaskDetailsList(taskDetails));
+        wfNode.setWorkflowNodeStatus(getWorkflowNodeStatus(nodeDetailResource.getWorkflowNodeStatus()));
+        List<ErrorDetailResource> errorDetails = nodeDetailResource.getErrorDetails();
+        wfNode.setErrors(getErrorDetailList(errorDetails));
         return wfNode;
+    }
+
+    public static List<WorkflowNodeDetails> getWfNodeList (List<WorkflowNodeDetailResource> resources){
+        List<WorkflowNodeDetails> workflowNodeDetailsList = new ArrayList<WorkflowNodeDetails>();
+        for (WorkflowNodeDetailResource resource : resources){
+            workflowNodeDetailsList.add(getWorkflowNodeDetails(resource));
+        }
+        return workflowNodeDetailsList;
     }
 
     public static TaskDetails getTaskDetail (TaskDetailResource taskDetailResource){
@@ -239,8 +254,28 @@ public class ThriftDataModelConversion {
         taskDetails.setAdvancedOutputDataHandling(getAdvanceOutputDataHandling(outputDataHandling));
         taskDetails.setTaskStatus(getTaskStatus(taskDetailResource.getTaskStatus()));
         List<JobDetailResource> jobDetailList = taskDetailResource.getJobDetailList();
+        taskDetails.setJobDetailsList(getJobDetailsList(jobDetailList));
+        taskDetails.setErrors(getErrorDetailList(taskDetailResource.getErrorDetailList()));
+        taskDetails.setDataTransferDetailsList(getDataTransferlList(taskDetailResource.getDataTransferDetailList()));
         return taskDetails;
     }
+
+    public static List<TaskDetails> getTaskDetailsList (List<TaskDetailResource> resources){
+        List<TaskDetails> taskDetailsList = new ArrayList<TaskDetails>();
+        for (TaskDetailResource resource : resources){
+            taskDetailsList.add(getTaskDetail(resource));
+        }
+        return taskDetailsList;
+    }
+
+    public static List<JobDetails> getJobDetailsList(List<JobDetailResource> jobs){
+        List<JobDetails> jobDetailsList = new ArrayList<JobDetails>();
+        for (JobDetailResource resource : jobs){
+            jobDetailsList.add(getJobDetail(resource));
+        }
+        return jobDetailsList;
+    }
+
 
     public static JobDetails getJobDetail(JobDetailResource jobDetailResource){
         JobDetails jobDetails = new JobDetails();
@@ -252,8 +287,9 @@ public class ThriftDataModelConversion {
         StatusResource applicationStatus = jobDetailResource.getApplicationStatus();
         jobDetails.setApplicationStatus(getApplicationStatus(applicationStatus));
         List<ErrorDetailResource> errorDetails = jobDetailResource.getErrorDetails();
+        jobDetails.setErrors(getErrorDetailList(errorDetails));
+        jobDetails.setComputeResourceConsumed(jobDetailResource.getComputeResourceConsumed());
         return jobDetails;
-
     }
 
     public static ErrorDetails getErrorDetails (ErrorDetailResource resource){
@@ -266,26 +302,52 @@ public class ThriftDataModelConversion {
         errorDetails.setTransientOrPersistent(resource.isTransientPersistent());
         errorDetails.setCorrectiveAction(CorrectiveAction.valueOf(resource.getCorrectiveAction()));
         errorDetails.setActionableGroup(ActionableGroup.valueOf(resource.getActionableGroup()));
-//        errorDetails.setRootCauseErrorIdList();
         return errorDetails;
 
     }
 
+    public static List<ErrorDetails> getErrorDetailList (List<ErrorDetailResource> errorDetailResources){
+        List<ErrorDetails> errorDetailsList = new ArrayList<ErrorDetails>();
+        for (ErrorDetailResource errorDetailResource : errorDetailResources){
+            errorDetailsList.add(getErrorDetails(errorDetailResource));
+        }
+        return errorDetailsList;
+    }
 
-//    public static ConfigurationData getConfigurationData (ExperimentConfigDataResource excd){
-//        ConfigurationData configData = new ConfigurationData();
-//        configData.setBasicMetadata(getExperiment(excd.getExMetadata()));
-//        configData.setApplicationId(excd.getApplicationID());
-//        configData.setApplicationVersion(excd.getApplicationVersion());
-//        configData.setWorkflowTemplateId(excd.getWorkflowTemplateId());
-//        configData.setWorklfowTemplateVersion(excd.getWorkflowTemplateVersion());
-//        configData.setExperimentInputs(getExperimentInputs(excd.getExMetadata()));
-//        configData.setAdvanceInputDataHandling(getAdvanceInputDataHandling(excd));
-//        configData.setAdvanceOutputDataHandling(getAdvanceOutputDataHandling(excd));
-//        configData.setComputationalResourceScheduling(getComputationalResourceScheduling(excd));
-//        configData.setQosParams(getQOSParams(excd));
-//        return configData;
-//    }
+    public static DataTransferDetails getDataTransferDetail (DataTransferDetailResource resource){
+        DataTransferDetails details = new DataTransferDetails();
+        details.setTransferID(resource.getTransferId());
+        details.setCreationTime(resource.getCreationTime().getTime());
+        details.setTransferDescription(resource.getTransferDescription());
+        details.setTransferStatus(getTransferStatus(resource.getDataTransferStatus()));
+        return details;
+    }
+
+    public static List<DataTransferDetails> getDataTransferlList (List<DataTransferDetailResource> resources){
+        List<DataTransferDetails> transferDetailsList = new ArrayList<DataTransferDetails>();
+        for (DataTransferDetailResource resource : resources){
+            transferDetailsList.add(getDataTransferDetail(resource));
+        }
+        return transferDetailsList;
+    }
+
+
+    public static UserConfigurationData getUserConfigData (ConfigDataResource resource){
+        UserConfigurationData data = new UserConfigurationData();
+        data.setAiravataAutoSchedule(resource.isAiravataAutoSchedule());
+        data.setOverrideManualScheduledParams(resource.isOverrideManualParams());
+        data.setShareExperimentPublicly(resource.isShareExp());
+        ExperimentResource experimentResource = resource.getExperimentResource();
+        String expID = experimentResource.getExpID();
+        ComputationSchedulingResource computationScheduling = experimentResource.getComputationScheduling(expID);
+        AdvanceInputDataHandlingResource inputDataHandling = experimentResource.getInputDataHandling(expID);
+        AdvancedOutputDataHandlingResource outputDataHandling = experimentResource.getOutputDataHandling(expID);
+        data.setAdvanceInputDataHandling(getAdvanceInputDataHandling(inputDataHandling));
+        data.setAdvanceOutputDataHandling(getAdvanceOutputDataHandling(outputDataHandling));
+        data.setComputationalResourceScheduling(getComputationalResourceScheduling(computationScheduling));
+        data.setQosParams(getQOSParams(experimentResource.getQOSparams(expID)));
+        return data;
+    }
 
 
     public static ComputationalResourceScheduling getComputationalResourceScheduling (ComputationSchedulingResource csr){
