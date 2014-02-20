@@ -24,11 +24,9 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
-import org.apache.airavata.persistance.registry.jpa.model.JobDetail;
-import org.apache.airavata.persistance.registry.jpa.model.JobDetails_PK;
-import org.apache.airavata.persistance.registry.jpa.model.Status;
-import org.apache.airavata.persistance.registry.jpa.model.TaskDetail;
+import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.apache.airavata.registry.cpi.utils.StatusType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +42,7 @@ public class JobDetailResource extends AbstractResource {
     private TaskDetailResource taskDetailResource;
     private String jobDescription;
     private Timestamp creationTime;
+    private String computeResourceConsumed;
 
     public String getJobId() {
         return jobId;
@@ -77,6 +76,14 @@ public class JobDetailResource extends AbstractResource {
         this.creationTime = creationTime;
     }
 
+    public String getComputeResourceConsumed() {
+        return computeResourceConsumed;
+    }
+
+    public void setComputeResourceConsumed(String computeResourceConsumed) {
+        this.computeResourceConsumed = computeResourceConsumed;
+    }
+
     @Override
     public Resource create(ResourceType type) {
         switch (type){
@@ -84,6 +91,10 @@ public class JobDetailResource extends AbstractResource {
                 StatusResource statusResource = new StatusResource();
                 statusResource.setJobId(jobId);
                 return statusResource;
+            case ERROR_DETAIL:
+                ErrorDetailResource errorDetailResource = new ErrorDetailResource();
+                errorDetailResource.setJobId(jobId);
+                return errorDetailResource;
             default:
                 logger.error("Unsupported resource type for job details data resource.", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
@@ -100,6 +111,12 @@ public class JobDetailResource extends AbstractResource {
             case STATUS:
                 generator = new QueryGenerator(STATUS);
                 generator.setParameter(StatusConstants.JOB_ID, name);
+                q = generator.deleteQuery(em);
+                q.executeUpdate();
+                break;
+            case ERROR_DETAIL:
+                generator = new QueryGenerator(STATUS);
+                generator.setParameter(ErrorDetailConstants.JOB_ID, name);
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
                 break;
@@ -127,6 +144,15 @@ public class JobDetailResource extends AbstractResource {
                 em.getTransaction().commit();
                 em.close();
                 return statusResource;
+            case ERROR_DETAIL:
+                generator = new QueryGenerator(ERROR_DETAIL);
+                generator.setParameter(ErrorDetailConstants.JOB_ID, name);
+                q = generator.selectQuery(em);
+                ErrorDetail errorDetail = (ErrorDetail)q.getSingleResult();
+                ErrorDetailResource errorDetailResource = (ErrorDetailResource)Utils.getResource(ResourceType.ERROR_DETAIL, errorDetail);
+                em.getTransaction().commit();
+                em.close();
+                return errorDetailResource;
             default:
                 em.getTransaction().commit();
                 em.close();
@@ -158,6 +184,20 @@ public class JobDetailResource extends AbstractResource {
                     }
                 }
                 break;
+            case ERROR_DETAIL:
+                generator = new QueryGenerator(ERROR_DETAIL);
+                generator.setParameter(ErrorDetailConstants.JOB_ID, jobId);
+                q = generator.selectQuery(em);
+                results = q.getResultList();
+                if (results.size() != 0) {
+                    for (Object result : results) {
+                        ErrorDetail errorDetail = (ErrorDetail) result;
+                        ErrorDetailResource errorDetailResource =
+                                (ErrorDetailResource)Utils.getResource(ResourceType.ERROR_DETAIL, errorDetail);
+                        resourceList.add(errorDetailResource);
+                    }
+                }
+                break;
             default:
                 em.getTransaction().commit();
                 em.close();
@@ -184,17 +224,50 @@ public class JobDetailResource extends AbstractResource {
         jobDetail.setTaskId(taskDetailResource.getTaskId());
         jobDetail.setCreationTime(creationTime);
         jobDetail.setJobDescription(jobDescription);
+        jobDetail.setComputeResourceConsumed(computeResourceConsumed);
         if (existingJobDetail != null){
             existingJobDetail.setJobId(jobId);
             existingJobDetail.setTask(taskDetail);
             existingJobDetail.setTaskId(taskDetailResource.getTaskId());
             existingJobDetail.setCreationTime(creationTime);
             existingJobDetail.setJobDescription(jobDescription);
+            existingJobDetail.setComputeResourceConsumed(computeResourceConsumed);
             jobDetail = em.merge(existingJobDetail);
         }else {
             em.merge(jobDetail);
         }
         em.getTransaction().commit();
         em.close();
+    }
+
+    public StatusResource getJobStatus(){
+        List<Resource> resources = get(ResourceType.STATUS);
+        for (Resource resource : resources) {
+            StatusResource jobStatus = (StatusResource) resource;
+            if(jobStatus.getStatusType().equals(StatusType.JOB)){
+                return jobStatus;
+            }
+        }
+        return null;
+    }
+
+    public StatusResource getApplicationStatus(){
+        List<Resource> resources = get(ResourceType.STATUS);
+        for (Resource resource : resources) {
+            StatusResource appStatus = (StatusResource) resource;
+            if(appStatus.getStatusType().equals(StatusType.APPLICATION)){
+                return appStatus;
+            }
+        }
+        return null;
+    }
+
+    public List<ErrorDetailResource> getErrorDetails (){
+        List<ErrorDetailResource> errorDetailResources = new ArrayList<ErrorDetailResource>();
+        List<Resource> resources = get(ResourceType.ERROR_DETAIL);
+        for(Resource resource : resources){
+            errorDetailResources.add((ErrorDetailResource)resource);
+        }
+        return errorDetailResources;
     }
 }

@@ -38,7 +38,7 @@ public class QosParam {
     private String startExecutionAt;
     @Column(name = "EXECUTE_BEFORE")
     private String executeBefore;
-    @Column(name = "EXECUTE_BEFORE")
+    @Column(name = "NO_OF_RETRIES")
     private int noOfRetries;
 
     @ManyToOne(cascade= CascadeType.MERGE)

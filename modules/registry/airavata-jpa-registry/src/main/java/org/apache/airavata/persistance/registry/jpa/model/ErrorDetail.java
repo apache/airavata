@@ -51,6 +51,9 @@ public class ErrorDetail {
     private String correctiveAction;
     @Column(name = "ACTIONABLE_GROUP")
     private String actionableGroup;
+    @Column(name = "JOB_ID")
+    private String jobId;
+
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "EXPERIMENT_ID")
@@ -174,5 +177,13 @@ public class ErrorDetail {
 
     public void setCorrectiveAction(String correctiveAction) {
         this.correctiveAction = correctiveAction;
+    }
+
+    public String getJobId() {
+        return jobId;
+    }
+
+    public void setJobId(String jobId) {
+        this.jobId = jobId;
     }
 }

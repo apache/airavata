@@ -205,6 +205,7 @@ public abstract class AbstractResource implements Resource {
 		public static final String ERROR_ID = "error_id";
 		public static final String EXPERIMENT_ID = "experiment_id";
 		public static final String TASK_ID = "task_id";
+		public static final String JOB_ID = "job_id";
 		public static final String NODE_INSTANCE_ID = "node_instance_id";
 		public static final String CREATION_TIME = "creation_time";
 		public static final String ACTUAL_ERROR_MESSAGE = "actual_error_message";

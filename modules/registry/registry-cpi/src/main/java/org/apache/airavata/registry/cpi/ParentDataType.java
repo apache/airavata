@@ -5,7 +5,7 @@ public enum ParentDataType {
     GROUP,
     USER,
     PROJECT,
-    EXPERIMENT_BASIC_DATA
+    EXPERIMENT
 }
 
 
