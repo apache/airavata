@@ -48,6 +48,7 @@ public class ErrorDetailResource extends AbstractResource {
     private String errorCategory;
     private String correctiveAction;
     private String actionableGroup;
+    private String jobId;
 
     public int getErrorId() {
         return errorId;
@@ -137,6 +138,14 @@ public class ErrorDetailResource extends AbstractResource {
         this.nodeDetail = nodeDetail;
     }
 
+    public String getJobId() {
+        return jobId;
+    }
+
+    public void setJobId(String jobId) {
+        this.jobId = jobId;
+    }
+
     @Override
     public Resource create(ResourceType type) {
         logger.error("Unsupported resource type for error details data resource.", new UnsupportedOperationException());
@@ -184,6 +193,7 @@ public class ErrorDetailResource extends AbstractResource {
         errorDetail.setErrorCategory(errorCategory);
         errorDetail.setCorrectiveAction(correctiveAction);
         errorDetail.setActionableGroup(actionableGroup);
+        errorDetail.setJobId(jobId);
         if (existingErrorDetail != null){
             existingErrorDetail.setErrorID(errorId);
             existingErrorDetail.setExperiment(experiment);
@@ -196,6 +206,7 @@ public class ErrorDetailResource extends AbstractResource {
             existingErrorDetail.setErrorCategory(errorCategory);
             existingErrorDetail.setCorrectiveAction(correctiveAction);
             existingErrorDetail.setActionableGroup(actionableGroup);
+            existingErrorDetail.setJobId(jobId);
             errorDetail = em.merge(existingErrorDetail);
         }else {
             em.merge(errorDetail);
