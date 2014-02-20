@@ -26,8 +26,10 @@
 //import java.util.Map;
 //
 //public class ExperimentInputResourceTest extends AbstractResourceTest  {
+//    private ExperimentMetadataResource experimentResource;
 //    @Override
 //    public void setUp() throws Exception {
+//        super.setUp();
 //        super.setUp();
 //        GatewayResource gatewayResource = super.getGatewayResource();
 //        WorkerResource workerResource = super.getWorkerResource();
@@ -43,7 +45,13 @@
 //    }
 //
 //    public void testSave() throws Exception {
-//     
+//        ExperimentInputResource experimentInputResource = new ExperimentInputResource();
+//        experimentInputResource.setExperimentMetadataResource(experimentResource);
+//        experimentInputResource.setExperimentKey("testKey");
+//        experimentInputResource.setValue("testValue");
+//        experimentInputResource.save();
+//
+//        assertTrue("Experiment input saved successfully", experimentResource.isExists(ResourceType.EXPERIMENT_INPUT, "testExpID"));
 //    }
 //
 //    @Override

@@ -24,10 +24,11 @@ package org.apache.airavata.persistance.registry.jpa.impl;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
+import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 
 public class UserReg {
-    public WorkerResource getSysteUser () throws ApplicationSettingsException {
+    public WorkerResource getSystemUser() throws ApplicationSettingsException {
         WorkerResource worker = (WorkerResource)ResourceUtils.getWorker(ServerSettings.getSystemUserGateway(), ServerSettings.getSystemUser());
         return worker;
     }
@@ -36,4 +37,7 @@ public class UserReg {
         WorkerResource worker = (WorkerResource)ResourceUtils.getWorker(gatewayName, userName);
         return worker;
     }
+
+
+
 }

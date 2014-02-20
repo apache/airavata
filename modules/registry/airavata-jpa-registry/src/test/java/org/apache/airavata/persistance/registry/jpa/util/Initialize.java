@@ -22,7 +22,9 @@
 package org.apache.airavata.persistance.registry.jpa.util;
 
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
 import org.apache.airavata.persistance.registry.jpa.resources.Utils;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
@@ -146,8 +148,8 @@ public class Initialize {
             gatewayResource.setGatewayName(RegistrySettings.getSetting("default.registry.gateway"));
             gatewayResource.setOwner(RegistrySettings.getSetting("default.registry.gateway"));
             gatewayResource.save();
-
-            UserResource userResource = (UserResource) gatewayResource.create(ResourceType.USER);
+            
+            UserResource userResource = new UserResource();
             userResource.setUserName(RegistrySettings.getSetting("default.registry.user"));
             userResource.setPassword(RegistrySettings.getSetting("default.registry.password"));
             userResource.save();
@@ -155,6 +157,7 @@ public class Initialize {
             WorkerResource workerResource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
             workerResource.setUser(userResource.getUserName());
             workerResource.save();
+          
         } catch (RegistrySettingsException e) {
             logger.error("Unable to read properties", e);
         }
@@ -297,7 +300,7 @@ public class Initialize {
         try {
             System.setProperty(DERBY_SERVER_MODE_SYS_PROPERTY, "true");
             server = new NetworkServerControl(InetAddress.getByName(Utils.getHost()),
-            		Utils.getPort(),
+                    20000,
                     Utils.getJDBCUser(), Utils.getJDBCPassword());
             java.io.PrintWriter consoleWriter = new java.io.PrintWriter(System.out, true);
             server.start(consoleWriter);
