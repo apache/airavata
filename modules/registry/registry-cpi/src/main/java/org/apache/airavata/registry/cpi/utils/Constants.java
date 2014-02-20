@@ -23,23 +23,31 @@ package org.apache.airavata.registry.cpi.utils;
 
 public class Constants {
     public final class FieldConstants {
-        public final class BasicMetadataConstants {
+        public final class ExperimentConstants {
             public static final String EXPERIMENT_NAME = "experimentName";
             public static final String USER_NAME = "userName";
             public static final String GATEWAY = "gateway";
             public static final String EXPERIMENT_DESC = "experimentDescription";
             public static final String SHARE_EXP_PUBLIC = "shareExperimentPublicly";
             public static final String PROJECT_NAME = "project";
-            public static final String SUBMITTED_DATE = "submitted_date";
-        }
-
-        public final class ConfigurationDataConstants {
-            public static final String EXPERIMENT_ID = "experimentId";
+            public static final String CREATION_TIME = "creationTime";
             public static final String APPLICATION_ID = "applicationId";
             public static final String APPLICATION_VERSION = "applicationVersion";
             public static final String WORKFLOW_TEMPLATE_ID = "workflowTemplateId";
             public static final String WORKFLOW_TEMPLATE_VERSION = "worklfowTemplateVersion";
+            public static final String USER_CONFIGURATION_DATA = "userConfigurationData";
+            public static final String WORKFLOW_EXECUTION_ID = "workflowExecutionInstanceId";
             public static final String EXPERIMENT_INPUTS = "experimentInputs";
+            public static final String EXPERIMENT_OUTPUTS = "experimentOutputs";
+            public static final String EXPERIMENT_STATUS = "experimentStatus";
+            public static final String STATE_CHANGE_LIST = "stateChangeList";
+            public static final String WORKFLOW_NODE_LIST = "workflowNodeDetailsList";
+            public static final String ERROR_DETAIL_LIST = "errors";
+
+        }
+
+        public final class ConfigurationDataConstants {
+            public static final String EXPERIMENT_ID = "experimentId";
             public static final String COMPUTATIONAL_RESOURCE_SCHEDULING = "computationalResourceScheduling";
             public static final String ADVANCED_INPUT_HANDLING = "advanceInputDataHandling";
             public static final String ADVANCED_OUTPUT_HANDLING = "advanceOutputDataHandling";
