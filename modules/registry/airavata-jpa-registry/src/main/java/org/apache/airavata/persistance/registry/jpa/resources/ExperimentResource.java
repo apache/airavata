@@ -641,4 +641,8 @@ public class ExperimentResource extends AbstractResource {
     public QosParamResource getQOSparams (String expId){
         return  (QosParamResource)get(ResourceType.QOS_PARAM, expId);
     }
+
+    public ConfigDataResource getUserConfigData(String expID){
+        return (ConfigDataResource)get(ResourceType.CONFIG_DATA, expID);
+    }
 }

@@ -744,5 +744,14 @@ public class GatewayResource extends AbstractResource {
     public ExperimentResource getExperiment (String expId){
         return (ExperimentResource)get(ResourceType.EXPERIMENT, expId);
     }
+
+    public List<ExperimentResource> getExperiments (){
+        List<ExperimentResource> experiments = new ArrayList<ExperimentResource>();
+        List<Resource> resources = get(ResourceType.EXPERIMENT);
+        for (Resource resource : resources){
+            experiments.add((ExperimentResource)resource);
+        }
+        return experiments;
+    }
 }
 

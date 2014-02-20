@@ -47,6 +47,9 @@ public class Constants {
 
         public final class ConfigurationDataConstants {
             public static final String EXPERIMENT_ID = "experimentId";
+            public static final String AIRAVATA_AUTO_SCHEDULE = "airavataAutoSchedule";
+            public static final String OVERRIDE_MANUAL_PARAMS = "overrideManualScheduledParams";
+            public static final String SHARE_EXP = "shareExperimentPublicly";
             public static final String COMPUTATIONAL_RESOURCE_SCHEDULING = "computationalResourceScheduling";
             public static final String ADVANCED_INPUT_HANDLING = "advanceInputDataHandling";
             public static final String ADVANCED_OUTPUT_HANDLING = "advanceOutputDataHandling";
