@@ -33,14 +33,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * This is the implementation for AMQP based monitor, this uses
+ * This is the implementation for AMQP based finishQueue, this uses
  * rabbitmq client to recieve AMQP based monitoring data from
  * mostly excede resources.
  */
@@ -60,20 +57,19 @@ public class AMQPMonitor extends PushMonitor implements Runnable {
 
     private BlockingQueue<MonitorID> finishQueue;
 
-    public AMQPMonitor(MonitorPublisher publisher, BlockingQueue runningQueue,BlockingQueue finishQueue) {
+    public AMQPMonitor(MonitorPublisher publisher, BlockingQueue runningQueue, BlockingQueue finishQueue) {
         this.publisher = publisher;
         this.runningQueue = runningQueue;
-        availableChannels = new HashMap<String, Channel>();
         this.finishQueue = finishQueue;
-
+        availableChannels = new HashMap<String, Channel>();
+//        UnRegisterThread unRegisterThread = new UnRegisterThread(finishQueue,availableChannels);
+//        unRegisterThread.run();
+        System.out.println("Testing");
     }
 
-    public synchronized void run() {
+    public void run() {
         try {
             // before going to the while true mode we start unregister thread
-//            UnRegisterThread unRegisterThread = new UnRegisterThread(this);
-//            unRegisterThread.run();
-
             while (true) {
                 // we got a new job to do the monitoring
                 MonitorID take = runningQueue.take();
@@ -113,7 +109,7 @@ public class AMQPMonitor extends PushMonitor implements Runnable {
                 channel.queueBind(queueName, "glue2.computing_activity", filterString);
                 System.out.println(filterString);
             } catch (IOException e) {
-                logger.error("Error creating the connection to monitor the job:" + monitorID.getJobID());
+                logger.error("Error creating the connection to finishQueue the job:" + monitorID.getJobID());
             }
         }
         return false;  //To change body of implemented methods use File | Settings | File Templates.
@@ -190,24 +186,5 @@ public class AMQPMonitor extends PushMonitor implements Runnable {
      * implementing a logic to handle the finished job and unsubscribe
      */
 
-    class UnRegisterThread extends Thread {
-        private AMQPMonitor monitor;
 
-        public UnRegisterThread(AMQPMonitor monitor){
-            this.monitor = monitor;
-        }
-        public synchronized void run() {
-            while(true){
-                try {
-                    MonitorID monitorID = this.monitor.getFinishQueue().take();
-                    monitor.unRegisterListener(monitorID);
-
-                }  catch (AiravataMonitorException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (InterruptedException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-            }
-        }
-    }
 }
