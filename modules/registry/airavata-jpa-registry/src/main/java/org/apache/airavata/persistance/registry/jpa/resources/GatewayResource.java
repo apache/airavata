@@ -99,10 +99,6 @@ public class GatewayResource extends AbstractResource {
                 ProjectResource projectResource = new ProjectResource();
                 projectResource.setGateway(this);
                 return projectResource;
-            case USER:
-                UserResource userResource = new UserResource();
-                userResource.setGatewayName(this.getGatewayName());
-                return userResource;
             case PUBLISHED_WORKFLOW:
                 PublishWorkflowResource publishWorkflowResource = new PublishWorkflowResource();
                 publishWorkflowResource.setGateway(this);
@@ -743,6 +739,19 @@ public class GatewayResource extends AbstractResource {
         ExperimentResource metadataResource = (ExperimentResource)create(ResourceType.EXPERIMENT);
         metadataResource.setExpID(experimentID);
         return metadataResource;
+    }
+
+    public ExperimentResource getExperiment (String expId){
+        return (ExperimentResource)get(ResourceType.EXPERIMENT, expId);
+    }
+
+    public List<ExperimentResource> getExperiments (){
+        List<ExperimentResource> experiments = new ArrayList<ExperimentResource>();
+        List<Resource> resources = get(ResourceType.EXPERIMENT);
+        for (Resource resource : resources){
+            experiments.add((ExperimentResource)resource);
+        }
+        return experiments;
     }
 }
 

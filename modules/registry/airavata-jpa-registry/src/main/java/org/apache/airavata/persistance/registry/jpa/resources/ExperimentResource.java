@@ -479,7 +479,7 @@ public class ExperimentResource extends AbstractResource {
         Gateway gateway = em.find(Gateway.class, getGateway().getGatewayName());
         experiment.setProject(projectmodel);
         experiment.setExpId(expID);
-        experiment.setUser(user);
+        experiment.setExecutionUser(user.getUser_name());
         experiment.setGateway(gateway);
         experiment.setCreationTime(creationTime);
         experiment.setExpName(expName);
@@ -492,7 +492,7 @@ public class ExperimentResource extends AbstractResource {
         if(existingExp != null){
             existingExp.setGateway(gateway);
             existingExp.setProject(projectmodel);
-            existingExp.setUser(user);
+            existingExp.setExecutionUser(user.getUser_name());
             existingExp.setCreationTime(creationTime);
             existingExp.setExpName(expName);
             existingExp.setExpDesc(description);
@@ -624,5 +624,25 @@ public class ExperimentResource extends AbstractResource {
             errorDetailResources.add(errorDetailResource);
         }
         return errorDetailResources;
+    }
+
+    public ComputationSchedulingResource getComputationScheduling (String expId){
+        return  (ComputationSchedulingResource)get(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, expId);
+    }
+
+    public AdvanceInputDataHandlingResource getInputDataHandling (String expId){
+        return  (AdvanceInputDataHandlingResource)get(ResourceType.ADVANCE_INPUT_DATA_HANDLING, expId);
+    }
+
+    public AdvancedOutputDataHandlingResource getOutputDataHandling (String expId){
+        return  (AdvancedOutputDataHandlingResource)get(ResourceType.ADVANCE_OUTPUT_DATA_HANDLING, expId);
+    }
+
+    public QosParamResource getQOSparams (String expId){
+        return  (QosParamResource)get(ResourceType.QOS_PARAM, expId);
+    }
+
+    public ConfigDataResource getUserConfigData(String expID){
+        return (ConfigDataResource)get(ResourceType.CONFIG_DATA, expID);
     }
 }
