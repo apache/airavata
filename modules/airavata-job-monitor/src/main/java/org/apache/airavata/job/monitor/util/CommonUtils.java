@@ -24,9 +24,9 @@ import org.apache.airavata.job.monitor.MonitorID;
 
 public class CommonUtils {
     public static String getChannelID(MonitorID monitorID) {
-        return monitorID.getUserName() + monitorID.getHost().getType().getHostName();
+        return monitorID.getUserName() + "-" + monitorID.getHost().getType().getHostName();
     }
     public static String getRoutingKey(MonitorID monitorID) {
-        return "*." + monitorID.getUserName() + monitorID.getHost().getType().getHostAddress();
+        return "*." + monitorID.getUserName() + "." + monitorID.getHost().getType().getHostAddress();
     }
 }

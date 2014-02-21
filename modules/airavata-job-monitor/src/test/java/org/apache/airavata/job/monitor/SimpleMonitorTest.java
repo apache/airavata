@@ -47,17 +47,18 @@ public class SimpleMonitorTest {
     private String pbsFilePath;
     private String workingDirectory;
     private HostDescription hostDescription;
+
     @Before
     public void setUp() throws Exception {
         System.setProperty("myproxy.user", "ogce");
         System.setProperty("myproxy.password", "");
         System.setProperty("basedir", "/Users/lahirugunathilake/work/airavata/sandbox/gsissh");
-        System.setProperty("gsi.working.directory","/home/ogce");
+        System.setProperty("gsi.working.directory", "/home/ogce");
         myProxyUserName = System.getProperty("myproxy.user");
         myProxyPassword = System.getProperty("myproxy.password");
         workingDirectory = System.getProperty("gsi.working.directory");
         String pomDirectory = System.getProperty("basedir");
-
+        certificateLocation = "/Users/lahirugunathilake/Downloads/certificates";
         if (myProxyUserName == null || myProxyPassword == null || workingDirectory == null) {
             System.out.println(">>>>>> Please run tests with my proxy user name and password. " +
                     "E.g :- mvn clean install -Dmyproxy.user=xxx -Dmyproxy.password=xxx -Dgsi.working.directory=/path<<<<<<<");
@@ -67,7 +68,7 @@ public class SimpleMonitorTest {
         monitorManager = new MonitorManager();
         AMQPMonitor amqpMonitor = new
                 AMQPMonitor(monitorManager.getMonitorPublisher(),
-                monitorManager.getRunningQueue(),monitorManager.getFinishQueue());
+                monitorManager.getRunningQueue(), monitorManager.getFinishQueue());
         try {
             monitorManager.addPushMonitor(amqpMonitor);
             monitorManager.launchMonitor();
@@ -76,28 +77,28 @@ public class SimpleMonitorTest {
         }
 
         hostDescription = new HostDescription(GsisshHostType.type);
-        hostDescription.getType().setHostAddress("trestles.sdsc.edu");
-        hostDescription.getType().setHostName("gsissh-trestles");
+        hostDescription.getType().setHostAddress("gordon.sdsc.xsede.org");
+        hostDescription.getType().setHostName("gsissh-gordon");
     }
 
     @Test
     public void testAMQPMonitor() throws SSHApiException {
         /* now have to submit a job to some machine and add that job to the queue */
-// Create authentication
-        GSIAuthenticationInfo authenticationInfo
+//Create authentication
+      /*  GSIAuthenticationInfo authenticationInfo
                 = new MyProxyAuthenticationInfo(myProxyUserName, myProxyPassword, "myproxy.teragrid.org",
                 7512, 17280000, certificateLocation);
-
-        // Server info
+//
+//        // Server info
         ServerInfo serverInfo = new ServerInfo("ogce", "trestles.sdsc.edu");
-
-
+//
+//
         Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, "/opt/torque/bin/");
-
-
-        // Execute command
+//
+//
+//        // Execute command
         System.out.println("Target PBS file path: " + workingDirectory);
-        // constructing the job object
+//        // constructing the job object
         JobDescriptor jobDescriptor = new JobDescriptor();
         jobDescriptor.setWorkingDirectory(workingDirectory);
         jobDescriptor.setShellName("/bin/bash");
@@ -113,11 +114,22 @@ public class SimpleMonitorTest {
         jobDescriptor.setMaxWallTime("60");
         jobDescriptor.setAcountString("sds128");
         List<String> inputs = new ArrayList<String>();
+        jobDescriptor.setOwner("ogce");
         inputs.add("Hello World");
         jobDescriptor.setInputValues(inputs);
-        //finished construction of job object
+//        //finished construction of job object
         System.out.println(jobDescriptor.toXML());
-        String jobID = pbsCluster.submitBatchJob(jobDescriptor);
-        monitorManager.addAJobToMonitor(new MonitorID(hostDescription, jobID, "ogce"));
+//        String jobID = pbsCluster.submitBatchJob(jobDescriptor);   */
+
+        try {
+            monitorManager.addAJobToMonitor(new MonitorID(hostDescription, "gordon.sdsc.xsede.org", "ogce"));
+        } catch (AiravataMonitorException e) {
+            e.printStackTrace();
+        }
+        try {
+            Thread.sleep(100000000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
