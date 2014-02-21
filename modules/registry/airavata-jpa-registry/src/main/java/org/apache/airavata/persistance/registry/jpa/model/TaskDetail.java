@@ -21,8 +21,6 @@
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
-import org.apache.airavata.registry.api.workflow.WorkflowNodeType;
-
 import javax.persistence.*;
 import java.sql.Timestamp;
 

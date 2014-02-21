@@ -8,7 +8,6 @@ import java.util.Date;
 import org.apache.airavata.persistance.registry.jpa.resources.ExperimentResource;
 import org.apache.airavata.persistance.registry.jpa.resources.TaskDetailResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkflowNodeDetailResource;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 

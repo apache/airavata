@@ -187,7 +187,7 @@ public class ErrorDetailResource extends AbstractResource {
         WorkflowNodeDetail workflowNodeDetail = em.find(WorkflowNodeDetail.class, nodeDetail.getNodeInstanceId());
         errorDetail.setNodeDetails(workflowNodeDetail);
         errorDetail.setCreationTime(creationTime);
-        errorDetail.setActualErrorMsg(actualErrorMsg);
+        errorDetail.setActualErrorMsg(actualErrorMsg.toCharArray());
         errorDetail.setUserFriendlyErrorMsg(userFriendlyErrorMsg);
         errorDetail.setTransientPersistent(transientPersistent);
         errorDetail.setErrorCategory(errorCategory);
@@ -200,7 +200,7 @@ public class ErrorDetailResource extends AbstractResource {
             existingErrorDetail.setTask(taskDetail);
             existingErrorDetail.setNodeDetails(workflowNodeDetail);
             existingErrorDetail.setCreationTime(creationTime);
-            existingErrorDetail.setActualErrorMsg(actualErrorMsg);
+            existingErrorDetail.setActualErrorMsg(actualErrorMsg.toCharArray());
             existingErrorDetail.setUserFriendlyErrorMsg(userFriendlyErrorMsg);
             existingErrorDetail.setTransientPersistent(transientPersistent);
             existingErrorDetail.setErrorCategory(errorCategory);

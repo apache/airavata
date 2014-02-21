@@ -21,15 +21,20 @@
 
 package org.apache.airavata.persistance.registry.jpa;
 
-import org.apache.airavata.persistance.registry.jpa.resources.*;
+import static org.junit.Assert.*;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Date;
+
+import org.apache.airavata.persistance.registry.jpa.resources.ExperimentResource;
+import org.junit.After;
+import org.junit.Test;
 
 public class ExperimentResourceTest extends AbstractResourceTest {
     private ExperimentResource experimentResource;
     private String experimentID = "testExpID";
- 
+
     @Override
     public void setUp() throws Exception {
     	super.setUp();
@@ -37,9 +42,7 @@ public class ExperimentResourceTest extends AbstractResourceTest {
         experimentResource.setExpID(experimentID);
         experimentResource.setWorker(getWorkerResource());
         experimentResource.setProject(getProjectResource());
-        Calendar calender = Calendar.getInstance();
-        java.util.Date d = calender.getTime();
-        Timestamp currentDate = new Timestamp(d.getTime());
+        Timestamp currentDate = new Timestamp(new Date().getTime());
         experimentResource.setCreationTime(currentDate);
         experimentResource.setApplicationId("testApplication");
         experimentResource.setApplicationVersion("1.0");
@@ -48,25 +51,28 @@ public class ExperimentResourceTest extends AbstractResourceTest {
     	experimentResource.save();
     }
     
-
+    @Test
     public void testCreate() throws Exception {
     	assertNotNull("experiment data resource has being created ", experimentResource);
     }
-
+    
+    @Test
     public void testSave() throws Exception {
         assertTrue("experiment save successfully", getGatewayResource().isExists(ResourceType.EXPERIMENT, experimentID));
     }
+    
+    @Test
     public void testGet() throws Exception {
         assertNotNull("experiment data retrieved successfully", getGatewayResource().get(ResourceType.EXPERIMENT, experimentID));
     }
 
+    @Test
     public void testRemove() throws Exception {
     	getGatewayResource().remove(ResourceType.EXPERIMENT, experimentID);
-      assertTrue("experiment data removed successfully", !getGatewayResource().isExists(ResourceType.EXPERIMENT, experimentID));        
+    	assertFalse("experiment data removed successfully", getGatewayResource().isExists(ResourceType.EXPERIMENT, experimentID));        
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
-        super.tearDown();
     }
 }
