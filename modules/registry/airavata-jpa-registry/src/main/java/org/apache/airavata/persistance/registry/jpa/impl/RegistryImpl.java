@@ -21,9 +21,7 @@
 
 package org.apache.airavata.persistance.registry.jpa.impl;
 
-import org.apache.airavata.model.workspace.experiment.DataObjectType;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
+import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.ParentDataType;
@@ -70,21 +68,19 @@ public class RegistryImpl implements Registry {
      *                            null
      */
     @Override
-    public void add(ChildDataType dataType, Object newObjectToAdd, String dependentIdentifier) throws Exception{
+    public Object add(ChildDataType dataType, Object newObjectToAdd, Object dependentIdentifier) throws Exception{
         switch (dataType){
             case EXPERIMENT_CONFIGURATION_DATA:
-                experimentRegistry.addUserConfigData((UserConfigurationData) newObjectToAdd, dependentIdentifier);
-                break;
+                return experimentRegistry.addUserConfigData((UserConfigurationData) newObjectToAdd, (String)dependentIdentifier);
             case EXPERIMENT_OUTPUT:
-                experimentRegistry.addExpOuputs((List<DataObjectType>)newObjectToAdd, dependentIdentifier);
-                break;
+                return experimentRegistry.addExpOuputs((List<DataObjectType>)newObjectToAdd, (String)dependentIdentifier);
+            case EXPERIMENT_STATUS:
+                return experimentRegistry.updateExperimentStatus((ExperimentStatus)newObjectToAdd, (String)dependentIdentifier);
+            case WORKFLOW_NODE_DETAIL:
+                return experimentRegistry.addWorkflowNodeDetails((WorkflowNodeDetails)newObjectToAdd, (String)dependentIdentifier);
             case TASK_DETAIL:
-                // no thrift model yet
-                break;
-            case ERROR_DETAIL:
-                // no thrift model yet
-                break;
-            case APPLICATION_INPUT:
+                return experimentRegistry.addTaskDetails((TaskDetails)newObjectToAdd, (String)dependentIdentifier);
+            case WORKFLOW_NODE_STATUS:
                 // no thrift model yet
                 break;
             case APPLICATION_OUTPUT:
@@ -97,9 +93,6 @@ public class RegistryImpl implements Registry {
                 // no thrift model yet
                 break;
             case DATA_TRANSFER_DETAIL:
-                // no thrift model yet
-                break;
-            case STATUS:
                 // no thrift model yet
                 break;
             case ADVANCE_INPUT_DATA_HANDLING:
@@ -118,6 +111,7 @@ public class RegistryImpl implements Registry {
                 logger.error("Unsupported dependent data type...", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
         }
+        return null;
 
     }
 
@@ -132,13 +126,13 @@ public class RegistryImpl implements Registry {
      *                       other fields that need to be updated.
      */
     @Override
-    public void update(DataType dataType, Object newObjectToUpdate, String identifier) throws Exception {
+    public void update(DataType dataType, Object newObjectToUpdate, Object identifier) throws Exception {
         switch (dataType){
             case EXPERIMENT:
-                experimentRegistry.updateExperiment((Experiment) newObjectToUpdate, identifier);
+                experimentRegistry.updateExperiment((Experiment) newObjectToUpdate, (String)identifier);
                 break;
             case EXPERIMENT_CONFIGURATION_DATA:
-                experimentRegistry.updateUserConfigData((UserConfigurationData) newObjectToUpdate, identifier);
+                experimentRegistry.updateUserConfigData((UserConfigurationData) newObjectToUpdate, (String)identifier);
                 break;
             default:
                 logger.error("Unsupported data type...", new UnsupportedOperationException());
@@ -159,13 +153,13 @@ public class RegistryImpl implements Registry {
      *              updated by given value
      */
     @Override
-    public void update(DataType dataType, String identifier, String fieldName, Object value) throws Exception {
+    public void update(DataType dataType, Object identifier, String fieldName, Object value) throws Exception {
         switch (dataType){
             case EXPERIMENT:
-                experimentRegistry.updateExperimentField(identifier, fieldName, value);
+                experimentRegistry.updateExperimentField((String)identifier, fieldName, value);
                 break;
             case EXPERIMENT_CONFIGURATION_DATA:
-                experimentRegistry.updateExpConfigDataField(identifier, fieldName, value);
+                experimentRegistry.updateExpConfigDataField((String)identifier, fieldName, value);
                 break;
             default:
                 logger.error("Unsupported data type...", new UnsupportedOperationException());
@@ -183,13 +177,13 @@ public class RegistryImpl implements Registry {
      * @return object according to the given identifier.
      */
     @Override
-    public Object get(DataType dataType, String identifier) throws Exception {
+    public Object get(DataType dataType, Object identifier) throws Exception {
 
         switch (dataType){
             case EXPERIMENT:
-                return experimentRegistry.getExperiment(identifier, null);
+                return experimentRegistry.getExperiment((String)identifier, null);
             case EXPERIMENT_CONFIGURATION_DATA:
-                return experimentRegistry.getConfigData(identifier, null);
+                return experimentRegistry.getConfigData((String)identifier, null);
             default:
                 logger.error("Unsupported data type...", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
@@ -233,12 +227,12 @@ public class RegistryImpl implements Registry {
      *         given
      */
     @Override
-    public Object getValue(DataType dataType, String identifier, String field) throws Exception {
+    public Object getValue(DataType dataType, Object identifier, String field) throws Exception {
         switch (dataType){
             case EXPERIMENT:
-                return experimentRegistry.getExperiment(identifier, field);
+                return experimentRegistry.getExperiment((String)identifier, field);
             case EXPERIMENT_CONFIGURATION_DATA:
-                return experimentRegistry.getConfigData(identifier, field);
+                return experimentRegistry.getConfigData((String)identifier, field);
             default:
                 logger.error("Unsupported data type...", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
@@ -277,13 +271,13 @@ public class RegistryImpl implements Registry {
      *                   identifier will be generated experimentID
      */
     @Override
-    public void remove(DataType dataType, String identifier) throws Exception {
+    public void remove(DataType dataType, Object identifier) throws Exception {
         switch (dataType){
             case EXPERIMENT:
-                experimentRegistry.removeExperiment(identifier);
+                experimentRegistry.removeExperiment((String)identifier);
                 break;
             case EXPERIMENT_CONFIGURATION_DATA:
-                experimentRegistry.removeExperimentConfigData(identifier);
+                experimentRegistry.removeExperimentConfigData((String)identifier);
             default:
                 logger.error("Unsupported data type...", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
@@ -299,12 +293,12 @@ public class RegistryImpl implements Registry {
      * @return whether the given data type exists or not
      */
     @Override
-    public boolean isExist(DataType dataType, String identifier) throws Exception {
+    public boolean isExist(DataType dataType, Object identifier) throws Exception {
         switch (dataType){
             case EXPERIMENT:
-                return experimentRegistry.isExperimentExist(identifier);
+                return experimentRegistry.isExperimentExist((String)identifier);
             case EXPERIMENT_CONFIGURATION_DATA:
-                return experimentRegistry.isExperimentConfigDataExist(identifier);
+                return experimentRegistry.isExperimentConfigDataExist((String)identifier);
         }
         return false;
     }
