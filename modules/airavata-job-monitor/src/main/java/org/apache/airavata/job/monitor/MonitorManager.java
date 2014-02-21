@@ -79,9 +79,13 @@ public class MonitorManager {
      * This is going to be useful during the startup of the launching process
      * @param monitorID
      */
-    public void addAJobToMonitor(MonitorID monitorID) {
-        runningQueue.add(monitorID);
-        runningQueue.notify();
+    public void addAJobToMonitor(MonitorID monitorID) throws AiravataMonitorException {
+        try {
+            runningQueue.put(monitorID);
+        } catch (InterruptedException e) {
+            String error = "Error while putting the job: " + monitorID.getJobID() + " the monitor queue";
+            throw new AiravataMonitorException(error, e);
+        }
     }
 
     /**
@@ -95,37 +99,26 @@ public class MonitorManager {
      */
     public void launchMonitor() throws AiravataMonitorException {
         new Thread(){
-            public void run() {
-                try {
-                    runningQueue.wait();
-                } catch (InterruptedException e) {
-                    String error = "Error occured during launching the monitor";
-                    logger.error(error);
-                    try {
-                        throw e;
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
-                }
+            public synchronized void run() {
                 if (pushMonitors.isEmpty()) {
                     if (pullMonitors.isEmpty()) {
                         logger.error("Before launching MonitorManager should have atleast one Monitor");
                         return;
                     } else {
                         //no push monitor is configured so we launch pull monitor
-                        PushMonitor pushMonitor = pushMonitors.get(0);
-                        if(pushMonitor instanceof AMQPMonitor){
-                            ((AMQPMonitor) pushMonitor).run();
+                        PullMonitor pullMonitor = pullMonitors.get(0);
+                        try {
+                            pullMonitor.startPulling();
+                        } catch (AiravataMonitorException e) {
+                            e.printStackTrace();
                         }
                     }
                 } else {
                     // there is a push monitor configured, so we schedule the push monitor
                     // We currently support dealing with one type of monitor
-                    PullMonitor pullMonitor = pullMonitors.get(0);
-                    try {
-                        pullMonitor.startPulling();
-                    } catch (AiravataMonitorException e) {
-                        e.printStackTrace();
+                    PushMonitor pushMonitor = pushMonitors.get(0);
+                    if(pushMonitor instanceof AMQPMonitor){
+                        ((AMQPMonitor) pushMonitor).run();
                     }
 
                 }

@@ -23,9 +23,6 @@ package org.apache.airavata.job.monitor.impl.push.amqp;
 import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.core.MessageParser;
 import org.apache.airavata.job.monitor.state.JobStatus;
-import org.apache.hadoop.mapred.jobcontrol.Job;
-
-import javax.mail.search.MessageIDTerm;
 
 public class JSONMessageParser implements MessageParser {
     public JobStatus parseMessage(String message,MonitorID monitorID) {

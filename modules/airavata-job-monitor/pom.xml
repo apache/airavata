@@ -14,7 +14,7 @@
         <groupId>org.apache.airavata</groupId>
         <artifactId>airavata</artifactId>
         <version>0.12-SNAPSHOT</version>
-	<relativePath>../../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -24,15 +24,20 @@
     <url>http://airavata.apache.org/</url>
 
     <dependencies>
-
         <dependency>
             <groupId>org.jglobus</groupId>
             <artifactId>gss</artifactId>
             <version>${jglobus.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcprov-jdk16</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jglobus</groupId>
-            <artifactId>gram</artifactId>
+            <artifactId>myproxy</artifactId>
             <version>${jglobus.version}</version>
             <exclusions>
                 <exclusion>
@@ -43,41 +48,20 @@
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk16</artifactId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.48</version>
         </dependency>
         <dependency>
-            <groupId>org.jglobus</groupId>
-            <artifactId>myproxy</artifactId>
-            <version>${jglobus.version}</version>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk15on</artifactId>
+            <version>1.48</version>
         </dependency>
-        <dependency>
-            <groupId>org.jglobus</groupId>
-            <artifactId>gridftp</artifactId>
-            <version>${jglobus.version}</version>
-        </dependency>
-
         <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
 
-        <!-- GFAC schemas -->
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-client-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-workflow-execution-context</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-registry-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-registry-cpi</artifactId>
@@ -88,26 +72,23 @@
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-jpa-registry</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcprov-jdk16</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-        <!-- Workflow Tracking -->
         <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-workflow-tracking</artifactId>
-            <version>${project.version}</version>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>3.2.3</version>
         </dependency>
-
         <!-- SSH -->
         <dependency>
             <groupId>net.schmizz</groupId>
             <artifactId>sshj</artifactId>
             <version>0.8.0</version>
-        </dependency>
-
-        <!-- Credential Store -->
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-credential-store</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <!-- Amazon EC2 Provider -->
@@ -161,65 +142,8 @@
             <artifactId>slf4j-log4j12</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- Unicore dependencies -->
-        <dependency>
-            <groupId>eu.unicore</groupId>
-            <artifactId>ogsabes-client</artifactId>
-            <version>1.7.0-rc</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.santuario</groupId>
-                    <artifactId>xmlsec</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.bouncycastle</groupId>
-                    <artifactId>bcprov-jdk16</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
 
 
-        <!-- Hadoop provider related dependencies -->
-        <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-core</artifactId>
-            <version>1.0.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-client</artifactId>
-            <version>1.0.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.whirr</groupId>
-            <artifactId>whirr-core</artifactId>
-            <version>0.7.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.whirr</groupId>
-            <artifactId>whirr-hadoop</artifactId>
-            <version>0.7.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-all</artifactId>
-            <version>1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.8.5</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-configuration</groupId>
-            <artifactId>commons-configuration</artifactId>
-            <version>1.7</version>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.jopt-simple</groupId>
-            <artifactId>jopt-simple</artifactId>
-            <version>3.2</version>
-        </dependency>
         <!-- Guava -->
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -262,32 +186,10 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <!--skip>true</skip -->
-                    <excludes>
-                        <exclude>**/services/**</exclude>
-                        <exclude>**/gfac/**</exclude>
-                    </excludes>
+                    <skip>false</skip>
                     <forkMode>always</forkMode>
                     <failIfNoTests>false</failIfNoTests>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>target/lib</outputDirectory>
-                            <overWriteReleases>false</overWriteReleases>
-                            <overWriteSnapshots>true</overWriteSnapshots>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

@@ -68,14 +68,13 @@ public class AMQPMonitor extends PushMonitor implements Runnable {
 
     }
 
-    public void run() {
+    public synchronized void run() {
         try {
             // before going to the while true mode we start unregister thread
-            UnRegisterThread unRegisterThread = new UnRegisterThread(this);
-            unRegisterThread.run();
+//            UnRegisterThread unRegisterThread = new UnRegisterThread(this);
+//            unRegisterThread.run();
 
             while (true) {
-                runningQueue.wait();
                 // we got a new job to do the monitoring
                 MonitorID take = runningQueue.take();
                 this.registerListener(take);
@@ -96,7 +95,8 @@ public class AMQPMonitor extends PushMonitor implements Runnable {
         // the Monitoring implementation (what data is required)
         checkMonitorID(monitorID);
         String channelID = CommonUtils.getChannelID(monitorID);
-
+        System.out.println("Going to start monitoring job with ID: " + monitorID.getJobID());
+        logger.info("Going to start monitoring job with ID: " + monitorID.getJobID());
         // if we already have a channel we do not create one
         if (availableChannels.get(channelID) == null) {
             //todo need to fix this rather getting it from a file
@@ -111,6 +111,7 @@ public class AMQPMonitor extends PushMonitor implements Runnable {
                 String filterString = CommonUtils.getRoutingKey(monitorID);
                 // here we queuebind to a particular user in a particular machine
                 channel.queueBind(queueName, "glue2.computing_activity", filterString);
+                System.out.println(filterString);
             } catch (IOException e) {
                 logger.error("Error creating the connection to monitor the job:" + monitorID.getJobID());
             }
@@ -198,21 +199,12 @@ public class AMQPMonitor extends PushMonitor implements Runnable {
         public synchronized void run() {
             while(true){
                 try {
-                    this.monitor.getFinishQueue().wait();
-                    if(this.monitor.getFinishQueue().isEmpty()){
-                        logger.error("Error signal came to the UnRegistering thread, so skipping");
-                    }else{
-                        Iterator<MonitorID> iterator = this.monitor.getFinishQueue().iterator();
-                        /* takes all the finished jobs at a time and unregister them */
-                        while(iterator.hasNext()){
-                            MonitorID next = iterator.next();
-                            monitor.unRegisterListener(next);
-                        }
-                    }
+                    MonitorID monitorID = this.monitor.getFinishQueue().take();
+                    monitor.unRegisterListener(monitorID);
 
-                } catch (InterruptedException e) {
+                }  catch (AiravataMonitorException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (AiravataMonitorException e) {
+                } catch (InterruptedException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
             }
