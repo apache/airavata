@@ -26,6 +26,7 @@ import org.apache.airavata.job.monitor.core.PushMonitor;
 import org.apache.airavata.job.monitor.event.MonitorPublisher;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.impl.push.amqp.AMQPMonitor;
+import org.apache.airavata.job.monitor.impl.push.amqp.UnRegisterThread;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,7 +100,7 @@ public class MonitorManager {
      */
     public void launchMonitor() throws AiravataMonitorException {
         new Thread(){
-            public synchronized void run() {
+            public void run() {
                 if (pushMonitors.isEmpty()) {
                     if (pullMonitors.isEmpty()) {
                         logger.error("Before launching MonitorManager should have atleast one Monitor");
@@ -110,7 +111,7 @@ public class MonitorManager {
                         try {
                             pullMonitor.startPulling();
                         } catch (AiravataMonitorException e) {
-                            e.printStackTrace();
+                            logger.error(e.getLocalizedMessage());
                         }
                     }
                 } else {
@@ -120,6 +121,9 @@ public class MonitorManager {
                     if(pushMonitor instanceof AMQPMonitor){
                         ((AMQPMonitor) pushMonitor).run();
                     }
+                    UnRegisterThread unRegisterThread = new
+                            UnRegisterThread(((AMQPMonitor) pushMonitor).getFinishQueue(),((AMQPMonitor) pushMonitor).getAvailableChannels());
+                    unRegisterThread.run();
 
                 }
             }
