@@ -203,7 +203,7 @@ public class ExperimentResource extends AbstractResource {
                 break;
             case WORKFLOW_NODE_DETAIL:
                 generator = new QueryGenerator(WORKFLOW_NODE_DETAIL);
-                generator.setParameter(WorkflowNodeDetailsConstants.EXPERIMENT_ID, name);
+                generator.setParameter(WorkflowNodeDetailsConstants.NODE_INSTANCE_ID, name);
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
                 break;
@@ -289,7 +289,7 @@ public class ExperimentResource extends AbstractResource {
                 return outputResource;
             case WORKFLOW_NODE_DETAIL:
                 generator = new QueryGenerator(WORKFLOW_NODE_DETAIL);
-                generator.setParameter(WorkflowNodeDetailsConstants.EXPERIMENT_ID, name);
+                generator.setParameter(WorkflowNodeDetailsConstants.NODE_INSTANCE_ID, name);
                 q = generator.selectQuery(em);
                 WorkflowNodeDetail workflowNodeDetail = (WorkflowNodeDetail)q.getSingleResult();
                 WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)Utils.getResource(ResourceType.WORKFLOW_NODE_DETAIL, workflowNodeDetail);
@@ -644,5 +644,8 @@ public class ExperimentResource extends AbstractResource {
 
     public ConfigDataResource getUserConfigData(String expID){
         return (ConfigDataResource)get(ResourceType.CONFIG_DATA, expID);
+    }
+    public WorkflowNodeDetailResource getWorkflowNode (String nodeId){
+        return (WorkflowNodeDetailResource)get(ResourceType.WORKFLOW_NODE_DETAIL, nodeId);
     }
 }

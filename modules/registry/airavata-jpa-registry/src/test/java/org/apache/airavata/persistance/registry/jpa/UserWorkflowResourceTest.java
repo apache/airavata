@@ -21,9 +21,13 @@
 
 package org.apache.airavata.persistance.registry.jpa;
 
+import static org.junit.Assert.*;
+
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserWorkflowResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
+import org.junit.After;
+import org.junit.Test;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -48,6 +52,7 @@ public class UserWorkflowResourceTest extends AbstractResourceTest {
         userWorkflowResource.setLastUpdateDate(currentTime);
     }
 
+    @Test
     public void testSave() throws Exception {
         userWorkflowResource.save();
         assertTrue("user workflow saved successfully", workerResource.isWorkflowTemplateExists("workflow1"));
@@ -55,8 +60,7 @@ public class UserWorkflowResourceTest extends AbstractResourceTest {
         workerResource.removeWorkflowTemplate("workflow1");
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
-        super.tearDown();
     }
 }

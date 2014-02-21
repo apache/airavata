@@ -29,7 +29,9 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.apache.airavata.persistance.registry.jpa.utils.ThriftDataModelConversion;
+import org.apache.airavata.registry.cpi.CompositeIdentifier;
 import org.apache.airavata.registry.cpi.utils.Constants;
+import org.apache.airavata.registry.cpi.utils.StatusType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +73,10 @@ public class ExperimentRegistry {
             experimentResource.setWorkflowExecutionId(experiment.getWorkflowExecutionInstanceId());
             experimentResource.save();
             List<DataObjectType> experimentInputs = experiment.getExperimentInputs();
-            addExpInputs(experimentInputs, experimentResource);
+            if (experimentInputs != null){
+                addExpInputs(experimentInputs, experimentResource);
+            }
+
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read airavata-server properties", e.getMessage());
         }catch (Exception e){
@@ -80,7 +85,7 @@ public class ExperimentRegistry {
         return experimentID;
     }
 
-    public void addUserConfigData(UserConfigurationData configurationData, String experimentID) {
+    public String addUserConfigData(UserConfigurationData configurationData, String experimentID) {
         try {
             gatewayRegistry = new GatewayRegistry();
             GatewayResource gateway = gatewayRegistry.getDefaultGateway();
@@ -93,48 +98,21 @@ public class ExperimentRegistry {
 
             ComputationalResourceScheduling resourceScheduling = configurationData.getComputationalResourceScheduling();
             if (resourceScheduling != null) {
-                ComputationSchedulingResource cmsr = new ComputationSchedulingResource();
-                cmsr.setExperimentResource(experiment);
-                cmsr.setResourceHostId(resourceScheduling.getResourceHostId());
-                cmsr.setCpuCount(resourceScheduling.getTotalCPUCount());
-                cmsr.setNodeCount(resourceScheduling.getNodeCount());
-                cmsr.setNumberOfThreads(resourceScheduling.getNumberOfThreads());
-                cmsr.setQueueName(resourceScheduling.getQueueName());
-                cmsr.setWalltimeLimit(resourceScheduling.getWallTimeLimit());
-                cmsr.setJobStartTime(getTime(resourceScheduling.getJobStartTime()));
-                cmsr.setPhysicalMemory(resourceScheduling.getTotalPhysicalMemory());
-                cmsr.setProjectName(resourceScheduling.getComputationalProjectAccount());
-                cmsr.save();
+                addComputationScheduling(resourceScheduling, experiment);
             }
             AdvancedInputDataHandling inputDataHandling = configurationData.getAdvanceInputDataHandling();
             if (inputDataHandling != null) {
-                AdvanceInputDataHandlingResource adidh = new AdvanceInputDataHandlingResource();
-                adidh.setExperimentResource(experiment);
-                adidh.setWorkingDir(inputDataHandling.getUniqueWorkingDirectory());
-                adidh.setWorkingDirParent(inputDataHandling.getParentWorkingDirectory());
-                adidh.setStageInputFiles(inputDataHandling.isSetStageInputFilesToWorkingDir());
-                adidh.setCleanAfterJob(inputDataHandling.isCleanUpWorkingDirAfterJob());
-                adidh.save();
+                addInputDataHandling(inputDataHandling, experiment);
             }
 
             AdvancedOutputDataHandling outputDataHandling = configurationData.getAdvanceOutputDataHandling();
             if (outputDataHandling != null) {
-                AdvancedOutputDataHandlingResource adodh = new AdvancedOutputDataHandlingResource();
-                adodh.setExperimentResource(experiment);
-                adodh.setOutputDataDir(outputDataHandling.getOutputDataDir());
-                adodh.setDataRegUrl(outputDataHandling.getDataRegistryURL());
-                adodh.setPersistOutputData(outputDataHandling.isPersistOutputData());
-                adodh.save();
+                addOutputDataHandling(outputDataHandling,experiment);
             }
 
             QualityOfServiceParams qosParams = configurationData.getQosParams();
             if (qosParams != null) {
-                QosParamResource qosr = new QosParamResource();
-                qosr.setExperimentResource(experiment);
-                qosr.setStartExecutionAt(qosParams.getStartExecutionAt());
-                qosr.setExecuteBefore(qosParams.getExecuteBefore());
-                qosr.setNoOfRetries(qosParams.getNumberofRetries());
-                qosr.save();
+                addQosParams(qosParams,experiment);
             }
             configData.save();
         } catch (ApplicationSettingsException e) {
@@ -142,6 +120,78 @@ public class ExperimentRegistry {
         }catch (Exception e){
             logger.error("Unable to save user config data", e.getMessage());
         }
+        return experimentID;
+    }
+
+    public void addQosParams(QualityOfServiceParams qosParams, Resource resource) {
+        QosParamResource qosr = new QosParamResource();
+        if (resource instanceof  ExperimentResource){
+            ExperimentResource experiment = (ExperimentResource)resource;
+            qosr.setExperimentResource(experiment);
+        }
+        if (resource instanceof TaskDetailResource){
+            TaskDetailResource taskDetailResource = (TaskDetailResource)resource;
+            qosr.setTaskDetailResource(taskDetailResource);
+        }
+        qosr.setStartExecutionAt(qosParams.getStartExecutionAt());
+        qosr.setExecuteBefore(qosParams.getExecuteBefore());
+        qosr.setNoOfRetries(qosParams.getNumberofRetries());
+        qosr.save();
+    }
+
+    public void addOutputDataHandling(AdvancedOutputDataHandling outputDataHandling, Resource resource) {
+        AdvancedOutputDataHandlingResource adodh = new AdvancedOutputDataHandlingResource();
+        if (resource instanceof  ExperimentResource){
+            ExperimentResource experiment = (ExperimentResource)resource;
+            adodh.setExperimentResource(experiment);
+        }
+        if (resource instanceof TaskDetailResource){
+            TaskDetailResource taskDetailResource = (TaskDetailResource)resource;
+            adodh.setTaskDetailResource(taskDetailResource);
+        }
+        adodh.setOutputDataDir(outputDataHandling.getOutputDataDir());
+        adodh.setDataRegUrl(outputDataHandling.getDataRegistryURL());
+        adodh.setPersistOutputData(outputDataHandling.isPersistOutputData());
+        adodh.save();
+    }
+
+    public void addInputDataHandling(AdvancedInputDataHandling inputDataHandling, Resource resource) {
+        AdvanceInputDataHandlingResource adidh = new AdvanceInputDataHandlingResource();
+        if (resource instanceof  ExperimentResource){
+            ExperimentResource experiment = (ExperimentResource)resource;
+            adidh.setExperimentResource(experiment);
+        }
+        if (resource instanceof TaskDetailResource){
+            TaskDetailResource taskDetailResource = (TaskDetailResource)resource;
+            adidh.setTaskDetailResource(taskDetailResource);
+        }
+        adidh.setWorkingDir(inputDataHandling.getUniqueWorkingDirectory());
+        adidh.setWorkingDirParent(inputDataHandling.getParentWorkingDirectory());
+        adidh.setStageInputFiles(inputDataHandling.isSetStageInputFilesToWorkingDir());
+        adidh.setCleanAfterJob(inputDataHandling.isCleanUpWorkingDirAfterJob());
+        adidh.save();
+    }
+
+    public void addComputationScheduling(ComputationalResourceScheduling resourceScheduling, Resource resource) {
+        ComputationSchedulingResource cmsr = new ComputationSchedulingResource();
+        if (resource instanceof  ExperimentResource){
+            ExperimentResource experiment = (ExperimentResource)resource;
+            cmsr.setExperimentResource(experiment);
+        }
+        if (resource instanceof TaskDetailResource){
+            TaskDetailResource taskDetailResource = (TaskDetailResource)resource;
+            cmsr.setTaskDetailResource(taskDetailResource);
+        }
+        cmsr.setResourceHostId(resourceScheduling.getResourceHostId());
+        cmsr.setCpuCount(resourceScheduling.getTotalCPUCount());
+        cmsr.setNodeCount(resourceScheduling.getNodeCount());
+        cmsr.setNumberOfThreads(resourceScheduling.getNumberOfThreads());
+        cmsr.setQueueName(resourceScheduling.getQueueName());
+        cmsr.setWalltimeLimit(resourceScheduling.getWallTimeLimit());
+        cmsr.setJobStartTime(getTime(resourceScheduling.getJobStartTime()));
+        cmsr.setPhysicalMemory(resourceScheduling.getTotalPhysicalMemory());
+        cmsr.setProjectName(resourceScheduling.getComputationalProjectAccount());
+        cmsr.save();
     }
 
     public void addExpInputs (List<DataObjectType> exInputs, ExperimentResource experimentResource ){
@@ -170,7 +220,7 @@ public class ExperimentRegistry {
         }
     }
 
-    public void addExpOuputs (List<DataObjectType> exOutput, String expId ) {
+    public String addExpOuputs (List<DataObjectType> exOutput, String expId ) {
         try {
             gatewayRegistry = new GatewayRegistry();
             GatewayResource gateway = gatewayRegistry.getDefaultGateway();
@@ -187,10 +237,117 @@ public class ExperimentRegistry {
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read airavata-server properties", e.getMessage());
         }
+        return expId;
+    }
+
+    public String updateExperimentStatus (ExperimentStatus experimentStatus, String expId){
+        try{
+            gatewayRegistry = new GatewayRegistry();
+            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
+            ExperimentResource experiment = gateway.getExperiment(expId);
+            StatusResource status = experiment.getExperimentStatus();
+            if (status == null){
+                status = (StatusResource)experiment.create(ResourceType.STATUS);
+            }
+            status.setExperimentResource(experiment);
+            status.setStatusUpdateTime(getTime(experimentStatus.getTimeOfStateChange()));
+            status.setState(experimentStatus.getExperimentState().toString());
+            status.setStatusType(StatusType.EXPERIMENT.toString());
+            status.save();
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties", e.getMessage());
+        }
+        return expId;
+    }
+
+    public void addWorkflowNodeStatus(WorkflowNodeStatus status, String nodeId) {
+        try {
+            gatewayRegistry = new GatewayRegistry();
+            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
+//            ExperimentResource experiment = gateway.getExperiment(expId);
+//            StatusResource resource = (StatusResource)experiment.create(ResourceType.STATUS);
+
+
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties", e.getMessage());
+        }
+    }
+
+    public String addWorkflowNodeDetails (WorkflowNodeDetails nodeDetails, String expId) {
+        try {
+            gatewayRegistry = new GatewayRegistry();
+            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
+            ExperimentResource experiment = gateway.getExperiment(expId);
+            WorkflowNodeDetailResource resource = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+            resource.setExperimentResource(experiment);
+            resource.setNodeName(nodeDetails.getNodeName());
+            resource.setCreationTime(getTime(nodeDetails.getCreationTime()));
+            resource.setNodeInstanceId(getNodeInstanceID(nodeDetails.getNodeName()));
+            resource.save();
+            return resource.getNodeInstanceId();
+        } catch (ApplicationSettingsException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String addTaskDetails (TaskDetails taskDetails, String nodeId) {
+        try {
+            gatewayRegistry = new GatewayRegistry();
+            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
+            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode(nodeId);
+            TaskDetailResource taskDetail = (TaskDetailResource)workflowNode.create(ResourceType.TASK_DETAIL);
+            taskDetail.setWorkflowNodeDetailResource(workflowNode);
+            taskDetail.setTaskId(getTaskID(workflowNode.getNodeName()));
+            taskDetail.setApplicationId(taskDetails.getApplicationId());
+            taskDetail.setApplicationVersion(taskDetails.getApplicationVersion());
+            taskDetail.setCreationTime(getTime(taskDetails.getCreationTime()));
+            List<DataObjectType> applicationInputs = taskDetails.getApplicationInputs();
+            if (applicationInputs != null){
+                addAppInputs(applicationInputs, taskDetail);
+            }
+            ComputationalResourceScheduling taskScheduling = taskDetails.getTaskScheduling();
+            if (taskScheduling != null){
+                addComputationScheduling(taskScheduling, taskDetail);
+            }
+            AdvancedInputDataHandling inputDataHandling = taskDetails.getAdvancedInputDataHandling();
+            if (inputDataHandling != null){
+                addInputDataHandling(inputDataHandling, taskDetail);
+            }
+            AdvancedOutputDataHandling outputDataHandling = taskDetails.getAdvancedOutputDataHandling();
+            if (outputDataHandling != null){
+                addOutputDataHandling(outputDataHandling, taskDetail);
+            }
+            return taskDetail.getTaskId();
+        } catch (ApplicationSettingsException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void addAppInputs (List<DataObjectType> appInputs, TaskDetailResource taskDetailResource ){
+        for (DataObjectType input :  appInputs){
+            ApplicationInputResource resource = (ApplicationInputResource)taskDetailResource.create(ResourceType.APPLICATION_INPUT);
+            resource.setTaskDetailResource(taskDetailResource);
+            resource.setInputKey(input.getKey());
+            resource.setValue(input.getValue());
+            resource.setInputType(input.getType());
+            resource.setMetadata(input.getMetaData());
+            resource.save();
+        }
+    }
+
+    public String getNodeInstanceID(String nodeName) {
+        return nodeName + "_" + UUID.randomUUID();
     }
 
     public String getExperimentID(String experimentName) {
         return experimentName + "_" + UUID.randomUUID();
+    }
+
+    public String getTaskID(String nodeName) {
+        return nodeName + "_" + UUID.randomUUID();
     }
 
     public void updateExperimentField(String expID, String fieldName, Object value) {

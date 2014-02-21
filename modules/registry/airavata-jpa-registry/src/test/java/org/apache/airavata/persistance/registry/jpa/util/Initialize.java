@@ -157,6 +157,13 @@ public class Initialize {
             WorkerResource workerResource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
             workerResource.setUser(userResource.getUserName());
             workerResource.save();
+            
+            ProjectResource projectResource = (ProjectResource)workerResource.create(ResourceType.PROJECT);
+            projectResource.setGateway(gatewayResource);
+            projectResource.setName("default");
+            projectResource.setWorker(workerResource);
+            projectResource.save();
+        
           
         } catch (RegistrySettingsException e) {
             logger.error("Unable to read properties", e);

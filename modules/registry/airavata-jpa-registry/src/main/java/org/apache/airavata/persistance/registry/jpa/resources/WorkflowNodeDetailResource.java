@@ -113,7 +113,7 @@ public class WorkflowNodeDetailResource extends AbstractResource {
         switch (type){
             case TASK_DETAIL:
                 generator = new QueryGenerator(TASK_DETAIL);
-                generator.setParameter(TaskDetailConstants.NODE_INSTANCE_ID, name);
+                generator.setParameter(TaskDetailConstants.TASK_ID, name);
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
                 break;
@@ -158,7 +158,7 @@ public class WorkflowNodeDetailResource extends AbstractResource {
         switch (type) {
             case TASK_DETAIL:
                 generator = new QueryGenerator(TASK_DETAIL);
-                generator.setParameter(TaskDetailConstants.NODE_INSTANCE_ID, name);
+                generator.setParameter(TaskDetailConstants.TASK_ID, name);
                 q = generator.selectQuery(em);
                 TaskDetail taskDetail = (TaskDetail)q.getSingleResult();
                 TaskDetailResource taskDetailResource = (TaskDetailResource)Utils.getResource(ResourceType.TASK_DETAIL, taskDetail);

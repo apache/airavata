@@ -42,21 +42,21 @@ public abstract class AbstractResource implements Resource {
 	public static final String EXPERIMENT_CONFIG_DATA = "Configuration_Data";
 	public static final String EXPERIMENT_INPUT = "Experiment_Input";
 	public static final String EXPERIMENT_OUTPUT = "Experiment_Output";
-	public static final String WORKFLOW_NODE_DETAIL = "Workflow_Node_Details";
-	public static final String TASK_DETAIL = "Task_Detail";
-	public static final String ERROR_DETAIL = "Error_Detail";
-	public static final String APPLICATION_INPUT = "Application_Input";
-	public static final String APPLICATION_OUTPUT = "Application_Output";
-	public static final String NODE_INPUT = "Node_Input";
-	public static final String NODE_OUTPUT = "Node_Output";
-	public static final String JOB_DETAIL = "Job_Detail";
-	public static final String DATA_TRANSFER_DETAIL = "Data_Transfer_Detail";
+	public static final String WORKFLOW_NODE_DETAIL = "WorkflowNodeDetail";
+	public static final String TASK_DETAIL = "TaskDetail";
+	public static final String ERROR_DETAIL = "ErrorDetail";
+	public static final String APPLICATION_INPUT = "ApplicationInput";
+	public static final String APPLICATION_OUTPUT = "ApplicationOutput";
+	public static final String NODE_INPUT = "NodeInput";
+	public static final String NODE_OUTPUT = "NodeOutput";
+	public static final String JOB_DETAIL = "JobDetail";
+	public static final String DATA_TRANSFER_DETAIL = "DataTransferDetail";
 	public static final String STATUS = "Status";
 	public static final String CONFIG_DATA = "Config_Data";
 	public static final String COMPUTATIONAL_RESOURCE_SCHEDULING = "Computation_Resource_Scheduling";
-	public static final String ADVANCE_INPUT_DATA_HANDLING = "Advance_Input_Data_Handling";
-	public static final String ADVANCE_OUTPUT_DATA_HANDLING = "Advance_Output_Data_Handling";
-	public static final String QOS_PARAMS = "Qos_Params";
+	public static final String ADVANCE_INPUT_DATA_HANDLING = "AdvanceInputDataHandling";
+	public static final String ADVANCE_OUTPUT_DATA_HANDLING = "AdvanceOutputDataHandling";
+	public static final String QOS_PARAMS = "QosParams";
 
 
 	// Gateway Table
@@ -159,7 +159,7 @@ public abstract class AbstractResource implements Resource {
 
     // Experiment Configuration Data table
     public final class ExperimentConfigurationDataConstants {
-        public static final String EXPERIMENT_ID = "experiment_id";
+        public static final String EXPERIMENT_ID = "expId";
         public static final String AIRAVATA_AUTO_SCHEDULE = "airavata_auto_schedule";
         public static final String OVERRIDE_MANUAL_SCHEDULE = "override_manual_schedule";
         public static final String SHARE_EXPERIMENT = "share_experiment";
@@ -167,7 +167,7 @@ public abstract class AbstractResource implements Resource {
 
     //Experiment Input table
     public final class ExperimentInputConstants {
-        public static final String EXPERIMENT_ID = "experiment_id";
+        public static final String EXPERIMENT_ID = "expId";
         public static final String EXPERIMENT_INPUT_KEY = "input_key";
         public static final String EXPERIMENT_INPUT_VAL = "value";
         public static final String INPUT_TYPE = "input_type";
@@ -176,7 +176,7 @@ public abstract class AbstractResource implements Resource {
 
     //Experiment Output table
     public final class ExperimentOutputConstants {
-        public static final String EXPERIMENT_ID = "experiment_id";
+        public static final String EXPERIMENT_ID = "expId";
         public static final String EXPERIMENT_OUTPUT_KEY = "output_key";
         public static final String EXPERIMENT_OUTPUT_VAL = "value";
         public static final String OUTPUT_TYPE = "output_type";
@@ -186,15 +186,15 @@ public abstract class AbstractResource implements Resource {
 	// Workflow_Data table
 	public final class WorkflowNodeDetailsConstants {
 		public static final String EXPERIMENT_ID = "experiment_ID";
-		public static final String NODE_INSTANCE_ID = "node_instance_id";
+		public static final String NODE_INSTANCE_ID = "nodeId";
 		public static final String CREATION_TIME = "creation_time";
 		public static final String NODE_NAME = "node_name";
 	}
 
 	// TaskDetail table
 	public final class TaskDetailConstants {
-		public static final String TASK_ID = "task_id";
-		public static final String NODE_INSTANCE_ID = "node_instance_id";
+		public static final String TASK_ID = "taskId";
+		public static final String NODE_INSTANCE_ID = "nodeId";
 		public static final String CREATION_TIME = "creation_type";
 		public static final String APPLICATION_ID = "application_id";
 		public static final String APPLICATION_VERSION = "application_version";
@@ -203,10 +203,10 @@ public abstract class AbstractResource implements Resource {
 	// ErrorDetails table
 	public final class ErrorDetailConstants {
 		public static final String ERROR_ID = "error_id";
-		public static final String EXPERIMENT_ID = "experiment_id";
-		public static final String TASK_ID = "task_id";
+		public static final String EXPERIMENT_ID = "expId";
+		public static final String TASK_ID = "taskId";
 		public static final String JOB_ID = "job_id";
-		public static final String NODE_INSTANCE_ID = "node_instance_id";
+		public static final String NODE_INSTANCE_ID = "nodeId";
 		public static final String CREATION_TIME = "creation_time";
 		public static final String ACTUAL_ERROR_MESSAGE = "actual_error_message";
 		public static final String USER_FRIEDNLY_ERROR_MSG = "user_friendly_error_msg";
@@ -218,7 +218,7 @@ public abstract class AbstractResource implements Resource {
 
     // ApplicationInput table
 	public final class ApplicationInputConstants {
-		public static final String TASK_ID = "task_id";
+		public static final String TASK_ID = "taskId";
 		public static final String INPUT_KEY = "input_key";
 		public static final String INPUT_KEY_TYPE = "input_key_type";
 		public static final String METADATA = "metadata";
@@ -227,7 +227,7 @@ public abstract class AbstractResource implements Resource {
 
     // ApplicationOutput table
     public final class ApplicationOutputConstants {
-        public static final String TASK_ID = "task_id";
+        public static final String TASK_ID = "taskId";
         public static final String OUTPUT_KEY = "output_key";
         public static final String OUTPUT_KEY_TYPE = "output_key_type";
         public static final String METADATA = "metadata";
@@ -236,7 +236,7 @@ public abstract class AbstractResource implements Resource {
 
     // NodeInput table
     public final class NodeInputConstants {
-        public static final String NODE_INSTANCE_ID = "node_instance_id";
+        public static final String NODE_INSTANCE_ID = "nodeId";
         public static final String INPUT_KEY = "input_key";
         public static final String INPUT_KEY_TYPE = "input_key_type";
         public static final String METADATA = "metadata";
@@ -245,7 +245,7 @@ public abstract class AbstractResource implements Resource {
 
     // NodeOutput table
     public final class NodeOutputConstants {
-        public static final String NODE_INSTANCE_ID = "node_instance_id";
+        public static final String NODE_INSTANCE_ID = "nodeId";
         public static final String OUTPUT_KEY = "output_key";
         public static final String OUTPUT_KEY_TYPE = "output_key_type";
         public static final String METADATA = "metadata";
@@ -255,7 +255,7 @@ public abstract class AbstractResource implements Resource {
     // Job Details table constants
     public final class JobDetailConstants{
         public static final String JOB_ID = "job_id";
-        public static final String TASK_ID = "task_id";
+        public static final String TASK_ID = "taskId";
         public static final String JOB_DESCRIPTION = "job_description";
         public static final String CREATION_TIME = "creation_time";
     }
@@ -263,7 +263,7 @@ public abstract class AbstractResource implements Resource {
     // Data transfer Details table constants
     public final class DataTransferDetailConstants{
         public static final String TRANSFER_ID = "transfer_id";
-        public static final String TASK_ID = "task_id";
+        public static final String TASK_ID = "taskId";
         public static final String TRANSFER_DESC = "transfer_description";
         public static final String CREATION_TIME = "creation_time";
     }
@@ -271,10 +271,10 @@ public abstract class AbstractResource implements Resource {
     // Status table constants
     public final class StatusConstants {
         public static final String STATUS_ID = "status_id";
-        public static final String EXPERIMENT_ID = "experiment_id";
-        public static final String NODE_INSTANCE_ID = "node_instance_id";
+        public static final String EXPERIMENT_ID = "expId";
+        public static final String NODE_INSTANCE_ID = "nodeId";
         public static final String TRANSFER_ID = "transfer_id";
-        public static final String TASK_ID = "task_id";
+        public static final String TASK_ID = "taskId";
         public static final String JOB_ID = "job_id";
         public static final String STATE = "state";
         public static final String STATUS_UPDATE_TIME = "status_update_time";
@@ -283,8 +283,8 @@ public abstract class AbstractResource implements Resource {
 
     public static final class ComputationalResourceSchedulingConstants{
         public static final String RESOURCE_SCHEDULING_ID = "resource_scheduling_id";
-        public static final String EXPERIMENT_ID = "experiment_id";
-        public static final String TASK_ID = "task_id";
+        public static final String EXPERIMENT_ID = "expId";
+        public static final String TASK_ID = "taskId";
         public static final String RESOURCE_HOST_ID = "resource_host_id";
         public static final String CPU_COUNT = "cpu_count";
         public static final String NODE_COUNT = "node_count";
@@ -298,8 +298,8 @@ public abstract class AbstractResource implements Resource {
 
     public static final class AdvancedInputDataHandlingConstants {
         public static final String INPUT_DATA_HANDLING_ID = "input_data_handling_id";
-        public static final String EXPERIMENT_ID = "experiment_id";
-        public static final String TASK_ID = "task_id";
+        public static final String EXPERIMENT_ID = "expId";
+        public static final String TASK_ID = "taskId";
         public static final String WORKING_DIR_PARENT = "working_dir_parent";
         public static final String UNIQUE_WORKING_DIR = "unique_working_dir";
         public static final String STAGE_INPUT_FILES_TO_WORKING_DIR = "stage_input_files_to_working_dir";
@@ -308,8 +308,8 @@ public abstract class AbstractResource implements Resource {
 
     public static final class AdvancedOutputDataHandlingConstants {
         public static final String OUTPUT_DATA_HANDLING_ID = "output_data_handling_id";
-        public static final String EXPERIMENT_ID = "experiment_id";
-        public static final String TASK_ID = "task_id";
+        public static final String EXPERIMENT_ID = "expId";
+        public static final String TASK_ID = "taskId";
         public static final String OUTPUT_DATA_DIR = "output_data_dir";
         public static final String DATA_REG_URL = "data_reg_url";
         public static final String PERSIST_OUTPUT_DATA = "persist_output_data";
@@ -317,8 +317,8 @@ public abstract class AbstractResource implements Resource {
 
     public static final class QosParamsConstants {
         public static final String QOS_ID = "qos_id";
-        public static final String EXPERIMENT_ID = "experiment_id";
-        public static final String TASK_ID = "task_id";
+        public static final String EXPERIMENT_ID = "expId";
+        public static final String TASK_ID = "taskId";
         public static final String START_EXECUTION_AT = "start_execution_at";
         public static final String EXECUTE_BEFORE = "execute_before";
         public static final String NO_OF_RETRIES = "no_of_retries";
