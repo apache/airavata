@@ -377,4 +377,8 @@ public class WorkflowNodeDetailResource extends AbstractResource {
         }
         return errorDetails;
     }
+
+    public TaskDetailResource getTaskDetail(String taskId){
+        return (TaskDetailResource)get(ResourceType.TASK_DETAIL, taskId);
+    }
 }

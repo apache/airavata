@@ -521,4 +521,14 @@ public class TaskDetailResource extends AbstractResource {
         return  (AdvancedOutputDataHandlingResource)get(ResourceType.ADVANCE_OUTPUT_DATA_HANDLING, taskId);
     }
 
+    public JobDetailResource createJobDetail (String jobId){
+        JobDetailResource resource = (JobDetailResource)create(ResourceType.JOB_DETAIL);
+        resource.setJobId(jobId);
+        return resource;
+    }
+
+    public JobDetailResource getJobDetail (String jobId){
+        return (JobDetailResource)get(ResourceType.JOB_DETAIL, jobId);
+    }
+
 }
