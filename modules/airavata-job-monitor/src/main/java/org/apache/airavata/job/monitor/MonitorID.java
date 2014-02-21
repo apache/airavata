@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.job.monitor;
 
+import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +38,23 @@ public class MonitorID {
     private String jobID;
 
     private Timestamp lastMonitored;
+
+    private HostDescription host;
+
+
+    public MonitorID(HostDescription host, String jobID, String userName) {
+        this.host = host;
+        this.jobID = jobID;
+        this.userName = userName;
+    }
+
+    public HostDescription getHost() {
+        return host;
+    }
+
+    public void setHost(HostDescription host) {
+        this.host = host;
+    }
 
     public Timestamp getLastMonitored() {
         return lastMonitored;

@@ -20,6 +20,56 @@
 */
 package org.apache.airavata.job.monitor.impl.push.amqp;
 
-public class BasicConsumer {
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Consumer;
+import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.ShutdownSignalException;
+import org.apache.airavata.job.monitor.MonitorID;
+import org.apache.airavata.job.monitor.core.MessageParser;
+import org.apache.airavata.job.monitor.event.MonitorPublisher;
+
+public class BasicConsumer implements Consumer {
+
+    MessageParser parser;
+
+    MonitorPublisher publisher;
+
+    MonitorID monitorID;
+
+    public BasicConsumer(MessageParser parser, MonitorPublisher publisher, MonitorID monitorID) {
+        this.parser = parser;
+        this.publisher = publisher;
+        this.monitorID = monitorID;
+    }
+
+    public void handleCancel(java.lang.String consumerTag) {
+    }
+
+    public void handleCancelOk(java.lang.String consumerTag) {
+    }
+
+    public void handleConsumeOk(java.lang.String consumerTag) {
+    }
+
+    public void handleDelivery(java.lang.String consumerTag,
+                               Envelope envelope,
+                               AMQP.BasicProperties properties,
+                               byte[] body) {
+
+        System.out.println("  job update for: " + envelope.getRoutingKey());
+
+        String message = new String(body);
+        message = message.replaceAll("(?m)^", "    ");
+        // Here we parse the message and get the job status and push it
+        // to the Event bus, this will be picked by
+        // AiravataJobStatusUpdator and store in to registry
+        publisher.publish(parser.parseMessage(message,monitorID));
+    }
+
+    public void handleRecoverOk(java.lang.String consumerTag) {
+    }
+
+    public void handleShutdownSignal(java.lang.String consumerTag, ShutdownSignalException sig) {
+    }
 
 }

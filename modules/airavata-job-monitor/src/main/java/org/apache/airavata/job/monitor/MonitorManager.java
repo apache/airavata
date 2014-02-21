@@ -25,6 +25,7 @@ import org.apache.airavata.job.monitor.core.PullMonitor;
 import org.apache.airavata.job.monitor.core.PushMonitor;
 import org.apache.airavata.job.monitor.event.MonitorPublisher;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
+import org.apache.airavata.job.monitor.impl.push.amqp.AMQPMonitor;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,13 +44,15 @@ remove them from the queue, this will be done by AiravataJobUpdator.
 public class MonitorManager {
     private final static Logger logger = LoggerFactory.getLogger(MonitorManager.class);
 
-    List<PullMonitor> pullMonitors;
+    private List<PullMonitor> pullMonitors;
 
-    List<PushMonitor> pushMonitors;
+    private List<PushMonitor> pushMonitors;
 
-    BlockingQueue<MonitorID> jobsToMonitor;
+    private BlockingQueue<MonitorID> runningQueue;
 
-    MonitorPublisher monitorPublisher;
+    private BlockingQueue<MonitorID> finishQueue;
+
+    private MonitorPublisher monitorPublisher;
 
     /**
      * This will initialize the major monitoring system.
@@ -57,9 +60,10 @@ public class MonitorManager {
     public MonitorManager() {
         pullMonitors = new ArrayList<PullMonitor>();
         pushMonitors = new ArrayList<PushMonitor>();
-        jobsToMonitor = new LinkedBlockingDeque<MonitorID>();
+        runningQueue = new LinkedBlockingDeque<MonitorID>();
+        finishQueue = new LinkedBlockingDeque<MonitorID>();
         monitorPublisher = new MonitorPublisher(new EventBus());
-        monitorPublisher.registerListener(new AiravataJobStatusUpdator(new RegistryImpl(),jobsToMonitor));
+        monitorPublisher.registerListener(new AiravataJobStatusUpdator(new RegistryImpl(), finishQueue));
     }
 
     public void addPushMonitor(PushMonitor monitor) {
@@ -71,6 +75,17 @@ public class MonitorManager {
     }
 
     /**
+     * Adding this method will trigger the thread in launchMonitor and notify it
+     * This is going to be useful during the startup of the launching process
+     * @param monitorID
+     */
+    public void addAJobToMonitor(MonitorID monitorID) {
+        runningQueue.add(monitorID);
+        runningQueue.notify();
+    }
+
+    /**
+     * This method should be invoked before adding any elements to monitorQueue
      * In this method we assume that we give higher preference to Push
      * Monitorig mechanism if there's any configured, otherwise Pull
      * monitoring will be launched.
@@ -78,7 +93,86 @@ public class MonitorManager {
      * to live with Pull MOnitoring.
      * @throws AiravataMonitorException
      */
-    public void launchMonitor() throws AiravataMonitorException{
+    public void launchMonitor() throws AiravataMonitorException {
+        new Thread(){
+            public void run() {
+                try {
+                    runningQueue.wait();
+                } catch (InterruptedException e) {
+                    String error = "Error occured during launching the monitor";
+                    logger.error(error);
+                    try {
+                        throw e;
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+                if (pushMonitors.isEmpty()) {
+                    if (pullMonitors.isEmpty()) {
+                        logger.error("Before launching MonitorManager should have atleast one Monitor");
+                        return;
+                    } else {
+                        //no push monitor is configured so we launch pull monitor
+                        PushMonitor pushMonitor = pushMonitors.get(0);
+                        if(pushMonitor instanceof AMQPMonitor){
+                            ((AMQPMonitor) pushMonitor).run();
+                        }
+                    }
+                } else {
+                    // there is a push monitor configured, so we schedule the push monitor
+                    // We currently support dealing with one type of monitor
+                    PullMonitor pullMonitor = pullMonitors.get(0);
+                    try {
+                        pullMonitor.startPulling();
+                    } catch (AiravataMonitorException e) {
+                        e.printStackTrace();
+                    }
 
+                }
+            }
+        }.start();
+
+    }
+
+    /* getter setters for the private variables */
+
+    public List<PullMonitor> getPullMonitors() {
+        return pullMonitors;
+    }
+
+    public void setPullMonitors(List<PullMonitor> pullMonitors) {
+        this.pullMonitors = pullMonitors;
+    }
+
+    public List<PushMonitor> getPushMonitors() {
+        return pushMonitors;
+    }
+
+    public void setPushMonitors(List<PushMonitor> pushMonitors) {
+        this.pushMonitors = pushMonitors;
+    }
+
+    public BlockingQueue<MonitorID> getRunningQueue() {
+        return runningQueue;
+    }
+
+    public void setRunningQueue(BlockingQueue<MonitorID> runningQueue) {
+        this.runningQueue = runningQueue;
+    }
+
+    public MonitorPublisher getMonitorPublisher() {
+        return monitorPublisher;
+    }
+
+    public void setMonitorPublisher(MonitorPublisher monitorPublisher) {
+        this.monitorPublisher = monitorPublisher;
+    }
+
+    public BlockingQueue<MonitorID> getFinishQueue() {
+        return finishQueue;
+    }
+
+    public void setFinishQueue(BlockingQueue<MonitorID> finishQueue) {
+        this.finishQueue = finishQueue;
     }
 }
