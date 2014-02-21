@@ -20,17 +20,34 @@
 */
 package org.apache.airavata.job.monitor.impl.pull.qstat;
 
+import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.core.PullMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.BlockingQueue;
 
 /**
  * This monitor is based on qstat command which can be run
  * in grid resources and retrieve the job status.
  */
-public class QstatMonitor extends PullMonitor {
+public class QstatMonitor extends PullMonitor implements Runnable{
    private final static Logger logger = LoggerFactory.getLogger(QstatMonitor.class);
- /**
+
+    // I think this should use DelayedBlocking Queue to do the monitoring*/
+   private BlockingQueue<MonitorID> queue;
+
+    public QstatMonitor(BlockingQueue<MonitorID> queue) {
+        this.queue = queue;
+    }
+
+    public void run() {
+        /* implement a logic to pick each monitorID object from the queue and do the
+        monitoring
+         */
+    }
+
+    /**
      * This method will can invoke when PullMonitor needs to start
      * and it has to invoke in the frequency specified below,
      * @return if the start process is successful return true else false

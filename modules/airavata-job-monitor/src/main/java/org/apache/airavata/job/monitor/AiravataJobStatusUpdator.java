@@ -70,7 +70,7 @@ public class AiravataJobStatusUpdator{
         if (JobState.COMPLETE.equals(jobStatus.getState())) {
             // When job is done we remove the job from the queue
             logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + "is DONE");
-            jobsToMonitor.remove(jobStatus.getMonitorID());
+            jobsToMonitor.add(jobStatus.getMonitorID());
         }
     }
 }
