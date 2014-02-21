@@ -143,18 +143,18 @@ public abstract class AbstractResource implements Resource {
 
 	// Experiment table
 	public final class ExperimentConstants {
-		public static final String PROJECT_NAME = "project_name";
-		public static final String EXECUTION_USER = "execution_user";
-		public static final String GATEWAY_NAME = "gateway_name";
-		public static final String EXPERIMENT_ID = "experiment_id";
-		public static final String EXPERIMENT_NAME = "experiment_name";
-		public static final String DESCRIPTION = "experiment_description";
-		public static final String CREATION_TIME = "creation_time";
-		public static final String APPLICATION_ID = "application_id";
-		public static final String APPLICATION_VERSION = "application_version";
-		public static final String WORKFLOW_TEMPLATE_ID = "workflow_template_id";
-		public static final String WORKFLOW_TEMPLATE_VERSION = "workflow_template_version";
-		public static final String WORKFLOW_EXECUTION_ID = "workflow_execution_id";
+		public static final String PROJECT_NAME = "projectName";
+		public static final String EXECUTION_USER = "executionUser";
+		public static final String GATEWAY_NAME = "gatewayName";
+		public static final String EXPERIMENT_ID = "expId";
+		public static final String EXPERIMENT_NAME = "expName";
+		public static final String DESCRIPTION = "expDesc";
+		public static final String CREATION_TIME = "creationTime";
+		public static final String APPLICATION_ID = "applicationId";
+		public static final String APPLICATION_VERSION = "appVersion";
+		public static final String WORKFLOW_TEMPLATE_ID = "workflowTemplateId";
+		public static final String WORKFLOW_TEMPLATE_VERSION = "workflowTemplateVersion";
+		public static final String WORKFLOW_EXECUTION_ID = "workflowExecutionId";
 	}
 
     // Experiment Configuration Data table

@@ -177,12 +177,4 @@ public class Experiment {
     public void setProject(Project project) {
         this.project = project;
     }
-
-    public Users getUser() {
-        return user;
-    }
-
-    public void setUser(Users user) {
-        this.user = user;
-    }
 }

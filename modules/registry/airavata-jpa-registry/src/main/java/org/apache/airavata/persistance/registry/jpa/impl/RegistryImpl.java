@@ -21,6 +21,7 @@
 
 package org.apache.airavata.persistance.registry.jpa.impl;
 
+import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
 import org.apache.airavata.registry.cpi.ChildDataType;
@@ -47,10 +48,10 @@ public class RegistryImpl implements Registry {
      * @return return the identifier to identify the object
      */
     @Override
-    public Object add(ParentDataType dataType, Object newObjectToAdd) {
+    public Object add(ParentDataType dataType, Object newObjectToAdd) throws Exception{
         switch (dataType){
             case EXPERIMENT:
-                return experimentRegistry.add((Experiment) newObjectToAdd);
+                return experimentRegistry.addExperiment((Experiment) newObjectToAdd);
             default:
                 logger.error("Unsupported top level type..", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
@@ -69,16 +70,13 @@ public class RegistryImpl implements Registry {
      *                            null
      */
     @Override
-    public void add(ChildDataType dataType, Object newObjectToAdd, String dependentIdentifier) {
+    public void add(ChildDataType dataType, Object newObjectToAdd, String dependentIdentifier) throws Exception{
         switch (dataType){
             case EXPERIMENT_CONFIGURATION_DATA:
-                experimentRegistry.add((UserConfigurationData)newObjectToAdd, (String)dependentIdentifier);
-                break;
-            case EXPERIMENT_INPUT:
-                // no thrift model yet
+                experimentRegistry.addUserConfigData((UserConfigurationData) newObjectToAdd, dependentIdentifier);
                 break;
             case EXPERIMENT_OUTPUT:
-                // no thrift model yet
+                experimentRegistry.addExpOuputs((List<DataObjectType>)newObjectToAdd, dependentIdentifier);
                 break;
             case TASK_DETAIL:
                 // no thrift model yet
@@ -134,19 +132,18 @@ public class RegistryImpl implements Registry {
      *                       other fields that need to be updated.
      */
     @Override
-    public void update(DataType dataType, Object newObjectToUpdate, String identifier) {
+    public void update(DataType dataType, Object newObjectToUpdate, String identifier) throws Exception {
         switch (dataType){
             case EXPERIMENT:
-                experimentRegistry.update(newObjectToUpdate, identifier);
+                experimentRegistry.updateExperiment((Experiment) newObjectToUpdate, identifier);
                 break;
             case EXPERIMENT_CONFIGURATION_DATA:
-                experimentRegistry.update(newObjectToUpdate, identifier);
+                experimentRegistry.updateUserConfigData((UserConfigurationData) newObjectToUpdate, identifier);
                 break;
             default:
                 logger.error("Unsupported data type...", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
         }
-
     }
 
     /**
@@ -162,10 +159,10 @@ public class RegistryImpl implements Registry {
      *              updated by given value
      */
     @Override
-    public void update(DataType dataType, String identifier, String fieldName, Object value) {
+    public void update(DataType dataType, String identifier, String fieldName, Object value) throws Exception {
         switch (dataType){
             case EXPERIMENT:
-                experimentRegistry.updateExpBasicMetadataField(identifier, fieldName, value);
+                experimentRegistry.updateExperimentField(identifier, fieldName, value);
                 break;
             case EXPERIMENT_CONFIGURATION_DATA:
                 experimentRegistry.updateExpConfigDataField(identifier, fieldName, value);
@@ -186,11 +183,11 @@ public class RegistryImpl implements Registry {
      * @return object according to the given identifier.
      */
     @Override
-    public Object get(DataType dataType, String identifier) {
+    public Object get(DataType dataType, String identifier) throws Exception {
 
         switch (dataType){
             case EXPERIMENT:
-                return experimentRegistry.getBasicMetaData(identifier, null);
+                return experimentRegistry.getExperiment(identifier, null);
             case EXPERIMENT_CONFIGURATION_DATA:
                 return experimentRegistry.getConfigData(identifier, null);
             default:
@@ -209,19 +206,13 @@ public class RegistryImpl implements Registry {
      * @return List of objects according to the given criteria
      */
     @Override
-    public List<Object> get(DataType dataType, String fieldName, Object value) {
+    public List<Object> get(DataType dataType, String fieldName, Object value) throws Exception{
         List<Object> result = new ArrayList<Object>();
         switch (dataType){
             case EXPERIMENT:
-                List<Experiment> experimentMetaDataList = experimentRegistry.getExperimentMetaDataList(fieldName, value);
+                List<Experiment> experimentMetaDataList = experimentRegistry.getExperimentList(fieldName, value);
                 for (Experiment experiment : experimentMetaDataList){
                     result.add(experiment);
-                }
-                return result;
-            case EXPERIMENT_CONFIGURATION_DATA:
-                List<UserConfigurationData> configurationDataList = experimentRegistry.getConfigurationDataList(fieldName, value);
-                for (UserConfigurationData configData : configurationDataList){
-                    result.add(configData);
                 }
                 return result;
             default:
@@ -242,10 +233,10 @@ public class RegistryImpl implements Registry {
      *         given
      */
     @Override
-    public Object getValue(DataType dataType, String identifier, String field) {
+    public Object getValue(DataType dataType, String identifier, String field) throws Exception {
         switch (dataType){
             case EXPERIMENT:
-                return experimentRegistry.getBasicMetaData(identifier, field);
+                return experimentRegistry.getExperiment(identifier, field);
             case EXPERIMENT_CONFIGURATION_DATA:
                 return experimentRegistry.getConfigData(identifier, field);
             default:
@@ -266,7 +257,7 @@ public class RegistryImpl implements Registry {
      * @return id list according to the filtering criteria
      */
     @Override
-    public List<String> getIds(DataType dataType, String fieldName, Object value) {
+    public List<String> getIds(DataType dataType, String fieldName, Object value) throws Exception {
         switch (dataType){
             case EXPERIMENT:
                 return experimentRegistry.getExperimentIDs(fieldName, value);
@@ -286,7 +277,7 @@ public class RegistryImpl implements Registry {
      *                   identifier will be generated experimentID
      */
     @Override
-    public void remove(DataType dataType, String identifier) {
+    public void remove(DataType dataType, String identifier) throws Exception {
         switch (dataType){
             case EXPERIMENT:
                 experimentRegistry.removeExperiment(identifier);
@@ -308,10 +299,10 @@ public class RegistryImpl implements Registry {
      * @return whether the given data type exists or not
      */
     @Override
-    public boolean isExist(DataType dataType, String identifier) {
+    public boolean isExist(DataType dataType, String identifier) throws Exception {
         switch (dataType){
             case EXPERIMENT:
-                return experimentRegistry.isExperimentBasicDataExist(identifier);
+                return experimentRegistry.isExperimentExist(identifier);
             case EXPERIMENT_CONFIGURATION_DATA:
                 return experimentRegistry.isExperimentConfigDataExist(identifier);
         }

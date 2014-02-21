@@ -469,7 +469,7 @@ public class Utils {
     private static Resource createGatewayWorker(Gateway_Worker o) {
         GatewayResource gatewayResource = new GatewayResource(o.getGateway().getGateway_name());
         gatewayResource.setOwner(o.getGateway().getOwner());
-        WorkerResource workerResource = new WorkerResource(o.getUser().getUser_name(), gatewayResource);
+        WorkerResource workerResource = new WorkerResource(o.getUser_name(), gatewayResource);
         return workerResource;
     }
 
@@ -568,7 +568,7 @@ public class Utils {
         experimentResource.setGateway(gatewayResource);
         Gateway_Worker gateway_worker = new Gateway_Worker();
         gateway_worker.setGateway(o.getGateway());
-        gateway_worker.setUser(o.getUser());
+        gateway_worker.setUser_name(o.getExecutionUser());
         WorkerResource workerResource = (WorkerResource) createGatewayWorker(gateway_worker);
         experimentResource.setWorker(workerResource);
         ProjectResource projectResource = (ProjectResource)createProject(o.getProject());

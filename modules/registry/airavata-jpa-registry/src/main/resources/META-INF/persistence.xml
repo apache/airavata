@@ -38,7 +38,7 @@
         <class>org.apache.airavata.persistance.registry.jpa.model.Experiment_Output</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.WorkflowNodeDetail</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.TaskDetail</class>
-		<class>org.apache.airavata.persistance.registry.jpa.model.ErrorDetails</class>
+		<class>org.apache.airavata.persistance.registry.jpa.model.ErrorDetail</class>
 		<class>org.apache.airavata.persistance.registry.jpa.model.ApplicationInput</class>
 		<class>org.apache.airavata.persistance.registry.jpa.model.ApplicationOutput</class>
 		<class>org.apache.airavata.persistance.registry.jpa.model.NodeInput</class>

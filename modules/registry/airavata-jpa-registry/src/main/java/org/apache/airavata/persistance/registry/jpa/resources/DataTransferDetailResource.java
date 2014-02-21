@@ -28,6 +28,7 @@ import org.apache.airavata.persistance.registry.jpa.model.DataTransferDetail;
 import org.apache.airavata.persistance.registry.jpa.model.Status;
 import org.apache.airavata.persistance.registry.jpa.model.TaskDetail;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.apache.airavata.registry.cpi.utils.StatusType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -195,5 +196,16 @@ public class DataTransferDetailResource extends AbstractResource {
         }
         em.getTransaction().commit();
         em.close();
+    }
+
+    public StatusResource getDataTransferStatus (){
+        List<Resource> resources = get(ResourceType.STATUS);
+        for (Resource resource : resources) {
+            StatusResource dataTransferStatus = (StatusResource) resource;
+            if(dataTransferStatus.getStatusType().equals(StatusType.DATA_TRANSFER)){
+                return dataTransferStatus;
+            }
+        }
+        return null;
     }
 }
