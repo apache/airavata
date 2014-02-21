@@ -270,4 +270,6 @@ public class JobDetailResource extends AbstractResource {
         }
         return errorDetailResources;
     }
+
+
 }
