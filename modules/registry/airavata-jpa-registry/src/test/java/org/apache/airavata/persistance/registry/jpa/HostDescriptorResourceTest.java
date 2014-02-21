@@ -21,8 +21,12 @@
 
 package org.apache.airavata.persistance.registry.jpa;
 
+import static org.junit.Assert.*;
+
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.HostDescriptorResource;
+import org.junit.After;
+import org.junit.Test;
 
 public class HostDescriptorResourceTest extends AbstractResourceTest {
     private GatewayResource gatewayResource;
@@ -37,10 +41,11 @@ public class HostDescriptorResourceTest extends AbstractResourceTest {
         hostDescriptorResource.setContent("testContent");
     }
 
+    @Test
     public void testGetList() throws Exception {
         assertNotNull("application data being retrieved successfully", hostDescriptorResource.get(ResourceType.APPLICATION_DESCRIPTOR));
     }
-
+    @Test
     public void testSave() throws Exception {
         hostDescriptorResource.save();
         assertTrue("host descriptor saved successfully", gatewayResource.isHostDescriptorExists("testHostDesc"));
@@ -48,8 +53,7 @@ public class HostDescriptorResourceTest extends AbstractResourceTest {
         gatewayResource.removeHostDescriptor("testHostDesc");
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
-        super.tearDown();
     }
 }

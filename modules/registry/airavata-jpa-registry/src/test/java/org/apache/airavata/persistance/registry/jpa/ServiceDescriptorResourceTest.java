@@ -21,8 +21,12 @@
 
 package org.apache.airavata.persistance.registry.jpa;
 
+import static org.junit.Assert.*;
+
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ServiceDescriptorResource;
+import org.junit.After;
+import org.junit.Test;
 
 public class ServiceDescriptorResourceTest extends AbstractResourceTest {
     private GatewayResource gatewayResource;
@@ -37,10 +41,11 @@ public class ServiceDescriptorResourceTest extends AbstractResourceTest {
         serviceDescriptorResource.setContent("testContent");
     }
 
+    @Test
     public void testGetList() throws Exception {
         assertNotNull("application data being retrieved successfully", serviceDescriptorResource.get(ResourceType.APPLICATION_DESCRIPTOR));
     }
-
+    @Test
     public void testSave() throws Exception {
         serviceDescriptorResource.save();
         assertTrue("service descriptor saved successfully", gatewayResource.isServiceDescriptorExists("testServiceDesc"));
@@ -48,9 +53,7 @@ public class ServiceDescriptorResourceTest extends AbstractResourceTest {
         gatewayResource.removeServiceDescriptor("testServiceDesc");
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
-        super.tearDown();
-
     }
 }

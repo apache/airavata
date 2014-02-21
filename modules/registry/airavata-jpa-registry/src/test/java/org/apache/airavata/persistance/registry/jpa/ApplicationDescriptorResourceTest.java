@@ -21,8 +21,12 @@
 
 package org.apache.airavata.persistance.registry.jpa;
 
+import static org.junit.Assert.*;
+
 import org.apache.airavata.persistance.registry.jpa.resources.ApplicationDescriptorResource;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
+import org.junit.After;
+import org.junit.Test;
 
 public class ApplicationDescriptorResourceTest extends AbstractResourceTest {
     private GatewayResource gatewayResource;
@@ -33,6 +37,7 @@ public class ApplicationDescriptorResourceTest extends AbstractResourceTest {
         gatewayResource = super.getGatewayResource();
     }
 
+    @Test
     public void testSave() throws Exception {
         ApplicationDescriptorResource applicationDescriptorResouce = (ApplicationDescriptorResource) gatewayResource.create(ResourceType.APPLICATION_DESCRIPTOR);
         applicationDescriptorResouce.setHostDescName("testHostDesc");
@@ -47,8 +52,7 @@ public class ApplicationDescriptorResourceTest extends AbstractResourceTest {
         gatewayResource.remove(ResourceType.APPLICATION_DESCRIPTOR, "testAppDesc");
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
-        super.tearDown();
     }
 }

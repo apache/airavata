@@ -29,30 +29,34 @@ import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 import org.apache.airavata.registry.api.util.RegistrySettings;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
 
-public abstract class AbstractResourceTest extends TestCase {
+public abstract class AbstractResourceTest {
 
     private GatewayResource gatewayResource;
     private WorkerResource workerResource;
     private UserResource userResource;
     private ProjectResource projectResource;
 
-    private Initialize initialize;
-    @Override
+    private static Initialize initialize;
+   
+    @BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+    	  initialize = new Initialize("registry-derby.sql");
+          initialize.initializeDB();
+    }
+    @Before
     public void setUp() throws Exception {
-        initialize = new Initialize("registry-derby.sql");
-        initialize.initializeDB();
         gatewayResource = (GatewayResource)ResourceUtils.getGateway("default");
         workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayName(), "admin");
         userResource = (UserResource)ResourceUtils.getUser(RegistrySettings.getSetting("default.registry.user"));
-        projectResource = (ProjectResource)workerResource.create(ResourceType.PROJECT);
-        projectResource.setGateway(gatewayResource);
-        projectResource.setName("default");
-        projectResource.setWorker(workerResource);
-        projectResource.save();
+        projectResource = (ProjectResource) workerResource.getProject("default"); 
     }
 
     public Timestamp getCurrentTimestamp() {
@@ -60,11 +64,11 @@ public abstract class AbstractResourceTest extends TestCase {
         java.util.Date d = calender.getTime();
         return new Timestamp(d.getTime());
     }
-
-    @Override
-    public void tearDown() throws Exception {
+    @AfterClass
+	public static void tearDownAfterClass() throws Exception {
         initialize.stopDerbyServer();
-    }
+	}
+   
 
     public GatewayResource getGatewayResource() {
         return gatewayResource;

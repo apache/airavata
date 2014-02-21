@@ -21,7 +21,11 @@
 
 package org.apache.airavata.persistance.registry.jpa;
 
+import static org.junit.Assert.*;
+
 import org.apache.airavata.persistance.registry.jpa.resources.ConfigurationResource;
+import org.junit.After;
+import org.junit.Test;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -32,7 +36,7 @@ public class ConfigurationResourceTest extends AbstractResourceTest {
     public void setUp() throws Exception {
         super.setUp();
     }
-
+    @Test
     public void testSave() throws Exception {
         ConfigurationResource configuration = ResourceUtils.createConfiguration("testConfigKey");
         configuration.setConfigVal("testConfigValue");
@@ -48,8 +52,7 @@ public class ConfigurationResourceTest extends AbstractResourceTest {
         ResourceUtils.removeConfiguration("testConfigKey");
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
-        super.tearDown();
     }
 }
