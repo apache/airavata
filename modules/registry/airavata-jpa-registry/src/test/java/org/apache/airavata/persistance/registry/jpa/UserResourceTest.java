@@ -21,29 +21,34 @@
 
 package org.apache.airavata.persistance.registry.jpa;
 
+import static org.junit.Assert.*;
+
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
+import org.junit.After;
+import org.junit.Test;
 
 public class UserResourceTest extends AbstractResourceTest {
     private UserResource userResource;
     private GatewayResource gatewayResource;
+    private String userName = "testUser";
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
         gatewayResource = super.getGatewayResource();
         userResource = super.getUserResource();
-    }
-
-    public void testSave() throws Exception {
+        userResource.setUserName(userName);
+        userResource.setPassword("testPassword");
         userResource.save();
-        assertTrue("user resource saved successfully", gatewayResource.isExists(ResourceType.USER, "admin"));
-        //remove user
-//        gatewayResource.remove(ResourceType.USER, "testUser");
     }
 
-    @Override
+    @Test
+    public void testSave() throws Exception {
+        assertTrue("user resource saved successfully", gatewayResource.isExists(ResourceType.USER, "admin"));
+    }
+
+    @After
     public void tearDown() throws Exception {
-        super.tearDown();
     }
 }

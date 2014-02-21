@@ -22,6 +22,7 @@
 package org.apache.airavata.persistance.registry.jpa.model;
 
 import javax.persistence.*;
+
 import java.sql.Timestamp;
 
 @Entity
@@ -39,8 +40,10 @@ public class ErrorDetail {
     private String nodeId;
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
+    @Lob
     @Column(name = "ACTUAL_ERROR_MESSAGE")
-    private String actualErrorMsg;
+    private char[] actualErrorMsg;
+    
     @Column(name = "USER_FRIEDNLY_ERROR_MSG")
     private String userFriendlyErrorMsg;
     @Column(name = "TRANSIENT_OR_PERSISTENT")
@@ -107,15 +110,15 @@ public class ErrorDetail {
         this.creationTime = creationTime;
     }
 
-    public String getActualErrorMsg() {
-        return actualErrorMsg;
-    }
+    public char[] getActualErrorMsg() {
+		return actualErrorMsg;
+	}
 
-    public void setActualErrorMsg(String actualErrorMsg) {
-        this.actualErrorMsg = actualErrorMsg;
-    }
+	public void setActualErrorMsg(char[] actualErrorMsg) {
+		this.actualErrorMsg = actualErrorMsg;
+	}
 
-    public String getUserFriendlyErrorMsg() {
+	public String getUserFriendlyErrorMsg() {
         return userFriendlyErrorMsg;
     }
 

@@ -638,7 +638,7 @@ public class Utils {
         errorDetailResource.setErrorId(o.getErrorID());
         errorDetailResource.setJobId(o.getJobId());
         errorDetailResource.setCreationTime(o.getCreationTime());
-        errorDetailResource.setActualErrorMsg(o.getActualErrorMsg());
+        errorDetailResource.setActualErrorMsg(new String(o.getActualErrorMsg()));
         errorDetailResource.setUserFriendlyErrorMsg(o.getUserFriendlyErrorMsg());
         errorDetailResource.setTransientPersistent(o.isTransientPersistent());
         errorDetailResource.setErrorCategory(o.getErrorCategory());
