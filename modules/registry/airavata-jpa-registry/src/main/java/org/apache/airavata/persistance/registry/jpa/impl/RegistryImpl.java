@@ -22,10 +22,7 @@
 package org.apache.airavata.persistance.registry.jpa.impl;
 
 import org.apache.airavata.model.workspace.experiment.*;
-import org.apache.airavata.registry.cpi.ChildDataType;
-import org.apache.airavata.registry.cpi.DataType;
-import org.apache.airavata.registry.cpi.ParentDataType;
-import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,31 +70,31 @@ public class RegistryImpl implements Registry {
             case EXPERIMENT_CONFIGURATION_DATA:
                 return experimentRegistry.addUserConfigData((UserConfigurationData) newObjectToAdd, (String)dependentIdentifier);
             case EXPERIMENT_OUTPUT:
-                return experimentRegistry.addExpOuputs((List<DataObjectType>)newObjectToAdd, (String)dependentIdentifier);
+                return experimentRegistry.addExpOutputs((List<DataObjectType>) newObjectToAdd, (String) dependentIdentifier);
             case EXPERIMENT_STATUS:
                 return experimentRegistry.updateExperimentStatus((ExperimentStatus)newObjectToAdd, (String)dependentIdentifier);
             case WORKFLOW_NODE_DETAIL:
                 return experimentRegistry.addWorkflowNodeDetails((WorkflowNodeDetails)newObjectToAdd, (String)dependentIdentifier);
+            case WORKFLOW_NODE_STATUS:
+                return experimentRegistry.addWorkflowNodeStatus((WorkflowNodeStatus)newObjectToAdd, (CompositeIdentifier)dependentIdentifier);
+            case NODE_OUTPUT:
+                return experimentRegistry.addNodeOutputs((List<DataObjectType>)newObjectToAdd, (CompositeIdentifier)dependentIdentifier);
             case TASK_DETAIL:
                 return experimentRegistry.addTaskDetails((TaskDetails)newObjectToAdd, (String)dependentIdentifier);
-            case WORKFLOW_NODE_STATUS:
-                // no thrift model yet
-                break;
             case APPLICATION_OUTPUT:
-                // no thrift model yet
-                break;
-            case NODE_INPUT:
-                // no thrift model yet
-                break;
+                return experimentRegistry.addApplicationOutputs((List<DataObjectType>)newObjectToAdd, (CompositeIdentifier)dependentIdentifier);
+            case TASK_STATUS:
+                return experimentRegistry.addTaskStatus((TaskStatus)newObjectToAdd, (CompositeIdentifier)dependentIdentifier);
             case JOB_DETAIL:
-                // no thrift model yet
-                break;
+                return experimentRegistry.addJobDetails((JobDetails)newObjectToAdd, (CompositeIdentifier)dependentIdentifier);
+            case JOB_STATUS:
+                return experimentRegistry.addJobStatus((JobStatus)newObjectToAdd, (CompositeIdentifier)dependentIdentifier);
+            case APPLICATION_STATUS:
+                return experimentRegistry.addApplicationStatus((ApplicationStatus)newObjectToAdd, (CompositeIdentifier)dependentIdentifier);
             case DATA_TRANSFER_DETAIL:
-                // no thrift model yet
-                break;
-            case ADVANCE_INPUT_DATA_HANDLING:
-                // no thrift model yet
-                break;
+                return experimentRegistry.addDataTransferDetails((DataTransferDetails)newObjectToAdd, (String)dependentIdentifier);
+            case TRANSFER_STATUS:
+
             case COMPUTATIONAL_RESOURCE_SCHEDULING:
                 // no thrift model yet
                 break;
