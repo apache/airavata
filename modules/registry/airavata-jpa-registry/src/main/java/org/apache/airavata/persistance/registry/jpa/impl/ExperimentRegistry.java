@@ -30,6 +30,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.apache.airavata.persistance.registry.jpa.utils.ThriftDataModelConversion;
 import org.apache.airavata.registry.cpi.CompositeIdentifier;
+import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.airavata.registry.cpi.utils.StatusType;
 import org.slf4j.Logger;
@@ -239,6 +240,29 @@ public class ExperimentRegistry {
         return expId;
     }
 
+    public void updateExpOutputs(List<DataObjectType> exOutput, String expId) {
+        try {
+            gatewayRegistry = new GatewayRegistry();
+            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
+            ExperimentResource experiment = gateway.getExperiment(expId);
+            List<ExperimentOutputResource> existingExpOutputs = experiment.getExperimentOutputs();
+            for (DataObjectType output : exOutput) {
+                for (ExperimentOutputResource resource : existingExpOutputs){
+                    if (resource.getExperimentKey().equals(output.getKey())){
+                        resource.setExperimentResource(experiment);
+                        resource.setExperimentKey(output.getKey());
+                        resource.setValue(output.getValue());
+                        resource.setOutputType(output.getType());
+                        resource.setMetadata(output.getMetaData());
+                        resource.save();
+                    }
+                }
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties", e.getMessage());
+        }
+    }
+
     public String addNodeOutputs (List<DataObjectType> wfOutputs, CompositeIdentifier ids ) {
         try {
             gatewayRegistry = new GatewayRegistry();
@@ -258,6 +282,28 @@ public class ExperimentRegistry {
             logger.error("Unable to read airavata-server properties", e.getMessage());
         }
         return (String)ids.getSecondLevelIdentifier();
+    }
+
+    public void updateNodeOutputs (List<DataObjectType> wfOutputs, String nodeId ) {
+        try {
+            gatewayRegistry = new GatewayRegistry();
+            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
+            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode(nodeId);
+            List<NodeOutputResource> nodeOutputs = workflowNode.getNodeOutputs();
+            for (DataObjectType output : wfOutputs) {
+                for (NodeOutputResource resource : nodeOutputs){
+                    resource.setNodeDetailResource(workflowNode);
+                    resource.setOutputKey(output.getKey());
+                    resource.setValue(output.getValue());
+                    resource.setOutputType(output.getType());
+                    resource.setMetadata(output.getMetaData());
+                    resource.save();
+                }
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties", e.getMessage());
+        }
     }
 
     public String addApplicationOutputs (List<DataObjectType> appOutputs, CompositeIdentifier ids ) {
@@ -322,6 +368,26 @@ public class ExperimentRegistry {
         return null;
     }
 
+    public String updateWorkflowNodeStatus(WorkflowNodeStatus status, String nodeId) {
+        try {
+            gatewayRegistry = new GatewayRegistry();
+            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
+            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode(nodeId);
+            StatusResource statusResource = workflowNode.getWorkflowNodeStatus();
+            statusResource.setExperimentResource(workflowNode.getExperimentResource());
+            statusResource.setWorkflowNodeDetail(workflowNode);
+            statusResource.setStatusType(StatusType.WORKFLOW_NODE.toString());
+            statusResource.setStatusUpdateTime(getTime(status.getTimeOfStateChange()));
+            statusResource.setState(status.getWorkflowNodeState().toString());
+            statusResource.save();
+            return String.valueOf(statusResource.getStatusId());
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties", e.getMessage());
+        }
+        return null;
+    }
+
     public String addTaskStatus(TaskStatus status, CompositeIdentifier ids) {
         try {
             gatewayRegistry = new GatewayRegistry();
@@ -344,6 +410,26 @@ public class ExperimentRegistry {
         return null;
     }
 
+    public void updateTaskStatus(TaskStatus status, String taskId) {
+        try {
+            gatewayRegistry = new GatewayRegistry();
+            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
+            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+            TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
+            StatusResource statusResource = workflowNode.geTaskStatus(taskId);
+            statusResource.setExperimentResource(taskDetail.getWorkflowNodeDetailResource().getExperimentResource());
+            statusResource.setWorkflowNodeDetail(taskDetail.getWorkflowNodeDetailResource());
+            statusResource.setTaskDetailResource(taskDetail);
+            statusResource.setStatusType(StatusType.TASK.toString());
+            statusResource.setStatusUpdateTime(getTime(status.getTimeOfStateChange()));
+            statusResource.setState(status.getExecutionState().toString());
+            statusResource.save();
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties", e.getMessage());
+        }
+    }
+
     /**
      *
      * @param status job status
@@ -361,6 +447,28 @@ public class ExperimentRegistry {
             statusResource.setExperimentResource(taskDetail.getWorkflowNodeDetailResource().getExperimentResource());
             statusResource.setWorkflowNodeDetail(taskDetail.getWorkflowNodeDetailResource());
             statusResource.setTaskDetailResource(taskDetail);
+            statusResource.setStatusType(StatusType.JOB.toString());
+            statusResource.setStatusUpdateTime(getTime(status.getTimeOfStateChange()));
+            statusResource.setState(status.getJobState().toString());
+            statusResource.save();
+            return String.valueOf(statusResource.getStatusId());
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties", e.getMessage());
+        }
+        return null;
+    }
+
+    public String updateJobStatus(JobStatus status, String jobId) {
+        try {
+            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
+            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+            TaskDetailResource taskDetail = (TaskDetailResource)workflowNode.create(ResourceType.TASK_DETAIL);
+            JobDetailResource jobDetail = taskDetail.getJobDetail(jobId);
+            StatusResource statusResource = jobDetail.getJobStatus();
+            statusResource.setExperimentResource(jobDetail.getTaskDetailResource().getWorkflowNodeDetailResource().getExperimentResource());
+            statusResource.setWorkflowNodeDetail(jobDetail.getTaskDetailResource().getWorkflowNodeDetailResource());
+            statusResource.setTaskDetailResource(jobDetail.getTaskDetailResource());
             statusResource.setStatusType(StatusType.JOB.toString());
             statusResource.setStatusUpdateTime(getTime(status.getTimeOfStateChange()));
             statusResource.setState(status.getJobState().toString());
@@ -399,6 +507,27 @@ public class ExperimentRegistry {
         return null;
     }
 
+    public void updateApplicationStatus(ApplicationStatus status, String jobId) {
+        try {
+            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
+            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+            TaskDetailResource taskDetail = (TaskDetailResource)workflowNode.create(ResourceType.TASK_DETAIL);
+            JobDetailResource jobDetail = taskDetail.getJobDetail(jobId);
+            StatusResource statusResource = jobDetail.getApplicationStatus();
+            statusResource.setExperimentResource(jobDetail.getTaskDetailResource().getWorkflowNodeDetailResource().getExperimentResource());
+            statusResource.setWorkflowNodeDetail(jobDetail.getTaskDetailResource().getWorkflowNodeDetailResource());
+            statusResource.setTaskDetailResource(jobDetail.getTaskDetailResource());
+            statusResource.setStatusType(StatusType.APPLICATION.toString());
+            statusResource.setStatusUpdateTime(getTime(status.getTimeOfStateChange()));
+            statusResource.setState(status.getApplicationState());
+            statusResource.save();
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties", e.getMessage());
+        }
+    }
+
+
     /**
      *
      * @param status data transfer status
@@ -428,6 +557,27 @@ public class ExperimentRegistry {
         return null;
     }
 
+    public void updateTransferStatus(TransferStatus status, String transferId) {
+        try {
+            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
+            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+            TaskDetailResource taskDetail = (TaskDetailResource)workflowNode.create(ResourceType.TASK_DETAIL);
+            DataTransferDetailResource dataTransferDetail = taskDetail.getDataTransferDetail(transferId);
+            StatusResource statusResource = dataTransferDetail.getDataTransferStatus();
+            statusResource.setExperimentResource(dataTransferDetail.getTaskDetailResource().getWorkflowNodeDetailResource().getExperimentResource());
+            statusResource.setWorkflowNodeDetail(dataTransferDetail.getTaskDetailResource().getWorkflowNodeDetailResource());
+            statusResource.setTaskDetailResource(dataTransferDetail.getTaskDetailResource());
+            statusResource.setDataTransferDetail(dataTransferDetail);
+            statusResource.setStatusType(StatusType.DATA_TRANSFER.toString());
+            statusResource.setStatusUpdateTime(getTime(status.getTimeOfStateChange()));
+            statusResource.setState(status.getTransferState().toString());
+            statusResource.save();
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties", e.getMessage());
+        }
+    }
+
     public String addWorkflowNodeDetails (WorkflowNodeDetails nodeDetails, String expId) {
         try {
             gatewayRegistry = new GatewayRegistry();
@@ -450,6 +600,26 @@ public class ExperimentRegistry {
         return null;
     }
 
+    public void updateWorkflowNodeDetails (WorkflowNodeDetails nodeDetails, String nodeId) {
+        try {
+            gatewayRegistry = new GatewayRegistry();
+            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
+            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode(nodeId);
+            workflowNode.setExperimentResource(experiment);
+            workflowNode.setNodeName(nodeDetails.getNodeName());
+            workflowNode.setCreationTime(getTime(nodeDetails.getCreationTime()));
+            workflowNode.setNodeInstanceId(getNodeInstanceID(nodeDetails.getNodeName()));
+            workflowNode.save();
+            List<DataObjectType> nodeInputs = nodeDetails.getNodeInputs();
+            if (nodeInputs != null){
+                updateWorkflowInputs(nodeDetails.getNodeInputs(), workflowNode);
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties", e.getMessage());
+        }
+    }
+
 
     public void addWorkflowInputs (List<DataObjectType> wfInputs, WorkflowNodeDetailResource nodeDetailResource ){
         for (DataObjectType input : wfInputs){
@@ -460,6 +630,20 @@ public class ExperimentRegistry {
             resource.setInputType(input.getType());
             resource.setMetadata(input.getMetaData());
             resource.save();
+        }
+    }
+
+    public void updateWorkflowInputs (List<DataObjectType> wfInputs, WorkflowNodeDetailResource nodeDetailResource ){
+        List<NodeInputResource> nodeInputs = nodeDetailResource.getNodeInputs();
+        for (DataObjectType input : wfInputs){
+            for (NodeInputResource resource : nodeInputs){
+                resource.setNodeDetailResource(nodeDetailResource);
+                resource.setInputKey(input.getKey());
+                resource.setValue(input.getValue());
+                resource.setInputType(input.getType());
+                resource.setMetadata(input.getMetaData());
+                resource.save();
+            }
         }
     }
 
@@ -499,6 +683,42 @@ public class ExperimentRegistry {
         return null;
     }
 
+    public String updateTaskDetails (TaskDetails taskDetails, String taskId) {
+        try {
+            gatewayRegistry = new GatewayRegistry();
+            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
+            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+            TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
+            taskDetail.setWorkflowNodeDetailResource(workflowNode);
+            taskDetail.setTaskId(getTaskID(workflowNode.getNodeName()));
+            taskDetail.setApplicationId(taskDetails.getApplicationId());
+            taskDetail.setApplicationVersion(taskDetails.getApplicationVersion());
+            taskDetail.setCreationTime(getTime(taskDetails.getCreationTime()));
+            taskDetail.save();
+            List<DataObjectType> applicationInputs = taskDetails.getApplicationInputs();
+            if (applicationInputs != null){
+                updateAppInputs(applicationInputs, taskDetail);
+            }
+            ComputationalResourceScheduling taskScheduling = taskDetails.getTaskScheduling();
+            if (taskScheduling != null){
+                updateSchedulingData(taskScheduling, taskDetail);
+            }
+            AdvancedInputDataHandling inputDataHandling = taskDetails.getAdvancedInputDataHandling();
+            if (inputDataHandling != null){
+                updateInputDataHandling(inputDataHandling, taskDetail);
+            }
+            AdvancedOutputDataHandling outputDataHandling = taskDetails.getAdvancedOutputDataHandling();
+            if (outputDataHandling != null){
+                updateOutputDataHandling(outputDataHandling, taskDetail);
+            }
+            return taskDetail.getTaskId();
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties", e.getMessage());
+        }
+        return null;
+    }
+
     public void addAppInputs (List<DataObjectType> appInputs, TaskDetailResource taskDetailResource ){
         for (DataObjectType input :  appInputs){
             ApplicationInputResource resource = (ApplicationInputResource)taskDetailResource.create(ResourceType.APPLICATION_INPUT);
@@ -508,6 +728,44 @@ public class ExperimentRegistry {
             resource.setInputType(input.getType());
             resource.setMetadata(input.getMetaData());
             resource.save();
+        }
+    }
+
+    public void updateAppOutputs (List<DataObjectType> appOutputs, String taskId ) {
+        try {
+            gatewayRegistry = new GatewayRegistry();
+            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
+            ExperimentResource experiment = (ExperimentResource) gateway.create(ResourceType.EXPERIMENT);
+            WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+            TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
+            List<ApplicationOutputResource> outputs = taskDetail.getApplicationOutputs();
+            for (DataObjectType output : appOutputs) {
+                for (ApplicationOutputResource resource : outputs) {
+                    resource.setTaskDetailResource(taskDetail);
+                    resource.setOutputKey(output.getKey());
+                    resource.setValue(output.getValue());
+                    resource.setOutputType(output.getType());
+                    resource.setMetadata(output.getMetaData());
+                    resource.save();
+                }
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties", e.getMessage());
+        }
+    }
+
+    public void updateAppInputs (List<DataObjectType> appInputs, TaskDetailResource taskDetailResource ){
+        List<ApplicationInputResource> inputs = taskDetailResource.getApplicationInputs();
+        for (DataObjectType input :  appInputs){
+            for (ApplicationInputResource resource : inputs){
+                resource.setTaskDetailResource(taskDetailResource);
+                resource.setInputKey(input.getKey());
+                resource.setValue(input.getValue());
+                resource.setInputType(input.getType());
+                resource.setMetadata(input.getMetaData());
+                resource.save();
+            }
+
         }
     }
 
@@ -531,6 +789,24 @@ public class ExperimentRegistry {
         return null;
     }
 
+    public void updateJobDetails (JobDetails jobDetails, String jobId) {
+        try {
+            gatewayRegistry = new GatewayRegistry();
+            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
+            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+            TaskDetailResource taskDetail = (TaskDetailResource)workflowNode.create(ResourceType.TASK_DETAIL);
+            JobDetailResource jobDetail = taskDetail.getJobDetail(jobId);
+            jobDetail.setTaskDetailResource(jobDetail.getTaskDetailResource());
+            jobDetail.setJobDescription(jobDetails.getJobDescription());
+            jobDetail.setCreationTime(getTime(jobDetails.getCreationTime()));
+            jobDetail.setComputeResourceConsumed(jobDetails.getComputeResourceConsumed());
+            jobDetail.save();
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties", e.getMessage());
+        }
+    }
+
     public String addDataTransferDetails (DataTransferDetails transferDetails, String taskId) {
         try {
             gatewayRegistry = new GatewayRegistry();
@@ -541,6 +817,25 @@ public class ExperimentRegistry {
             DataTransferDetailResource resource = (DataTransferDetailResource)taskDetail.create(ResourceType.DATA_TRANSFER_DETAIL);
             resource.setTaskDetailResource(taskDetail);
             resource.setTransferId(getDataTransferID(taskId));
+            resource.setTransferDescription(transferDetails.getTransferDescription());
+            resource.setCreationTime(getTime(transferDetails.getCreationTime()));
+            resource.save();
+            return resource.getTransferId();
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties", e.getMessage());
+        }
+        return null;
+    }
+
+    public String updateDataTransferDetails (DataTransferDetails transferDetails, String transferId) {
+        try {
+            gatewayRegistry = new GatewayRegistry();
+            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
+            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+            TaskDetailResource taskDetail = (TaskDetailResource)workflowNode.create(ResourceType.TASK_DETAIL);
+            DataTransferDetailResource resource = taskDetail.getDataTransferDetail(transferId);
+            resource.setTaskDetailResource(taskDetail);
             resource.setTransferDescription(transferDetails.getTransferDescription());
             resource.setCreationTime(getTime(transferDetails.getCreationTime()));
             resource.save();
@@ -727,40 +1022,13 @@ public class ExperimentRegistry {
                 exConfigData.setShareExp((Boolean) value);
                 exConfigData.save();
             } else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.COMPUTATIONAL_RESOURCE_SCHEDULING)){
-                ComputationalResourceScheduling resourceScheduling = (ComputationalResourceScheduling)value;
-                ComputationSchedulingResource resource = experiment.getComputationScheduling(expID);
-                resource.setCpuCount(resourceScheduling.getTotalCPUCount());
-                resource.setResourceHostId(resourceScheduling.getResourceHostId());
-                resource.setNodeCount(resourceScheduling.getNodeCount());
-                resource.setNumberOfThreads(resourceScheduling.getNumberOfThreads());
-                resource.setQueueName(resourceScheduling.getQueueName());
-                resource.setWalltimeLimit(resourceScheduling.getWallTimeLimit());
-                resource.setJobStartTime(getTime(resourceScheduling.getJobStartTime()));
-                resource.setPhysicalMemory(resourceScheduling.getTotalPhysicalMemory());
-                resource.setProjectName(resourceScheduling.getComputationalProjectAccount());
-                resource.save();
+                updateSchedulingData((ComputationalResourceScheduling) value, experiment);
             }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.ADVANCED_INPUT_HANDLING)){
-                AdvancedInputDataHandling adInputHandling = (AdvancedInputDataHandling)value;
-                AdvanceInputDataHandlingResource resource = experiment.getInputDataHandling(expID);
-                resource.setStageInputFiles(adInputHandling.isStageInputFilesToWorkingDir());
-                resource.setWorkingDirParent(adInputHandling.getParentWorkingDirectory());
-                resource.setWorkingDir(adInputHandling.getUniqueWorkingDirectory());
-                resource.setCleanAfterJob(adInputHandling.isCleanUpWorkingDirAfterJob());
-                resource.save();
+                updateInputDataHandling((AdvancedInputDataHandling) value, experiment);
             }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.ADVANCED_OUTPUT_HANDLING)){
-                AdvancedOutputDataHandling adOutputHandling = (AdvancedOutputDataHandling)value;
-                AdvancedOutputDataHandlingResource resource = experiment.getOutputDataHandling(expID);
-                resource.setOutputDataDir(adOutputHandling.getOutputDataDir());
-                resource.setDataRegUrl(adOutputHandling.getDataRegistryURL());
-                resource.setPersistOutputData(adOutputHandling.isPersistOutputData());
-                resource.save();
+                updateOutputDataHandling((AdvancedOutputDataHandling) value, experiment);
             }else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.QOS_PARAMS)){
-                QualityOfServiceParams qosParams = (QualityOfServiceParams)value;
-                QosParamResource qoSparams = experiment.getQOSparams(expID);
-                qoSparams.setStartExecutionAt(qosParams.getStartExecutionAt());
-                qoSparams.setExecuteBefore(qosParams.getExecuteBefore());
-                qoSparams.setNoOfRetries(qosParams.getNumberofRetries());
-                qoSparams.save();
+                updateQosParams((QualityOfServiceParams) value, experiment);
             }else {
                 logger.error("Unsupported field type for Experiment config data");
             }
@@ -805,50 +1073,96 @@ public class ExperimentRegistry {
 
         ComputationalResourceScheduling resourceScheduling = configData.getComputationalResourceScheduling();
         if (resourceScheduling != null) {
-            ComputationSchedulingResource cmsr = experiment.getComputationScheduling(expId);
-            cmsr.setExperimentResource(experiment);
-            cmsr.setResourceHostId(resourceScheduling.getResourceHostId());
-            cmsr.setCpuCount(resourceScheduling.getTotalCPUCount());
-            cmsr.setNodeCount(resourceScheduling.getNodeCount());
-            cmsr.setNumberOfThreads(resourceScheduling.getNumberOfThreads());
-            cmsr.setQueueName(resourceScheduling.getQueueName());
-            cmsr.setWalltimeLimit(resourceScheduling.getWallTimeLimit());
-            cmsr.setJobStartTime(getTime(resourceScheduling.getJobStartTime()));
-            cmsr.setPhysicalMemory(resourceScheduling.getTotalPhysicalMemory());
-            cmsr.setProjectName(resourceScheduling.getComputationalProjectAccount());
-            cmsr.save();
+            updateSchedulingData(resourceScheduling, experiment);
         }
         AdvancedInputDataHandling inputDataHandling = configData.getAdvanceInputDataHandling();
         if (inputDataHandling != null) {
-            AdvanceInputDataHandlingResource adidh = experiment.getInputDataHandling(expId);
-            adidh.setExperimentResource(experiment);
-            adidh.setWorkingDir(inputDataHandling.getUniqueWorkingDirectory());
-            adidh.setWorkingDirParent(inputDataHandling.getParentWorkingDirectory());
-            adidh.setStageInputFiles(inputDataHandling.isSetStageInputFilesToWorkingDir());
-            adidh.setCleanAfterJob(inputDataHandling.isCleanUpWorkingDirAfterJob());
-            adidh.save();
+            updateInputDataHandling(inputDataHandling, experiment);
         }
-
         AdvancedOutputDataHandling outputDataHandling = configData.getAdvanceOutputDataHandling();
         if (outputDataHandling != null) {
-            AdvancedOutputDataHandlingResource adodh = experiment.getOutputDataHandling(expId);
-            adodh.setExperimentResource(experiment);
-            adodh.setOutputDataDir(outputDataHandling.getOutputDataDir());
-            adodh.setDataRegUrl(outputDataHandling.getDataRegistryURL());
-            adodh.setPersistOutputData(outputDataHandling.isPersistOutputData());
-            adodh.save();
+            updateOutputDataHandling(outputDataHandling, experiment);
         }
 
         QualityOfServiceParams qosParams = configData.getQosParams();
         if (qosParams != null) {
-            QosParamResource qosr = experiment.getQOSparams(expId);
-            qosr.setExperimentResource(experiment);
+            updateQosParams(qosParams, experiment);
+        }
+        resource.save();
+    }
+
+    public void updateQosParams(QualityOfServiceParams qosParams, Resource resource) {
+        if (resource instanceof  ExperimentResource){
+            ExperimentResource expResource = (ExperimentResource) resource;
+            QosParamResource qosr = expResource.getQOSparams(expResource.getExpID());
+            qosr.setExperimentResource(expResource);
             qosr.setStartExecutionAt(qosParams.getStartExecutionAt());
             qosr.setExecuteBefore(qosParams.getExecuteBefore());
             qosr.setNoOfRetries(qosParams.getNumberofRetries());
             qosr.save();
         }
-        resource.save();
+    }
+
+    public void updateOutputDataHandling(AdvancedOutputDataHandling outputDataHandling, Resource resource) {
+        AdvancedOutputDataHandlingResource adodh;
+        if (resource instanceof ExperimentResource){
+            ExperimentResource expResource = (ExperimentResource) resource;
+            adodh = expResource.getOutputDataHandling(expResource.getExpID());
+            adodh.setExperimentResource(expResource);
+        }else {
+            TaskDetailResource taskDetailResource = (TaskDetailResource) resource;
+            adodh = taskDetailResource.getOutputDataHandling(taskDetailResource.getTaskId());
+            adodh.setTaskDetailResource(taskDetailResource);
+            adodh.setExperimentResource(taskDetailResource.getWorkflowNodeDetailResource().getExperimentResource());
+        }
+        adodh.setOutputDataDir(outputDataHandling.getOutputDataDir());
+        adodh.setDataRegUrl(outputDataHandling.getDataRegistryURL());
+        adodh.setPersistOutputData(outputDataHandling.isPersistOutputData());
+        adodh.save();
+    }
+
+    public void updateInputDataHandling(AdvancedInputDataHandling inputDataHandling, Resource resource) {
+
+        AdvanceInputDataHandlingResource adidh;
+        if (resource instanceof  ExperimentResource){
+            ExperimentResource expResource = (ExperimentResource) resource;
+            adidh = expResource.getInputDataHandling(expResource.getExpID());
+            adidh.setExperimentResource(expResource);
+        }else {
+            TaskDetailResource taskDetailResource = (TaskDetailResource) resource;
+            adidh = taskDetailResource.getInputDataHandling(taskDetailResource.getTaskId());
+            adidh.setTaskDetailResource(taskDetailResource);
+            adidh.setExperimentResource(taskDetailResource.getWorkflowNodeDetailResource().getExperimentResource());
+        }
+        adidh.setWorkingDir(inputDataHandling.getUniqueWorkingDirectory());
+        adidh.setWorkingDirParent(inputDataHandling.getParentWorkingDirectory());
+        adidh.setStageInputFiles(inputDataHandling.isSetStageInputFilesToWorkingDir());
+        adidh.setCleanAfterJob(inputDataHandling.isCleanUpWorkingDirAfterJob());
+        adidh.save();
+    }
+
+    public void updateSchedulingData(ComputationalResourceScheduling resourceScheduling, Resource resource) {
+        ComputationSchedulingResource cmsr;
+        if (resource instanceof ExperimentResource){
+            ExperimentResource expResource = (ExperimentResource) resource;
+            cmsr = expResource.getComputationScheduling(expResource.getExpID());
+            cmsr.setExperimentResource(expResource);
+        }else {
+            TaskDetailResource taskDetailResource = (TaskDetailResource) resource;
+            cmsr = taskDetailResource.getComputationScheduling(taskDetailResource.getTaskId());
+            cmsr.setTaskDetailResource(taskDetailResource);
+            cmsr.setExperimentResource(taskDetailResource.getWorkflowNodeDetailResource().getExperimentResource());
+        }
+        cmsr.setResourceHostId(resourceScheduling.getResourceHostId());
+        cmsr.setCpuCount(resourceScheduling.getTotalCPUCount());
+        cmsr.setNodeCount(resourceScheduling.getNodeCount());
+        cmsr.setNumberOfThreads(resourceScheduling.getNumberOfThreads());
+        cmsr.setQueueName(resourceScheduling.getQueueName());
+        cmsr.setWalltimeLimit(resourceScheduling.getWallTimeLimit());
+        cmsr.setJobStartTime(getTime(resourceScheduling.getJobStartTime()));
+        cmsr.setPhysicalMemory(resourceScheduling.getTotalPhysicalMemory());
+        cmsr.setProjectName(resourceScheduling.getComputationalProjectAccount());
+        cmsr.save();
     }
 
     public List<Experiment> getExperimentList(String fieldName, Object value){
@@ -890,29 +1204,6 @@ public class ExperimentRegistry {
         }
         return experiments;
     }
-
-//    public List<UserConfigurationData> getConfigurationDataList (String fieldName, Object value){
-//        List<UserConfigurationData> configDataList = new ArrayList<UserConfigurationData>();
-//        try {
-//            gatewayRegistry = new GatewayRegistry();
-//            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-//            if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.EXPERIMENT_ID)){
-//                ExperimentResource experiment = gateway.getExperiment((String) value);
-//                List<Resource> resources = experiment.get(ResourceType.CONFIG_DATA);
-//                for (Resource resource : resources){
-//                    ExperimentConfigDataResource configDataResource = (ExperimentConfigDataResource)resource;
-//                    ConfigurationData conData = ThriftDataModelConversion.getConfigurationData(configDataResource);
-//                    configDataList.add(conData);
-//                }
-//                return configDataList;
-//            }else {
-//                logger.error("Unsupported field type for Experiment meta data");
-//            }
-//        } catch (ApplicationSettingsException e) {
-//            logger.error("Unable to read airavata-server properties", e.getMessage());
-//        }
-//        return configDataList;
-//    }
 
     public Object getExperiment(String expId, String fieldName) {
         try {
@@ -1073,6 +1364,74 @@ public class ExperimentRegistry {
         return false;
     }
 
+    public void updateScheduling(ComputationalResourceScheduling scheduling, String id, String type){
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            if (type.equals(DataType.EXPERIMENT.toString())){
+                ExperimentResource experiment = defaultGateway.getExperiment(id);
+                updateSchedulingData(scheduling, experiment);
+            }else if (type.equals(DataType.TASK_DETAIL.toString())){
+                ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+                TaskDetailResource taskDetail = workflowNode.getTaskDetail(id);
+                updateSchedulingData(scheduling, taskDetail);
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        }
+    }
+
+    public void updateInputDataHandling(AdvancedInputDataHandling dataHandling, String id, String type){
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            if (type.equals(DataType.EXPERIMENT.toString())){
+                ExperimentResource experiment = defaultGateway.getExperiment(id);
+                updateInputDataHandling(dataHandling, experiment);
+            }else if (type.equals(DataType.TASK_DETAIL.toString())){
+                ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+                TaskDetailResource taskDetail = workflowNode.getTaskDetail(id);
+                updateInputDataHandling(dataHandling, taskDetail);
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        }
+    }
+
+    public void updateOutputDataHandling(AdvancedOutputDataHandling dataHandling, String id, String type){
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            if (type.equals(DataType.EXPERIMENT.toString())){
+                ExperimentResource experiment = defaultGateway.getExperiment(id);
+                updateOutputDataHandling(dataHandling, experiment);
+            }else if (type.equals(DataType.TASK_DETAIL.toString())){
+                ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+                TaskDetailResource taskDetail = workflowNode.getTaskDetail(id);
+                updateOutputDataHandling(dataHandling, taskDetail);
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        }
+    }
+
+    public void updateQOSParams(QualityOfServiceParams params, String id, String type){
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            if (type.equals(DataType.EXPERIMENT.toString())){
+                ExperimentResource experiment = defaultGateway.getExperiment(id);
+                updateQosParams(params, experiment);
+            }else if (type.equals(DataType.TASK_DETAIL.toString())){
+                ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+                TaskDetailResource taskDetail = workflowNode.getTaskDetail(id);
+                updateQosParams(params, taskDetail);
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        }
+    }
+      
     public Timestamp getCurrentTimestamp() {
         Calendar calender = Calendar.getInstance();
         java.util.Date d = calender.getTime();
