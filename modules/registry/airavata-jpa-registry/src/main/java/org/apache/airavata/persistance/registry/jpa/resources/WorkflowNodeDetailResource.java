@@ -351,8 +351,19 @@ public class WorkflowNodeDetailResource extends AbstractResource {
         List<Resource> resources = get(ResourceType.STATUS);
         for (Resource resource : resources) {
             StatusResource nodeStatus = (StatusResource) resource;
-            if(nodeStatus.getStatusType().equals(StatusType.WORKFLOW_NODE)){
+            if(nodeStatus.getStatusType().equals(StatusType.WORKFLOW_NODE.toString())){
                 return nodeStatus;
+            }
+        }
+        return null;
+    }
+
+    public StatusResource geTaskStatus(String taskId){
+        List<Resource> resources = get(ResourceType.STATUS);
+        for (Resource resource : resources) {
+            StatusResource taskStatus = (StatusResource) resource;
+            if(taskStatus.getStatusType().equals(StatusType.TASK.toString()) && taskStatus.getTaskDetailResource().getTaskId().equals(taskId)){
+                return taskStatus;
             }
         }
         return null;

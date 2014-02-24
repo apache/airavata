@@ -100,7 +100,7 @@ public class RegistryImpl implements Registry {
             case ADVANCE_OUTPUT_DATA_HANDLING:
                 return experimentRegistry.addOutputDataHandling((AdvancedOutputDataHandling)newObjectToAdd, (CompositeIdentifier)dependentIdentifier);
             case ADVANCE_INPUT_DATA_HANDLING:
-                return experimentRegistry.addInputDataHandling((AdvancedInputDataHandling)newObjectToAdd, (CompositeIdentifier)dependentIdentifier);
+                return experimentRegistry.addInputDataHandling((AdvancedInputDataHandling) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
             case QOS_PARAM:
                 return experimentRegistry.addQosParams((QualityOfServiceParams)newObjectToAdd, (CompositeIdentifier)dependentIdentifier);
             default:
@@ -127,6 +127,57 @@ public class RegistryImpl implements Registry {
                 break;
             case EXPERIMENT_CONFIGURATION_DATA:
                 experimentRegistry.updateUserConfigData((UserConfigurationData) newObjectToUpdate, (String)identifier);
+                break;
+            case EXPERIMENT_OUTPUT:
+                experimentRegistry.updateExpOutputs((List<DataObjectType>)newObjectToUpdate, (String)identifier);
+                break;
+            case EXPERIMENT_STATUS:
+                experimentRegistry.updateExperimentStatus((ExperimentStatus)newObjectToUpdate, (String)identifier);
+                break;
+            case WORKFLOW_NODE_DETAIL:
+                experimentRegistry.updateWorkflowNodeDetails((WorkflowNodeDetails) newObjectToUpdate, (String) identifier);
+                break;
+            case WORKFLOW_NODE_STATUS:
+                experimentRegistry.updateWorkflowNodeStatus((WorkflowNodeStatus) newObjectToUpdate, (String) identifier);
+                break;
+            case NODE_OUTPUT:
+                experimentRegistry.updateNodeOutputs((List<DataObjectType>) newObjectToUpdate, (String) identifier);
+                break;
+            case TASK_DETAIL:
+                experimentRegistry.updateTaskDetails((TaskDetails) newObjectToUpdate, (String) identifier);
+                break;
+            case APPLICATION_OUTPUT:
+                experimentRegistry.updateAppOutputs((List<DataObjectType>) newObjectToUpdate, (String) identifier);
+                break;
+            case TASK_STATUS:
+                experimentRegistry.updateTaskStatus((TaskStatus) newObjectToUpdate, (String) identifier);
+                break;
+            case JOB_DETAIL:
+                experimentRegistry.updateJobDetails((JobDetails)newObjectToUpdate, (String)identifier);
+                break;
+            case JOB_STATUS:
+                experimentRegistry.updateJobStatus((JobStatus)newObjectToUpdate, (String)identifier);
+                break;
+            case APPLICATION_STATUS:
+                experimentRegistry.updateApplicationStatus((ApplicationStatus)newObjectToUpdate, (String)identifier);
+                break;
+            case DATA_TRANSFER_DETAIL:
+                experimentRegistry.updateDataTransferDetails((DataTransferDetails)newObjectToUpdate, (String)identifier);
+                break;
+            case TRANSFER_STATUS:
+                experimentRegistry.updateTransferStatus((TransferStatus)newObjectToUpdate, (String)identifier);
+                break;
+            case COMPUTATIONAL_RESOURCE_SCHEDULING:
+                experimentRegistry.updateScheduling((ComputationalResourceScheduling) newObjectToUpdate, (String) identifier, dataType.toString());
+                break;
+            case ADVANCE_OUTPUT_DATA_HANDLING:
+                experimentRegistry.updateInputDataHandling((AdvancedInputDataHandling)newObjectToUpdate, (String)identifier, dataType.toString());
+                break;
+            case ADVANCE_INPUT_DATA_HANDLING:
+                experimentRegistry.updateOutputDataHandling((AdvancedOutputDataHandling) newObjectToUpdate, (String) identifier, dataType.toString());
+                break;
+            case QOS_PARAM:
+                experimentRegistry.updateQOSParams((QualityOfServiceParams) newObjectToUpdate, (String) identifier, dataType.toString());
                 break;
             default:
                 logger.error("Unsupported data type...", new UnsupportedOperationException());
