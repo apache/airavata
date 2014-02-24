@@ -31,8 +31,7 @@ import org.apache.airavata.gsi.ssh.jsch.ExtendedJSch;
 import org.apache.airavata.gsi.ssh.util.SSHAPIUIKeyboardInteractive;
 import org.apache.airavata.gsi.ssh.util.SSHKeyPasswordHandler;
 import org.apache.airavata.job.monitor.MonitorID;
-import org.apache.airavata.job.monitor.state.JobStatus;
-import org.apache.airavata.model.experiment.JobState;
+import org.apache.airavata.model.workspace.experiment.JobState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

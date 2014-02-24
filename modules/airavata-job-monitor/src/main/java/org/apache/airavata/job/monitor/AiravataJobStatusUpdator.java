@@ -22,7 +22,7 @@ package org.apache.airavata.job.monitor;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.airavata.job.monitor.state.JobStatus;
-import org.apache.airavata.model.experiment.JobState;
+import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.registry.cpi.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

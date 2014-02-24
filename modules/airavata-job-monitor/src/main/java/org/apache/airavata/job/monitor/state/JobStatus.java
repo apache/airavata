@@ -21,7 +21,7 @@
 package org.apache.airavata.job.monitor.state;
 
 import org.apache.airavata.job.monitor.MonitorID;
-import org.apache.airavata.model.experiment.JobState;
+import org.apache.airavata.model.workspace.experiment.JobState;
 
 /**
  * This is the primary job state object used in
@@ -31,15 +31,15 @@ import org.apache.airavata.model.experiment.JobState;
  * the monitoring ID
  */
 public class JobStatus {
-    private org.apache.airavata.model.experiment.JobState state;
+    private JobState state;
 
     private MonitorID monitorID;
 
-    public org.apache.airavata.model.experiment.JobState getState() {
+    public JobState getState() {
         return state;
     }
 
-    public void setState(org.apache.airavata.model.experiment.JobState state) {
+    public void setState(JobState state) {
         this.state = state;
     }
 
