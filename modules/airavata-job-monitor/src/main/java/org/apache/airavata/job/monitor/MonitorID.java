@@ -21,10 +21,12 @@
 package org.apache.airavata.job.monitor;
 
 import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 /*
 This is the object which contains the data to identify a particular
@@ -37,17 +39,30 @@ public class MonitorID {
 
     private String jobID;
 
+    private Timestamp jobStartedTime;
+
     private Timestamp lastMonitored;
 
     private HostDescription host;
 
+    private int port = 22;
+
+    private AuthenticationInfo authenticationInfo = null;
 
     public MonitorID(HostDescription host, String jobID, String userName) {
         this.host = host;
         this.jobID = jobID;
+        this.jobStartedTime = new Timestamp((new Date()).getTime());
         this.userName = userName;
     }
 
+    public MonitorID(HostDescription host, String jobID, String userName,AuthenticationInfo authenticationInfo) {
+        this.host = host;
+        this.jobID = jobID;
+        this.jobStartedTime = new Timestamp((new Date()).getTime());
+        this.authenticationInfo = authenticationInfo;
+        this.userName = userName;
+    }
     public HostDescription getHost() {
         return host;
     }
@@ -78,5 +93,29 @@ public class MonitorID {
 
     public void setJobID(String jobID) {
         this.jobID = jobID;
+    }
+
+    public Timestamp getJobStartedTime() {
+        return jobStartedTime;
+    }
+
+    public void setJobStartedTime(Timestamp jobStartedTime) {
+        this.jobStartedTime = jobStartedTime;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public AuthenticationInfo getAuthenticationInfo() {
+        return authenticationInfo;
+    }
+
+    public void setAuthenticationInfo(AuthenticationInfo authenticationInfo) {
+        this.authenticationInfo = authenticationInfo;
     }
 }

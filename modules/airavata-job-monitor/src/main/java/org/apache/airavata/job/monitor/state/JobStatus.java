@@ -21,6 +21,7 @@
 package org.apache.airavata.job.monitor.state;
 
 import org.apache.airavata.job.monitor.MonitorID;
+import org.apache.airavata.model.experiment.JobState;
 
 /**
  * This is the primary job state object used in
@@ -49,4 +50,6 @@ public class JobStatus {
     public void setMonitorID(MonitorID monitorID) {
         this.monitorID = monitorID;
     }
+
+
 }
