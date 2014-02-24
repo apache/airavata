@@ -94,22 +94,19 @@ public class RegistryImpl implements Registry {
             case DATA_TRANSFER_DETAIL:
                 return experimentRegistry.addDataTransferDetails((DataTransferDetails)newObjectToAdd, (String)dependentIdentifier);
             case TRANSFER_STATUS:
-
+                return experimentRegistry.addTransferStatus((TransferStatus)newObjectToAdd, (CompositeIdentifier)dependentIdentifier);
             case COMPUTATIONAL_RESOURCE_SCHEDULING:
-                // no thrift model yet
-                break;
+                return experimentRegistry.addComputationalResourceScheduling((ComputationalResourceScheduling)newObjectToAdd, (CompositeIdentifier)dependentIdentifier);
             case ADVANCE_OUTPUT_DATA_HANDLING:
-                // no thrift model yet
-                break;
+                return experimentRegistry.addOutputDataHandling((AdvancedOutputDataHandling)newObjectToAdd, (CompositeIdentifier)dependentIdentifier);
+            case ADVANCE_INPUT_DATA_HANDLING:
+                return experimentRegistry.addInputDataHandling((AdvancedInputDataHandling)newObjectToAdd, (CompositeIdentifier)dependentIdentifier);
             case QOS_PARAM:
-                // no thrift model yet
-                break;
+                return experimentRegistry.addQosParams((QualityOfServiceParams)newObjectToAdd, (CompositeIdentifier)dependentIdentifier);
             default:
                 logger.error("Unsupported dependent data type...", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
         }
-        return null;
-
     }
 
     /**
