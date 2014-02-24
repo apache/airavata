@@ -22,7 +22,6 @@ package org.apache.airavata.job.monitor.core;
 
 import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.state.JobStatus;
-import org.apache.airavata.model.experiment.JobState;
 
 /**
  * This is an interface to implement messageparser, it could be

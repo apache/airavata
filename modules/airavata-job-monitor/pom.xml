@@ -48,13 +48,14 @@
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk16</artifactId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.48</version>
         </dependency>
-        <!--dependency>
+        <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcpkix-jdk15on</artifactId>
             <version>1.48</version>
-        </dependency-->
+        </dependency>
         <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
