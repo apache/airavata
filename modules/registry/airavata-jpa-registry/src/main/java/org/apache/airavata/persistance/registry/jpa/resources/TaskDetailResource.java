@@ -244,7 +244,7 @@ public class TaskDetailResource extends AbstractResource {
                 return outputResource;
             case JOB_DETAIL:
                 generator = new QueryGenerator(JOB_DETAIL);
-                generator.setParameter(JobDetailConstants.TASK_ID, name);
+                generator.setParameter(JobDetailConstants.JOB_ID, name);
                 q = generator.selectQuery(em);
                 JobDetail jobDetail = (JobDetail)q.getSingleResult();
                 JobDetailResource jobDetailResource = (JobDetailResource)Utils.getResource(ResourceType.JOB_DETAIL, jobDetail);
@@ -253,7 +253,7 @@ public class TaskDetailResource extends AbstractResource {
                 return jobDetailResource;
             case DATA_TRANSFER_DETAIL:
                 generator = new QueryGenerator(DATA_TRANSFER_DETAIL);
-                generator.setParameter(DataTransferDetailConstants.TASK_ID, name);
+                generator.setParameter(DataTransferDetailConstants.TRANSFER_ID, name);
                 q = generator.selectQuery(em);
                 DataTransferDetail transferDetail = (DataTransferDetail)q.getSingleResult();
                 DataTransferDetailResource transferDetailResource = (DataTransferDetailResource)Utils.getResource(ResourceType.DATA_TRANSFER_DETAIL, transferDetail);
@@ -529,6 +529,10 @@ public class TaskDetailResource extends AbstractResource {
 
     public JobDetailResource getJobDetail (String jobId){
         return (JobDetailResource)get(ResourceType.JOB_DETAIL, jobId);
+    }
+
+    public DataTransferDetailResource getDataTransferDetail (String dataTransferId){
+        return (DataTransferDetailResource)get(ResourceType.TASK_DETAIL, dataTransferId);
     }
 
 }
