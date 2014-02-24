@@ -38,7 +38,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleMonitorTest {
+public class AMQPMonitorTest {
     private MonitorManager monitorManager;
 
     private String myProxyUserName;
@@ -84,21 +84,21 @@ public class SimpleMonitorTest {
     @Test
     public void testAMQPMonitor() throws SSHApiException {
         /* now have to submit a job to some machine and add that job to the queue */
-//Create authentication
-      /*  GSIAuthenticationInfo authenticationInfo
+        //Create authentication
+        GSIAuthenticationInfo authenticationInfo
                 = new MyProxyAuthenticationInfo(myProxyUserName, myProxyPassword, "myproxy.teragrid.org",
                 7512, 17280000, certificateLocation);
-//
-//        // Server info
+
+        // Server info
         ServerInfo serverInfo = new ServerInfo("ogce", "trestles.sdsc.edu");
-//
-//
+
+
         Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, "/opt/torque/bin/");
-//
-//
-//        // Execute command
+
+
+        // Execute command
         System.out.println("Target PBS file path: " + workingDirectory);
-//        // constructing the job object
+        // constructing the job object
         JobDescriptor jobDescriptor = new JobDescriptor();
         jobDescriptor.setWorkingDirectory(workingDirectory);
         jobDescriptor.setShellName("/bin/bash");
@@ -117,19 +117,33 @@ public class SimpleMonitorTest {
         jobDescriptor.setOwner("ogce");
         inputs.add("Hello World");
         jobDescriptor.setInputValues(inputs);
-//        //finished construction of job object
+        //finished construction of job object
         System.out.println(jobDescriptor.toXML());
-//        String jobID = pbsCluster.submitBatchJob(jobDescriptor);   */
+        String jobID = pbsCluster.submitBatchJob(jobDescriptor);
 
+        Thread test = new TestThread(monitorManager);
+        test.start();
         try {
-            monitorManager.addAJobToMonitor(new MonitorID(hostDescription, "gordon.sdsc.xsede.org", "ogce"));
-        } catch (AiravataMonitorException e) {
-            e.printStackTrace();
-        }
-        try {
-            Thread.sleep(100000000);
+            test.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    private class TestThread extends Thread {
+        private MonitorManager manager;
+
+        public TestThread(MonitorManager manager) {
+            this.manager = manager;
+        }
+
+        @Override
+        public void run() {
+            try {
+                monitorManager.addAJobToMonitor(new MonitorID(hostDescription, "gordon.sdsc.xsede.org", "ogce"));
+            } catch (AiravataMonitorException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
         }
     }
 }

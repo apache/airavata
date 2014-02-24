@@ -67,10 +67,38 @@ public class AiravataJobStatusUpdator{
         System.out.println("Job ID: " + jobStatus.getMonitorID().getJobID());
         System.out.println("Username: " + jobStatus.getMonitorID().getUserName());
         System.out.println("Job Status: " + jobStatus.getState().toString());
-        if (JobState.COMPLETE.equals(jobStatus.getState())) {
-            // When job is done we remove the job from the queue
-            logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + "is DONE");
-            jobsToMonitor.add(jobStatus.getMonitorID());
+
+
+        switch (state) {
+            case COMPLETE:
+                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + "is DONE");
+                jobsToMonitor.remove(jobStatus.getMonitorID());
+                break;
+            case UNKNOWN:
+                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + "is UNKNOWN");
+                System.out.println("Unknown job status came, if the old job status is RUNNING or something active, we have to make it complete");
+                //todo implement this logic
+                break;
+            case QUEUED:
+                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + "is QUEUED");
+
+            case SUBMITTED:
+                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + "is SUBMITTED");
+            case ACTIVE:
+                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + "is ACTIVE");
+                break;
+            case CANCELED:
+                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + "is CANCELED");
+                break;
+            case FAILED:
+                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + "is FAILED");
+                break;
+            case HELD:
+                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + "is HELD");
+                break;
+            case SUSPENDED:
+                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + "is SUSPENDED");
+                break;
         }
     }
 }
