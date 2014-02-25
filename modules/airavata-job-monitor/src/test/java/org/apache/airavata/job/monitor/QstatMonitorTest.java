@@ -73,7 +73,7 @@ public class QstatMonitorTest {
             monitorManager.addPullMonitor(qstatMonitor);
             monitorManager.launchMonitor();
         } catch (AiravataMonitorException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
 
         hostDescription = new HostDescription(GsisshHostType.type);
@@ -82,7 +82,7 @@ public class QstatMonitorTest {
     }
 
     @Test
-    public void testAMQPMonitor() throws SSHApiException {
+    public void testQstatMonitor() throws SSHApiException {
         /* now have to submit a job to some machine and add that job to the queue */
         //Create authentication
         GSIAuthenticationInfo authenticationInfo
@@ -119,41 +119,20 @@ public class QstatMonitorTest {
         jobDescriptor.setInputValues(inputs);
         //finished construction of job object
         System.out.println(jobDescriptor.toXML());
-        String jobID = pbsCluster.submitBatchJob(jobDescriptor);
-
-        Thread test = new TestThread(monitorManager,jobID);
-        test.start();
-        try {
-            Thread.sleep(1000000);
-            test.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private class TestThread extends Thread {
-        private MonitorManager manager;
-
-        private String jobID;
-
-        public TestThread(MonitorManager manager,String jobID) {
-            this.manager = manager;
-            this.jobID = jobID;
-        }
-
-        @Override
-        public void run() {
+        for (int i = 0; i < 50; i++) {
+            String jobID = pbsCluster.submitBatchJob(jobDescriptor);
+            MonitorID monitorID = new MonitorID(hostDescription, jobID, "ogce");
+            monitorID.setAuthenticationInfo(authenticationInfo);
             try {
-                MonitorID monitorID = new MonitorID(hostDescription, jobID, "ogce");
-                GSIAuthenticationInfo authenticationInfo
-                = new MyProxyAuthenticationInfo(myProxyUserName, myProxyPassword, "myproxy.teragrid.org",
-                7512, 17280000, certificateLocation);
-                monitorID.setAuthenticationInfo(authenticationInfo);
-
                 monitorManager.addAJobToMonitor(monitorID);
             } catch (AiravataMonitorException e) {
                 e.printStackTrace();
             }
+        }
+        try {
+            Thread.sleep(10000000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

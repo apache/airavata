@@ -24,6 +24,7 @@ package org.apache.airavata.orchestrator.core.impl;
 import java.util.*;
 
 import org.apache.airavata.common.utils.AiravataJobState;
+import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.cpi.GFac;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
@@ -43,6 +44,13 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
     private final static Logger logger = LoggerFactory.getLogger(EmbeddedGFACJobSubmitter.class);
 
     private OrchestratorContext orchestratorContext;
+
+    private GFac gfac;
+
+    public EmbeddedGFACJobSubmitter(GFac gfac, OrchestratorContext orchestratorContext) {
+        this.gfac = gfac;
+        this.orchestratorContext = orchestratorContext;
+    }
 
     public void initialize(OrchestratorContext orchestratorContext) throws OrchestratorException {
         this.orchestratorContext = orchestratorContext;
@@ -74,8 +82,7 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
         Registry newRegistry = orchestratorContext.getNewRegistry();
         try {
             //todo init this during submitter init
-            GFac gFac = new GFacImpl(newRegistry, orchestratorContext.getOrchestratorConfiguration().getAiravataAPI(), orchestratorContext.getRegistry());
-            gFac.submitJob(experimentID);
+            JobExecutionContext jobExecutionContext = gfac.submitJob(experimentID);
             orchestratorContext.getRegistry().changeStatus(experimentID, AiravataJobState.State.SUBMITTED);
         } catch (Exception e)
         {

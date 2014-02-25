@@ -134,7 +134,10 @@ public class QstatMonitor extends PullMonitor implements Runnable {
                     // in this case job is finished or may be the given job ID is wrong
                     jobStatus.setState(JobState.UNKNOWN);
                     publisher.publish(jobStatus);
-                }else if(!this.queue.contains(take)){   // we put the job back to the queue only if its state is not unknown
+                }else if(e.getMessage().contains("illegally formed job identifier")){
+                   logger.error("Wrong job ID is given so dropping the job from monitoring system");
+                }
+                else if(!this.queue.contains(take)){   // we put the job back to the queue only if its state is not unknown
                     try {
                         this.queue.put(take);
                     } catch (InterruptedException e1) {

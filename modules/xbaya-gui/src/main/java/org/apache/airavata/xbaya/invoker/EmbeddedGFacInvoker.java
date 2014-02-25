@@ -407,6 +407,7 @@ public class EmbeddedGFacInvoker implements Invoker {
         if (registeredHost.getType() instanceof GlobusHostType || registeredHost.getType() instanceof UnicoreHostType
                 || registeredHost.getType() instanceof GsisshHostType) {
 
+            /* todo fix the credential store and uncomment following code block
             SecurityContextDocument.SecurityContext.CredentialManagementService credentialManagementService
                     = getCredentialManagementService(contextHeader);
 
@@ -429,6 +430,31 @@ public class EmbeddedGFacInvoker implements Invoker {
             } catch (Exception e) {
                 throw new WorkflowException("An error occurred while creating GSI security context", e);
             }
+            if (registeredHost.getType() instanceof GsisshHostType) {
+                GSIAuthenticationInfo authenticationInfo
+                        = new MyProxyAuthenticationInfo(requestData.getMyProxyUserName(), requestData.getMyProxyPassword(), requestData.getMyProxyServerUrl(),
+                        requestData.getMyProxyPort(), requestData.getMyProxyLifeTime(), System.getProperty(Constants.TRUSTED_CERTIFICATE_SYSTEM_PROPERTY));
+                ServerInfo serverInfo = new ServerInfo(requestData.getMyProxyUserName(), registeredHost.getType().getHostAddress());
+
+                Cluster pbsCluster = null;
+                try {
+                    pbsCluster = new PBSCluster(serverInfo, authenticationInfo,
+                            (((HpcApplicationDeploymentType) jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath()));
+                } catch (SSHApiException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+
+                context.setPbsCluster(pbsCluster);
+            }
+            */
+            requestData = new RequestData("default");
+            GSISecurityContext context;
+            try {
+                context = new GSISecurityContext(CredentialReaderFactory.createCredentialStoreReader(), requestData);
+            } catch (Exception e) {
+                throw new WorkflowException("An error occurred while creating GSI security context", e);
+            }
+
             if (registeredHost.getType() instanceof GsisshHostType) {
                 GSIAuthenticationInfo authenticationInfo
                         = new MyProxyAuthenticationInfo(requestData.getMyProxyUserName(), requestData.getMyProxyPassword(), requestData.getMyProxyServerUrl(),

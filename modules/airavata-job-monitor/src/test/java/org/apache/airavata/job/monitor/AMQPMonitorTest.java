@@ -73,7 +73,7 @@ public class AMQPMonitorTest {
             monitorManager.addPushMonitor(amqpMonitor);
             monitorManager.launchMonitor();
         } catch (AiravataMonitorException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
 
         hostDescription = new HostDescription(GsisshHostType.type);
@@ -120,30 +120,16 @@ public class AMQPMonitorTest {
         //finished construction of job object
         System.out.println(jobDescriptor.toXML());
         String jobID = pbsCluster.submitBatchJob(jobDescriptor);
-
-        Thread test = new TestThread(monitorManager);
-        test.start();
+        System.out.println(jobID);
         try {
-            test.join();
+            monitorManager.addAJobToMonitor(new MonitorID(hostDescription, jobID, "ogce"));
+        } catch (AiravataMonitorException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        try {
+            Thread.sleep(10000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private class TestThread extends Thread {
-        private MonitorManager manager;
-
-        public TestThread(MonitorManager manager) {
-            this.manager = manager;
-        }
-
-        @Override
-        public void run() {
-            try {
-                monitorManager.addAJobToMonitor(new MonitorID(hostDescription, "gordon.sdsc.xsede.org", "ogce"));
-            } catch (AiravataMonitorException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
 }

@@ -79,6 +79,7 @@ public class SSHDemo {
             }
 
             Session session = jsch.getSession(user, host, port);
+            HostKey hostKey = session.getHostKey();
 
             java.util.Properties config = new java.util.Properties();
             config.put("StrictHostKeyChecking", "no");

@@ -64,11 +64,6 @@ public class AiravataJobStatusUpdator{
                 the registry accordingly, for now we are just printing to standard Out
                  */
         JobState state = jobStatus.getState();
-        System.out.println("Job ID: " + jobStatus.getMonitorID().getJobID());
-        System.out.println("Username: " + jobStatus.getMonitorID().getUserName());
-        System.out.println("Job Status: " + jobStatus.getState().toString());
-
-
         switch (state) {
             case COMPLETE:
                 logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + "is DONE");
@@ -76,28 +71,29 @@ public class AiravataJobStatusUpdator{
                 break;
             case UNKNOWN:
                 logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + "is UNKNOWN");
-                System.out.println("Unknown job status came, if the old job status is RUNNING or something active, we have to make it complete");
+                logger.info("Unknown job status came, if the old job status is RUNNING or something active, we have to make it complete");
                 //todo implement this logic
                 break;
             case QUEUED:
-                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + "is QUEUED");
-
+                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is QUEUED");
+                break;
             case SUBMITTED:
-                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + "is SUBMITTED");
+                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is SUBMITTED");
+                break;
             case ACTIVE:
-                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + "is ACTIVE");
+                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is ACTIVE");
                 break;
             case CANCELED:
-                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + "is CANCELED");
+                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is CANCELED");
                 break;
             case FAILED:
-                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + "is FAILED");
+                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is FAILED");
                 break;
             case HELD:
-                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + "is HELD");
+                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is HELD");
                 break;
             case SUSPENDED:
-                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + "is SUSPENDED");
+                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is SUSPENDED");
                 break;
         }
     }
