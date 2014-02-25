@@ -42,7 +42,6 @@ public class ExperimentModelUtil {
         experiment.setDescription(expDescription);
         experiment.setApplicationId(applicationId);
         experiment.setExperimentInputs(experimentInputList);
-
         return experiment;
     }
 
@@ -83,7 +82,7 @@ public class ExperimentModelUtil {
         return inputDataHandling;
     }
 
-    public static AdvancedOutputDataHandling createOutputDataHandling(String outputDatadir,
+    public static AdvancedOutputDataHandling createAdvancedOutputDataHandling(String outputDatadir,
                                                                       String dataRegUrl,
                                                                       boolean persistOutput) {
         AdvancedOutputDataHandling outputDataHandling = new AdvancedOutputDataHandling();
@@ -101,5 +100,40 @@ public class ExperimentModelUtil {
         qosParams.setExecuteBefore(executeBefore);
         qosParams.setNumberofRetries(numberOfRetires);
         return qosParams;
+    }
+
+    public static TaskDetails cloneTaskFromExperiment (Experiment experiment){
+        TaskDetails taskDetails = new TaskDetails();
+        taskDetails.setCreationTime(experiment.getCreationTime());
+        taskDetails.setApplicationId(experiment.getApplicationId());
+        taskDetails.setApplicationVersion(experiment.getApplicationVersion());
+        List<DataObjectType> experimentInputs = experiment.getExperimentInputs();
+        if (experimentInputs != null){
+            taskDetails.setApplicationInputs(experimentInputs);
+        }
+        UserConfigurationData configData = experiment.getUserConfigurationData();
+        if (configData != null){
+            ComputationalResourceScheduling scheduling = configData.getComputationalResourceScheduling();
+            if (scheduling != null){
+                taskDetails.setTaskScheduling(scheduling);
+            }
+            AdvancedInputDataHandling advanceInputDataHandling = configData.getAdvanceInputDataHandling();
+            if (advanceInputDataHandling != null){
+                taskDetails.setAdvancedInputDataHandling(advanceInputDataHandling);
+            }
+            AdvancedOutputDataHandling outputHandling = configData.getAdvanceOutputDataHandling();
+            if (outputHandling != null){
+                taskDetails.setAdvancedOutputDataHandling(outputHandling);
+            }
+        }
+        return taskDetails;
+    }
+
+    public static WorkflowNodeDetails createWorkflowNode (String nodeName,
+                                                          List<DataObjectType> nodeInputs){
+        WorkflowNodeDetails wfnod = new WorkflowNodeDetails();
+        wfnod.setNodeName(nodeName);
+        wfnod.setNodeInputs(nodeInputs);
+        return wfnod;
     }
 }
