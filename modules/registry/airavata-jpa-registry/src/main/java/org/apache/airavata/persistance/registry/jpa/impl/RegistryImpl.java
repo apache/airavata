@@ -229,6 +229,40 @@ public class RegistryImpl implements Registry {
                 return experimentRegistry.getExperiment((String)identifier, null);
             case EXPERIMENT_CONFIGURATION_DATA:
                 return experimentRegistry.getConfigData((String)identifier, null);
+            case EXPERIMENT_OUTPUT:
+                return experimentRegistry.getExperimentOutputs((String)identifier);
+            case EXPERIMENT_STATUS:
+                return experimentRegistry.getExperimentStatus((String)identifier);
+            case WORKFLOW_NODE_DETAIL:
+                return experimentRegistry.getWorkflowNodeDetails((String) identifier);
+            case WORKFLOW_NODE_STATUS:
+                return experimentRegistry.getWorkflowNodeStatus((String) identifier);
+            case NODE_OUTPUT:
+                return experimentRegistry.getNodeOutputs((String) identifier);
+            case TASK_DETAIL:
+                return experimentRegistry.getTaskDetails((String) identifier);
+            case APPLICATION_OUTPUT:
+                return experimentRegistry.getApplicationOutputs((String) identifier);
+            case TASK_STATUS:
+                return experimentRegistry.getTaskStatus((String) identifier);
+            case JOB_DETAIL:
+                return experimentRegistry.getJobDetails((CompositeIdentifier)identifier);
+            case JOB_STATUS:
+                return experimentRegistry.getJobStatus((CompositeIdentifier)identifier);
+            case APPLICATION_STATUS:
+                return experimentRegistry.getApplicationStatus((CompositeIdentifier)identifier);
+            case DATA_TRANSFER_DETAIL:
+                return  experimentRegistry.getDataTransferDetails((String)identifier);
+            case TRANSFER_STATUS:
+                return experimentRegistry.getDataTransferStatus((String)identifier);
+            case COMPUTATIONAL_RESOURCE_SCHEDULING:
+                return experimentRegistry.getComputationalScheduling(dataType, (String) identifier);
+            case ADVANCE_OUTPUT_DATA_HANDLING:
+                return experimentRegistry.getInputDataHandling(dataType, (String) identifier);
+            case ADVANCE_INPUT_DATA_HANDLING:
+                return experimentRegistry.getOutputDataHandling(dataType, (String) identifier);
+            case QOS_PARAM:
+                return experimentRegistry.getQosParams(dataType, (String) identifier);
             default:
                 logger.error("Unsupported data type...", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
