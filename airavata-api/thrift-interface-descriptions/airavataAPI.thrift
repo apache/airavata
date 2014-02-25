@@ -94,7 +94,7 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  string createExperiment(1: experimentModel.Experiment experiment)
+  string createExperiment(1: required experimentModel.Experiment experiment)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
@@ -132,7 +132,7 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  experimentModel.Experiment getBasicExperiment(1: string airavataExperimentId)
+  experimentModel.Experiment getExperiment(1: required string airavataExperimentId)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.ExperimentNotFoundException enf,
             3: airavataErrors.AiravataClientException ace,
@@ -177,51 +177,18 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  void updateExperiment(1: string airavataExperimentId,
-                           2: experimentModel.Experiment experiment)
+  void updateExperiment(1: required string airavataExperimentId,
+                           2: required experimentModel.Experiment experiment)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.ExperimentNotFoundException enf,
             3: airavataErrors.AiravataClientException ace,
             4: airavataErrors.AiravataSystemException ase)
 
-  /**
-   * Fetch the previously configured experiment configuration information.
-   *
-   * @param airavataExperimentId
-   *    The identifier for the requested experiment. This is returned during the create experiment step.
-   *
-   * @return
-   *   This method returns the previously configured experiment configuration data.
-   *
-   * @throws org.apache.airavata.api.error.InvalidRequestException
-   *    For any incorrect forming of the request itself.
-   * 
-   * @throws org.apache.airavata.api.error.ExperimentNotFoundException
-   *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
-   * 
-   * @throws org.apache.airavata.api.error.AiravataClientException
-   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-   *      
-   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
-   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
-   *         gateway registration steps and retry this request.
-   *
-   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
-   *         For now this is a place holder.
-   *
-   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
-   *         is implemented, the authorization will be more substantial.
-   *
-   * @throws org.apache.airavata.api.error.AiravataSystemException
-   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
-   *       rather an Airavata Administrator will be notified to take corrective action.
-   *
-  */
-  experimentModel.ExperimentStatus getExperimentStatus(1: string airavataExperimentId)
-    throws (1: airavataErrors.InvalidRequestException ire,
-            2: airavataErrors.ExperimentNotFoundException enf,
-            3: airavataErrors.AiravataClientException ace,
-            4: airavataErrors.AiravataSystemException ase)
+  void updateExperimentConfiguration(1: required string airavataExperimentId,
+                                       2: required experimentModel.UserConfigurationData userConfiguration)
+
+  void updateResourceScheduleing(1: required string airavataExperimentId,
+                                 2: required experimentModel.ComputationalResourceScheduling resourceScheduling)
 
   /**
    * Launch a previously created and configured experiment. Airavata Server will then start processing the request and appropriate
@@ -266,13 +233,25 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  void launchExperiment(1: string airavataExperimentId
-                                  2: string airavataCredStoreToken)
+  void launchExperiment(1: required string airavataExperimentId
+                                  2: required string airavataCredStoreToken)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.ExperimentNotFoundException enf,
             3: airavataErrors.AiravataClientException ace,
             4: airavataErrors.AiravataSystemException ase)
-            
+
+
+    experimentModel.ExperimentStatus getExperimentStatus(1: required string airavataExperimentId)
+      throws (1: airavataErrors.InvalidRequestException ire,
+              2: airavataErrors.ExperimentNotFoundException enf,
+              3: airavataErrors.AiravataClientException ace,
+              4: airavataErrors.AiravataSystemException ase)
+
+  list<experimentModel.DataObjectType> getExperimentOutputs (1: required string airavataExperimentId)
+
+  experimentModel.TaskStatus getJobStatus(1: required string resourceJobId)
+
+
   /**
    * Configure and Launch a previously created experiment with required inputs, scheduling, security and other quality of service
    *   parameters. This method also launches the experiment after it is configured. If you would like to configure only 
@@ -317,13 +296,13 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  string updateAndLaunchExperiment (1: string airavataExperimentId
-                                       2: experimentModel.Experiment experiment,
-                                       3: string airavataCredStoreToken)
-    throws (1: airavataErrors.InvalidRequestException ire,
-            2: airavataErrors.ExperimentNotFoundException enf,
-            3: airavataErrors.AiravataClientException ace,
-            4: airavataErrors.AiravataSystemException ase)
+//  string updateAndLaunchExperiment (1: string airavataExperimentId
+//                                       2: experimentModel.Experiment experiment,
+//                                       3: string airavataCredStoreToken)
+//    throws (1: airavataErrors.InvalidRequestException ire,
+//            2: airavataErrors.ExperimentNotFoundException enf,
+//            3: airavataErrors.AiravataClientException ace,
+//            4: airavataErrors.AiravataSystemException ase)
 
   /**
    * Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.
