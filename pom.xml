@@ -460,6 +460,7 @@
                 <module>modules/test-suite</module>
                 <module>modules/distribution</module>
                 <module>modules/integration-tests</module>
+                <module>modules/airavata-job-monitor</module>
             </modules>
         </profile>
         <profile>

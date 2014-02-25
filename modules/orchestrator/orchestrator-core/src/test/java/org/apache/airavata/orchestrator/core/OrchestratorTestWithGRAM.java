@@ -85,7 +85,6 @@ public class OrchestratorTestWithGRAM extends BaseOrchestratorTest {
 
         boolean b = orchestrator.launchExperiment(experimentID);
 
-        Thread.sleep(100000);
         if (b) {
             Assert.assertTrue(true);
         } else {

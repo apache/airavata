@@ -55,8 +55,6 @@ public class GSSContextX509 implements com.jcraft.jsch.GSSContext {
     private GSSCredential credential;
 
     public void create(String user, String host) throws JSchException {
-        System.out.printf("Attempting GSI authentication for %s on %s\n", user, host);
-
         try {
 //			ExtendedGSSManager manager = (ExtendedGSSManager) ExtendedGSSManager.getInstance();
 

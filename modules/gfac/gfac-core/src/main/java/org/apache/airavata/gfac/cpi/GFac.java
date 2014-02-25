@@ -21,6 +21,7 @@
 package org.apache.airavata.gfac.cpi;
 
 import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.model.experiment.ConfigurationData;
 import org.apache.airavata.registry.cpi.DataType;
 
@@ -38,6 +39,13 @@ public interface GFac {
      * @return
      * @throws org.apache.airavata.gfac.GFacException
      */
-    public boolean submitJob(String experimentID) throws GFacException;
+    public JobExecutionContext submitJob(String experimentID) throws GFacException;
+
+    /**
+     * This method has to be invoked after submitting the job and have to make sure job is properly finished
+     * @param jobExecutionContext
+     * @throws GFacException
+     */
+    public void invokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException;
 
 }

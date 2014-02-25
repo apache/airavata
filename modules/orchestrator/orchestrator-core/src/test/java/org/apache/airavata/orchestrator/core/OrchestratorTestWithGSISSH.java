@@ -53,8 +53,6 @@ public class OrchestratorTestWithGSISSH extends BaseOrchestratorTest {
      }
 
      private void createJobRequestWithDocuments() {
-
-
          //Using new airavata-api methods to store experiment metadata
          BasicMetadata basicMetadata = new BasicMetadata();
          basicMetadata.setExperimentName("test-trestles-gsissh");

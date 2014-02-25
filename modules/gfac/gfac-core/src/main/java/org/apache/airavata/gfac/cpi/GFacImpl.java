@@ -109,10 +109,10 @@ public class GFacImpl implements GFac {
      * @return
      * @throws GFacException
      */
-    public boolean submitJob(String experimentID) throws GFacException {
+    public JobExecutionContext submitJob(String experimentID) throws GFacException {
         ConfigurationData configurationData = (ConfigurationData) registry.get(DataType.EXPERIMENT_CONFIGURATION_DATA, experimentID);
         String serviceName = configurationData.getApplicationId();
-
+        JobExecutionContext jobExecutionContext = null;
         if (serviceName == null) {
             throw new GFacException("Error executing the job because there is not Application Name in this Experiment");
         }
@@ -133,7 +133,7 @@ public class GFacImpl implements GFac {
             Properties configurationProperties = ServerSettings.getProperties();
             GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, configurationProperties);
 
-            JobExecutionContext jobExecutionContext = new JobExecutionContext(gFacConfiguration, serviceName);
+            jobExecutionContext = new JobExecutionContext(gFacConfiguration, serviceName);
 
             ApplicationContext applicationContext = new ApplicationContext();
             applicationContext.setApplicationDeploymentDescription(applicationDescription);
@@ -158,7 +158,7 @@ public class GFacImpl implements GFac {
             log.error("Error inovoking the job with experiment ID: " + experimentID);
             throw new GFacException(e);
         }
-        return true;
+        return jobExecutionContext;
     }
 
     public void submitJob(JobExecutionContext jobExecutionContext) throws GFacException {
@@ -196,7 +196,6 @@ public class GFacImpl implements GFac {
                 executeProvider(provider, jobExecutionContext);
                 disposeProvider(provider, jobExecutionContext);
             }
-            invokeOutFlowHandlers(jobExecutionContext);
 //            if (experimentID != null){
 //                registry2.changeStatus(jobExecutionContext.getExperimentID(),AiravataJobState.State.OUTHANDLERSDONE);
 //            }
@@ -264,7 +263,7 @@ public class GFacImpl implements GFac {
         }
     }
 
-    private void invokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
+    public void invokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
         List<GFacHandlerConfig> handlers = jobExecutionContext.getGFacConfiguration().getOutHandlers();
 
         for (GFacHandlerConfig handlerClassName : handlers) {
