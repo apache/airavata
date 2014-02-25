@@ -37,6 +37,7 @@ import org.apache.airavata.registry.cpi.utils.StatusType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.crypto.Data;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -1707,6 +1708,133 @@ public class ExperimentRegistry {
         }
     }
 
+    public void removeWorkflowNode (String nodeId){
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+            experiment.remove(ResourceType.WORKFLOW_NODE_DETAIL, nodeId);
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        }
+    }
+
+    public void removeTaskDetails (String taskId){
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+            WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+            nodeDetailResource.remove(ResourceType.TASK_DETAIL, taskId);
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        }
+    }
+
+    public void removeJobDetails (CompositeIdentifier ids){
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+            WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+            TaskDetailResource taskDetailResource = nodeDetailResource.getTaskDetail((String)ids.getTopLevelIdentifier());
+            taskDetailResource.remove(ResourceType.JOB_DETAIL, (String)ids.getSecondLevelIdentifier());
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        }
+    }
+
+    public void removeDataTransferDetails (String transferId){
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+            WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+            TaskDetailResource taskDetail = (TaskDetailResource)nodeDetailResource.create(ResourceType.TASK_DETAIL);
+            taskDetail.remove(ResourceType.DATA_TRANSFER_DETAIL, transferId);
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        }
+    }
+
+    public void removeComputationalScheduling (DataType dataType, String id){
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            switch (dataType){
+                case EXPERIMENT:
+                    ExperimentResource experiment = defaultGateway.getExperiment(id);
+                    experiment.remove(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, id);
+                    break;
+                case TASK_DETAIL:
+                    ExperimentResource resource = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                    WorkflowNodeDetailResource wf = (WorkflowNodeDetailResource)resource.create(ResourceType.WORKFLOW_NODE_DETAIL);
+                    TaskDetailResource taskDetail = wf.getTaskDetail(id);
+                    taskDetail.remove(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, id);
+                    break;
+                default:
+                    logger.error("Unsupported data type...");
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        }
+    }
+
+    public void removeInputDataHandling (DataType dataType, String id){
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            switch (dataType){
+                case EXPERIMENT:
+                    ExperimentResource experiment = defaultGateway.getExperiment(id);
+                    experiment.remove(ResourceType.ADVANCE_INPUT_DATA_HANDLING, id);
+                    break;
+                case TASK_DETAIL:
+                    ExperimentResource resource = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                    WorkflowNodeDetailResource wf = (WorkflowNodeDetailResource)resource.create(ResourceType.WORKFLOW_NODE_DETAIL);
+                    TaskDetailResource taskDetail = wf.getTaskDetail(id);
+                    taskDetail.remove(ResourceType.ADVANCE_INPUT_DATA_HANDLING, id);
+                    break;
+                default:
+                    logger.error("Unsupported data type...");
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        }
+    }
+
+    public void removeOutputDataHandling (DataType dataType, String id){
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            switch (dataType){
+                case EXPERIMENT:
+                    ExperimentResource experiment = defaultGateway.getExperiment(id);
+                    experiment.remove(ResourceType.ADVANCE_OUTPUT_DATA_HANDLING, id);
+                    break;
+                case TASK_DETAIL:
+                    ExperimentResource resource = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                    WorkflowNodeDetailResource wf = (WorkflowNodeDetailResource)resource.create(ResourceType.WORKFLOW_NODE_DETAIL);
+                    TaskDetailResource taskDetail = wf.getTaskDetail(id);
+                    taskDetail.remove(ResourceType.ADVANCE_OUTPUT_DATA_HANDLING, id);
+                    break;
+                default:
+                    logger.error("Unsupported data type...");
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        }
+    }
+
+    public void removeQOSParams (DataType dataType, String id){
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            switch (dataType){
+                case EXPERIMENT:
+                    ExperimentResource experiment = defaultGateway.getExperiment(id);
+                    experiment.remove(ResourceType.QOS_PARAM, id);
+                    break;
+                default:
+                    logger.error("Unsupported data type...");
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        }
+    }
+
     public boolean isExperimentExist(String expID) {
         try{
             GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
@@ -1724,6 +1852,140 @@ public class ExperimentRegistry {
             ExperimentResource experiment = defaultGateway.getExperiment(expID);
             experiment.isExists(ResourceType.CONFIG_DATA, expID);
             return true;
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean isWFNodeExist(String nodeId) {
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+            return experiment.isExists(ResourceType.WORKFLOW_NODE_DETAIL, nodeId);
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean isTaskDetailExist(String taskId) {
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+            WorkflowNodeDetailResource wf = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+            return wf.isExists(ResourceType.TASK_DETAIL, taskId);
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean isJobDetailExist(CompositeIdentifier ids) {
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+            WorkflowNodeDetailResource wf = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+            TaskDetailResource taskDetail = wf.getTaskDetail((String) ids.getTopLevelIdentifier());
+            return taskDetail.isExists(ResourceType.JOB_DETAIL, (String)ids.getSecondLevelIdentifier());
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean isTransferDetailExist(String transferId) {
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+            WorkflowNodeDetailResource wf = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+            TaskDetailResource taskDetail = (TaskDetailResource)wf.create(ResourceType.TASK_DETAIL);
+            return taskDetail.isExists(ResourceType.DATA_TRANSFER_DETAIL, transferId);
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean isComputationalSchedulingExist(DataType dataType, String id ) {
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            switch (dataType){
+                case EXPERIMENT:
+                    ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                    return experiment.isExists(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, id);
+                case TASK_DETAIL:
+                    ExperimentResource exp = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                    WorkflowNodeDetailResource wf = (WorkflowNodeDetailResource)exp.create(ResourceType.WORKFLOW_NODE_DETAIL);
+                    TaskDetailResource taskDetail = wf.getTaskDetail(id);
+                    return taskDetail.isExists(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, id);
+                default:
+                    logger.error("Unsupported data type...");
+
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean isInputDataHandlingExist(DataType dataType, String id ) {
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            switch (dataType){
+                case EXPERIMENT:
+                    ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                    return experiment.isExists(ResourceType.ADVANCE_INPUT_DATA_HANDLING, id);
+                case TASK_DETAIL:
+                    ExperimentResource exp = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                    WorkflowNodeDetailResource wf = (WorkflowNodeDetailResource)exp.create(ResourceType.WORKFLOW_NODE_DETAIL);
+                    TaskDetailResource taskDetail = wf.getTaskDetail(id);
+                    return taskDetail.isExists(ResourceType.ADVANCE_INPUT_DATA_HANDLING, id);
+                default:
+                    logger.error("Unsupported data type...");
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean isOutputDataHandlingExist(DataType dataType, String id ) {
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            switch (dataType){
+                case EXPERIMENT:
+                    ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                    return experiment.isExists(ResourceType.ADVANCE_OUTPUT_DATA_HANDLING, id);
+                case TASK_DETAIL:
+                    ExperimentResource exp = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                    WorkflowNodeDetailResource wf = (WorkflowNodeDetailResource)exp.create(ResourceType.WORKFLOW_NODE_DETAIL);
+                    TaskDetailResource taskDetail = wf.getTaskDetail(id);
+                    return taskDetail.isExists(ResourceType.ADVANCE_OUTPUT_DATA_HANDLING, id);
+                default:
+                    logger.error("Unsupported data type...");
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean isQOSParamsExist(DataType dataType, String id ) {
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            switch (dataType){
+                case EXPERIMENT:
+                    ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                    return experiment.isExists(ResourceType.QOS_PARAM, id);
+//                case TASK_DETAIL:
+//                    ExperimentResource exp = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+//                    WorkflowNodeDetailResource wf = (WorkflowNodeDetailResource)exp.create(ResourceType.WORKFLOW_NODE_DETAIL);
+//                    TaskDetailResource taskDetail = wf.getTaskDetail(id);
+//                    return taskDetail.isExists(ResourceType.ADVANCE_OUTPUT_DATA_HANDLING, id);
+                default:
+                    logger.error("Unsupported data type...");
+            }
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read airavata-server properties..", e.getMessage());
         }

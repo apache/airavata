@@ -26,6 +26,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.airavata.registry.cpi.utils.StatusType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,13 +161,14 @@ public class TaskDetailResource extends AbstractResource {
                 break;
             case JOB_DETAIL:
                 generator = new QueryGenerator(JOB_DETAIL);
-                generator.setParameter(JobDetailConstants.TASK_ID, name);
+                generator.setParameter(JobDetailConstants.TASK_ID, taskId);
+                generator.setParameter(JobDetailConstants.JOB_ID, name);
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
                 break;
             case DATA_TRANSFER_DETAIL:
                 generator = new QueryGenerator(DATA_TRANSFER_DETAIL);
-                generator.setParameter(DataTransferDetailConstants.TASK_ID, name);
+                generator.setParameter(DataTransferDetailConstants.TRANSFER_ID, name);
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
                 break;
