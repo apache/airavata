@@ -27,6 +27,7 @@ import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
+import org.apache.airavata.persistance.registry.jpa.model.Status;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.apache.airavata.persistance.registry.jpa.utils.ThriftDataModelConversion;
 import org.apache.airavata.registry.cpi.CompositeIdentifier;
@@ -1171,12 +1172,97 @@ public class ExperimentRegistry {
                 }
                 return experiments;
             }else {
-                logger.error("Unsupported field type for Experiment meta data");
+                logger.error("Unsupported field name to retrieve experiment list...");
             }
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read airavata-server properties", e.getMessage());
         }
         return experiments;
+    }
+
+    public List<WorkflowNodeDetails> getWFNodeDetails (String fieldName, Object value){
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            if (fieldName.equals(Constants.FieldConstants.WorkflowNodeConstants.EXPERIMENT_ID)){
+                ExperimentResource experiment = defaultGateway.getExperiment((String) value);
+                List<WorkflowNodeDetailResource> workflowNodeDetails = experiment.getWorkflowNodeDetails();
+                return ThriftDataModelConversion.getWfNodeList(workflowNodeDetails);
+            }else {
+                logger.error("Unsupported field name to retrieve workflow detail list...");
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties", e.getMessage());
+        }
+        return null;
+    }
+
+    public List<WorkflowNodeStatus> getWFNodeStatusList (String fieldName, Object value){
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            if (fieldName.equals(Constants.FieldConstants.WorkflowNodeStatus.EXPERIMENT_ID)){
+                ExperimentResource experiment = defaultGateway.getExperiment((String) value);
+                List<StatusResource> workflowNodeStatuses = experiment.getWorkflowNodeStatuses();
+                return ThriftDataModelConversion.getWorkflowNodeStatusList(workflowNodeStatuses);
+            }else {
+                logger.error("Unsupported field name to retrieve workflow status list...");
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties", e.getMessage());
+        }
+        return null;
+    }
+
+    public List<TaskDetails> getTaskDetails (String fieldName, Object value){
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            if (fieldName.equals(Constants.FieldConstants.TaskDetailConstants.NODE_ID)){
+                ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode((String) value);
+                List<TaskDetailResource> taskDetails = workflowNode.getTaskDetails();
+                return ThriftDataModelConversion.getTaskDetailsList(taskDetails);
+            }else {
+                logger.error("Unsupported field name to retrieve task detail list...");
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties", e.getMessage());
+        }
+        return null;
+    }
+
+    public List<JobDetails> getJobDetails (String fieldName, Object value){
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            if (fieldName.equals(Constants.FieldConstants.JobDetaisConstants.TASK_ID)){
+                ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+                TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) value);
+                List<JobDetailResource> jobDetailList = taskDetail.getJobDetailList();
+                return ThriftDataModelConversion.getJobDetailsList(jobDetailList);
+            }else {
+                logger.error("Unsupported field name to retrieve job details list...");
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties", e.getMessage());
+        }
+        return null;
+    }
+
+    public List<DataTransferDetails> getDataTransferDetails (String fieldName, Object value){
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            if (fieldName.equals(Constants.FieldConstants.DataTransferDetailConstants.TASK_ID)){
+                ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+                TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) value);
+                List<DataTransferDetailResource> dataTransferDetailList = taskDetail.getDataTransferDetailList();
+                return ThriftDataModelConversion.getDataTransferlList(dataTransferDetailList);
+            }else {
+                logger.error("Unsupported field name to retrieve job details list...");
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties", e.getMessage());
+        }
+        return null;
     }
 
     public Object getExperiment(String expId, String fieldName) {
@@ -1563,6 +1649,42 @@ public class ExperimentRegistry {
             logger.error("Unable to read airavata-server properties..", e.getMessage());
         }
         return expIDs;
+    }
+
+    public List<String> getWorkflowNodeIds (String fieldName, Object value){
+        List<String> wfIds = new ArrayList<String>();
+        List<WorkflowNodeDetails> wfNodeDetails = getWFNodeDetails(fieldName, value);
+        for (WorkflowNodeDetails wf : wfNodeDetails){
+            wfIds.add(wf.getNodeInstanceId());
+        }
+        return wfIds;
+    }
+
+    public List<String> getTaskDetailIds (String fieldName, Object value){
+        List<String> taskDetailIds = new ArrayList<String>();
+        List<TaskDetails> taskDetails = getTaskDetails(fieldName, value);
+        for (TaskDetails td : taskDetails){
+            taskDetailIds.add(td.getTaskID());
+        }
+        return taskDetailIds;
+    }
+
+    public List<String> getJobDetailIds (String fieldName, Object value){
+        List<String> jobIds = new ArrayList<String>();
+        List<JobDetails> jobDetails = getJobDetails(fieldName, value);
+        for (JobDetails jd : jobDetails){
+            jobIds.add(jd.getJobID());
+        }
+        return jobIds;
+    }
+
+    public List<String> getTransferDetailIds (String fieldName, Object value){
+        List<String> transferIds = new ArrayList<String>();
+        List<DataTransferDetails> dataTransferDetails = getDataTransferDetails(fieldName, value);
+        for (DataTransferDetails dtd : dataTransferDetails){
+            transferIds.add(dtd.getTransferID());
+        }
+        return transferIds;
     }
 
 
