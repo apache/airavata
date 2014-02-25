@@ -109,8 +109,13 @@ public class GFacImpl implements GFac {
      * @return
      * @throws GFacException
      */
-    public JobExecutionContext submitJob(String experimentID) throws GFacException {
+    public JobExecutionContext submitJob(String experimentID,String taskID) throws GFacException {
         ConfigurationData configurationData = (ConfigurationData) registry.get(DataType.EXPERIMENT_CONFIGURATION_DATA, experimentID);
+        // this is wear our new model and old model is mapping (so serviceName in ExperimentData and service name in ServiceDescriptor
+        // has to be same.
+
+        // 1. Get the Task from the task ID and construct the Job object and save it in to registry
+        // 2. Add another property to jobExecutionContext and read them inside the provider and use it.
         String serviceName = configurationData.getApplicationId();
         JobExecutionContext jobExecutionContext = null;
         if (serviceName == null) {
@@ -153,6 +158,8 @@ public class GFacImpl implements GFac {
             jobExecutionContext.setExperimentID(experimentID);
 
             addSecurityContext(hostDescription, configurationProperties, jobExecutionContext);
+
+
             submitJob(jobExecutionContext);
         } catch (Exception e) {
             log.error("Error inovoking the job with experiment ID: " + experimentID);
