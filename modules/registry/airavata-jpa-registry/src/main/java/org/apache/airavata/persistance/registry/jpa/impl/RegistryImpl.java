@@ -103,6 +103,8 @@ public class RegistryImpl implements Registry {
                 return experimentRegistry.addInputDataHandling((AdvancedInputDataHandling) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
             case QOS_PARAM:
                 return experimentRegistry.addQosParams((QualityOfServiceParams)newObjectToAdd, (CompositeIdentifier)dependentIdentifier);
+            case ERROR_DETAIL:
+                return experimentRegistry.addErrorDetails((ErrorDetails)newObjectToAdd, dependentIdentifier);
             default:
                 logger.error("Unsupported dependent data type...", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
@@ -223,7 +225,6 @@ public class RegistryImpl implements Registry {
      */
     @Override
     public Object get(DataType dataType, Object identifier) throws Exception {
-
         switch (dataType){
             case EXPERIMENT:
                 return experimentRegistry.getExperiment((String)identifier, null);
@@ -316,6 +317,12 @@ public class RegistryImpl implements Registry {
                 List<DataTransferDetails> dataTransferDetails = experimentRegistry.getDataTransferDetails(fieldName, value);
                 for (DataTransferDetails transferDetails : dataTransferDetails){
                     result.add(transferDetails);
+                }
+                return result;
+            case ERROR_DETAIL:
+                List<ErrorDetails> errorDetails = experimentRegistry.getErrorDetails(fieldName, value);
+                for (ErrorDetails error : errorDetails){
+                    result.add(error);
                 }
                 return result;
             default:
