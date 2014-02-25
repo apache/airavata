@@ -176,11 +176,13 @@ public class ComputationSchedulingResource extends AbstractResource {
 
         Computational_Resource_Scheduling scheduling = new Computational_Resource_Scheduling();
         Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-        TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+        if (taskDetailResource != null){
+            TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+            scheduling.setTask(taskDetail);
+            scheduling.setTaskId(taskDetailResource.getTaskId());
+        }
         scheduling.setExpId(experimentResource.getExpID());
         scheduling.setExperiment(experiment);
-        scheduling.setTaskId(taskDetailResource.getTaskId());
-        scheduling.setTask(taskDetail);
         scheduling.setResourceHostId(resourceHostId);
         scheduling.setCpuCount(cpuCount);
         scheduling.setNodeCount(nodeCount);

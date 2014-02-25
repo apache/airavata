@@ -744,8 +744,10 @@ public class Utils {
         ComputationSchedulingResource schedulingResource = new ComputationSchedulingResource();
         ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
         schedulingResource.setExperimentResource(experimentResource);
-        TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
-        schedulingResource.setTaskDetailResource(taskDetailResource);
+        if (o.getTask() != null){
+            TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
+            schedulingResource.setTaskDetailResource(taskDetailResource);
+        }
         schedulingResource.setSchedulingId(o.getSchedulingId());
         schedulingResource.setResourceHostId(o.getResourceHostId());
         schedulingResource.setCpuCount(o.getCpuCount());
@@ -763,8 +765,10 @@ public class Utils {
         AdvanceInputDataHandlingResource dataHandlingResource = new AdvanceInputDataHandlingResource();
         ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
         dataHandlingResource.setExperimentResource(experimentResource);
-        TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
-        dataHandlingResource.setTaskDetailResource(taskDetailResource);
+        if (o.getTask() != null){
+            TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
+            dataHandlingResource.setTaskDetailResource(taskDetailResource);
+        }
         dataHandlingResource.setDataHandlingId(o.getDataHandlingId());
         dataHandlingResource.setWorkingDirParent(o.getParentWorkingDir());
         dataHandlingResource.setWorkingDir(o.getWorkingDir());
@@ -777,8 +781,10 @@ public class Utils {
         AdvancedOutputDataHandlingResource dataHandlingResource = new AdvancedOutputDataHandlingResource();
         ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
         dataHandlingResource.setExperimentResource(experimentResource);
-        TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
-        dataHandlingResource.setTaskDetailResource(taskDetailResource);
+        if (o.getTask() != null){
+            TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
+            dataHandlingResource.setTaskDetailResource(taskDetailResource);
+        }
         dataHandlingResource.setOutputDataHandlingId(o.getOutputDataHandlingId());
         dataHandlingResource.setOutputDataDir(o.getOutputDataDir());
         dataHandlingResource.setDataRegUrl(o.getDataRegUrl());
@@ -790,8 +796,10 @@ public class Utils {
         QosParamResource qosParamResource = new QosParamResource();
         ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
         qosParamResource.setExperimentResource(experimentResource);
-        TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
-        qosParamResource.setTaskDetailResource(taskDetailResource);
+        if (o.getTask() != null){
+            TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
+            qosParamResource.setTaskDetailResource(taskDetailResource);
+        }
         qosParamResource.setQosId(o.getQosId());
         qosParamResource.setExecuteBefore(o.getExecuteBefore());
         qosParamResource.setStartExecutionAt(o.getStartExecutionAt());
