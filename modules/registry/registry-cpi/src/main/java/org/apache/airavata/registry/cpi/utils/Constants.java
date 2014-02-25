@@ -79,8 +79,15 @@ public class Constants {
             public static final String TASK_ID = "taskId";
         }
 
-        public final class WorkflowNodeStatus {
+        public final class WorkflowNodeStatusConstants {
             public static final String EXPERIMENT_ID = "experimentId";
+        }
+
+        public final class ErrorDetailsConstants {
+            public static final String EXPERIMENT_ID = "experimentId";
+            public static final String NODE_ID = "nodeId";
+            public static final String TASK_ID = "taskId";
+            public static final String JOB_ID = "jobId";
         }
     }
 }
