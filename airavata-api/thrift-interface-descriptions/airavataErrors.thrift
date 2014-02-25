@@ -50,6 +50,7 @@ namespace js AiravataAPIError
  * 
  *  UNSUPPORTED_OPERATION: Operation denied because it is currently unsupported.
  */
+
 enum AiravataErrorType {
   UNKNOWN,
   PERMISSION_DENIED,

@@ -26,9 +26,10 @@ import org.apache.airavata.api.error.AiravataClientException;
 import org.apache.airavata.api.error.AiravataSystemException;
 import org.apache.airavata.api.error.ExperimentNotFoundException;
 import org.apache.airavata.api.error.InvalidRequestException;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.ExperimentStatus;
+import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.thrift.TException;
+
+import java.util.List;
 
 public class AiravataServerHandler implements Airavata.Iface {
 
@@ -90,9 +91,10 @@ public class AiravataServerHandler implements Airavata.Iface {
      *                                                                   rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
-    public Experiment getBasicExperiment(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+    public Experiment getExperiment(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
         return null;
     }
+
 
     /**
      * Configure a previously created experiment with required inputs, scheduling and other quality of service
@@ -123,6 +125,16 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     }
 
+    @Override
+    public void updateExperimentConfiguration(String airavataExperimentId, UserConfigurationData userConfiguration) throws TException {
+
+    }
+
+    @Override
+    public void updateResourceScheduleing(String airavataExperimentId, ComputationalResourceScheduling resourceScheduling) throws TException {
+
+    }
+
     /**
      * Fetch the previously configured experiment configuration information.
      *
@@ -146,6 +158,16 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public ExperimentStatus getExperimentStatus(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    @Override
+    public List<DataObjectType> getExperimentOutputs(String airavataExperimentId) throws TException {
+        return null;
+    }
+
+    @Override
+    public TaskStatus getJobStatus(String resourceJobId) throws TException {
         return null;
     }
 
@@ -182,41 +204,6 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public void launchExperiment(String airavataExperimentId, String airavataCredStoreToken) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
 
-    }
-
-    /**
-     * Configure and Launch a previously created experiment with required inputs, scheduling, security and other quality of service
-     * parameters. This method also launches the experiment after it is configured. If you would like to configure only
-     * and launch at a later time or partially configure then ConfigureExperiment should be used.
-     *
-     * @param airavataExperimentId   The identifier for the requested experiment. This is returned during the create experiment step.
-     * @param experiment
-     * @param airavataCredStoreToken :
-     *                               A requirement to execute experiments within Airavata is to first register the targeted remote computational account
-     *                               credentials with Airavata Credential Store. The administrative API (related to credential store) will return a
-     *                               generated token associated with the registered credentials. The client has to security posses this token id and is
-     *                               required to pass it to Airavata Server for all execution requests.
-     *                               Note: At this point only the credential store token is required so the string is directly passed here. In future if
-     *                               if more security credentials are enables, then the structure ExecutionSecurityParameters should be used.
-     * @return The server-side generated experiment GUID.
-     * @throws org.apache.airavata.api.error.InvalidRequestException For any incorrect forming of the request itself.
-     * @throws org.apache.airavata.api.error.AiravataClientException The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-     *                                                               <p/>
-     *                                                               UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
-     *                                                               step, then Airavata Registry will not have a provenance area setup. The client has to follow
-     *                                                               gateway registration steps and retry this request.
-     *                                                               <p/>
-     *                                                               AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
-     *                                                               For now this is a place holder.
-     *                                                               <p/>
-     *                                                               INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
-     *                                                               is implemented, the authorization will be more substantial.
-     * @throws org.apache.airavata.api.error.AiravataSystemException This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
-     *                                                               rather an Airavata Administrator will be notified to take corrective action.
-     */
-    @Override
-    public String updateAndLaunchExperiment(String airavataExperimentId, Experiment experiment, String airavataCredStoreToken) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
-        return null;
     }
 
     /**
