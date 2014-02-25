@@ -55,5 +55,32 @@ public class Constants {
             public static final String ADVANCED_OUTPUT_HANDLING = "advanceOutputDataHandling";
             public static final String QOS_PARAMS = "qosParams";
         }
+
+        public final class WorkflowNodeConstants {
+            public static final String EXPERIMENT_ID = "experimentId";
+            public static final String NODE_NAME = "nodeName";
+            public static final String NODE_INPUTS = "nodeInputs";
+            public static final String NODE_OUTPUTS = "nodeOutputs";
+            public static final String WF_NODE_STATUS = "workflowNodeStatus";
+            public static final String TASK_LIST = "taskDetailsList";
+            public static final String NODE_ERRORS = "errors";
+        }
+
+        public final class TaskDetailConstants {
+            public static final String EXPERIMENT_ID = "experimentId";
+            public static final String NODE_ID = "nodeId";
+        }
+
+        public final class JobDetaisConstants {
+            public static final String TASK_ID = "taskId";
+        }
+
+        public final class DataTransferDetailConstants {
+            public static final String TASK_ID = "taskId";
+        }
+
+        public final class WorkflowNodeStatus {
+            public static final String EXPERIMENT_ID = "experimentId";
+        }
     }
 }

@@ -153,19 +153,19 @@ public class RegistryImpl implements Registry {
                 experimentRegistry.updateTaskStatus((TaskStatus) newObjectToUpdate, (String) identifier);
                 break;
             case JOB_DETAIL:
-                experimentRegistry.updateJobDetails((JobDetails)newObjectToUpdate, (String)identifier);
+                experimentRegistry.updateJobDetails((JobDetails) newObjectToUpdate, (String) identifier);
                 break;
             case JOB_STATUS:
-                experimentRegistry.updateJobStatus((JobStatus)newObjectToUpdate, (String)identifier);
+                experimentRegistry.updateJobStatus((JobStatus) newObjectToUpdate, (String) identifier);
                 break;
             case APPLICATION_STATUS:
-                experimentRegistry.updateApplicationStatus((ApplicationStatus)newObjectToUpdate, (String)identifier);
+                experimentRegistry.updateApplicationStatus((ApplicationStatus) newObjectToUpdate, (String) identifier);
                 break;
             case DATA_TRANSFER_DETAIL:
-                experimentRegistry.updateDataTransferDetails((DataTransferDetails)newObjectToUpdate, (String)identifier);
+                experimentRegistry.updateDataTransferDetails((DataTransferDetails) newObjectToUpdate, (String) identifier);
                 break;
             case TRANSFER_STATUS:
-                experimentRegistry.updateTransferStatus((TransferStatus)newObjectToUpdate, (String)identifier);
+                experimentRegistry.updateTransferStatus((TransferStatus) newObjectToUpdate, (String) identifier);
                 break;
             case COMPUTATIONAL_RESOURCE_SCHEDULING:
                 experimentRegistry.updateScheduling((ComputationalResourceScheduling) newObjectToUpdate, (String) identifier, dataType.toString());
@@ -288,6 +288,36 @@ public class RegistryImpl implements Registry {
                     result.add(experiment);
                 }
                 return result;
+            case WORKFLOW_NODE_DETAIL:
+                List<WorkflowNodeDetails> wfNodeDetails = experimentRegistry.getWFNodeDetails(fieldName, value);
+                for (WorkflowNodeDetails wf : wfNodeDetails){
+                    result.add(wf);
+                }
+                return result;
+            case WORKFLOW_NODE_STATUS:
+                List<WorkflowNodeStatus> wfNodeStatusList = experimentRegistry.getWFNodeStatusList(fieldName, value);
+                for (WorkflowNodeStatus wfs : wfNodeStatusList){
+                    result.add(wfs);
+                }
+                return result;
+            case TASK_DETAIL:
+                List<TaskDetails> taskDetails = experimentRegistry.getTaskDetails(fieldName, value);
+                for (TaskDetails task : taskDetails){
+                    result.add(task);
+                }
+                return result;
+            case JOB_DETAIL:
+                List<JobDetails> jobDetails = experimentRegistry.getJobDetails(fieldName, value);
+                for (JobDetails job : jobDetails){
+                    result.add(job);
+                }
+                return result;
+            case DATA_TRANSFER_DETAIL:
+                List<DataTransferDetails> dataTransferDetails = experimentRegistry.getDataTransferDetails(fieldName, value);
+                for (DataTransferDetails transferDetails : dataTransferDetails){
+                    result.add(transferDetails);
+                }
+                return result;
             default:
                 logger.error("Unsupported data type...", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
@@ -336,6 +366,14 @@ public class RegistryImpl implements Registry {
                 return experimentRegistry.getExperimentIDs(fieldName, value);
             case EXPERIMENT_CONFIGURATION_DATA:
                 return experimentRegistry.getExperimentIDs(fieldName, value);
+            case WORKFLOW_NODE_DETAIL:
+                return experimentRegistry.getWorkflowNodeIds(fieldName, value);
+            case TASK_DETAIL:
+                return experimentRegistry.getTaskDetailIds(fieldName, value);
+            case JOB_DETAIL:
+                return experimentRegistry.getJobDetailIds(fieldName, value);
+            case DATA_TRANSFER_DETAIL:
+                return experimentRegistry.getTransferDetailIds(fieldName, value);
             default:
                 logger.error("Unsupported data type...", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
