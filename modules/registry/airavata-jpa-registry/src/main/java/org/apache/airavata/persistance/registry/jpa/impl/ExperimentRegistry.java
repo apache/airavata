@@ -934,6 +934,70 @@ public class ExperimentRegistry {
         return null;
     }
 
+    public String addErrorDetails (ErrorDetails error, Object id){
+        try{
+
+            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
+            ErrorDetailResource errorResource = null;
+            ExperimentResource experiment;
+            TaskDetailResource taskDetail;
+            WorkflowNodeDetailResource workflowNode;
+            // figure out the id is an experiment, node task or job
+            if (id instanceof String){
+                if (isExperimentExist((String) id)){
+                    experiment = gateway.getExperiment((String) id);
+                    errorResource = (ErrorDetailResource)experiment.create(ResourceType.ERROR_DETAIL);
+                }else if (isWFNodeExist((String) id)){
+                    experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+                    workflowNode = experiment.getWorkflowNode((String)id);
+                    errorResource = (ErrorDetailResource)workflowNode.create(ResourceType.ERROR_DETAIL);
+                    errorResource.setExperimentResource(workflowNode.getExperimentResource());
+                }else if (isTaskDetailExist((String)id)){
+                    experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+                    workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+                    taskDetail = workflowNode.getTaskDetail((String)id);
+                    errorResource = (ErrorDetailResource)taskDetail.create(ResourceType.ERROR_DETAIL);
+                    errorResource.setTaskDetailResource(taskDetail);
+                    errorResource.setNodeDetail(taskDetail.getWorkflowNodeDetailResource());
+                    errorResource.setExperimentResource(taskDetail.getWorkflowNodeDetailResource().getExperimentResource());
+                }else {
+                    logger.error("The id provided is not an experiment id or a workflow id or a task id..");
+                }
+            }else if (id instanceof CompositeIdentifier){
+                CompositeIdentifier cid = (CompositeIdentifier)id;
+                if (isJobDetailExist(cid)){
+                    experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+                    workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+                    taskDetail = workflowNode.getTaskDetail((String)cid.getTopLevelIdentifier());
+                    JobDetailResource jobDetail = taskDetail.getJobDetail((String) cid.getSecondLevelIdentifier());
+                    errorResource = (ErrorDetailResource)jobDetail.create(ResourceType.ERROR_DETAIL);
+                    errorResource.setTaskDetailResource(taskDetail);
+                    errorResource.setNodeDetail(taskDetail.getWorkflowNodeDetailResource());
+                    errorResource.setExperimentResource(taskDetail.getWorkflowNodeDetailResource().getExperimentResource());
+                }else {
+                    logger.error("The id provided is not a job in the system..");
+                }
+            }else {
+                logger.error("The id provided is not an experiment id or a workflow id or a task id or a composite " +
+                        "identifier for job..");
+            }
+            if (errorResource != null){
+                errorResource.setCreationTime(getTime(error.getCreationTime()));
+                errorResource.setActualErrorMsg(error.getActualErrorMessage());
+                errorResource.setUserFriendlyErrorMsg(error.getUserFriendlyMessage());
+                errorResource.setErrorCategory(error.getErrorCategory().toString());
+                errorResource.setTransientPersistent(error.isTransientOrPersistent());
+                errorResource.setCorrectiveAction(error.getCorrectiveAction().toString());
+                errorResource.setActionableGroup(error.getActionableGroup().toString());
+                errorResource.save();
+                return String.valueOf(errorResource.getErrorId());
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties", e.getMessage());
+        }
+        return null;
+    }
+
     public String getNodeInstanceID(String nodeName) {
         return nodeName + "_" + UUID.randomUUID();
     }
@@ -1198,7 +1262,7 @@ public class ExperimentRegistry {
     public List<WorkflowNodeStatus> getWFNodeStatusList (String fieldName, Object value){
         try {
             GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
-            if (fieldName.equals(Constants.FieldConstants.WorkflowNodeStatus.EXPERIMENT_ID)){
+            if (fieldName.equals(Constants.FieldConstants.WorkflowNodeStatusConstants.EXPERIMENT_ID)){
                 ExperimentResource experiment = defaultGateway.getExperiment((String) value);
                 List<StatusResource> workflowNodeStatuses = experiment.getWorkflowNodeStatuses();
                 return ThriftDataModelConversion.getWorkflowNodeStatusList(workflowNodeStatuses);
@@ -1255,6 +1319,41 @@ public class ExperimentRegistry {
                 TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) value);
                 List<DataTransferDetailResource> dataTransferDetailList = taskDetail.getDataTransferDetailList();
                 return ThriftDataModelConversion.getDataTransferlList(dataTransferDetailList);
+            }else {
+                logger.error("Unsupported field name to retrieve job details list...");
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-server properties", e.getMessage());
+        }
+        return null;
+    }
+
+    public List<ErrorDetails> getErrorDetails (String fieldName, Object value){
+        try {
+            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
+            if (fieldName.equals(Constants.FieldConstants.ErrorDetailsConstants.EXPERIMENT_ID)){
+                ExperimentResource experiment = defaultGateway.getExperiment((String) value);
+                List<ErrorDetailResource> errorDetails = experiment.getErrorDetails();
+                return ThriftDataModelConversion.getErrorDetailList(errorDetails);
+            }else if (fieldName.equals(Constants.FieldConstants.ErrorDetailsConstants.NODE_ID)){
+                ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode((String) value);
+                List<ErrorDetailResource> errorDetails = workflowNode.getErrorDetails();
+                return ThriftDataModelConversion.getErrorDetailList(errorDetails);
+            }else if (fieldName.equals(Constants.FieldConstants.ErrorDetailsConstants.TASK_ID)){
+                ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+                TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) value);
+                List<ErrorDetailResource> errorDetailList = taskDetail.getErrorDetailList();
+                return ThriftDataModelConversion.getErrorDetailList(errorDetailList);
+            }else if (fieldName.equals(Constants.FieldConstants.ErrorDetailsConstants.JOB_ID)){
+                CompositeIdentifier cid = (CompositeIdentifier)value;
+                ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+                TaskDetailResource taskDetail = workflowNode.getTaskDetail((String)cid.getTopLevelIdentifier());
+                JobDetailResource jobDetail = taskDetail.getJobDetail((String) cid.getSecondLevelIdentifier());
+                List<ErrorDetailResource> errorDetails = jobDetail.getErrorDetails();
+                return ThriftDataModelConversion.getErrorDetailList(errorDetails);
             }else {
                 logger.error("Unsupported field name to retrieve job details list...");
             }
