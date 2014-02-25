@@ -37,8 +37,10 @@ public class OrchestratorServer {
     //FIXME: Read the port from airavata-server.config file
     private static final int ORCHESTRATOT_SERVER_PORT = 8940;
 
+    public static final String TESTARGUMENTTOHANDLER = "testing";
 
-    public static void StartRegistryServer(OrchestratorService.Processor<OrchestratorServerHandler> orchestratorServerHandlerProcessor)
+
+    public static void StartOrchestratorServer(OrchestratorService.Processor<OrchestratorServerHandler> orchestratorServerHandlerProcessor)
             throws Exception {
         try {
             TServerTransport serverTransport = new TServerSocket(ORCHESTRATOT_SERVER_PORT);
@@ -53,10 +55,10 @@ public class OrchestratorServer {
     }
 
     public static void main(String[] args) {
-        OrchestratorService.Processor<OrchestratorServerHandler> registryCPIServerHandlerProcessor =
+        OrchestratorService.Processor<OrchestratorServerHandler> orchestratorServerHandlerProcessor =
                 new OrchestratorService.Processor<OrchestratorServerHandler>(new OrchestratorServerHandler());
         try {
-            StartRegistryServer(registryCPIServerHandlerProcessor);
+            StartOrchestratorServer(orchestratorServerHandlerProcessor);
         } catch (Exception e) {
             e.printStackTrace();
         }

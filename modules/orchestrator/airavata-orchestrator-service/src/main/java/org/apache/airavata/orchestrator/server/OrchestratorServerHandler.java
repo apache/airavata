@@ -32,7 +32,14 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
      */
     @Override
     public String getOrchestratorCPIVersion() throws TException {
+
         return orchestrator_cpi_serviceConstants.ORCHESTRATOR_CPI_VERSION;
+    }
+
+
+
+    public OrchestratorServerHandler() {
+        System.out.println("testing the default constructor");
     }
 
     /**
@@ -49,6 +56,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
      */
     @Override
     public boolean launchExperiment(String experimentId) throws TException {
+        //TODO: Write the Orchestrator implementaion
+
+
         return false;
     }
 
