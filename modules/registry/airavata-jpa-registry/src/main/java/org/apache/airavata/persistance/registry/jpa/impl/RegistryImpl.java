@@ -170,10 +170,10 @@ public class RegistryImpl implements Registry {
             case COMPUTATIONAL_RESOURCE_SCHEDULING:
                 experimentRegistry.updateScheduling((ComputationalResourceScheduling) newObjectToUpdate, (String) identifier, dataType.toString());
                 break;
-            case ADVANCE_OUTPUT_DATA_HANDLING:
+            case ADVANCE_INPUT_DATA_HANDLING:
                 experimentRegistry.updateInputDataHandling((AdvancedInputDataHandling)newObjectToUpdate, (String)identifier, dataType.toString());
                 break;
-            case ADVANCE_INPUT_DATA_HANDLING:
+            case ADVANCE_OUTPUT_DATA_HANDLING:
                 experimentRegistry.updateOutputDataHandling((AdvancedOutputDataHandling) newObjectToUpdate, (String) identifier, dataType.toString());
                 break;
             case QOS_PARAM:
@@ -257,9 +257,9 @@ public class RegistryImpl implements Registry {
                 return experimentRegistry.getDataTransferStatus((String)identifier);
             case COMPUTATIONAL_RESOURCE_SCHEDULING:
                 return experimentRegistry.getComputationalScheduling(dataType, (String) identifier);
-            case ADVANCE_OUTPUT_DATA_HANDLING:
-                return experimentRegistry.getInputDataHandling(dataType, (String) identifier);
             case ADVANCE_INPUT_DATA_HANDLING:
+                return experimentRegistry.getInputDataHandling(dataType, (String) identifier);
+            case ADVANCE_OUTPUT_DATA_HANDLING:
                 return experimentRegistry.getOutputDataHandling(dataType, (String) identifier);
             case QOS_PARAM:
                 return experimentRegistry.getQosParams(dataType, (String) identifier);
@@ -395,6 +395,31 @@ public class RegistryImpl implements Registry {
                 break;
             case EXPERIMENT_CONFIGURATION_DATA:
                 experimentRegistry.removeExperimentConfigData((String)identifier);
+                break;
+            case WORKFLOW_NODE_DETAIL:
+                experimentRegistry.removeWorkflowNode((String) identifier);
+                break;
+            case TASK_DETAIL:
+                experimentRegistry.removeTaskDetails((String) identifier);
+                break;
+            case JOB_DETAIL:
+                experimentRegistry.removeJobDetails((CompositeIdentifier)identifier);
+                break;
+            case DATA_TRANSFER_DETAIL:
+                experimentRegistry.removeDataTransferDetails((String)identifier);
+                break;
+            case COMPUTATIONAL_RESOURCE_SCHEDULING:
+                experimentRegistry.removeComputationalScheduling(dataType, (String) identifier);
+                break;
+            case ADVANCE_OUTPUT_DATA_HANDLING:
+                experimentRegistry.removeOutputDataHandling(dataType, (String) identifier);
+                break;
+            case ADVANCE_INPUT_DATA_HANDLING:
+                experimentRegistry.removeInputDataHandling(dataType, (String) identifier);
+                break;
+            case QOS_PARAM:
+                experimentRegistry.removeQOSParams(dataType, (String) identifier);
+                break;
             default:
                 logger.error("Unsupported data type...", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
@@ -416,7 +441,25 @@ public class RegistryImpl implements Registry {
                 return experimentRegistry.isExperimentExist((String)identifier);
             case EXPERIMENT_CONFIGURATION_DATA:
                 return experimentRegistry.isExperimentConfigDataExist((String)identifier);
+            case WORKFLOW_NODE_DETAIL:
+                return experimentRegistry.isWFNodeExist((String) identifier);
+            case TASK_DETAIL:
+                return experimentRegistry.isTaskDetailExist((String) identifier);
+            case JOB_DETAIL:
+                return experimentRegistry.isJobDetailExist((CompositeIdentifier)identifier);
+            case DATA_TRANSFER_DETAIL:
+                return experimentRegistry.isTransferDetailExist((String)identifier);
+            case COMPUTATIONAL_RESOURCE_SCHEDULING:
+                return experimentRegistry.isComputationalSchedulingExist(dataType, (String) identifier);
+            case ADVANCE_INPUT_DATA_HANDLING:
+                return experimentRegistry.isInputDataHandlingExist(dataType, (String) identifier);
+            case ADVANCE_OUTPUT_DATA_HANDLING:
+                return experimentRegistry.isOutputDataHandlingExist(dataType, (String) identifier);
+            case QOS_PARAM:
+                return experimentRegistry.isQOSParamsExist(dataType, (String) identifier);
+            default:
+                logger.error("Unsupported data type...", new UnsupportedOperationException());
+                throw new UnsupportedOperationException();
         }
-        return false;
     }
 }
