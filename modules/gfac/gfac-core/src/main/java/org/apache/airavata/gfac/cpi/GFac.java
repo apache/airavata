@@ -39,7 +39,7 @@ public interface GFac {
      * @return
      * @throws org.apache.airavata.gfac.GFacException
      */
-    public JobExecutionContext submitJob(String experimentID) throws GFacException;
+    public JobExecutionContext submitJob(String experimentID,String taskID) throws GFacException;
 
     /**
      * This method has to be invoked after submitting the job and have to make sure job is properly finished
