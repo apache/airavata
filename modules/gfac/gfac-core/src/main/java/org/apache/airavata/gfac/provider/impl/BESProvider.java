@@ -434,12 +434,11 @@ public class BESProvider implements GFacProvider {
     }
 
     private String getUserName(JobExecutionContext context) {
-    	//FIXME: get experiment user
-//        if (context.getContextHeader() != null) {
-//            return context.getContextHeader().getUserIdentifier();
-//        } else {
+        if (context.getConfigurationData()!= null) {
+            return context.getConfigurationData().getBasicMetadata().getUserName();
+        } else {
             return "";
-//        }
+        }
 
     }
 
