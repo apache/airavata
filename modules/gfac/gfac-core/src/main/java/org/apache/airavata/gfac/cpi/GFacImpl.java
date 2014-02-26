@@ -112,7 +112,7 @@ public class GFacImpl implements GFac {
     public JobExecutionContext submitJob(String experimentID,String taskID) throws GFacException {
         JobExecutionContext jobExecutionContext = null;
         try {
-            ConfigurationData configurationData = (ConfigurationData) registry.get(DataType.EXPERIMENT_CONFIGURATION_DATA, experimentID);
+            ConfigurationData configurationData = (ConfigurationData) registry.get(DataType.TASK_DETAIL, taskID);
             // this is wear our new model and old model is mapping (so serviceName in ExperimentData and service name in ServiceDescriptor
             // has to be same.
 
@@ -139,7 +139,8 @@ public class GFacImpl implements GFac {
             GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, configurationProperties);
 
             jobExecutionContext = new JobExecutionContext(gFacConfiguration, serviceName);
-
+            jobExecutionContext.setConfigurationData(configurationData);
+            
             ApplicationContext applicationContext = new ApplicationContext();
             applicationContext.setApplicationDeploymentDescription(applicationDescription);
             applicationContext.setHostDescription(hostDescription);
