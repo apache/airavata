@@ -82,7 +82,7 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
         Registry newRegistry = orchestratorContext.getNewRegistry();
         try {
             //todo init this during submitter init
-            JobExecutionContext jobExecutionContext = gfac.submitJob(experimentID);
+            JobExecutionContext jobExecutionContext = gfac.submitJob(experimentID,null);
             orchestratorContext.getRegistry().changeStatus(experimentID, AiravataJobState.State.SUBMITTED);
         } catch (Exception e)
         {
