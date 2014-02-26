@@ -631,10 +631,14 @@ public class Utils {
         ErrorDetailResource errorDetailResource = new ErrorDetailResource();
         ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
         errorDetailResource.setExperimentResource(experimentResource);
-        TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
-        errorDetailResource.setTaskDetailResource(taskDetailResource);
-        WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)createWorkflowNodeDetail(o.getNodeDetails());
-        errorDetailResource.setNodeDetail(nodeDetailResource);
+        if (o.getTask() != null){
+            TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
+            errorDetailResource.setTaskDetailResource(taskDetailResource);
+        }
+        if (o.getNodeDetails() != null){
+            WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)createWorkflowNodeDetail(o.getNodeDetails());
+            errorDetailResource.setNodeDetail(nodeDetailResource);
+        }
         errorDetailResource.setErrorId(o.getErrorID());
         errorDetailResource.setJobId(o.getJobId());
         errorDetailResource.setCreationTime(o.getCreationTime());
@@ -716,12 +720,18 @@ public class Utils {
         StatusResource statusResource = new StatusResource();
         ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
         statusResource.setExperimentResource(experimentResource);
-        TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
-        statusResource.setTaskDetailResource(taskDetailResource);
-        WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)createWorkflowNodeDetail(o.getNode());
-        statusResource.setWorkflowNodeDetail(nodeDetailResource);
-        DataTransferDetailResource transferDetailResource = (DataTransferDetailResource)createDataTransferResource(o.getTransferDetail());
-        statusResource.setDataTransferDetail(transferDetailResource);
+        if (o.getTask() != null){
+            TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
+            statusResource.setTaskDetailResource(taskDetailResource);
+        }
+        if (o.getNode() != null){
+            WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)createWorkflowNodeDetail(o.getNode());
+            statusResource.setWorkflowNodeDetail(nodeDetailResource);
+        }
+        if (o.getTransferDetail() != null){
+            DataTransferDetailResource transferDetailResource = (DataTransferDetailResource)createDataTransferResource(o.getTransferDetail());
+            statusResource.setDataTransferDetail(transferDetailResource);
+        }
         statusResource.setStatusId(o.getStatusId());
         statusResource.setJobId(o.getJobId());
         statusResource.setState(o.getState());

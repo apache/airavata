@@ -173,19 +173,20 @@ public class ErrorDetailResource extends AbstractResource {
     @Override
     public void save() {
         EntityManager em = ResourceUtils.getEntityManager();
-        ErrorDetail existingErrorDetail = em.find(ErrorDetail.class, errorId);
-        em.close();
-
-        em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
         ErrorDetail errorDetail = new ErrorDetail();
         errorDetail.setErrorID(errorId);
         Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
         errorDetail.setExperiment(experiment);
-        TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
-        errorDetail.setTask(taskDetail);
-        WorkflowNodeDetail workflowNodeDetail = em.find(WorkflowNodeDetail.class, nodeDetail.getNodeInstanceId());
-        errorDetail.setNodeDetails(workflowNodeDetail);
+        if (taskDetailResource != null){
+            TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+            errorDetail.setTask(taskDetail);
+        }
+
+        if (nodeDetail != null){
+            WorkflowNodeDetail workflowNodeDetail = em.find(WorkflowNodeDetail.class, nodeDetail.getNodeInstanceId());
+            errorDetail.setNodeDetails(workflowNodeDetail);
+        }
         errorDetail.setCreationTime(creationTime);
         errorDetail.setActualErrorMsg(actualErrorMsg.toCharArray());
         errorDetail.setUserFriendlyErrorMsg(userFriendlyErrorMsg);
@@ -194,23 +195,8 @@ public class ErrorDetailResource extends AbstractResource {
         errorDetail.setCorrectiveAction(correctiveAction);
         errorDetail.setActionableGroup(actionableGroup);
         errorDetail.setJobId(jobId);
-        if (existingErrorDetail != null){
-            existingErrorDetail.setErrorID(errorId);
-            existingErrorDetail.setExperiment(experiment);
-            existingErrorDetail.setTask(taskDetail);
-            existingErrorDetail.setNodeDetails(workflowNodeDetail);
-            existingErrorDetail.setCreationTime(creationTime);
-            existingErrorDetail.setActualErrorMsg(actualErrorMsg.toCharArray());
-            existingErrorDetail.setUserFriendlyErrorMsg(userFriendlyErrorMsg);
-            existingErrorDetail.setTransientPersistent(transientPersistent);
-            existingErrorDetail.setErrorCategory(errorCategory);
-            existingErrorDetail.setCorrectiveAction(correctiveAction);
-            existingErrorDetail.setActionableGroup(actionableGroup);
-            existingErrorDetail.setJobId(jobId);
-            errorDetail = em.merge(existingErrorDetail);
-        }else {
-            em.merge(errorDetail);
-        }
+        em.persist(errorDetail);
+        errorId = errorDetail.getErrorID();
         em.getTransaction().commit();
         em.close();
     }
