@@ -34,13 +34,12 @@ import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.provider.GFacProviderException;
+import org.apache.airavata.model.experiment.ConfigurationData;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.StringArrayType;
 import org.apache.airavata.schemas.gfac.StringParameterType;
 import org.apache.airavata.schemas.gfac.URIParameterType;
-import org.apache.airavata.schemas.wec.ApplicationOutputDataHandlingDocument.ApplicationOutputDataHandling;
-import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -232,20 +231,11 @@ public class DataTransferrer {
 	}
 	
 	private String getDownloadLocation() {
-		String outputDataDirectory = null;
-		ContextHeaderDocument.ContextHeader currentContextHeader = jobContext
-				.getContextHeader();
-		if (currentContextHeader != null
-				&& currentContextHeader.getWorkflowOutputDataHandling() != null) {
-			ApplicationOutputDataHandling[] handlings = currentContextHeader
-					.getWorkflowOutputDataHandling()
-					.getApplicationOutputDataHandlingArray();
-			if (handlings != null && handlings.length != 0) {
-				 outputDataDirectory = handlings[0]
-						.getOutputDataDirectory();
-				return outputDataDirectory;
-			}
+		ConfigurationData configurationData = jobContext.getConfigurationData();
+		if (configurationData != null && configurationData.getAdvanceOutputDataHandling() != null) {
+			String outputDataDirectory = configurationData.getAdvanceOutputDataHandling().getOutputdataDir();
+			return outputDataDirectory;
 		}
-		return outputDataDirectory;
+		return null;
 	}
 }

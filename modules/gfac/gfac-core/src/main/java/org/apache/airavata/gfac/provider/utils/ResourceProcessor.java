@@ -23,6 +23,8 @@ package org.apache.airavata.gfac.provider.utils;
 
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.provider.GFacProviderException;
+import org.apache.airavata.model.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.model.experiment.ConfigurationData;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.QueueType;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
@@ -39,14 +41,11 @@ public class ResourceProcessor {
 				.getType();
 		
 		createMemory(value, appDepType);
-		ContextHeaderDocument.ContextHeader currentContextHeader = context.getContextHeader();
-	    if(currentContextHeader != null){
-        if (currentContextHeader.getWorkflowSchedulingContext() != null) {
-            if (currentContextHeader != null &&
-                    currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray() != null &&
-                    currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray().length > 0) {
+		ConfigurationData configurationData = context.getConfigurationData();
+	    if(configurationData != null && configurationData.isSetComputationalResourceScheduling()){
+	    	ComputationalResourceScheduling computionResource= configurationData.getComputationalResourceScheduling();
                 try {
-                    int cpuCount = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getCpuCount();
+                    int cpuCount = computionResource.getTotalCPUCount();
                     if(cpuCount>0){
 //                    	appDepType.setCpuCount(cpuCount);
                 		NumberOfProcessesType num = NumberOfProcessesType.Factory.newInstance();
@@ -58,7 +57,7 @@ public class ResourceProcessor {
                     new GFacProviderException("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used",e);
                 }
                 try {
-                    int nodeCount = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getNodeCount();
+                    int nodeCount = computionResource.getNodeCount();
                     if(nodeCount>0){
                     	appDepType.setNodeCount(nodeCount);
                     }
@@ -66,7 +65,7 @@ public class ResourceProcessor {
                      new GFacProviderException("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used",e);
                 }
                 try {
-                    String queueName = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getQueueName();
+                    String queueName = computionResource.getQueueName();
                     if (queueName != null) {
                         if(appDepType.getQueue() == null){
                             QueueType queueType = appDepType.addNewQueue();
@@ -79,16 +78,14 @@ public class ResourceProcessor {
                      new GFacProviderException("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used",e);
                 }
                 try {
-                    int maxwallTime = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getMaxWallTime();
+                    int maxwallTime = computionResource.getWallTimeLimit();
                     if(maxwallTime>0){
                     	appDepType.setMaxWallTime(maxwallTime);
                     }
                 } catch (NullPointerException e) {
                      new GFacProviderException("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used",e);
                 }
-            }
         }
-	    }
 		
 		if (appDepType.getCpuCount() > 0) {
 			RangeValueType rangeType = new RangeValueType();

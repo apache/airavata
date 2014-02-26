@@ -55,7 +55,7 @@ public class NewOrchestratorTest extends BaseOrchestratorTest {
         createJobRequestWithDocuments(getAiravataAPI());
     }
 
-    private void createJobRequestWithDocuments(AiravataAPI airavataAPI) {
+    private void createJobRequestWithDocuments(AiravataAPI airavataAPI) throws Exception{
         // creating host description
 
         //Using new airavata-api methods to store experiment metadata
@@ -83,7 +83,7 @@ public class NewOrchestratorTest extends BaseOrchestratorTest {
         configurationData.setApplicationId("Echo");
 
         Registry registry = new RegistryImpl();
-        experimentID = (String) registry.add(ParentDataType.EXPERIMENT_BASIC_DATA, basicMetadata);
+        experimentID = (String) registry.add(ParentDataType.EXPERIMENT, basicMetadata);
         registry.add(ChildDataType.EXPERIMENT_CONFIGURATION_DATA, configurationData, experimentID);
     }
 

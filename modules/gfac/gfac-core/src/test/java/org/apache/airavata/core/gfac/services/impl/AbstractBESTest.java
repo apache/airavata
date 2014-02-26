@@ -103,11 +103,11 @@ public abstract class AbstractBESTest extends GFacBaseTestCase {
 	}
 
 	protected void submitJob() throws Exception {
-		ContextHeader contextHeader = ContextHeader.Factory.newInstance();
-		buildOutputLocation(contextHeader);
-		
-		buildUserName(contextHeader, userName);
-		jobExecutionContext.setContextHeader(contextHeader);
+//		ContextHeader contextHeader = ContextHeader.Factory.newInstance();
+//		buildOutputLocation(contextHeader);
+//		
+//		buildUserName(contextHeader, userName);
+//		jobExecutionContext.setContextHeader(contextHeader);
 	}
 
 	protected GFacConfiguration getGFACConfig() throws Exception {

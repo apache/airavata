@@ -51,7 +51,7 @@ public class OrchestratorTestWithGRAM extends BaseOrchestratorTest {
         createJobRequestWithDocuments();
     }
 
-    private void createJobRequestWithDocuments() {
+    private void createJobRequestWithDocuments() throws Exception{
         //Using new airavata-api methods to store experiment metadata
         BasicMetadata basicMetadata = new BasicMetadata();
         basicMetadata.setExperimentName("test-trestles");
@@ -76,7 +76,7 @@ public class OrchestratorTestWithGRAM extends BaseOrchestratorTest {
         configurationData.setApplicationId("SimpleEcho1");
 
         Registry registry = new RegistryImpl();
-        experimentID = (String) registry.add(ParentDataType.EXPERIMENT_BASIC_DATA, basicMetadata);
+        experimentID = (String) registry.add(ParentDataType.EXPERIMENT, basicMetadata);
         registry.add(ChildDataType.EXPERIMENT_CONFIGURATION_DATA, configurationData, experimentID);
     }
 

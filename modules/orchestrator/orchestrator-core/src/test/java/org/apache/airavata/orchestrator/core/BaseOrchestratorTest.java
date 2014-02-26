@@ -36,7 +36,6 @@ public class BaseOrchestratorTest {
     private GatewayResource gatewayResource;
     private WorkerResource workerResource;
     private UserResource userResource;
-    private OrchestratorDataResource orchestratorDataResource;
     private Initialize initialize;
     private DocumentCreator documentCreator;
 
@@ -46,7 +45,6 @@ public class BaseOrchestratorTest {
         gatewayResource = (GatewayResource) ResourceUtils.getGateway("default");
         workerResource = (WorkerResource) ResourceUtils.getWorker(gatewayResource.getGatewayName(), "admin");
         userResource = (UserResource) gatewayResource.create(ResourceType.USER);
-        orchestratorDataResource = (OrchestratorDataResource) gatewayResource.create(ResourceType.ORCHESTRATOR);
         userResource.setUserName("admin");
         userResource.setPassword("admin");
 

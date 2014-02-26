@@ -20,6 +20,10 @@
 */
 package org.apache.airavata.gfac.utils;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
@@ -28,15 +32,17 @@ import org.apache.airavata.gfac.ToolsException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.provider.GFacProviderException;
-import org.apache.airavata.schemas.gfac.*;
-import org.apache.airavata.schemas.wec.ContextHeaderDocument;
+import org.apache.airavata.model.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.model.experiment.ConfigurationData;
+import org.apache.airavata.schemas.gfac.FileArrayType;
+import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.NameValuePairType;
+import org.apache.airavata.schemas.gfac.QueueType;
+import org.apache.airavata.schemas.gfac.StringArrayType;
+import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.globus.gram.GramAttributes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 public class GramRSLGenerator {
     protected static final Logger log = LoggerFactory.getLogger(GramRSLGenerator.class);
@@ -104,14 +110,11 @@ public class GramRSLGenerator {
         }
         // Using the workflowContext Header values if user provided them in the request and overwrite the default values in DD
         //todo finish the scheduling based on workflow execution context
-        ContextHeaderDocument.ContextHeader currentContextHeader = context.getContextHeader();
-        if(currentContextHeader != null){
-        if (currentContextHeader.getWorkflowSchedulingContext() != null) {
-            if (currentContextHeader != null &&
-                    currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray() != null &&
-                    currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray().length > 0) {
+        ConfigurationData configurationData = context.getConfigurationData();
+        if(configurationData != null && configurationData.getComputationalResourceScheduling() != null){
+        	 ComputationalResourceScheduling computionnalResource = configurationData.getComputationalResourceScheduling();
                 try {
-                    int cpuCount = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getCpuCount();
+                    int cpuCount = computionnalResource.getTotalCPUCount();
                     if(cpuCount>0){
                         app.setCpuCount(cpuCount);
                     }
@@ -120,7 +123,7 @@ public class GramRSLGenerator {
                     new GFacProviderException("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used",e);
                 }
                 try {
-                    int nodeCount = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getNodeCount();
+                    int nodeCount = computionnalResource.getNodeCount();
                     if(nodeCount>0){
                         app.setNodeCount(nodeCount);
                     }
@@ -129,7 +132,7 @@ public class GramRSLGenerator {
                      new GFacProviderException("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used",e);
                 }
                 try {
-                    String queueName = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getQueueName();
+                    String queueName = computionnalResource.getQueueName();
                     if (queueName != null) {
                         if(app.getQueue() == null){
                             QueueType queueType = app.addNewQueue();
@@ -143,7 +146,7 @@ public class GramRSLGenerator {
                      new GFacProviderException("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used",e);
                 }
                 try {
-                    int maxwallTime = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getMaxWallTime();
+                    int maxwallTime = computionnalResource.getWallTimeLimit();
                     if(maxwallTime>0){
                         app.setMaxWallTime(maxwallTime);
                     }
@@ -151,12 +154,6 @@ public class GramRSLGenerator {
                     log.debug("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used");
                      new GFacProviderException("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used",e);
                 }
-            }
-        }
-//        if(currentContextHeader.getWorkflowOutputDataHandling() != null){
-//            if(currentContextHeader.getWorkflowOutputDataHandling().getApplicationOutputDataHandlingArray().length != 0)
-//            app.setOutputDataDirectory(currentContextHeader.getWorkflowOutputDataHandling().getApplicationOutputDataHandlingArray()[0].getOutputDataDirectory());
-//        }
         }
         if (app.getNodeCount() > 0) {
             jobAttr.set("hostCount", String.valueOf(app.getNodeCount()));
