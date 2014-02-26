@@ -110,18 +110,18 @@ public class GFacImpl implements GFac {
      * @throws GFacException
      */
     public JobExecutionContext submitJob(String experimentID,String taskID) throws GFacException {
-        ConfigurationData configurationData = (ConfigurationData) registry.get(DataType.EXPERIMENT_CONFIGURATION_DATA, experimentID);
-        // this is wear our new model and old model is mapping (so serviceName in ExperimentData and service name in ServiceDescriptor
-        // has to be same.
-
-        // 1. Get the Task from the task ID and construct the Job object and save it in to registry
-        // 2. Add another property to jobExecutionContext and read them inside the provider and use it.
-        String serviceName = configurationData.getApplicationId();
         JobExecutionContext jobExecutionContext = null;
+        try {
+            ConfigurationData configurationData = (ConfigurationData) registry.get(DataType.EXPERIMENT_CONFIGURATION_DATA, experimentID);
+            // this is wear our new model and old model is mapping (so serviceName in ExperimentData and service name in ServiceDescriptor
+            // has to be same.
+
+            // 1. Get the Task from the task ID and construct the Job object and save it in to registry
+            // 2. Add another property to jobExecutionContext and read them inside the provider and use it.
+            String serviceName = configurationData.getApplicationId();
         if (serviceName == null) {
             throw new GFacException("Error executing the job because there is not Application Name in this Experiment");
         }
-        try {
             List<HostDescription> registeredHosts = new ArrayList<HostDescription>();
             Map<String, ApplicationDescription> applicationDescriptors = airavataRegistry2.getApplicationDescriptors(serviceName);
             for (String hostDescName : applicationDescriptors.keySet()) {
