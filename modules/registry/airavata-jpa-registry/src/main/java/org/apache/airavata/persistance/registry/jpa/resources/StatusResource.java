@@ -143,47 +143,33 @@ public class StatusResource extends AbstractResource {
     @Override
     public void save() {
         EntityManager em = ResourceUtils.getEntityManager();
-        Status existingStatus = em.find(Status.class, statusId);
-        em.close();
-
-        em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
         Status status = new Status();
         Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-        TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
-        WorkflowNodeDetail nodeDetail = em.find(WorkflowNodeDetail.class, workflowNodeDetail.getNodeInstanceId());
-        DataTransferDetail transferDetail = em.find(DataTransferDetail.class, dataTransferDetail.getTransferId());
+        if (taskDetailResource != null){
+            TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+            status.setTask(taskDetail);
+            status.setTaskId(taskDetailResource.getTaskId());
+        }
+        if (workflowNodeDetail != null){
+            WorkflowNodeDetail nodeDetail = em.find(WorkflowNodeDetail.class, workflowNodeDetail.getNodeInstanceId());
+            status.setNode(nodeDetail);
+            status.setNodeId(workflowNodeDetail.getNodeInstanceId());
+        }
+        if (dataTransferDetail != null){
+            DataTransferDetail transferDetail = em.find(DataTransferDetail.class, dataTransferDetail.getTransferId());
+            status.setTransferDetail(transferDetail);
+            status.setTransferId(dataTransferDetail.getTransferId());
+        }
         status.setStatusId(statusId);
         status.setExperiment(experiment);
-        status.setTask(taskDetail);
-        status.setNode(nodeDetail);
-        status.setTransferDetail(transferDetail);
         status.setJobId(jobId);
         status.setExpId(experimentResource.getExpID());
-        status.setTaskId(taskDetailResource.getTaskId());
-        status.setNodeId(workflowNodeDetail.getNodeInstanceId());
-        status.setTransferId(dataTransferDetail.getTransferId());
         status.setState(state);
         status.setStatusUpdateTime(statusUpdateTime);
         status.setStatusType(statusType);
-        if (existingStatus != null){
-            existingStatus.setStatusId(statusId);
-            existingStatus.setExperiment(experiment);
-            existingStatus.setTask(taskDetail);
-            existingStatus.setNode(nodeDetail);
-            existingStatus.setTransferDetail(transferDetail);
-            existingStatus.setJobId(jobId);
-            existingStatus.setExpId(experimentResource.getExpID());
-            existingStatus.setTaskId(taskDetailResource.getTaskId());
-            existingStatus.setNodeId(workflowNodeDetail.getNodeInstanceId());
-            existingStatus.setTransferId(dataTransferDetail.getTransferId());
-            existingStatus.setState(state);
-            existingStatus.setStatusUpdateTime(statusUpdateTime);
-            existingStatus.setStatusType(statusType);
-            status = em.merge(existingStatus);
-        }else {
-            em.merge(status);
-        }
+        em.persist(status);
+        statusId = status.getStatusId();
         em.getTransaction().commit();
         em.close();
     }
