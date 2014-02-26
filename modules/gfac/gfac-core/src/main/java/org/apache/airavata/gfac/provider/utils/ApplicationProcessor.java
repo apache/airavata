@@ -112,9 +112,10 @@ public class ApplicationProcessor {
 	}
 	
 	public static String getUserNameFromContext(JobExecutionContext jobContext) {
-		if(jobContext.getContextHeader() == null)
+		if(jobContext.getConfigurationData() == null)
 			return null;
-		return jobContext.getContextHeader().getUserIdentifier();
+		//FIXME: Discuss to get user and change this
+		return "admin";
 	}
 	public static boolean isParallelJob(HpcApplicationDeploymentType appDepType) {
 		

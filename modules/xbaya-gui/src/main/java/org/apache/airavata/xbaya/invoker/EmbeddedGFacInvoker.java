@@ -404,9 +404,6 @@ public class EmbeddedGFacInvoker implements Invoker {
     private void addSecurityContext(HostDescription registeredHost, Properties configurationProperties,
                                     JobExecutionContext jobExecutionContext, ContextHeaderDocument.ContextHeader contextHeader) throws WorkflowException {
         RequestData requestData;
-        if (registeredHost.getType() instanceof GlobusHostType || registeredHost.getType() instanceof UnicoreHostType
-                || registeredHost.getType() instanceof GsisshHostType) {
-
             /* todo fix the credential store and uncomment following code block
             SecurityContextDocument.SecurityContext.CredentialManagementService credentialManagementService
                     = getCredentialManagementService(contextHeader);
@@ -473,12 +470,12 @@ public class EmbeddedGFacInvoker implements Invoker {
             }
 
             jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT, context);
-        } else if (registeredHost.getType() instanceof Ec2HostType) {
+        //Adding Amanzon Keys
             if (this.configuration.getAmazonSecurityContext() != null) {
                 jobExecutionContext.addSecurityContext(AmazonSecurityContext.AMAZON_SECURITY_CONTEXT,
                         this.configuration.getAmazonSecurityContext());
-            }
-        } else if (registeredHost.getType() instanceof SSHHostType) {
+         }
+      //Adding SSH security
             String sshUserName = configurationProperties.getProperty(Constants.SSH_USER_NAME);
             String sshPrivateKey = configurationProperties.getProperty(Constants.SSH_PRIVATE_KEY);
             String sshPrivateKeyPass = configurationProperties.getProperty(Constants.SSH_PRIVATE_KEY_PASS);
@@ -511,7 +508,6 @@ public class EmbeddedGFacInvoker implements Invoker {
                 sshSecurityContext.setKeyPass(sshPrivateKeyPass);
             }
             jobExecutionContext.addSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT, sshSecurityContext);
-        }
     }
 
     /**

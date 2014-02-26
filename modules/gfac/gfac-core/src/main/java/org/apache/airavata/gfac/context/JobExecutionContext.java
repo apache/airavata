@@ -26,6 +26,7 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.SecurityContext;
 import org.apache.airavata.gfac.notification.GFacNotifier;
 import org.apache.airavata.gfac.provider.GFacProvider;
+import org.apache.airavata.model.experiment.ConfigurationData;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 
 import java.util.ArrayList;
@@ -44,8 +45,10 @@ public class JobExecutionContext extends AbstractContext{
     private MessageContext outMessageContext;
 
     private GFacNotifier notifier;
+    
+    private ConfigurationData configurationData;
 
-    private ContextHeaderDocument.ContextHeader contextHeader;
+//    private ContextHeaderDocument.ContextHeader contextHeader;
 
     // Keep track of the current path of the message. Before hitting provider its in-path.
     // After provider its out-path.
@@ -71,6 +74,8 @@ public class JobExecutionContext extends AbstractContext{
     private String serviceName;
 
     private String experimentID;
+    
+    private String status;
 
     /**
      *  Security context is used to handle authentication for input handlers and providers.
@@ -181,13 +186,21 @@ public class JobExecutionContext extends AbstractContext{
         this.inPath = false;
     }
 
-    public ContextHeaderDocument.ContextHeader getContextHeader() {
-        return contextHeader;
-    }
+//    public ContextHeaderDocument.ContextHeader getContextHeader() {
+//        return contextHeader;
+//    }
+//
+//    public void setContextHeader(ContextHeaderDocument.ContextHeader contextHeader) {
+//        this.contextHeader = contextHeader;
+//    }
 
-    public void setContextHeader(ContextHeaderDocument.ContextHeader contextHeader) {
-        this.contextHeader = contextHeader;
-    }
+	public ConfigurationData getConfigurationData() {
+		return configurationData;
+	}
+
+	public void setConfigurationData(ConfigurationData configurationData) {
+		this.configurationData = configurationData;
+	}
 
 	public SecurityContext getSecurityContext(String name) throws GFacException{
 		SecurityContext secContext = securityContext.get(name);
@@ -197,5 +210,13 @@ public class JobExecutionContext extends AbstractContext{
 	public void addSecurityContext(String name, SecurityContext value){
 		securityContext.put(name, value);
     }
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
 }

@@ -22,8 +22,6 @@ package org.apache.airavata.gfac.cpi;
 
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.model.experiment.ConfigurationData;
-import org.apache.airavata.registry.cpi.DataType;
 
 /**
  * This is the GFac CPI interface which needs to be implemented by an internal class, this simply have a single method to submit a job to
