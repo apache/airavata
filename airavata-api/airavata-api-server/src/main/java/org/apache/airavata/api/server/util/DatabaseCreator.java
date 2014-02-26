@@ -59,7 +59,7 @@ public class DatabaseCreator {
      * @throws Exception
      */
     public static void createRegistryDatabase(Connection conn) throws Exception {
-        createDatabase("airavata-registry", conn);
+        createDatabase("registry", conn);
     }
 
 
@@ -223,7 +223,7 @@ public class DatabaseCreator {
     private static String getScriptLocation(String prefix, DatabaseType databaseType) {
         String scriptName = prefix + "-" + databaseType + ".sql";
         log.debug("Loading database script from :" + scriptName);
-        return "database_scripts" + File.separator + scriptName;
+        return  scriptName;
     }
 
     private static void createDatabase(String prefix, Connection conn) throws Exception {

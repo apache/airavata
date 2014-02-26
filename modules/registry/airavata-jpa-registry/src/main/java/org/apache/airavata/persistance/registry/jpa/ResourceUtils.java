@@ -91,6 +91,17 @@ public class ResourceUtils {
 
     }
 
+    public static UserResource createUser(String username, String password){
+        if (!isUserExist(username)) {
+            UserResource userResource = new UserResource();
+            userResource.setUserName(username);
+            userResource.setPassword(password);
+            return userResource;
+        }
+        return null;
+
+    }
+
     public static Resource getGateway(String gatewayName){
         if (isGatewayExist(gatewayName)) {
             EntityManager em = getEntityManager();
