@@ -26,6 +26,7 @@ import org.apache.airavata.api.error.AiravataErrorType;
 import org.apache.airavata.api.error.AiravataSystemException;
 import org.apache.airavata.api.server.handler.AiravataServerHandler;
 import org.apache.airavata.api.server.util.RegistryInitUtil;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TSimpleServer;
 import org.apache.thrift.transport.TServerSocket;
@@ -44,6 +45,7 @@ public class AiravataServer {
 
     public static void StartAiravataServer(Airavata.Processor<AiravataServerHandler> mockAiravataServer) throws AiravataSystemException {
         try {
+            AiravataUtils.setExecutionAsServer();
             RegistryInitUtil.initializeDB();
             TServerTransport serverTransport = new TServerSocket(THRIFT_SERVER_PORT);
             TServer server = new TSimpleServer(
