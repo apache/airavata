@@ -29,7 +29,9 @@ import java.sql.SQLException;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
@@ -83,26 +85,22 @@ public class RegistryInitUtil {
                 logger.info("Database already created for Registry!");
             }
             try{
-                GatewayResource gatewayResource = new GatewayResource();
-                gatewayResource.setGatewayName(ServerSettings.getSystemUserGateway());
-                gatewayResource.setOwner(ServerSettings.getSystemUser());
-                gatewayResource.save();
-                UserResource userResource = (UserResource) gatewayResource.create(ResourceType.USER);
-                userResource.setUserName(ServerSettings.getSystemUser());
-                userResource.setPassword(ServerSettings.getSystemUserPassword());
-                userResource.save();
-                WorkerResource workerResource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
-                workerResource.setUser(userResource.getUserName());
+                GatewayResource gateway = (GatewayResource)ResourceUtils.createGateway(ServerSettings.getSystemUserGateway());
+                gateway.save();
+                UserResource user = ResourceUtils.createUser(ServerSettings.getSystemUser(), ServerSettings.getSystemUserPassword());
+                user.save();
+                WorkerResource workerResource = (WorkerResource)gateway.create(ResourceType.GATEWAY_WORKER);
+                workerResource.setUser(user.getUserName());
                 workerResource.save();
                 ProjectResource projectResource = workerResource.createProject(DEFAULT_PROJECT_NAME);
-                projectResource.setGateway(gatewayResource);
+                projectResource.setGateway(gateway);
                 projectResource.save();
             } catch (ApplicationSettingsException e) {
                 logger.error("Unable to read airavata-server properties...", e.getMessage());
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new RuntimeException("Database failure");
+            throw new RuntimeException("Database failure", e);
         } finally {
             db.closeConnection(conn);
             try {
