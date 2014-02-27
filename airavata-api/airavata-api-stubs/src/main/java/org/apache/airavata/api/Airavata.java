@@ -233,7 +233,7 @@ import org.slf4j.LoggerFactory;
 
     public List<org.apache.airavata.model.workspace.experiment.DataObjectType> getExperimentOutputs(String airavataExperimentId) throws org.apache.thrift.TException;
 
-    public org.apache.airavata.model.workspace.experiment.TaskStatus getJobStatus(String resourceJobId) throws org.apache.thrift.TException;
+    public Map<String,org.apache.airavata.model.workspace.experiment.JobStatus> getJobStatuses(String airavataExperimentId) throws org.apache.thrift.TException;
 
     /**
      * Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.
@@ -340,7 +340,7 @@ import org.slf4j.LoggerFactory;
 
     public void getExperimentOutputs(String airavataExperimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void getJobStatus(String resourceJobId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void getJobStatuses(String airavataExperimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void cloneExperiment(String airavataExperimentIdToBeCloned, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -625,27 +625,27 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getExperimentOutputs failed: unknown result");
     }
 
-    public org.apache.airavata.model.workspace.experiment.TaskStatus getJobStatus(String resourceJobId) throws org.apache.thrift.TException
+    public Map<String,org.apache.airavata.model.workspace.experiment.JobStatus> getJobStatuses(String airavataExperimentId) throws org.apache.thrift.TException
     {
-      send_getJobStatus(resourceJobId);
-      return recv_getJobStatus();
+      send_getJobStatuses(airavataExperimentId);
+      return recv_getJobStatuses();
     }
 
-    public void send_getJobStatus(String resourceJobId) throws org.apache.thrift.TException
+    public void send_getJobStatuses(String airavataExperimentId) throws org.apache.thrift.TException
     {
-      getJobStatus_args args = new getJobStatus_args();
-      args.setResourceJobId(resourceJobId);
-      sendBase("getJobStatus", args);
+      getJobStatuses_args args = new getJobStatuses_args();
+      args.setAiravataExperimentId(airavataExperimentId);
+      sendBase("getJobStatuses", args);
     }
 
-    public org.apache.airavata.model.workspace.experiment.TaskStatus recv_getJobStatus() throws org.apache.thrift.TException
+    public Map<String,org.apache.airavata.model.workspace.experiment.JobStatus> recv_getJobStatuses() throws org.apache.thrift.TException
     {
-      getJobStatus_result result = new getJobStatus_result();
-      receiveBase(result, "getJobStatus");
+      getJobStatuses_result result = new getJobStatuses_result();
+      receiveBase(result, "getJobStatuses");
       if (result.isSetSuccess()) {
         return result.success;
       }
-      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getJobStatus failed: unknown result");
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getJobStatuses failed: unknown result");
     }
 
     public String cloneExperiment(String airavataExperimentIdToBeCloned, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
@@ -1067,35 +1067,35 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public void getJobStatus(String resourceJobId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void getJobStatuses(String airavataExperimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      getJobStatus_call method_call = new getJobStatus_call(resourceJobId, resultHandler, this, ___protocolFactory, ___transport);
+      getJobStatuses_call method_call = new getJobStatuses_call(airavataExperimentId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
-    public static class getJobStatus_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private String resourceJobId;
-      public getJobStatus_call(String resourceJobId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+    public static class getJobStatuses_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String airavataExperimentId;
+      public getJobStatuses_call(String airavataExperimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
-        this.resourceJobId = resourceJobId;
+        this.airavataExperimentId = airavataExperimentId;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
-        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getJobStatus", org.apache.thrift.protocol.TMessageType.CALL, 0));
-        getJobStatus_args args = new getJobStatus_args();
-        args.setResourceJobId(resourceJobId);
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getJobStatuses", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getJobStatuses_args args = new getJobStatuses_args();
+        args.setAiravataExperimentId(airavataExperimentId);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public org.apache.airavata.model.workspace.experiment.TaskStatus getResult() throws org.apache.thrift.TException {
+      public Map<String,org.apache.airavata.model.workspace.experiment.JobStatus> getResult() throws org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        return (new Client(prot)).recv_getJobStatus();
+        return (new Client(prot)).recv_getJobStatuses();
       }
     }
 
@@ -1223,7 +1223,7 @@ import org.slf4j.LoggerFactory;
       processMap.put("launchExperiment", new launchExperiment());
       processMap.put("getExperimentStatus", new getExperimentStatus());
       processMap.put("getExperimentOutputs", new getExperimentOutputs());
-      processMap.put("getJobStatus", new getJobStatus());
+      processMap.put("getJobStatuses", new getJobStatuses());
       processMap.put("cloneExperiment", new cloneExperiment());
       processMap.put("terminateExperiment", new terminateExperiment());
       processMap.put("createProject", new createProject());
@@ -1458,22 +1458,22 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public static class getJobStatus<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getJobStatus_args> {
-      public getJobStatus() {
-        super("getJobStatus");
+    public static class getJobStatuses<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getJobStatuses_args> {
+      public getJobStatuses() {
+        super("getJobStatuses");
       }
 
-      public getJobStatus_args getEmptyArgsInstance() {
-        return new getJobStatus_args();
+      public getJobStatuses_args getEmptyArgsInstance() {
+        return new getJobStatuses_args();
       }
 
       protected boolean isOneway() {
         return false;
       }
 
-      public getJobStatus_result getResult(I iface, getJobStatus_args args) throws org.apache.thrift.TException {
-        getJobStatus_result result = new getJobStatus_result();
-        result.success = iface.getJobStatus(args.resourceJobId);
+      public getJobStatuses_result getResult(I iface, getJobStatuses_args args) throws org.apache.thrift.TException {
+        getJobStatuses_result result = new getJobStatuses_result();
+        result.success = iface.getJobStatuses(args.airavataExperimentId);
         return result;
       }
     }
@@ -1590,7 +1590,7 @@ import org.slf4j.LoggerFactory;
       processMap.put("launchExperiment", new launchExperiment());
       processMap.put("getExperimentStatus", new getExperimentStatus());
       processMap.put("getExperimentOutputs", new getExperimentOutputs());
-      processMap.put("getJobStatus", new getJobStatus());
+      processMap.put("getJobStatuses", new getJobStatuses());
       processMap.put("cloneExperiment", new cloneExperiment());
       processMap.put("terminateExperiment", new terminateExperiment());
       processMap.put("createProject", new createProject());
@@ -2152,20 +2152,20 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public static class getJobStatus<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getJobStatus_args, org.apache.airavata.model.workspace.experiment.TaskStatus> {
-      public getJobStatus() {
-        super("getJobStatus");
+    public static class getJobStatuses<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getJobStatuses_args, Map<String,org.apache.airavata.model.workspace.experiment.JobStatus>> {
+      public getJobStatuses() {
+        super("getJobStatuses");
       }
 
-      public getJobStatus_args getEmptyArgsInstance() {
-        return new getJobStatus_args();
+      public getJobStatuses_args getEmptyArgsInstance() {
+        return new getJobStatuses_args();
       }
 
-      public AsyncMethodCallback<org.apache.airavata.model.workspace.experiment.TaskStatus> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<Map<String,org.apache.airavata.model.workspace.experiment.JobStatus>> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<org.apache.airavata.model.workspace.experiment.TaskStatus>() { 
-          public void onComplete(org.apache.airavata.model.workspace.experiment.TaskStatus o) {
-            getJobStatus_result result = new getJobStatus_result();
+        return new AsyncMethodCallback<Map<String,org.apache.airavata.model.workspace.experiment.JobStatus>>() { 
+          public void onComplete(Map<String,org.apache.airavata.model.workspace.experiment.JobStatus> o) {
+            getJobStatuses_result result = new getJobStatuses_result();
             result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
@@ -2178,7 +2178,7 @@ import org.slf4j.LoggerFactory;
           public void onError(Exception e) {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
-            getJobStatus_result result = new getJobStatus_result();
+            getJobStatuses_result result = new getJobStatuses_result();
             {
               msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
               msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
@@ -2198,8 +2198,8 @@ import org.slf4j.LoggerFactory;
         return false;
       }
 
-      public void start(I iface, getJobStatus_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.workspace.experiment.TaskStatus> resultHandler) throws TException {
-        iface.getJobStatus(args.resourceJobId,resultHandler);
+      public void start(I iface, getJobStatuses_args args, org.apache.thrift.async.AsyncMethodCallback<Map<String,org.apache.airavata.model.workspace.experiment.JobStatus>> resultHandler) throws TException {
+        iface.getJobStatuses(args.airavataExperimentId,resultHandler);
       }
     }
 
@@ -10618,22 +10618,22 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  public static class getJobStatus_args implements org.apache.thrift.TBase<getJobStatus_args, getJobStatus_args._Fields>, java.io.Serializable, Cloneable, Comparable<getJobStatus_args>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getJobStatus_args");
+  public static class getJobStatuses_args implements org.apache.thrift.TBase<getJobStatuses_args, getJobStatuses_args._Fields>, java.io.Serializable, Cloneable, Comparable<getJobStatuses_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getJobStatuses_args");
 
-    private static final org.apache.thrift.protocol.TField RESOURCE_JOB_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceJobId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField AIRAVATA_EXPERIMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("airavataExperimentId", org.apache.thrift.protocol.TType.STRING, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new getJobStatus_argsStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new getJobStatus_argsTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new getJobStatuses_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getJobStatuses_argsTupleSchemeFactory());
     }
 
-    public String resourceJobId; // required
+    public String airavataExperimentId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      RESOURCE_JOB_ID((short)1, "resourceJobId");
+      AIRAVATA_EXPERIMENT_ID((short)1, "airavataExperimentId");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -10648,8 +10648,8 @@ import org.slf4j.LoggerFactory;
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // RESOURCE_JOB_ID
-            return RESOURCE_JOB_ID;
+          case 1: // AIRAVATA_EXPERIMENT_ID
+            return AIRAVATA_EXPERIMENT_ID;
           default:
             return null;
         }
@@ -10693,71 +10693,71 @@ import org.slf4j.LoggerFactory;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.RESOURCE_JOB_ID, new org.apache.thrift.meta_data.FieldMetaData("resourceJobId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+      tmpMap.put(_Fields.AIRAVATA_EXPERIMENT_ID, new org.apache.thrift.meta_data.FieldMetaData("airavataExperimentId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getJobStatus_args.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getJobStatuses_args.class, metaDataMap);
     }
 
-    public getJobStatus_args() {
+    public getJobStatuses_args() {
     }
 
-    public getJobStatus_args(
-      String resourceJobId)
+    public getJobStatuses_args(
+      String airavataExperimentId)
     {
       this();
-      this.resourceJobId = resourceJobId;
+      this.airavataExperimentId = airavataExperimentId;
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public getJobStatus_args(getJobStatus_args other) {
-      if (other.isSetResourceJobId()) {
-        this.resourceJobId = other.resourceJobId;
+    public getJobStatuses_args(getJobStatuses_args other) {
+      if (other.isSetAiravataExperimentId()) {
+        this.airavataExperimentId = other.airavataExperimentId;
       }
     }
 
-    public getJobStatus_args deepCopy() {
-      return new getJobStatus_args(this);
+    public getJobStatuses_args deepCopy() {
+      return new getJobStatuses_args(this);
     }
 
     @Override
     public void clear() {
-      this.resourceJobId = null;
+      this.airavataExperimentId = null;
     }
 
-    public String getResourceJobId() {
-      return this.resourceJobId;
+    public String getAiravataExperimentId() {
+      return this.airavataExperimentId;
     }
 
-    public getJobStatus_args setResourceJobId(String resourceJobId) {
-      this.resourceJobId = resourceJobId;
+    public getJobStatuses_args setAiravataExperimentId(String airavataExperimentId) {
+      this.airavataExperimentId = airavataExperimentId;
       return this;
     }
 
-    public void unsetResourceJobId() {
-      this.resourceJobId = null;
+    public void unsetAiravataExperimentId() {
+      this.airavataExperimentId = null;
     }
 
-    /** Returns true if field resourceJobId is set (has been assigned a value) and false otherwise */
-    public boolean isSetResourceJobId() {
-      return this.resourceJobId != null;
+    /** Returns true if field airavataExperimentId is set (has been assigned a value) and false otherwise */
+    public boolean isSetAiravataExperimentId() {
+      return this.airavataExperimentId != null;
     }
 
-    public void setResourceJobIdIsSet(boolean value) {
+    public void setAiravataExperimentIdIsSet(boolean value) {
       if (!value) {
-        this.resourceJobId = null;
+        this.airavataExperimentId = null;
       }
     }
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
-      case RESOURCE_JOB_ID:
+      case AIRAVATA_EXPERIMENT_ID:
         if (value == null) {
-          unsetResourceJobId();
+          unsetAiravataExperimentId();
         } else {
-          setResourceJobId((String)value);
+          setAiravataExperimentId((String)value);
         }
         break;
 
@@ -10766,8 +10766,8 @@ import org.slf4j.LoggerFactory;
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
-      case RESOURCE_JOB_ID:
-        return getResourceJobId();
+      case AIRAVATA_EXPERIMENT_ID:
+        return getAiravataExperimentId();
 
       }
       throw new IllegalStateException();
@@ -10780,8 +10780,8 @@ import org.slf4j.LoggerFactory;
       }
 
       switch (field) {
-      case RESOURCE_JOB_ID:
-        return isSetResourceJobId();
+      case AIRAVATA_EXPERIMENT_ID:
+        return isSetAiravataExperimentId();
       }
       throw new IllegalStateException();
     }
@@ -10790,21 +10790,21 @@ import org.slf4j.LoggerFactory;
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof getJobStatus_args)
-        return this.equals((getJobStatus_args)that);
+      if (that instanceof getJobStatuses_args)
+        return this.equals((getJobStatuses_args)that);
       return false;
     }
 
-    public boolean equals(getJobStatus_args that) {
+    public boolean equals(getJobStatuses_args that) {
       if (that == null)
         return false;
 
-      boolean this_present_resourceJobId = true && this.isSetResourceJobId();
-      boolean that_present_resourceJobId = true && that.isSetResourceJobId();
-      if (this_present_resourceJobId || that_present_resourceJobId) {
-        if (!(this_present_resourceJobId && that_present_resourceJobId))
+      boolean this_present_airavataExperimentId = true && this.isSetAiravataExperimentId();
+      boolean that_present_airavataExperimentId = true && that.isSetAiravataExperimentId();
+      if (this_present_airavataExperimentId || that_present_airavataExperimentId) {
+        if (!(this_present_airavataExperimentId && that_present_airavataExperimentId))
           return false;
-        if (!this.resourceJobId.equals(that.resourceJobId))
+        if (!this.airavataExperimentId.equals(that.airavataExperimentId))
           return false;
       }
 
@@ -10817,19 +10817,19 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public int compareTo(getJobStatus_args other) {
+    public int compareTo(getJobStatuses_args other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
 
       int lastComparison = 0;
 
-      lastComparison = Boolean.valueOf(isSetResourceJobId()).compareTo(other.isSetResourceJobId());
+      lastComparison = Boolean.valueOf(isSetAiravataExperimentId()).compareTo(other.isSetAiravataExperimentId());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetResourceJobId()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.resourceJobId, other.resourceJobId);
+      if (isSetAiravataExperimentId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.airavataExperimentId, other.airavataExperimentId);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -10851,14 +10851,14 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("getJobStatus_args(");
+      StringBuilder sb = new StringBuilder("getJobStatuses_args(");
       boolean first = true;
 
-      sb.append("resourceJobId:");
-      if (this.resourceJobId == null) {
+      sb.append("airavataExperimentId:");
+      if (this.airavataExperimentId == null) {
         sb.append("null");
       } else {
-        sb.append(this.resourceJobId);
+        sb.append(this.airavataExperimentId);
       }
       first = false;
       sb.append(")");
@@ -10867,8 +10867,8 @@ import org.slf4j.LoggerFactory;
 
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
-      if (resourceJobId == null) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'resourceJobId' was not present! Struct: " + toString());
+      if (airavataExperimentId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'airavataExperimentId' was not present! Struct: " + toString());
       }
       // check for sub-struct validity
     }
@@ -10889,15 +10889,15 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    private static class getJobStatus_argsStandardSchemeFactory implements SchemeFactory {
-      public getJobStatus_argsStandardScheme getScheme() {
-        return new getJobStatus_argsStandardScheme();
+    private static class getJobStatuses_argsStandardSchemeFactory implements SchemeFactory {
+      public getJobStatuses_argsStandardScheme getScheme() {
+        return new getJobStatuses_argsStandardScheme();
       }
     }
 
-    private static class getJobStatus_argsStandardScheme extends StandardScheme<getJobStatus_args> {
+    private static class getJobStatuses_argsStandardScheme extends StandardScheme<getJobStatuses_args> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, getJobStatus_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getJobStatuses_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -10907,10 +10907,10 @@ import org.slf4j.LoggerFactory;
             break;
           }
           switch (schemeField.id) {
-            case 1: // RESOURCE_JOB_ID
+            case 1: // AIRAVATA_EXPERIMENT_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.resourceJobId = iprot.readString();
-                struct.setResourceJobIdIsSet(true);
+                struct.airavataExperimentId = iprot.readString();
+                struct.setAiravataExperimentIdIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -10926,13 +10926,13 @@ import org.slf4j.LoggerFactory;
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, getJobStatus_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getJobStatuses_args struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
-        if (struct.resourceJobId != null) {
-          oprot.writeFieldBegin(RESOURCE_JOB_ID_FIELD_DESC);
-          oprot.writeString(struct.resourceJobId);
+        if (struct.airavataExperimentId != null) {
+          oprot.writeFieldBegin(AIRAVATA_EXPERIMENT_ID_FIELD_DESC);
+          oprot.writeString(struct.airavataExperimentId);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -10941,42 +10941,42 @@ import org.slf4j.LoggerFactory;
 
     }
 
-    private static class getJobStatus_argsTupleSchemeFactory implements SchemeFactory {
-      public getJobStatus_argsTupleScheme getScheme() {
-        return new getJobStatus_argsTupleScheme();
+    private static class getJobStatuses_argsTupleSchemeFactory implements SchemeFactory {
+      public getJobStatuses_argsTupleScheme getScheme() {
+        return new getJobStatuses_argsTupleScheme();
       }
     }
 
-    private static class getJobStatus_argsTupleScheme extends TupleScheme<getJobStatus_args> {
+    private static class getJobStatuses_argsTupleScheme extends TupleScheme<getJobStatuses_args> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, getJobStatus_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, getJobStatuses_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
-        oprot.writeString(struct.resourceJobId);
+        oprot.writeString(struct.airavataExperimentId);
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, getJobStatus_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, getJobStatuses_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        struct.resourceJobId = iprot.readString();
-        struct.setResourceJobIdIsSet(true);
+        struct.airavataExperimentId = iprot.readString();
+        struct.setAiravataExperimentIdIsSet(true);
       }
     }
 
   }
 
-  public static class getJobStatus_result implements org.apache.thrift.TBase<getJobStatus_result, getJobStatus_result._Fields>, java.io.Serializable, Cloneable, Comparable<getJobStatus_result>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getJobStatus_result");
+  public static class getJobStatuses_result implements org.apache.thrift.TBase<getJobStatuses_result, getJobStatuses_result._Fields>, java.io.Serializable, Cloneable, Comparable<getJobStatuses_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getJobStatuses_result");
 
-    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.MAP, (short)0);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new getJobStatus_resultStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new getJobStatus_resultTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new getJobStatuses_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getJobStatuses_resultTupleSchemeFactory());
     }
 
-    public org.apache.airavata.model.workspace.experiment.TaskStatus success; // required
+    public Map<String,org.apache.airavata.model.workspace.experiment.JobStatus> success; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -11041,16 +11041,18 @@ import org.slf4j.LoggerFactory;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.workspace.experiment.TaskStatus.class)));
+          new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING), 
+              new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.workspace.experiment.JobStatus.class))));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getJobStatus_result.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getJobStatuses_result.class, metaDataMap);
     }
 
-    public getJobStatus_result() {
+    public getJobStatuses_result() {
     }
 
-    public getJobStatus_result(
-      org.apache.airavata.model.workspace.experiment.TaskStatus success)
+    public getJobStatuses_result(
+      Map<String,org.apache.airavata.model.workspace.experiment.JobStatus> success)
     {
       this();
       this.success = success;
@@ -11059,14 +11061,26 @@ import org.slf4j.LoggerFactory;
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public getJobStatus_result(getJobStatus_result other) {
+    public getJobStatuses_result(getJobStatuses_result other) {
       if (other.isSetSuccess()) {
-        this.success = new org.apache.airavata.model.workspace.experiment.TaskStatus(other.success);
+        Map<String,org.apache.airavata.model.workspace.experiment.JobStatus> __this__success = new HashMap<String,org.apache.airavata.model.workspace.experiment.JobStatus>(other.success.size());
+        for (Map.Entry<String, org.apache.airavata.model.workspace.experiment.JobStatus> other_element : other.success.entrySet()) {
+
+          String other_element_key = other_element.getKey();
+          org.apache.airavata.model.workspace.experiment.JobStatus other_element_value = other_element.getValue();
+
+          String __this__success_copy_key = other_element_key;
+
+          org.apache.airavata.model.workspace.experiment.JobStatus __this__success_copy_value = new org.apache.airavata.model.workspace.experiment.JobStatus(other_element_value);
+
+          __this__success.put(__this__success_copy_key, __this__success_copy_value);
+        }
+        this.success = __this__success;
       }
     }
 
-    public getJobStatus_result deepCopy() {
-      return new getJobStatus_result(this);
+    public getJobStatuses_result deepCopy() {
+      return new getJobStatuses_result(this);
     }
 
     @Override
@@ -11074,11 +11088,22 @@ import org.slf4j.LoggerFactory;
       this.success = null;
     }
 
-    public org.apache.airavata.model.workspace.experiment.TaskStatus getSuccess() {
+    public int getSuccessSize() {
+      return (this.success == null) ? 0 : this.success.size();
+    }
+
+    public void putToSuccess(String key, org.apache.airavata.model.workspace.experiment.JobStatus val) {
+      if (this.success == null) {
+        this.success = new HashMap<String,org.apache.airavata.model.workspace.experiment.JobStatus>();
+      }
+      this.success.put(key, val);
+    }
+
+    public Map<String,org.apache.airavata.model.workspace.experiment.JobStatus> getSuccess() {
       return this.success;
     }
 
-    public getJobStatus_result setSuccess(org.apache.airavata.model.workspace.experiment.TaskStatus success) {
+    public getJobStatuses_result setSuccess(Map<String,org.apache.airavata.model.workspace.experiment.JobStatus> success) {
       this.success = success;
       return this;
     }
@@ -11104,7 +11129,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((org.apache.airavata.model.workspace.experiment.TaskStatus)value);
+          setSuccess((Map<String,org.apache.airavata.model.workspace.experiment.JobStatus>)value);
         }
         break;
 
@@ -11137,12 +11162,12 @@ import org.slf4j.LoggerFactory;
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof getJobStatus_result)
-        return this.equals((getJobStatus_result)that);
+      if (that instanceof getJobStatuses_result)
+        return this.equals((getJobStatuses_result)that);
       return false;
     }
 
-    public boolean equals(getJobStatus_result that) {
+    public boolean equals(getJobStatuses_result that) {
       if (that == null)
         return false;
 
@@ -11164,7 +11189,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public int compareTo(getJobStatus_result other) {
+    public int compareTo(getJobStatuses_result other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -11198,7 +11223,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("getJobStatus_result(");
+      StringBuilder sb = new StringBuilder("getJobStatuses_result(");
       boolean first = true;
 
       sb.append("success:");
@@ -11215,9 +11240,6 @@ import org.slf4j.LoggerFactory;
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
       // check for sub-struct validity
-      if (success != null) {
-        success.validate();
-      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -11236,15 +11258,15 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    private static class getJobStatus_resultStandardSchemeFactory implements SchemeFactory {
-      public getJobStatus_resultStandardScheme getScheme() {
-        return new getJobStatus_resultStandardScheme();
+    private static class getJobStatuses_resultStandardSchemeFactory implements SchemeFactory {
+      public getJobStatuses_resultStandardScheme getScheme() {
+        return new getJobStatuses_resultStandardScheme();
       }
     }
 
-    private static class getJobStatus_resultStandardScheme extends StandardScheme<getJobStatus_result> {
+    private static class getJobStatuses_resultStandardScheme extends StandardScheme<getJobStatuses_result> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, getJobStatus_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getJobStatuses_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -11255,9 +11277,21 @@ import org.slf4j.LoggerFactory;
           }
           switch (schemeField.id) {
             case 0: // SUCCESS
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.success = new org.apache.airavata.model.workspace.experiment.TaskStatus();
-                struct.success.read(iprot);
+              if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+                {
+                  org.apache.thrift.protocol.TMap _map8 = iprot.readMapBegin();
+                  struct.success = new HashMap<String,org.apache.airavata.model.workspace.experiment.JobStatus>(2*_map8.size);
+                  for (int _i9 = 0; _i9 < _map8.size; ++_i9)
+                  {
+                    String _key10;
+                    org.apache.airavata.model.workspace.experiment.JobStatus _val11;
+                    _key10 = iprot.readString();
+                    _val11 = new org.apache.airavata.model.workspace.experiment.JobStatus();
+                    _val11.read(iprot);
+                    struct.success.put(_key10, _val11);
+                  }
+                  iprot.readMapEnd();
+                }
                 struct.setSuccessIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -11274,13 +11308,21 @@ import org.slf4j.LoggerFactory;
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, getJobStatus_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getJobStatuses_result struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
         if (struct.success != null) {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
-          struct.success.write(oprot);
+          {
+            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
+            for (Map.Entry<String, org.apache.airavata.model.workspace.experiment.JobStatus> _iter12 : struct.success.entrySet())
+            {
+              oprot.writeString(_iter12.getKey());
+              _iter12.getValue().write(oprot);
+            }
+            oprot.writeMapEnd();
+          }
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -11289,16 +11331,16 @@ import org.slf4j.LoggerFactory;
 
     }
 
-    private static class getJobStatus_resultTupleSchemeFactory implements SchemeFactory {
-      public getJobStatus_resultTupleScheme getScheme() {
-        return new getJobStatus_resultTupleScheme();
+    private static class getJobStatuses_resultTupleSchemeFactory implements SchemeFactory {
+      public getJobStatuses_resultTupleScheme getScheme() {
+        return new getJobStatuses_resultTupleScheme();
       }
     }
 
-    private static class getJobStatus_resultTupleScheme extends TupleScheme<getJobStatus_result> {
+    private static class getJobStatuses_resultTupleScheme extends TupleScheme<getJobStatuses_result> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, getJobStatus_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, getJobStatuses_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
         if (struct.isSetSuccess()) {
@@ -11306,17 +11348,35 @@ import org.slf4j.LoggerFactory;
         }
         oprot.writeBitSet(optionals, 1);
         if (struct.isSetSuccess()) {
-          struct.success.write(oprot);
+          {
+            oprot.writeI32(struct.success.size());
+            for (Map.Entry<String, org.apache.airavata.model.workspace.experiment.JobStatus> _iter13 : struct.success.entrySet())
+            {
+              oprot.writeString(_iter13.getKey());
+              _iter13.getValue().write(oprot);
+            }
+          }
         }
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, getJobStatus_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, getJobStatuses_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
-          struct.success = new org.apache.airavata.model.workspace.experiment.TaskStatus();
-          struct.success.read(iprot);
+          {
+            org.apache.thrift.protocol.TMap _map14 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new HashMap<String,org.apache.airavata.model.workspace.experiment.JobStatus>(2*_map14.size);
+            for (int _i15 = 0; _i15 < _map14.size; ++_i15)
+            {
+              String _key16;
+              org.apache.airavata.model.workspace.experiment.JobStatus _val17;
+              _key16 = iprot.readString();
+              _val17 = new org.apache.airavata.model.workspace.experiment.JobStatus();
+              _val17.read(iprot);
+              struct.success.put(_key16, _val17);
+            }
+          }
           struct.setSuccessIsSet(true);
         }
       }
