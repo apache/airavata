@@ -146,7 +146,8 @@ thrift ${THRIFT_ARGS} --gen java ${THRIFT_IDL_DIR}/airavataAPI.thrift || fail un
 add_license_header $JAVA_GEN_DIR
 
 # Compare the newly generated classes with existing java generated skelton/stub sources and replace the changed ones.
-copy_changed_files ${JAVA_GEN_DIR} ${JAVA_API_SDK_DIR}
+#  Only copying the API related classes and avoiding copy of any data models which already exist in the data-models.
+copy_changed_files ${JAVA_GEN_DIR}/org/apache/airavata/api ${JAVA_API_SDK_DIR}/org/apache/airavata/api
 
 # CleanUp: Delete the base target build directory
 rm -rf ${BASE_TARGET_DIR}

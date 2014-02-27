@@ -30,7 +30,7 @@ import org.apache.thrift.transport.TTransportException;
 
 public class AiravataClientFactory {
 
-    public Airavata.Client createAiravataClient(String serverHost, int serverPort){
+    public static Airavata.Client createAiravataClient(String serverHost, int serverPort){
         try {
             TTransport transport = new TSocket(serverHost, serverPort);
             transport.open();
