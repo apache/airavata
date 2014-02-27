@@ -83,11 +83,6 @@
             <artifactId>airavata-registry-cpi</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-api-stubs</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <!-- Workflow Tracking -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
