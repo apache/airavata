@@ -21,18 +21,17 @@
 
 package org.apache.airavata.gfac.context;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.SecurityContext;
 import org.apache.airavata.gfac.notification.GFacNotifier;
 import org.apache.airavata.gfac.provider.GFacProvider;
-import org.apache.airavata.model.experiment.ConfigurationData;
-import org.apache.airavata.schemas.wec.ContextHeaderDocument;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
 
 public class JobExecutionContext extends AbstractContext{
 
@@ -46,7 +45,7 @@ public class JobExecutionContext extends AbstractContext{
 
     private GFacNotifier notifier;
     
-    private ConfigurationData configurationData;
+    private TaskDetails taskData;
 
 //    private ContextHeaderDocument.ContextHeader contextHeader;
 
@@ -174,7 +173,15 @@ public class JobExecutionContext extends AbstractContext{
         return inPath;
     }
 
-    public boolean isOutPath(){
+    public TaskDetails getTaskData() {
+		return taskData;
+	}
+
+	public void setTaskData(TaskDetails taskData) {
+		this.taskData = taskData;
+	}
+
+	public boolean isOutPath(){
         return !inPath;
     }
 
@@ -194,14 +201,7 @@ public class JobExecutionContext extends AbstractContext{
 //        this.contextHeader = contextHeader;
 //    }
 
-	public ConfigurationData getConfigurationData() {
-		return configurationData;
-	}
-
-	public void setConfigurationData(ConfigurationData configurationData) {
-		this.configurationData = configurationData;
-	}
-
+	
 	public SecurityContext getSecurityContext(String name) throws GFacException{
 		SecurityContext secContext = securityContext.get(name);
 		return secContext;

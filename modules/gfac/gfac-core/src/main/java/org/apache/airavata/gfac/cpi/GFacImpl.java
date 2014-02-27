@@ -53,6 +53,8 @@ import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthentica
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
 import org.apache.airavata.model.experiment.ConfigurationData;
+import org.apache.airavata.model.workspace.experiment.DataObjectType;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.Registry;
@@ -112,13 +114,13 @@ public class GFacImpl implements GFac {
     public JobExecutionContext submitJob(String experimentID,String taskID) throws GFacException {
         JobExecutionContext jobExecutionContext = null;
         try {
-            ConfigurationData configurationData = (ConfigurationData) registry.get(DataType.TASK_DETAIL, taskID);
+        	TaskDetails taskData = (TaskDetails) registry.get(DataType.TASK_DETAIL, taskID);
             // this is wear our new model and old model is mapping (so serviceName in ExperimentData and service name in ServiceDescriptor
             // has to be same.
 
             // 1. Get the Task from the task ID and construct the Job object and save it in to registry
             // 2. Add another property to jobExecutionContext and read them inside the provider and use it.
-            String serviceName = configurationData.getApplicationId();
+            String serviceName = taskData.getApplicationId();
         if (serviceName == null) {
             throw new GFacException("Error executing the job because there is not Application Name in this Experiment");
         }
@@ -139,7 +141,7 @@ public class GFacImpl implements GFac {
             GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, configurationProperties);
 
             jobExecutionContext = new JobExecutionContext(gFacConfiguration, serviceName);
-            jobExecutionContext.setConfigurationData(configurationData);
+            jobExecutionContext.setTaskData(taskData);
             
             ApplicationContext applicationContext = new ApplicationContext();
             applicationContext.setApplicationDeploymentDescription(applicationDescription);
@@ -147,8 +149,7 @@ public class GFacImpl implements GFac {
             applicationContext.setServiceDescription(serviceDescription);
             jobExecutionContext.setApplicationContext(applicationContext);
 
-
-            Map<String, String> experimentInputs = configurationData.getExperimentInputs();
+            List<DataObjectType> experimentInputs = taskData.getApplicationInputs();
             jobExecutionContext.setInMessageContext(new MessageContext(GFacUtils.getMessageContext(experimentInputs,
                     serviceDescription.getType().getInputParametersArray())));
 
@@ -159,7 +160,6 @@ public class GFacImpl implements GFac {
             jobExecutionContext.setExperimentID(experimentID);
 
             addSecurityContext(hostDescription, configurationProperties, jobExecutionContext);
-
 
             submitJob(jobExecutionContext);
         } catch (Exception e) {

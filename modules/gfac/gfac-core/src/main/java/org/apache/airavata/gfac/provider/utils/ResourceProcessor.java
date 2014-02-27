@@ -23,11 +23,10 @@ package org.apache.airavata.gfac.provider.utils;
 
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.provider.GFacProviderException;
-import org.apache.airavata.model.experiment.ComputationalResourceScheduling;
-import org.apache.airavata.model.experiment.ConfigurationData;
+import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.QueueType;
-import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
 import org.ogf.schemas.jsdl.x2007.x02.jsdlSpmd.NumberOfProcessesType;
 
@@ -41,9 +40,9 @@ public class ResourceProcessor {
 				.getType();
 		
 		createMemory(value, appDepType);
-		ConfigurationData configurationData = context.getConfigurationData();
-	    if(configurationData != null && configurationData.isSetComputationalResourceScheduling()){
-	    	ComputationalResourceScheduling computionResource= configurationData.getComputationalResourceScheduling();
+		TaskDetails taskData = context.getTaskData();
+	    if(taskData != null && taskData.isSetTaskScheduling()){
+	    	ComputationalResourceScheduling computionResource= taskData.getTaskScheduling();
                 try {
                     int cpuCount = computionResource.getTotalCPUCount();
                     if(cpuCount>0){

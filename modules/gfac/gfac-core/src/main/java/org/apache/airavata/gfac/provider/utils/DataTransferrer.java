@@ -35,6 +35,7 @@ import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.model.experiment.ConfigurationData;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.StringArrayType;
@@ -231,9 +232,9 @@ public class DataTransferrer {
 	}
 	
 	private String getDownloadLocation() {
-		ConfigurationData configurationData = jobContext.getConfigurationData();
-		if (configurationData != null && configurationData.getAdvanceOutputDataHandling() != null) {
-			String outputDataDirectory = configurationData.getAdvanceOutputDataHandling().getOutputdataDir();
+		TaskDetails taskData = jobContext.getTaskData();
+		if (taskData != null && taskData.getAdvancedOutputDataHandling() != null) {
+			String outputDataDirectory = taskData.getAdvancedOutputDataHandling().getOutputDataDir();
 			return outputDataDirectory;
 		}
 		return null;

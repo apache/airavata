@@ -48,17 +48,14 @@ import org.apache.airavata.gfac.external.GridFtp;
 import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.OutputUtils;
-import org.apache.airavata.model.experiment.ConfigurationData;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.schemas.gfac.StringArrayType;
-import org.apache.airavata.schemas.gfac.StringParameterType;
 import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.apache.airavata.schemas.gfac.UnicoreHostType;
-import org.apache.airavata.schemas.wec.ApplicationOutputDataHandlingDocument.ApplicationOutputDataHandling;
-import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -179,9 +176,9 @@ public class GridFTPOutputHandler implements GFacHandler {
                                 "and ApplicationDescriptor output Parameter Names");
                     }
                     // If users has given an output Data path to download the output files this will download the file on machine where GFac is installed
-                    ConfigurationData configurationData =  jobExecutionContext.getConfigurationData();
-                    if(configurationData != null && configurationData.getAdvanceOutputDataHandling() != null){
-                    	String outputDataDirectory = configurationData.getAdvanceOutputDataHandling().getOutputdataDir();
+                    TaskDetails taskData =  jobExecutionContext.getTaskData();
+                    if(taskData != null && taskData.getAdvancedOutputDataHandling() != null){
+                    	String outputDataDirectory = taskData.getAdvancedOutputDataHandling().getOutputDataDir();
                             if(outputDataDirectory != null && !"".equals(outputDataDirectory)){
                                 stageOutputFiles(jobExecutionContext,outputDataDirectory);
                             }
