@@ -32,7 +32,6 @@ import org.apache.airavata.gfac.ToolsException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.provider.GFacProviderException;
-import org.apache.airavata.model.experiment.ConfigurationData;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.schemas.gfac.FileArrayType;
