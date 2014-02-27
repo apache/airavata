@@ -145,6 +145,7 @@ thrift ${THRIFT_ARGS} --gen java ${THRIFT_IDL_DIR}/airavataAPI.thrift || fail un
 # For the generated java classes add the ASF V2 License header
 add_license_header $JAVA_GEN_DIR
 
+#FIXME: Change this to only copy the API classes and not the data model classes
 # Compare the newly generated classes with existing java generated skelton/stub sources and replace the changed ones.
 copy_changed_files ${JAVA_GEN_DIR} ${JAVA_API_SDK_DIR}
 
