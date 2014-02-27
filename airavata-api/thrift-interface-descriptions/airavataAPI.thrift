@@ -249,7 +249,7 @@ service Airavata {
 
   list<experimentModel.DataObjectType> getExperimentOutputs (1: required string airavataExperimentId)
 
-  experimentModel.TaskStatus getJobStatus(1: required string resourceJobId)
+  map<string, experimentModel.JobStatus> getJobStatuses(1: required string airavataExperimentId)
 
 
   /**
