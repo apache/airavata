@@ -8,14 +8,15 @@ in writing, software distributed under the License is distributed on an "AS IS" 
 ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under
 the License. -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 
     <parent>
-	<groupId>org.apache.airavata</groupId>
-	<artifactId>orchestrator</artifactId>
+        <groupId>org.apache.airavata</groupId>
+        <artifactId>orchestrator</artifactId>
         <version>0.12-SNAPSHOT</version>
-	<relativePath>../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>airavata-orchestrator-core</artifactId>
@@ -61,50 +62,60 @@ the License. -->
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-	    <artifactId>airavata-data-models</artifactId>
+            <artifactId>airavata-data-models</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-model-utils</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
-			<version>6.1.1</version>
-			<scope>test</scope>
-		</dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-job-monitor</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>6.1.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <source>1.6</source>
-                        <target>1.6</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <configuration>
-                     <excludes>
-                            <exclude>**/ssh/**</exclude>
-                        </excludes>
-                        <forkMode>always</forkMode>
-                        <failIfNoTests>false</failIfNoTests>
-                    </configuration>
-                </plugin>
-            </plugins>
-            <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
-            <testOutputDirectory>${project.build.directory}/test-classes</testOutputDirectory>
-            <testResources>
-                <testResource>
-                    <directory>${project.basedir}/src/test/resources</directory>
-                </testResource>
-            </testResources>
-        </build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/ssh/**</exclude>
+                    </excludes>
+                    <forkMode>always</forkMode>
+                    <failIfNoTests>false</failIfNoTests>
+                </configuration>
+            </plugin>
+        </plugins>
+        <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
+        <testOutputDirectory>${project.build.directory}/test-classes</testOutputDirectory>
+        <testResources>
+            <testResource>
+                <directory>${project.basedir}/src/test/resources</directory>
+            </testResource>
+        </testResources>
+    </build>
 
 </project>

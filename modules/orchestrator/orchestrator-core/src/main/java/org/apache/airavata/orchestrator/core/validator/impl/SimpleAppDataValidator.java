@@ -20,12 +20,21 @@
 */
 package org.apache.airavata.orchestrator.core.validator.impl;
 
+import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
+import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
+import org.apache.airavata.registry.cpi.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SimpleAppDataValidator extends AbstractJobMetadataValidator {
     private final static Logger logger = LoggerFactory.getLogger(SimpleAppDataValidator.class);
+
+    private Registry registry;
+
+    public SimpleAppDataValidator() {
+        this.registry = RegistryFactory.getDefaultRegistry();
+    }
 
     public boolean runAppSpecificValidation(String experimentID) throws OrchestratorException{
         // implement simple application specific validator to be used for
@@ -37,6 +46,19 @@ public class SimpleAppDataValidator extends AbstractJobMetadataValidator {
         boolean result = false;
         if (super.runBasicValidation(experimentID)) {
 
+            Experiment experiment = null;
+            try {
+                experiment = (Experiment) registry.get(org.apache.airavata.registry.cpi.DataType.EXPERIMENT, experimentID);
+            } catch (Exception e) {
+                throw new OrchestratorException(e);
+            }
+            if (experiment.getUserConfigurationData().isAiravataAutoSchedule()) {
+                logger.error("We dont' support auto scheduling at this point, We will simply use user data as it is");
+            }
+
+            /* todo like this do more validation and if they are suppose to fail return false otherwise give some
+               log messages in server side logs
+             */
             if (runAppSpecificValidation(experimentID)) {
                 return true;
             }

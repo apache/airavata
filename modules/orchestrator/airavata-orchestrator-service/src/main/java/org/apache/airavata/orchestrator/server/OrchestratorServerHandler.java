@@ -21,25 +21,38 @@
 
 package org.apache.airavata.orchestrator.server;
 
+import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
+import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
+import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.MonitorManager;
 import org.apache.airavata.job.monitor.core.Monitor;
 import org.apache.airavata.job.monitor.core.PullMonitor;
 import org.apache.airavata.job.monitor.core.PushMonitor;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
+import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.orchestrator.cpi.orchestrator_cpi_serviceConstants;
+import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryImpl;
+import org.apache.airavata.persistance.registry.jpa.model.TaskDetail;
+import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.constraints.Null;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.Properties;
 
 public class OrchestratorServerHandler implements OrchestratorService.Iface {
@@ -50,6 +63,10 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     private SimpleOrchestratorImpl orchestrator = null;
 
     private Registry registry;
+
+    private boolean pushMode = true;
+
+    GSIAuthenticationInfo authenticationInfo = null;
 
     /**
      * Query orchestrator server to fetch the CPI version
@@ -68,12 +85,23 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             // first constructing the monitorManager and orchestrator, then fill the required properties
             monitorManager = new MonitorManager();
             orchestrator = new SimpleOrchestratorImpl();
-            registry = new RegistryImpl();
+            registry = RegistryFactory.getDefaultRegistry();
 
             // Filling monitorManager properties
             properties.load(monitorUrl.openStream());
+            // we can keep a single user to do all the monitoring authentication for required machine..
+            String myProxyUser = properties.getProperty("myproxy.user");
+            String myProxyPass = properties.getProperty("myproxy.password");
+            String certPath = properties.getProperty("certificate.path");
+            String myProxyServer = properties.getProperty("myproxy.server");
+            authenticationInfo = new MyProxyAuthenticationInfo(myProxyUser, myProxyPass, myProxyServer,
+                    7512, 17280000, certPath);
+
+            // loading Monitor configuration
             String primaryMonitor = properties.getProperty("primaryMonitor");
             String secondaryMonitor = properties.getProperty("secondaryMonitor");
+
+
             if (primaryMonitor == null) {
                 log.error("Error loading primaryMonitor and there has to be a primary monitor");
             } else {
@@ -81,6 +109,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 Monitor monitor = aClass.newInstance();
                 if (monitor instanceof PullMonitor) {
                     monitorManager.addPullMonitor((PullMonitor) monitor);
+                    pushMode = false;
                 } else if (monitor instanceof PushMonitor) {
                     monitorManager.addPushMonitor((PushMonitor) monitor);
                 } else {
@@ -93,6 +122,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 // todo we do not support a secondary Monitor at this point
             }
 
+            monitorManager.registerListener(orchestrator);
             // Now Monitor Manager is properly configured, now we have to start the monitoring system.
             // This will initialize all the required threads and required queues
             monitorManager.launchMonitor();
@@ -128,23 +158,40 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     @Override
     public boolean launchExperiment(String experimentId) throws TException {
         //TODO: Write the Orchestrator implementaion
-
-        /*
-        Use the registry to take the Experiment Model object
-         check the ExperimentModel object to check airavataAutoSchedule property
-         if its set give an error telling that we do not support it
-         else create a Task and save to the registry
-         This should return the task ID
-         if monitoring is in push mode, add the job to monitor queue, i hope by this time the host has finalized
-         Get the task ID and invoke GFAC
-         GFac will submit the job and return the jobID
-         submit the job to minitor to monitoring queue after the submission if the monitoring is in pull mode
-         RETURN;
-        */
         try {
-            orchestrator.launchExperiment(experimentId);
-        } catch (OrchestratorException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            List<TaskDetails> tasks = orchestrator.createTasks(experimentId);
+            MonitorID monitorID = null;
+            if(tasks.size() > 1){
+                log.info("There are multiple tasks for this experiment, So Orchestrator will launch multiple Jobs");
+            }
+            for(TaskDetails taskID:tasks) {
+                //iterate through all the generated tasks and performs the job submisssion+monitoring
+
+                Experiment experiment = (Experiment) registry.get(DataType.EXPERIMENT, experimentId);
+                String userName = experiment.getUserName();
+
+                HostDescription hostDescription = OrchestratorUtils.getHostDescription(orchestrator, taskID);
+
+                // creating monitorID to register with monitoring queue
+
+                if(pushMode){
+                    // during the pull we need the monitorID in the queue inadvance
+                    // For this we have enough data at this point
+                    monitorID = new MonitorID(hostDescription, null,taskID.getTaskID(),experimentId, userName);
+                    monitorManager.addAJobToMonitor(monitorID);
+                }
+                // Launching job for each task
+                String jobID = orchestrator.launchExperiment(experimentId, taskID.getTaskID());
+                log.debug("Job Launched to the resource by GFAC and jobID returned : " + jobID);
+                // if the monitoring is pull mode then we add the monitorID for each task after submitting
+                // the job with the jobID, otherwise we don't need the jobID
+                if(!pushMode) {
+                    monitorID = new MonitorID(hostDescription, jobID,taskID.getTaskID(),experimentId, userName, authenticationInfo);
+                    monitorManager.addAJobToMonitor(monitorID);
+                }
+            }
+        } catch (Exception e) {
+            throw new TException(e);
         }
         return false;
     }

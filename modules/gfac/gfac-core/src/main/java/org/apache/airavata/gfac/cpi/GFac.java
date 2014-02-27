@@ -40,10 +40,11 @@ public interface GFac {
     public JobExecutionContext submitJob(String experimentID,String taskID) throws GFacException;
 
     /**
-     * This method has to be invoked after submitting the job and have to make sure job is properly finished
-     * @param jobExecutionContext
+     *  This method has to be invoked after submitting the job and have to make sure job is properly finished
+     * @param experimentID
+     * @param taskID
      * @throws GFacException
      */
-    public void invokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException;
+    public void invokeOutFlowHandlers(String experimentID,String taskID) throws GFacException;
 
 }

@@ -27,6 +27,8 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.Map;
+import java.util.Properties;
 
 /*
 This is the object which contains the data to identify a particular
@@ -49,19 +51,30 @@ public class MonitorID {
 
     private AuthenticationInfo authenticationInfo = null;
 
-    public MonitorID(HostDescription host, String jobID, String userName) {
+    private Map<String, Object> parameters;
+
+    private String experimentID;
+
+    private String taskID;
+
+
+    public MonitorID(HostDescription host, String jobID,String taskID,String experimentID, String userName) {
         this.host = host;
-        this.jobID = jobID;
         this.jobStartedTime = new Timestamp((new Date()).getTime());
         this.userName = userName;
+        this.jobID = jobID;
+        this.taskID = taskID;
+        this.experimentID = experimentID;
     }
 
-    public MonitorID(HostDescription host, String jobID, String userName,AuthenticationInfo authenticationInfo) {
+    public MonitorID(HostDescription host, String jobID,String taskID,String experimentID, String userName,AuthenticationInfo authenticationInfo) {
         this.host = host;
-        this.jobID = jobID;
         this.jobStartedTime = new Timestamp((new Date()).getTime());
         this.authenticationInfo = authenticationInfo;
         this.userName = userName;
+        this.jobID = jobID;
+        this.taskID = taskID;
+        this.experimentID = experimentID;
     }
     public HostDescription getHost() {
         return host;
@@ -117,5 +130,37 @@ public class MonitorID {
 
     public void setAuthenticationInfo(AuthenticationInfo authenticationInfo) {
         this.authenticationInfo = authenticationInfo;
+    }
+
+    public void addParameter(String key,Object value) {
+        this.parameters.put(key, value);
+    }
+
+    public Object getParameter(String key) {
+        return this.parameters.get(key);
+    }
+
+    public Map<String, Object> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(Map<String, Object> parameters) {
+        this.parameters = parameters;
+    }
+
+    public String getExperimentID() {
+        return experimentID;
+    }
+
+    public void setExperimentID(String experimentID) {
+        this.experimentID = experimentID;
+    }
+
+    public String getTaskID() {
+        return taskID;
+    }
+
+    public void setTaskID(String taskID) {
+        this.taskID = taskID;
     }
 }

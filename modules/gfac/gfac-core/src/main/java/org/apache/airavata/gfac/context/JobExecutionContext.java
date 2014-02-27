@@ -31,6 +31,7 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.SecurityContext;
 import org.apache.airavata.gfac.notification.GFacNotifier;
 import org.apache.airavata.gfac.provider.GFacProvider;
+import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 
 public class JobExecutionContext extends AbstractContext{
@@ -46,6 +47,8 @@ public class JobExecutionContext extends AbstractContext{
     private GFacNotifier notifier;
     
     private TaskDetails taskData;
+
+    private JobDetails jobDetails;
 
 //    private ContextHeaderDocument.ContextHeader contextHeader;
 
@@ -219,4 +222,11 @@ public class JobExecutionContext extends AbstractContext{
 		this.status = status;
 	}
 
+    public JobDetails getJobDetails() {
+        return jobDetails;
+    }
+
+    public void setJobDetails(JobDetails jobDetails) {
+        this.jobDetails = jobDetails;
+    }
 }

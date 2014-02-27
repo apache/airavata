@@ -20,7 +20,10 @@
 */
 package org.apache.airavata.orchestrator.cpi;
 
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
+
+import java.util.List;
 
 /*
    This is the interface for orchestrator functionality exposed to the out side of the
@@ -34,10 +37,21 @@ public interface Orchestrator {
      * We just have to give the experimentID
      *
      * @param experimentID
+     * @return jobID
+     * @throws OrchestratorException
+     */
+    String launchExperiment(String experimentID, String taskID) throws OrchestratorException;
+
+
+    /**
+     * This method will parse the ExperimentConfiguration and based on the configuration
+     * we create a single or multiple tasks for the experiment.
+     * @param experimentId
      * @return
      * @throws OrchestratorException
      */
-    boolean launchExperiment(String experimentID) throws OrchestratorException;
+    public List<TaskDetails> createTasks(String experimentId) throws OrchestratorException;
+
 
     //todo have to add another method to handle failed or jobs to be recovered by orchestrator
     //todo if you don't add these this is not an orchestrator, its just an intemediate component which invoke gfac
