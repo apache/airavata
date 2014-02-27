@@ -32,8 +32,9 @@ import org.apache.airavata.gfac.ToolsException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.provider.GFacProviderException;
-import org.apache.airavata.model.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.experiment.ConfigurationData;
+import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.schemas.gfac.FileArrayType;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.NameValuePairType;
@@ -110,9 +111,9 @@ public class GramRSLGenerator {
         }
         // Using the workflowContext Header values if user provided them in the request and overwrite the default values in DD
         //todo finish the scheduling based on workflow execution context
-        ConfigurationData configurationData = context.getConfigurationData();
-        if(configurationData != null && configurationData.getComputationalResourceScheduling() != null){
-        	 ComputationalResourceScheduling computionnalResource = configurationData.getComputationalResourceScheduling();
+        TaskDetails taskData = context.getTaskData();
+        if(taskData != null && taskData.isSetTaskScheduling()){
+        	 ComputationalResourceScheduling computionnalResource = taskData.getTaskScheduling();
                 try {
                     int cpuCount = computionnalResource.getTotalCPUCount();
                     if(cpuCount>0){

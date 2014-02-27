@@ -433,13 +433,13 @@ public class BESProvider implements GFacProvider {
         }
     }
 
+    //FIXME: Get user details
     private String getUserName(JobExecutionContext context) {
-        if (context.getConfigurationData()!= null) {
-            return context.getConfigurationData().getBasicMetadata().getUserName();
-        } else {
-            return "";
-        }
-
+//        if (context.getConfigurationData()!= null) {
+//            return context.getConfigurationData().getBasicMetadata().getUserName();
+//        } else {
+           return "";
+//        }
     }
 
     protected ActivityStatusType getStatus(FactoryClient fc, EndpointReferenceType activityEpr)

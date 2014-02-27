@@ -112,7 +112,7 @@ public class ApplicationProcessor {
 	}
 	
 	public static String getUserNameFromContext(JobExecutionContext jobContext) {
-		if(jobContext.getConfigurationData() == null)
+		if(jobContext.getTaskData() == null)
 			return null;
 		//FIXME: Discuss to get user and change this
 		return "admin";
