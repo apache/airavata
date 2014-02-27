@@ -86,9 +86,9 @@ public class ResourceUtils {
             GatewayResource gatewayResource = new GatewayResource();
             gatewayResource.setGatewayName(gatewayName);
             return gatewayResource;
+        }else {
+            return getGateway(gatewayName);
         }
-        return null;
-
     }
 
     public static UserResource createUser(String username, String password){
@@ -97,8 +97,9 @@ public class ResourceUtils {
             userResource.setUserName(username);
             userResource.setPassword(password);
             return userResource;
+        }else {
+            return (UserResource)getUser(username);
         }
-        return null;
 
     }
 
