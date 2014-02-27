@@ -22,10 +22,13 @@
 package org.apache.airavata.api.server.handler;
 
 import org.apache.airavata.api.Airavata;
+import org.apache.airavata.api.airavataAPIConstants;
 import org.apache.airavata.api.error.AiravataClientException;
 import org.apache.airavata.api.error.AiravataSystemException;
 import org.apache.airavata.api.error.ExperimentNotFoundException;
 import org.apache.airavata.api.error.InvalidRequestException;
+import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
+import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.registry.cpi.ChildDataType;
@@ -36,18 +39,23 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AiravataServerHandler implements Airavata.Iface {
 
     private Registry registry;
     private static final Logger logger = LoggerFactory.getLogger(AiravataServerHandler.class);
+    private OrchestratorService.Client orchestratorClient;
+    public static final String ORCHESTRATOR_SERVER_HOST = "localhost";
+    public static final int ORCHESTRATOR_SERVER_PORT = 8930;
     /**
      * Query Airavata to fetch the API version
      */
     @Override
     public String GetAPIVersion() throws TException {
-        return null;
+        return airavataAPIConstants.AIRAVATA_API_VERSION;
     }
 
     /**
@@ -217,9 +225,31 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
-    @Override
-    public TaskStatus getJobStatus(String resourceJobId) throws TException {
-        return null;
+    public Map<String, JobStatus> getJobStatuses(String airavataExperimentId) throws TException {
+        Map<String, JobStatus> jobStatus = new HashMap<String, JobStatus>();
+        try {
+            registry = RegistryFactory.getDefaultRegistry();
+            List<WorkflowNodeDetails> workflowNodes = (List<WorkflowNodeDetails>)registry.get(DataType.WORKFLOW_NODE_DETAIL, airavataExperimentId);
+            if (workflowNodes != null){
+                for (WorkflowNodeDetails wf : workflowNodes){
+                    List<TaskDetails> taskDetails = (List<TaskDetails>)registry.get(DataType.TASK_DETAIL, wf.getNodeInstanceId());
+                    if (taskDetails != null){
+                        for (TaskDetails ts : taskDetails){
+                            List<JobDetails> jobDetails = (List<JobDetails>)registry.get(DataType.JOB_DETAIL, ts.getTaskID());
+                            if (jobDetails != null){
+                                for (JobDetails job : jobDetails){
+                                    jobStatus.put(job.getJobID(), job.getJobStatus());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error while retrieving the job statuses", e);
+            throw new AiravataSystemException();
+        }
+        return jobStatus;
     }
 
     /**
@@ -254,7 +284,8 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public void launchExperiment(String airavataExperimentId, String airavataCredStoreToken) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
-
+        orchestratorClient = OrchestratorClientFactory.createOrchestratorClient(ORCHESTRATOR_SERVER_HOST, ORCHESTRATOR_SERVER_PORT);
+        orchestratorClient.launchExperiment(airavataExperimentId);
     }
 
     /**
@@ -282,7 +313,15 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public String cloneExperiment(String airavataExperimentIdToBeCloned, Experiment updatedExperiment) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            registry = RegistryFactory.getDefaultRegistry();
+            UserConfigurationData previousConfiguration = (UserConfigurationData)registry.get(DataType.EXPERIMENT_CONFIGURATION_DATA, airavataExperimentIdToBeCloned);
+            updatedExperiment.setUserConfigurationData(previousConfiguration);
+            return (String)registry.add(ParentDataType.EXPERIMENT, updatedExperiment);
+        } catch (Exception e) {
+            logger.error("Error while cloning the experiment with existing configuration...", e);
+            throw new AiravataSystemException();
+        }
     }
 
     /**

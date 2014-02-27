@@ -30,7 +30,7 @@ import org.apache.thrift.transport.TTransportException;
 
 public class OrchestratorClientFactory {
 
-    public OrchestratorService.Client createOrchestratorClient(String serverHost, int serverPort){
+    public static OrchestratorService.Client createOrchestratorClient(String serverHost, int serverPort){
         try {
             TTransport transport = new TSocket(serverHost, serverPort);
             transport.open();
