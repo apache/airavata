@@ -26,13 +26,22 @@ import org.apache.airavata.api.error.AiravataClientException;
 import org.apache.airavata.api.error.AiravataSystemException;
 import org.apache.airavata.api.error.ExperimentNotFoundException;
 import org.apache.airavata.api.error.InvalidRequestException;
+import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.registry.cpi.ChildDataType;
+import org.apache.airavata.registry.cpi.DataType;
+import org.apache.airavata.registry.cpi.ParentDataType;
+import org.apache.airavata.registry.cpi.Registry;
 import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class AiravataServerHandler implements Airavata.Iface {
 
+    private Registry registry;
+    private static final Logger logger = LoggerFactory.getLogger(AiravataServerHandler.class);
     /**
      * Query Airavata to fetch the API version
      */
@@ -65,7 +74,13 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public String createExperiment(Experiment experiment) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            registry = RegistryFactory.getDefaultRegistry();
+            return (String)registry.add(ParentDataType.EXPERIMENT, experiment);
+        } catch (Exception e) {
+            logger.error("Error while creating the experiment", e);
+            throw new AiravataSystemException();
+        }
     }
 
     /**
@@ -92,7 +107,13 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public Experiment getExperiment(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            registry = RegistryFactory.getDefaultRegistry();
+            return (Experiment)registry.get(DataType.EXPERIMENT, airavataExperimentId);
+        } catch (Exception e) {
+            logger.error("Error while retrieving the experiment", e);
+            throw new AiravataSystemException();
+        }
     }
 
 
@@ -122,17 +143,35 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public void updateExperiment(String airavataExperimentId, Experiment experiment) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
-
+        try {
+            registry = RegistryFactory.getDefaultRegistry();
+            registry.update(DataType.EXPERIMENT, experiment, airavataExperimentId);
+        } catch (Exception e) {
+            logger.error("Error while updating experiment", e);
+            throw new AiravataSystemException();
+        }
     }
 
     @Override
     public void updateExperimentConfiguration(String airavataExperimentId, UserConfigurationData userConfiguration) throws TException {
-
+        try {
+            registry = RegistryFactory.getDefaultRegistry();
+            registry.add(ChildDataType.EXPERIMENT_CONFIGURATION_DATA, userConfiguration, airavataExperimentId);
+        } catch (Exception e) {
+            logger.error("Error while updating user configuration", e);
+            throw new AiravataSystemException();
+        }
     }
 
     @Override
     public void updateResourceScheduleing(String airavataExperimentId, ComputationalResourceScheduling resourceScheduling) throws TException {
-
+        try {
+            registry = RegistryFactory.getDefaultRegistry();
+            registry.add(ChildDataType.COMPUTATIONAL_RESOURCE_SCHEDULING, resourceScheduling, airavataExperimentId);
+        } catch (Exception e) {
+            logger.error("Error while updating scheduling info", e);
+            throw new AiravataSystemException();
+        }
     }
 
     /**
@@ -158,12 +197,24 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public ExperimentStatus getExperimentStatus(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            registry = RegistryFactory.getDefaultRegistry();
+            return (ExperimentStatus)registry.get(DataType.EXPERIMENT_STATUS, airavataExperimentId);
+        } catch (Exception e) {
+            logger.error("Error while retrieving the experiment status", e);
+            throw new AiravataSystemException();
+        }
     }
 
     @Override
     public List<DataObjectType> getExperimentOutputs(String airavataExperimentId) throws TException {
-        return null;
+        try {
+            registry = RegistryFactory.getDefaultRegistry();
+            return (List<DataObjectType>)registry.get(DataType.EXPERIMENT_OUTPUT, airavataExperimentId);
+        } catch (Exception e) {
+            logger.error("Error while retrieving the experiment outputs", e);
+            throw new AiravataSystemException();
+        }
     }
 
     @Override
