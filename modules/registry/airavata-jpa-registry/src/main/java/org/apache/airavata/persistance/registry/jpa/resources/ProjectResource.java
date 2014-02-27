@@ -67,7 +67,7 @@ public class ProjectResource extends AbstractResource {
         if (type == ResourceType.EXPERIMENT) {
             ExperimentResource experimentResource = new ExperimentResource();
             experimentResource.setGateway(getGateway());
-            experimentResource.setWorker(worker);
+            experimentResource.setExecutionUser(worker.getUser());
             experimentResource.setProject(this);
             return experimentResource;
         } else {

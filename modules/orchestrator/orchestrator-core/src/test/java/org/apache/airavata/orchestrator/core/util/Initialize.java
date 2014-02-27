@@ -22,6 +22,7 @@ package org.apache.airavata.orchestrator.core.util;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.apache.airavata.registry.api.exception.RegistrySettingsException;
 import org.apache.airavata.registry.api.util.RegistrySettings;
@@ -40,7 +41,7 @@ import java.util.StringTokenizer;
 public class Initialize {
     private static final Logger logger = LoggerFactory.getLogger(Initialize.class);
     public static final String DERBY_SERVER_MODE_SYS_PROPERTY = "derby.drda.startNetworkServer";
-    public  String scriptName = "airavata-registry-derby.sql";
+    public  String scriptName = "registry-derby.sql";
     private NetworkServerControl server;
     private static final String delimiter = ";";
     public static final String PERSISTANT_DATA = "Configuration";
@@ -139,14 +140,11 @@ public class Initialize {
         }
 
         try{
-            GatewayResource gatewayResource = new GatewayResource();
-            gatewayResource.setGatewayName(RegistrySettings.getSetting("default.registry.gateway"));
+            GatewayResource gatewayResource = (GatewayResource)ResourceUtils.createGateway(RegistrySettings.getSetting("default.registry.gateway"));
             gatewayResource.setOwner(RegistrySettings.getSetting("default.registry.gateway"));
             gatewayResource.save();
 
-            UserResource userResource = (UserResource) gatewayResource.create(ResourceType.USER);
-            userResource.setUserName(RegistrySettings.getSetting("default.registry.user"));
-            userResource.setPassword(RegistrySettings.getSetting("default.registry.password"));
+            UserResource userResource = ResourceUtils.createUser(RegistrySettings.getSetting("default.registry.user"),RegistrySettings.getSetting("default.registry.password"));
             userResource.save();
 
             WorkerResource workerResource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);

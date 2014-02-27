@@ -78,7 +78,7 @@ public class WorkerResource extends AbstractResource {
                 break;
             case EXPERIMENT:
                 ExperimentResource experimentResource = new ExperimentResource();
-                experimentResource.setWorker(this);
+                experimentResource.setExecutionUser(user);
                 experimentResource.setGateway(gateway);
                 result = experimentResource;
                 break;

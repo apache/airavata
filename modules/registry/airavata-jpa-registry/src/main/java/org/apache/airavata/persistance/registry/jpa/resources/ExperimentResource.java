@@ -38,7 +38,8 @@ import org.slf4j.LoggerFactory;
 
 public class ExperimentResource extends AbstractResource {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentResource.class);
-    private WorkerResource worker;
+//    private WorkerResource worker;
+    private String executionUser;
     private String expID;
     private Timestamp creationTime;
     private GatewayResource gateway;
@@ -475,11 +476,10 @@ public class ExperimentResource extends AbstractResource {
         Experiment experiment = new Experiment();
         Project projectmodel = em.find(Project.class, project.getName());
         experiment.setProject(projectmodel);
-        Users user = em.find(Users.class, getWorker().getUser());
         Gateway gateway = em.find(Gateway.class, getGateway().getGatewayName());
         experiment.setProject(projectmodel);
         experiment.setExpId(expID);
-        experiment.setExecutionUser(user.getUser_name());
+        experiment.setExecutionUser(executionUser);
         experiment.setGateway(gateway);
         experiment.setCreationTime(creationTime);
         experiment.setExpName(expName);
@@ -492,7 +492,7 @@ public class ExperimentResource extends AbstractResource {
         if(existingExp != null){
             existingExp.setGateway(gateway);
             existingExp.setProject(projectmodel);
-            existingExp.setExecutionUser(user.getUser_name());
+            existingExp.setExecutionUser(executionUser);
             existingExp.setCreationTime(creationTime);
             existingExp.setExpName(expName);
             existingExp.setExpDesc(description);
@@ -533,21 +533,13 @@ public class ExperimentResource extends AbstractResource {
 		this.gateway = gateway;
 	}
 
-    /**
-     *
-     * @return worker for the gateway
-     */
-    public WorkerResource getWorker() {
-		return worker;
-	}
+    public String getExecutionUser() {
+        return executionUser;
+    }
 
-    /**
-     *
-     * @param worker gateway worker
-     */
-    public void setWorker(WorkerResource worker) {
-		this.worker = worker;
-	}
+    public void setExecutionUser(String executionUser) {
+        this.executionUser = executionUser;
+    }
 
     /**
      *

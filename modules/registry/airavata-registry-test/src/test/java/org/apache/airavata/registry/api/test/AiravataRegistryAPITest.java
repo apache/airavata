@@ -1055,102 +1055,102 @@ public class AiravataRegistryAPITest extends TestCase {
 
 
     public void testIsExperimentExists() throws Exception {
-        WorkspaceProject workspaceProject = null;
-        if(!registry.isWorkspaceProjectExists("testProject"))  {
-            workspaceProject =  new WorkspaceProject("testProject", registry);
-            registry.addWorkspaceProject(workspaceProject);
-        }
-        AiravataExperiment experiment = new AiravataExperiment();
-        experiment.setExperimentId("testExperiment");
-        registry.addExperiment("testProject", experiment);
-
-        assertTrue("experiment exists", registry.isExperimentExists("testExperiment"));
-        registry.removeExperiment("testExperiment");
-        registry.deleteWorkspaceProject("testProject");
+//        WorkspaceProject workspaceProject = null;
+//        if(!registry.isWorkspaceProjectExists("testProject"))  {
+//            workspaceProject =  new WorkspaceProject("testProject", registry);
+//            registry.addWorkspaceProject(workspaceProject);
+//        }
+//        AiravataExperiment experiment = new AiravataExperiment();
+//        experiment.setExperimentId("testExperiment");
+//        registry.addExperiment("testProject", experiment);
+//
+//        assertTrue("experiment exists", registry.isExperimentExists("testExperiment"));
+//        registry.removeExperiment("testExperiment");
+//        registry.deleteWorkspaceProject("testProject");
     }
 
     public void testUpdateExperimentExecutionUser() throws Exception {
-        WorkspaceProject workspaceProject = null;
-        if(!registry.isWorkspaceProjectExists("testProject"))  {
-            workspaceProject =  new WorkspaceProject("testProject", registry);
-            registry.addWorkspaceProject(workspaceProject);
-        }
-        AiravataExperiment experiment = new AiravataExperiment();
-        experiment.setExperimentId("testExperiment");
-        registry.addExperiment("testProject", experiment);
-        registry.updateExperimentExecutionUser("testExperiment", "testUser");
-        ExperimentData testExperiment = registry.getExperiment("testExperiment");
-        assertTrue("execution user updated successfully", testExperiment.getUser().equals("testUser"));
-        registry.removeExperiment("testExperiment");
-        registry.deleteWorkspaceProject("testProject");
+//        WorkspaceProject workspaceProject = null;
+//        if(!registry.isWorkspaceProjectExists("testProject"))  {
+//            workspaceProject =  new WorkspaceProject("testProject", registry);
+//            registry.addWorkspaceProject(workspaceProject);
+//        }
+//        AiravataExperiment experiment = new AiravataExperiment();
+//        experiment.setExperimentId("testExperiment");
+//        registry.addExperiment("testProject", experiment);
+//        registry.updateExperimentExecutionUser("testExperiment", "testUser");
+//        ExperimentData testExperiment = registry.getExperiment("testExperiment");
+//        assertTrue("execution user updated successfully", testExperiment.getUser().equals("testUser"));
+//        registry.removeExperiment("testExperiment");
+//        registry.deleteWorkspaceProject("testProject");
     }
 
 
     public void testGetExperimentExecutionUser() throws Exception {
-        Calendar c = Calendar.getInstance();
-        java.util.Date date = c.getTime();
-        Date currentTime = new Date(date.getTime());
-        WorkspaceProject workspaceProject = null;
-        if(!registry.isWorkspaceProjectExists("testProject"))  {
-            workspaceProject =  new WorkspaceProject("testProject", registry);
-            registry.addWorkspaceProject(workspaceProject);
-        }
-        AiravataExperiment experiment = new AiravataExperiment();
-        experiment.setExperimentId("testExp");
-        experiment.setSubmittedDate(currentTime);
-        registry.addExperiment("testProject", experiment);
-        registry.updateExperimentExecutionUser("testExp", "admin");
-
-        ExperimentData testExperiment = registry.getExperiment("testExp");
-        assertTrue("execution user retrieved successfully", testExperiment.getUser().equals("admin"));
-        registry.removeExperiment("testExp");
-        registry.deleteWorkspaceProject("testProject");
+//        Calendar c = Calendar.getInstance();
+//        java.util.Date date = c.getTime();
+//        Date currentTime = new Date(date.getTime());
+//        WorkspaceProject workspaceProject = null;
+//        if(!registry.isWorkspaceProjectExists("testProject"))  {
+//            workspaceProject =  new WorkspaceProject("testProject", registry);
+//            registry.addWorkspaceProject(workspaceProject);
+//        }
+//        AiravataExperiment experiment = new AiravataExperiment();
+//        experiment.setExperimentId("testExp");
+//        experiment.setSubmittedDate(currentTime);
+//        registry.addExperiment("testProject", experiment);
+//        registry.updateExperimentExecutionUser("testExp", "admin");
+//
+//        ExperimentData testExperiment = registry.getExperiment("testExp");
+//        assertTrue("execution user retrieved successfully", testExperiment.getUser().equals("admin"));
+//        registry.removeExperiment("testExp");
+//        registry.deleteWorkspaceProject("testProject");
     }
 
 
     public void testGetExperimentName() throws Exception {
-        Calendar c = Calendar.getInstance();
-        java.util.Date date = c.getTime();
-        Date currentTime = new Date(date.getTime());
-        WorkspaceProject workspaceProject = null;
-        if(!registry.isWorkspaceProjectExists("testProject"))  {
-            workspaceProject =  new WorkspaceProject("testProject", registry);
-            registry.addWorkspaceProject(workspaceProject);
-        }
-        AiravataExperiment experiment = new AiravataExperiment();
-        experiment.setExperimentId("testExp");
-        experiment.setSubmittedDate(currentTime);
-        registry.addExperiment("testProject", experiment);
-        registry.updateExperimentExecutionUser("testExp", "admin");
-        registry.updateExperimentName("testExp", "testExperiment");
-
-        ExperimentData testExperiment = registry.getExperiment("testExp");
-        assertTrue("experiment name retrieved successfully", testExperiment.getExperimentName().equals("testExperiment"));
-        registry.removeExperiment("testExp");
-        registry.deleteWorkspaceProject("testProject");
+//        Calendar c = Calendar.getInstance();
+//        java.util.Date date = c.getTime();
+//        Date currentTime = new Date(date.getTime());
+//        WorkspaceProject workspaceProject = null;
+//        if(!registry.isWorkspaceProjectExists("testProject"))  {
+//            workspaceProject =  new WorkspaceProject("testProject", registry);
+//            registry.addWorkspaceProject(workspaceProject);
+//        }
+//        AiravataExperiment experiment = new AiravataExperiment();
+//        experiment.setExperimentId("testExp");
+//        experiment.setSubmittedDate(currentTime);
+//        registry.addExperiment("testProject", experiment);
+//        registry.updateExperimentExecutionUser("testExp", "admin");
+//        registry.updateExperimentName("testExp", "testExperiment");
+//
+//        ExperimentData testExperiment = registry.getExperiment("testExp");
+//        assertTrue("experiment name retrieved successfully", testExperiment.getExperimentName().equals("testExperiment"));
+//        registry.removeExperiment("testExp");
+//        registry.deleteWorkspaceProject("testProject");
     }
 
 
     public void testUpdateExperimentName() throws Exception {
-        Calendar c = Calendar.getInstance();
-        java.util.Date date = c.getTime();
-        Date currentTime = new Date(date.getTime());
-        WorkspaceProject workspaceProject = null;
-        if(!registry.isWorkspaceProjectExists("testProject"))  {
-            workspaceProject =  new WorkspaceProject("testProject", registry);
-            registry.addWorkspaceProject(workspaceProject);
-        }
-        AiravataExperiment experiment = new AiravataExperiment();
-        experiment.setExperimentId("testExp");
-        experiment.setSubmittedDate(currentTime);
-        registry.addExperiment("testProject", experiment);
-        registry.updateExperimentExecutionUser("testExp", "admin");
-        registry.updateExperimentName("testExp", "testExperiment");
-
-        ExperimentData testExperiment = registry.getExperiment("testExp");
-        assertTrue("experiment name updated successfully", testExperiment.getExperimentName().equals("testExperiment"));
-        registry.removeExperiment("testExp");
-        registry.deleteWorkspaceProject("testProject");
+//        Calendar c = Calendar.getInstance();
+//        java.util.Date date = c.getTime();
+//        Date currentTime = new Date(date.getTime());
+//        WorkspaceProject workspaceProject = null;
+//        if(!registry.isWorkspaceProjectExists("testProject"))  {
+//            workspaceProject =  new WorkspaceProject("testProject", registry);
+//            registry.addWorkspaceProject(workspaceProject);
+//        }
+//        AiravataExperiment experiment = new AiravataExperiment();
+//        experiment.setExperimentId("testExp");
+//        experiment.setSubmittedDate(currentTime);
+//        registry.addExperiment("testProject", experiment);
+//        registry.updateExperimentExecutionUser("testExp", "admin");
+//        registry.updateExperimentName("testExp", "testExperiment");
+//
+//        ExperimentData testExperiment = registry.getExperiment("testExp");
+//        assertTrue("experiment name updated successfully", testExperiment.getExperimentName().equals("testExperiment"));
+//        registry.removeExperiment("testExp");
+//        registry.deleteWorkspaceProject("testProject");
     }
 
 
@@ -1197,328 +1197,373 @@ public class AiravataRegistryAPITest extends TestCase {
 
 
     public void testGetWorkflowExecutionTemplateName() throws Exception {
-        WorkspaceProject workspaceProject = null;
-        if(!registry.isWorkspaceProjectExists("testProject"))  {
-            workspaceProject =  new WorkspaceProject("testProject", registry);
-            registry.addWorkspaceProject(workspaceProject);
-        }
-        AiravataExperiment experiment = new AiravataExperiment();
-        experiment.setExperimentId("testExp");
-        registry.addExperiment("testProject", experiment);
-
-        registry.updateExperimentExecutionUser("testExp", "admin");
-        registry.updateExperimentName("testExp", "testexperiment");
-
-        ExperimentData experimentData = registry.getExperiment("testExp");
-
-        registry.addWorkflowInstance("testExp", "testWorkflow1", "template1");
-
-        String testWorkflow = registry.getWorkflowExecutionTemplateName("testWorkflow1");
-        assertTrue("workflow execution template name retrieved successfully", testWorkflow.equals("template1"));
-
-        registry.removeExperiment("testExp");
-        registry.deleteWorkspaceProject("testProject");
+//        WorkspaceProject workspaceProject = null;
+//        if(!registry.isWorkspaceProjectExists("testProject"))  {
+//            workspaceProject =  new WorkspaceProject("testProject", registry);
+//            registry.addWorkspaceProject(workspaceProject);
+//        }
+//        AiravataExperiment experiment = new AiravataExperiment();
+//        experiment.setExperimentId("testExp");
+//        registry.addExperiment("testProject", experiment);
+//
+//        registry.updateExperimentExecutionUser("testExp", "admin");
+//        registry.updateExperimentName("testExp", "testexperiment");
+//
+//        ExperimentData experimentData = registry.getExperiment("testExp");
+//
+//        registry.addWorkflowInstance("testExp", "testWorkflow1", "template1");
+//
+//        String testWorkflow = registry.getWorkflowExecutionTemplateName("testWorkflow1");
+//        assertTrue("workflow execution template name retrieved successfully", testWorkflow.equals("template1"));
+//
+//        registry.removeExperiment("testExp");
+//        registry.deleteWorkspaceProject("testProject");
 
     }
 
 
     public void testSetWorkflowInstanceTemplateName() throws Exception {
-        WorkspaceProject workspaceProject = null;
-        if(!registry.isWorkspaceProjectExists("testProject"))  {
-            workspaceProject =  new WorkspaceProject("testProject", registry);
-            registry.addWorkspaceProject(workspaceProject);
-        }
-        AiravataExperiment experiment = new AiravataExperiment();
-        experiment.setExperimentId("testExp");
-        registry.addExperiment("testProject", experiment);
-
-        registry.updateExperimentExecutionUser("testExp", "admin");
-        registry.updateExperimentName("testExp", "testexperiment");
-
-        ExperimentData experimentData = registry.getExperiment("testExp");
-
-        registry.addWorkflowInstance("testExp", "testWorkflow2", "template1");
-        registry.setWorkflowInstanceTemplateName("testWorkflow2", "template2");
-
-        String testWorkflow = registry.getWorkflowExecutionTemplateName("testWorkflow2");
-        assertTrue("workflow execution template name retrieved successfully", testWorkflow.equals("template2"));
-
-        registry.removeExperiment("testExp");
-        registry.deleteWorkspaceProject("testProject");
+//        WorkspaceProject workspaceProject = null;
+//        if(!registry.isWorkspaceProjectExists("testProject"))  {
+//            workspaceProject =  new WorkspaceProject("testProject", registry);
+//            registry.addWorkspaceProject(workspaceProject);
+//        }
+//        AiravataExperiment experiment = new AiravataExperiment();
+//        experiment.setExperimentId("testExp");
+//        registry.addExperiment("testProject", experiment);
+//
+//        registry.updateExperimentExecutionUser("testExp", "admin");
+//        registry.updateExperimentName("testExp", "testexperiment");
+//
+//        ExperimentData experimentData = registry.getExperiment("testExp");
+//
+//        registry.addWorkflowInstance("testExp", "testWorkflow2", "template1");
+//        registry.setWorkflowInstanceTemplateName("testWorkflow2", "template2");
+//
+//        String testWorkflow = registry.getWorkflowExecutionTemplateName("testWorkflow2");
+//        assertTrue("workflow execution template name retrieved successfully", testWorkflow.equals("template2"));
+//
+//        registry.removeExperiment("testExp");
+//        registry.deleteWorkspaceProject("testProject");
     }
 
 
     public void testGetExperimentWorkflowInstances() throws Exception {
-        WorkspaceProject workspaceProject = null;
-        if(!registry.isWorkspaceProjectExists("testProject"))  {
-            workspaceProject =  new WorkspaceProject("testProject", registry);
-            registry.addWorkspaceProject(workspaceProject);
-        }
-        AiravataExperiment experiment = new AiravataExperiment();
-        experiment.setExperimentId("testExp");
-        registry.addExperiment("testProject", experiment);
-
-        registry.updateExperimentExecutionUser("testExp", "admin");
-        registry.updateExperimentName("testExp", "testexperiment");
-
-        registry.addWorkflowInstance("testExp", "testWorkflow3", "template1");
-        List<WorkflowExecution> workflowInstances = registry.getExperimentWorkflowInstances("testExp");
-
-        assertTrue("workflow instances retrieved successfully", workflowInstances.size() != 0);
-        registry.removeExperiment("testExp");
-        registry.deleteWorkspaceProject("testProject");
+//        WorkspaceProject workspaceProject = null;
+//        if(!registry.isWorkspaceProjectExists("testProject"))  {
+//            workspaceProject =  new WorkspaceProject("testProject", registry);
+//            registry.addWorkspaceProject(workspaceProject);
+//        }
+//        AiravataExperiment experiment = new AiravataExperiment();
+//        experiment.setExperimentId("testExp");
+//        registry.addExperiment("testProject", experiment);
+//
+//        registry.updateExperimentExecutionUser("testExp", "admin");
+//        registry.updateExperimentName("testExp", "testexperiment");
+//
+//        registry.addWorkflowInstance("testExp", "testWorkflow3", "template1");
+//        List<WorkflowExecution> workflowInstances = registry.getExperimentWorkflowInstances("testExp");
+//
+//        assertTrue("workflow instances retrieved successfully", workflowInstances.size() != 0);
+//        registry.removeExperiment("testExp");
+//        registry.deleteWorkspaceProject("testProject");
     }
 
 
     public void testIsWorkflowInstanceExists() throws Exception {
-        WorkspaceProject workspaceProject = null;
-        if(!registry.isWorkspaceProjectExists("testProject"))  {
-            workspaceProject =  new WorkspaceProject("testProject", registry);
-            registry.addWorkspaceProject(workspaceProject);
-        }
-        AiravataExperiment experiment = new AiravataExperiment();
-        experiment.setExperimentId("testExp");
-        registry.addExperiment("testProject", experiment);
-
-        registry.updateExperimentExecutionUser("testExp", "admin");
-        registry.updateExperimentName("testExp", "testexperiment");
-
-        registry.addWorkflowInstance("testExp", "testWorkflow4", "template1");
-
-        assertTrue("workflow instance exists", registry.isWorkflowInstanceExists("testWorkflow4"));
-        registry.removeExperiment("testExp");
-        registry.deleteWorkspaceProject("testProject");
+//        WorkspaceProject workspaceProject = null;
+//        if(!registry.isWorkspaceProjectExists("testProject"))  {
+//            workspaceProject =  new WorkspaceProject("testProject", registry);
+//            registry.addWorkspaceProject(workspaceProject);
+//        }
+//        AiravataExperiment experiment = new AiravataExperiment();
+//        experiment.setExperimentId("testExp");
+//        registry.addExperiment("testProject", experiment);
+//
+//        registry.updateExperimentExecutionUser("testExp", "admin");
+//        registry.updateExperimentName("testExp", "testexperiment");
+//
+//        registry.addWorkflowInstance("testExp", "testWorkflow4", "template1");
+//
+//        assertTrue("workflow instance exists", registry.isWorkflowInstanceExists("testWorkflow4"));
+//        registry.removeExperiment("testExp");
+//        registry.deleteWorkspaceProject("testProject");
     }
 
     public void testUpdateWorkflowInstanceStatus() throws Exception {
-        WorkspaceProject workspaceProject = null;
-        if(!registry.isWorkspaceProjectExists("testProject"))  {
-            workspaceProject =  new WorkspaceProject("testProject", registry);
-            registry.addWorkspaceProject(workspaceProject);
-        }
-        AiravataExperiment experiment = new AiravataExperiment();
-        experiment.setExperimentId("testExp");
-        registry.addExperiment("testProject", experiment);
-
-        registry.updateExperimentExecutionUser("testExp", "admin");
-        registry.updateExperimentName("testExp", "testexperiment");
-
-        registry.addWorkflowInstance("testExp", "testWorkflow5", "template1");
-        registry.updateWorkflowInstanceStatus("testWorkflow5", WorkflowExecutionStatus.State.STARTED);
-
-        assertTrue("workflow instance status updated successfully", registry.getWorkflowInstanceStatus("testWorkflow5").getExecutionStatus().equals(WorkflowExecutionStatus.State.STARTED));
-        registry.removeExperiment("testExp");
-        registry.deleteWorkspaceProject("testProject");
+//        WorkspaceProject workspaceProject = null;
+//        if(!registry.isWorkspaceProjectExists("testProject"))  {
+//            workspaceProject =  new WorkspaceProject("testProject", registry);
+//            registry.addWorkspaceProject(workspaceProject);
+//        }
+//        AiravataExperiment experiment = new AiravataExperiment();
+//        experiment.setExperimentId("testExp");
+//        registry.addExperiment("testProject", experiment);
+//
+//        registry.updateExperimentExecutionUser("testExp", "admin");
+//        registry.updateExperimentName("testExp", "testexperiment");
+//
+//        registry.addWorkflowInstance("testExp", "testWorkflow5", "template1");
+//        registry.updateWorkflowInstanceStatus("testWorkflow5", WorkflowExecutionStatus.State.STARTED);
+//
+//        assertTrue("workflow instance status updated successfully", registry.getWorkflowInstanceStatus("testWorkflow5").getExecutionStatus().equals(WorkflowExecutionStatus.State.STARTED));
+//        registry.removeExperiment("testExp");
+//        registry.deleteWorkspaceProject("testProject");
     }
 
 
     public void testGetWorkflowInstanceStatus() throws Exception {
-        WorkspaceProject workspaceProject = null;
-        if(!registry.isWorkspaceProjectExists("testProject1"))  {
-            workspaceProject =  new WorkspaceProject("testProject1", registry);
-            registry.addWorkspaceProject(workspaceProject);
-        }
-        AiravataExperiment experiment = new AiravataExperiment();
-        experiment.setExperimentId("testExp");
-        registry.addExperiment("testProject1", experiment);
-
-        registry.updateExperimentExecutionUser("testExp", "admin");
-        registry.updateExperimentName("testExp", "testexperiment");
-
-        registry.addWorkflowInstance("testExp", "testWorkflow6", "template1");
-        Calendar c = Calendar.getInstance();
-        java.util.Date date = c.getTime();
-        Date currentTime = new Date(date.getTime());
-
-        registry.updateWorkflowInstanceStatus(new WorkflowExecutionStatus(new WorkflowExecution("testExp", "testWorkflow6"), WorkflowExecutionStatus.State.STARTED,currentTime));
-        assertTrue("workflow instance status updated successfully", registry.getWorkflowInstanceStatus("testWorkflow6").getExecutionStatus().equals(WorkflowExecutionStatus.State.STARTED));
-        registry.removeExperiment("testExp");
-        registry.deleteWorkspaceProject("testProject1");
+//        WorkspaceProject workspaceProject = null;
+//        if(!registry.isWorkspaceProjectExists("testProject1"))  {
+//            workspaceProject =  new WorkspaceProject("testProject1", registry);
+//            registry.addWorkspaceProject(workspaceProject);
+//        }
+//        AiravataExperiment experiment = new AiravataExperiment();
+//        experiment.setExperimentId("testExp");
+//        registry.addExperiment("testProject1", experiment);
+//
+//        registry.updateExperimentExecutionUser("testExp", "admin");
+//        registry.updateExperimentName("testExp", "testexperiment");
+//
+//        registry.addWorkflowInstance("testExp", "testWorkflow6", "template1");
+//        Calendar c = Calendar.getInstance();
+//        java.util.Date date = c.getTime();
+//        Date currentTime = new Date(date.getTime());
+//
+//        registry.updateWorkflowInstanceStatus(new WorkflowExecutionStatus(new WorkflowExecution("testExp", "testWorkflow6"), WorkflowExecutionStatus.State.STARTED,currentTime));
+//        assertTrue("workflow instance status updated successfully", registry.getWorkflowInstanceStatus("testWorkflow6").getExecutionStatus().equals(WorkflowExecutionStatus.State.STARTED));
+//        registry.removeExperiment("testExp");
+//        registry.deleteWorkspaceProject("testProject1");
 
     }
 
     public void testUpdateWorkflowNodeInput() throws Exception {
-        WorkspaceProject workspaceProject = null;
-        if(!registry.isWorkspaceProjectExists("testProject1"))  {
-            workspaceProject =  new WorkspaceProject("testProject1", registry);
-            registry.addWorkspaceProject(workspaceProject);
-        }
-        AiravataExperiment experiment = new AiravataExperiment();
-        experiment.setExperimentId("testExp");
-        registry.addExperiment("testProject1", experiment);
-
-        registry.updateExperimentExecutionUser("testExp", "admin");
-        registry.updateExperimentName("testExp", "testexperiment");
-
-        registry.addWorkflowInstance("testExp", "testWorkflow7", "template1");
-
-        WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(new WorkflowExecution("testExp", "testWorkflow7"), "testNode");
-        WorkflowNodeType nodeType = new WorkflowNodeType(WorkflowNodeType.WorkflowNode.INPUTNODE);
-        registry.updateWorkflowNodeType(workflowInstanceNode, nodeType);
-        registry.updateWorkflowNodeInput(workflowInstanceNode, "testParameter=testData");
-
-        NodeExecutionData nodeData = registry.getWorkflowInstanceNodeData("testWorkflow7", "testNode");
-        assertTrue("workflow instance node input saved successfully", nodeData.getInput().equals("testParameter=testData"));
-
-        registry.removeExperiment("testExp");
-        registry.deleteWorkspaceProject("testProject1");
+//        WorkspaceProject workspaceProject = null;
+//        if(!registry.isWorkspaceProjectExists("testProject1"))  {
+//            workspaceProject =  new WorkspaceProject("testProject1", registry);
+//            registry.addWorkspaceProject(workspaceProject);
+//        }
+//        AiravataExperiment experiment = new AiravataExperiment();
+//        experiment.setExperimentId("testExp");
+//        registry.addExperiment("testProject1", experiment);
+//
+//        registry.updateExperimentExecutionUser("testExp", "admin");
+//        registry.updateExperimentName("testExp", "testexperiment");
+//
+//        registry.addWorkflowInstance("testExp", "testWorkflow7", "template1");
+//
+//        WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(new WorkflowExecution("testExp", "testWorkflow7"), "testNode");
+//        WorkflowNodeType nodeType = new WorkflowNodeType(WorkflowNodeType.WorkflowNode.INPUTNODE);
+//        registry.updateWorkflowNodeType(workflowInstanceNode, nodeType);
+//        registry.updateWorkflowNodeInput(workflowInstanceNode, "testParameter=testData");
+//
+//        NodeExecutionData nodeData = registry.getWorkflowInstanceNodeData("testWorkflow7", "testNode");
+//        assertTrue("workflow instance node input saved successfully", nodeData.getInput().equals("testParameter=testData"));
+//
+//        registry.removeExperiment("testExp");
+//        registry.deleteWorkspaceProject("testProject1");
 
     }
 
 
     public void testUpdateWorkflowNodeOutput() throws Exception {
-        WorkspaceProject workspaceProject = null;
-        if(!registry.isWorkspaceProjectExists("testProject1"))  {
-            workspaceProject =  new WorkspaceProject("testProject1", registry);
-            registry.addWorkspaceProject(workspaceProject);
-        }
-        AiravataExperiment experiment = new AiravataExperiment();
-        experiment.setExperimentId("testExp");
-        registry.addExperiment("testProject1", experiment);
-
-        registry.updateExperimentExecutionUser("testExp", "admin");
-        registry.updateExperimentName("testExp", "testexperiment");
-
-        registry.addWorkflowInstance("testExp", "testWorkflow8", "template1");
-
-        WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(new WorkflowExecution("testExp", "testWorkflow8"), "testNode");
-        registry.updateWorkflowNodeOutput(workflowInstanceNode, "testData");
-
-        NodeExecutionData nodeData = registry.getWorkflowInstanceNodeData("testWorkflow8", "testNode");
-        assertTrue("workflow instance node output saved successfully", nodeData.getOutput().equals("testData"));
-
-        registry.removeExperiment("testExp");
-        registry.deleteWorkspaceProject("testProject1");
+//        WorkspaceProject workspaceProject = null;
+//        if(!registry.isWorkspaceProjectExists("testProject1"))  {
+//            workspaceProject =  new WorkspaceProject("testProject1", registry);
+//            registry.addWorkspaceProject(workspaceProject);
+//        }
+//        AiravataExperiment experiment = new AiravataExperiment();
+//        experiment.setExperimentId("testExp");
+//        registry.addExperiment("testProject1", experiment);
+//
+//        registry.updateExperimentExecutionUser("testExp", "admin");
+//        registry.updateExperimentName("testExp", "testexperiment");
+//
+//        registry.addWorkflowInstance("testExp", "testWorkflow8", "template1");
+//
+//        WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(new WorkflowExecution("testExp", "testWorkflow8"), "testNode");
+//        registry.updateWorkflowNodeOutput(workflowInstanceNode, "testData");
+//
+//        NodeExecutionData nodeData = registry.getWorkflowInstanceNodeData("testWorkflow8", "testNode");
+//        assertTrue("workflow instance node output saved successfully", nodeData.getOutput().equals("testData"));
+//
+//        registry.removeExperiment("testExp");
+//        registry.deleteWorkspaceProject("testProject1");
 
     }
 
-    public void testGetExperiment() throws Exception {
-        WorkspaceProject workspaceProject = null;
-        if(!registry.isWorkspaceProjectExists("testProject1"))  {
-            workspaceProject =  new WorkspaceProject("testProject1", registry);
-            registry.addWorkspaceProject(workspaceProject);
-        }
-        AiravataExperiment experiment = new AiravataExperiment();
-        experiment.setExperimentId("testExp");
-        registry.addExperiment("testProject1", experiment);
-
-        registry.updateExperimentExecutionUser("testExp", "admin");
-        registry.updateExperimentName("testExp", "testexperiment");
-
-        registry.addWorkflowInstance("testExp", "testWorkflow9", "template1");
-        ExperimentData testExp = registry.getExperiment("testExp");
-
-        assertNotNull("experiment data retrieved successfully", testExp);
-        registry.removeExperiment("testExp");
-        registry.deleteWorkspaceProject("testProject1");
-    }
-
-
-    public void testGetExperimentMetaInformation() throws Exception {
-        WorkspaceProject workspaceProject = null;
-        if(!registry.isWorkspaceProjectExists("testProject1"))  {
-            workspaceProject =  new WorkspaceProject("testProject1", registry);
-            registry.addWorkspaceProject(workspaceProject);
-        }
-        AiravataExperiment experiment = new AiravataExperiment();
-        experiment.setExperimentId("testExp");
-        registry.addExperiment("testProject1", experiment);
-
-        registry.updateExperimentExecutionUser("testExp", "admin");
-        registry.updateExperimentName("testExp", "testexperiment");
-
-        registry.addWorkflowInstance("testExp", "testWorkflow10", "template1");
-        ExperimentData testExp = registry.getExperimentMetaInformation("testExp");
-
-        assertNotNull("experiment data retrieved successfully", testExp);
-        registry.removeExperiment("testExp");
-        registry.deleteWorkspaceProject("testProject1");
-    }
-
-
-    public void testGetAllExperimentMetaInformation() throws Exception {
-        WorkspaceProject workspaceProject = null;
-        if(!registry.isWorkspaceProjectExists("testProject1"))  {
-            workspaceProject =  new WorkspaceProject("testProject1", registry);
-            registry.addWorkspaceProject(workspaceProject);
-        }
-        AiravataExperiment experiment = new AiravataExperiment();
-        experiment.setExperimentId("testExp");
-        registry.addExperiment("testProject1", experiment);
-
-        registry.updateExperimentExecutionUser("testExp", "admin");
-        registry.updateExperimentName("testExp", "testexperiment");
-
-        registry.addWorkflowInstance("testExp", "testWorkflow11", "template1");
-        ExperimentData testExp = registry.getExperimentMetaInformation("testExp");
-
-        assertNotNull("experiment data retrieved successfully", testExp);
-        registry.removeExperiment("testExp");
-        registry.deleteWorkspaceProject("testProject1");
-    }
-
-
-    public void testGetExperimentIdByUser() throws Exception {
-        WorkspaceProject workspaceProject = null;
-        if(!registry.isWorkspaceProjectExists("testProject1"))  {
-            workspaceProject =  new WorkspaceProject("testProject1", registry);
-            registry.addWorkspaceProject(workspaceProject);
-        }
-        AiravataExperiment experiment1 = new AiravataExperiment();
-        experiment1.setExperimentId("testExp1");
-        registry.addExperiment("testProject1", experiment1);
-
-        AiravataExperiment experiment2 = new AiravataExperiment();
-        experiment2.setExperimentId("testExp2");
-        registry.addExperiment("testProject1", experiment2);
-
-        registry.updateExperimentExecutionUser("testExp1", "admin");
-        registry.updateExperimentExecutionUser("testExp2", "admin");
-        registry.updateExperimentName("testExp1", "testexperiment1");
-        registry.updateExperimentName("testExp2", "testexperiment2");
-
-        registry.addWorkflowInstance("testExp1", "testWorkflow12", "template1");
-        registry.addWorkflowInstance("testExp2", "testWorkflow13", "template2");
-        List<String> experimentIdByUser = registry.getExperimentIdByUser("admin");
-
-        assertNotNull("experiment ID s for user retrieved successfully", experimentIdByUser.size() != 0);
-        registry.removeExperiment("testExp1");
-        registry.removeExperiment("testExp2");
-        registry.deleteWorkspaceProject("testProject1");
-    }
-
-
-    public void testGetExperimentByUser() throws Exception {
-        WorkspaceProject workspaceProject = null;
-        if(!registry.isWorkspaceProjectExists("testProject1"))  {
-            workspaceProject =  new WorkspaceProject("testProject1", registry);
-            registry.addWorkspaceProject(workspaceProject);
-        }
-        AiravataExperiment experiment1 = new AiravataExperiment();
-        experiment1.setExperimentId("testExp1");
-        registry.addExperiment("testProject1", experiment1);
-
-        AiravataExperiment experiment2 = new AiravataExperiment();
-        experiment2.setExperimentId("testExp2");
-        registry.addExperiment("testProject1", experiment2);
-
-        registry.updateExperimentExecutionUser("testExp1", "admin");
-        registry.updateExperimentExecutionUser("testExp2", "admin");
-        registry.updateExperimentName("testExp1", "testexperiment1");
-        registry.updateExperimentName("testExp2", "testexperiment2");
-
-        registry.addWorkflowInstance("testExp1", "testWorkflow14", "template1");
-        registry.addWorkflowInstance("testExp2", "testWorkflow15", "template2");
-        List<ExperimentData> experimentDataList = registry.getExperimentByUser("admin");
-
-        assertNotNull("experiment ID s for user retrieved successfully", experimentDataList.size() != 0);
-        registry.removeExperiment("testExp1");
-        registry.removeExperiment("testExp2");
-        registry.deleteWorkspaceProject("testProject1");
-    }
-
-
-//    public void testUpdateWorkflowNodeStatus() throws Exception {
+//    public void testGetExperiment() throws Exception {
+//        WorkspaceProject workspaceProject = null;
+//        if(!registry.isWorkspaceProjectExists("testProject1"))  {
+//            workspaceProject =  new WorkspaceProject("testProject1", registry);
+//            registry.addWorkspaceProject(workspaceProject);
+//        }
+//        AiravataExperiment experiment = new AiravataExperiment();
+//        experiment.setExperimentId("testExp");
+//        registry.addExperiment("testProject1", experiment);
+//
+//        registry.updateExperimentExecutionUser("testExp", "admin");
+//        registry.updateExperimentName("testExp", "testexperiment");
+//
+//        registry.addWorkflowInstance("testExp", "testWorkflow9", "template1");
+//        ExperimentData testExp = registry.getExperiment("testExp");
+//
+//        assertNotNull("experiment data retrieved successfully", testExp);
+//        registry.removeExperiment("testExp");
+//        registry.deleteWorkspaceProject("testProject1");
+//    }
+//
+//
+//    public void testGetExperimentMetaInformation() throws Exception {
+//        WorkspaceProject workspaceProject = null;
+//        if(!registry.isWorkspaceProjectExists("testProject1"))  {
+//            workspaceProject =  new WorkspaceProject("testProject1", registry);
+//            registry.addWorkspaceProject(workspaceProject);
+//        }
+//        AiravataExperiment experiment = new AiravataExperiment();
+//        experiment.setExperimentId("testExp");
+//        registry.addExperiment("testProject1", experiment);
+//
+//        registry.updateExperimentExecutionUser("testExp", "admin");
+//        registry.updateExperimentName("testExp", "testexperiment");
+//
+//        registry.addWorkflowInstance("testExp", "testWorkflow10", "template1");
+//        ExperimentData testExp = registry.getExperimentMetaInformation("testExp");
+//
+//        assertNotNull("experiment data retrieved successfully", testExp);
+//        registry.removeExperiment("testExp");
+//        registry.deleteWorkspaceProject("testProject1");
+//    }
+//
+//
+//    public void testGetAllExperimentMetaInformation() throws Exception {
+//        WorkspaceProject workspaceProject = null;
+//        if(!registry.isWorkspaceProjectExists("testProject1"))  {
+//            workspaceProject =  new WorkspaceProject("testProject1", registry);
+//            registry.addWorkspaceProject(workspaceProject);
+//        }
+//        AiravataExperiment experiment = new AiravataExperiment();
+//        experiment.setExperimentId("testExp");
+//        registry.addExperiment("testProject1", experiment);
+//
+//        registry.updateExperimentExecutionUser("testExp", "admin");
+//        registry.updateExperimentName("testExp", "testexperiment");
+//
+//        registry.addWorkflowInstance("testExp", "testWorkflow11", "template1");
+//        ExperimentData testExp = registry.getExperimentMetaInformation("testExp");
+//
+//        assertNotNull("experiment data retrieved successfully", testExp);
+//        registry.removeExperiment("testExp");
+//        registry.deleteWorkspaceProject("testProject1");
+//    }
+//
+//
+//    public void testGetExperimentIdByUser() throws Exception {
+//        WorkspaceProject workspaceProject = null;
+//        if(!registry.isWorkspaceProjectExists("testProject1"))  {
+//            workspaceProject =  new WorkspaceProject("testProject1", registry);
+//            registry.addWorkspaceProject(workspaceProject);
+//        }
+//        AiravataExperiment experiment1 = new AiravataExperiment();
+//        experiment1.setExperimentId("testExp1");
+//        registry.addExperiment("testProject1", experiment1);
+//
+//        AiravataExperiment experiment2 = new AiravataExperiment();
+//        experiment2.setExperimentId("testExp2");
+//        registry.addExperiment("testProject1", experiment2);
+//
+//        registry.updateExperimentExecutionUser("testExp1", "admin");
+//        registry.updateExperimentExecutionUser("testExp2", "admin");
+//        registry.updateExperimentName("testExp1", "testexperiment1");
+//        registry.updateExperimentName("testExp2", "testexperiment2");
+//
+//        registry.addWorkflowInstance("testExp1", "testWorkflow12", "template1");
+//        registry.addWorkflowInstance("testExp2", "testWorkflow13", "template2");
+//        List<String> experimentIdByUser = registry.getExperimentIdByUser("admin");
+//
+//        assertNotNull("experiment ID s for user retrieved successfully", experimentIdByUser.size() != 0);
+//        registry.removeExperiment("testExp1");
+//        registry.removeExperiment("testExp2");
+//        registry.deleteWorkspaceProject("testProject1");
+//    }
+//
+//
+//    public void testGetExperimentByUser() throws Exception {
+//        WorkspaceProject workspaceProject = null;
+//        if(!registry.isWorkspaceProjectExists("testProject1"))  {
+//            workspaceProject =  new WorkspaceProject("testProject1", registry);
+//            registry.addWorkspaceProject(workspaceProject);
+//        }
+//        AiravataExperiment experiment1 = new AiravataExperiment();
+//        experiment1.setExperimentId("testExp1");
+//        registry.addExperiment("testProject1", experiment1);
+//
+//        AiravataExperiment experiment2 = new AiravataExperiment();
+//        experiment2.setExperimentId("testExp2");
+//        registry.addExperiment("testProject1", experiment2);
+//
+//        registry.updateExperimentExecutionUser("testExp1", "admin");
+//        registry.updateExperimentExecutionUser("testExp2", "admin");
+//        registry.updateExperimentName("testExp1", "testexperiment1");
+//        registry.updateExperimentName("testExp2", "testexperiment2");
+//
+//        registry.addWorkflowInstance("testExp1", "testWorkflow14", "template1");
+//        registry.addWorkflowInstance("testExp2", "testWorkflow15", "template2");
+//        List<ExperimentData> experimentDataList = registry.getExperimentByUser("admin");
+//
+//        assertNotNull("experiment ID s for user retrieved successfully", experimentDataList.size() != 0);
+//        registry.removeExperiment("testExp1");
+//        registry.removeExperiment("testExp2");
+//        registry.deleteWorkspaceProject("testProject1");
+//    }
+//
+//
+////    public void testUpdateWorkflowNodeStatus() throws Exception {
+////        WorkspaceProject workspaceProject1 = new WorkspaceProject("testProject", registry);
+////        registry.addWorkspaceProject(workspaceProject1);
+////        AiravataExperiment experiment = new AiravataExperiment();
+////        experiment.setExperimentId("testExp");
+////        registry.addExperiment("testProject", experiment);
+////
+////        registry.updateExperimentExecutionUser("testExp", "admin");
+////        registry.updateExperimentName("testExp", "testexperiment");
+////
+////        registry.addWorkflowInstance("testExp", "testWorkflow", "template1");
+////
+////
+////
+////        WorkflowNodeType workflowNodeType = new WorkflowNodeType();
+////        workflowNodeType.setNodeType(WorkflowNodeType.WorkflowNode.SERVICENODE);
+////
+////        WorkflowInstanceNode node = new WorkflowInstanceNode(new WorkflowInstance("testExp", "testWorkflow"), "testNode");
+////        registry.addWorkflowInstanceNode("testWorkflow", "testNode");
+////
+////        WorkflowInstanceData workflowInstanceData = registry.getWorkflowInstanceData("testWorkflow");
+////        WorkflowInstanceNodeData workflowInstanceNodeData = registry.getWorkflowInstanceNodeData("testWorkflow", "testNode");
+////
+////        Calendar c = Calendar.getInstance();
+////        java.util.Date date = c.getTime();
+////        Date currentTime = new Date(date.getTime());
+////
+////        workflowInstanceNodeData.setStatus(WorkflowInstanceStatus.ExecutionStatus.FINISHED, currentTime);
+////        workflowInstanceData.addNodeData(workflowInstanceNodeData);
+////
+////        registry.updateWorkflowNodeOutput(node, "testData");
+////        registry.updateWorkflowNodeType(node,workflowNodeType);
+////
+////        registry.updateWorkflowNodeStatus("testWorkflow", "testNode", WorkflowInstanceStatus.ExecutionStatus.FINISHED);
+////
+////        WorkflowInstanceNodeStatus workflowNodeStatus = registry.getWorkflowNodeStatus(node);
+////
+////        assertTrue("workflow instance node status updated successfully", workflowNodeStatus.getExecutionStatus().equals(WorkflowInstanceStatus.ExecutionStatus.FINISHED));
+////
+////        registry.removeExperiment("testExp");
+////        registry.deleteWorkspaceProject("testProject");
+////
+////    }
+//
+//    /*
+//    public void testGetWorkflowNodeStatus() throws Exception {
 //        WorkspaceProject workspaceProject1 = new WorkspaceProject("testProject", registry);
 //        registry.addWorkspaceProject(workspaceProject1);
 //        AiravataExperiment experiment = new AiravataExperiment();
@@ -1530,268 +1575,223 @@ public class AiravataRegistryAPITest extends TestCase {
 //
 //        registry.addWorkflowInstance("testExp", "testWorkflow", "template1");
 //
+//        WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(new WorkflowInstance("testExp", "testWorkflow"), "testNode");
+//        registry.updateWorkflowNodeOutput(workflowInstanceNode, "testData");
+//
+//        WorkflowInstanceNodeData nodeData = registry.getWorkflowInstanceNodeData("testWorkflow", "testNode");
 //
 //
-//        WorkflowNodeType workflowNodeType = new WorkflowNodeType();
-//        workflowNodeType.setNodeType(WorkflowNodeType.WorkflowNode.SERVICENODE);
-//
-//        WorkflowInstanceNode node = new WorkflowInstanceNode(new WorkflowInstance("testExp", "testWorkflow"), "testNode");
-//        registry.addWorkflowInstanceNode("testWorkflow", "testNode");
-//
-//        WorkflowInstanceData workflowInstanceData = registry.getWorkflowInstanceData("testWorkflow");
-//        WorkflowInstanceNodeData workflowInstanceNodeData = registry.getWorkflowInstanceNodeData("testWorkflow", "testNode");
-//
-//        Calendar c = Calendar.getInstance();
-//        java.util.Date date = c.getTime();
-//        Date currentTime = new Date(date.getTime());
-//
-//        workflowInstanceNodeData.setStatus(WorkflowInstanceStatus.ExecutionStatus.FINISHED, currentTime);
-//        workflowInstanceData.addNodeData(workflowInstanceNodeData);
-//
-//        registry.updateWorkflowNodeOutput(node, "testData");
-//        registry.updateWorkflowNodeType(node,workflowNodeType);
-//
-//        registry.updateWorkflowNodeStatus("testWorkflow", "testNode", WorkflowInstanceStatus.ExecutionStatus.FINISHED);
-//
-//        WorkflowInstanceNodeStatus workflowNodeStatus = registry.getWorkflowNodeStatus(node);
-//
-//        assertTrue("workflow instance node status updated successfully", workflowNodeStatus.getExecutionStatus().equals(WorkflowInstanceStatus.ExecutionStatus.FINISHED));
+//        assertTrue("workflow instance node output saved successfully", nodeData.getOutput().equals("testData"));
 //
 //        registry.removeExperiment("testExp");
 //        registry.deleteWorkspaceProject("testProject");
 //
 //    }
-
-    /*
-    public void testGetWorkflowNodeStatus() throws Exception {
-        WorkspaceProject workspaceProject1 = new WorkspaceProject("testProject", registry);
-        registry.addWorkspaceProject(workspaceProject1);
-        AiravataExperiment experiment = new AiravataExperiment();
-        experiment.setExperimentId("testExp");
-        registry.addExperiment("testProject", experiment);
-
-        registry.updateExperimentExecutionUser("testExp", "admin");
-        registry.updateExperimentName("testExp", "testexperiment");
-
-        registry.addWorkflowInstance("testExp", "testWorkflow", "template1");
-
-        WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(new WorkflowInstance("testExp", "testWorkflow"), "testNode");
-        registry.updateWorkflowNodeOutput(workflowInstanceNode, "testData");
-
-        WorkflowInstanceNodeData nodeData = registry.getWorkflowInstanceNodeData("testWorkflow", "testNode");
-
-
-        assertTrue("workflow instance node output saved successfully", nodeData.getOutput().equals("testData"));
-
-        registry.removeExperiment("testExp");
-        registry.deleteWorkspaceProject("testProject");
-
-    }
-
-
-    public void testGetWorkflowNodeStartTime() throws Exception {
-//        WorkspaceProject workspaceProject1 = new WorkspaceProject("testProject", registry);
-//        registry.addWorkspaceProject(workspaceProject1);
-//        AiravataExperiment experiment = new AiravataExperiment();
-//        experiment.setExperimentId("testExp");
-//        registry.addExperiment("testProject", experiment);
 //
-//        registry.updateExperimentExecutionUser("testExp", "admin");
-//        registry.updateExperimentName("testExp", "testexperiment");
 //
-//        registry.addWorkflowInstance("testExp", "testWorkflow", "template1");
+//    public void testGetWorkflowNodeStartTime() throws Exception {
+////        WorkspaceProject workspaceProject1 = new WorkspaceProject("testProject", registry);
+////        registry.addWorkspaceProject(workspaceProject1);
+////        AiravataExperiment experiment = new AiravataExperiment();
+////        experiment.setExperimentId("testExp");
+////        registry.addExperiment("testProject", experiment);
+////
+////        registry.updateExperimentExecutionUser("testExp", "admin");
+////        registry.updateExperimentName("testExp", "testexperiment");
+////
+////        registry.addWorkflowInstance("testExp", "testWorkflow", "template1");
+////
+////        WorkflowNodeType workflowNodeType = new WorkflowNodeType();
+////        workflowNodeType.setNodeType(WorkflowNodeType.WorkflowNode.SERVICENODE);
+////
+////        WorkflowInstanceNode node = new WorkflowInstanceNode(new WorkflowInstance("testExp", "testWorkflow"), "testNode");
+////        registry.addWorkflowInstanceNode("testWorkflow", "testNode");
+////
+////        WorkflowInstanceData workflowInstanceData = registry.getWorkflowInstanceData("testWorkflow");
+////        WorkflowInstanceNodeData workflowInstanceNodeData = registry.getWorkflowInstanceNodeData("testWorkflow", "testNode");
+////
+////        Calendar c = Calendar.getInstance();
+////        java.util.Date date = c.getTime();
+////        Date currentTime = new Date(date.getTime());
+////
+////        workflowInstanceNodeData.setStatus(WorkflowInstanceStatus.ExecutionStatus.FINISHED, currentTime);
+////        workflowInstanceData.addNodeData(workflowInstanceNodeData);
+////
+////        registry.updateWorkflowNodeOutput(node, "testData");
+////        registry.updateWorkflowNodeType(node,workflowNodeType);
+////
+////        registry.updateWorkflowNodeStatus("testWorkflow", "testNode", WorkflowInstanceStatus.ExecutionStatus.FINISHED);
+////
+////        WorkflowInstanceNodeStatus workflowNodeStatus = registry.getWorkflowNodeStatus(node);
+////
+////        assertTrue("workflow instance node status updated successfully", workflowNodeStatus.getExecutionStatus().equals(WorkflowInstanceStatus.ExecutionStatus.FINISHED));
+////
+////        registry.removeExperiment("testExp");
+////        registry.deleteWorkspaceProject("testProject");
+//    }
 //
-//        WorkflowNodeType workflowNodeType = new WorkflowNodeType();
-//        workflowNodeType.setNodeType(WorkflowNodeType.WorkflowNode.SERVICENODE);
 //
-//        WorkflowInstanceNode node = new WorkflowInstanceNode(new WorkflowInstance("testExp", "testWorkflow"), "testNode");
-//        registry.addWorkflowInstanceNode("testWorkflow", "testNode");
+//    public void testGetWorkflowStartTime() throws Exception {
+//    }
 //
-//        WorkflowInstanceData workflowInstanceData = registry.getWorkflowInstanceData("testWorkflow");
-//        WorkflowInstanceNodeData workflowInstanceNodeData = registry.getWorkflowInstanceNodeData("testWorkflow", "testNode");
 //
-//        Calendar c = Calendar.getInstance();
-//        java.util.Date date = c.getTime();
-//        Date currentTime = new Date(date.getTime());
+//    public void testUpdateWorkflowNodeGramData() throws Exception {
+//    }
 //
-//        workflowInstanceNodeData.setStatus(WorkflowInstanceStatus.ExecutionStatus.FINISHED, currentTime);
-//        workflowInstanceData.addNodeData(workflowInstanceNodeData);
 //
-//        registry.updateWorkflowNodeOutput(node, "testData");
-//        registry.updateWorkflowNodeType(node,workflowNodeType);
+//    public void testGetWorkflowInstanceData() throws Exception {
+//    }
 //
-//        registry.updateWorkflowNodeStatus("testWorkflow", "testNode", WorkflowInstanceStatus.ExecutionStatus.FINISHED);
 //
-//        WorkflowInstanceNodeStatus workflowNodeStatus = registry.getWorkflowNodeStatus(node);
+//    public void testIsWorkflowInstanceNodePresent() throws Exception {
+//    }
 //
-//        assertTrue("workflow instance node status updated successfully", workflowNodeStatus.getExecutionStatus().equals(WorkflowInstanceStatus.ExecutionStatus.FINISHED));
+//    public void testGetWorkflowInstanceNodeData() throws Exception {
+//    }
 //
-//        registry.removeExperiment("testExp");
-//        registry.deleteWorkspaceProject("testProject");
-    }
-
-
-    public void testGetWorkflowStartTime() throws Exception {
-    }
-
-
-    public void testUpdateWorkflowNodeGramData() throws Exception {
-    }
-
-
-    public void testGetWorkflowInstanceData() throws Exception {
-    }
-
-
-    public void testIsWorkflowInstanceNodePresent() throws Exception {
-    }
-
-    public void testGetWorkflowInstanceNodeData() throws Exception {
-    }
-
-
-    public void testAddWorkflowInstance() throws Exception {
-    }
-
-
-    public void testUpdateWorkflowNodeType() throws Exception {
-    }
-
-
-    public void testAddWorkflowInstanceNode() throws Exception {
-    }   */
-
-
-
-    public void testIsPublishedWorkflowExists() throws Exception {
-        registry.addWorkflow("workflow1", "testContent");
-        registry.publishWorkflow("workflow1");
-
-        assertTrue("published workflow exists", registry.isPublishedWorkflowExists("workflow1"));
-
-        registry.removePublishedWorkflow("workflow1");
-        registry.removeWorkflow("workflow1");
-    }
-
-
-    public void testPublishWorkflow() throws Exception {
-        registry.addWorkflow("workflow1", "testContent");
-        registry.publishWorkflow("workflow1");
-
-        assertTrue("workflow is published", registry.isPublishedWorkflowExists("workflow1"));
-
-        registry.removePublishedWorkflow("workflow1");
-        registry.removeWorkflow("workflow1");
-    }
-
-
-    public void testPublishWorkflowWithGivenName() throws Exception {
-        registry.addWorkflow("workflow1", "testContent");
-        registry.publishWorkflow("workflow1", "publishedWorkflow1");
-
-        assertTrue("workflow published with given name", registry.isPublishedWorkflowExists("publishedWorkflow1"));
-
-        registry.removePublishedWorkflow("publishedWorkflow1");
-        registry.removeWorkflow("workflow1");
-    }
-
-
-    public void testGetPublishedWorkflowGraphXML() throws Exception {
-        registry.addWorkflow("workflow1", "testContent");
-        registry.publishWorkflow("workflow1");
-
-        String graphXML = registry.getPublishedWorkflowGraphXML("workflow1");
-
-        assertTrue("workflow content retrieved successfully", "testContent".equals(graphXML));
-
-        registry.removePublishedWorkflow("workflow1");
-        registry.removeWorkflow("workflow1");
-    }
-
-
-    public void testGetPublishedWorkflowNames() throws Exception {
-        registry.addWorkflow("workflow1", "testContent");
-        registry.publishWorkflow("workflow1", "publishWorkflow1");
-        registry.publishWorkflow("workflow1", "publishWorkflow2");
-
-        List<String> publishedWorkflowNames = registry.getPublishedWorkflowNames();
-
-        assertTrue("published workflow names retrieved successfully", publishedWorkflowNames.size() == 2);
-        registry.removePublishedWorkflow("publishWorkflow1");
-        registry.removePublishedWorkflow("publishWorkflow2");
-        registry.removeWorkflow("workflow1");
-    }
-
-
-    public void testGetPublishedWorkflows() throws Exception {
-        registry.addWorkflow("workflow1", "testContent");
-        registry.publishWorkflow("workflow1", "publishWorkflow1");
-        registry.publishWorkflow("workflow1", "publishWorkflow2");
-
-        Map<String, String> publishedWorkflows = registry.getPublishedWorkflows();
-
-        assertTrue("published workflows retrieved successfully", publishedWorkflows.size() == 2);
-        registry.removePublishedWorkflow("publishWorkflow1");
-        registry.removePublishedWorkflow("publishWorkflow2");
-        registry.removeWorkflow("workflow1");
-    }
-
-
-    public void testRemovePublishedWorkflow() throws Exception {
-        registry.addWorkflow("workflow1", "testContent");
-        registry.publishWorkflow("workflow1");
-        registry.removePublishedWorkflow("workflow1");
-
-        assertFalse("publish workflow removed successfully", registry.isPublishedWorkflowExists("workflow1"));
-        registry.removeWorkflow("workflow1");
-    }
-
-
-    public void testIsWorkflowExists() throws Exception {
-        registry.addWorkflow("workflow1", "testContent");
-        assertTrue("user workflow exists", registry.isWorkflowExists("workflow1"));
-        registry.removeWorkflow("workflow1");
-    }
-
-
-    public void testAddWorkflow() throws Exception {
-        registry.addWorkflow("workflow1", "testContent");
-        assertTrue("user workflow added successfully", registry.isWorkflowExists("workflow1"));
-        registry.removeWorkflow("workflow1");
-    }
-
-
-    public void testUpdateWorkflow() throws Exception {
-        registry.addWorkflow("workflow1", "testContent1");
-        registry.updateWorkflow("workflow1", "testContent2");
-        assertTrue("user workflow updated successfully", registry.getWorkflowGraphXML("workflow1").equals("testContent2"));
-        registry.removeWorkflow("workflow1");
-    }
-
-
-    public void testGetWorkflowGraphXML() throws Exception {
-        registry.addWorkflow("workflow1", "testContent1");
-        assertTrue("user workflow graph retrieved successfully", registry.getWorkflowGraphXML("workflow1").equals("testContent1"));
-        registry.removeWorkflow("workflow1");
-    }
-
-
-    public void testGetWorkflows() throws Exception {
-        registry.addWorkflow("workflow1", "testContent1");
-        registry.addWorkflow("workflow2", "testContent2");
-
-        Map<String, String> workflows = registry.getWorkflows();
-        assertTrue("workflows retrieved successfully", workflows.size() ==2);
-        registry.removeWorkflow("workflow1");
-        registry.removeWorkflow("workflow2");
-    }
-
-
-    public void testRemoveWorkflow() throws Exception {
-        registry.addWorkflow("workflow1", "testContent");
-        registry.removeWorkflow("workflow1");
-        assertFalse("user workflow removed successfully", registry.isWorkflowExists("workflow1"));
-    }
+//
+//    public void testAddWorkflowInstance() throws Exception {
+//    }
+//
+//
+//    public void testUpdateWorkflowNodeType() throws Exception {
+//    }
+//
+//
+//    public void testAddWorkflowInstanceNode() throws Exception {
+//    }   */
+//
+//
+//
+//    public void testIsPublishedWorkflowExists() throws Exception {
+//        registry.addWorkflow("workflow1", "testContent");
+//        registry.publishWorkflow("workflow1");
+//
+//        assertTrue("published workflow exists", registry.isPublishedWorkflowExists("workflow1"));
+//
+//        registry.removePublishedWorkflow("workflow1");
+//        registry.removeWorkflow("workflow1");
+//    }
+//
+//
+//    public void testPublishWorkflow() throws Exception {
+//        registry.addWorkflow("workflow1", "testContent");
+//        registry.publishWorkflow("workflow1");
+//
+//        assertTrue("workflow is published", registry.isPublishedWorkflowExists("workflow1"));
+//
+//        registry.removePublishedWorkflow("workflow1");
+//        registry.removeWorkflow("workflow1");
+//    }
+//
+//
+//    public void testPublishWorkflowWithGivenName() throws Exception {
+//        registry.addWorkflow("workflow1", "testContent");
+//        registry.publishWorkflow("workflow1", "publishedWorkflow1");
+//
+//        assertTrue("workflow published with given name", registry.isPublishedWorkflowExists("publishedWorkflow1"));
+//
+//        registry.removePublishedWorkflow("publishedWorkflow1");
+//        registry.removeWorkflow("workflow1");
+//    }
+//
+//
+//    public void testGetPublishedWorkflowGraphXML() throws Exception {
+//        registry.addWorkflow("workflow1", "testContent");
+//        registry.publishWorkflow("workflow1");
+//
+//        String graphXML = registry.getPublishedWorkflowGraphXML("workflow1");
+//
+//        assertTrue("workflow content retrieved successfully", "testContent".equals(graphXML));
+//
+//        registry.removePublishedWorkflow("workflow1");
+//        registry.removeWorkflow("workflow1");
+//    }
+//
+//
+//    public void testGetPublishedWorkflowNames() throws Exception {
+//        registry.addWorkflow("workflow1", "testContent");
+//        registry.publishWorkflow("workflow1", "publishWorkflow1");
+//        registry.publishWorkflow("workflow1", "publishWorkflow2");
+//
+//        List<String> publishedWorkflowNames = registry.getPublishedWorkflowNames();
+//
+//        assertTrue("published workflow names retrieved successfully", publishedWorkflowNames.size() == 2);
+//        registry.removePublishedWorkflow("publishWorkflow1");
+//        registry.removePublishedWorkflow("publishWorkflow2");
+//        registry.removeWorkflow("workflow1");
+//    }
+//
+//
+//    public void testGetPublishedWorkflows() throws Exception {
+//        registry.addWorkflow("workflow1", "testContent");
+//        registry.publishWorkflow("workflow1", "publishWorkflow1");
+//        registry.publishWorkflow("workflow1", "publishWorkflow2");
+//
+//        Map<String, String> publishedWorkflows = registry.getPublishedWorkflows();
+//
+//        assertTrue("published workflows retrieved successfully", publishedWorkflows.size() == 2);
+//        registry.removePublishedWorkflow("publishWorkflow1");
+//        registry.removePublishedWorkflow("publishWorkflow2");
+//        registry.removeWorkflow("workflow1");
+//    }
+//
+//
+//    public void testRemovePublishedWorkflow() throws Exception {
+//        registry.addWorkflow("workflow1", "testContent");
+//        registry.publishWorkflow("workflow1");
+//        registry.removePublishedWorkflow("workflow1");
+//
+//        assertFalse("publish workflow removed successfully", registry.isPublishedWorkflowExists("workflow1"));
+//        registry.removeWorkflow("workflow1");
+//    }
+//
+//
+//    public void testIsWorkflowExists() throws Exception {
+//        registry.addWorkflow("workflow1", "testContent");
+//        assertTrue("user workflow exists", registry.isWorkflowExists("workflow1"));
+//        registry.removeWorkflow("workflow1");
+//    }
+//
+//
+//    public void testAddWorkflow() throws Exception {
+//        registry.addWorkflow("workflow1", "testContent");
+//        assertTrue("user workflow added successfully", registry.isWorkflowExists("workflow1"));
+//        registry.removeWorkflow("workflow1");
+//    }
+//
+//
+//    public void testUpdateWorkflow() throws Exception {
+//        registry.addWorkflow("workflow1", "testContent1");
+//        registry.updateWorkflow("workflow1", "testContent2");
+//        assertTrue("user workflow updated successfully", registry.getWorkflowGraphXML("workflow1").equals("testContent2"));
+//        registry.removeWorkflow("workflow1");
+//    }
+//
+//
+//    public void testGetWorkflowGraphXML() throws Exception {
+//        registry.addWorkflow("workflow1", "testContent1");
+//        assertTrue("user workflow graph retrieved successfully", registry.getWorkflowGraphXML("workflow1").equals("testContent1"));
+//        registry.removeWorkflow("workflow1");
+//    }
+//
+//
+//    public void testGetWorkflows() throws Exception {
+//        registry.addWorkflow("workflow1", "testContent1");
+//        registry.addWorkflow("workflow2", "testContent2");
+//
+//        Map<String, String> workflows = registry.getWorkflows();
+//        assertTrue("workflows retrieved successfully", workflows.size() ==2);
+//        registry.removeWorkflow("workflow1");
+//        registry.removeWorkflow("workflow2");
+//    }
+//
+//
+//    public void testRemoveWorkflow() throws Exception {
+//        registry.addWorkflow("workflow1", "testContent");
+//        registry.removeWorkflow("workflow1");
+//        assertFalse("user workflow removed successfully", registry.isWorkflowExists("workflow1"));
+//    }
 
     @Override
     protected void tearDown() throws Exception {

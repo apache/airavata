@@ -307,7 +307,8 @@ public class EmbeddedGFacInvoker implements Invoker {
             //Here we get only the contextheader information sent specific for this node
             //Add security context
 
-            jobExecutionContext.setContextHeader(WorkflowContextHeaderBuilder.removeOtherSchedulingConfig(nodeID, configuration.getContextHeader()));
+            //FIXME - We no longer using job execution context
+//            jobExecutionContext.setContextHeader(WorkflowContextHeaderBuilder.removeOtherSchedulingConfig(nodeID, configuration.getContextHeader()));
 
 
             jobExecutionContext.setProperty(Constants.PROP_WORKFLOW_NODE_ID, this.nodeID);
