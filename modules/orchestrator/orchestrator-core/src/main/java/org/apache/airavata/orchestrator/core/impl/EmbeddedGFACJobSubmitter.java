@@ -24,6 +24,7 @@ package org.apache.airavata.orchestrator.core.impl;
 import java.util.*;
 
 import org.apache.airavata.common.utils.AiravataJobState;
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.cpi.GFac;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
@@ -61,44 +62,39 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
     }
 
 
-    public boolean submitJob(GFACInstance gfac, List<String> experimentIDList) throws OrchestratorException {
-
-        for (int i = 0; i < experimentIDList.size(); i++) {
-            try {
-                // once its fetched it's status will changed to fetched state
-                launchGfacWithExperimentID(experimentIDList.get(i));
-            } catch (Exception e) {
-                logger.error("Error getting job related information");
-                throw new OrchestratorException(e);
-            }
-        }
-        return true;
-    }
-
-    //FIXME: (MEP) This method is pretty gruesome.  If we really expect multiple implementations of the JobSubmitter
-    // interface and at least some of them will need to do the stuff in this method, then we need a parent class
-    // GenericJobSubmitterImpl.java (maybe abstract) that includes launchGfacWithExperimentID() so that subclasses can inherit it.
-    private void launchGfacWithExperimentID(String experimentID) throws OrchestratorException {
-        Registry newRegistry = orchestratorContext.getNewRegistry();
+    public String submit(String experimentID, String taskID) throws OrchestratorException {
+        JobExecutionContext jobExecutionContext;
         try {
-            //todo init this during submitter init
-            JobExecutionContext jobExecutionContext = gfac.submitJob(experimentID,null);
-            orchestratorContext.getRegistry().changeStatus(experimentID, AiravataJobState.State.SUBMITTED);
-        } catch (Exception e)
-        {
-            throw new OrchestratorException("Error launching the Job", e);
-        }
-
-    }
-
-    public boolean directJobSubmit(String experimentID) throws OrchestratorException {
-        try {
-            launchGfacWithExperimentID(experimentID);
+             jobExecutionContext = gfac.submitJob(experimentID, taskID);
         } catch (Exception e) {
             String error = "Error launching the job : " + experimentID;
             logger.error(error);
             throw new OrchestratorException(error);
         }
-        return true;
+        return jobExecutionContext.getJobDetails().getJobID();
+    }
+
+    public GFac getGfac() {
+        return gfac;
+    }
+
+    public void setGfac(GFac gfac) {
+        this.gfac = gfac;
+    }
+
+    public OrchestratorContext getOrchestratorContext() {
+        return orchestratorContext;
+    }
+
+    public void setOrchestratorContext(OrchestratorContext orchestratorContext) {
+        this.orchestratorContext = orchestratorContext;
+    }
+
+    public void runAfterJobTask(String experimentID, String taskID) throws OrchestratorException {
+        try {
+            gfac.invokeOutFlowHandlers(experimentID,taskID);
+        } catch (GFacException e) {
+            throw new OrchestratorException(e);
+        }
     }
 }

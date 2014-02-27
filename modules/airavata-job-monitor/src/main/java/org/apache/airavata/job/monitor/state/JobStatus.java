@@ -23,6 +23,8 @@ package org.apache.airavata.job.monitor.state;
 import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.model.workspace.experiment.JobState;
 
+import java.util.Properties;
+
 /**
  * This is the primary job state object used in
  * through out the monitor module. This use airavata-data-model JobState enum
@@ -34,6 +36,7 @@ public class JobStatus {
     private JobState state;
 
     private MonitorID monitorID;
+
 
     public JobState getState() {
         return state;

@@ -44,17 +44,21 @@ public interface JobSubmitter {
      */
     GFACInstance selectGFACInstance() throws OrchestratorException;
 
-    /**
-     * @param gfac
-     * @return
-     */
-    boolean submitJob(GFACInstance gfac,List<String> experimentIDList) throws OrchestratorException;
 
     /**
      * This can be used when user doesn't want to run in a threaded pull mode
      * just get the request data and do the submission
-     * @param experimentID
-     * @return
+     * @param experimentID experimentID cannot be null
+     * @param taskID taskID cannot be null
+     * @return jobID return the jobID from GFac
      */
-    boolean directJobSubmit(String experimentID) throws OrchestratorException;
+    String submit(String experimentID, String taskID) throws OrchestratorException;
+
+    /**
+     * This can be use to handle any after Jobsubmission task
+     * @param experimentID
+     * @param taskID
+     * @throws OrchestratorException
+     */
+    void runAfterJobTask(String experimentID,String taskID) throws OrchestratorException;
 }

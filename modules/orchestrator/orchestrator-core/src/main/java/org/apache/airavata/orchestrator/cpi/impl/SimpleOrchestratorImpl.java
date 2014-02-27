@@ -20,15 +20,24 @@
 */
 package org.apache.airavata.orchestrator.cpi.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import org.apache.airavata.common.utils.AiravataJobState;
+import com.google.common.eventbus.Subscribe;
+import org.apache.airavata.gfac.cpi.GFacImpl;
+import org.apache.airavata.job.monitor.MonitorID;
+import org.apache.airavata.job.monitor.state.JobStatus;
+import org.apache.airavata.model.util.ExperimentModelUtil;
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
-import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.cpi.ChildDataType;
+import org.apache.airavata.registry.cpi.DataType;
+import org.apache.airavata.registry.cpi.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,26 +79,77 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         }
     }
 
-    public boolean launchExperiment(String experimentID) throws OrchestratorException {
+    public String launchExperiment(String experimentID, String taskID) throws OrchestratorException {
         // we give higher priority to userExperimentID
         //todo support multiple validators
+        String jobID = null;
         if (this.orchestratorConfiguration.isEnableValidation()) {
-            if(jobMetadataValidator.validate(experimentID)){
-                logger.info("validation Successful for the experiment: " +  experimentID);
-            }else {
+            if (jobMetadataValidator.validate(experimentID)) {
+                logger.info("validation Successful for the experiment: " + experimentID);
+            } else {
                 throw new OrchestratorException("Validation Failed, so Job will not be submitted to GFAC");
             }
         }
-        try {
-            airavataRegistry.changeStatus(experimentID, AiravataJobState.State.ACCEPTED);
-            if (orchestratorContext.getOrchestratorConfiguration().getThreadPoolSize() == 0) {
-                jobSubmitter.directJobSubmit(experimentID);
-            }
-        } catch (RegistryException e) {
-            //todo put more meaningful error message
-            logger.error("Failed to create experiment for the request from " + experimentID);
-            return false;
+        if (orchestratorContext.getOrchestratorConfiguration().getThreadPoolSize() == 0) {
+            jobID = jobSubmitter.submit(experimentID, taskID);
         }
-        return true;
+        return jobID;
+    }
+
+    /**
+     * This method will parse the ExperimentConfiguration and based on the configuration
+     * we create a single or multiple tasks for the experiment.
+     *
+     * @param experimentId
+     * @return
+     * @throws OrchestratorException
+     */
+    public List<TaskDetails> createTasks(String experimentId) throws OrchestratorException {
+        Experiment experiment = null;
+        List<TaskDetails> tasks = new ArrayList<TaskDetails>();
+        try {
+            Registry newRegistry = orchestratorContext.getNewRegistry();
+            experiment = (Experiment) newRegistry.get(DataType.EXPERIMENT, experimentId);
+
+
+            WorkflowNodeDetails iDontNeedaNode = ExperimentModelUtil.createWorkflowNode("IDontNeedaNode", null);
+            String nodeID = (String) newRegistry.add(ChildDataType.WORKFLOW_NODE_DETAIL, iDontNeedaNode, experimentId);
+
+            TaskDetails taskDetails = ExperimentModelUtil.cloneTaskFromExperiment(experiment);
+            taskDetails.setTaskID((String) newRegistry.add(ChildDataType.TASK_DETAIL, taskDetails, nodeID));
+            tasks.add(taskDetails);
+        } catch (Exception e) {
+            throw new OrchestratorException("Error during creating a task");
+        }
+        return tasks;
+    }
+
+    @Subscribe
+    public void handlePostExperimentTask(JobStatus status) throws OrchestratorException {
+        MonitorID monitorID = status.getMonitorID();
+        jobSubmitter.runAfterJobTask(monitorID.getExperimentID(),monitorID.getTaskID());
+    }
+    public ExecutorService getExecutor() {
+        return executor;
+    }
+
+    public void setExecutor(ExecutorService executor) {
+        this.executor = executor;
+    }
+
+    public JobMetadataValidator getJobMetadataValidator() {
+        return jobMetadataValidator;
+    }
+
+    public void setJobMetadataValidator(JobMetadataValidator jobMetadataValidator) {
+        this.jobMetadataValidator = jobMetadataValidator;
+    }
+
+    public JobSubmitter getJobSubmitter() {
+        return jobSubmitter;
+    }
+
+    public void setJobSubmitter(JobSubmitter jobSubmitter) {
+        this.jobSubmitter = jobSubmitter;
     }
 }

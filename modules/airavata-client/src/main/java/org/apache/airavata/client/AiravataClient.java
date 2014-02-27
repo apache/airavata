@@ -63,18 +63,10 @@ public class AiravataClient extends Observable implements AiravataAPI {
 			.getLogger(AiravataClient.class);
 	public static final String REGISTRY = "JCR";
 	public static final String GFAC = "gfac";
-	public static final String PROXYSERVER = "proxyserver";
 	public static final String MSGBOX = "msgbox";
 	public static final String BROKER = "broker";
-	public static final String DEFAULT_GFAC_URL = "gfac.url";
-	public static final String DEFAULT_MYPROXY_SERVER = "myproxy.url";
-	public static final String DEFAULT_MESSAGE_BOX_URL = "messagebox.url";
-	public static final String DEFAULT_BROKER_URL = "messagebroker.url";
-	public static final String MYPROXYUSERNAME = "myproxy.username";
-	public static final String MYPROXYPASS = "myproxy.password";
 	public static final String WITHLISTENER = "with.Listener";
 	public static final String WORKFLOWSERVICEURL = "xbaya.service.url";
-	public static final String TRUSTED_CERT_LOCATION = "trusted.cert.location";
 	private AiravataClientConfiguration clientConfiguration;
 	private String currentUser;
 	private URI regitryURI;

@@ -114,58 +114,63 @@ public class GFacImpl implements GFac {
     public JobExecutionContext submitJob(String experimentID,String taskID) throws GFacException {
         JobExecutionContext jobExecutionContext = null;
         try {
-        	TaskDetails taskData = (TaskDetails) registry.get(DataType.TASK_DETAIL, taskID);
-            // this is wear our new model and old model is mapping (so serviceName in ExperimentData and service name in ServiceDescriptor
-            // has to be same.
-
-            // 1. Get the Task from the task ID and construct the Job object and save it in to registry
-            // 2. Add another property to jobExecutionContext and read them inside the provider and use it.
-            String serviceName = taskData.getApplicationId();
-        if (serviceName == null) {
-            throw new GFacException("Error executing the job because there is not Application Name in this Experiment");
-        }
-            List<HostDescription> registeredHosts = new ArrayList<HostDescription>();
-            Map<String, ApplicationDescription> applicationDescriptors = airavataRegistry2.getApplicationDescriptors(serviceName);
-            for (String hostDescName : applicationDescriptors.keySet()) {
-                registeredHosts.add(airavataRegistry2.getHostDescriptor(hostDescName));
-            }
-            Class<? extends HostScheduler> aClass = Class.forName(ServerSettings.getHostScheduler()).asSubclass(HostScheduler.class);
-            HostScheduler hostScheduler = aClass.newInstance();
-            HostDescription hostDescription = hostScheduler.schedule(registeredHosts);
-
-            ServiceDescription serviceDescription = airavataRegistry2.getServiceDescriptor(serviceName);
-
-            ApplicationDescription applicationDescription = airavataRegistry2.getApplicationDescriptors(serviceName, hostDescription.getType().getHostName());
-            URL resource = GFacImpl.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
-            Properties configurationProperties = ServerSettings.getProperties();
-            GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, configurationProperties);
-
-            jobExecutionContext = new JobExecutionContext(gFacConfiguration, serviceName);
-            jobExecutionContext.setTaskData(taskData);
-            
-            ApplicationContext applicationContext = new ApplicationContext();
-            applicationContext.setApplicationDeploymentDescription(applicationDescription);
-            applicationContext.setHostDescription(hostDescription);
-            applicationContext.setServiceDescription(serviceDescription);
-            jobExecutionContext.setApplicationContext(applicationContext);
-
-            List<DataObjectType> experimentInputs = taskData.getApplicationInputs();
-            jobExecutionContext.setInMessageContext(new MessageContext(GFacUtils.getMessageContext(experimentInputs,
-                    serviceDescription.getType().getInputParametersArray())));
-
-            HashMap<String, Object> outputData = new HashMap<String, Object>();
-            jobExecutionContext.setOutMessageContext(new MessageContext(outputData));
-
-            jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
-            jobExecutionContext.setExperimentID(experimentID);
-
-            addSecurityContext(hostDescription, configurationProperties, jobExecutionContext);
+            jobExecutionContext = createJEC(experimentID, taskID);
 
             submitJob(jobExecutionContext);
         } catch (Exception e) {
             log.error("Error inovoking the job with experiment ID: " + experimentID);
             throw new GFacException(e);
         }
+        return jobExecutionContext;
+    }
+
+    private JobExecutionContext createJEC(String experimentID, String taskID) throws Exception {
+        JobExecutionContext jobExecutionContext;TaskDetails taskData = (TaskDetails) registry.get(DataType.TASK_DETAIL, taskID);
+        // this is wear our new model and old model is mapping (so serviceName in ExperimentData and service name in ServiceDescriptor
+        // has to be same.
+
+        // 1. Get the Task from the task ID and construct the Job object and save it in to registry
+        // 2. Add another property to jobExecutionContext and read them inside the provider and use it.
+        String serviceName = taskData.getApplicationId();
+        if (serviceName == null) {
+            throw new GFacException("Error executing the job because there is not Application Name in this Experiment");
+        }
+        List<HostDescription> registeredHosts = new ArrayList<HostDescription>();
+        Map<String, ApplicationDescription> applicationDescriptors = airavataRegistry2.getApplicationDescriptors(serviceName);
+        for (String hostDescName : applicationDescriptors.keySet()) {
+            registeredHosts.add(airavataRegistry2.getHostDescriptor(hostDescName));
+        }
+        Class<? extends HostScheduler> aClass = Class.forName(ServerSettings.getHostScheduler()).asSubclass(HostScheduler.class);
+        HostScheduler hostScheduler = aClass.newInstance();
+        HostDescription hostDescription = hostScheduler.schedule(registeredHosts);
+
+        ServiceDescription serviceDescription = airavataRegistry2.getServiceDescriptor(serviceName);
+
+        ApplicationDescription applicationDescription = airavataRegistry2.getApplicationDescriptors(serviceName, hostDescription.getType().getHostName());
+        URL resource = GFacImpl.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
+        Properties configurationProperties = ServerSettings.getProperties();
+        GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, configurationProperties);
+
+        jobExecutionContext = new JobExecutionContext(gFacConfiguration, serviceName);
+        jobExecutionContext.setTaskData(taskData);
+
+        ApplicationContext applicationContext = new ApplicationContext();
+        applicationContext.setApplicationDeploymentDescription(applicationDescription);
+        applicationContext.setHostDescription(hostDescription);
+        applicationContext.setServiceDescription(serviceDescription);
+        jobExecutionContext.setApplicationContext(applicationContext);
+
+        List<DataObjectType> experimentInputs = taskData.getApplicationInputs();
+        jobExecutionContext.setInMessageContext(new MessageContext(GFacUtils.getMessageContext(experimentInputs,
+                serviceDescription.getType().getInputParametersArray())));
+
+        HashMap<String, Object> outputData = new HashMap<String, Object>();
+        jobExecutionContext.setOutMessageContext(new MessageContext(outputData));
+
+        jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
+        jobExecutionContext.setExperimentID(experimentID);
+
+        addSecurityContext(hostDescription, configurationProperties, jobExecutionContext);
         return jobExecutionContext;
     }
 
@@ -271,7 +276,14 @@ public class GFacImpl implements GFac {
         }
     }
 
-    public void invokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
+    public void invokeOutFlowHandlers(String experimentID,String taskID) throws GFacException {
+        JobExecutionContext jobExecutionContext = null;
+        try {
+            jobExecutionContext = createJEC(experimentID, taskID);
+            Scheduler.schedule(jobExecutionContext);
+        } catch (Exception e) {
+            throw new GFacException(e);
+        }
         List<GFacHandlerConfig> handlers = jobExecutionContext.getGFacConfiguration().getOutHandlers();
 
         for (GFacHandlerConfig handlerClassName : handlers) {

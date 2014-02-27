@@ -627,10 +627,10 @@ public class EmbeddedGFacInvoker implements Invoker {
                 XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(XMLUtil.xmlElementToString((XmlElement) value)));
                 StAXOMBuilder builder = new StAXOMBuilder(reader);
                 OMElement input = builder.getDocumentElement();
-                actualParameters.put(parameter.getParameterName(), GFacUtils.getInputActualParameter(parameter, input));
+//                actualParameters.put(parameter.getParameterName(), GFacUtils.getInputActualParameter(parameter, input));
             } else if (value instanceof String) {
                 omElement.setText((String) value);
-                actualParameters.put(parameter.getParameterName(), GFacUtils.getInputActualParameter(parameter, AXIOMUtil.stringToOM("<value>" + value + "</value>")));
+//                actualParameters.put(parameter.getParameterName(), GFacUtils.getInputActualParameter(parameter, AXIOMUtil.stringToOM("<value>" + value + "</value>")));
             }
             invoke_inputParams.addChild(omElement);
         }
