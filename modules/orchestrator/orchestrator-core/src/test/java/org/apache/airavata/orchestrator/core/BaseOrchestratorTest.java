@@ -40,11 +40,11 @@ public class BaseOrchestratorTest {
     private DocumentCreator documentCreator;
 
     public void setUp() throws Exception {
-        initialize = new Initialize("airavata-registry-derby.sql");
+        initialize = new Initialize("registry-derby.sql");
         initialize.initializeDB();
         gatewayResource = (GatewayResource) ResourceUtils.getGateway("default");
         workerResource = (WorkerResource) ResourceUtils.getWorker(gatewayResource.getGatewayName(), "admin");
-        userResource = (UserResource) gatewayResource.create(ResourceType.USER);
+        userResource = new UserResource();
         userResource.setUserName("admin");
         userResource.setPassword("admin");
 

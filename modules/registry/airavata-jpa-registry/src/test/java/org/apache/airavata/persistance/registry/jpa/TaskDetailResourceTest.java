@@ -29,7 +29,7 @@ public class TaskDetailResourceTest extends AbstractResourceTest{
 	    
 	    experimentResource = (ExperimentResource) getGatewayResource().create(ResourceType.EXPERIMENT);
         experimentResource.setExpID(experimentID);
-        experimentResource.setWorker(getWorkerResource());
+        experimentResource.setExecutionUser(getWorkerResource().getUser());
         experimentResource.setProject(getProjectResource());
         experimentResource.setCreationTime(creationTime);
         experimentResource.save();

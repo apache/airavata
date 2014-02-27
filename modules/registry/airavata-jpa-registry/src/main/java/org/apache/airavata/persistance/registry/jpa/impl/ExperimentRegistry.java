@@ -21,8 +21,6 @@
 
 package org.apache.airavata.persistance.registry.jpa.impl;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
@@ -40,13 +38,14 @@ import java.sql.Timestamp;
 import java.util.*;
 
 public class ExperimentRegistry {
-    private GatewayRegistry gatewayRegistry;
-    private UserReg userReg;
+    private GatewayResource gatewayResource;
+    private WorkerResource workerResource;
     private final static Logger logger = LoggerFactory.getLogger(ExperimentRegistry.class);
 
-    public ExperimentRegistry() {
-        gatewayRegistry = new GatewayRegistry();
-        userReg = new UserReg();
+    public ExperimentRegistry(GatewayResource gateway, UserResource user) {
+        gatewayResource = gateway;
+        workerResource = new WorkerResource(user.getUserName(), gatewayResource);
+        workerResource.save();
     }
 
     public String addExperiment(Experiment experiment) throws Exception{
@@ -56,16 +55,14 @@ public class ExperimentRegistry {
                 logger.error("User does not exist in the system..");
                 throw new Exception("User does not exist in the system..");
             }
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            WorkerResource worker = userReg.getExistingUser(gateway.getGatewayName(), experiment.getUserName());
             experimentID = getExperimentID(experiment.getName());
             ExperimentResource experimentResource = new ExperimentResource();
             experimentResource.setExpID(experimentID);
             experimentResource.setExpName(experiment.getName());
-            experimentResource.setWorker(worker);
-            experimentResource.setGateway(gateway);
-            if (!worker.isProjectExists(experiment.getProjectID())){
-                ProjectResource project = worker.createProject(experiment.getProjectID());
+            experimentResource.setExecutionUser(experiment.getUserName());
+            experimentResource.setGateway(gatewayResource);
+            if (!workerResource.isProjectExists(experiment.getProjectID())){
+                ProjectResource project = workerResource.createProject(experiment.getProjectID());
                 experimentResource.setProject(project);
             }
             experimentResource.setCreationTime(getTime(experiment.getCreationTime()));
@@ -81,9 +78,7 @@ public class ExperimentRegistry {
                 addExpInputs(experimentInputs, experimentResource);
             }
 
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
-        }catch (Exception e){
+        } catch (Exception e){
             logger.error("Error while saving experiment to registry", e.getMessage());
         }
         return experimentID;
@@ -91,8 +86,7 @@ public class ExperimentRegistry {
 
     public String addUserConfigData(UserConfigurationData configurationData, String experimentID) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = gateway.getExperiment(experimentID);
+            ExperimentResource experiment = gatewayResource.getExperiment(experimentID);
             ConfigDataResource configData = (ConfigDataResource)experiment.create(ResourceType.CONFIG_DATA);
             configData.setExperimentResource(experiment);
             configData.setAiravataAutoSchedule(configurationData.isAiravataAutoSchedule());
@@ -117,9 +111,7 @@ public class ExperimentRegistry {
             if (qosParams != null) {
                 addQosParams(qosParams,experiment);
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
-        }catch (Exception e){
+        } catch (Exception e){
             logger.error("Unable to save user config data", e.getMessage());
         }
         return experimentID;
@@ -224,8 +216,7 @@ public class ExperimentRegistry {
 
     public String addExpOutputs(List<DataObjectType> exOutput, String expId) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = gateway.getExperiment(expId);
+            ExperimentResource experiment = gatewayResource.getExperiment(expId);
             for (DataObjectType output : exOutput) {
                 ExperimentOutputResource resource = (ExperimentOutputResource) experiment.create(ResourceType.EXPERIMENT_OUTPUT);
                 resource.setExperimentResource(experiment);
@@ -235,16 +226,15 @@ public class ExperimentRegistry {
                 resource.setMetadata(output.getMetaData());
                 resource.save();
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while adding experiment outputs...", e.getMessage());
         }
         return expId;
     }
 
     public void updateExpOutputs(List<DataObjectType> exOutput, String expId) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = gateway.getExperiment(expId);
+            ExperimentResource experiment = gatewayResource.getExperiment(expId);
             List<ExperimentOutputResource> existingExpOutputs = experiment.getExperimentOutputs();
             for (DataObjectType output : exOutput) {
                 for (ExperimentOutputResource resource : existingExpOutputs){
@@ -258,15 +248,14 @@ public class ExperimentRegistry {
                     }
                 }
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while updating experiment outputs", e.getMessage());
         }
     }
 
     public String addNodeOutputs (List<DataObjectType> wfOutputs, CompositeIdentifier ids ) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = gateway.getExperiment((String)ids.getTopLevelIdentifier());
+            ExperimentResource experiment = gatewayResource.getExperiment((String)ids.getTopLevelIdentifier());
             WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode((String) ids.getSecondLevelIdentifier());
             for (DataObjectType output : wfOutputs) {
                 NodeOutputResource resource = (NodeOutputResource) workflowNode.create(ResourceType.NODE_OUTPUT);
@@ -277,16 +266,15 @@ public class ExperimentRegistry {
                 resource.setMetadata(output.getMetaData());
                 resource.save();
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while adding node outputs...", e.getMessage());
         }
         return (String)ids.getSecondLevelIdentifier();
     }
 
     public void updateNodeOutputs (List<DataObjectType> wfOutputs, String nodeId ) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode(nodeId);
             List<NodeOutputResource> nodeOutputs = workflowNode.getNodeOutputs();
             for (DataObjectType output : wfOutputs) {
@@ -299,15 +287,14 @@ public class ExperimentRegistry {
                     resource.save();
                 }
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while updating node outputs...", e.getMessage());
         }
     }
 
     public String addApplicationOutputs (List<DataObjectType> appOutputs, CompositeIdentifier ids ) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode((String) ids.getTopLevelIdentifier());
             TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) ids.getSecondLevelIdentifier());
             for (DataObjectType output : appOutputs) {
@@ -319,16 +306,15 @@ public class ExperimentRegistry {
                 resource.setMetadata(output.getMetaData());
                 resource.save();
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while adding application outputs...", e.getMessage());
         }
         return (String)ids.getSecondLevelIdentifier();
     }
 
     public String updateExperimentStatus (ExperimentStatus experimentStatus, String expId){
         try{
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = gateway.getExperiment(expId);
+            ExperimentResource experiment = gatewayResource.getExperiment(expId);
             StatusResource status = experiment.getExperimentStatus();
             if (status == null){
                 status = (StatusResource)experiment.create(ResourceType.STATUS);
@@ -338,16 +324,15 @@ public class ExperimentRegistry {
             status.setState(experimentStatus.getExperimentState().toString());
             status.setStatusType(StatusType.EXPERIMENT.toString());
             status.save();
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while updating experiment status...", e.getMessage());
         }
         return expId;
     }
 
     public String addWorkflowNodeStatus(WorkflowNodeStatus status, CompositeIdentifier ids) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = gateway.getExperiment((String)ids.getTopLevelIdentifier());
+            ExperimentResource experiment = gatewayResource.getExperiment((String)ids.getTopLevelIdentifier());
             WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode((String) ids.getSecondLevelIdentifier());
             StatusResource statusResource = (StatusResource)experiment.create(ResourceType.STATUS);
             statusResource.setExperimentResource(experiment);
@@ -357,16 +342,15 @@ public class ExperimentRegistry {
             statusResource.setState(status.getWorkflowNodeState().toString());
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while adding workflow node status...", e.getMessage());
         }
         return null;
     }
 
     public String updateWorkflowNodeStatus(WorkflowNodeStatus status, String nodeId) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode(nodeId);
             StatusResource statusResource = workflowNode.getWorkflowNodeStatus();
             statusResource.setExperimentResource(workflowNode.getExperimentResource());
@@ -376,16 +360,15 @@ public class ExperimentRegistry {
             statusResource.setState(status.getWorkflowNodeState().toString());
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error whilw updating workflow node status...", e.getMessage());
         }
         return null;
     }
 
     public String addTaskStatus(TaskStatus status, CompositeIdentifier ids) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode((String) ids.getTopLevelIdentifier());
             TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) ids.getSecondLevelIdentifier());
             StatusResource statusResource = (StatusResource)workflowNode.create(ResourceType.STATUS);
@@ -397,16 +380,15 @@ public class ExperimentRegistry {
             statusResource.setState(status.getExecutionState().toString());
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while adding task status...", e.getMessage());
         }
         return null;
     }
 
     public void updateTaskStatus(TaskStatus status, String taskId) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
             StatusResource statusResource = workflowNode.geTaskStatus(taskId);
@@ -417,8 +399,8 @@ public class ExperimentRegistry {
             statusResource.setStatusUpdateTime(getTime(status.getTimeOfStateChange()));
             statusResource.setState(status.getExecutionState().toString());
             statusResource.save();
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while updating task status...", e.getMessage());
         }
     }
 
@@ -430,8 +412,7 @@ public class ExperimentRegistry {
      */
     public String addJobStatus(JobStatus status, CompositeIdentifier ids) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) ids.getTopLevelIdentifier());
             JobDetailResource jobDetail = taskDetail.getJobDetail((String) ids.getSecondLevelIdentifier());
@@ -444,16 +425,15 @@ public class ExperimentRegistry {
             statusResource.setState(status.getJobState().toString());
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while adding job status...", e.getMessage());
         }
         return null;
     }
 
     public String updateJobStatus(JobStatus status, String jobId) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = (TaskDetailResource)workflowNode.create(ResourceType.TASK_DETAIL);
             JobDetailResource jobDetail = taskDetail.getJobDetail(jobId);
@@ -466,8 +446,8 @@ public class ExperimentRegistry {
             statusResource.setState(status.getJobState().toString());
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while updating job status...", e.getMessage());
         }
         return null;
     }
@@ -479,8 +459,7 @@ public class ExperimentRegistry {
      */
     public String addApplicationStatus(ApplicationStatus status, CompositeIdentifier ids) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) ids.getTopLevelIdentifier());
             JobDetailResource jobDetail = taskDetail.getJobDetail((String) ids.getSecondLevelIdentifier());
@@ -493,7 +472,7 @@ public class ExperimentRegistry {
             statusResource.setState(status.getApplicationState());
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
-        } catch (ApplicationSettingsException e) {
+        } catch (Exception e) {
             logger.error("Unable to read airavata-server properties", e.getMessage());
         }
         return null;
@@ -501,8 +480,7 @@ public class ExperimentRegistry {
 
     public void updateApplicationStatus(ApplicationStatus status, String jobId) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = (TaskDetailResource)workflowNode.create(ResourceType.TASK_DETAIL);
             JobDetailResource jobDetail = taskDetail.getJobDetail(jobId);
@@ -514,8 +492,8 @@ public class ExperimentRegistry {
             statusResource.setStatusUpdateTime(getTime(status.getTimeOfStateChange()));
             statusResource.setState(status.getApplicationState());
             statusResource.save();
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while updating application status...", e.getMessage());
         }
     }
 
@@ -528,8 +506,7 @@ public class ExperimentRegistry {
      */
     public String addTransferStatus(TransferStatus status, CompositeIdentifier ids) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) ids.getTopLevelIdentifier());
             DataTransferDetailResource dataTransferDetail = taskDetail.getDataTransferDetail((String) ids.getSecondLevelIdentifier());
@@ -543,16 +520,15 @@ public class ExperimentRegistry {
             statusResource.setState(status.getTransferState().toString());
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while adding transfer status...", e.getMessage());
         }
         return null;
     }
 
     public void updateTransferStatus(TransferStatus status, String transferId) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = (TaskDetailResource)workflowNode.create(ResourceType.TASK_DETAIL);
             DataTransferDetailResource dataTransferDetail = taskDetail.getDataTransferDetail(transferId);
@@ -565,15 +541,14 @@ public class ExperimentRegistry {
             statusResource.setStatusUpdateTime(getTime(status.getTimeOfStateChange()));
             statusResource.setState(status.getTransferState().toString());
             statusResource.save();
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while updating transfer status...", e.getMessage());
         }
     }
 
     public String addWorkflowNodeDetails (WorkflowNodeDetails nodeDetails, String expId) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = gateway.getExperiment(expId);
+            ExperimentResource experiment = gatewayResource.getExperiment(expId);
             WorkflowNodeDetailResource resource = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             resource.setExperimentResource(experiment);
             resource.setNodeName(nodeDetails.getNodeName());
@@ -585,16 +560,15 @@ public class ExperimentRegistry {
                 addWorkflowInputs (nodeDetails.getNodeInputs(), resource);
             }
             return resource.getNodeInstanceId();
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while adding workflow node details...", e.getMessage());
         }
         return null;
     }
 
     public void updateWorkflowNodeDetails (WorkflowNodeDetails nodeDetails, String nodeId) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode(nodeId);
             workflowNode.setExperimentResource(experiment);
             workflowNode.setNodeName(nodeDetails.getNodeName());
@@ -605,8 +579,8 @@ public class ExperimentRegistry {
             if (nodeInputs != null){
                 updateWorkflowInputs(nodeDetails.getNodeInputs(), workflowNode);
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while updating workflow node details...", e.getMessage());
         }
     }
 
@@ -639,8 +613,7 @@ public class ExperimentRegistry {
 
     public String addTaskDetails (TaskDetails taskDetails, String nodeId) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode(nodeId);
             TaskDetailResource taskDetail = (TaskDetailResource)workflowNode.create(ResourceType.TASK_DETAIL);
             taskDetail.setWorkflowNodeDetailResource(workflowNode);
@@ -666,16 +639,15 @@ public class ExperimentRegistry {
                 addOutputDataHandling(outputDataHandling, taskDetail);
             }
             return taskDetail.getTaskId();
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while adding task details...", e.getMessage());
         }
         return null;
     }
 
     public String updateTaskDetails (TaskDetails taskDetails, String taskId) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
             taskDetail.setWorkflowNodeDetailResource(workflowNode);
@@ -701,8 +673,8 @@ public class ExperimentRegistry {
                 updateOutputDataHandling(outputDataHandling, taskDetail);
             }
             return taskDetail.getTaskId();
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while updating task details...", e.getMessage());
         }
         return null;
     }
@@ -721,8 +693,7 @@ public class ExperimentRegistry {
 
     public void updateAppOutputs (List<DataObjectType> appOutputs, String taskId ) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource) gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
             List<ApplicationOutputResource> outputs = taskDetail.getApplicationOutputs();
@@ -736,8 +707,8 @@ public class ExperimentRegistry {
                     resource.save();
                 }
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while updating application outputs...", e.getMessage());
         }
     }
 
@@ -758,8 +729,7 @@ public class ExperimentRegistry {
 
     public String addJobDetails (JobDetails jobDetails, CompositeIdentifier ids) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) ids.getTopLevelIdentifier());
             JobDetailResource jobDetail = taskDetail.createJobDetail((String) ids.getSecondLevelIdentifier());
@@ -769,16 +739,15 @@ public class ExperimentRegistry {
             jobDetail.setComputeResourceConsumed(jobDetails.getComputeResourceConsumed());
             jobDetail.save();
             return jobDetail.getJobId();
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while adding job details...", e.getMessage());
         }
         return null;
     }
 
     public void updateJobDetails (JobDetails jobDetails, String jobId) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = (TaskDetailResource)workflowNode.create(ResourceType.TASK_DETAIL);
             JobDetailResource jobDetail = taskDetail.getJobDetail(jobId);
@@ -787,15 +756,14 @@ public class ExperimentRegistry {
             jobDetail.setCreationTime(getTime(jobDetails.getCreationTime()));
             jobDetail.setComputeResourceConsumed(jobDetails.getComputeResourceConsumed());
             jobDetail.save();
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while updating job details...", e.getMessage());
         }
     }
 
     public String addDataTransferDetails (DataTransferDetails transferDetails, String taskId) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
             DataTransferDetailResource resource = (DataTransferDetailResource)taskDetail.create(ResourceType.DATA_TRANSFER_DETAIL);
@@ -805,16 +773,15 @@ public class ExperimentRegistry {
             resource.setCreationTime(getTime(transferDetails.getCreationTime()));
             resource.save();
             return resource.getTransferId();
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while adding transfer details...", e.getMessage());
         }
         return null;
     }
 
     public String updateDataTransferDetails (DataTransferDetails transferDetails, String transferId) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = (TaskDetailResource)workflowNode.create(ResourceType.TASK_DETAIL);
             DataTransferDetailResource resource = taskDetail.getDataTransferDetail(transferId);
@@ -823,8 +790,8 @@ public class ExperimentRegistry {
             resource.setCreationTime(getTime(transferDetails.getCreationTime()));
             resource.save();
             return resource.getTransferId();
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while updating transfer details...", e.getMessage());
         }
         return null;
     }
@@ -837,8 +804,7 @@ public class ExperimentRegistry {
      */
     public String addComputationalResourceScheduling (ComputationalResourceScheduling scheduling, CompositeIdentifier ids){
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = gateway.getExperiment((String) ids.getTopLevelIdentifier());
+            ExperimentResource experiment = gatewayResource.getExperiment((String) ids.getTopLevelIdentifier());
             WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = nodeDetailResource.getTaskDetail((String) ids.getSecondLevelIdentifier());
             ComputationSchedulingResource schedulingResource = (ComputationSchedulingResource)experiment.create(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING);
@@ -855,8 +821,8 @@ public class ExperimentRegistry {
             schedulingResource.setProjectName(scheduling.getComputationalProjectAccount());
             schedulingResource.save();
             return String.valueOf(schedulingResource.getSchedulingId());
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while adding scheduling parameters...", e.getMessage());
         }
         return null;
     }
@@ -869,8 +835,7 @@ public class ExperimentRegistry {
      */
     public String addInputDataHandling (AdvancedInputDataHandling dataHandling, CompositeIdentifier ids){
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = gateway.getExperiment((String) ids.getTopLevelIdentifier());
+            ExperimentResource experiment = gatewayResource.getExperiment((String) ids.getTopLevelIdentifier());
             WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = nodeDetailResource.getTaskDetail((String) ids.getSecondLevelIdentifier());
             AdvanceInputDataHandlingResource dataHandlingResource = (AdvanceInputDataHandlingResource)experiment.create(ResourceType.ADVANCE_INPUT_DATA_HANDLING);
@@ -882,8 +847,8 @@ public class ExperimentRegistry {
             dataHandlingResource.setCleanAfterJob(dataHandling.isCleanUpWorkingDirAfterJob());
             dataHandlingResource.save();
             return String.valueOf(dataHandlingResource.getDataHandlingId());
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while adding input data handling...", e.getMessage());
         }
         return null;
     }
@@ -896,8 +861,7 @@ public class ExperimentRegistry {
      */
     public String addOutputDataHandling (AdvancedOutputDataHandling dataHandling, CompositeIdentifier ids){
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = gateway.getExperiment((String) ids.getTopLevelIdentifier());
+            ExperimentResource experiment = gatewayResource.getExperiment((String) ids.getTopLevelIdentifier());
             WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = nodeDetailResource.getTaskDetail((String) ids.getSecondLevelIdentifier());
             AdvancedOutputDataHandlingResource dataHandlingResource = (AdvancedOutputDataHandlingResource)experiment.create(ResourceType.ADVANCE_OUTPUT_DATA_HANDLING);
@@ -908,16 +872,15 @@ public class ExperimentRegistry {
             dataHandlingResource.setPersistOutputData(dataHandling.isPersistOutputData());
             dataHandlingResource.save();
             return String.valueOf(dataHandlingResource.getOutputDataHandlingId());
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while adding output data handling...", e.getMessage());
         }
         return null;
     }
 
     public String addQosParams (QualityOfServiceParams qosParams, CompositeIdentifier ids){
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = gateway.getExperiment((String) ids.getTopLevelIdentifier());
+            ExperimentResource experiment = gatewayResource.getExperiment((String) ids.getTopLevelIdentifier());
             WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = nodeDetailResource.getTaskDetail((String) ids.getSecondLevelIdentifier());
             QosParamResource qosParamResource = (QosParamResource)experiment.create(ResourceType.QOS_PARAM);
@@ -928,8 +891,8 @@ public class ExperimentRegistry {
             qosParamResource.setNoOfRetries(qosParams.getNumberofRetries());
             qosParamResource.save();
             return String.valueOf(qosParamResource.getQosId());
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while adding QOS params...", e.getMessage());
         }
         return null;
     }
@@ -937,7 +900,6 @@ public class ExperimentRegistry {
     public String addErrorDetails (ErrorDetails error, Object id){
         try{
 
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
             ErrorDetailResource errorResource = null;
             ExperimentResource experiment;
             TaskDetailResource taskDetail;
@@ -945,15 +907,15 @@ public class ExperimentRegistry {
             // figure out the id is an experiment, node task or job
             if (id instanceof String){
                 if (isExperimentExist((String) id)){
-                    experiment = gateway.getExperiment((String) id);
+                    experiment = gatewayResource.getExperiment((String) id);
                     errorResource = (ErrorDetailResource)experiment.create(ResourceType.ERROR_DETAIL);
                 }else if (isWFNodeExist((String) id)){
-                    experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+                    experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                     workflowNode = experiment.getWorkflowNode((String)id);
                     errorResource = (ErrorDetailResource)workflowNode.create(ResourceType.ERROR_DETAIL);
                     errorResource.setExperimentResource(workflowNode.getExperimentResource());
                 }else if (isTaskDetailExist((String)id)){
-                    experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+                    experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                     workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
                     taskDetail = workflowNode.getTaskDetail((String)id);
                     errorResource = (ErrorDetailResource)taskDetail.create(ResourceType.ERROR_DETAIL);
@@ -966,7 +928,7 @@ public class ExperimentRegistry {
             }else if (id instanceof CompositeIdentifier){
                 CompositeIdentifier cid = (CompositeIdentifier)id;
                 if (isJobDetailExist(cid)){
-                    experiment = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+                    experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                     workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
                     taskDetail = workflowNode.getTaskDetail((String)cid.getTopLevelIdentifier());
                     JobDetailResource jobDetail = taskDetail.getJobDetail((String) cid.getSecondLevelIdentifier());
@@ -992,8 +954,8 @@ public class ExperimentRegistry {
                 errorResource.save();
                 return String.valueOf(errorResource.getErrorId());
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Unable to add error details...", e.getMessage());
         }
         return null;
     }
@@ -1016,14 +978,12 @@ public class ExperimentRegistry {
 
     public void updateExperimentField(String expID, String fieldName, Object value) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = gateway.getExperiment(expID);
+            ExperimentResource experiment = gatewayResource.getExperiment(expID);
             if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME)) {
                 experiment.setExpName((String)value);
                 experiment.save();
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
-                WorkerResource worker = userReg.getExistingUser(gateway.getGatewayName(), (String)value);
-                experiment.setWorker(worker);
+                experiment.setExecutionUser((String)value);
                 experiment.save();
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC)) {
                 experiment.setDescription((String)value);
@@ -1044,15 +1004,14 @@ public class ExperimentRegistry {
                 logger.error("Unsupported field type for Experiment");
             }
 
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while updating fields in experiment...", e.getMessage());
         }
     }
 
     public void updateExpConfigDataField(String expID, String fieldName, Object value) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = gateway.getExperiment(expID);
+            ExperimentResource experiment = gatewayResource.getExperiment(expID);
             ConfigDataResource exConfigData = (ConfigDataResource)experiment.get(ResourceType.CONFIG_DATA, expID);
             if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.AIRAVATA_AUTO_SCHEDULE)) {
                 exConfigData.setAiravataAutoSchedule((Boolean) value);
@@ -1075,20 +1034,18 @@ public class ExperimentRegistry {
                 logger.error("Unsupported field type for Experiment config data");
             }
 
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while updating fields in experiment config...", e.getMessage());
         }
     }
 
-    public void updateExperiment(Experiment experiment, String expId) throws ApplicationSettingsException {
-        GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-        ExperimentResource existingExperiment = gateway.getExperiment(expId);
-        WorkerResource worker = userReg.getExistingUser(gateway.getGatewayName(), experiment.getUserName());
+    public void updateExperiment(Experiment experiment, String expId) throws Exception {
+        ExperimentResource existingExperiment = gatewayResource.getExperiment(expId);
         existingExperiment.setExpName(experiment.getName());
-        existingExperiment.setWorker(worker);
-        existingExperiment.setGateway(gateway);
-        if (!worker.isProjectExists(experiment.getProjectID())){
-            ProjectResource project = worker.createProject(experiment.getProjectID());
+        existingExperiment.setExecutionUser(experiment.getUserName());
+        existingExperiment.setGateway(gatewayResource);
+        if (!workerResource.isProjectExists(experiment.getProjectID())){
+            ProjectResource project = workerResource.createProject(experiment.getProjectID());
             existingExperiment.setProject(project);
         }
         existingExperiment.setCreationTime(getTime(experiment.getCreationTime()));
@@ -1103,9 +1060,8 @@ public class ExperimentRegistry {
         updateExpInputs(experimentInputs, existingExperiment);
     }
 
-    public void updateUserConfigData(UserConfigurationData configData, String expId) throws ApplicationSettingsException {
-        GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-        ExperimentResource experiment = gateway.getExperiment(expId);
+    public void updateUserConfigData(UserConfigurationData configData, String expId) throws Exception {
+        ExperimentResource experiment = gatewayResource.getExperiment(expId);
         ConfigDataResource resource = (ConfigDataResource)experiment.get(ResourceType.CONFIG_DATA, expId);
         resource.setExperimentResource(experiment);
         resource.setAiravataAutoSchedule(configData.isAiravataAutoSchedule());
@@ -1210,16 +1166,14 @@ public class ExperimentRegistry {
         List<Experiment> experiments = new ArrayList<Experiment>();
         try {
             if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)){
-                WorkerResource worker = userReg.getExistingUser(ServerSettings.getSystemUserGateway(), (String) value);
-                List<ExperimentResource> resources = worker.getExperiments();
+                List<ExperimentResource> resources = workerResource.getExperiments();
                 for (ExperimentResource resource : resources){
                     Experiment experiment = ThriftDataModelConversion.getExperiment(resource);
                     experiments.add(experiment);
                 }
                 return experiments;
             }else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_NAME)){
-                WorkerResource worker = userReg.getSystemUser();
-                ProjectResource project = worker.getProject((String) value);
+                ProjectResource project = workerResource.getProject((String) value);
                 List<ExperimentResource> resources = project.getExperiments();
                 for (ExperimentResource resource : resources){
                     Experiment experiment = ThriftDataModelConversion.getExperiment(resource);
@@ -1227,8 +1181,7 @@ public class ExperimentRegistry {
                 }
                 return experiments;
             }else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY)){
-                GatewayResource existingGateway = gatewayRegistry.getExistingGateway((String) value);
-                List<ExperimentResource> resources = existingGateway.getExperiments();
+                List<ExperimentResource> resources = gatewayResource.getExperiments();
                 for (ExperimentResource resource : resources){
                     Experiment experiment = ThriftDataModelConversion.getExperiment(resource);
                     experiments.add(experiment);
@@ -1237,66 +1190,62 @@ public class ExperimentRegistry {
             }else {
                 logger.error("Unsupported field name to retrieve experiment list...");
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while getting experiment list...", e.getMessage());
         }
         return experiments;
     }
 
     public List<WorkflowNodeDetails> getWFNodeDetails (String fieldName, Object value){
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
             if (fieldName.equals(Constants.FieldConstants.WorkflowNodeConstants.EXPERIMENT_ID)){
-                ExperimentResource experiment = defaultGateway.getExperiment((String) value);
+                ExperimentResource experiment = gatewayResource.getExperiment((String) value);
                 List<WorkflowNodeDetailResource> workflowNodeDetails = experiment.getWorkflowNodeDetails();
                 return ThriftDataModelConversion.getWfNodeList(workflowNodeDetails);
             }else {
                 logger.error("Unsupported field name to retrieve workflow detail list...");
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while getting workfkow details...", e.getMessage());
         }
         return null;
     }
 
     public List<WorkflowNodeStatus> getWFNodeStatusList (String fieldName, Object value){
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
             if (fieldName.equals(Constants.FieldConstants.WorkflowNodeStatusConstants.EXPERIMENT_ID)){
-                ExperimentResource experiment = defaultGateway.getExperiment((String) value);
+                ExperimentResource experiment = gatewayResource.getExperiment((String) value);
                 List<StatusResource> workflowNodeStatuses = experiment.getWorkflowNodeStatuses();
                 return ThriftDataModelConversion.getWorkflowNodeStatusList(workflowNodeStatuses);
             }else {
                 logger.error("Unsupported field name to retrieve workflow status list...");
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while getting workflow status...", e.getMessage());
         }
         return null;
     }
 
     public List<TaskDetails> getTaskDetails (String fieldName, Object value){
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
             if (fieldName.equals(Constants.FieldConstants.TaskDetailConstants.NODE_ID)){
-                ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                 WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode((String) value);
                 List<TaskDetailResource> taskDetails = workflowNode.getTaskDetails();
                 return ThriftDataModelConversion.getTaskDetailsList(taskDetails);
             }else {
                 logger.error("Unsupported field name to retrieve task detail list...");
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while getting task details...", e.getMessage());
         }
         return null;
     }
 
     public List<JobDetails> getJobDetails (String fieldName, Object value){
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
             if (fieldName.equals(Constants.FieldConstants.JobDetaisConstants.TASK_ID)){
-                ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                 WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
                 TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) value);
                 List<JobDetailResource> jobDetailList = taskDetail.getJobDetailList();
@@ -1304,17 +1253,16 @@ public class ExperimentRegistry {
             }else {
                 logger.error("Unsupported field name to retrieve job details list...");
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while job details...", e.getMessage());
         }
         return null;
     }
 
     public List<DataTransferDetails> getDataTransferDetails (String fieldName, Object value){
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
             if (fieldName.equals(Constants.FieldConstants.DataTransferDetailConstants.TASK_ID)){
-                ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                 WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
                 TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) value);
                 List<DataTransferDetailResource> dataTransferDetailList = taskDetail.getDataTransferDetailList();
@@ -1322,33 +1270,32 @@ public class ExperimentRegistry {
             }else {
                 logger.error("Unsupported field name to retrieve job details list...");
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while getting data transfer details...", e.getMessage());
         }
         return null;
     }
 
     public List<ErrorDetails> getErrorDetails (String fieldName, Object value){
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
             if (fieldName.equals(Constants.FieldConstants.ErrorDetailsConstants.EXPERIMENT_ID)){
-                ExperimentResource experiment = defaultGateway.getExperiment((String) value);
+                ExperimentResource experiment = gatewayResource.getExperiment((String) value);
                 List<ErrorDetailResource> errorDetails = experiment.getErrorDetails();
                 return ThriftDataModelConversion.getErrorDetailList(errorDetails);
             }else if (fieldName.equals(Constants.FieldConstants.ErrorDetailsConstants.NODE_ID)){
-                ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                 WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode((String) value);
                 List<ErrorDetailResource> errorDetails = workflowNode.getErrorDetails();
                 return ThriftDataModelConversion.getErrorDetailList(errorDetails);
             }else if (fieldName.equals(Constants.FieldConstants.ErrorDetailsConstants.TASK_ID)){
-                ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                 WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
                 TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) value);
                 List<ErrorDetailResource> errorDetailList = taskDetail.getErrorDetailList();
                 return ThriftDataModelConversion.getErrorDetailList(errorDetailList);
             }else if (fieldName.equals(Constants.FieldConstants.ErrorDetailsConstants.JOB_ID)){
                 CompositeIdentifier cid = (CompositeIdentifier)value;
-                ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                 WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
                 TaskDetailResource taskDetail = workflowNode.getTaskDetail((String)cid.getTopLevelIdentifier());
                 JobDetailResource jobDetail = taskDetail.getJobDetail((String) cid.getSecondLevelIdentifier());
@@ -1357,20 +1304,19 @@ public class ExperimentRegistry {
             }else {
                 logger.error("Unsupported field name to retrieve job details list...");
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Unable to get error details...", e.getMessage());
         }
         return null;
     }
 
     public Object getExperiment(String expId, String fieldName) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource resource = gateway.getExperiment(expId);
+            ExperimentResource resource = gatewayResource.getExperiment(expId);
             if (fieldName == null){
                 return ThriftDataModelConversion.getExperiment(resource);
             }else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)){
-                return resource.getWorker().getUser();
+                return resource.getExecutionUser();
             }else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME)){
                 return resource.getExpName();
             }else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC)){
@@ -1405,16 +1351,15 @@ public class ExperimentRegistry {
             else {
                 logger.error("Unsupported field name for experiment basic data..");
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while getting experiment info...", e.getMessage());
         }
         return null;
     }
 
     public Object getConfigData(String expId, String fieldName) {
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource resource = gateway.getExperiment(expId);
+            ExperimentResource resource = gatewayResource.getExperiment(expId);
             ConfigDataResource userConfigData = resource.getUserConfigData(expId);
             if (fieldName == null){
                 return ThriftDataModelConversion.getUserConfigData(userConfigData);
@@ -1435,47 +1380,44 @@ public class ExperimentRegistry {
             }else {
                 logger.error("Unsupported field name for experiment configuration data..");
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while getting config data..", e.getMessage());
         }
         return null;
     }
 
     public List<DataObjectType> getExperimentOutputs (String expId){
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource resource = gateway.getExperiment(expId);
+            ExperimentResource resource = gatewayResource.getExperiment(expId);
             List<ExperimentOutputResource> experimentOutputs = resource.getExperimentOutputs();
             return ThriftDataModelConversion.getExpOutputs(experimentOutputs);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while getting experiment outputs...", e.getMessage());
         }
         return null;
     }
 
     public ExperimentStatus getExperimentStatus (String expId){
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource resource = gateway.getExperiment(expId);
+            ExperimentResource resource = gatewayResource.getExperiment(expId);
             StatusResource experimentStatus = resource.getExperimentStatus();
             return ThriftDataModelConversion.getExperimentStatus(experimentStatus);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while getting experiment status...", e.getMessage());
         }
         return null;
     }
 
     public ComputationalResourceScheduling getComputationalScheduling (DataType type, String id){
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
             ComputationSchedulingResource computationScheduling = null;
             switch (type){
                 case EXPERIMENT:
-                    ExperimentResource resource = gateway.getExperiment(id);
+                    ExperimentResource resource = gatewayResource.getExperiment(id);
                     computationScheduling = resource.getComputationScheduling(id);
                     break;
                 case TASK_DETAIL:
-                    ExperimentResource exp = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+                    ExperimentResource exp = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                     WorkflowNodeDetailResource wf = (WorkflowNodeDetailResource)exp.create(ResourceType.WORKFLOW_NODE_DETAIL);
                     TaskDetailResource taskDetail = wf.getTaskDetail(id);
                     computationScheduling = taskDetail.getComputationScheduling(id);
@@ -1484,23 +1426,22 @@ public class ExperimentRegistry {
             if (computationScheduling != null){
                 return ThriftDataModelConversion.getComputationalResourceScheduling(computationScheduling);
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while getting scheduling data..", e.getMessage());
         }
         return null;
     }
 
     public AdvancedInputDataHandling getInputDataHandling (DataType type, String id){
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
             AdvanceInputDataHandlingResource dataHandlingResource = null;
             switch (type){
                 case EXPERIMENT:
-                    ExperimentResource resource = gateway.getExperiment(id);
+                    ExperimentResource resource = gatewayResource.getExperiment(id);
                     dataHandlingResource = resource.getInputDataHandling(id);
                     break;
                 case TASK_DETAIL:
-                    ExperimentResource exp = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+                    ExperimentResource exp = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                     WorkflowNodeDetailResource wf = (WorkflowNodeDetailResource)exp.create(ResourceType.WORKFLOW_NODE_DETAIL);
                     TaskDetailResource taskDetail = wf.getTaskDetail(id);
                     dataHandlingResource = taskDetail.getInputDataHandling(id);
@@ -1509,23 +1450,22 @@ public class ExperimentRegistry {
             if (dataHandlingResource != null){
                 return ThriftDataModelConversion.getAdvanceInputDataHandling(dataHandlingResource);
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while getting input data handling..", e.getMessage());
         }
         return null;
     }
 
     public AdvancedOutputDataHandling getOutputDataHandling (DataType type, String id){
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
             AdvancedOutputDataHandlingResource dataHandlingResource = null;
             switch (type){
                 case EXPERIMENT:
-                    ExperimentResource resource = gateway.getExperiment(id);
+                    ExperimentResource resource = gatewayResource.getExperiment(id);
                     dataHandlingResource = resource.getOutputDataHandling(id);
                     break;
                 case TASK_DETAIL:
-                    ExperimentResource exp = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+                    ExperimentResource exp = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                     WorkflowNodeDetailResource wf = (WorkflowNodeDetailResource)exp.create(ResourceType.WORKFLOW_NODE_DETAIL);
                     TaskDetailResource taskDetail = wf.getTaskDetail(id);
                     dataHandlingResource = taskDetail.getOutputDataHandling(id);
@@ -1534,106 +1474,99 @@ public class ExperimentRegistry {
             if (dataHandlingResource != null){
                 return ThriftDataModelConversion.getAdvanceOutputDataHandling(dataHandlingResource);
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while getting output data handling...", e.getMessage());
         }
         return null;
     }
 
     public QualityOfServiceParams getQosParams (DataType type, String id){
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
             QosParamResource qosParamResource = null;
             switch (type){
                 case EXPERIMENT:
-                    ExperimentResource resource = gateway.getExperiment(id);
+                    ExperimentResource resource = gatewayResource.getExperiment(id);
                     qosParamResource = resource.getQOSparams(id);
                     break;
             }
             if (qosParamResource != null){
                 return ThriftDataModelConversion.getQOSParams(qosParamResource);
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while getting qos params..", e.getMessage());
         }
         return null;
     }
 
     public WorkflowNodeDetails getWorkflowNodeDetails (String nodeId){
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource resource = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource resource = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = resource.getWorkflowNode(nodeId);
             return ThriftDataModelConversion.getWorkflowNodeDetails(workflowNode);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while getting workflow node details...", e.getMessage());
         }
         return null;
     }
 
     public WorkflowNodeStatus getWorkflowNodeStatus (String nodeId){
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource resource = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource resource = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = resource.getWorkflowNode(nodeId);
             StatusResource workflowNodeStatus = workflowNode.getWorkflowNodeStatus();
             return ThriftDataModelConversion.getWorkflowNodeStatus(workflowNodeStatus);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while getting workflow node status..", e.getMessage());
         }
         return null;
     }
 
     public List<DataObjectType> getNodeOutputs (String nodeId){
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource resource = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource resource = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = resource.getWorkflowNode(nodeId);
             List<NodeOutputResource> nodeOutputs = workflowNode.getNodeOutputs();
             return ThriftDataModelConversion.getNodeOutputs(nodeOutputs);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while getting node outputs..", e.getMessage());
         }
         return null;
     }
 
     public TaskDetails getTaskDetails (String taskId){
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource resource = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource resource = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)resource.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
             return ThriftDataModelConversion.getTaskDetail(taskDetail);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while getting task details..", e.getMessage());
         }
         return null;
     }
 
     public List<DataObjectType> getApplicationOutputs (String taskId){
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource resource = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource resource = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)resource.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
             List<ApplicationOutputResource> applicationOutputs = taskDetail.getApplicationOutputs();
             return ThriftDataModelConversion.getApplicationOutputs(applicationOutputs);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while getting application outputs..", e.getMessage());
         }
         return null;
     }
 
     public TaskStatus getTaskStatus (String taskId){
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource resource = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource resource = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)resource.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
             StatusResource taskStatus = taskDetail.getTaskStatus();
             return ThriftDataModelConversion.getTaskStatus(taskStatus);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while getting experiment outputs..", e.getMessage());
         }
         return null;
     }
@@ -1643,14 +1576,13 @@ public class ExperimentRegistry {
     // ids contains task id + job id
     public JobDetails getJobDetails (CompositeIdentifier ids){
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource resource = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource resource = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)resource.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = workflowNode.getTaskDetail((String)ids.getTopLevelIdentifier());
             JobDetailResource jobDetail = taskDetail.getJobDetail((String) ids.getSecondLevelIdentifier());
             return ThriftDataModelConversion.getJobDetail(jobDetail);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while getting job details..", e.getMessage());
         }
         return null;
     }
@@ -1658,59 +1590,55 @@ public class ExperimentRegistry {
     // ids contains task id + job id
     public JobStatus getJobStatus (CompositeIdentifier ids){
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource resource = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource resource = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)resource.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = workflowNode.getTaskDetail((String)ids.getTopLevelIdentifier());
             JobDetailResource jobDetail = taskDetail.getJobDetail((String) ids.getSecondLevelIdentifier());
             StatusResource jobStatus = jobDetail.getJobStatus();
             return ThriftDataModelConversion.getJobStatus(jobStatus);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while getting job status..", e.getMessage());
         }
         return null;
     }
 
     public ApplicationStatus getApplicationStatus (CompositeIdentifier ids){
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource resource = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource resource = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)resource.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = workflowNode.getTaskDetail((String)ids.getTopLevelIdentifier());
             JobDetailResource jobDetail = taskDetail.getJobDetail((String) ids.getSecondLevelIdentifier());
             StatusResource applicationStatus = jobDetail.getApplicationStatus();
             return ThriftDataModelConversion.getApplicationStatus(applicationStatus);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while getting application status..", e.getMessage());
         }
         return null;
     }
 
     public DataTransferDetails getDataTransferDetails (String transferId){
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource resource = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource resource = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)resource.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = (TaskDetailResource)workflowNode.create(ResourceType.TASK_DETAIL);
             DataTransferDetailResource dataTransferDetail = taskDetail.getDataTransferDetail(transferId);
             return ThriftDataModelConversion.getDataTransferDetail(dataTransferDetail);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while getting data transfer details..", e.getMessage());
         }
         return null;
     }
 
     public TransferStatus getDataTransferStatus (String transferId){
         try {
-            GatewayResource gateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource resource = (ExperimentResource)gateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource resource = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)resource.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = (TaskDetailResource)workflowNode.create(ResourceType.TASK_DETAIL);
             DataTransferDetailResource dataTransferDetail = taskDetail.getDataTransferDetail(transferId);
             StatusResource dataTransferStatus = dataTransferDetail.getDataTransferStatus();
             return ThriftDataModelConversion.getTransferStatus(dataTransferStatus);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while getting data transfer status..", e.getMessage());
         }
         return null;
     }
@@ -1719,32 +1647,29 @@ public class ExperimentRegistry {
         List<String> expIDs = new ArrayList<String>();
         try {
             if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY)) {
-                GatewayResource gateway = gatewayRegistry.getExistingGateway((String) value);
-                if (gateway == null) {
+                if (gatewayResource == null) {
                     logger.error("You should use an existing gateway in order to retrieve experiments..");
                     return null;
                 } else {
-                    List<ExperimentResource> resources = gateway.getExperiments();
+                    List<ExperimentResource> resources = gatewayResource.getExperiments();
                     for (ExperimentResource resource : resources) {
                         String expID = resource.getExpID();
                         expIDs.add(expID);
                     }
                 }
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
-                WorkerResource workerResource = userReg.getExistingUser(ServerSettings.getSystemUserGateway(), (String)value);
                 List<ExperimentResource> resources = workerResource.getExperiments();
                 for (ExperimentResource resource : resources) {
                     expIDs.add(resource.getExpID());
                 }
             }else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_NAME)) {
-                WorkerResource workerResource = userReg.getSystemUser();
                 List<ExperimentResource> resources = workerResource.getExperiments();
                 for (ExperimentResource resource : resources) {
                     expIDs.add(resource.getExpID());
                 }
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while retrieving experiment ids..", e.getMessage());
         }
         return expIDs;
     }
@@ -1788,78 +1713,71 @@ public class ExperimentRegistry {
 
     public void removeExperiment(String experimentId) {
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
-            defaultGateway.remove(ResourceType.EXPERIMENT, experimentId);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+            gatewayResource.remove(ResourceType.EXPERIMENT, experimentId);
+        } catch (Exception e) {
+            logger.error("Error while removing experiment..", e.getMessage());
         }
     }
 
     public void removeExperimentConfigData(String experimentId) {
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = defaultGateway.getExperiment(experimentId);
+            ExperimentResource experiment = gatewayResource.getExperiment(experimentId);
             experiment.remove(ResourceType.CONFIG_DATA, experimentId);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while removing experiment config..", e.getMessage());
         }
     }
 
     public void removeWorkflowNode (String nodeId){
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             experiment.remove(ResourceType.WORKFLOW_NODE_DETAIL, nodeId);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while removing workflow node..", e.getMessage());
         }
     }
 
     public void removeTaskDetails (String taskId){
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             nodeDetailResource.remove(ResourceType.TASK_DETAIL, taskId);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while removing task details..", e.getMessage());
         }
     }
 
     public void removeJobDetails (CompositeIdentifier ids){
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetailResource = nodeDetailResource.getTaskDetail((String)ids.getTopLevelIdentifier());
             taskDetailResource.remove(ResourceType.JOB_DETAIL, (String)ids.getSecondLevelIdentifier());
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while removing job details..", e.getMessage());
         }
     }
 
     public void removeDataTransferDetails (String transferId){
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = (TaskDetailResource)nodeDetailResource.create(ResourceType.TASK_DETAIL);
             taskDetail.remove(ResourceType.DATA_TRANSFER_DETAIL, transferId);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while removing transfer details..", e.getMessage());
         }
     }
 
     public void removeComputationalScheduling (DataType dataType, String id){
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
             switch (dataType){
                 case EXPERIMENT:
-                    ExperimentResource experiment = defaultGateway.getExperiment(id);
+                    ExperimentResource experiment = gatewayResource.getExperiment(id);
                     experiment.remove(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, id);
                     break;
                 case TASK_DETAIL:
-                    ExperimentResource resource = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                    ExperimentResource resource = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                     WorkflowNodeDetailResource wf = (WorkflowNodeDetailResource)resource.create(ResourceType.WORKFLOW_NODE_DETAIL);
                     TaskDetailResource taskDetail = wf.getTaskDetail(id);
                     taskDetail.remove(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, id);
@@ -1867,21 +1785,20 @@ public class ExperimentRegistry {
                 default:
                     logger.error("Unsupported data type...");
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while removing scheduling data..", e.getMessage());
         }
     }
 
     public void removeInputDataHandling (DataType dataType, String id){
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
             switch (dataType){
                 case EXPERIMENT:
-                    ExperimentResource experiment = defaultGateway.getExperiment(id);
+                    ExperimentResource experiment = gatewayResource.getExperiment(id);
                     experiment.remove(ResourceType.ADVANCE_INPUT_DATA_HANDLING, id);
                     break;
                 case TASK_DETAIL:
-                    ExperimentResource resource = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                    ExperimentResource resource = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                     WorkflowNodeDetailResource wf = (WorkflowNodeDetailResource)resource.create(ResourceType.WORKFLOW_NODE_DETAIL);
                     TaskDetailResource taskDetail = wf.getTaskDetail(id);
                     taskDetail.remove(ResourceType.ADVANCE_INPUT_DATA_HANDLING, id);
@@ -1889,21 +1806,20 @@ public class ExperimentRegistry {
                 default:
                     logger.error("Unsupported data type...");
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while removing input data handling..", e.getMessage());
         }
     }
 
     public void removeOutputDataHandling (DataType dataType, String id){
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
             switch (dataType){
                 case EXPERIMENT:
-                    ExperimentResource experiment = defaultGateway.getExperiment(id);
+                    ExperimentResource experiment = gatewayResource.getExperiment(id);
                     experiment.remove(ResourceType.ADVANCE_OUTPUT_DATA_HANDLING, id);
                     break;
                 case TASK_DETAIL:
-                    ExperimentResource resource = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                    ExperimentResource resource = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                     WorkflowNodeDetailResource wf = (WorkflowNodeDetailResource)resource.create(ResourceType.WORKFLOW_NODE_DETAIL);
                     TaskDetailResource taskDetail = wf.getTaskDetail(id);
                     taskDetail.remove(ResourceType.ADVANCE_OUTPUT_DATA_HANDLING, id);
@@ -1911,108 +1827,100 @@ public class ExperimentRegistry {
                 default:
                     logger.error("Unsupported data type...");
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while removing output data handling..", e.getMessage());
         }
     }
 
     public void removeQOSParams (DataType dataType, String id){
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
             switch (dataType){
                 case EXPERIMENT:
-                    ExperimentResource experiment = defaultGateway.getExperiment(id);
+                    ExperimentResource experiment = gatewayResource.getExperiment(id);
                     experiment.remove(ResourceType.QOS_PARAM, id);
                     break;
                 default:
                     logger.error("Unsupported data type...");
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while removing QOS params", e.getMessage());
         }
     }
 
     public boolean isExperimentExist(String expID) {
         try{
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
-            defaultGateway.isExists(ResourceType.EXPERIMENT, expID);
+            gatewayResource.isExists(ResourceType.EXPERIMENT, expID);
             return true;
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while retrieving experiment...", e.getMessage());
         }
         return false;
     }
 
     public boolean isExperimentConfigDataExist(String expID) {
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = defaultGateway.getExperiment(expID);
+            ExperimentResource experiment = gatewayResource.getExperiment(expID);
             experiment.isExists(ResourceType.CONFIG_DATA, expID);
             return true;
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while retrieving experiment...", e.getMessage());
         }
         return false;
     }
 
     public boolean isWFNodeExist(String nodeId) {
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             return experiment.isExists(ResourceType.WORKFLOW_NODE_DETAIL, nodeId);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while retrieving workflow...", e.getMessage());
         }
         return false;
     }
 
     public boolean isTaskDetailExist(String taskId) {
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource wf = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             return wf.isExists(ResourceType.TASK_DETAIL, taskId);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while retrieving task.....", e.getMessage());
         }
         return false;
     }
 
     public boolean isJobDetailExist(CompositeIdentifier ids) {
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource wf = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = wf.getTaskDetail((String) ids.getTopLevelIdentifier());
             return taskDetail.isExists(ResourceType.JOB_DETAIL, (String)ids.getSecondLevelIdentifier());
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while retrieving job details.....", e.getMessage());
         }
         return false;
     }
 
     public boolean isTransferDetailExist(String transferId) {
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
-            ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+            ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource wf = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = (TaskDetailResource)wf.create(ResourceType.TASK_DETAIL);
             return taskDetail.isExists(ResourceType.DATA_TRANSFER_DETAIL, transferId);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while retrieving transfer details.....", e.getMessage());
         }
         return false;
     }
 
     public boolean isComputationalSchedulingExist(DataType dataType, String id ) {
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
             switch (dataType){
                 case EXPERIMENT:
-                    ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                    ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                     return experiment.isExists(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, id);
                 case TASK_DETAIL:
-                    ExperimentResource exp = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                    ExperimentResource exp = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                     WorkflowNodeDetailResource wf = (WorkflowNodeDetailResource)exp.create(ResourceType.WORKFLOW_NODE_DETAIL);
                     TaskDetailResource taskDetail = wf.getTaskDetail(id);
                     return taskDetail.isExists(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, id);
@@ -2020,60 +1928,57 @@ public class ExperimentRegistry {
                     logger.error("Unsupported data type...");
 
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while retrieving scheduling data.....", e.getMessage());
         }
         return false;
     }
 
     public boolean isInputDataHandlingExist(DataType dataType, String id ) {
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
             switch (dataType){
                 case EXPERIMENT:
-                    ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                    ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                     return experiment.isExists(ResourceType.ADVANCE_INPUT_DATA_HANDLING, id);
                 case TASK_DETAIL:
-                    ExperimentResource exp = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                    ExperimentResource exp = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                     WorkflowNodeDetailResource wf = (WorkflowNodeDetailResource)exp.create(ResourceType.WORKFLOW_NODE_DETAIL);
                     TaskDetailResource taskDetail = wf.getTaskDetail(id);
                     return taskDetail.isExists(ResourceType.ADVANCE_INPUT_DATA_HANDLING, id);
                 default:
                     logger.error("Unsupported data type...");
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while retrieving input data handling.....", e.getMessage());
         }
         return false;
     }
 
     public boolean isOutputDataHandlingExist(DataType dataType, String id ) {
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
             switch (dataType){
                 case EXPERIMENT:
-                    ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                    ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                     return experiment.isExists(ResourceType.ADVANCE_OUTPUT_DATA_HANDLING, id);
                 case TASK_DETAIL:
-                    ExperimentResource exp = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                    ExperimentResource exp = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                     WorkflowNodeDetailResource wf = (WorkflowNodeDetailResource)exp.create(ResourceType.WORKFLOW_NODE_DETAIL);
                     TaskDetailResource taskDetail = wf.getTaskDetail(id);
                     return taskDetail.isExists(ResourceType.ADVANCE_OUTPUT_DATA_HANDLING, id);
                 default:
                     logger.error("Unsupported data type...");
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while retrieving output data handling..", e.getMessage());
         }
         return false;
     }
 
     public boolean isQOSParamsExist(DataType dataType, String id ) {
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
             switch (dataType){
                 case EXPERIMENT:
-                    ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                    ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                     return experiment.isExists(ResourceType.QOS_PARAM, id);
 //                case TASK_DETAIL:
 //                    ExperimentResource exp = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
@@ -2083,77 +1988,73 @@ public class ExperimentRegistry {
                 default:
                     logger.error("Unsupported data type...");
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while retrieving qos params..", e.getMessage());
         }
         return false;
     }
 
     public void updateScheduling(ComputationalResourceScheduling scheduling, String id, String type){
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
             if (type.equals(DataType.EXPERIMENT.toString())){
-                ExperimentResource experiment = defaultGateway.getExperiment(id);
+                ExperimentResource experiment = gatewayResource.getExperiment(id);
                 updateSchedulingData(scheduling, experiment);
             }else if (type.equals(DataType.TASK_DETAIL.toString())){
-                ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                 WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
                 TaskDetailResource taskDetail = workflowNode.getTaskDetail(id);
                 updateSchedulingData(scheduling, taskDetail);
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while updating scheduling..", e.getMessage());
         }
     }
 
     public void updateInputDataHandling(AdvancedInputDataHandling dataHandling, String id, String type){
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
             if (type.equals(DataType.EXPERIMENT.toString())){
-                ExperimentResource experiment = defaultGateway.getExperiment(id);
+                ExperimentResource experiment = gatewayResource.getExperiment(id);
                 updateInputDataHandling(dataHandling, experiment);
             }else if (type.equals(DataType.TASK_DETAIL.toString())){
-                ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                 WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
                 TaskDetailResource taskDetail = workflowNode.getTaskDetail(id);
                 updateInputDataHandling(dataHandling, taskDetail);
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while updating input data handling..", e.getMessage());
         }
     }
 
     public void updateOutputDataHandling(AdvancedOutputDataHandling dataHandling, String id, String type){
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
             if (type.equals(DataType.EXPERIMENT.toString())){
-                ExperimentResource experiment = defaultGateway.getExperiment(id);
+                ExperimentResource experiment = gatewayResource.getExperiment(id);
                 updateOutputDataHandling(dataHandling, experiment);
             }else if (type.equals(DataType.TASK_DETAIL.toString())){
-                ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                 WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
                 TaskDetailResource taskDetail = workflowNode.getTaskDetail(id);
                 updateOutputDataHandling(dataHandling, taskDetail);
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while updating output data handling", e.getMessage());
         }
     }
 
     public void updateQOSParams(QualityOfServiceParams params, String id, String type){
         try {
-            GatewayResource defaultGateway = gatewayRegistry.getDefaultGateway();
             if (type.equals(DataType.EXPERIMENT.toString())){
-                ExperimentResource experiment = defaultGateway.getExperiment(id);
+                ExperimentResource experiment = gatewayResource.getExperiment(id);
                 updateQosParams(params, experiment);
             }else if (type.equals(DataType.TASK_DETAIL.toString())){
-                ExperimentResource experiment = (ExperimentResource)defaultGateway.create(ResourceType.EXPERIMENT);
+                ExperimentResource experiment = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
                 WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
                 TaskDetailResource taskDetail = workflowNode.getTaskDetail(id);
                 updateQosParams(params, taskDetail);
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata-server properties..", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while updating QOS data..", e.getMessage());
         }
     }
       

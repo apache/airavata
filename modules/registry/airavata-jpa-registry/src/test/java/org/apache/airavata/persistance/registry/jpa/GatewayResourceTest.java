@@ -97,7 +97,7 @@ public class GatewayResourceTest extends AbstractResourceTest {
         publishWorkflowResource.save();
 
         experimentResource.setExpID("testExpID");
-        experimentResource.setWorker(getWorkerResource());
+        experimentResource.setExecutionUser(getWorkerResource().getUser());
         experimentResource.setProject(getProjectResource());
         experimentResource.setCreationTime(currentDate);
         experimentResource.setApplicationId("testApplication");

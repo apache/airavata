@@ -21,7 +21,12 @@
 
 package org.apache.airavata.persistance.registry.jpa.impl;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
+import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
+import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
 import org.apache.airavata.registry.cpi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +35,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RegistryImpl implements Registry {
+    private GatewayResource gatewayResource;
+    private UserResource user;
     private final static Logger logger = LoggerFactory.getLogger(RegistryImpl.class);
-    ExperimentRegistry experimentRegistry = new ExperimentRegistry();
+    ExperimentRegistry experimentRegistry = null;
+
+    public RegistryImpl(){
+        try {
+            gatewayResource = (GatewayResource)ResourceUtils.createGateway(ServerSettings.getSystemUserGateway());
+            gatewayResource.save();
+            user = ResourceUtils.createUser(ServerSettings.getSystemUser(), ServerSettings.getSystemUserPassword());
+            user.save();
+            experimentRegistry = new ExperimentRegistry(gatewayResource, user);
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata server properties..", e.getMessage());
+        }
+    }
+
+    public RegistryImpl(String gateway, String username, String password) {
+        gatewayResource = (GatewayResource)ResourceUtils.createGateway(gateway);
+        gatewayResource.save();
+        user = ResourceUtils.createUser(username, password);
+        user.save();
+        experimentRegistry = new ExperimentRegistry(gatewayResource, user);
+    }
 
     /**
      * This method is to add an object in to the registry
