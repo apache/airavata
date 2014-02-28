@@ -25,6 +25,7 @@ import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
@@ -34,6 +35,7 @@ import org.apache.airavata.orchestrator.core.DocumentCreator;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.ChildDataType;
+import org.apache.airavata.registry.cpi.CompositeIdentifier;
 import org.apache.airavata.registry.cpi.ParentDataType;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.schemas.gfac.DataType;
@@ -45,14 +47,14 @@ import java.util.List;
 
 public class OrchestratorClientFactoryTest {
     private DocumentCreator documentCreator;
-    private OrchestratorService.Client orchestratorClient;
+//    private OrchestratorService.Client orchestratorClient;
     private Registry registry;
 
     @Before
     public void setUp(){
-        OrchestratorClientFactory orchestratorClientFactory = new OrchestratorClientFactory();
-        orchestratorClient = orchestratorClientFactory.createOrchestratorClient("localhost", 8940);
+//        orchestratorClient = OrchestratorClientFactory.createOrchestratorClient("localhost", 8940);
         registry = RegistryFactory.getDefaultRegistry();
+        AiravataUtils.setExecutionAsServer();
         documentCreator = new DocumentCreator(getAiravataAPI());
         documentCreator.createLocalHostDocs();
         documentCreator.createGramDocs();
@@ -90,9 +92,9 @@ public class OrchestratorClientFactoryTest {
             exInputs.add(input);
             Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "EchoLocal", "EchoLocal", exInputs);
             ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "development", 0, 0, 1, "sds128");
-
             String expId = (String)registry.add(ParentDataType.EXPERIMENT, simpleExperiment);
-            registry.add(ChildDataType.COMPUTATIONAL_RESOURCE_SCHEDULING, scheduling, expId);
+            CompositeIdentifier compositeIdentifier = new CompositeIdentifier(expId, null);
+            registry.add(ChildDataType.COMPUTATIONAL_RESOURCE_SCHEDULING, scheduling, compositeIdentifier);
         } catch (Exception e) {
             e.printStackTrace();
         }
