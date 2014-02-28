@@ -52,7 +52,7 @@ public abstract class AbstractResource implements Resource {
 	public static final String JOB_DETAIL = "JobDetail";
 	public static final String DATA_TRANSFER_DETAIL = "DataTransferDetail";
 	public static final String STATUS = "Status";
-	public static final String CONFIG_DATA = "Config_Data";
+	public static final String CONFIG_DATA = "ExperimentConfigData";
 	public static final String COMPUTATIONAL_RESOURCE_SCHEDULING = "Computational_Resource_Scheduling";
 	public static final String ADVANCE_INPUT_DATA_HANDLING = "AdvancedInputDataHandling";
 	public static final String ADVANCE_OUTPUT_DATA_HANDLING = "AdvancedOutputDataHandling";

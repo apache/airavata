@@ -381,7 +381,7 @@ public class WorkflowNodeDetailResource extends AbstractResource {
 
     public List<ErrorDetailResource> getErrorDetails(){
         List<ErrorDetailResource> errorDetails = new ArrayList<ErrorDetailResource>();
-        List<Resource> resources = get(ResourceType.TASK_DETAIL);
+        List<Resource> resources = get(ResourceType.ERROR_DETAIL);
         for (Resource resource : resources) {
             ErrorDetailResource errorDetailResource = (ErrorDetailResource) resource;
             errorDetails.add(errorDetailResource);
