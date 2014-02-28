@@ -31,6 +31,7 @@ import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.ChildDataType;
@@ -91,9 +92,10 @@ public class OrchestratorClientFactoryTest {
             exInputs.add(input);
             Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "EchoLocal", "EchoLocal", exInputs);
             ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "development", 0, 0, 1, "sds128");
+            UserConfigurationData userConfigurationData = new UserConfigurationData();
+            userConfigurationData.setComputationalResourceScheduling(scheduling);
+            simpleExperiment.setUserConfigurationData(userConfigurationData);
             String expId = (String)registry.add(ParentDataType.EXPERIMENT, simpleExperiment);
-            CompositeIdentifier compositeIdentifier = new CompositeIdentifier(expId, null);
-            registry.add(ChildDataType.COMPUTATIONAL_RESOURCE_SCHEDULING, scheduling, compositeIdentifier);
 
             orchestratorClient.launchExperiment(expId);
         } catch (Exception e) {

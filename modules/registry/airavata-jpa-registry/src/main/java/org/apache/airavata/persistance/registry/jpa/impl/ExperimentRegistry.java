@@ -61,8 +61,14 @@ public class ExperimentRegistry {
             experimentResource.setExpName(experiment.getName());
             experimentResource.setExecutionUser(experiment.getUserName());
             experimentResource.setGateway(gatewayResource);
+            ProjectResource project;
             if (!workerResource.isProjectExists(experiment.getProjectID())){
-                ProjectResource project = workerResource.createProject(experiment.getProjectID());
+                project = workerResource.createProject(experiment.getProjectID());
+                project.setGateway(gatewayResource);
+                project.save();
+                experimentResource.setProject(project);
+            }else {
+                project = workerResource.getProject(experiment.getProjectID());
                 experimentResource.setProject(project);
             }
             experimentResource.setCreationTime(getTime(experiment.getCreationTime()));
@@ -76,6 +82,11 @@ public class ExperimentRegistry {
             List<DataObjectType> experimentInputs = experiment.getExperimentInputs();
             if (experimentInputs != null){
                 addExpInputs(experimentInputs, experimentResource);
+            }
+
+            UserConfigurationData userConfigurationData = experiment.getUserConfigurationData();
+            if (userConfigurationData != null){
+                addUserConfigData(userConfigurationData, experimentID);
             }
 
         } catch (Exception e){
@@ -175,6 +186,7 @@ public class ExperimentRegistry {
         if (resource instanceof TaskDetailResource){
             TaskDetailResource taskDetailResource = (TaskDetailResource)resource;
             cmsr.setTaskDetailResource(taskDetailResource);
+            cmsr.setExperimentResource(taskDetailResource.getWorkflowNodeDetailResource().getExperimentResource());
         }
         cmsr.setResourceHostId(resourceScheduling.getResourceHostId());
         cmsr.setCpuCount(resourceScheduling.getTotalCPUCount());
