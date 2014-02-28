@@ -22,10 +22,18 @@
 package org.apache.airavata.orchestrator.client;
 
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
+import org.junit.Before;
 import org.junit.Test;
 
 public class OrchestratorClientFactoryTest {
 
+    @Before
+    public void setUp(){
+               // fill the descripter saving code using AiravataRegistry2
+        //
+
+        // fill the code to store ExperimentData
+    }
     @Test
     public void testCreateOrchestratorClient() throws Exception {
 
@@ -34,6 +42,14 @@ public class OrchestratorClientFactoryTest {
         OrchestratorService.Client orchestratorClient = orchestratorClientFactory.createOrchestratorClient("localhost", 8940);
 
         System.out.println("Orchestrator CPI version is " + orchestratorClient.getOrchestratorCPIVersion());
+
+    }
+
+    private void storeDescriptors(){
+
+    }
+
+    private void storeExperimentDetail(){
 
     }
 }
