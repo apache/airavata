@@ -21,28 +21,58 @@
 
 package org.apache.airavata.orchestrator.client;
 
+import org.apache.airavata.client.AiravataAPIFactory;
+import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.model.util.ExperimentModelUtil;
+import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.model.workspace.experiment.DataObjectType;
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.orchestrator.core.DocumentCreator;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
+import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
+import org.apache.airavata.registry.cpi.ChildDataType;
+import org.apache.airavata.registry.cpi.ParentDataType;
+import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.schemas.gfac.DataType;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class OrchestratorClientFactoryTest {
+    private DocumentCreator documentCreator;
+    private OrchestratorService.Client orchestratorClient;
+    private Registry registry;
 
     @Before
     public void setUp(){
-               // fill the descripter saving code using AiravataRegistry2
-        //
-
-        // fill the code to store ExperimentData
-    }
-    @Test
-    public void testCreateOrchestratorClient() throws Exception {
-
         OrchestratorClientFactory orchestratorClientFactory = new OrchestratorClientFactory();
+        orchestratorClient = orchestratorClientFactory.createOrchestratorClient("localhost", 8940);
+        registry = RegistryFactory.getDefaultRegistry();
+        documentCreator = new DocumentCreator(getAiravataAPI());
+        documentCreator.createLocalHostDocs();
+        documentCreator.createGramDocs();
+        documentCreator.createGSISSHDocs();
+    }
 
-        OrchestratorService.Client orchestratorClient = orchestratorClientFactory.createOrchestratorClient("localhost", 8940);
-
-        System.out.println("Orchestrator CPI version is " + orchestratorClient.getOrchestratorCPIVersion());
-
+    private AiravataAPI getAiravataAPI() {
+        AiravataAPI airavataAPI = null;
+        if (airavataAPI == null) {
+            try {
+                String systemUserName = ServerSettings.getSystemUser();
+                String gateway = ServerSettings.getSystemUserGateway();
+                airavataAPI = AiravataAPIFactory.getAPI(gateway, systemUserName);
+            } catch (ApplicationSettingsException e) {
+                e.printStackTrace();
+            } catch (AiravataAPIInvocationException e) {
+                e.printStackTrace();
+            }
+        }
+        return airavataAPI;
     }
 
     private void storeDescriptors(){
@@ -50,6 +80,20 @@ public class OrchestratorClientFactoryTest {
     }
 
     private void storeExperimentDetail(){
+        try{
+            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
+            DataObjectType input = new DataObjectType();
+            input.setKey("echo_input");
+            input.setType(DataType.STRING.toString());
+            input.setValue("helloWorld");
+            exInputs.add(input);
+            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "EchoLocal", "EchoLocal", exInputs);
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "development", 0, 0, 1, "sds128");
+            String expId = (String)registry.add(ParentDataType.EXPERIMENT, simpleExperiment);
+            registry.add(ChildDataType.COMPUTATIONAL_RESOURCE_SCHEDULING, scheduling, expId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 }
