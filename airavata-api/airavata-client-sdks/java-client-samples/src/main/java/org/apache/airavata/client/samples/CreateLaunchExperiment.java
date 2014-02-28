@@ -44,7 +44,9 @@ public class CreateLaunchExperiment {
         airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
         try {
             System.out.println("API version is " + airavata.GetAPIVersion());
-            createExperiment(airavata);
+            String expId = createExperiment(airavata);
+            Experiment experiment = airavata.getExperiment(expId);
+            System.out.println("retrieved exp id : " + experiment.getExperimentID());
         } catch (TException e) {
            logger.error("Error while connecting with server", e.getMessage());
         }
@@ -57,13 +59,13 @@ public class CreateLaunchExperiment {
             System.out.println("Experiment ID : " + expId);
             return expId;
         } catch (AiravataSystemException e) {
-            e.printStackTrace();
+            logger.error("Error occured while creating the experiment...", e.getMessage());
         } catch (InvalidRequestException e) {
-            e.printStackTrace();
+            logger.error("Error occured while creating the experiment...", e.getMessage());
         } catch (AiravataClientException e) {
-            e.printStackTrace();
+            logger.error("Error occured while creating the experiment...", e.getMessage());
         }catch (TException e) {
-            e.printStackTrace();
+            logger.error("Error occured while creating the experiment...", e.getMessage());
         }
         return null;
     }
