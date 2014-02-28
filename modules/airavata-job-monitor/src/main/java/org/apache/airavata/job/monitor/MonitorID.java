@@ -22,6 +22,7 @@ package org.apache.airavata.job.monitor;
 
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
+import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +73,12 @@ public class MonitorID {
         this.jobStartedTime = new Timestamp((new Date()).getTime());
         this.authenticationInfo = authenticationInfo;
         this.userName = userName;
+        // if we give myproxyauthenticationInfo, so we try to use myproxy user as the user
+        if(this.authenticationInfo != null){
+            if(this.authenticationInfo instanceof MyProxyAuthenticationInfo){
+                this.userName = ((MyProxyAuthenticationInfo)this.authenticationInfo).getUserName();
+            }
+        }
         this.jobID = jobID;
         this.taskID = taskID;
         this.experimentID = experimentID;

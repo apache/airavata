@@ -566,12 +566,14 @@ public class Utils {
         ExperimentResource experimentResource = new ExperimentResource();
         GatewayResource gatewayResource = (GatewayResource)createGateway(o.getGateway());
         experimentResource.setGateway(gatewayResource);
-        Gateway_Worker gateway_worker = new Gateway_Worker();
-        gateway_worker.setGateway(o.getGateway());
-        gateway_worker.setUser_name(o.getExecutionUser());
+//        Gateway_Worker gateway_worker = new Gateway_Worker();
+//        gateway_worker.setGateway(o.getGateway());
+//        gateway_worker.setUser_name(o.getExecutionUser());
         experimentResource.setExecutionUser(o.getExecutionUser());
-        ProjectResource projectResource = (ProjectResource)createProject(o.getProject());
-        experimentResource.setProject(projectResource);
+        if (o.getProject() != null){
+            ProjectResource projectResource = (ProjectResource)createProject(o.getProject());
+            experimentResource.setProject(projectResource);
+        }
         experimentResource.setExpID(o.getExpId());
         experimentResource.setCreationTime(o.getCreationTime());
         experimentResource.setDescription(o.getExpDesc());

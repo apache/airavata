@@ -34,7 +34,10 @@ public class ThriftDataModelConversion {
 
     public static Experiment getExperiment(ExperimentResource experimentResource){
         Experiment experiment = new Experiment();
-        experiment.setProjectID(experimentResource.getProject().getName());
+        if (experimentResource.getProject()!= null){
+            experiment.setProjectID(experimentResource.getProject().getName());
+        }
+
         experiment.setCreationTime(experimentResource.getCreationTime().getTime());
         experiment.setUserName(experimentResource.getExecutionUser());
         experiment.setName(experimentResource.getExpName());
@@ -49,13 +52,22 @@ public class ThriftDataModelConversion {
         List<ExperimentOutputResource> experimentOutputs = experimentResource.getExperimentOutputs();
         experiment.setExperimentOutputs(getExpOutputs(experimentOutputs));
         StatusResource experimentStatus = experimentResource.getExperimentStatus();
-        experiment.setExperimentStatus(getExperimentStatus(experimentStatus));
+        if (experimentStatus != null){
+            experiment.setExperimentStatus(getExperimentStatus(experimentStatus));
+        }
         List<StatusResource> changeList = experimentResource.getWorkflowNodeStatuses();
-        experiment.setStateChangeList(getWorkflowNodeStatusList(changeList));
+        if (changeList != null){
+               experiment.setStateChangeList(getWorkflowNodeStatusList(changeList));
+        }
+
         List<WorkflowNodeDetailResource> workflowNodeDetails = experimentResource.getWorkflowNodeDetails();
-        experiment.setWorkflowNodeDetailsList(getWfNodeList(workflowNodeDetails));
+        if (workflowNodeDetails != null){
+                experiment.setWorkflowNodeDetailsList(getWfNodeList(workflowNodeDetails));
+        }
         List<ErrorDetailResource> errorDetails = experimentResource.getErrorDetails();
-        experiment.setErrors(getErrorDetailList(errorDetails));
+        if (errorDetails!= null){
+            experiment.setErrors(getErrorDetailList(errorDetails));
+        }
         return experiment;
     }
 

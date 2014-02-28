@@ -47,12 +47,12 @@ import java.util.List;
 
 public class OrchestratorClientFactoryTest {
     private DocumentCreator documentCreator;
-//    private OrchestratorService.Client orchestratorClient;
+    private OrchestratorService.Client orchestratorClient;
     private Registry registry;
 
     @Before
     public void setUp(){
-//        orchestratorClient = OrchestratorClientFactory.createOrchestratorClient("localhost", 8940);
+        orchestratorClient = OrchestratorClientFactory.createOrchestratorClient("localhost", 8940);
         registry = RegistryFactory.getDefaultRegistry();
         AiravataUtils.setExecutionAsServer();
         documentCreator = new DocumentCreator(getAiravataAPI());
@@ -95,6 +95,8 @@ public class OrchestratorClientFactoryTest {
             String expId = (String)registry.add(ParentDataType.EXPERIMENT, simpleExperiment);
             CompositeIdentifier compositeIdentifier = new CompositeIdentifier(expId, null);
             registry.add(ChildDataType.COMPUTATIONAL_RESOURCE_SCHEDULING, scheduling, compositeIdentifier);
+
+            orchestratorClient.launchExperiment(expId);
         } catch (Exception e) {
             e.printStackTrace();
         }

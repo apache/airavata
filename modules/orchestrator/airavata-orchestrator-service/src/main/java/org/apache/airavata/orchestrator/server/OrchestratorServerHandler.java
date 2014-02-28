@@ -171,6 +171,10 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 //iterate through all the generated tasks and performs the job submisssion+monitoring
 
                 Experiment experiment = (Experiment) registry.get(DataType.EXPERIMENT, experimentId);
+                if(experiment == null){
+                    log.error("Error retrieving the Experiment by the given experimentID: " + experimentId);
+                    return false;
+                }
                 String userName = experiment.getUserName();
 
                 HostDescription hostDescription = OrchestratorUtils.getHostDescription(orchestrator, taskID);
