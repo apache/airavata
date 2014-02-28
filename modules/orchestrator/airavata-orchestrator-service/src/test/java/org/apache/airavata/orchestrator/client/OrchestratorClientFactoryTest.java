@@ -79,7 +79,8 @@ public class OrchestratorClientFactoryTest {
 
     }
 
-    private void storeExperimentDetail(){
+    @Test
+    public void storeExperimentDetail(){
         try{
             List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
             DataObjectType input = new DataObjectType();
@@ -89,6 +90,7 @@ public class OrchestratorClientFactoryTest {
             exInputs.add(input);
             Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "EchoLocal", "EchoLocal", exInputs);
             ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "development", 0, 0, 1, "sds128");
+
             String expId = (String)registry.add(ParentDataType.EXPERIMENT, simpleExperiment);
             registry.add(ChildDataType.COMPUTATIONAL_RESOURCE_SCHEDULING, scheduling, expId);
         } catch (Exception e) {

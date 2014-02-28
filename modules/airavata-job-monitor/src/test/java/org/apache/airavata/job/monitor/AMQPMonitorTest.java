@@ -51,7 +51,7 @@ public class AMQPMonitorTest {
     @Before
     public void setUp() throws Exception {
         System.setProperty("myproxy.user", "ogce");
-        System.setProperty("myproxy.password", "");
+        System.setProperty("myproxy.password", "0Gce3098");
         System.setProperty("basedir", "/Users/lahirugunathilake/work/airavata/sandbox/gsissh");
         System.setProperty("gsi.working.directory", "/home/ogce");
         myProxyUserName = System.getProperty("myproxy.user");
@@ -122,7 +122,7 @@ public class AMQPMonitorTest {
         String jobID = pbsCluster.submitBatchJob(jobDescriptor);
         System.out.println(jobID);
         try {
-            monitorManager.addAJobToMonitor(new MonitorID(hostDescription, jobID, "ogce"));
+            monitorManager.addAJobToMonitor(new MonitorID(hostDescription, jobID,null,null, "ogce"));
         } catch (AiravataMonitorException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }

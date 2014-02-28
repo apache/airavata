@@ -32,6 +32,8 @@ import org.apache.airavata.job.monitor.core.Monitor;
 import org.apache.airavata.job.monitor.core.PullMonitor;
 import org.apache.airavata.job.monitor.core.PushMonitor;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
+import org.apache.airavata.job.monitor.impl.pull.qstat.QstatMonitor;
+import org.apache.airavata.job.monitor.impl.push.amqp.AMQPMonitor;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
@@ -105,10 +107,14 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 Class<? extends Monitor> aClass = Class.forName(primaryMonitor).asSubclass(Monitor.class);
                 Monitor monitor = aClass.newInstance();
                 if (monitor instanceof PullMonitor) {
-                    monitorManager.addPullMonitor((PullMonitor) monitor);
+                    if(monitor instanceof QstatMonitor){
+                        monitorManager.addQstatMonitor((QstatMonitor)monitor);
+                    }
                     pushMode = false;
                 } else if (monitor instanceof PushMonitor) {
-                    monitorManager.addPushMonitor((PushMonitor) monitor);
+                    if(monitor instanceof AMQPMonitor){
+                        monitorManager.addAMQPMonitor((AMQPMonitor)monitor);
+                    }
                 } else {
                     log.error("Wrong class is given to primary Monitor");
                 }

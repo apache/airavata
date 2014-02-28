@@ -52,7 +52,7 @@ public class QstatMonitorTest {
     @Before
     public void setUp() throws Exception {
         System.setProperty("myproxy.user", "ogce");
-        System.setProperty("myproxy.password", "");
+        System.setProperty("myproxy.password", "0Gce3098");
         System.setProperty("basedir", "/Users/lahirugunathilake/work/airavata/sandbox/gsissh");
         System.setProperty("gsi.working.directory", "/home/ogce");
         myProxyUserName = System.getProperty("myproxy.user");
@@ -119,9 +119,9 @@ public class QstatMonitorTest {
         jobDescriptor.setInputValues(inputs);
         //finished construction of job object
         System.out.println(jobDescriptor.toXML());
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 1; i++) {
             String jobID = pbsCluster.submitBatchJob(jobDescriptor);
-            MonitorID monitorID = new MonitorID(hostDescription, jobID, "ogce");
+            MonitorID monitorID = new MonitorID(hostDescription, jobID,null,null, "ogce");
             monitorID.setAuthenticationInfo(authenticationInfo);
             try {
                 monitorManager.addAJobToMonitor(monitorID);
