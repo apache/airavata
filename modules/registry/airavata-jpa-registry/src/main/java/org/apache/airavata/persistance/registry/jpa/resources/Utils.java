@@ -418,14 +418,17 @@ public class Utils {
      */
     private static Resource createProject(Project o) {
         ProjectResource projectResource = new ProjectResource();
-        projectResource.setName(o.getProject_name());
-        GatewayResource gatewayResource = (GatewayResource)createGateway(o.getGateway());
-        projectResource.setGateway(gatewayResource);
-        Gateway_Worker gateway_worker = new Gateway_Worker();
-        gateway_worker.setGateway(o.getGateway());
-        gateway_worker.setUser(o.getUsers());
-        WorkerResource workerResource = (WorkerResource) createGatewayWorker(gateway_worker);
-        projectResource.setWorker(workerResource);
+        if (o != null){
+            projectResource.setName(o.getProject_name());
+            GatewayResource gatewayResource = (GatewayResource)createGateway(o.getGateway());
+            projectResource.setGateway(gatewayResource);
+            Gateway_Worker gateway_worker = new Gateway_Worker();
+            gateway_worker.setGateway(o.getGateway());
+            gateway_worker.setUser(o.getUsers());
+            WorkerResource workerResource = (WorkerResource) createGatewayWorker(gateway_worker);
+            projectResource.setWorker(workerResource);
+        }
+
         return projectResource;
     }
 
@@ -436,10 +439,13 @@ public class Utils {
      */
     private static Resource createConfiguration (Configuration o){
         ConfigurationResource configurationResource = new ConfigurationResource();
-        configurationResource.setConfigKey(o.getConfig_key());
-        configurationResource.setConfigVal(o.getConfig_val());
-        configurationResource.setExpireDate(o.getExpire_date());
-        configurationResource.setCategoryID(o.getCategory_id());
+        if (o != null){
+            configurationResource.setConfigKey(o.getConfig_key());
+            configurationResource.setConfigVal(o.getConfig_val());
+            configurationResource.setExpireDate(o.getExpire_date());
+            configurationResource.setCategoryID(o.getCategory_id());
+        }
+
         return configurationResource;
     }
 
@@ -450,12 +456,14 @@ public class Utils {
      */
     private static Resource createApplicationDescriptor(Application_Descriptor o) {
         ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource();
-        applicationDescriptorResource.setName(o.getApplication_descriptor_ID());
-        applicationDescriptorResource.setHostDescName(o.getHost_descriptor_ID());
-        applicationDescriptorResource.setServiceDescName(o.getService_descriptor_ID());
-        applicationDescriptorResource.setContent(new String(o.getApplication_descriptor_xml()));
-        applicationDescriptorResource.setUpdatedUser(o.getUser().getUser_name());
-        applicationDescriptorResource.setGatewayName(o.getGateway().getGateway_name());
+        if (o != null){
+            applicationDescriptorResource.setName(o.getApplication_descriptor_ID());
+            applicationDescriptorResource.setHostDescName(o.getHost_descriptor_ID());
+            applicationDescriptorResource.setServiceDescName(o.getService_descriptor_ID());
+            applicationDescriptorResource.setContent(new String(o.getApplication_descriptor_xml()));
+            applicationDescriptorResource.setUpdatedUser(o.getUser().getUser_name());
+            applicationDescriptorResource.setGatewayName(o.getGateway().getGateway_name());
+        }
         return applicationDescriptorResource;
     }
 
@@ -467,10 +475,13 @@ public class Utils {
      * @return  Gateway_Worker resource object
      */
     private static Resource createGatewayWorker(Gateway_Worker o) {
-        GatewayResource gatewayResource = new GatewayResource(o.getGateway().getGateway_name());
-        gatewayResource.setOwner(o.getGateway().getOwner());
-        WorkerResource workerResource = new WorkerResource(o.getUser_name(), gatewayResource);
-        return workerResource;
+        if (o != null){
+            GatewayResource gatewayResource = new GatewayResource(o.getGateway().getGateway_name());
+            gatewayResource.setOwner(o.getGateway().getOwner());
+            WorkerResource workerResource = new WorkerResource(o.getUser_name(), gatewayResource);
+            return workerResource;
+        }
+        return null;
     }
 
     /**
@@ -479,18 +490,21 @@ public class Utils {
      * @return  HostDescriptor resource object
      */
     private static Resource createHostDescriptor(Host_Descriptor o) {
-        try {
-            HostDescriptorResource hostDescriptorResource = new HostDescriptorResource();
-            hostDescriptorResource.setGatewayName(o.getGateway().getGateway_name());
-            hostDescriptorResource.setUserName(o.getUser().getUser_name());
-            hostDescriptorResource.setHostDescName(o.getHost_descriptor_ID());
-            byte[] bytes = o.getHost_descriptor_xml();
-            hostDescriptorResource.setContent(new String(bytes));
-            return hostDescriptorResource;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+        if (o != null){
+            try {
+                HostDescriptorResource hostDescriptorResource = new HostDescriptorResource();
+                hostDescriptorResource.setGatewayName(o.getGateway().getGateway_name());
+                hostDescriptorResource.setUserName(o.getUser().getUser_name());
+                hostDescriptorResource.setHostDescName(o.getHost_descriptor_ID());
+                byte[] bytes = o.getHost_descriptor_xml();
+                hostDescriptorResource.setContent(new String(bytes));
+                return hostDescriptorResource;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
         }
+        return null;
     }
 
     /**
@@ -500,14 +514,17 @@ public class Utils {
      */
     private static Resource createPublishWorkflow(Published_Workflow o) {
         PublishWorkflowResource publishWorkflowResource = new PublishWorkflowResource();
-        GatewayResource gatewayResource = (GatewayResource)createGateway(o.getGateway());
-        publishWorkflowResource.setGateway(gatewayResource);
-        publishWorkflowResource.setCreatedUser(o.getUser().getUser_name());
-        publishWorkflowResource.setName(o.getPublish_workflow_name());
-        publishWorkflowResource.setContent(new String(o.getWorkflow_content()));
-        publishWorkflowResource.setPublishedDate(o.getPublished_date());
-        publishWorkflowResource.setVersion(o.getVersion());
-        publishWorkflowResource.setPath(o.getPath());
+        if (o != null){
+            GatewayResource gatewayResource = (GatewayResource)createGateway(o.getGateway());
+            publishWorkflowResource.setGateway(gatewayResource);
+            publishWorkflowResource.setCreatedUser(o.getUser().getUser_name());
+            publishWorkflowResource.setName(o.getPublish_workflow_name());
+            publishWorkflowResource.setContent(new String(o.getWorkflow_content()));
+            publishWorkflowResource.setPublishedDate(o.getPublished_date());
+            publishWorkflowResource.setVersion(o.getVersion());
+            publishWorkflowResource.setPath(o.getPath());
+        }
+
         return publishWorkflowResource;
     }
 
@@ -518,10 +535,13 @@ public class Utils {
      */
     private static Resource createServiceDescriptor(Service_Descriptor o) {
         ServiceDescriptorResource serviceDescriptorResource = new ServiceDescriptorResource();
-        serviceDescriptorResource.setGatewayName(o.getGateway().getGateway_name());
-        serviceDescriptorResource.setUserName(o.getUser().getUser_name());
-        serviceDescriptorResource.setServiceDescName(o.getService_descriptor_ID());
-        serviceDescriptorResource.setContent(new String(o.getService_descriptor_xml()));
+        if (o != null){
+            serviceDescriptorResource.setGatewayName(o.getGateway().getGateway_name());
+            serviceDescriptorResource.setUserName(o.getUser().getUser_name());
+            serviceDescriptorResource.setServiceDescName(o.getService_descriptor_ID());
+            serviceDescriptorResource.setContent(new String(o.getService_descriptor_xml()));
+        }
+
         return serviceDescriptorResource;
     }
 
@@ -532,17 +552,20 @@ public class Utils {
      */
     private static Resource createUserWorkflow(User_Workflow o) {
         UserWorkflowResource userWorkflowResource = new UserWorkflowResource();
-        userWorkflowResource.setName(o.getTemplate_name());
-        GatewayResource gatewayResource = (GatewayResource)createGateway(o.getGateway());
-        userWorkflowResource.setGateway(gatewayResource);
-        Gateway_Worker gateway_worker = new Gateway_Worker();
-        gateway_worker.setGateway(o.getGateway());
-        gateway_worker.setUser(o.getUser());
-        WorkerResource workerResource = (WorkerResource) createGatewayWorker(gateway_worker);
-        userWorkflowResource.setWorker(workerResource);
-        userWorkflowResource.setLastUpdateDate(o.getLast_updated_date());
-        userWorkflowResource.setContent(new String(o.getWorkflow_graph()));
-        userWorkflowResource.setPath(o.getPath());
+        if (o != null){
+            userWorkflowResource.setName(o.getTemplate_name());
+            GatewayResource gatewayResource = (GatewayResource)createGateway(o.getGateway());
+            userWorkflowResource.setGateway(gatewayResource);
+            Gateway_Worker gateway_worker = new Gateway_Worker();
+            gateway_worker.setGateway(o.getGateway());
+            gateway_worker.setUser(o.getUser());
+            WorkerResource workerResource = (WorkerResource) createGatewayWorker(gateway_worker);
+            userWorkflowResource.setWorker(workerResource);
+            userWorkflowResource.setLastUpdateDate(o.getLast_updated_date());
+            userWorkflowResource.setContent(new String(o.getWorkflow_graph()));
+            userWorkflowResource.setPath(o.getPath());
+        }
+
         return userWorkflowResource;
     }
 
@@ -553,8 +576,11 @@ public class Utils {
      */
     private static Resource createUser(Users o) {
         UserResource userResource = new UserResource();
-        userResource.setUserName(o.getUser_name());
-        userResource.setPassword(o.getPassword());
+        if (o != null){
+            userResource.setUserName(o.getUser_name());
+            userResource.setPassword(o.getPassword());
+        }
+
         return userResource;
     }
 
@@ -564,257 +590,299 @@ public class Utils {
      */
     private static Resource createExperiment(Experiment o) {
         ExperimentResource experimentResource = new ExperimentResource();
-        GatewayResource gatewayResource = (GatewayResource)createGateway(o.getGateway());
-        experimentResource.setGateway(gatewayResource);
-//        Gateway_Worker gateway_worker = new Gateway_Worker();
-//        gateway_worker.setGateway(o.getGateway());
-//        gateway_worker.setUser_name(o.getExecutionUser());
-        experimentResource.setExecutionUser(o.getExecutionUser());
-        if (o.getProject() != null){
-            ProjectResource projectResource = (ProjectResource)createProject(o.getProject());
-            experimentResource.setProject(projectResource);
+        if (o != null){
+            GatewayResource gatewayResource = (GatewayResource)createGateway(o.getGateway());
+            experimentResource.setGateway(gatewayResource);
+            experimentResource.setExecutionUser(o.getExecutionUser());
+            if (o.getProject() != null){
+                ProjectResource projectResource = (ProjectResource)createProject(o.getProject());
+                experimentResource.setProject(projectResource);
+            }
+            experimentResource.setExpID(o.getExpId());
+            experimentResource.setCreationTime(o.getCreationTime());
+            experimentResource.setDescription(o.getExpDesc());
+            experimentResource.setApplicationId(o.getApplicationId());
+            experimentResource.setApplicationVersion(o.getAppVersion());
+            experimentResource.setWorkflowTemplateId(o.getWorkflowTemplateId());
+            experimentResource.setWorkflowTemplateVersion(o.getWorkflowTemplateVersion());
+            experimentResource.setWorkflowExecutionId(o.getWorkflowExecutionId());
         }
-        experimentResource.setExpID(o.getExpId());
-        experimentResource.setCreationTime(o.getCreationTime());
-        experimentResource.setDescription(o.getExpDesc());
-        experimentResource.setApplicationId(o.getApplicationId());
-        experimentResource.setApplicationVersion(o.getAppVersion());
-        experimentResource.setWorkflowTemplateId(o.getWorkflowTemplateId());
-        experimentResource.setWorkflowTemplateVersion(o.getWorkflowTemplateVersion());
-        experimentResource.setWorkflowExecutionId(o.getWorkflowExecutionId());
+
         return experimentResource;
     }
 
     private static Resource createExperimentInput (Experiment_Input o){
         ExperimentInputResource eInputResource = new ExperimentInputResource();
-        ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
-        eInputResource.setExperimentResource(experimentResource);
-        eInputResource.setInputType(o.getInputType());
-        eInputResource.setMetadata(o.getMetadata());
-        eInputResource.setExperimentKey(o.getEx_key());
-        eInputResource.setValue(o.getValue());
+        if (o != null){
+            ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
+            eInputResource.setExperimentResource(experimentResource);
+            eInputResource.setInputType(o.getInputType());
+            eInputResource.setMetadata(o.getMetadata());
+            eInputResource.setExperimentKey(o.getEx_key());
+            eInputResource.setValue(o.getValue());
+        }
         return eInputResource;
     }
 
     private static Resource createExperimentOutput (Experiment_Output o){
         ExperimentOutputResource eOutputResource = new ExperimentOutputResource();
-        ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
-        eOutputResource.setExperimentResource(experimentResource);
-        eOutputResource.setExperimentKey(o.getEx_key());
-        eOutputResource.setValue(o.getValue());
-        eOutputResource.setOutputType(o.getOutputKeyType());
-        eOutputResource.setMetadata(o.getMetadata());
+        if (o != null){
+            ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
+            eOutputResource.setExperimentResource(experimentResource);
+            eOutputResource.setExperimentKey(o.getEx_key());
+            eOutputResource.setValue(o.getValue());
+            eOutputResource.setOutputType(o.getOutputKeyType());
+            eOutputResource.setMetadata(o.getMetadata());
+        }
         return eOutputResource;
     }
 
     private static Resource createWorkflowNodeDetail (WorkflowNodeDetail o){
         WorkflowNodeDetailResource nodeDetailResource = new WorkflowNodeDetailResource();
-        ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
-        nodeDetailResource.setExperimentResource(experimentResource);
-        nodeDetailResource.setCreationTime(o.getCreationTime());
-        nodeDetailResource.setNodeInstanceId(o.getNodeId());
-        nodeDetailResource.setNodeName(o.getNodeName());
+        if (o != null){
+            ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
+            nodeDetailResource.setExperimentResource(experimentResource);
+            nodeDetailResource.setCreationTime(o.getCreationTime());
+            nodeDetailResource.setNodeInstanceId(o.getNodeId());
+            nodeDetailResource.setNodeName(o.getNodeName());
+        }
         return nodeDetailResource;
     }
 
     private static Resource createTaskDetail(TaskDetail o){
         TaskDetailResource taskDetailResource = new TaskDetailResource();
-        WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)createWorkflowNodeDetail(o.getNodeDetail());
-        taskDetailResource.setWorkflowNodeDetailResource(nodeDetailResource);
-        taskDetailResource.setCreationTime(o.getCreationTime());
-        taskDetailResource.setTaskId(o.getTaskId());
-        taskDetailResource.setApplicationId(o.getAppId());
-        taskDetailResource.setApplicationVersion(o.getAppVersion());
+        if ( o != null){
+            WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)createWorkflowNodeDetail(o.getNodeDetail());
+            taskDetailResource.setWorkflowNodeDetailResource(nodeDetailResource);
+            taskDetailResource.setCreationTime(o.getCreationTime());
+            taskDetailResource.setTaskId(o.getTaskId());
+            taskDetailResource.setApplicationId(o.getAppId());
+            taskDetailResource.setApplicationVersion(o.getAppVersion());
+        }
         return taskDetailResource;
     }
 
     private static Resource createErrorDetail (ErrorDetail o){
         ErrorDetailResource errorDetailResource = new ErrorDetailResource();
-        ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
-        errorDetailResource.setExperimentResource(experimentResource);
-        if (o.getTask() != null){
-            TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
-            errorDetailResource.setTaskDetailResource(taskDetailResource);
+        if (o != null){
+            ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
+            errorDetailResource.setExperimentResource(experimentResource);
+            if (o.getTask() != null){
+                TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
+                errorDetailResource.setTaskDetailResource(taskDetailResource);
+            }
+            if (o.getNodeDetails() != null){
+                WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)createWorkflowNodeDetail(o.getNodeDetails());
+                errorDetailResource.setNodeDetail(nodeDetailResource);
+            }
+            errorDetailResource.setErrorId(o.getErrorID());
+            errorDetailResource.setJobId(o.getJobId());
+            errorDetailResource.setCreationTime(o.getCreationTime());
+            errorDetailResource.setActualErrorMsg(new String(o.getActualErrorMsg()));
+            errorDetailResource.setUserFriendlyErrorMsg(o.getUserFriendlyErrorMsg());
+            errorDetailResource.setTransientPersistent(o.isTransientPersistent());
+            errorDetailResource.setErrorCategory(o.getErrorCategory());
+            errorDetailResource.setCorrectiveAction(o.getCorrectiveAction());
+            errorDetailResource.setActionableGroup(o.getActionableGroup());
         }
-        if (o.getNodeDetails() != null){
-            WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)createWorkflowNodeDetail(o.getNodeDetails());
-            errorDetailResource.setNodeDetail(nodeDetailResource);
-        }
-        errorDetailResource.setErrorId(o.getErrorID());
-        errorDetailResource.setJobId(o.getJobId());
-        errorDetailResource.setCreationTime(o.getCreationTime());
-        errorDetailResource.setActualErrorMsg(new String(o.getActualErrorMsg()));
-        errorDetailResource.setUserFriendlyErrorMsg(o.getUserFriendlyErrorMsg());
-        errorDetailResource.setTransientPersistent(o.isTransientPersistent());
-        errorDetailResource.setErrorCategory(o.getErrorCategory());
-        errorDetailResource.setCorrectiveAction(o.getCorrectiveAction());
-        errorDetailResource.setActionableGroup(o.getActionableGroup());
+
         return errorDetailResource;
     }
 
     private static Resource createApplicationInput (ApplicationInput o){
         ApplicationInputResource inputResource = new ApplicationInputResource();
-        TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
-        inputResource.setTaskDetailResource(taskDetailResource);
-        inputResource.setInputKey(o.getInputKey());
-        inputResource.setInputType(o.getInputKeyType());
-        inputResource.setValue(o.getValue());
-        inputResource.setMetadata(o.getMetadata());
+        if (o != null){
+            TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
+            inputResource.setTaskDetailResource(taskDetailResource);
+            inputResource.setInputKey(o.getInputKey());
+            inputResource.setInputType(o.getInputKeyType());
+            inputResource.setValue(o.getValue());
+            inputResource.setMetadata(o.getMetadata());
+        }
         return inputResource;
     }
 
     private static Resource createApplicationOutput (ApplicationOutput o){
         ApplicationOutputResource outputResource = new ApplicationOutputResource();
-        TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
-        outputResource.setTaskDetailResource(taskDetailResource);
-        outputResource.setOutputType(o.getOutputKeyType());
-        outputResource.setOutputKey(o.getOutputKey());
-        outputResource.setValue(o.getValue());
-        outputResource.setMetadata(o.getMetadata());
+        if (o != null){
+            TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
+            outputResource.setTaskDetailResource(taskDetailResource);
+            outputResource.setOutputType(o.getOutputKeyType());
+            outputResource.setOutputKey(o.getOutputKey());
+            outputResource.setValue(o.getValue());
+            outputResource.setMetadata(o.getMetadata());
+        }
         return outputResource;
     }
 
     private static Resource createNodeInput (NodeInput o){
         NodeInputResource inputResource = new NodeInputResource();
-        WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)createWorkflowNodeDetail(o.getNodeDetails());
-        inputResource.setNodeDetailResource(nodeDetailResource);
-        inputResource.setInputKey(o.getInputKey());
-        inputResource.setInputType(o.getInputKeyType());
-        inputResource.setValue(o.getValue());
-        inputResource.setMetadata(o.getMetadata());
+        if (o != null){
+            WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)createWorkflowNodeDetail(o.getNodeDetails());
+            inputResource.setNodeDetailResource(nodeDetailResource);
+            inputResource.setInputKey(o.getInputKey());
+            inputResource.setInputType(o.getInputKeyType());
+            inputResource.setValue(o.getValue());
+            inputResource.setMetadata(o.getMetadata());
+        }
         return inputResource;
     }
 
     private static Resource createNodeOutput (NodeOutput o){
         NodeOutputResource outputResource = new NodeOutputResource();
-        WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)createWorkflowNodeDetail(o.getNode());
-        outputResource.setNodeDetailResource(nodeDetailResource);
-        outputResource.setOutputType(o.getOutputKeyType());
-        outputResource.setOutputKey(o.getOutputKey());
-        outputResource.setValue(o.getValue());
-        outputResource.setMetadata(o.getMetadata());
+        if (o != null){
+            WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)createWorkflowNodeDetail(o.getNode());
+            outputResource.setNodeDetailResource(nodeDetailResource);
+            outputResource.setOutputType(o.getOutputKeyType());
+            outputResource.setOutputKey(o.getOutputKey());
+            outputResource.setValue(o.getValue());
+            outputResource.setMetadata(o.getMetadata());
+        }
+
         return outputResource;
     }
 
     private static Resource createJobDetail (JobDetail o){
         JobDetailResource jobDetailResource = new JobDetailResource();
-        TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
-        jobDetailResource.setTaskDetailResource(taskDetailResource);
-        jobDetailResource.setJobDescription(o.getJobDescription());
-        jobDetailResource.setJobId(o.getJobId());
-        jobDetailResource.setCreationTime(o.getCreationTime());
-        jobDetailResource.setComputeResourceConsumed(o.getComputeResourceConsumed());
+        if (o != null){
+            TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
+            jobDetailResource.setTaskDetailResource(taskDetailResource);
+            jobDetailResource.setJobDescription(o.getJobDescription());
+            jobDetailResource.setJobId(o.getJobId());
+            jobDetailResource.setCreationTime(o.getCreationTime());
+            jobDetailResource.setComputeResourceConsumed(o.getComputeResourceConsumed());
+        }
+
         return jobDetailResource;
     }
 
     private static Resource createDataTransferResource (DataTransferDetail o){
         DataTransferDetailResource transferDetailResource = new DataTransferDetailResource();
-        TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
-        transferDetailResource.setTaskDetailResource(taskDetailResource);
-        transferDetailResource.setTransferId(o.getTransferId());
-        transferDetailResource.setCreationTime(o.getCreationTime());
-        transferDetailResource.setTransferDescription(o.getTransferDesc());
+        if (o != null){
+            TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
+            transferDetailResource.setTaskDetailResource(taskDetailResource);
+            transferDetailResource.setTransferId(o.getTransferId());
+            transferDetailResource.setCreationTime(o.getCreationTime());
+            transferDetailResource.setTransferDescription(o.getTransferDesc());
+        }
         return transferDetailResource;
     }
 
     private static Resource createStatusResource (Status o){
         StatusResource statusResource = new StatusResource();
-        ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
-        statusResource.setExperimentResource(experimentResource);
-        if (o.getTask() != null){
-            TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
-            statusResource.setTaskDetailResource(taskDetailResource);
+        if (o != null){
+            ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
+            statusResource.setExperimentResource(experimentResource);
+            if (o.getTask() != null){
+                TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
+                statusResource.setTaskDetailResource(taskDetailResource);
+            }
+            if (o.getNode() != null){
+                WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)createWorkflowNodeDetail(o.getNode());
+                statusResource.setWorkflowNodeDetail(nodeDetailResource);
+            }
+            if (o.getTransferDetail() != null){
+                DataTransferDetailResource transferDetailResource = (DataTransferDetailResource)createDataTransferResource(o.getTransferDetail());
+                statusResource.setDataTransferDetail(transferDetailResource);
+            }
+            statusResource.setStatusId(o.getStatusId());
+            statusResource.setJobId(o.getJobId());
+            statusResource.setState(o.getState());
+            statusResource.setStatusUpdateTime(o.getStatusUpdateTime());
+            statusResource.setStatusType(o.getStatusType());
         }
-        if (o.getNode() != null){
-            WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)createWorkflowNodeDetail(o.getNode());
-            statusResource.setWorkflowNodeDetail(nodeDetailResource);
-        }
-        if (o.getTransferDetail() != null){
-            DataTransferDetailResource transferDetailResource = (DataTransferDetailResource)createDataTransferResource(o.getTransferDetail());
-            statusResource.setDataTransferDetail(transferDetailResource);
-        }
-        statusResource.setStatusId(o.getStatusId());
-        statusResource.setJobId(o.getJobId());
-        statusResource.setState(o.getState());
-        statusResource.setStatusUpdateTime(o.getStatusUpdateTime());
-        statusResource.setStatusType(o.getStatusType());
+
         return statusResource;
     }
 
     private static Resource createExConfigDataResource (ExperimentConfigData o){
         ConfigDataResource configDataResource = new ConfigDataResource();
-        ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
-        configDataResource.setExperimentResource(experimentResource);
-        configDataResource.setAiravataAutoSchedule(o.isAiravataAutoSchedule());
-        configDataResource.setOverrideManualParams(o.isOverrideManualParams());
-        configDataResource.setShareExp(o.isShareExp());
+        if (o != null){
+            ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
+            configDataResource.setExperimentResource(experimentResource);
+            configDataResource.setAiravataAutoSchedule(o.isAiravataAutoSchedule());
+            configDataResource.setOverrideManualParams(o.isOverrideManualParams());
+            configDataResource.setShareExp(o.isShareExp());
+        }
+
         return configDataResource;
     }
 
     private static Resource createComputationalScheduling (Computational_Resource_Scheduling o){
         ComputationSchedulingResource schedulingResource = new ComputationSchedulingResource();
-        ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
-        schedulingResource.setExperimentResource(experimentResource);
-        if (o.getTask() != null){
-            TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
-            schedulingResource.setTaskDetailResource(taskDetailResource);
+        if (o != null){
+            ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
+            schedulingResource.setExperimentResource(experimentResource);
+            if (o.getTask() != null){
+                TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
+                schedulingResource.setTaskDetailResource(taskDetailResource);
+            }
+            schedulingResource.setSchedulingId(o.getSchedulingId());
+            schedulingResource.setResourceHostId(o.getResourceHostId());
+            schedulingResource.setCpuCount(o.getCpuCount());
+            schedulingResource.setNodeCount(o.getNodeCount());
+            schedulingResource.setNumberOfThreads(o.getNumberOfThreads());
+            schedulingResource.setQueueName(o.getQueueName());
+            schedulingResource.setWalltimeLimit(o.getWallTimeLimit());
+            schedulingResource.setJobStartTime(o.getJobStartTime());
+            schedulingResource.setPhysicalMemory(o.getTotalPhysicalmemory());
+            schedulingResource.setProjectName(o.getProjectName());
         }
-        schedulingResource.setSchedulingId(o.getSchedulingId());
-        schedulingResource.setResourceHostId(o.getResourceHostId());
-        schedulingResource.setCpuCount(o.getCpuCount());
-        schedulingResource.setNodeCount(o.getNodeCount());
-        schedulingResource.setNumberOfThreads(o.getNumberOfThreads());
-        schedulingResource.setQueueName(o.getQueueName());
-        schedulingResource.setWalltimeLimit(o.getWallTimeLimit());
-        schedulingResource.setJobStartTime(o.getJobStartTime());
-        schedulingResource.setPhysicalMemory(o.getTotalPhysicalmemory());
-        schedulingResource.setProjectName(o.getProjectName());
+
         return schedulingResource;
     }
 
     private static Resource createAdvancedInputDataResource (AdvancedInputDataHandling o){
         AdvanceInputDataHandlingResource dataHandlingResource = new AdvanceInputDataHandlingResource();
-        ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
-        dataHandlingResource.setExperimentResource(experimentResource);
-        if (o.getTask() != null){
-            TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
-            dataHandlingResource.setTaskDetailResource(taskDetailResource);
+        if (o != null){
+            ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
+            dataHandlingResource.setExperimentResource(experimentResource);
+            if (o.getTask() != null){
+                TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
+                dataHandlingResource.setTaskDetailResource(taskDetailResource);
+            }
+            dataHandlingResource.setDataHandlingId(o.getDataHandlingId());
+            dataHandlingResource.setWorkingDirParent(o.getParentWorkingDir());
+            dataHandlingResource.setWorkingDir(o.getWorkingDir());
+            dataHandlingResource.setStageInputFiles(o.isStageInputsToWorkingDir());
+            dataHandlingResource.setCleanAfterJob(o.isCleanAfterJob());
         }
-        dataHandlingResource.setDataHandlingId(o.getDataHandlingId());
-        dataHandlingResource.setWorkingDirParent(o.getParentWorkingDir());
-        dataHandlingResource.setWorkingDir(o.getWorkingDir());
-        dataHandlingResource.setStageInputFiles(o.isStageInputsToWorkingDir());
-        dataHandlingResource.setCleanAfterJob(o.isCleanAfterJob());
+
         return dataHandlingResource;
     }
 
     private static Resource createAdvancedOutputDataResource (AdvancedOutputDataHandling o){
         AdvancedOutputDataHandlingResource dataHandlingResource = new AdvancedOutputDataHandlingResource();
-        ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
-        dataHandlingResource.setExperimentResource(experimentResource);
-        if (o.getTask() != null){
-            TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
-            dataHandlingResource.setTaskDetailResource(taskDetailResource);
+        if (o != null){
+            ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
+            dataHandlingResource.setExperimentResource(experimentResource);
+            if (o.getTask() != null){
+                TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
+                dataHandlingResource.setTaskDetailResource(taskDetailResource);
+            }
+            dataHandlingResource.setOutputDataHandlingId(o.getOutputDataHandlingId());
+            dataHandlingResource.setOutputDataDir(o.getOutputDataDir());
+            dataHandlingResource.setDataRegUrl(o.getDataRegUrl());
+            dataHandlingResource.setPersistOutputData(o.isPersistOutputData());
         }
-        dataHandlingResource.setOutputDataHandlingId(o.getOutputDataHandlingId());
-        dataHandlingResource.setOutputDataDir(o.getOutputDataDir());
-        dataHandlingResource.setDataRegUrl(o.getDataRegUrl());
-        dataHandlingResource.setPersistOutputData(o.isPersistOutputData());
         return dataHandlingResource;
     }
 
     private static Resource createQosParamResource (QosParam o){
         QosParamResource qosParamResource = new QosParamResource();
-        ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
-        qosParamResource.setExperimentResource(experimentResource);
-        if (o.getTask() != null){
-            TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
-            qosParamResource.setTaskDetailResource(taskDetailResource);
+        if (o != null){
+            ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
+            qosParamResource.setExperimentResource(experimentResource);
+            if (o.getTask() != null){
+                TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
+                qosParamResource.setTaskDetailResource(taskDetailResource);
+            }
+            qosParamResource.setQosId(o.getQosId());
+            qosParamResource.setExecuteBefore(o.getExecuteBefore());
+            qosParamResource.setStartExecutionAt(o.getStartExecutionAt());
+            qosParamResource.setNoOfRetries(o.getNoOfRetries());
         }
-        qosParamResource.setQosId(o.getQosId());
-        qosParamResource.setExecuteBefore(o.getExecuteBefore());
-        qosParamResource.setStartExecutionAt(o.getStartExecutionAt());
-        qosParamResource.setNoOfRetries(o.getNoOfRetries());
+
         return qosParamResource;
     }
 }
