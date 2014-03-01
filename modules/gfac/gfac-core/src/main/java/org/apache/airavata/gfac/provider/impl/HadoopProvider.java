@@ -78,7 +78,7 @@ public class HadoopProvider implements GFacProvider{
         }
     }
 
-    public JobExecutionContext execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+    public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
         HadoopApplicationDeploymentDescriptionType hadoopAppDesc =
                 (HadoopApplicationDeploymentDescriptionType)jobExecutionContext
                         .getApplicationContext().getApplicationDeploymentDescription().getType();
@@ -135,7 +135,6 @@ public class HadoopProvider implements GFacProvider{
             logger.error(errMessage, e);
             throw new GFacProviderException(errMessage, e);
         }
-        return jobExecutionContext;
     }
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {

@@ -185,10 +185,11 @@ public class GFacImpl implements GFac {
         }
         // Register log event listener. This is required in all scenarios.
         jobExecutionContext.getNotificationService().registerListener(new LoggingListener());
-        return schedule(jobExecutionContext);
+        schedule(jobExecutionContext);
+        return jobExecutionContext;
     }
 
-    private JobExecutionContext schedule(JobExecutionContext jobExecutionContext) throws GFacException {
+    private void schedule(JobExecutionContext jobExecutionContext) throws GFacException {
         // Scheduler will decide the execution flow of handlers and provider which handles
         // the job.
         String experimentID = jobExecutionContext.getExperimentID();
@@ -206,7 +207,7 @@ public class GFacImpl implements GFac {
             GFacProvider provider = jobExecutionContext.getProvider();
             if (provider != null) {
                 initProvider(provider, jobExecutionContext);
-                jobExecutionContext = executeProvider(provider, jobExecutionContext);
+                executeProvider(provider, jobExecutionContext);
                 disposeProvider(provider, jobExecutionContext);
             }
         } catch (Exception e) {
@@ -214,7 +215,6 @@ public class GFacImpl implements GFac {
             jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
             throw new GFacException(e.getMessage(), e);
         }
-        return jobExecutionContext;
     }
 
     private void initProvider(GFacProvider provider, JobExecutionContext jobExecutionContext) throws GFacException {
@@ -225,9 +225,9 @@ public class GFacImpl implements GFac {
         }
     }
 
-    private JobExecutionContext executeProvider(GFacProvider provider, JobExecutionContext jobExecutionContext) throws GFacException {
+    private void executeProvider(GFacProvider provider, JobExecutionContext jobExecutionContext) throws GFacException {
         try {
-            return provider.execute(jobExecutionContext);
+             provider.execute(jobExecutionContext);
         } catch (Exception e) {
             throw new GFacException("Error while executing provider " + provider.getClass().getName() + " functionality.", e);
         }
