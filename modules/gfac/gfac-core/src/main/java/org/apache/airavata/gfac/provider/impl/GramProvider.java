@@ -126,7 +126,7 @@ public class GramProvider implements GFacProvider {
         job.addListener(listener);
     }
 
-    public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException{
+    public JobExecutionContext execute(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException{
         jobExecutionContext.getNotifier().publish(new StartExecutionEvent());
         GlobusHostType host = (GlobusHostType) jobExecutionContext.getApplicationContext().
                 getHostDescription().getType();
@@ -164,7 +164,7 @@ public class GramProvider implements GFacProvider {
                 }
             }
         }
-
+        return jobExecutionContext;
     }
 
     private void submitJobs(String gateKeeper,

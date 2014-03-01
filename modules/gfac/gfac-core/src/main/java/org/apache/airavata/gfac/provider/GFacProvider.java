@@ -43,7 +43,7 @@ public interface GFacProvider {
      * @param jobExecutionContext containing job execution related information.
      * @throws GFacProviderException in case of a error executing the job.
      */
-    void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException;
+    JobExecutionContext execute(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException;
 
     /**
      * Cleans up the acquired resources during initialization and execution of the job.

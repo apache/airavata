@@ -119,7 +119,7 @@ public class LocalProvider implements GFacProvider {
         }
     }
 
-    public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+    public JobExecutionContext execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
         jobExecutionContext.getNotifier().publish(new StartExecutionEvent());
          ApplicationDeploymentDescriptionType app = jobExecutionContext.
                  getApplicationContext().getApplicationDeploymentDescription().getType();
@@ -176,6 +176,7 @@ public class LocalProvider implements GFacProvider {
         } catch (InterruptedException e) {
             throw new GFacProviderException(e.getMessage(), e);
         }
+        return jobExecutionContext;
     }
 
 	private void saveApplicationJob(JobExecutionContext jobExecutionContext)

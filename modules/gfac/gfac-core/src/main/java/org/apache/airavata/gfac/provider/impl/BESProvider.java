@@ -108,7 +108,7 @@ public class BESProvider implements GFacProvider {
     }
 
 
-	public void execute(JobExecutionContext jobExecutionContext)
+	public JobExecutionContext execute(JobExecutionContext jobExecutionContext)
 			throws GFacProviderException {
         UnicoreHostType host = (UnicoreHostType) jobExecutionContext.getApplicationContext().getHostDescription()
                 .getType();
@@ -261,6 +261,7 @@ public class BESProvider implements GFacProvider {
                 log.warn("Cannot destroy temporary SMS instance:" + sc.getUrl(), e);
             }
         }
+        return jobExecutionContext;
     }
 
 	private ApplicationJobStatus getApplicationJobStatus(ActivityStatusType activityStatus){

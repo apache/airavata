@@ -638,6 +638,10 @@ public class ExperimentRegistry {
             if (applicationInputs != null){
                 addAppInputs(applicationInputs, taskDetail);
             }
+            List<DataObjectType> applicationOutput = taskDetails.getApplicationOutputs();
+            if (applicationOutput != null){
+                addAppOutputs(applicationOutput, taskDetail);
+            }
             ComputationalResourceScheduling taskScheduling = taskDetails.getTaskScheduling();
             if (taskScheduling != null){
                 addComputationScheduling(taskScheduling, taskDetail);
@@ -694,6 +698,17 @@ public class ExperimentRegistry {
     public void addAppInputs (List<DataObjectType> appInputs, TaskDetailResource taskDetailResource ){
         for (DataObjectType input :  appInputs){
             ApplicationInputResource resource = (ApplicationInputResource)taskDetailResource.create(ResourceType.APPLICATION_INPUT);
+            resource.setTaskDetailResource(taskDetailResource);
+            resource.setInputKey(input.getKey());
+            resource.setValue(input.getValue());
+            resource.setInputType(input.getType());
+            resource.setMetadata(input.getMetaData());
+            resource.save();
+        }
+    }
+     public void addAppOutputs (List<DataObjectType> appInputs, TaskDetailResource taskDetailResource ){
+        for (DataObjectType input :  appInputs){
+            ApplicationInputResource resource = (ApplicationInputResource)taskDetailResource.create(ResourceType.APPLICATION_OUTPUT);
             resource.setTaskDetailResource(taskDetailResource);
             resource.setInputKey(input.getKey());
             resource.setValue(input.getValue());

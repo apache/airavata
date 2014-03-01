@@ -52,6 +52,9 @@ public class QstatMonitor extends PullMonitor implements Runnable {
 
     private MonitorPublisher publisher;
 
+    public QstatMonitor(){
+        connections = new HashMap<String, ResourceConnection>();
+    }
     public QstatMonitor(BlockingQueue<MonitorID> queue, MonitorPublisher publisher) {
         this.queue = queue;
         this.publisher = publisher;

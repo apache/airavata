@@ -189,7 +189,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 }
                 // Launching job for each task
                 String jobID = orchestrator.launchExperiment(experimentId, taskID.getTaskID());
-                log.debug("Job Launched to the resource by GFAC and jobID returned : " + jobID);
+                log.info("Job Launched to the resource by GFAC and jobID returned : " + jobID);
                 // if the monitoring is pull mode then we add the monitorID for each task after submitting
                 // the job with the jobID, otherwise we don't need the jobID
                 if(!pushMode) {

@@ -88,10 +88,22 @@ public class OrchestratorClientFactoryTest {
             DataObjectType input = new DataObjectType();
             input.setKey("echo_input");
             input.setType(DataType.STRING.toString());
-            input.setValue("helloWorld");
+            input.setValue("echo_output=Hello World");
             exInputs.add(input);
-            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "EchoLocal", "EchoLocal", exInputs);
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "development", 0, 0, 1, "sds128");
+
+
+            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
+            DataObjectType output = new DataObjectType();
+            output.setKey("echo_output");
+            output.setType(DataType.STRING.toString());
+            output.setValue("");
+            exOut.add(output);
+
+            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
+            simpleExperiment.setExperimentOutputs(exOut);
+
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0, 1, "sds128");
+            scheduling.setResourceHostId("gsissh-trestles");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setComputationalResourceScheduling(scheduling);
             simpleExperiment.setUserConfigurationData(userConfigurationData);
