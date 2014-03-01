@@ -101,7 +101,7 @@ public class SSHProvider implements GFacProvider {
         GFacUtils.recordApplicationJob(jobExecutionContext, job);
     }
 
-    public JobExecutionContext execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+    public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
         if (gsiSshProvider == null) {
             ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
             Session session = null;
@@ -149,7 +149,6 @@ public class SSHProvider implements GFacProvider {
                 throw new GFacProviderException(e.getMessage(), e);
             }
         }
-        return jobExecutionContext;
     }
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {

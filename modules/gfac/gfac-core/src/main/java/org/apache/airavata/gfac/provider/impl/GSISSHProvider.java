@@ -65,7 +65,7 @@ public class GSISSHProvider implements GFacProvider {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public JobExecutionContext execute(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
+    public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
         log.info("Invoking GSISSH Provider Invoke ...");
         jobExecutionContext.getNotifier().publish(new StartExecutionEvent());
         HostDescriptionType host = jobExecutionContext.getApplicationContext().
@@ -146,7 +146,6 @@ public class GSISSHProvider implements GFacProvider {
             log.error(error);
             throw new GFacProviderException(error, e);
         }
-        return jobExecutionContext;
     }
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
