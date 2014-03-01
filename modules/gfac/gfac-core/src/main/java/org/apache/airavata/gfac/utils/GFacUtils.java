@@ -41,21 +41,7 @@ import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.registry.api.workflow.ApplicationJob;
 import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
-import org.apache.airavata.schemas.gfac.BooleanArrayType;
-import org.apache.airavata.schemas.gfac.BooleanParameterType;
-import org.apache.airavata.schemas.gfac.DoubleArrayType;
-import org.apache.airavata.schemas.gfac.DoubleParameterType;
-import org.apache.airavata.schemas.gfac.FileArrayType;
-import org.apache.airavata.schemas.gfac.FileParameterType;
-import org.apache.airavata.schemas.gfac.FloatArrayType;
-import org.apache.airavata.schemas.gfac.FloatParameterType;
-import org.apache.airavata.schemas.gfac.IntegerArrayType;
-import org.apache.airavata.schemas.gfac.IntegerParameterType;
-import org.apache.airavata.schemas.gfac.Parameter;
-import org.apache.airavata.schemas.gfac.StringArrayType;
-import org.apache.airavata.schemas.gfac.StringParameterType;
-import org.apache.airavata.schemas.gfac.URIArrayType;
-import org.apache.airavata.schemas.gfac.URIParameterType;
+import org.apache.airavata.schemas.gfac.*;
 import org.apache.axiom.om.OMElement;
 import org.globus.gram.GramJob;
 import org.slf4j.Logger;
@@ -749,7 +735,12 @@ public class GFacUtils {
             if (input != null) {
                 stringObjectHashMap.put(parameters[i].getParameterName(), GFacUtils.getInputActualParameter(parameters[i], input));
             } else {
-                throw new GFacException("Parameter:" + input + "is missing");
+                //todo remove this once proper registry impl is done
+                DataObjectType dataObjectType = new DataObjectType();
+                dataObjectType.setKey(parameters[i].getParameterName());
+                dataObjectType.setType(DataType.STRING.toString());
+                dataObjectType.setValue("");
+                stringObjectHashMap.put(parameters[i].getParameterName(), GFacUtils.getInputActualParameter(parameters[i], dataObjectType));
             }
         }
         return stringObjectHashMap;
