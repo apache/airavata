@@ -45,6 +45,7 @@ import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.impl.JobStatus;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.listener.JobSubmissionListener;
+import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.schemas.gfac.FileArrayType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
@@ -64,7 +65,7 @@ public class GSISSHProvider implements GFacProvider {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
+    public JobExecutionContext execute(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
         log.info("Invoking GSISSH Provider Invoke ...");
         jobExecutionContext.getNotifier().publish(new StartExecutionEvent());
         HostDescriptionType host = jobExecutionContext.getApplicationContext().
@@ -132,63 +133,10 @@ public class GSISSHProvider implements GFacProvider {
             jobDescriptor.setInputValues(inputValues);
 
             log.info(jobDescriptor.toXML());
-            final String jobID = cluster.submitBatchJob(jobDescriptor);
-            log.info("Job Submitted successfully and returned Job ID: " + jobID);
-            jobExecutionContext.getNotifier().publish(new JobIDEvent(jobID));
-
-            final JobSubmissionListener listener = new GSISSHJobSubmissionListener(jobExecutionContext);
-            final Cluster finalCluster = cluster;
-//            try {
-//            // Wait 5 seconds to start the first poll, this is hard coded, user doesn't have
-//            // to configure this.
-//            Thread.sleep(5000);
-//        } catch (InterruptedException e) {
-//            log.error("Error during job status monitoring");
-//            throw new SSHApiException("Error during job status monitoring", e);
-//        }
-//        // Get the job status first
-            try {
-//
-                Thread t = new Thread() {
-                    @Override
-                    public void run() {
-                        try {
-                            JobStatus jobStatus = finalCluster.getJobStatus(jobID);
-                            listener.statusChanged(jobStatus);
-                            while (true) {
-                                while (!jobStatus.equals(JobStatus.C)) {
-                                    if (!jobStatus.equals(listener.getJobStatus().toString())) {
-                                        listener.setJobStatus(jobStatus);
-                                        listener.statusChanged(jobStatus);
-                                    }
-                                    Thread.sleep(60000);
-
-                                    jobStatus = finalCluster.getJobStatus(jobID);
-                                }
-                                //Set the job status to Complete
-                                listener.setJobStatus(JobStatus.C);
-                                listener.statusChanged(jobStatus);
-                                break;
-                            }
-                        } catch (InterruptedException e) {
-                            log.error("Error listening to the submitted job", e);
-                        } catch (SSHApiException e) {
-                            log.error("Error listening to the submitted job", e);
-                        }
-                    }
-                };
-                //  This thread runs until the program termination, so that use can provide
-//            // any action in onChange method of the listener, without worrying for waiting in the caller thread.
-                t.setDaemon(false);
-                t.start();
-            } catch (Exception e) {
-                String error = "Error during job status monitoring";
-                log.error(error);
-                throw new GFacProviderException(error, e);
-            }
-            while (!listener.isJobDone()) {
-                Thread.sleep(10000);
-            }
+            String jobID = cluster.submitBatchJob(jobDescriptor);
+            JobDetails jobDetails = new JobDetails();
+            jobDetails.setJobID(jobID);
+            jobExecutionContext.setJobDetails(jobDetails);
         } catch (SSHApiException e) {
             String error = "Error submitting the job to host " + host.getHostAddress() + e.getMessage();
             log.error(error);
@@ -198,6 +146,7 @@ public class GSISSHProvider implements GFacProvider {
             log.error(error);
             throw new GFacProviderException(error, e);
         }
+        return jobExecutionContext;
     }
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {

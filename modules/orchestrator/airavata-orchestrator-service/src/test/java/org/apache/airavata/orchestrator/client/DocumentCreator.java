@@ -169,7 +169,7 @@ public class DocumentCreator {
         projectAccountType.setProjectAccountNumber("sds128");
 
         QueueType queueType = app.addNewQueue();
-        queueType.setQueueName("development");
+        queueType.setQueueName("normal");
 
         app.setCpuCount(1);
         app.setJobType(JobTypeType.SERIAL);
@@ -198,6 +198,7 @@ public class DocumentCreator {
         app.setOutputDataDirectory(tempDir + File.separator + "outputData");
         app.setStandardOutput(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stdout");
         app.setStandardError(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stderr");
+        app.setMaxMemory(10);
 
 
         try {
@@ -266,13 +267,13 @@ public class DocumentCreator {
         projectAccountType.setProjectAccountNumber("sds128");
 
         QueueType queueType = app.addNewQueue();
-        queueType.setQueueName("development");
+        queueType.setQueueName("normal");
 
         app.setCpuCount(1);
         app.setJobType(JobTypeType.SERIAL);
         app.setNodeCount(1);
         app.setProcessorsPerNode(1);
-
+        app.setMaxWallTime(10);
         /*
            * Use bat file if it is compiled on Windows
            */

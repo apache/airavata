@@ -115,16 +115,16 @@ public class GFacImpl implements GFac {
         try {
             jobExecutionContext = createJEC(experimentID, taskID);
 
-            submitJob(jobExecutionContext);
+            return  submitJob(jobExecutionContext);
         } catch (Exception e) {
             log.error("Error inovoking the job with experiment ID: " + experimentID);
             throw new GFacException(e);
         }
-        return jobExecutionContext;
     }
 
     private JobExecutionContext createJEC(String experimentID, String taskID) throws Exception {
-        JobExecutionContext jobExecutionContext;TaskDetails taskData = (TaskDetails) registry.get(DataType.TASK_DETAIL, taskID);
+        JobExecutionContext jobExecutionContext;
+        TaskDetails taskData = (TaskDetails) registry.get(DataType.TASK_DETAIL, taskID);
         // this is wear our new model and old model is mapping (so serviceName in ExperimentData and service name in ServiceDescriptor
         // has to be same.
 
@@ -163,8 +163,9 @@ public class GFacImpl implements GFac {
         jobExecutionContext.setInMessageContext(new MessageContext(GFacUtils.getMessageContext(experimentInputs,
                 serviceDescription.getType().getInputParametersArray())));
 
-        HashMap<String, Object> outputData = new HashMap<String, Object>();
-        jobExecutionContext.setOutMessageContext(new MessageContext(outputData));
+        List<DataObjectType> outputData = taskData.getApplicationOutputs();
+        jobExecutionContext.setOutMessageContext(new MessageContext(GFacUtils.getMessageContext(outputData,
+                serviceDescription.getType().getOutputParametersArray())));
 
         jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
         jobExecutionContext.setExperimentID(experimentID);
@@ -173,7 +174,7 @@ public class GFacImpl implements GFac {
         return jobExecutionContext;
     }
 
-    public void submitJob(JobExecutionContext jobExecutionContext) throws GFacException {
+    public JobExecutionContext submitJob(JobExecutionContext jobExecutionContext) throws GFacException {
         // We need to check whether this job is submitted as a part of a large workflow. If yes,
         // we need to setup workflow tracking listerner.
         String workflowInstanceID = null;
@@ -184,10 +185,10 @@ public class GFacImpl implements GFac {
         }
         // Register log event listener. This is required in all scenarios.
         jobExecutionContext.getNotificationService().registerListener(new LoggingListener());
-        schedule(jobExecutionContext);
+        return schedule(jobExecutionContext);
     }
 
-    private void schedule(JobExecutionContext jobExecutionContext) throws GFacException {
+    private JobExecutionContext schedule(JobExecutionContext jobExecutionContext) throws GFacException {
         // Scheduler will decide the execution flow of handlers and provider which handles
         // the job.
         String experimentID = jobExecutionContext.getExperimentID();
@@ -205,17 +206,15 @@ public class GFacImpl implements GFac {
             GFacProvider provider = jobExecutionContext.getProvider();
             if (provider != null) {
                 initProvider(provider, jobExecutionContext);
-                executeProvider(provider, jobExecutionContext);
+                jobExecutionContext = executeProvider(provider, jobExecutionContext);
                 disposeProvider(provider, jobExecutionContext);
             }
-//            if (experimentID != null){
-//                registry2.changeStatus(jobExecutionContext.getExperimentID(),AiravataJobState.State.OUTHANDLERSDONE);
-//            }
         } catch (Exception e) {
             jobExecutionContext.setProperty(ERROR_SENT, "true");
             jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
             throw new GFacException(e.getMessage(), e);
         }
+        return jobExecutionContext;
     }
 
     private void initProvider(GFacProvider provider, JobExecutionContext jobExecutionContext) throws GFacException {
@@ -226,9 +225,9 @@ public class GFacImpl implements GFac {
         }
     }
 
-    private void executeProvider(GFacProvider provider, JobExecutionContext jobExecutionContext) throws GFacException {
+    private JobExecutionContext executeProvider(GFacProvider provider, JobExecutionContext jobExecutionContext) throws GFacException {
         try {
-            provider.execute(jobExecutionContext);
+            return provider.execute(jobExecutionContext);
         } catch (Exception e) {
             throw new GFacException("Error while executing provider " + provider.getClass().getName() + " functionality.", e);
         }
@@ -358,7 +357,8 @@ public class GFacImpl implements GFac {
 
             requestData = new RequestData("default");
             try {
-                context = new GSISecurityContext(CredentialReaderFactory.createCredentialStoreReader(), requestData);
+                //todo fix this
+                context = new GSISecurityContext(null, requestData);
             } catch (Exception e) {
                 throw new GFacException("An error occurred while creating GSI security context", e);
             }
