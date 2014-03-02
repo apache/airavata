@@ -16,7 +16,7 @@ public interface Registry {
      *                       etc
      * @return return the identifier to identify the object
      */
-    public Object add(ParentDataType dataType, Object newObjectToAdd) throws Exception ;
+    public Object add(ParentDataType dataType, Object newObjectToAdd) throws RegistryException ;
 
     /**
      * This method is to add an object in to the registry
@@ -31,7 +31,7 @@ public interface Registry {
      *                             with multiple identifiers
      * @return return the identifier to identify the object
      */
-    public Object add(ChildDataType dataType, Object newObjectToAdd, Object dependentIdentifiers) throws Exception;
+    public Object add(ChildDataType dataType, Object newObjectToAdd, Object dependentIdentifiers) throws RegistryException;
 
     /**
      * This method is to update the whole object in registry
@@ -43,7 +43,7 @@ public interface Registry {
      *                       have to fill the whole object. He needs to only fill the mandatory fields and whatever the
      *                       other fields that need to be updated.
      */
-    public void update(DataType dataType, Object newObjectToUpdate, Object identifier) throws Exception;
+    public void update(DataType dataType, Object newObjectToUpdate, Object identifier) throws RegistryException;
 
 
     /**
@@ -58,7 +58,7 @@ public interface Registry {
      * @param value Value by which the given field need to be updated. If the field is "description", that field will be
      *              updated by given value
      */
-    public void update(DataType dataType, Object identifier, String fieldName, Object value) throws Exception;
+    public void update(DataType dataType, Object identifier, String fieldName, Object value) throws RegistryException;
 
     /**
      * This method is to retrieve object according to the identifier. In the experiment basic data type, if you give the
@@ -69,7 +69,7 @@ public interface Registry {
      *                   identifier will be generated experimentID
      * @return object according to the given identifier.
      */
-    public Object get(DataType dataType, Object identifier) throws Exception;
+    public Object get(DataType dataType, Object identifier) throws RegistryException;
 
     /**
      * This method is to retrieve list of objects according to a given criteria
@@ -80,7 +80,7 @@ public interface Registry {
      * @param value value for the filtering field. In the experiment case, value for "userName" can be "admin"
      * @return List of objects according to the given criteria
      */
-    public List<Object> get(DataType dataType, String fieldName, Object value) throws Exception;
+    public List<Object> get(DataType dataType, String fieldName, Object value) throws RegistryException;
 
     /**
      * This method is to retrieve a specific value for a given field.
@@ -93,7 +93,7 @@ public interface Registry {
      * @return return the value for the specific field where data model is identified by the unique identifier that has
      *         given
      */
-    public Object getValue (DataType dataType, Object identifier, String field) throws Exception;
+    public Object getValue (DataType dataType, Object identifier, String field) throws RegistryException;
 
     /**
      * This method is to retrieve all the identifiers according to given filtering criteria. For an example, if you want
@@ -106,7 +106,7 @@ public interface Registry {
      * @param value value for the filtering field. In the experiment case, value for "userName" can be "admin"
      * @return id list according to the filtering criteria
      */
-    public List<String> getIds (DataType dataType, String fieldName, Object value) throws Exception;
+    public List<String> getIds (DataType dataType, String fieldName, Object value) throws RegistryException;
 
     /**
      * This method is to remove a item from the registry
@@ -115,7 +115,7 @@ public interface Registry {
      * @param identifier Identifier which will uniquely identify the data model. For example, in Experiment_Basic_Type,
      *                   identifier will be generated experimentID
      */
-    public void remove (DataType dataType, Object identifier) throws Exception;
+    public void remove (DataType dataType, Object identifier) throws RegistryException;
 
     /**
      * This method will check whether a given data type which can be identified with the identifier exists or not
@@ -125,7 +125,7 @@ public interface Registry {
      *                   identifier will be generated experimentID
      * @return whether the given data type exists or not
      */
-    public boolean isExist(DataType dataType, Object identifier) throws Exception;
+    public boolean isExist(DataType dataType, Object identifier) throws RegistryException;
 
 
 }
