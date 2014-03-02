@@ -28,7 +28,7 @@ public class RegistryFactory {
         return new RegistryImpl(gateway, username, password);
     }
 
-    public static Registry getDefaultRegistry (){
+    public static Registry getDefaultRegistry () {
         return new RegistryImpl();
     }
 }
