@@ -32,6 +32,8 @@ import org.apache.airavata.job.monitor.core.Monitor;
 import org.apache.airavata.job.monitor.core.PullMonitor;
 import org.apache.airavata.job.monitor.core.PushMonitor;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
+import org.apache.airavata.job.monitor.impl.pull.qstat.QstatMonitor;
+import org.apache.airavata.job.monitor.impl.push.amqp.AMQPMonitor;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
@@ -40,15 +42,12 @@ import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.orchestrator.cpi.orchestrator_cpi_serviceConstants;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
-import org.apache.airavata.persistance.registry.jpa.impl.RegistryImpl;
-import org.apache.airavata.persistance.registry.jpa.model.TaskDetail;
 import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.constraints.Null;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
@@ -108,10 +107,14 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 Class<? extends Monitor> aClass = Class.forName(primaryMonitor).asSubclass(Monitor.class);
                 Monitor monitor = aClass.newInstance();
                 if (monitor instanceof PullMonitor) {
-                    monitorManager.addPullMonitor((PullMonitor) monitor);
+                    if(monitor instanceof QstatMonitor){
+                        monitorManager.addQstatMonitor((QstatMonitor)monitor);
+                    }
                     pushMode = false;
                 } else if (monitor instanceof PushMonitor) {
-                    monitorManager.addPushMonitor((PushMonitor) monitor);
+                    if(monitor instanceof AMQPMonitor){
+                        monitorManager.addAMQPMonitor((AMQPMonitor)monitor);
+                    }
                 } else {
                     log.error("Wrong class is given to primary Monitor");
                 }
@@ -168,6 +171,10 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 //iterate through all the generated tasks and performs the job submisssion+monitoring
 
                 Experiment experiment = (Experiment) registry.get(DataType.EXPERIMENT, experimentId);
+                if(experiment == null){
+                    log.error("Error retrieving the Experiment by the given experimentID: " + experimentId);
+                    return false;
+                }
                 String userName = experiment.getUserName();
 
                 HostDescription hostDescription = OrchestratorUtils.getHostDescription(orchestrator, taskID);
@@ -182,7 +189,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 }
                 // Launching job for each task
                 String jobID = orchestrator.launchExperiment(experimentId, taskID.getTaskID());
-                log.debug("Job Launched to the resource by GFAC and jobID returned : " + jobID);
+                log.info("Job Launched to the resource by GFAC and jobID returned : " + jobID);
                 // if the monitoring is pull mode then we add the monitorID for each task after submitting
                 // the job with the jobID, otherwise we don't need the jobID
                 if(!pushMode) {

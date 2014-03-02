@@ -164,7 +164,6 @@ public class GramProvider implements GFacProvider {
                 }
             }
         }
-
     }
 
     private void submitJobs(String gateKeeper,

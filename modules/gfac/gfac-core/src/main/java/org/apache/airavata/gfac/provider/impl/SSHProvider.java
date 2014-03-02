@@ -149,7 +149,6 @@ public class SSHProvider implements GFacProvider {
                 throw new GFacProviderException(e.getMessage(), e);
             }
         }
-
     }
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {

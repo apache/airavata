@@ -122,7 +122,7 @@ public class AMQPMonitorTest {
         String jobID = pbsCluster.submitBatchJob(jobDescriptor);
         System.out.println(jobID);
         try {
-            monitorManager.addAJobToMonitor(new MonitorID(hostDescription, jobID, "ogce"));
+            monitorManager.addAJobToMonitor(new MonitorID(hostDescription, jobID,null,null, "ogce"));
         } catch (AiravataMonitorException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }

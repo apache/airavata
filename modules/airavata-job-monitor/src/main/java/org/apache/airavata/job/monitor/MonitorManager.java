@@ -46,9 +46,9 @@ remove them from the queue, this will be done by AiravataJobUpdator.
 public class MonitorManager {
     private final static Logger logger = LoggerFactory.getLogger(MonitorManager.class);
 
-    private List<PullMonitor> pullMonitors;
+    private List<PullMonitor> pullMonitors;    //todo though we have a List we only support one at a time
 
-    private List<PushMonitor> pushMonitors;
+    private List<PushMonitor> pushMonitors;   //todo we need to support multiple monitors dynamically
 
     private BlockingQueue<MonitorID> runningQueue;
 
@@ -66,6 +66,32 @@ public class MonitorManager {
         finishQueue = new LinkedBlockingDeque<MonitorID>();
         monitorPublisher = new MonitorPublisher(new EventBus());
         registerListener(new AiravataJobStatusUpdator(new RegistryImpl(), finishQueue));
+    }
+
+    /**
+     * This can be use to add an empty AMQPMonitor object to the monitor system
+     * and tihs method will take care of the initialization
+     * todo may be we need to move this to some other class
+     * @param monitor
+     */
+    public void addAMQPMonitor(AMQPMonitor monitor) {
+        monitor.setPublisher(this.getMonitorPublisher());
+        monitor.setFinishQueue(this.getFinishQueue());
+        monitor.setRunningQueue(this.getRunningQueue());
+        addPushMonitor(monitor);
+    }
+
+    /**
+     * This can be used to adda a QstatMonitor and it will take care of
+     * the initialization of QstatMonitor
+     * //todo may be we need to move this to some other class
+     * @param qstatMonitor
+     */
+    public void addQstatMonitor(QstatMonitor qstatMonitor) {
+        qstatMonitor.setPublisher(this.getMonitorPublisher());
+        qstatMonitor.setQueue(this.getRunningQueue());
+        addPullMonitor(qstatMonitor);
+
     }
 
     /**
