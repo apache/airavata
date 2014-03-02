@@ -66,11 +66,11 @@ public abstract class ApplicationSettings {
 
 	private static URL getPropertyFileURL() {
 		URL url;
-		if (AiravataUtils.isServer()){
-			 url=ApplicationSettings.class.getClassLoader().getResource(SERVER_PROPERTIES);
-    	}else{
-    		url=ApplicationSettings.class.getClassLoader().getResource(CLIENT_PROPERTIES);
-    	}
+		if (AiravataUtils.isClient()){
+            url=ApplicationSettings.class.getClassLoader().getResource(CLIENT_PROPERTIES);
+        }else{
+            url=ApplicationSettings.class.getClassLoader().getResource(SERVER_PROPERTIES);
+        }
 		return url;
 	}
 	

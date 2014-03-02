@@ -57,6 +57,9 @@ public class AMQPMonitor extends PushMonitor implements Runnable {
 
     private BlockingQueue<MonitorID> finishQueue;
 
+    public AMQPMonitor(){
+
+    }
     public AMQPMonitor(MonitorPublisher publisher, BlockingQueue runningQueue, BlockingQueue finishQueue) {
         this.publisher = publisher;
         this.runningQueue = runningQueue;

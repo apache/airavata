@@ -48,13 +48,10 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
 
     private GFac gfac;
 
-    public EmbeddedGFACJobSubmitter(GFac gfac, OrchestratorContext orchestratorContext) {
-        this.gfac = gfac;
-        this.orchestratorContext = orchestratorContext;
-    }
 
     public void initialize(OrchestratorContext orchestratorContext) throws OrchestratorException {
         this.orchestratorContext = orchestratorContext;
+        gfac = new GFacImpl(orchestratorContext.getNewRegistry(), null, orchestratorContext.getRegistry());
     }
 
     public GFACInstance selectGFACInstance() throws OrchestratorException {

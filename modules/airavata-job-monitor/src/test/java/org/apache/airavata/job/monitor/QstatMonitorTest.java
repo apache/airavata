@@ -119,9 +119,9 @@ public class QstatMonitorTest {
         jobDescriptor.setInputValues(inputs);
         //finished construction of job object
         System.out.println(jobDescriptor.toXML());
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 1; i++) {
             String jobID = pbsCluster.submitBatchJob(jobDescriptor);
-            MonitorID monitorID = new MonitorID(hostDescription, jobID, "ogce");
+            MonitorID monitorID = new MonitorID(hostDescription, jobID,null,null, "ogce");
             monitorID.setAuthenticationInfo(authenticationInfo);
             try {
                 monitorManager.addAJobToMonitor(monitorID);

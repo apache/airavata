@@ -30,6 +30,7 @@ import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.state.JobStatus;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
@@ -90,9 +91,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                 throw new OrchestratorException("Validation Failed, so Job will not be submitted to GFAC");
             }
         }
-        if (orchestratorContext.getOrchestratorConfiguration().getThreadPoolSize() == 0) {
-            jobID = jobSubmitter.submit(experimentID, taskID);
-        }
+
+        jobID = jobSubmitter.submit(experimentID, taskID);
         return jobID;
     }
 
@@ -126,8 +126,10 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
     @Subscribe
     public void handlePostExperimentTask(JobStatus status) throws OrchestratorException {
-        MonitorID monitorID = status.getMonitorID();
-        jobSubmitter.runAfterJobTask(monitorID.getExperimentID(),monitorID.getTaskID());
+        if(status.getState() == JobState.COMPLETE){
+            MonitorID monitorID = status.getMonitorID();
+            jobSubmitter.runAfterJobTask(monitorID.getExperimentID(), monitorID.getTaskID());
+        }
     }
     public ExecutorService getExecutor() {
         return executor;

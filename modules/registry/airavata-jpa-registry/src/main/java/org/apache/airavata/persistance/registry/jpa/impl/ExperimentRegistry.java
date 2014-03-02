@@ -61,8 +61,14 @@ public class ExperimentRegistry {
             experimentResource.setExpName(experiment.getName());
             experimentResource.setExecutionUser(experiment.getUserName());
             experimentResource.setGateway(gatewayResource);
+            ProjectResource project;
             if (!workerResource.isProjectExists(experiment.getProjectID())){
-                ProjectResource project = workerResource.createProject(experiment.getProjectID());
+                project = workerResource.createProject(experiment.getProjectID());
+                project.setGateway(gatewayResource);
+                project.save();
+                experimentResource.setProject(project);
+            }else {
+                project = workerResource.getProject(experiment.getProjectID());
                 experimentResource.setProject(project);
             }
             experimentResource.setCreationTime(getTime(experiment.getCreationTime()));
@@ -76,6 +82,11 @@ public class ExperimentRegistry {
             List<DataObjectType> experimentInputs = experiment.getExperimentInputs();
             if (experimentInputs != null){
                 addExpInputs(experimentInputs, experimentResource);
+            }
+
+            UserConfigurationData userConfigurationData = experiment.getUserConfigurationData();
+            if (userConfigurationData != null){
+                addUserConfigData(userConfigurationData, experimentID);
             }
 
         } catch (Exception e){
@@ -175,6 +186,7 @@ public class ExperimentRegistry {
         if (resource instanceof TaskDetailResource){
             TaskDetailResource taskDetailResource = (TaskDetailResource)resource;
             cmsr.setTaskDetailResource(taskDetailResource);
+            cmsr.setExperimentResource(taskDetailResource.getWorkflowNodeDetailResource().getExperimentResource());
         }
         cmsr.setResourceHostId(resourceScheduling.getResourceHostId());
         cmsr.setCpuCount(resourceScheduling.getTotalCPUCount());
@@ -626,6 +638,10 @@ public class ExperimentRegistry {
             if (applicationInputs != null){
                 addAppInputs(applicationInputs, taskDetail);
             }
+            List<DataObjectType> applicationOutput = taskDetails.getApplicationOutputs();
+            if (applicationOutput != null){
+                addAppOutputs(applicationOutput, taskDetail);
+            }
             ComputationalResourceScheduling taskScheduling = taskDetails.getTaskScheduling();
             if (taskScheduling != null){
                 addComputationScheduling(taskScheduling, taskDetail);
@@ -682,6 +698,17 @@ public class ExperimentRegistry {
     public void addAppInputs (List<DataObjectType> appInputs, TaskDetailResource taskDetailResource ){
         for (DataObjectType input :  appInputs){
             ApplicationInputResource resource = (ApplicationInputResource)taskDetailResource.create(ResourceType.APPLICATION_INPUT);
+            resource.setTaskDetailResource(taskDetailResource);
+            resource.setInputKey(input.getKey());
+            resource.setValue(input.getValue());
+            resource.setInputType(input.getType());
+            resource.setMetadata(input.getMetaData());
+            resource.save();
+        }
+    }
+     public void addAppOutputs (List<DataObjectType> appInputs, TaskDetailResource taskDetailResource ){
+        for (DataObjectType input :  appInputs){
+            ApplicationInputResource resource = (ApplicationInputResource)taskDetailResource.create(ResourceType.APPLICATION_OUTPUT);
             resource.setTaskDetailResource(taskDetailResource);
             resource.setInputKey(input.getKey());
             resource.setValue(input.getValue());
@@ -799,17 +826,19 @@ public class ExperimentRegistry {
     /**
      *
      * @param scheduling computational resource object
-     * @param ids contains expId and taskId
+     * @param ids contains expId and taskId, if it is an experiment, task id can be null
      * @return scheduling id
      */
     public String addComputationalResourceScheduling (ComputationalResourceScheduling scheduling, CompositeIdentifier ids){
         try {
             ExperimentResource experiment = gatewayResource.getExperiment((String) ids.getTopLevelIdentifier());
-            WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
-            TaskDetailResource taskDetail = nodeDetailResource.getTaskDetail((String) ids.getSecondLevelIdentifier());
             ComputationSchedulingResource schedulingResource = (ComputationSchedulingResource)experiment.create(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING);
+            if (ids.getSecondLevelIdentifier() != null){
+                WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+                TaskDetailResource taskDetail = nodeDetailResource.getTaskDetail((String) ids.getSecondLevelIdentifier());
+                schedulingResource.setTaskDetailResource(taskDetail);
+            }
             schedulingResource.setExperimentResource(experiment);
-            schedulingResource.setTaskDetailResource(taskDetail);
             schedulingResource.setResourceHostId(scheduling.getResourceHostId());
             schedulingResource.setCpuCount(scheduling.getTotalCPUCount());
             schedulingResource.setNodeCount(scheduling.getNodeCount());
@@ -836,11 +865,13 @@ public class ExperimentRegistry {
     public String addInputDataHandling (AdvancedInputDataHandling dataHandling, CompositeIdentifier ids){
         try {
             ExperimentResource experiment = gatewayResource.getExperiment((String) ids.getTopLevelIdentifier());
-            WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
-            TaskDetailResource taskDetail = nodeDetailResource.getTaskDetail((String) ids.getSecondLevelIdentifier());
             AdvanceInputDataHandlingResource dataHandlingResource = (AdvanceInputDataHandlingResource)experiment.create(ResourceType.ADVANCE_INPUT_DATA_HANDLING);
+            if (ids.getSecondLevelIdentifier() != null){
+                WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+                TaskDetailResource taskDetail = nodeDetailResource.getTaskDetail((String) ids.getSecondLevelIdentifier());
+                dataHandlingResource.setTaskDetailResource(taskDetail);
+            }
             dataHandlingResource.setExperimentResource(experiment);
-            dataHandlingResource.setTaskDetailResource(taskDetail);
             dataHandlingResource.setWorkingDir(dataHandling.getUniqueWorkingDirectory());
             dataHandlingResource.setWorkingDirParent(dataHandling.getParentWorkingDirectory());
             dataHandlingResource.setStageInputFiles(dataHandling.isStageInputFilesToWorkingDir());
@@ -862,11 +893,13 @@ public class ExperimentRegistry {
     public String addOutputDataHandling (AdvancedOutputDataHandling dataHandling, CompositeIdentifier ids){
         try {
             ExperimentResource experiment = gatewayResource.getExperiment((String) ids.getTopLevelIdentifier());
-            WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
-            TaskDetailResource taskDetail = nodeDetailResource.getTaskDetail((String) ids.getSecondLevelIdentifier());
             AdvancedOutputDataHandlingResource dataHandlingResource = (AdvancedOutputDataHandlingResource)experiment.create(ResourceType.ADVANCE_OUTPUT_DATA_HANDLING);
+            if (ids.getSecondLevelIdentifier() != null){
+                WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+                TaskDetailResource taskDetail = nodeDetailResource.getTaskDetail((String) ids.getSecondLevelIdentifier());
+                dataHandlingResource.setTaskDetailResource(taskDetail);
+            }
             dataHandlingResource.setExperimentResource(experiment);
-            dataHandlingResource.setTaskDetailResource(taskDetail);
             dataHandlingResource.setOutputDataDir(dataHandling.getOutputDataDir());
             dataHandlingResource.setDataRegUrl(dataHandling.getDataRegistryURL());
             dataHandlingResource.setPersistOutputData(dataHandling.isPersistOutputData());
@@ -881,11 +914,13 @@ public class ExperimentRegistry {
     public String addQosParams (QualityOfServiceParams qosParams, CompositeIdentifier ids){
         try {
             ExperimentResource experiment = gatewayResource.getExperiment((String) ids.getTopLevelIdentifier());
-            WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
-            TaskDetailResource taskDetail = nodeDetailResource.getTaskDetail((String) ids.getSecondLevelIdentifier());
             QosParamResource qosParamResource = (QosParamResource)experiment.create(ResourceType.QOS_PARAM);
+            if (ids.getSecondLevelIdentifier() != null){
+                WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
+                TaskDetailResource taskDetail = nodeDetailResource.getTaskDetail((String) ids.getSecondLevelIdentifier());
+                qosParamResource.setTaskDetailResource(taskDetail);
+            }
             qosParamResource.setExperimentResource(experiment);
-            qosParamResource.setTaskDetailResource(taskDetail);
             qosParamResource.setStartExecutionAt(qosParams.getStartExecutionAt());
             qosParamResource.setExecuteBefore(qosParams.getExecuteBefore());
             qosParamResource.setNoOfRetries(qosParams.getNumberofRetries());

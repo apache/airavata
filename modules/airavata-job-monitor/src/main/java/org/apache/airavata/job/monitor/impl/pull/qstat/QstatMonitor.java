@@ -52,6 +52,9 @@ public class QstatMonitor extends PullMonitor implements Runnable {
 
     private MonitorPublisher publisher;
 
+    public QstatMonitor(){
+        connections = new HashMap<String, ResourceConnection>();
+    }
     public QstatMonitor(BlockingQueue<MonitorID> queue, MonitorPublisher publisher) {
         this.queue = queue;
         this.publisher = publisher;
@@ -95,6 +98,8 @@ public class QstatMonitor extends PullMonitor implements Runnable {
                 if (take.getLastMonitored() != null) {
                     monitorDiff = (new Timestamp((new Date()).getTime())).getTime() - take.getLastMonitored().getTime();
                     startedDiff = (new Timestamp((new Date()).getTime())).getTime() - take.getJobStartedTime().getTime();
+                    //todo implement an algorithm to delay the monitor based no start time, we have to delay monitoring
+                    //todo  for long running jobs
 //                    System.out.println(monitorDiff + "-" + startedDiff);
                     if ((monitorDiff / 1000) < 5) {
                         // its too early to monitor this job, so we put it at the tail of the queue
@@ -162,6 +167,22 @@ public class QstatMonitor extends PullMonitor implements Runnable {
     public boolean stopPulling() {
         this.startPulling = false;
         return true;
+    }
+
+    public MonitorPublisher getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(MonitorPublisher publisher) {
+        this.publisher = publisher;
+    }
+
+    public BlockingQueue<MonitorID> getQueue() {
+        return queue;
+    }
+
+    public void setQueue(BlockingQueue<MonitorID> queue) {
+        this.queue = queue;
     }
 
     public boolean authenticate() {
