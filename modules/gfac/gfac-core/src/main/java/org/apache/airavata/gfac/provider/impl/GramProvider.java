@@ -24,7 +24,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -40,8 +43,12 @@ import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.GramJobSubmissionListener;
 import org.apache.airavata.gfac.utils.GramProviderUtils;
+import org.apache.airavata.model.workspace.experiment.JobDetails;
+import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.workspace.experiment.JobStatus;
 import org.apache.airavata.registry.api.workflow.ApplicationJob;
 import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
+import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.globus.gram.GramException;
@@ -54,7 +61,7 @@ import org.ietf.jgss.GSSException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GramProvider implements GFacProvider {
+public class GramProvider extends AbstractProvider implements GFacProvider{
     private static final Logger log = LoggerFactory.getLogger(GramJobSubmissionListener.class);
 
     private GramJob job;
@@ -109,9 +116,10 @@ public class GramProvider implements GFacProvider {
 
 
     // This method prepare the environment before the application invocation.
-    public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+    public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
 
         try {
+        	super.initialize(jobExecutionContext);
             String strTwoPhase = ServerSettings.getSetting("TwoPhase");
             if (strTwoPhase != null) {
                 twoPhase = Boolean.parseBoolean(strTwoPhase);
@@ -170,7 +178,7 @@ public class GramProvider implements GFacProvider {
                             JobExecutionContext jobExecutionContext,
                             GlobusHostType globusHostType) throws GFacException, GFacProviderException {
     	boolean applicationSaved=false;
-        if (twoPhase) {
+    	if (twoPhase) {
             try {
                 /*
                 * The first boolean is to force communication through SSLv3
@@ -185,17 +193,19 @@ public class GramProvider implements GFacProvider {
                 renewCredentialsAttempt = false;
 
             } catch (WaitingForCommitException e) {
-
-                saveApplicationJob(jobExecutionContext, ApplicationJobStatus.UN_SUBMITTED);
+            	String jobID = job.getIDAsString();
+				
+            	details.setJobID(jobID);
+            	details.setJobDescription(job.getRSL());
+                jobExecutionContext.setJobDetails(details);
+                GFacUtils.saveJobStatus(details, JobState.UN_SUBMITTED, jobExecutionContext.getTaskData().getTaskID());
+                
                 applicationSaved=true;
-                String jobStatusMessage = "Un-submitted JobID= " + job.getIDAsString();
+                String jobStatusMessage = "Un-submitted JobID= " + jobID;
                 log.info(jobStatusMessage);
                 jobExecutionContext.getNotifier().publish(new JobIDEvent(jobStatusMessage));
 
-                log.info("JobID = " + job.getIDAsString());
-
-
-                log.info("Two phase commit: sending COMMIT_REQUEST signal; Job id - " + job.getIDAsString());
+                log.info("Two phase commit: sending COMMIT_REQUEST signal; Job id - " + jobID);
 
                 try {
                     job.signal(GramJob.SIGNAL_COMMIT_REQUEST);
@@ -222,7 +232,7 @@ public class GramProvider implements GFacProvider {
                                 + job.getIDAsString() + ". Credentials provided invalid", e1);
                     }
                 }
-
+                GFacUtils.updateJobStatus(details, JobState.SUBMITTED);
                 jobStatusMessage = "Submitted JobID= " + job.getIDAsString();
                 log.info(jobStatusMessage);
                 jobExecutionContext.getNotifier().publish(new JobIDEvent(jobStatusMessage));
@@ -262,15 +272,6 @@ public class GramProvider implements GFacProvider {
         }
 
         currentlyExecutingJobCache.put(job.getIDAsString(), job);
-
-        /* these will be removed and used new status structure
-        if (applicationSaved){
-        	GFacUtils.updateApplicationJobStatus(jobExecutionContext, job.getIDAsString(), ApplicationJobStatus.SUBMITTED);
-        }else{
-	        saveApplicationJob(jobExecutionContext, ApplicationJobStatus.SUBMITTED);
-	        applicationSaved=true;
-        }*/
-
         /*
         * Wait until job is done
         */
@@ -350,15 +351,7 @@ public class GramProvider implements GFacProvider {
 
     }
 
-	private void saveApplicationJob(JobExecutionContext jobExecutionContext, ApplicationJobStatus jobStatus) {
-		ApplicationJob appJob = GFacUtils.createApplicationJob(jobExecutionContext);
-		appJob.setJobId(job.getIDAsString());
-		appJob.setJobData(job.getRSL());
-		appJob.setSubmittedTime(Calendar.getInstance().getTime());
-		appJob.setStatus(jobStatus);
-		appJob.setStatusUpdateTime(appJob.getSubmittedTime());
-		GFacUtils.recordApplicationJob(jobExecutionContext, appJob);
-	}
+	
 	
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
     }

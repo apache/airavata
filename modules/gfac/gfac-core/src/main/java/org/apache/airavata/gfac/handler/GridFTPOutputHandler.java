@@ -48,7 +48,12 @@ import org.apache.airavata.gfac.external.GridFtp;
 import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.OutputUtils;
+import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.workspace.experiment.TransferState;
+import org.apache.airavata.model.workspace.experiment.TransferStatus;
+import org.apache.airavata.registry.cpi.ChildDataType;
+import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
@@ -61,12 +66,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class GridFTPOutputHandler implements GFacHandler {
+public class GridFTPOutputHandler extends AbstractHandler {
     private static final Logger log = LoggerFactory.getLogger(GridFTPOutputHandler.class);
+    private Registry registry;
 
-    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
-        log.info("Invoking GridFTPOutputHandler ...");
 
+    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException,GFacException {
+       log.info("Invoking GridFTPOutputHandler ...");
+       super.invoke(jobExecutionContext);
+        
        ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
 
  	   HostDescriptionType hostType = jobExecutionContext.getApplicationContext().getHostDescription().getType();
@@ -89,6 +97,9 @@ public class GridFTPOutputHandler implements GFacHandler {
        GridFtp ftp = new GridFtp();
        File localStdErrFile = null;
        Map<String, ActualParameter> stringMap = new HashMap<String, ActualParameter>();
+	   DataTransferDetails detail = new DataTransferDetails();
+	   TransferStatus status = new TransferStatus();
+
        try {
     	    GSSCredential gssCred = ((GSISecurityContext)jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getGssCredentials();
     	    String[] hostgridFTP = gridFTPEndpointArray;
@@ -100,9 +111,17 @@ public class GridFTPOutputHandler implements GFacHandler {
                     /*
                      *  Read Stdout and Stderror
                      */
-                    URI stdoutURI = GFacUtils.createGsiftpURI(endpoint, app.getStandardOutput());
+					URI stdoutURI = GFacUtils.createGsiftpURI(endpoint, app.getStandardOutput());
                     URI stderrURI = GFacUtils.createGsiftpURI(endpoint, app.getStandardError());
-
+                	status.setTransferState(TransferState.COMPLETE);
+					detail.setTransferStatus(status);
+					detail.setTransferDescription("STDOUT:" + stdoutURI.toString());
+                    registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
+                    status.setTransferState(TransferState.COMPLETE);
+					detail.setTransferStatus(status);
+					detail.setTransferDescription("STDERR:" + stderrURI.toString());
+                    registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
+                  
                     log.info("STDOUT:" + stdoutURI.toString());
                     log.info("STDERR:" + stderrURI.toString());
 
@@ -170,6 +189,11 @@ public class GridFTPOutputHandler implements GFacHandler {
                             // This is to handle exception during the output parsing.
                             stringMap = OutputUtils.fillOutputFromStdout(output, stdout, stderr);
                         }
+                        status.setTransferState(TransferState.DOWNLOAD);
+    					detail.setTransferStatus(status);
+    					detail.setTransferDescription("Output: " + stringMap.get(paramName).toString());
+                        registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
+                      
                     }
                     if (stringMap == null || stringMap.isEmpty()) {
                         throw new GFacHandlerException("Empty Output returned from the Application, Double check the application" +
@@ -192,7 +216,14 @@ public class GridFTPOutputHandler implements GFacHandler {
                 }
             }
         } catch (Exception e) {
-            log.error(e.getMessage());
+        	 try {
+        	    status.setTransferState(TransferState.FAILED);
+				detail.setTransferStatus(status);
+				registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
+ 			} catch (Exception e1) {
+ 			    throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
+ 		   }
+        	log.error(e.getMessage());
             throw new GFacHandlerException(e.getMessage(), e, readLastLinesofStdOut(localStdErrFile.getPath(), 20));
         }
 

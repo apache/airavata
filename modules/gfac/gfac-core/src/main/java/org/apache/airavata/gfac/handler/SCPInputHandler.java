@@ -22,9 +22,11 @@ package org.apache.airavata.gfac.handler;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
-
-import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
@@ -34,16 +36,19 @@ import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
-import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
+import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
+import org.apache.airavata.model.workspace.experiment.TransferState;
+import org.apache.airavata.model.workspace.experiment.TransferStatus;
+import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SCPInputHandler implements GFacHandler {
+public class SCPInputHandler extends AbstractHandler {
 
     private static final Logger log = LoggerFactory.getLogger(SCPInputHandler.class);
 
@@ -51,8 +56,11 @@ public class SCPInputHandler implements GFacHandler {
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException, GFacException {
 
         log.info("Invoking SCPInputHandler");
-
-
+        super.invoke(jobExecutionContext);
+       
+        DataTransferDetails detail = new DataTransferDetails();
+        TransferStatus status = new TransferStatus();
+    
         MessageContext inputNew = new MessageContext();
         try {
             MessageContext input = jobExecutionContext.getInMessageContext();
@@ -67,7 +75,12 @@ public class SCPInputHandler implements GFacHandler {
                     List<String> split = Arrays.asList(StringUtil.getElementsFromString(paramValue));
                     List<String> newFiles = new ArrayList<String>();
                     for (String paramValueEach : split) {
-                        newFiles.add(stageInputFiles(jobExecutionContext, paramValueEach));
+                        String stageInputFiles = stageInputFiles(jobExecutionContext, paramValueEach);
+                        status.setTransferState(TransferState.UPLOAD);
+                        detail.setTransferStatus(status);
+                        detail.setTransferDescription("Input Data Staged: " + stageInputFiles);
+                        registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
+                   	newFiles.add(stageInputFiles);
                     }
                     ((URIArrayType) actualParameter.getType()).setValueArray(newFiles.toArray(new String[newFiles.size()]));
                 }
@@ -75,6 +88,13 @@ public class SCPInputHandler implements GFacHandler {
             }
         } catch (Exception e) {
             log.error(e.getMessage());
+            status.setTransferState(TransferState.FAILED);
+            detail.setTransferStatus(status);
+            try {
+				registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
+			} catch (Exception e1) {
+			    throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
+		   }
             throw new GFacHandlerException("Error while input File Staging", e, e.getLocalizedMessage());
         }
         jobExecutionContext.setInMessageContext(inputNew);

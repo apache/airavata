@@ -22,40 +22,41 @@ package org.apache.airavata.gfac.handler;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.transport.TransportException;
 
-import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.ToolsException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
-import org.apache.airavata.gfac.external.GridFtp;
 import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.OutputUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
+import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
+import org.apache.airavata.model.workspace.experiment.TransferState;
+import org.apache.airavata.model.workspace.experiment.TransferStatus;
+import org.apache.airavata.persistance.registry.jpa.model.DataTransferDetail;
+import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.URIArrayType;
-import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.apache.xmlbeans.XmlException;
-import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SCPOutputHandler implements GFacHandler{
+public class SCPOutputHandler extends AbstractHandler{
     private static final Logger log = LoggerFactory.getLogger(SCPOutputHandler.class);
 
-    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException, GFacException {
 
-        ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext()
+    	super.invoke(jobExecutionContext);
+        DataTransferDetails detail = new DataTransferDetails();
+        TransferStatus status = new TransferStatus();
+
+    	ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext()
                 .getApplicationDeploymentDescription().getType();
         try {
             Cluster cluster = null;
@@ -82,6 +83,16 @@ public class SCPOutputHandler implements GFacHandler{
 
             String stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
             String stdErrStr = GFacUtils.readFileToString(localStdErrFile.getAbsolutePath());
+            status.setTransferState(TransferState.COMPLETE);
+            detail.setTransferStatus(status);
+            detail.setTransferDescription("STDOUT:" + stdOutStr);
+            registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
+          
+            status.setTransferState(TransferState.COMPLETE);
+            detail.setTransferStatus(status);
+            detail.setTransferDescription("STDERR:" + stdErrStr);
+            registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
+          
 
             Map<String, ActualParameter> stringMap = new HashMap<String, ActualParameter>();
             Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
@@ -91,6 +102,11 @@ public class SCPOutputHandler implements GFacHandler{
                         "Empty Output returned from the Application, Double check the application"
                                 + "and ApplicationDescriptor output Parameter Names");
             }
+            status.setTransferState(TransferState.DOWNLOAD);
+            detail.setTransferStatus(status);
+            detail.setTransferDescription("Output: " + stringMap.get(output.keySet()).toString());
+            registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
+        
         } catch (XmlException e) {
             throw new GFacHandlerException("Cannot read output:" + e.getMessage(), e);
         } catch (ConnectionException e) {
@@ -100,6 +116,13 @@ public class SCPOutputHandler implements GFacHandler{
         } catch (IOException e) {
             throw new GFacHandlerException(e.getMessage(), e);
         } catch (Exception e) {
+        	 try {
+         	    status.setTransferState(TransferState.FAILED);
+ 				detail.setTransferStatus(status);
+ 				registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
+  			} catch (Exception e1) {
+  			    throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
+  		   }
             throw new GFacHandlerException("Error in retrieving results", e);
         }
 

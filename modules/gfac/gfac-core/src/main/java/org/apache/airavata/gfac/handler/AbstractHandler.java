@@ -17,26 +17,19 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- */
-
-package org.apache.airavata.gfac.provider.impl;
+*/
+package org.apache.airavata.gfac.handler;
 
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.provider.GFacProviderException;
-import org.apache.airavata.model.workspace.experiment.JobDetails;
-import org.apache.airavata.model.workspace.experiment.JobStatus;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
 
-public abstract class AbstractProvider{
+public abstract class AbstractHandler implements GFacHandler {
 	protected Registry registry = null;
-	protected JobDetails details;
-	protected JobStatus status;
 
-	public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
+	public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException, GFacException {
 		registry = RegistryFactory.getDefaultRegistry();
-		details = new JobDetails();
-		status = new JobStatus();
 	}
+
 }

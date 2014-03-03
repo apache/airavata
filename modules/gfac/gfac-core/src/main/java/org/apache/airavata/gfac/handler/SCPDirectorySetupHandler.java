@@ -28,15 +28,20 @@ import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
+import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
+import org.apache.airavata.model.workspace.experiment.TransferState;
+import org.apache.airavata.model.workspace.experiment.TransferStatus;
+import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SCPDirectorySetupHandler implements GFacHandler{
+public class SCPDirectorySetupHandler extends AbstractHandler{
     private static final Logger log = LoggerFactory.getLogger(SCPDirectorySetupHandler.class);
 
 	public void invoke(JobExecutionContext jobExecutionContext) throws GFacException {
 		log.info("Setup SSH job directorties");
+	    super.invoke(jobExecutionContext);
 		makeDirectory(jobExecutionContext);
 
 	}
@@ -54,11 +59,31 @@ public class SCPDirectorySetupHandler implements GFacHandler{
             }
 		ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
 		try {
-            cluster.makeDirectory(app.getScratchWorkingDirectory());
+            String workingDirectory = app.getScratchWorkingDirectory();
+			cluster.makeDirectory(workingDirectory);
             cluster.makeDirectory(app.getInputDataDirectory());
             cluster.makeDirectory(app.getOutputDataDirectory());
+            DataTransferDetails detail = new DataTransferDetails();
+            TransferStatus status = new TransferStatus();
+            status.setTransferState(TransferState.DIRECTORY_SETUP);
+            detail.setTransferStatus(status);
+            detail.setTransferDescription("Working directory = " + workingDirectory);
+         
+            registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
+          
 		} catch (SSHApiException e) {
-            throw new GFacHandlerException("Error executing the Handler: " + SCPDirectorySetupHandler.class,e);  //To change body of catch statement use File | Settings | File Templates.
+            throw new GFacHandlerException("Error executing the Handler: " + SCPDirectorySetupHandler.class,e);  
+        }catch (Exception e){
+            DataTransferDetails detail = new DataTransferDetails();
+            TransferStatus status = new TransferStatus();
+            status.setTransferState(TransferState.FAILED);
+            detail.setTransferStatus(status);
+            try {
+				registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
+			} catch (Exception e1) {
+			    throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
+		   }
+            throw new GFacHandlerException("Error executing the Handler: " + SCPDirectorySetupHandler.class,e); 
         }
 	}
 

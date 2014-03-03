@@ -26,12 +26,15 @@ import java.util.Map;
 
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.ToolsException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.external.GridFtp;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.GramJobSubmissionListener;
+import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
+import org.apache.airavata.model.workspace.experiment.TransferState;
+import org.apache.airavata.model.workspace.experiment.TransferStatus;
+import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
@@ -40,13 +43,12 @@ import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GramDirectorySetupHandler implements GFacHandler {
+public class GramDirectorySetupHandler extends  AbstractHandler {
     private static final Logger log = LoggerFactory.getLogger(GramJobSubmissionListener.class);
-
+   
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException,GFacException {
         log.info("Invoking GramDirectorySetupHandler ...");
-
-
+        super.invoke(jobExecutionContext);
         String[] gridFTPEndpointArray = null;
 
         //TODO: why it is tightly coupled with gridftp
@@ -63,9 +65,7 @@ public class GramDirectorySetupHandler implements GFacHandler {
         else if (hostType instanceof UnicoreHostType){
         	gridFTPEndpointArray = ((UnicoreHostType) hostType).getGridFTPEndPointArray();
         }
-        else {
-        	//TODO
-        }
+        
 
 
         ApplicationDescription applicationDeploymentDescription = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
@@ -73,9 +73,6 @@ public class GramDirectorySetupHandler implements GFacHandler {
         GridFtp ftp = new GridFtp();
 
         try {
-
-
-
 
             GSSCredential gssCred = ((GSISecurityContext)jobExecutionContext.
                     getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getGssCredentials();
@@ -98,18 +95,23 @@ public class GramDirectorySetupHandler implements GFacHandler {
                     log.info("Working directory = " + workingDirURI);
                     log.info("Input directory = " + inputURI);
                     log.info("Output directory = " + outputURI);
-
                     ftp.makeDir(tmpdirURI, gssCred);
                     ftp.makeDir(workingDirURI, gssCred);
                     ftp.makeDir(inputURI, gssCred);
                     ftp.makeDir(outputURI, gssCred);
-
                     success = true;
+                    DataTransferDetails detail = new DataTransferDetails();
+                    TransferStatus status = new TransferStatus();
+                    status.setTransferState(TransferState.DIRECTORY_SETUP);
+                    detail.setTransferStatus(status);
+                    detail.setTransferDescription("Working directory = " + workingDirURI);
+                    registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
+                                  
                     break;
                 } catch (URISyntaxException e) {
                     pe = new GFacHandlerException("URI is malformatted:" + e.getMessage(), e);
 
-                } catch (ToolsException e) {
+                } catch (Exception e) {
                     pe = new GFacHandlerException(e.getMessage(), e);
                 }
             }

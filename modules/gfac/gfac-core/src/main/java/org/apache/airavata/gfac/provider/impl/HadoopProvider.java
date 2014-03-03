@@ -55,7 +55,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  * Executes hadoop job using the cluster configuration provided by handlers in
  * in-flow.
  */
-public class HadoopProvider implements GFacProvider{
+public class HadoopProvider extends AbstractProvider implements GFacProvider{
     private static final Logger logger = LoggerFactory.getLogger(HadoopProvider.class);
 
     private boolean isWhirrBasedDeployment = false;

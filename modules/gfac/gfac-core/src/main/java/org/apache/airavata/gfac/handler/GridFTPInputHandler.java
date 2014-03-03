@@ -26,7 +26,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
@@ -38,6 +42,10 @@ import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.external.GridFtp;
 import org.apache.airavata.gfac.utils.GFacUtils;
+import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
+import org.apache.airavata.model.workspace.experiment.TransferState;
+import org.apache.airavata.model.workspace.experiment.TransferStatus;
+import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
@@ -48,11 +56,15 @@ import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GridFTPInputHandler implements GFacHandler {
+public class GridFTPInputHandler extends AbstractHandler {
     private static final Logger log = LoggerFactory.getLogger(AppDescriptorCheckHandler.class);
-
-    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+ 
+    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException,GFacException {
         log.info("Invoking GridFTPInputHandler ...");
+        super.invoke(jobExecutionContext);
+        DataTransferDetails detail = new DataTransferDetails();
+        TransferStatus status = new TransferStatus();
+       
         MessageContext inputNew = new MessageContext();
         try {
             MessageContext input = jobExecutionContext.getInMessageContext();
@@ -67,13 +79,27 @@ public class GridFTPInputHandler implements GFacHandler {
                     List<String> split = Arrays.asList(StringUtil.getElementsFromString(paramValue));
                     List<String> newFiles = new ArrayList<String>();
                     for (String paramValueEach : split) {
-                        newFiles.add(stageInputFiles(jobExecutionContext, paramValueEach));
+                        String stageInputFiles = stageInputFiles(jobExecutionContext, paramValueEach);
+                        detail.setTransferDescription("Input Data Staged: " + stageInputFiles);
+                        status.setTransferState(TransferState.UPLOAD);
+                        detail.setTransferStatus(status);
+                        registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
+                   
+                        newFiles.add(stageInputFiles);
                     }
                     ((URIArrayType) actualParameter.getType()).setValueArray(newFiles.toArray(new String[newFiles.size()]));
                 }
                 inputNew.getParameters().put(paramName, actualParameter);
+               
             }
         } catch (Exception e) {
+        	 try {
+         	    status.setTransferState(TransferState.FAILED);
+ 				detail.setTransferStatus(status);
+ 				registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
+  			} catch (Exception e1) {
+  			    throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
+  		   }
             log.error(e.getMessage());
             throw new GFacHandlerException("Error while input File Staging", e, e.getLocalizedMessage());
         }

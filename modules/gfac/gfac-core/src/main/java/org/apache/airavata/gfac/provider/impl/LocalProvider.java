@@ -41,6 +41,7 @@ import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.InputStreamToFileWriter;
 import org.apache.airavata.gfac.utils.InputUtils;
 import org.apache.airavata.gfac.utils.OutputUtils;
+import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.registry.api.workflow.ApplicationJob;
 import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
@@ -48,9 +49,10 @@ import org.apache.airavata.schemas.gfac.NameValuePairType;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class LocalProvider implements GFacProvider {
+public class LocalProvider extends AbstractProvider implements GFacProvider{
     private static final Logger log = LoggerFactory.getLogger(LocalProvider.class);
     private ProcessBuilder builder;
     private List<String> cmdList;
@@ -97,7 +99,8 @@ public class LocalProvider implements GFacProvider {
         cmdList = new ArrayList<String>();
     }
 
-    public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+    public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException,GFacException {
+    	super.initialize(jobExecutionContext);
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().
                 getApplicationDeploymentDescription().getType();
 
@@ -125,9 +128,12 @@ public class LocalProvider implements GFacProvider {
                  getApplicationContext().getApplicationDeploymentDescription().getType();
 
         try {
-            // running cmd
+        	jobId= jobExecutionContext.getTaskData().getTaskID();
+            details.setJobID(jobId);
+            GFacUtils.saveJobStatus(details, JobState.SETUP, jobExecutionContext.getTaskData().getTaskID());
+        	// running cmd
             Process process = builder.start();
-            jobId= jobExecutionContext.getExperimentID();
+            
             //todo fix how to incoperate orchestrator with gfac
 //            if(jobExecutionContext.getGFacConfiguration().getAiravataAPI() != null){
 //        		saveApplicationJob(jobExecutionContext);
@@ -168,36 +174,39 @@ public class LocalProvider implements GFacProvider {
                     .append(" on the localHost, working directory = ").append(app.getStaticWorkingDirectory())
                     .append(" tempDirectory = ").append(app.getScratchWorkingDirectory()).append(" With the status ")
                     .append(String.valueOf(returnValue));
-
+            details.setJobDescription(buf.toString());
+            GFacUtils.updateJobStatus(details, JobState.COMPLETE);
             log.info(buf.toString());
 
         } catch (IOException io) {
             throw new GFacProviderException(io.getMessage(), io);
         } catch (InterruptedException e) {
             throw new GFacProviderException(e.getMessage(), e);
+        }catch (GFacException e) {
+            throw new GFacProviderException(e.getMessage(), e);
         }
     }
 
-	private void saveApplicationJob(JobExecutionContext jobExecutionContext)
-			throws GFacProviderException {
-		ApplicationDeploymentDescriptionType app = jobExecutionContext.
-                getApplicationContext().getApplicationDeploymentDescription().getType();
-		ApplicationJob appJob = GFacUtils.createApplicationJob(jobExecutionContext);
-		appJob.setJobId(jobId);
-		LocalProviderJobData data = new LocalProviderJobData();
-		data.setApplicationName(app.getExecutableLocation());
-		data.setInputDir(app.getInputDataDirectory());
-		data.setOutputDir(app.getOutputDataDirectory());
-		data.setWorkingDir(builder.directory().toString());
-		data.setInputParameters(ProviderUtils.getInputParameters(jobExecutionContext));
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		JAXB.marshal(data, stream);
-		appJob.setJobData(stream.toString());
-		appJob.setSubmittedTime(Calendar.getInstance().getTime());
-		appJob.setStatus(ApplicationJobStatus.SUBMITTED);
-		appJob.setStatusUpdateTime(appJob.getSubmittedTime());
-		GFacUtils.recordApplicationJob(jobExecutionContext, appJob);
-	}
+//	private void saveApplicationJob(JobExecutionContext jobExecutionContext)
+//			throws GFacProviderException {
+//		ApplicationDeploymentDescriptionType app = jobExecutionContext.
+//                getApplicationContext().getApplicationDeploymentDescription().getType();
+//		ApplicationJob appJob = GFacUtils.createApplicationJob(jobExecutionContext);
+//		appJob.setJobId(jobId);
+//		LocalProviderJobData data = new LocalProviderJobData();
+//		data.setApplicationName(app.getExecutableLocation());
+//		data.setInputDir(app.getInputDataDirectory());
+//		data.setOutputDir(app.getOutputDataDirectory());
+//		data.setWorkingDir(builder.directory().toString());
+//		data.setInputParameters(ProviderUtils.getInputParameters(jobExecutionContext));
+//		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//		JAXB.marshal(data, stream);
+//		appJob.setJobData(stream.toString());
+//		appJob.setSubmittedTime(Calendar.getInstance().getTime());
+//		appJob.setStatus(ApplicationJobStatus.SUBMITTED);
+//		appJob.setStatusUpdateTime(appJob.getSubmittedTime());
+//		GFacUtils.recordApplicationJob(jobExecutionContext, appJob);
+//	}
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
