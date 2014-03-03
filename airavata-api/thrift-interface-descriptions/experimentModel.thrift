@@ -124,13 +124,13 @@ struct JobStatus {
 }
 
 enum TransferState {
-    DIRECTORY-SETUP,
+    DIRECTORY_SETUP,
     UPLOAD,
     DOWNLOAD,
     ACTIVE,
     COMPLETE,
-    STDOUT-DOWNLOAD,
-    STDERROR-DOWNLOAD,
+    STDOUT_DOWNLOAD,
+    STDERROR_DOWNLOAD,
     CANCELED,
     FAILED,
     HELD,

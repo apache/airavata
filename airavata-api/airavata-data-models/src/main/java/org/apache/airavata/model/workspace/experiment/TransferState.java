@@ -28,15 +28,18 @@ import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
 @SuppressWarnings("all") public enum TransferState implements org.apache.thrift.TEnum {
-  SUBMITTED(0),
-  QUEUED(1),
-  ACTIVE(2),
-  COMPLETE(3),
-  CANCELED(4),
-  FAILED(5),
-  HELD(6),
-  SUSPENDED(7),
-  UNKNOWN(8);
+  DIRECTORY_SETUP(0),
+  UPLOAD(1),
+  DOWNLOAD(2),
+  ACTIVE(3),
+  COMPLETE(4),
+  STDOUT_DOWNLOAD(5),
+  STDERROR_DOWNLOAD(6),
+  CANCELED(7),
+  FAILED(8),
+  HELD(9),
+  SUSPENDED(10),
+  UNKNOWN(11);
 
   private final int value;
 
@@ -58,22 +61,28 @@ import org.apache.thrift.TEnum;
   public static TransferState findByValue(int value) { 
     switch (value) {
       case 0:
-        return SUBMITTED;
+        return DIRECTORY_SETUP;
       case 1:
-        return QUEUED;
+        return UPLOAD;
       case 2:
-        return ACTIVE;
+        return DOWNLOAD;
       case 3:
-        return COMPLETE;
+        return ACTIVE;
       case 4:
-        return CANCELED;
+        return COMPLETE;
       case 5:
-        return FAILED;
+        return STDOUT_DOWNLOAD;
       case 6:
-        return HELD;
+        return STDERROR_DOWNLOAD;
       case 7:
-        return SUSPENDED;
+        return CANCELED;
       case 8:
+        return FAILED;
+      case 9:
+        return HELD;
+      case 10:
+        return SUSPENDED;
+      case 11:
         return UNKNOWN;
       default:
         return null;
