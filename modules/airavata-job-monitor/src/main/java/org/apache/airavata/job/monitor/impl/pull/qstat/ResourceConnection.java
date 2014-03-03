@@ -204,6 +204,8 @@ public class ResourceConnection {
 
     public JobState getJobStatus(MonitorID monitorID) throws SSHApiException {
         String jobID = monitorID.getJobID();
+        //todo so currently we execute the qstat for each job but we can use user based monitoring
+        //todo or we should concatenate all the commands and execute them in one go and parse the response
         RawCommandInfo rawCommandInfo = new RawCommandInfo(this.installedPath + "qstat -f " + jobID);
 
         StandardOutReader stdOutReader = new StandardOutReader();
