@@ -118,7 +118,11 @@ public class QstatMonitor extends PullMonitor implements Runnable {
                         logger.debug("We already have this connection so not going to create one");
                         connection = connections.get(hostName);
                     } else {
-                        connection = new ResourceConnection(take, gsisshHostType.getInstalledPath());
+                        if(gsisshHostType.getInstalledPath() == null){
+                            connection = new ResourceConnection(take, "/opt/torque/bin");
+                        }else{
+                            connection = new ResourceConnection(take, gsisshHostType.getInstalledPath());
+                        }
                         connections.put(hostName, connection);
                     }
                     jobStatus.setMonitorID(take);
@@ -148,7 +152,7 @@ public class QstatMonitor extends PullMonitor implements Runnable {
                 }else if(e.getMessage().contains("illegally formed job identifier")){
                    logger.error("Wrong job ID is given so dropping the job from monitoring system");
                 } else if (!this.queue.contains(take)) {   // we put the job back to the queue only if its state is not unknown
-                    if (take.getFailedCount() < 3) {
+                    if (take.getFailedCount() < 2) {
                         try {
                             take.setFailedCount(take.getFailedCount() + 1);
                             this.queue.put(take);
@@ -159,19 +163,19 @@ public class QstatMonitor extends PullMonitor implements Runnable {
                         logger.error("Tried to monitor the job 3 times, so dropping of the the Job with ID: " + take.getJobID());
                     }
                 }
-                logger.error("Error retrieving the job status");
                 throw new AiravataMonitorException("Error retrieving the job status", e);
             } catch (Exception e){
                 if (take.getFailedCount() < 3) {
-                        try {
-                            take.setFailedCount(take.getFailedCount() + 1);
-                            this.queue.put(take);
-                        } catch (InterruptedException e1) {
-                            e1.printStackTrace();
-                        }
-                    } else {
-                        logger.error("Tryied to monitor the job 3 times, so dropping of the the Job with ID: " + take.getJobID());
+                    try {
+                        take.setFailedCount(take.getFailedCount() + 1);
+                        this.queue.put(take);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
+                } else {
+                    logger.error("Tryied to monitor the job 3 times, so dropping of the the Job with ID: " + take.getJobID());
                 }
+                throw new AiravataMonitorException("Error retrieving the job status", e);
             }
         }
 
