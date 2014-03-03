@@ -46,7 +46,6 @@ public class ExperimentModelUtil {
     }
 
 
-
     public static ComputationalResourceScheduling createComputationResourceScheduling(String resourceHostId,
                                                                                       int cpuCount,
                                                                                       int nodeCount,
@@ -112,10 +111,11 @@ public class ExperimentModelUtil {
             taskDetails.setApplicationInputs(experimentInputs);
         }
 
-         List<DataObjectType> experimentOutputs = experiment.getExperimentOutputs();
+        List<DataObjectType> experimentOutputs = experiment.getExperimentOutputs();
         if (experimentOutputs != null){
             taskDetails.setApplicationOutputs(experimentOutputs);
         }
+        
         UserConfigurationData configData = experiment.getUserConfigurationData();
         if (configData != null){
             ComputationalResourceScheduling scheduling = configData.getComputationalResourceScheduling();

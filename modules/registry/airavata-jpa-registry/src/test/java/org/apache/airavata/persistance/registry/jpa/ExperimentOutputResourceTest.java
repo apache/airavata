@@ -21,7 +21,8 @@
 
 package org.apache.airavata.persistance.registry.jpa;
 
-import org.apache.airavata.persistance.registry.jpa.resources.*;
+import org.apache.airavata.persistance.registry.jpa.resources.ExperimentOutputResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ExperimentResource;
 import org.junit.After;
 import org.junit.Test;
 
@@ -30,10 +31,10 @@ import java.util.List;
 import static org.junit.Assert.assertTrue;
 
 
-public class ExperimentInputResourceTest extends AbstractResourceTest  {
+public class ExperimentOutputResourceTest extends AbstractResourceTest  {
     private ExperimentResource experimentResource;
     private String experimentID = "testExpID";
-    ExperimentInputResource experimentInputResource;
+    ExperimentOutputResource outputResource;
 
     @Override
     public void setUp() throws Exception {
@@ -49,17 +50,17 @@ public class ExperimentInputResourceTest extends AbstractResourceTest  {
         experimentResource.setExpName("TestExperiment");
         experimentResource.save();
 
-        experimentInputResource = (ExperimentInputResource)experimentResource.create(ResourceType.EXPERIMENT_INPUT);
-        experimentInputResource.setExperimentResource(experimentResource);
-        experimentInputResource.setExperimentKey("testKey");
-        experimentInputResource.setValue("testValue");
-        experimentInputResource.setInputType("string");
-        experimentInputResource.save();
+        outputResource = (ExperimentOutputResource)experimentResource.create(ResourceType.EXPERIMENT_OUTPUT);
+        outputResource.setExperimentResource(experimentResource);
+        outputResource.setExperimentKey("testKey");
+        outputResource.setValue("testValue");
+        outputResource.setOutputType("string");
+        outputResource.save();
     }
 
     @Test
     public void testSave() throws Exception {
-        assertTrue("Experiment Input saved successfully", experimentResource.isExists(ResourceType.EXPERIMENT_INPUT, experimentID));
+        assertTrue("Experiment output saved successfully", experimentResource.isExists(ResourceType.EXPERIMENT_OUTPUT, experimentID));
     }
 
     @After
@@ -68,8 +69,8 @@ public class ExperimentInputResourceTest extends AbstractResourceTest  {
 
     @Test
     public void testGet () throws Exception {
-        List<ExperimentInputResource> experimentInputs = experimentResource.getExperimentInputs();
-        System.out.println("input counts : " + experimentInputs.size());
-        assertTrue("Experiment input retrieved successfully...", experimentInputs.size() > 0);
+        List<ExperimentOutputResource> outputs = experimentResource.getExperimentOutputs();
+        System.out.println("output counts : " + outputs.size());
+        assertTrue("Experiment output retrieved successfully...", outputs.size() > 0);
     }
 }
