@@ -20,9 +20,8 @@
 */
 package org.apache.airavata.job.monitor.util;
 
-import org.bouncycastle.openssl.PEMKeyPair;
-import org.bouncycastle.openssl.PEMParser;
-import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.openssl.PEMReader;
 
 import java.io.*;
 import java.security.*;
@@ -36,7 +35,7 @@ public class X509Helper {
 
     static {
         // parsing of RSA key fails without this
-        java.security.Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+        java.security.Security.addProvider(new BouncyCastleProvider());
     }
 
 
@@ -82,13 +81,13 @@ public class X509Helper {
         //System.out.println(privKeyPEM);
 
         // using BouncyCastle
-        PEMParser pemParser = new PEMParser(new StringReader(privKeyPEM));
+        PEMReader pemParser = new PEMReader(new StringReader(privKeyPEM));
         Object object = pemParser.readObject();
-        //System.out.println(object);
-        JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
-        KeyPair kp = converter.getKeyPair((PEMKeyPair)object);
-        PrivateKey privKey = kp.getPrivate();
 
+        PrivateKey privKey = null;
+        if(object instanceof KeyPair){
+            privKey = ((KeyPair)object).getPrivate();
+        }
         // PEMParser from BouncyCastle is good for reading PEM files, but I didn't want to add that dependency
         /*
         // Base64 decode the data
