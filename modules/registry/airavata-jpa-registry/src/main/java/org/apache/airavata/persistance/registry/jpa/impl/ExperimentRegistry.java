@@ -852,11 +852,11 @@ public class ExperimentRegistry {
     public void addAppOutputs(List<DataObjectType> appInputs, TaskDetailResource taskDetailResource) throws Exception {
         try {
             for (DataObjectType input : appInputs) {
-                ApplicationInputResource resource = (ApplicationInputResource) taskDetailResource.create(ResourceType.APPLICATION_OUTPUT);
+                ApplicationOutputResource resource = (ApplicationOutputResource) taskDetailResource.create(ResourceType.APPLICATION_OUTPUT);
                 resource.setTaskDetailResource(taskDetailResource);
-                resource.setInputKey(input.getKey());
+                resource.setOutputKey(input.getKey());
                 resource.setValue(input.getValue());
-                resource.setInputType(input.getType());
+                resource.setOutputType(input.getType());
                 resource.setMetadata(input.getMetaData());
                 resource.save();
             }
