@@ -104,7 +104,6 @@ public class SCPOutputHandler extends AbstractHandler{
             }
             status.setTransferState(TransferState.DOWNLOAD);
             detail.setTransferStatus(status);
-            detail.setTransferDescription("Output: " + stringMap.get(output.keySet()).toString());
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
         
         } catch (XmlException e) {

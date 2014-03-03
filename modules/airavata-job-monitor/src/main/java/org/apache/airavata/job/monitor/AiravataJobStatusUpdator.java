@@ -21,12 +21,16 @@
 package org.apache.airavata.job.monitor;
 
 import com.google.common.eventbus.Subscribe;
+
 import org.apache.airavata.job.monitor.state.JobStatus;
+import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Calendar;
 import java.util.concurrent.BlockingQueue;
 
 public class AiravataJobStatusUpdator{
@@ -64,6 +68,11 @@ public class AiravataJobStatusUpdator{
                 the registry accordingly, for now we are just printing to standard Out
                  */
         JobState state = jobStatus.getState();
+        try {
+			updateJobStatus(jobStatus.getMonitorID().getJobID(),state);
+		} catch (Exception e) {
+			logger.error("Error persisting data" + e.getLocalizedMessage(),e);
+		}
         switch (state) {
             case COMPLETE:
                 logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is DONE");
@@ -97,4 +106,14 @@ public class AiravataJobStatusUpdator{
                 break;
         }
     }
+    public static void updateJobStatus(String jobID, JobState state) throws Exception {
+  			Registry registry = RegistryFactory.getDefaultRegistry();
+  			JobDetails details = new JobDetails();
+  			org.apache.airavata.model.workspace.experiment.JobStatus status = new org.apache.airavata.model.workspace.experiment.JobStatus();
+  			status.setJobState(state);
+  			status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
+          	details.setJobStatus(status);
+          	details.setJobID(jobID);
+  			registry.update(org.apache.airavata.registry.cpi.DataType.JOB_DETAIL, details, jobID);
+  	}
 }
