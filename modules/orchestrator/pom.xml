@@ -33,6 +33,7 @@
             <modules>
                 <module>orchestrator-core</module>
                 <module>airavata-orchestrator-service</module>
+                <module>orchestrator-client-sdks</module>
             </modules>
         </profile>
     </profiles>

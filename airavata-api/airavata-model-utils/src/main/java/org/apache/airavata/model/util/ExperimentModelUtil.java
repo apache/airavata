@@ -115,7 +115,7 @@ public class ExperimentModelUtil {
         if (experimentOutputs != null){
             taskDetails.setApplicationOutputs(experimentOutputs);
         }
-        
+
         UserConfigurationData configData = experiment.getUserConfigurationData();
         if (configData != null){
             ComputationalResourceScheduling scheduling = configData.getComputationalResourceScheduling();
