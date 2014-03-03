@@ -25,6 +25,7 @@ import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
+import org.apache.airavata.persistance.registry.jpa.model.WorkflowNodeDetail;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.apache.airavata.persistance.registry.jpa.utils.ThriftDataModelConversion;
 import org.apache.airavata.registry.cpi.CompositeIdentifier;
@@ -89,6 +90,22 @@ public class ExperimentRegistry {
                 addUserConfigData(userConfigurationData, experimentID);
             }
 
+            List<DataObjectType> experimentOutputs = experiment.getExperimentOutputs();
+            if (experimentOutputs != null && !experimentOutputs.isEmpty()){
+                addExpOutputs(experimentOutputs, experimentID);
+            }
+
+            ExperimentStatus experimentStatus = experiment.getExperimentStatus();
+            if (experimentStatus != null){
+                updateExperimentStatus(experimentStatus, experimentID);
+            }
+
+            List<WorkflowNodeDetails> workflowNodeDetailsList = experiment.getWorkflowNodeDetailsList();
+            if (workflowNodeDetailsList != null && !workflowNodeDetailsList.isEmpty()){
+                for (WorkflowNodeDetails wf : workflowNodeDetailsList){
+                    addWorkflowNodeDetails(wf, experimentID);
+                }
+            }
         } catch (Exception e) {
             logger.error("Error while saving experiment to registry", e.getMessage());
             throw new Exception(e);
@@ -615,6 +632,11 @@ public class ExperimentRegistry {
             if (nodeInputs != null) {
                 addWorkflowInputs(nodeDetails.getNodeInputs(), resource);
             }
+            List<DataObjectType> nodeOutputs = nodeDetails.getNodeOutputs();
+            if (nodeOutputs != null && !nodeOutputs.isEmpty()){
+                CompositeIdentifier ids = new CompositeIdentifier(expId, resource.getNodeInstanceId());
+                addNodeOutputs(nodeOutputs, ids);
+            }
             return resource.getNodeInstanceId();
         } catch (Exception e) {
             logger.error("Error while adding workflow node details...", e.getMessage());
@@ -634,6 +656,10 @@ public class ExperimentRegistry {
             List<DataObjectType> nodeInputs = nodeDetails.getNodeInputs();
             if (nodeInputs != null) {
                 updateWorkflowInputs(nodeDetails.getNodeInputs(), workflowNode);
+            }
+            List<DataObjectType> nodeOutputs = nodeDetails.getNodeOutputs();
+            if (nodeOutputs != null && !nodeOutputs.isEmpty()){
+                updateNodeOutputs(nodeOutputs, nodeId);
             }
         } catch (Exception e) {
             logger.error("Error while updating workflow node details...", e.getMessage());
@@ -711,6 +737,34 @@ public class ExperimentRegistry {
             if (outputDataHandling != null) {
                 addOutputDataHandling(outputDataHandling, taskDetail);
             }
+
+            List<JobDetails> jobDetailsList = taskDetails.getJobDetailsList();
+            if (jobDetailsList != null && !jobDetailsList.isEmpty()){
+                for (JobDetails job : jobDetailsList){
+                    CompositeIdentifier ids = new CompositeIdentifier(taskDetail.getTaskId(), job.getJobID());
+                    addJobDetails(job,ids);
+                }
+            }
+
+            List<DataTransferDetails> dataTransferDetailsList = taskDetails.getDataTransferDetailsList();
+            if (dataTransferDetailsList != null && !dataTransferDetailsList.isEmpty()){
+                for (DataTransferDetails transferDetails : dataTransferDetailsList){
+                    addDataTransferDetails(transferDetails, taskDetail.getTaskId());
+                }
+            }
+
+            List<ErrorDetails> errors = taskDetails.getErrors();
+            if (errors != null && !errors.isEmpty()){
+                for (ErrorDetails error : errors){
+                    addErrorDetails(error, taskDetail.getTaskId());
+                }
+            }
+
+            TaskStatus taskStatus = taskDetails.getTaskStatus();
+            if (taskStatus != null){
+                CompositeIdentifier ids = new CompositeIdentifier(nodeId, taskDetail.getTaskId());
+                addTaskStatus(taskStatus, ids);
+            }
             return taskDetail.getTaskId();
         } catch (Exception e) {
             logger.error("Error while adding task details...", e.getMessage());
@@ -744,6 +798,31 @@ public class ExperimentRegistry {
             AdvancedOutputDataHandling outputDataHandling = taskDetails.getAdvancedOutputDataHandling();
             if (outputDataHandling != null) {
                 updateOutputDataHandling(outputDataHandling, taskDetail);
+            }
+            List<JobDetails> jobDetailsList = taskDetails.getJobDetailsList();
+            if (jobDetailsList != null && !jobDetailsList.isEmpty()){
+                for (JobDetails job : jobDetailsList){
+                    updateJobDetails(job, job.getJobID());
+                }
+            }
+
+            List<DataTransferDetails> dataTransferDetailsList = taskDetails.getDataTransferDetailsList();
+            if (dataTransferDetailsList != null && !dataTransferDetailsList.isEmpty()){
+                for (DataTransferDetails transferDetails : dataTransferDetailsList){
+                    updateDataTransferDetails(transferDetails, transferDetails.getTransferID());
+                }
+            }
+
+            List<ErrorDetails> errors = taskDetails.getErrors();
+            if (errors != null && !errors.isEmpty()){
+                for (ErrorDetails error : errors){
+                    addErrorDetails(error, taskDetail.getTaskId());
+                }
+            }
+
+            TaskStatus taskStatus = taskDetails.getTaskStatus();
+            if (taskStatus != null){
+                updateTaskStatus(taskStatus, taskId);
             }
             return taskDetail.getTaskId();
         } catch (Exception e) {
@@ -1171,7 +1250,29 @@ public class ExperimentRegistry {
             existingExperiment.setWorkflowExecutionId(experiment.getWorkflowExecutionInstanceId());
             existingExperiment.save();
             List<DataObjectType> experimentInputs = experiment.getExperimentInputs();
-            updateExpInputs(experimentInputs, existingExperiment);
+            if (experimentInputs != null && !experimentInputs.isEmpty()){
+                updateExpInputs(experimentInputs, existingExperiment);
+            }
+
+            UserConfigurationData userConfigurationData = experiment.getUserConfigurationData();
+            if (userConfigurationData != null) {
+                updateUserConfigData(userConfigurationData, expId);
+            }
+
+            List<DataObjectType> experimentOutputs = experiment.getExperimentOutputs();
+            if (experimentOutputs != null && !experimentOutputs.isEmpty()){
+                updateExpOutputs(experimentOutputs, expId);
+            }
+            ExperimentStatus experimentStatus = experiment.getExperimentStatus();
+            if (experimentStatus != null){
+                updateExperimentStatus(experimentStatus, expId);
+            }
+            List<WorkflowNodeDetails> workflowNodeDetailsList = experiment.getWorkflowNodeDetailsList();
+            if (workflowNodeDetailsList != null && !workflowNodeDetailsList.isEmpty()){
+                for (WorkflowNodeDetails wf : workflowNodeDetailsList){
+                    updateWorkflowNodeDetails(wf, wf.getNodeInstanceId());
+                }
+            }
         } catch (Exception e) {
             logger.error("Error while updating experiment...", e.getMessage());
             throw new Exception(e);
