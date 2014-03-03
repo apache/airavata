@@ -58,6 +58,8 @@ public class MonitorID {
 
     private String taskID;
 
+    private int failedCount = 0;
+
 
     public MonitorID(HostDescription host, String jobID,String taskID,String experimentID, String userName) {
         this.host = host;
@@ -169,5 +171,13 @@ public class MonitorID {
 
     public void setTaskID(String taskID) {
         this.taskID = taskID;
+    }
+
+    public int getFailedCount() {
+        return failedCount;
+    }
+
+    public void setFailedCount(int failedCount) {
+        this.failedCount = failedCount;
     }
 }

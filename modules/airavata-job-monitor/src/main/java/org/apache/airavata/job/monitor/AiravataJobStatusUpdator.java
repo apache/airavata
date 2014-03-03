@@ -66,11 +66,11 @@ public class AiravataJobStatusUpdator{
         JobState state = jobStatus.getState();
         switch (state) {
             case COMPLETE:
-                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + "is DONE");
+                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is DONE");
                 jobsToMonitor.remove(jobStatus.getMonitorID());
                 break;
             case UNKNOWN:
-                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + "is UNKNOWN");
+                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is UNKNOWN");
                 logger.info("Unknown job status came, if the old job status is RUNNING or something active, we have to make it complete");
                 //todo implement this logic
                 break;
