@@ -106,6 +106,8 @@ struct TaskStatus {
 
 enum JobState {
     SUBMITTED,
+    UN_SUBMITTED,
+    SETUP,
     QUEUED,
     ACTIVE,
     COMPLETE,
@@ -122,10 +124,13 @@ struct JobStatus {
 }
 
 enum TransferState {
-    SUBMITTED,
-    QUEUED,
+    DIRECTORY_SETUP,
+    UPLOAD,
+    DOWNLOAD,
     ACTIVE,
     COMPLETE,
+    STDOUT_DOWNLOAD,
+    STDERROR_DOWNLOAD,
     CANCELED,
     FAILED,
     HELD,
