@@ -24,6 +24,7 @@ package org.apache.airavata.orchestrator.core;
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
+import org.apache.airavata.client.tools.DocumentCreator;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.orchestrator.core.util.Initialize;

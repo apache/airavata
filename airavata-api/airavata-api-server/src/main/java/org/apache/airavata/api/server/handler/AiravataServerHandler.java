@@ -47,9 +47,8 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     private Registry registry;
     private static final Logger logger = LoggerFactory.getLogger(AiravataServerHandler.class);
-    private OrchestratorService.Client orchestratorClient;
     public static final String ORCHESTRATOR_SERVER_HOST = "localhost";
-    public static final int ORCHESTRATOR_SERVER_PORT = 8930;
+    public static final int ORCHESTRATOR_SERVER_PORT = 8940;
     /**
      * Query Airavata to fetch the API version
      */
@@ -284,7 +283,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public void launchExperiment(String airavataExperimentId, String airavataCredStoreToken) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
-        orchestratorClient = OrchestratorClientFactory.createOrchestratorClient(ORCHESTRATOR_SERVER_HOST, ORCHESTRATOR_SERVER_PORT);
+        OrchestratorService.Client orchestratorClient = OrchestratorClientFactory.createOrchestratorClient(ORCHESTRATOR_SERVER_HOST, ORCHESTRATOR_SERVER_PORT);
         orchestratorClient.launchExperiment(airavataExperimentId);
     }
 

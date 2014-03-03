@@ -18,7 +18,7 @@
  * under the License.
  *
 */
-package org.apache.airavata.orchestrator.client;
+package org.apache.airavata.client.tools;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
