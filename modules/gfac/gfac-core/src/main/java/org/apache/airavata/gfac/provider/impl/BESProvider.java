@@ -54,6 +54,7 @@ import org.apache.airavata.gfac.provider.utils.DataTransferrer;
 import org.apache.airavata.gfac.provider.utils.JSDLGenerator;
 import org.apache.airavata.gfac.provider.utils.StorageCreator;
 import org.apache.airavata.gfac.utils.GFacUtils;
+import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.registry.api.workflow.ApplicationJob;
 import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
 import org.apache.airavata.schemas.gfac.UnicoreHostType;
@@ -91,7 +92,7 @@ import eu.unicore.util.httpclient.DefaultClientConfiguration;
 
 
 
-public class BESProvider implements GFacProvider {
+public class BESProvider extends AbstractProvider implements GFacProvider{
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private DefaultClientConfiguration secProperties;
@@ -103,6 +104,7 @@ public class BESProvider implements GFacProvider {
 	public void initialize(JobExecutionContext jobExecutionContext)
 			throws GFacProviderException, GFacException {
 		log.info("Initializing UNICORE Provider");
+		super.initialize(jobExecutionContext);
     	initSecurityProperties(jobExecutionContext);
     	log.debug("initialized security properties");
     }
@@ -194,11 +196,14 @@ public class BESProvider implements GFacProvider {
                 ActivityStatusType activityStatus = null;
                 try {
                     activityStatus = getStatus(factory, activityEpr);
-                    ApplicationJobStatus applicationJobStatus = getApplicationJobStatus(activityStatus);
-                    String jobStatusMessage = "Status of job " + jobId + "is " + applicationJobStatus;
+                    JobState jobStatus = getApplicationJobStatus(activityStatus);
+                    String jobStatusMessage = "Status of job " + jobId + "is " + jobStatus;
                     jobExecutionContext.getNotifier().publish(new StatusChangeEvent(jobStatusMessage));
-                    GFacUtils.updateApplicationJobStatus(jobExecutionContext, jobId, applicationJobStatus);
+                    details.setJobID(jobId);
+                    GFacUtils.updateJobStatus(details, jobStatus);
                 } catch (UnknownActivityIdentifierFault e) {
+                    throw new GFacProviderException(e.getMessage(), e.getCause());
+                }catch (GFacException e) {
                     throw new GFacProviderException(e.getMessage(), e.getCause());
                 }
 
@@ -230,10 +235,15 @@ public class BESProvider implements GFacProvider {
                 dt.downloadStdOuts();
             } else if (activityStatus.getState() == ActivityStateEnumeration.CANCELLED) {
                 String experimentID = (String) jobExecutionContext.getProperty(Constants.PROP_TOPIC);
-                ApplicationJobStatus applicationJobStatus = ApplicationJobStatus.CANCELED;
-                String jobStatusMessage = "Status of job " + jobId + "is " + applicationJobStatus;
+                JobState jobStatus = JobState.CANCELED;
+                String jobStatusMessage = "Status of job " + jobId + "is " + jobStatus;
                 jobExecutionContext.getNotifier().publish(new StatusChangeEvent(jobStatusMessage));
-                GFacUtils.updateApplicationJobStatus(jobExecutionContext, jobId, applicationJobStatus);
+                details.setJobID(jobId);
+                try {
+					GFacUtils.saveJobStatus(details, jobStatus, jobExecutionContext.getTaskData().getTaskID());
+				} catch (GFacException e) {
+					 throw new GFacProviderException(e.getLocalizedMessage(),e);
+				}
                 throw new GFacProviderException(experimentID + "Job Canceled");
             }
 
@@ -263,9 +273,9 @@ public class BESProvider implements GFacProvider {
         }
     }
 
-	private ApplicationJobStatus getApplicationJobStatus(ActivityStatusType activityStatus){
+	private JobState getApplicationJobStatus(ActivityStatusType activityStatus){
         if (activityStatus == null) {
-            return ApplicationJobStatus.UNKNOWN;
+            return JobState.UNKNOWN;
         }
         Enum state = activityStatus.getState();
         String status = null;
@@ -279,34 +289,34 @@ public class BESProvider implements GFacProvider {
             if (status != null) {
                 if (status.equalsIgnoreCase("Queued") || status.equalsIgnoreCase("Starting")
                         || status.equalsIgnoreCase("Ready")) {
-                    return ApplicationJobStatus.PENDING;
+                    return JobState.QUEUED;
                 } else if (status.equalsIgnoreCase("Staging-In")) {
-                    return ApplicationJobStatus.STAGING;
+                    return JobState.SUBMITTED;
                 } else if (status.equalsIgnoreCase("Staging-Out") || status.equalsIgnoreCase("FINISHED")) {
-                    return ApplicationJobStatus.FINISHED;
+                    return JobState.COMPLETE;
                 } else if (status.equalsIgnoreCase("Executing")) {
-                    return ApplicationJobStatus.ACTIVE;
+                    return JobState.ACTIVE;
                 } else if (status.equalsIgnoreCase("FAILED")) {
-                    return ApplicationJobStatus.FAILED;
+                    return JobState.FAILED;
                 } else if (status.equalsIgnoreCase("CANCELLED")) {
-                    return ApplicationJobStatus.CANCELED;
+                    return JobState.CANCELED;
                 }
             } else {
                 if (ActivityStateEnumeration.CANCELLED.equals(state)) {
-                    return ApplicationJobStatus.CANCELED;
+                    return JobState.CANCELED;
                 } else if (ActivityStateEnumeration.FAILED.equals(state)) {
-                    return ApplicationJobStatus.FAILED;
+                    return JobState.FAILED;
                 } else if (ActivityStateEnumeration.FINISHED.equals(state)) {
-                    return ApplicationJobStatus.FINISHED;
+                    return JobState.COMPLETE;
                 } else if (ActivityStateEnumeration.RUNNING.equals(state)) {
-                    return ApplicationJobStatus.ACTIVE;
+                    return JobState.ACTIVE;
                 }
             }
         } finally {
             if (acursor != null)
                 acursor.dispose();
         }
-        return ApplicationJobStatus.UNKNOWN;
+        return JobState.UNKNOWN;
     }
 
     private void saveApplicationJob(JobExecutionContext jobExecutionContext, JobDefinitionType jobDefinition,

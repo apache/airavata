@@ -39,8 +39,14 @@ import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
+import org.apache.airavata.model.workspace.experiment.JobDetails;
+import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.workspace.experiment.JobStatus;
+import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.api.workflow.ApplicationJob;
 import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
+import org.apache.airavata.registry.cpi.ChildDataType;
+import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.schemas.gfac.*;
 import org.apache.axiom.om.OMElement;
 import org.globus.gram.GramJob;
@@ -695,31 +701,49 @@ public class GFacUtils {
             log.error("Error in persisting application job data for application job " + job.getJobId() + "!!!", e);
         }
     }
-
-    public static void updateApplicationJobStatus(JobExecutionContext context, String jobId, ApplicationJobStatus status) {
-        updateApplicationJobStatus(context, jobId, status, Calendar.getInstance().getTime());
-    }
-
-    public static ApplicationJobStatus getApplicationJobStatus(int gramStatus) {
+    public static void saveJobStatus(JobDetails details, JobState state, String taskID) throws GFacException {
+		try {
+			Registry registry = RegistryFactory.getDefaultRegistry();
+			JobStatus status = new JobStatus();
+			status.setJobState(state);
+        	details.setJobStatus(status);
+			registry.add(ChildDataType.JOB_DETAIL,details, taskID);
+		} catch (Exception e) {
+			throw new GFacException("Error persisting job status" + e.getLocalizedMessage(),e);
+		}
+	}
+    public static void updateJobStatus(JobDetails details, JobState state) throws GFacException {
+		try {
+			Registry registry = RegistryFactory.getDefaultRegistry();
+			JobStatus status = new JobStatus();
+			status.setJobState(state);
+			status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
+        	details.setJobStatus(status);
+			registry.update(org.apache.airavata.registry.cpi.DataType.JOB_DETAIL, details, details.getJobID());
+		} catch (Exception e) {
+			throw new GFacException("Error persisting job status" + e.getLocalizedMessage(),e);
+		}
+	}
+    public static JobState getApplicationJobStatus(int gramStatus) {
         switch (gramStatus) {
             case GramJob.STATUS_UNSUBMITTED:
-                return ApplicationJobStatus.UN_SUBMITTED;
+                return JobState.HELD;
             case GramJob.STATUS_ACTIVE:
-                return ApplicationJobStatus.EXECUTING;
+                return JobState.ACTIVE;
             case GramJob.STATUS_DONE:
-                return ApplicationJobStatus.FINISHED;
+                return JobState.COMPLETE;
             case GramJob.STATUS_FAILED:
-                return ApplicationJobStatus.FAILED;
+                return JobState.FAILED;
             case GramJob.STATUS_PENDING:
-                return ApplicationJobStatus.PENDING;
+                return JobState.QUEUED;
             case GramJob.STATUS_STAGE_IN:
-                return ApplicationJobStatus.INITIALIZE;
+                return JobState.QUEUED;
             case GramJob.STATUS_STAGE_OUT:
-                return ApplicationJobStatus.FINALIZE;
+                return JobState.COMPLETE;
             case GramJob.STATUS_SUSPENDED:
-                return ApplicationJobStatus.SUSPENDED;
+                return JobState.SUSPENDED;
             default:
-                return ApplicationJobStatus.UNKNOWN;
+                return JobState.UNKNOWN;
         }
     }
 

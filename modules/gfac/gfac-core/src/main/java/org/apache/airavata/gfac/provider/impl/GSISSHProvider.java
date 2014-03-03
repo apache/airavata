@@ -34,18 +34,18 @@ import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
-import org.apache.airavata.gfac.notification.events.JobIDEvent;
 import org.apache.airavata.gfac.notification.events.StartExecutionEvent;
-import org.apache.airavata.gfac.notification.listeners.GSISSHJobSubmissionListener;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
+import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
-import org.apache.airavata.gsi.ssh.impl.JobStatus;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
-import org.apache.airavata.gsi.ssh.listener.JobSubmissionListener;
+import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
+import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.schemas.gfac.FileArrayType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
@@ -54,7 +54,7 @@ import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GSISSHProvider implements GFacProvider {
+public class GSISSHProvider extends AbstractProvider implements GFacProvider{
     private static final Logger log = LoggerFactory.getLogger(GSISSHProvider.class);
 
     public void initProperties(Map<String, String> properties) throws GFacProviderException, GFacException {
@@ -62,7 +62,7 @@ public class GSISSHProvider implements GFacProvider {
     }
 
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
-        //To change body of implemented methods use File | Settings | File Templates.
+    	super.initialize(jobExecutionContext);
     }
 
     public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
@@ -107,6 +107,26 @@ public class GSISSHProvider implements GFacProvider {
                 jobDescriptor.setQueueName(app.getQueue().getQueueName());
             }
             jobDescriptor.setOwner(((PBSCluster) cluster).getServerInfo().getUserName());
+            
+            TaskDetails taskData = jobExecutionContext.getTaskData();
+            if(taskData != null && taskData.isSetTaskScheduling()){
+            	ComputationalResourceScheduling computionnalResource = taskData.getTaskScheduling();
+                if(computionnalResource.getNodeCount() > 0){
+                	jobDescriptor.setNodes(computionnalResource.getNodeCount());
+                }
+                if(computionnalResource.getComputationalProjectAccount() != null){
+                	jobDescriptor.setAcountString(computionnalResource.getComputationalProjectAccount());
+                }
+                if(computionnalResource.getQueueName() != null){
+                	jobDescriptor.setQueueName(computionnalResource.getQueueName());
+                }
+                if(computionnalResource.getTotalCPUCount() > 0){
+                	jobDescriptor.setProcessesPerNode(computionnalResource.getTotalCPUCount());
+                }
+                if(computionnalResource.getWallTimeLimit() > 0){
+                	jobDescriptor.setMaxWallTime(String.valueOf(computionnalResource.getWallTimeLimit()));
+                }
+            }
             List<String> inputValues = new ArrayList<String>();
             MessageContext input = jobExecutionContext.getInMessageContext();
             Map<String, Object> inputs = input.getParameters();
@@ -137,6 +157,7 @@ public class GSISSHProvider implements GFacProvider {
             JobDetails jobDetails = new JobDetails();
             jobDetails.setJobID(jobID);
             jobExecutionContext.setJobDetails(jobDetails);
+            GFacUtils.saveJobStatus(jobDetails,JobState.QUEUED,jobExecutionContext.getTaskData().getTaskID());
         } catch (SSHApiException e) {
             String error = "Error submitting the job to host " + host.getHostAddress() + e.getMessage();
             log.error(error);

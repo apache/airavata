@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.gfac.utils;
 
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.notification.events.StatusChangeEvent;
@@ -67,8 +68,11 @@ public class GramJobSubmissionListener implements GramJobListener{
     }
 
     private void setStatus(int status, int error) {
-		GFacUtils.updateApplicationJobStatus(context,job.getIDAsString(),
-                GFacUtils.getApplicationJobStatus(status));
+		try {
+			GFacUtils.saveJobStatus(context.getJobDetails(), GFacUtils.getApplicationJobStatus(status), context.getTaskData().getTaskID());
+		} catch (GFacException e) {
+			log.error("Error persisting status" + e.getLocalizedMessage(), e);
+		}
         this.currentStatus = status;
         this.error = error;
 

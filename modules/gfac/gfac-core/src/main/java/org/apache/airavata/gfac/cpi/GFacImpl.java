@@ -144,8 +144,14 @@ public class GFacImpl implements GFac {
         HostDescription hostDescription = hostScheduler.schedule(registeredHosts);
 
         ServiceDescription serviceDescription = airavataRegistry2.getServiceDescriptor(serviceName);
-
-        ApplicationDescription applicationDescription = airavataRegistry2.getApplicationDescriptors(serviceName, hostDescription.getType().getHostName());
+        String hostName; 
+        if(taskData.getTaskScheduling().getResourceHostId() != null){
+        	hostName = taskData.getTaskScheduling().getResourceHostId();
+        }else{
+        	hostName = hostDescription.getType().getHostName();
+        }
+      
+		ApplicationDescription applicationDescription = airavataRegistry2.getApplicationDescriptors(serviceName, hostName);
         URL resource = GFacImpl.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         Properties configurationProperties = ServerSettings.getProperties();
         GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, configurationProperties);
