@@ -735,12 +735,7 @@ public class GFacUtils {
             if (input != null) {
                 stringObjectHashMap.put(parameters[i].getParameterName(), GFacUtils.getInputActualParameter(parameters[i], input));
             } else {
-                //todo remove this once proper registry impl is done
-                DataObjectType dataObjectType = new DataObjectType();
-                dataObjectType.setKey(parameters[i].getParameterName());
-                dataObjectType.setType(DataType.STRING.toString());
-                dataObjectType.setValue("");
-                stringObjectHashMap.put(parameters[i].getParameterName(), GFacUtils.getInputActualParameter(parameters[i], dataObjectType));
+                throw new GFacException("Error finding the parameter: parameter Name" + parameters[i].getParameterName());
             }
         }
         return stringObjectHashMap;
