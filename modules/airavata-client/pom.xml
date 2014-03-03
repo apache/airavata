@@ -54,11 +54,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-interpreter-service-client</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>javax.jcr</groupId>
             <artifactId>jcr</artifactId>
             <version>${jcr.version}</version>

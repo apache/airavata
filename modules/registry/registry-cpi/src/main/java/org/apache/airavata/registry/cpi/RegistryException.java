@@ -19,16 +19,20 @@
  *
  */
 
-package org.apache.airavata.persistance.registry.jpa.impl;
+package org.apache.airavata.registry.cpi;
 
-import org.apache.airavata.registry.cpi.Registry;
+public class RegistryException extends Exception {
+    private static final long serialVersionUID = -2849422320139467602L;
 
-public class RegistryFactory {
-    public static Registry getRegistry(String gateway, String username, String password){
-        return new RegistryImpl(gateway, username, password);
+    public RegistryException(Throwable e) {
+        super(e);
     }
 
-    public static Registry getDefaultRegistry () {
-        return new RegistryImpl();
+    public RegistryException(String message) {
+        super(message, null);
+    }
+
+    public RegistryException(String message, Throwable e) {
+        super(message, e);
     }
 }
