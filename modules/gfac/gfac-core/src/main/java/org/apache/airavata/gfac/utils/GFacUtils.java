@@ -46,6 +46,7 @@ import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.api.workflow.ApplicationJob;
 import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
 import org.apache.airavata.registry.cpi.ChildDataType;
+import org.apache.airavata.registry.cpi.CompositeIdentifier;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.schemas.gfac.*;
 import org.apache.axiom.om.OMElement;
@@ -707,7 +708,7 @@ public class GFacUtils {
 			JobStatus status = new JobStatus();
 			status.setJobState(state);
         	details.setJobStatus(status);
-			registry.add(ChildDataType.JOB_DETAIL,details, taskID);
+			registry.add(ChildDataType.JOB_DETAIL,details, new CompositeIdentifier(taskID, details.getJobID()));
 		} catch (Exception e) {
 			throw new GFacException("Error persisting job status" + e.getLocalizedMessage(),e);
 		}
