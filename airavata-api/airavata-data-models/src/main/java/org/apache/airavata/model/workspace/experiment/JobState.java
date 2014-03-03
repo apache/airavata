@@ -29,14 +29,16 @@ import org.apache.thrift.TEnum;
 
 @SuppressWarnings("all") public enum JobState implements org.apache.thrift.TEnum {
   SUBMITTED(0),
-  QUEUED(1),
-  ACTIVE(2),
-  COMPLETE(3),
-  CANCELED(4),
-  FAILED(5),
-  HELD(6),
-  SUSPENDED(7),
-  UNKNOWN(8);
+  UN_SUBMITTED(1),
+  SETUP(2),
+  QUEUED(3),
+  ACTIVE(4),
+  COMPLETE(5),
+  CANCELED(6),
+  FAILED(7),
+  HELD(8),
+  SUSPENDED(9),
+  UNKNOWN(10);
 
   private final int value;
 
@@ -60,20 +62,24 @@ import org.apache.thrift.TEnum;
       case 0:
         return SUBMITTED;
       case 1:
-        return QUEUED;
+        return UN_SUBMITTED;
       case 2:
-        return ACTIVE;
+        return SETUP;
       case 3:
-        return COMPLETE;
+        return QUEUED;
       case 4:
-        return CANCELED;
+        return ACTIVE;
       case 5:
-        return FAILED;
+        return COMPLETE;
       case 6:
-        return HELD;
+        return CANCELED;
       case 7:
-        return SUSPENDED;
+        return FAILED;
       case 8:
+        return HELD;
+      case 9:
+        return SUSPENDED;
+      case 10:
         return UNKNOWN;
       default:
         return null;
