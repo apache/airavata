@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.job.monitor.impl.pull.qstat;
 
+import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.core.PullMonitor;
@@ -27,6 +28,8 @@ import org.apache.airavata.job.monitor.event.MonitorPublisher;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.state.JobStatus;
 import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.schemas.gfac.GsisshHostType;
+import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,10 +74,11 @@ public class QstatMonitor extends PullMonitor implements Runnable {
                 startPulling();
                 // After finishing one iteration of the full queue this thread sleeps 1 second
                 Thread.sleep(1000);
-            } catch (AiravataMonitorException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            } catch (InterruptedException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (Exception e){
+                // we catch all the exceptions here because no matter what happens we do not stop running this
+                // thread, but ideally we should report proper error messages, but this is handled in startPulling
+                // method, incase something happen in Thread.sleep we handle it with this catch block.
+                logger.error(e.getMessage());
             }
         }
     }
@@ -106,24 +110,26 @@ public class QstatMonitor extends PullMonitor implements Runnable {
                         this.queue.put(take);
                     }
                 }
-                if(take.getLastMonitored() == null || ((monitorDiff/1000) >= 5)){
-                        String hostName = take.getHost().getType().getHostAddress();
-                        ResourceConnection connection = null;
-                        if (connections.containsKey(hostName)) {
-                            logger.debug("We already have this connection so not going to create one");
-                            connection = connections.get(hostName);
-                        } else {
-                            connection = new ResourceConnection(take, "/opt/torque/bin");
-                        }
-                        jobStatus.setMonitorID(take);
-                        jobStatus.setState(connection.getJobStatus(take));
-                        publisher.publish(jobStatus);
-                        // if the job is completed we do not have to put the job to the queue again
-                        if (!jobStatus.getState().equals(JobState.COMPLETE)) {
-                            take.setLastMonitored(new Timestamp((new Date()).getTime()));
-                            this.queue.put(take);
-                        }
+                if (take.getLastMonitored() == null || ((monitorDiff / 1000) >= 5)) {
+                    GsisshHostType gsisshHostType = (GsisshHostType) take.getHost().getType();
+                    String hostName = gsisshHostType.getHostAddress();
+                    ResourceConnection connection = null;
+                    if (connections.containsKey(hostName)) {
+                        logger.debug("We already have this connection so not going to create one");
+                        connection = connections.get(hostName);
+                    } else {
+                        connection = new ResourceConnection(take, gsisshHostType.getInstalledPath());
+                        connections.put(hostName, connection);
                     }
+                    jobStatus.setMonitorID(take);
+                    jobStatus.setState(connection.getJobStatus(take));
+                    publisher.publish(jobStatus);
+                    // if the job is completed we do not have to put the job to the queue again
+                    if (!jobStatus.getState().equals(JobState.COMPLETE)) {
+                        take.setLastMonitored(new Timestamp((new Date()).getTime()));
+                        this.queue.put(take);
+                    }
+                }
             } catch (InterruptedException e) {
                 if(!this.queue.contains(take)){
                     try {
@@ -141,16 +147,31 @@ public class QstatMonitor extends PullMonitor implements Runnable {
                     publisher.publish(jobStatus);
                 }else if(e.getMessage().contains("illegally formed job identifier")){
                    logger.error("Wrong job ID is given so dropping the job from monitoring system");
-                }
-                else if(!this.queue.contains(take)){   // we put the job back to the queue only if its state is not unknown
-                    try {
-                        this.queue.put(take);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                } else if (!this.queue.contains(take)) {   // we put the job back to the queue only if its state is not unknown
+                    if (take.getFailedCount() < 3) {
+                        try {
+                            take.setFailedCount(take.getFailedCount() + 1);
+                            this.queue.put(take);
+                        } catch (InterruptedException e1) {
+                            e1.printStackTrace();
+                        }
+                    } else {
+                        logger.error("Tried to monitor the job 3 times, so dropping of the the Job with ID: " + take.getJobID());
                     }
                 }
                 logger.error("Error retrieving the job status");
                 throw new AiravataMonitorException("Error retrieving the job status", e);
+            } catch (Exception e){
+                if (take.getFailedCount() < 3) {
+                        try {
+                            take.setFailedCount(take.getFailedCount() + 1);
+                            this.queue.put(take);
+                        } catch (InterruptedException e1) {
+                            e1.printStackTrace();
+                        }
+                    } else {
+                        logger.error("Tryied to monitor the job 3 times, so dropping of the the Job with ID: " + take.getJobID());
+                }
             }
         }
 
