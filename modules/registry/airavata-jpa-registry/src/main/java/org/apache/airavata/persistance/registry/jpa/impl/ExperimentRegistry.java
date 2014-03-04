@@ -510,9 +510,12 @@ public class ExperimentRegistry {
             TaskDetailResource taskDetail = (TaskDetailResource) workflowNode.create(ResourceType.TASK_DETAIL);
             JobDetailResource jobDetail = taskDetail.getJobDetail(jobId);
             StatusResource statusResource = jobDetail.getJobStatus();
-            statusResource.setExperimentResource(jobDetail.getTaskDetailResource().getWorkflowNodeDetailResource().getExperimentResource());
-            statusResource.setWorkflowNodeDetail(jobDetail.getTaskDetailResource().getWorkflowNodeDetailResource());
-            statusResource.setTaskDetailResource(jobDetail.getTaskDetailResource());
+            taskDetail = jobDetail.getTaskDetailResource();
+            workflowNode = taskDetail.getWorkflowNodeDetailResource();
+            experiment = workflowNode.getExperimentResource();
+            statusResource.setExperimentResource(experiment);
+            statusResource.setWorkflowNodeDetail(workflowNode);
+            statusResource.setTaskDetailResource(taskDetail);
             statusResource.setStatusType(StatusType.JOB.toString());
             statusResource.setStatusUpdateTime(getTime(status.getTimeOfStateChange()));
             statusResource.setState(status.getJobState().toString());
@@ -934,11 +937,38 @@ public class ExperimentRegistry {
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = (TaskDetailResource) workflowNode.create(ResourceType.TASK_DETAIL);
             JobDetailResource jobDetail = taskDetail.getJobDetail(jobId);
-            jobDetail.setTaskDetailResource(jobDetail.getTaskDetailResource());
+            TaskDetailResource taskDetailResource = jobDetail.getTaskDetailResource();
+            jobDetail.setTaskDetailResource(taskDetailResource);
             jobDetail.setJobDescription(jobDetails.getJobDescription());
             jobDetail.setCreationTime(getTime(jobDetails.getCreationTime()));
             jobDetail.setComputeResourceConsumed(jobDetails.getComputeResourceConsumed());
             jobDetail.save();
+            String taskId = taskDetailResource.getTaskId();
+            CompositeIdentifier ids = new CompositeIdentifier(taskId, jobId);
+            JobStatus jobStatus = jobDetails.getJobStatus();
+            if (jobStatus != null){
+                JobStatus status = getJobStatus(ids);
+                if (status != null){
+                    updateJobStatus(jobStatus, jobId);
+                }else {
+                    addJobStatus(jobStatus, ids);
+                }
+            }
+            ApplicationStatus applicationStatus = jobDetails.getApplicationStatus();
+            if (applicationStatus != null){
+                ApplicationStatus appStatus = getApplicationStatus(ids);
+                if (appStatus != null){
+                    updateApplicationStatus(applicationStatus, jobId);
+                }else {
+                    addApplicationStatus(applicationStatus, ids);
+                }
+            }
+            List<ErrorDetails> errors = jobDetails.getErrors();
+            if (errors != null && !errors.isEmpty()){
+                for (ErrorDetails error : errors ){
+                    addErrorDetails(error, jobId);
+                }
+            }
         } catch (Exception e) {
             logger.error("Error while updating job details...", e.getMessage());
             throw new Exception(e);

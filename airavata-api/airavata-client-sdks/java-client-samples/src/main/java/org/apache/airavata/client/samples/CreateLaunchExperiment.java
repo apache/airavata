@@ -64,7 +64,7 @@ public class CreateLaunchExperiment {
             final String expId = createExperiment(airavata);
             System.out.println("Experiment ID : " + expId);
             launchExperiment(airavata, expId);
-
+            System.out.println("Launched successfully");
             Thread monitor = (new Thread(){
                  public void run() {
                      Map<String, JobStatus> jobStatuses = null;
@@ -73,8 +73,19 @@ public class CreateLaunchExperiment {
                              jobStatuses = airavata.getJobStatuses(expId);
                              Set<String> strings = jobStatuses.keySet();
                              for (String key : strings) {
-                                 System.out.println("Job ID:" + key + jobStatuses.get(key).getJobState().toString());
+                                 JobStatus jobStatus = jobStatuses.get(key);
+                                 if(jobStatus == null){
+                                     return;
+                                 }else {
+                                     if (JobState.COMPLETE.equals(jobStatus.getJobState())) {
+                                         System.out.println("Job completed Job ID: " + key);
+                                         return;
+                                     }else{
+                                        System.out.println("Job ID:" + key + jobStatuses.get(key).getJobState().toString());
+                                     }
+                                 }
                              }
+                             Thread.sleep(5000);
                          } catch (Exception e) {
                              e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                          }

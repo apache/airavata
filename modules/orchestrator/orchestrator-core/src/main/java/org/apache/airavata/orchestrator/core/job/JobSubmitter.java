@@ -30,7 +30,7 @@ import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
  * This is the submitter interface, orchestrator can
  * submit jobs to gfac in different modes, gfac running embedded
  * or gfac running in server mode. This can be configured in
- * orchestrator.properties
+ * airavata-server.properties
  * todo provide a way to configure this in a dynamic way
  */
 public interface JobSubmitter {

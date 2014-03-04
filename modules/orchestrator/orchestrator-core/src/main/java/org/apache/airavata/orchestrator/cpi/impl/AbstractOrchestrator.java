@@ -126,7 +126,7 @@ public abstract class AbstractOrchestrator implements Orchestrator {
             OrchestratorException orchestratorException = new OrchestratorException(e);
             throw orchestratorException;
         } catch (IOException e) {
-            logger.error("Failed to initializing Orchestrator - Error parsing orchestrator.properties");
+            logger.error("Failed to initializing Orchestrator - Error parsing configuration files");
             OrchestratorException orchestratorException = new OrchestratorException(e);
             throw orchestratorException;
         }
