@@ -35,9 +35,9 @@ import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AiravataServer {
+public class AiravataAPIServer {
 
-    private final static Logger logger = LoggerFactory.getLogger(AiravataServer.class);
+    private final static Logger logger = LoggerFactory.getLogger(AiravataAPIServer.class);
 
     //FIXME: Read the port from airavata-server.config file
     private static final int THRIFT_SERVER_PORT = 8930;
