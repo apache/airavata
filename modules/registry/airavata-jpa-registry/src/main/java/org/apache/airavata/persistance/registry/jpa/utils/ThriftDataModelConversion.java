@@ -229,31 +229,33 @@ public class ThriftDataModelConversion {
     }
 
     public static JobStatus getJobStatus (StatusResource status){
-        JobStatus jobStatus = new JobStatus();
         if (status != null){
+            JobStatus jobStatus = new JobStatus();
             jobStatus.setJobState(JobState.valueOf(status.getState()));
             jobStatus.setTimeOfStateChange(status.getStatusUpdateTime().getTime());
+            return jobStatus;
         }
-        return jobStatus;
+        return null;
     }
 
     public static TransferStatus getTransferStatus (StatusResource status){
-        TransferStatus transferStatus = new TransferStatus();
         if (status != null){
+            TransferStatus transferStatus = new TransferStatus();
             transferStatus.setTransferState(TransferState.valueOf(status.getState()));
             transferStatus.setTimeOfStateChange(status.getStatusUpdateTime().getTime());
+            return transferStatus;
         }
-
-        return transferStatus;
+        return null;
     }
 
     public static ApplicationStatus getApplicationStatus (StatusResource status){
-        ApplicationStatus applicationStatus = new ApplicationStatus();
         if (status != null){
+            ApplicationStatus applicationStatus = new ApplicationStatus();
             applicationStatus.setApplicationState(status.getState());
             applicationStatus.setTimeOfStateChange(status.getStatusUpdateTime().getTime());
+            return applicationStatus;
         }
-        return applicationStatus;
+        return null;
     }
 
     public static List<WorkflowNodeStatus> getWorkflowNodeStatusList(List<StatusResource> statuses){
@@ -282,7 +284,6 @@ public class ThriftDataModelConversion {
             List<ErrorDetailResource> errorDetails = nodeDetailResource.getErrorDetails();
             wfNode.setErrors(getErrorDetailList(errorDetails));
         }
-
         return wfNode;
     }
 

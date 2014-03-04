@@ -244,7 +244,7 @@ public class JobDetailResource extends AbstractResource {
         List<Resource> resources = get(ResourceType.STATUS);
         for (Resource resource : resources) {
             StatusResource jobStatus = (StatusResource) resource;
-            if(jobStatus.getStatusType().equals(StatusType.JOB)){
+            if(jobStatus.getStatusType().equals(StatusType.JOB.toString())){
                 return jobStatus;
             }
         }
@@ -255,7 +255,7 @@ public class JobDetailResource extends AbstractResource {
         List<Resource> resources = get(ResourceType.STATUS);
         for (Resource resource : resources) {
             StatusResource appStatus = (StatusResource) resource;
-            if(appStatus.getStatusType().equals(StatusType.APPLICATION)){
+            if(appStatus.getStatusType().equals(StatusType.APPLICATION.toString())){
                 return appStatus;
             }
         }

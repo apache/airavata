@@ -85,6 +85,7 @@ public class CreateLaunchExperiment {
                                      }
                                  }
                              }
+                             Thread.sleep(5000);
                          } catch (Exception e) {
                              e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                          }
