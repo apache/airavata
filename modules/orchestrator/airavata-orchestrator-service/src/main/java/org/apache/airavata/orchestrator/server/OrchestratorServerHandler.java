@@ -91,7 +91,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             // we can keep a single user to do all the monitoring authentication for required machine..
             String myProxyUser = properties.getProperty("myproxy.user");
             String myProxyPass = properties.getProperty("myproxy.password");
-            String certPath = properties.getProperty("certificate.path");
+            String certPath = properties.getProperty("trusted.certificate.location");
             String myProxyServer = properties.getProperty("myproxy.server");
             authenticationInfo = new MyProxyAuthenticationInfo(myProxyUser, myProxyPass, myProxyServer,
                     7512, 17280000, certPath);
