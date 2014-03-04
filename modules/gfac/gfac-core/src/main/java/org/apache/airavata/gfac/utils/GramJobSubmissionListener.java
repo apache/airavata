@@ -24,6 +24,7 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.notification.events.StatusChangeEvent;
+import org.apache.airavata.model.workspace.experiment.JobState;
 import org.globus.gram.GramJob;
 import org.globus.gram.GramJobListener;
 import org.ietf.jgss.GSSCredential;
@@ -69,7 +70,7 @@ public class GramJobSubmissionListener implements GramJobListener{
 
     private void setStatus(int status, int error) {
 		try {
-			GFacUtils.saveJobStatus(context.getJobDetails(), GFacUtils.getApplicationJobStatus(status), context.getTaskData().getTaskID());
+			GFacUtils.updateJobStatus(context.getJobDetails(), GFacUtils.getApplicationJobStatus(status));
 		} catch (GFacException e) {
 			log.error("Error persisting status" + e.getLocalizedMessage(), e);
 		}

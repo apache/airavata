@@ -43,6 +43,8 @@ import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
+import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
@@ -72,6 +74,8 @@ public class GSISSHProvider extends AbstractProvider implements GFacProvider{
                 getHostDescription().getType();
         HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) jobExecutionContext.getApplicationContext().
                 getApplicationDeploymentDescription().getType();
+        JobDetails jobDetails = new JobDetails();
+     	String taskID = jobExecutionContext.getTaskData().getTaskID();
         try {
             Cluster cluster = null;
             if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) != null) {
@@ -153,18 +157,24 @@ public class GSISSHProvider extends AbstractProvider implements GFacProvider{
             jobDescriptor.setInputValues(inputValues);
 
             log.info(jobDescriptor.toXML());
+            
+            jobDetails.setJobDescription(jobDescriptor.toXML());
+            
             String jobID = cluster.submitBatchJob(jobDescriptor);
-            JobDetails jobDetails = new JobDetails();
             jobDetails.setJobID(jobID);
             jobExecutionContext.setJobDetails(jobDetails);
-            GFacUtils.saveJobStatus(jobDetails,JobState.QUEUED,jobExecutionContext.getTaskData().getTaskID());
+            GFacUtils.saveJobStatus(jobDetails,JobState.QUEUED,taskID);
         } catch (SSHApiException e) {
             String error = "Error submitting the job to host " + host.getHostAddress() + e.getMessage();
             log.error(error);
+        	GFacUtils.saveJobStatus(jobDetails,JobState.FAILED,taskID);
+         	GFacUtils.saveErrorDetails(error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
             throw new GFacProviderException(error, e);
         } catch (Exception e) {
-            String error = "Error submitting the job to host " + host.getHostAddress() + e.getMessage();
-            log.error(error);
+        	String error = "Error submitting the job to host " + host.getHostAddress() + e.getMessage();
+         	log.error(error);
+        	GFacUtils.saveJobStatus(jobDetails,JobState.FAILED,taskID);
+         	GFacUtils.saveErrorDetails(error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
             throw new GFacProviderException(error, e);
         }
     }
