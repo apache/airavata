@@ -81,7 +81,7 @@ public class CreateLaunchExperiment {
                      }
                  }
             });
-            monitor.start();
+//            monitor.start();
             try {
                 monitor.join();
             } catch (InterruptedException e) {
