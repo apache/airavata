@@ -29,5 +29,4 @@ public final class Constants {
     public static final String USER_IN_SESSION = "userName";
     public static final String GATEWAY_NAME = "gateway_id";
     public static final String GFAC_CONFIG_XML = "gfac-config.xml";
-    public static final String MONITOR_PROPERTIES = "monitor.properties";
 }

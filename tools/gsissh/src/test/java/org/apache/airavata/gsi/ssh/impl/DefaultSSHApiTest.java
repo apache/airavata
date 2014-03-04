@@ -37,7 +37,6 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class DefaultSSHApiTest {
     private static final Logger log = LoggerFactory.getLogger(PBSCluster.class);

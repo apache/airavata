@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.orchestrator.core.utils;
 
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
@@ -46,16 +47,8 @@ public class OrchestratorUtils {
     private final static Logger logger = LoggerFactory.getLogger(OrchestratorUtils.class);
 
     public static OrchestratorConfiguration loadOrchestratorConfiguration() throws OrchestratorException, IOException {
-        URL resource =
-                OrchestratorUtils.class.getClassLoader().getResource(OrchestratorConstants.ORCHESTRATOR_PROPERTIES);
-        if (resource == null) {
-            String error = "orchestrator.properties cannot be found, Failed to initialize Orchestrator";
-            logger.error(error);
-            throw new OrchestratorException(error);
-        }
         OrchestratorConfiguration orchestratorConfiguration = new OrchestratorConfiguration();
-        Properties orchestratorProps = new Properties();
-        orchestratorProps.load(resource.openStream());
+        Properties orchestratorProps = ServerSettings.getProperties();
         orchestratorConfiguration.setNewJobSubmitterClass((String) orchestratorProps.get(OrchestratorConstants.JOB_SUBMITTER));
         orchestratorConfiguration.setSubmitterInterval(Integer.parseInt((String) orchestratorProps.get(OrchestratorConstants.SUBMIT_INTERVAL)));
         orchestratorConfiguration.setThreadPoolSize(Integer.parseInt((String) orchestratorProps.get(OrchestratorConstants.THREAD_POOL_SIZE)));

@@ -34,7 +34,7 @@ import java.util.List;
 
 public class StatusResource extends AbstractResource {
     private static final Logger logger = LoggerFactory.getLogger(StatusResource.class);
-    private int statusId;
+    private int statusId = 0;
     private ExperimentResource experimentResource;
     private WorkflowNodeDetailResource workflowNodeDetail;
     private DataTransferDetailResource dataTransferDetail;
@@ -144,7 +144,14 @@ public class StatusResource extends AbstractResource {
     public void save() {
         EntityManager em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
-        Status status = new Status();
+        Status status;
+        if (statusId != 0){
+            status = em.find(Status.class, statusId);
+            status.setStatusId(statusId);
+        }else {
+            status = new Status();
+        }
+
         Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
         if (taskDetailResource != null){
             TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
@@ -161,7 +168,6 @@ public class StatusResource extends AbstractResource {
             status.setTransferDetail(transferDetail);
             status.setTransferId(dataTransferDetail.getTransferId());
         }
-        status.setStatusId(statusId);
         status.setExperiment(experiment);
         status.setJobId(jobId);
         status.setExpId(experimentResource.getExpID());
