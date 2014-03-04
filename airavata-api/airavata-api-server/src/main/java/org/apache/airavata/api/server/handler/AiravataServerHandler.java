@@ -35,6 +35,7 @@ import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.ParentDataType;
 import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class AiravataServerHandler implements Airavata.Iface {
 
@@ -228,16 +230,19 @@ public class AiravataServerHandler implements Airavata.Iface {
         Map<String, JobStatus> jobStatus = new HashMap<String, JobStatus>();
         try {
             registry = RegistryFactory.getDefaultRegistry();
-            List<WorkflowNodeDetails> workflowNodes = (List<WorkflowNodeDetails>)registry.get(DataType.WORKFLOW_NODE_DETAIL, airavataExperimentId);
-            if (workflowNodes != null){
-                for (WorkflowNodeDetails wf : workflowNodes){
-                    List<TaskDetails> taskDetails = (List<TaskDetails>)registry.get(DataType.TASK_DETAIL, wf.getNodeInstanceId());
-                    if (taskDetails != null){
-                        for (TaskDetails ts : taskDetails){
-                            List<JobDetails> jobDetails = (List<JobDetails>)registry.get(DataType.JOB_DETAIL, ts.getTaskID());
-                            if (jobDetails != null){
-                                for (JobDetails job : jobDetails){
-                                    jobStatus.put(job.getJobID(), job.getJobStatus());
+            List<Object> workflowNodes = registry.get(DataType.WORKFLOW_NODE_DETAIL, Constants.FieldConstants.WorkflowNodeConstants.EXPERIMENT_ID, airavataExperimentId);
+            if (workflowNodes != null && !workflowNodes.isEmpty()){
+                for (Object wf : workflowNodes){
+                    String nodeInstanceId = ((WorkflowNodeDetails) wf).getNodeInstanceId();
+                    List<Object> taskDetails = registry.get(DataType.TASK_DETAIL, Constants.FieldConstants.TaskDetailConstants.NODE_ID, nodeInstanceId);
+                    if (taskDetails != null && !taskDetails.isEmpty()){
+                        for (Object ts : taskDetails){
+                            String taskID = ((TaskDetails) ts).getTaskID();
+                            List<Object> jobDetails = registry.get(DataType.JOB_DETAIL, Constants.FieldConstants.JobDetaisConstants.TASK_ID, taskID);
+                            if (jobDetails != null && !jobDetails.isEmpty()){
+                                for (Object job : jobDetails){
+                                    String jobID = ((JobDetails) job).getJobID();
+                                    jobStatus.put(jobID, ((JobDetails) job).getJobStatus());
                                 }
                             }
                         }

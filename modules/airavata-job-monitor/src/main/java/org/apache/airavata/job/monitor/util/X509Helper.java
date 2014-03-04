@@ -118,7 +118,7 @@ public class X509Helper {
                                                              KeyStoreException,
                                                              CertificateException,
                                                              NoSuchAlgorithmException {
-        return trustKeyStoreFromCertDir("/Users/lahirugunathilake/Downloads/certificates");
+        return trustKeyStoreFromCertDir("/Users/chathuri/dev/airavata/cert/certificates");
     }
 
     public static KeyStore trustKeyStoreFromCertDir(String certDir) throws IOException,
