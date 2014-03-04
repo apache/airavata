@@ -21,8 +21,8 @@
 
 package org.apache.airavata.orchestrator.server;
 
-import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
@@ -78,8 +78,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 
 
     public OrchestratorServerHandler() {
-        URL monitorUrl = OrchestratorServerHandler.class.getClassLoader().getResource(Constants.MONITOR_PROPERTIES);
-        Properties properties = new Properties();
+        Properties properties = ServerSettings.getProperties();
         try {
             // first constructing the monitorManager and orchestrator, then fill the required properties
             monitorManager = new MonitorManager();
@@ -87,11 +86,10 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             registry = RegistryFactory.getDefaultRegistry();
 
             // Filling monitorManager properties
-            properties.load(monitorUrl.openStream());
             // we can keep a single user to do all the monitoring authentication for required machine..
             String myProxyUser = properties.getProperty("myproxy.user");
-            String myProxyPass = properties.getProperty("myproxy.password");
-            String certPath = properties.getProperty("trusted.certificate.location");
+            String myProxyPass = properties.getProperty("myproxy.pass");
+            String certPath = properties.getProperty("trusted.cert.location");
             String myProxyServer = properties.getProperty("myproxy.server");
             authenticationInfo = new MyProxyAuthenticationInfo(myProxyUser, myProxyPass, myProxyServer,
                     7512, 17280000, certPath);
@@ -130,10 +128,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             // This will initialize all the required threads and required queues
             monitorManager.launchMonitor();
         } catch (OrchestratorException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

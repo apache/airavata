@@ -26,7 +26,6 @@ package org.apache.airavata.orchestrator.core.utils;
  */
 public class OrchestratorConstants {
     private static final String SUBMITTER_PROPERTY = "job.submitter";
-    public static final String ORCHESTRATOR_PROPERTIES = "orchestrator.properties";
     public static final String AIRAVATA_PROPERTIES = "airavata-server.properties";
     public static final int hotUpdateInterval=1000;
     public static final String JOB_SUBMITTER = "job.submitter";
