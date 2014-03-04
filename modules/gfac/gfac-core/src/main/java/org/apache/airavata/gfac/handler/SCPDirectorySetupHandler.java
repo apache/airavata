@@ -20,15 +20,20 @@
 */
 package org.apache.airavata.gfac.handler;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
+import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
+import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
+import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.TransferState;
 import org.apache.airavata.model.workspace.experiment.TransferStatus;
 import org.apache.airavata.registry.cpi.ChildDataType;
@@ -38,6 +43,7 @@ import org.slf4j.LoggerFactory;
 
 public class SCPDirectorySetupHandler extends AbstractHandler{
     private static final Logger log = LoggerFactory.getLogger(SCPDirectorySetupHandler.class);
+    private List<String> errors = new ArrayList<String>();
 
 	public void invoke(JobExecutionContext jobExecutionContext) throws GFacException {
 		log.info("Setup SSH job directorties");
@@ -80,7 +86,8 @@ public class SCPDirectorySetupHandler extends AbstractHandler{
             detail.setTransferStatus(status);
             try {
 				registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
-			} catch (Exception e1) {
+				GFacUtils.saveErrorDetails(e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE,  jobExecutionContext.getTaskData().getTaskID());
+	        } catch (Exception e1) {
 			    throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
 		   }
             throw new GFacHandlerException("Error executing the Handler: " + SCPDirectorySetupHandler.class,e); 

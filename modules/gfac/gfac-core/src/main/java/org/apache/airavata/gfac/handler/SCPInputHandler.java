@@ -36,9 +36,13 @@ import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
+import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
+import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
+import org.apache.airavata.model.workspace.experiment.ErrorCategory;
+import org.apache.airavata.model.workspace.experiment.ErrorDetails;
 import org.apache.airavata.model.workspace.experiment.TransferState;
 import org.apache.airavata.model.workspace.experiment.TransferStatus;
 import org.apache.airavata.registry.cpi.ChildDataType;
@@ -91,7 +95,8 @@ public class SCPInputHandler extends AbstractHandler {
             status.setTransferState(TransferState.FAILED);
             detail.setTransferStatus(status);
             try {
-				registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
+    			GFacUtils.saveErrorDetails(e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE,  jobExecutionContext.getTaskData().getTaskID());
+    			registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
 			} catch (Exception e1) {
 			    throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
 		   }
