@@ -24,6 +24,7 @@ package org.apache.airavata.client.samples;
 import org.apache.airavata.api.error.ExperimentNotFoundException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ClientSettings;
+import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.schemas.gfac.DataType;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
@@ -36,16 +37,14 @@ import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.client.tools.DocumentCreator;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.util.ExperimentModelUtil;
-import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
-import org.apache.airavata.model.workspace.experiment.DataObjectType;
-import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
 import org.apache.thrift.TException;
-import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class CreateLaunchExperiment {
 
@@ -59,12 +58,36 @@ public class CreateLaunchExperiment {
     public static void main(String[] args) {
         try {
             AiravataUtils.setExecutionAsClient();
-            Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
+            final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavata.GetAPIVersion());
             addDescriptors();
-            String expId = createExperiment(airavata);
+            final String expId = createExperiment(airavata);
             System.out.println("Experiment ID : " + expId);
             launchExperiment(airavata, expId);
+
+            Thread monitor = (new Thread(){
+                 public void run() {
+                     Map<String, JobStatus> jobStatuses = null;
+                     while (true) {
+                         try {
+                             jobStatuses = airavata.getJobStatuses(expId);
+                             Set<String> strings = jobStatuses.keySet();
+                             for (String key : strings) {
+                                 System.out.println("Job ID:" + key + jobStatuses.get(key).getJobState().toString());
+                             }
+                         } catch (Exception e) {
+                             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                         }
+                     }
+                 }
+            });
+            monitor.start();
+            try {
+                monitor.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+
 //            Experiment experiment = airavata.getExperiment(expId);
 //            System.out.println("retrieved exp id : " + experiment.getExperimentID());
         } catch (TException e) {
