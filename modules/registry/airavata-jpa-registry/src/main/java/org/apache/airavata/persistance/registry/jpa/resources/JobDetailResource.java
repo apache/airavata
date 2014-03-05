@@ -223,14 +223,18 @@ public class JobDetailResource extends AbstractResource {
         jobDetail.setTask(taskDetail);
         jobDetail.setTaskId(taskDetailResource.getTaskId());
         jobDetail.setCreationTime(creationTime);
-        jobDetail.setJobDescription(jobDescription);
+        if (jobDescription != null){
+            jobDetail.setJobDescription(jobDescription.toCharArray());
+        }
         jobDetail.setComputeResourceConsumed(computeResourceConsumed);
         if (existingJobDetail != null){
             existingJobDetail.setJobId(jobId);
             existingJobDetail.setTask(taskDetail);
             existingJobDetail.setTaskId(taskDetailResource.getTaskId());
             existingJobDetail.setCreationTime(creationTime);
-            existingJobDetail.setJobDescription(jobDescription);
+            if (jobDescription != null){
+                existingJobDetail.setJobDescription(jobDescription.toCharArray());
+            }
             existingJobDetail.setComputeResourceConsumed(computeResourceConsumed);
             jobDetail = em.merge(existingJobDetail);
         }else {
