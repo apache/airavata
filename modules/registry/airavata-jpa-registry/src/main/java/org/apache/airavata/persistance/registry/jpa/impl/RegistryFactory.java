@@ -24,11 +24,19 @@ package org.apache.airavata.persistance.registry.jpa.impl;
 import org.apache.airavata.registry.cpi.Registry;
 
 public class RegistryFactory {
+    private static Registry registry;
+
     public static Registry getRegistry(String gateway, String username, String password){
-        return new RegistryImpl(gateway, username, password);
+        if (registry == null){
+            registry = new RegistryImpl(gateway, username, password);
+        }
+        return registry;
     }
 
     public static Registry getDefaultRegistry () {
-        return new RegistryImpl();
+        if (registry == null){
+            registry = new RegistryImpl();
+        }
+        return registry;
     }
 }
