@@ -747,7 +747,7 @@ public class Utils {
         if (o != null){
             TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
             jobDetailResource.setTaskDetailResource(taskDetailResource);
-            jobDetailResource.setJobDescription(o.getJobDescription());
+            jobDetailResource.setJobDescription(new String(o.getJobDescription()));
             jobDetailResource.setJobId(o.getJobId());
             jobDetailResource.setCreationTime(o.getCreationTime());
             jobDetailResource.setComputeResourceConsumed(o.getComputeResourceConsumed());
