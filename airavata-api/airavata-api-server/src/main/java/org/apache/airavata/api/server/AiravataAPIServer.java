@@ -27,6 +27,7 @@ import org.apache.airavata.api.error.AiravataSystemException;
 import org.apache.airavata.api.server.handler.AiravataServerHandler;
 import org.apache.airavata.api.server.util.RegistryInitUtil;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.IServer;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TSimpleServer;
 import org.apache.thrift.transport.TServerSocket;
@@ -35,38 +36,99 @@ import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AiravataAPIServer {
+public class AiravataAPIServer implements IServer{
 
     private final static Logger logger = LoggerFactory.getLogger(AiravataAPIServer.class);
 
     //FIXME: Read the port from airavata-server.config file
     private static final int THRIFT_SERVER_PORT = 8930;
+    private ServerStatus status;
 
+	private TSimpleServer server;
 
-    public static void StartAiravataServer(Airavata.Processor<AiravataServerHandler> mockAiravataServer) throws AiravataSystemException {
+	public AiravataAPIServer() {
+		setStatus(ServerStatus.STOPPED);
+	}
+	
+    public void StartAiravataServer(Airavata.Processor<AiravataServerHandler> mockAiravataServer) throws AiravataSystemException {
         try {
             AiravataUtils.setExecutionAsServer();
             RegistryInitUtil.initializeDB();
             TServerTransport serverTransport = new TServerSocket(THRIFT_SERVER_PORT);
-            TServer server = new TSimpleServer(
+            server = new TSimpleServer(
                     new TServer.Args(serverTransport).processor(mockAiravataServer));
             logger.info("Starting Airavata Mock Airavata Server on Port " + THRIFT_SERVER_PORT);
             logger.info("Listening to Airavata Clients ....");
-            server.serve();
+            new Thread() {
+				public void run() {
+					server.serve();
+					RegistryInitUtil.stopDerbyInServerMode();
+				}
+			}.start();
+			setStatus(ServerStatus.STARTED);
         } catch (TTransportException e) {
             logger.error(e.getMessage());
+            setStatus(ServerStatus.FAILED);
+            RegistryInitUtil.stopDerbyInServerMode();
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
     }
 
     public static void main(String[] args) {
-        Airavata.Processor<AiravataServerHandler> mockAiravataServer =
-                new Airavata.Processor<AiravataServerHandler>(new AiravataServerHandler());
-        try {
-            StartAiravataServer(mockAiravataServer);
-        } catch (AiravataSystemException e) {
-            e.printStackTrace();
-        }
+    	try {
+			AiravataAPIServer server = new AiravataAPIServer();
+			server.start();
+//			System.out.println(server.getStatus()+":"+server.getStatus().getTime());
+//			Thread.sleep(3000);
+//			server.stop();
+//			System.out.println(server.getStatus()+":"+server.getStatus().getTime());
+//			Thread.sleep(3000);
+//			server.start();
+//			System.out.println(server.getStatus()+":"+server.getStatus().getTime());
+//			Thread.sleep(3000);
+//			server.stop();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
     }
 
+	@Override
+	public void start() throws Exception {
+		setStatus(ServerStatus.STARTING);
+		Airavata.Processor<AiravataServerHandler> mockAiravataServer =
+                new Airavata.Processor<AiravataServerHandler>(new AiravataServerHandler());
+    	StartAiravataServer(mockAiravataServer);
+	}
+
+	@Override
+	public void stop() throws Exception {
+		if (server.isServing()){
+			server.stop();
+			setStatus(ServerStatus.STOPPED);
+			logger.info("Airavata API Server Stopped.");
+		}
+		
+	}
+
+	@Override
+	public void restart() throws Exception {
+		stop();
+		start();
+	}
+
+	@Override
+	public void configure() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public ServerStatus getStatus() throws Exception {
+		return status;
+	}
+	
+	private void setStatus(ServerStatus stat){
+		status=stat;
+		status.updateTime();
+	}
 }
