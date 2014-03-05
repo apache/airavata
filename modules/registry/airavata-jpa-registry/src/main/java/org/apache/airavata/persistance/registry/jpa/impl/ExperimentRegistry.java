@@ -924,6 +924,30 @@ public class ExperimentRegistry {
             jobDetail.setCreationTime(getTime(jobDetails.getCreationTime()));
             jobDetail.setComputeResourceConsumed(jobDetails.getComputeResourceConsumed());
             jobDetail.save();
+            JobStatus jobStatus = jobDetails.getJobStatus();
+            if (jobStatus != null){
+                JobStatus status = getJobStatus(ids);
+                if (status != null){
+                    updateJobStatus(jobStatus, (String)ids.getSecondLevelIdentifier());
+                }else {
+                    addJobStatus(jobStatus, ids);
+                }
+            }
+            ApplicationStatus applicationStatus = jobDetails.getApplicationStatus();
+            if (applicationStatus != null){
+                ApplicationStatus appStatus = getApplicationStatus(ids);
+                if (appStatus != null){
+                    updateApplicationStatus(applicationStatus, (String)ids.getSecondLevelIdentifier());
+                }else {
+                    addApplicationStatus(applicationStatus, ids);
+                }
+            }
+            List<ErrorDetails> errors = jobDetails.getErrors();
+            if (errors != null && !errors.isEmpty()){
+                for (ErrorDetails error : errors ){
+                    addErrorDetails(error, ids.getSecondLevelIdentifier());
+                }
+            }
             return jobDetail.getJobId();
         } catch (Exception e) {
             logger.error("Error while adding job details...", e.getMessage());
