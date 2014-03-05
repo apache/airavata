@@ -161,21 +161,6 @@
 
         <!-- ********************** Copy samples ********************** -->
         <fileSet>
-            <directory>${project.build.directory}/samples/services</directory>
-            <outputDirectory>repository/services
-            </outputDirectory>
-            <includes>
-                <include>*.aar</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>${project.build.directory}/samples/workflows</directory>
-            <outputDirectory>samples/workflows</outputDirectory>
-            <includes>
-                <include>*.xwf</include>
-            </includes>
-        </fileSet>
-        <fileSet>
             <directory>${project.build.directory}/samples/applications</directory>
             <outputDirectory>samples</outputDirectory>
             <includes>
@@ -226,30 +211,29 @@
                 <include>org.apache.xmlbeans:xmlbeans</include>
                 <include>com.amazonaws:aws-java-sdk</include>
                 <include>net.java.dev.jets3t:jets3t</include>
-                <include>org.apache.airavata:airavata-registry-api</include>
-                <include>org.apache.airavata:airavata-workflow-execution-context</include>
-                <include>org.apache.airavata:airavata-workflow-tracking</include>
-                <include>org.apache.airavata:airavata-gfac-core</include>
-                <include>org.apache.airavata:airavata-gfac-ec2</include>
-                <include>org.apache.airavata:airavata-credential-store</include>
-                <include>org.apache.airavata:airavata-messenger-client</include>
-                <include>org.apache.airavata:airavata-messenger-commons</include>
-                <include>org.apache.airavata:airavata-gfac-schema-utils</include>
-                <include>org.apache.airavata:airavata-common-utils</include>
-                <include>org.apache.airavata:airavata-workflow-model-core:jar</include>
-                <include>org.apache.airavata:airavata-workflow-model-component:jar</include>
-                <include>org.apache.airavata:airavata-message-monitor:jar</include>
-                <include>org.apache.airavata:airavata-client-api:jar</include>
-                <include>org.apache.airavata:airavata-jpa-registry:jar</include>
-                <include>org.apache.airavata:airavata-rest-mappings:jar</include>
-                <include>org.apache.airavata:airavata-rest-client:jar</include>
-                <include>org.apache.airavata:airavata-embedded-tomcat:jar</include>
-                <include>org.apache.airavata:airavata-interpreter-service:jar</include>
-                <include>org.apache.airavata:airavata-rest-mappings</include>
-                <include>org.apache.airavata:airavata-rest-services</include>
-                <include>org.apache.airavata:airavata-security</include>
-                <include>org.apache.airavata:json</include>
-                <include>org.apache.airavata:gsissh</include>
+                <include>org.apache.airavata:airavata-standalone-server:jar</include>
+		<include>org.apache.airavata:airavata-common-utils:jar</include>
+		<include>org.apache.airavata:airavata-orchestrator-service:jar</include>
+		<include>org.apache.airavata:airavata-orchestrator-core:jar</include>
+		<include>org.apache.airavata:airavata-registry-api:jar</include>
+		<include>org.apache.airavata:airavata-gfac-schema-utils:jar</include>
+		<include>org.apache.airavata:airavata-workflow-execution-context:jar</include>
+		<include>org.apache.airavata:airavata-registry-cpi:jar</include>
+		<include>org.apache.airavata:airavata-jpa-registry:jar</include>
+		<include>org.apache.airavata:airavata-data-models:jar</include>
+		<include>org.apache.airavata:airavata-credential-store:jar</include>
+		<include>org.apache.airavata:airavata-gfac-core:jar</include>
+		<include>org.apache.airavata:airavata-client-api:jar</include>
+		<include>org.apache.airavata:airavata-message-monitor:jar</include>
+		<include>org.apache.airavata:airavata-workflow-model-core:jar</include>
+		<include>org.apache.airavata:airavata-messenger-commons:jar</include>
+		<include>org.apache.airavata:airavata-messenger-client:jar</include>
+		<include>org.apache.airavata:airavata-workflow-tracking:jar</include>
+		<include>org.apache.airavata:gsissh:jar</include>
+		<include>org.apache.airavata:airavata-model-utils:jar</include>
+		<include>org.apache.airavata:airavata-job-monitor:jar</include>
+		<include>org.apache.airavata:airavata-api-server:jar</include>
+		<include>org.apache.airavata:airavata-api-stubs:jar</include>
                 <include>org.apache.openjpa:openjpa-all:jar</include>
                 <include>com.sun.jersey:jersey-client:jar</include>
                 <include>com.sun.jersey:jersey-core:jar</include>
@@ -336,15 +320,7 @@
 				unicore end-->
             </includes>
         </dependencySet>
-        <dependencySet>
-            <outputDirectory>repository/services</outputDirectory>
-            <includes>
-                <include>org.apache.airavata:airavata-message-box:jar</include>
-                <include>org.apache.airavata:airavata-message-broker:jar</include>
-                <include>org.apache.airavata:airavata-xbaya-gui:jar</include>
-                <include>org.apache.airavata:airavata-registry-service:jar</include>
-            </includes>
-        </dependencySet>
+        
     </dependencySets>
 
 </assembly>
