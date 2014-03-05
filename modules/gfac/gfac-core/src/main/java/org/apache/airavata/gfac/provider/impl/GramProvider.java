@@ -43,6 +43,8 @@ import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.GramJobSubmissionListener;
 import org.apache.airavata.gfac.utils.GramProviderUtils;
+import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
+import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.model.workspace.experiment.JobStatus;
@@ -178,6 +180,8 @@ public class GramProvider extends AbstractProvider implements GFacProvider{
                             JobExecutionContext jobExecutionContext,
                             GlobusHostType globusHostType) throws GFacException, GFacProviderException {
     	boolean applicationSaved=false;
+    	String taskID = jobExecutionContext.getTaskData().getTaskID();
+			
     	if (twoPhase) {
             try {
                 /*
@@ -198,7 +202,7 @@ public class GramProvider extends AbstractProvider implements GFacProvider{
             	details.setJobID(jobID);
             	details.setJobDescription(job.getRSL());
                 jobExecutionContext.setJobDetails(details);
-                GFacUtils.saveJobStatus(details, JobState.UN_SUBMITTED, jobExecutionContext.getTaskData().getTaskID());
+                GFacUtils.saveJobStatus(details, JobState.UN_SUBMITTED, taskID);
                 
                 applicationSaved=true;
                 String jobStatusMessage = "Un-submitted JobID= " + jobID;
@@ -219,15 +223,17 @@ public class GramProvider extends AbstractProvider implements GFacProvider{
                     log.error("Error while submitting commit request - Credentials provided are invalid. Job Id - "
                             + job.getIDAsString(), e);
                     log.info("Attempting to renew credentials and re-submit commit signal...");
-
+                	GFacUtils.saveErrorDetails(gssException.getLocalizedMessage(), CorrectiveAction.RETRY_SUBMISSION, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
                     renewCredentials(jobExecutionContext);
 
                     try {
                         job.signal(GramJob.SIGNAL_COMMIT_REQUEST);
                     } catch (GramException e1) {
-                        throw new GFacException("Error while sending commit request. Job Id - "
+                     	GFacUtils.saveErrorDetails(gssException.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
+                    	throw new GFacException("Error while sending commit request. Job Id - "
                                 + job.getIDAsString(), e1);
                     } catch (GSSException e1) {
+                     	GFacUtils.saveErrorDetails(gssException.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
                         throw new GFacException("Error while sending commit request. Job Id - "
                                 + job.getIDAsString() + ". Credentials provided invalid", e1);
                     }
@@ -239,10 +245,14 @@ public class GramProvider extends AbstractProvider implements GFacProvider{
 
             } catch (GSSException e) {
                 // Renew credentials and re-submit
+             	GFacUtils.saveErrorDetails(e.getLocalizedMessage(), CorrectiveAction.RETRY_SUBMISSION, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
+                
                 reSubmitJob(gateKeeper, jobExecutionContext, globusHostType, e);
 
             } catch (GramException e) {
-                throw new GFacException("An error occurred while submitting a job, job id = " + job.getIDAsString(), e);
+             	GFacUtils.saveErrorDetails(e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
+                
+            	throw new GFacException("An error occurred while submitting a job, job id = " + job.getIDAsString(), e);
             }
         } else {
 
@@ -258,9 +268,10 @@ public class GramProvider extends AbstractProvider implements GFacProvider{
                 renewCredentialsAttempt = false;
 
             } catch (GramException e) {
+            	GFacUtils.saveErrorDetails(e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
                 throw new GFacException("An error occurred while submitting a job, job id = " + job.getIDAsString(), e);
             } catch (GSSException e) {
-
+            	GFacUtils.saveErrorDetails(e.getLocalizedMessage(), CorrectiveAction.RETRY_SUBMISSION, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
                 // Renew credentials and re-submit
                 reSubmitJob(gateKeeper, jobExecutionContext, globusHostType, e);
             }
@@ -432,7 +443,7 @@ public class GramProvider extends AbstractProvider implements GFacProvider{
         int jobStatus = listener.getCurrentStatus();
 
         if (jobStatus == GramJob.STATUS_FAILED) {
-
+            
             String errorMsg = "Job " + job.getIDAsString() + " on host " + host.getHostAddress() + " Job Exit Code = "
                     + listener.getError() + " Error Description = " + getGramErrorString(listener.getError());
 

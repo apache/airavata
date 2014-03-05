@@ -68,42 +68,44 @@ public class AiravataJobStatusUpdator{
                 the registry accordingly, for now we are just printing to standard Out
                  */
         JobState state = jobStatus.getState();
-        try {
-			updateJobStatus(jobStatus.getMonitorID().getJobID(),state);
-		} catch (Exception e) {
-			logger.error("Error persisting data" + e.getLocalizedMessage(),e);
-		}
-        switch (state) {
-            case COMPLETE:
-                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is DONE");
-                jobsToMonitor.remove(jobStatus.getMonitorID());
-                break;
-            case UNKNOWN:
-                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is UNKNOWN");
-                logger.info("Unknown job status came, if the old job status is RUNNING or something active, we have to make it complete");
-                //todo implement this logic
-                break;
-            case QUEUED:
-                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is QUEUED");
-                break;
-            case SUBMITTED:
-                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is SUBMITTED");
-                break;
-            case ACTIVE:
-                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is ACTIVE");
-                break;
-            case CANCELED:
-                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is CANCELED");
-                break;
-            case FAILED:
-                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is FAILED");
-                break;
-            case HELD:
-                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is HELD");
-                break;
-            case SUSPENDED:
-                logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is SUSPENDED");
-                break;
+        if (state != null) {
+            try {
+                updateJobStatus(jobStatus.getMonitorID().getJobID(), state);
+            } catch (Exception e) {
+                logger.error("Error persisting data" + e.getLocalizedMessage(), e);
+            }
+            switch (state) {
+                case COMPLETE:
+                    logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is DONE");
+                    jobsToMonitor.remove(jobStatus.getMonitorID());
+                    break;
+                case UNKNOWN:
+                    logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is UNKNOWN");
+                    logger.info("Unknown job status came, if the old job status is RUNNING or something active, we have to make it complete");
+                    //todo implement this logic
+                    break;
+                case QUEUED:
+                    logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is QUEUED");
+                    break;
+                case SUBMITTED:
+                    logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is SUBMITTED");
+                    break;
+                case ACTIVE:
+                    logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is ACTIVE");
+                    break;
+                case CANCELED:
+                    logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is CANCELED");
+                    break;
+                case FAILED:
+                    logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is FAILED");
+                    break;
+                case HELD:
+                    logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is HELD");
+                    break;
+                case SUSPENDED:
+                    logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is SUSPENDED");
+                    break;
+            }
         }
     }
     public static void updateJobStatus(String jobID, JobState state) throws Exception {

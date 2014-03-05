@@ -38,7 +38,10 @@ import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
+import org.apache.airavata.model.workspace.experiment.ErrorCategory;
+import org.apache.airavata.model.workspace.experiment.ErrorDetails;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.model.workspace.experiment.JobStatus;
@@ -725,6 +728,19 @@ public class GFacUtils {
 			throw new GFacException("Error persisting job status" + e.getLocalizedMessage(),e);
 		}
 	}
+    public static void saveErrorDetails(String errorMessage, CorrectiveAction action, ErrorCategory errorCatogory, String id) throws GFacException {
+    	try {
+    	Registry registry = RegistryFactory.getDefaultRegistry();
+		ErrorDetails details = new ErrorDetails();
+    	details.setActualErrorMessage(errorMessage);
+    	details.setCorrectiveAction(action);
+    	details.setCreationTime(Calendar.getInstance().getTimeInMillis());
+    	details.setErrorCategory(errorCatogory);
+    	registry.add(ChildDataType.ERROR_DETAIL, details, id);
+    	} catch (Exception e) {
+			throw new GFacException("Error persisting job status" + e.getLocalizedMessage(),e);
+		}
+    }
     public static JobState getApplicationJobStatus(int gramStatus) {
         switch (gramStatus) {
             case GramJob.STATUS_UNSUBMITTED:
