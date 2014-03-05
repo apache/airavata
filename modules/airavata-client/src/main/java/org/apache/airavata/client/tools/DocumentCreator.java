@@ -304,6 +304,122 @@ public class DocumentCreator {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
+    
+    public void createUltrascanGSISSHDocs() {
+        HostDescription host = new HostDescription(GsisshHostType.type);
+        host.getType().setHostAddress(hpcHostAddress);
+        host.getType().setHostName(gsiSshHostName);
+
+        try {
+            airavataAPI.getApplicationManager().saveHostDescription(host);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        /*
+        * Service Description creation and saving
+        */
+        String serviceName = "UltrascanApp";
+        ServiceDescription serv = new ServiceDescription();
+        serv.getType().setName(serviceName);
+
+        List<InputParameterType> inputList = new ArrayList<InputParameterType>();
+        List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
+
+
+        InputParameterType input = InputParameterType.Factory.newInstance();
+        input.setParameterName("input");
+        ParameterType parameterType = input.addNewParameterType();
+        parameterType.setType(DataType.URI);
+        parameterType.setName("URI");
+
+//        InputParameterType input1 = InputParameterType.Factory.newInstance();
+//        input1.setParameterName("jobXML");
+//        ParameterType parameterType1 = input1.addNewParameterType();
+//        parameterType1.setType(DataType.URI);
+//        parameterType1.setName("URI");
+        
+        OutputParameterType output = OutputParameterType.Factory.newInstance();
+        output.setParameterName("output");
+        ParameterType parameterType2 = output.addNewParameterType();
+        parameterType2.setType(DataType.URI);
+        parameterType2.setName("URL");
+        
+        OutputParameterType stdout = OutputParameterType.Factory.newInstance();
+        stdout.setParameterName("stdout");
+        ParameterType parameterType3 = stdout.addNewParameterType();
+        parameterType3.setType(DataType.STD_OUT);
+        parameterType3.setName("String");
+        
+        OutputParameterType stderr = OutputParameterType.Factory.newInstance();
+        stderr.setParameterName("stderr");
+        ParameterType parameterType4 = stderr.addNewParameterType();
+        parameterType4.setType(DataType.STD_ERR);
+        parameterType4.setName("String");
+
+        inputList.add(input);
+        outputList.add(output);
+
+        InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList.size()]);
+        OutputParameterType[] outputParamList = outputList.toArray(new OutputParameterType[outputList.size()]);
+
+        serv.getType().setInputParametersArray(inputParamList);
+        serv.getType().setOutputParametersArray(outputParamList);
+        try {
+            airavataAPI.getApplicationManager().saveServiceDescription(serv);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        /*
+            Application descriptor creation and saving
+         */
+        ApplicationDescription appDesc = new ApplicationDescription(HpcApplicationDeploymentType.type);
+        HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) appDesc.getType();
+        ApplicationDeploymentDescriptionType.ApplicationName name = ApplicationDeploymentDescriptionType.ApplicationName.Factory.newInstance();
+        name.setStringValue("Ultrascan");
+        app.setApplicationName(name);
+        ProjectAccountType projectAccountType = app.addNewProjectAccount();
+        projectAccountType.setProjectAccountNumber("uot111");
+
+        QueueType queueType = app.addNewQueue();
+        queueType.setQueueName("normal");
+
+        app.setCpuCount(1);
+        app.setJobType(JobTypeType.MPI);
+        app.setNodeCount(2);
+        app.setProcessorsPerNode(64);
+        app.setMaxWallTime(10);
+        /*
+           * Use bat file if it is compiled on Windows
+           */
+        app.setExecutableLocation("/home/us3/trestles/bin/us_mpi_analysis");
+
+        /*
+           * Default tmp location
+           */
+        String tempDir = "/oasis/projects/nsf/uot111/us3/airavata-workdirs/";
+        String date = (new Date()).toString();
+        date = date.replaceAll(" ", "_");
+        date = date.replaceAll(":", "_");
+
+        tempDir = tempDir + File.separator
+                + "Ultrascan" + "_" + date + "_" + UUID.randomUUID();
+
+        app.setScratchWorkingDirectory(tempDir);
+        app.setStaticWorkingDirectory(tempDir);
+        app.setInputDataDirectory(tempDir + File.separator + "inputData");
+        app.setOutputDataDirectory(tempDir + File.separator + "outputData");
+        app.setStandardOutput(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stdout");
+        app.setStandardError(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stderr");
+        app.setInstalledParentPath("/opt/torque/bin/");
+        app.setJobSubmitterCommand("/opt/mvapich2/pgi/ib/bin/mpiexec");
+
+        try {
+            airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, gsiSshHostName, appDesc);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
 
     public AiravataAPI getAiravataAPI() {
         return airavataAPI;
