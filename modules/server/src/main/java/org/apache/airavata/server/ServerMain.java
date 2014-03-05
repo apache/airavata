@@ -17,128 +17,62 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 package org.apache.airavata.server;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.catalina.Wrapper;
-import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.deploy.FilterDef;
-import org.apache.catalina.deploy.FilterMap;
-import org.apache.catalina.startup.Tomcat;
+import org.apache.airavata.api.server.AiravataAPIServer;
+import org.apache.airavata.common.utils.IServer;
+import org.apache.airavata.orchestrator.server.OrchestratorServer;
 
 public class ServerMain {
+	private static List<IServer> servers;
 
-    private Tomcat embedded = null;
-    /**
-     * Default Constructor
-     */
-    public ServerMain() {
-    }
+	static {
+		servers = new ArrayList<IServer>();
+		servers.add(new AiravataAPIServer());
+		servers.add(new OrchestratorServer());
+	}
 
+	public static void main(String args[]) {
+		new Thread() {
+			public void run() {
+				startAllServers();
+			}
+		}.start();
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			public void run() {
+				stopAllServers();
+			}
+		});
+		try {
+			while (true) {
+				Thread.sleep(10000);
+			}
+		} catch (InterruptedException e) {
+			stopAllServers();
+		}
+	}
 
-    /**
-     * This method Starts the Tomcat server.
-     */
-    public void startTomcat() throws Exception {
-        AiravataUtils.setExecutionAsServer();
-        String protocol = ServerSettings.isEnableHttps() ? "https" : "http";
-        BetterTomcat tomcat = new BetterTomcat(Integer.parseInt(ServerSettings.getTomcatPort(protocol)));
-        tomcat.addContext("/airavata-server", System.getenv("AIRAVATA_HOME"));
-        Wrapper axis2Servlet = tomcat.addServlet("/airavata-server", "AxisServlet", "org.apache.axis2.transport.http.AxisServlet");
-        axis2Servlet.addMapping("/servlet/AxisServlet");
-        axis2Servlet.addMapping("*.jws");
-        axis2Servlet.addMapping("/services/*");
-        axis2Servlet.addInitParameter("axis2.repository.path",System.getenv("AIRAVATA_HOME") + File.separator + "repository");
-        axis2Servlet.addInitParameter("axis2.xml.path", System.getenv("AIRAVATA_HOME") +
-                File.separator + "bin" + File.separator + "axis2.xml");
-        axis2Servlet.setLoadOnStartup(1);
+	private static void stopAllServers() {
+		for (IServer server : servers) {
+			try {
+				server.stop();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
-        StandardContext context = (StandardContext)tomcat.getTomcat().addContext("/airavata", System.getenv("AIRAVATA_HOME"));
-        Wrapper experimentServlet = tomcat.addServlet("/airavata", "Airavata Experiment Service", "com.sun.jersey.spi.container.servlet.ServletContainer");
-        experimentServlet.addInitParameter("com.sun.jersey.config.property.packages", "org.apache.airavata.services.experiment;org.codehaus.jackson.jaxrs");
-        experimentServlet.setLoadOnStartup(1);
-        
-        Wrapper configurationServlet = tomcat.addServlet("/airavata", "Airavata Server Configuration Service", "com.sun.jersey.spi.container.servlet.ServletContainer");
-        configurationServlet.addInitParameter("com.sun.jersey.config.property.packages", "org.apache.airavata.services.server;org.codehaus.jackson.jaxrs");
-        configurationServlet.setLoadOnStartup(1);
-        
-        Wrapper registryServlet = tomcat.addServlet("/airavata", "Airavata Registry Service", "com.sun.jersey.spi.container.servlet.ServletContainer");
-        registryServlet.addInitParameter("com.sun.jersey.config.property.packages", "org.apache.airavata.services.registry.rest;org.codehaus.jackson.jaxrs");
-        registryServlet.setLoadOnStartup(1);
-        
-        FilterDef corsFilter = new FilterDef();
-        corsFilter.setFilterName("CORS Filter");
-        corsFilter.setFilterClass("org.ebaysf.web.cors.CORSFilter");
-        corsFilter.addInitParameter("cors.allowed.origins","*");
-        corsFilter.addInitParameter("cors.allowed.methods","GET,POST,HEAD,PUT,OPTIONS");
-        corsFilter.addInitParameter("cors.allowed.headers","Origin,Accept,X-Requested-With,Content-Type,Access-Control-Request-Method,Access-Control-Request-Headers,Authorization");
-        corsFilter.addInitParameter("cors.exposed.headers","");
-        corsFilter.addInitParameter("cors.preflight.maxage","1800");
-        corsFilter.addInitParameter("cors.support.credentials","true");
-        corsFilter.addInitParameter("cors.logging.enabled","false");
-        corsFilter.addInitParameter("cors.request.decorate","true");
-        context.addFilterDef(corsFilter);
-
-        FilterDef filter1definition = new FilterDef();
-        filter1definition.setFilterName("AuthenticationFilter");
-        filter1definition.setFilterClass("org.apache.airavata.services.registry.rest.security.HttpAuthenticatorFilter");
-        filter1definition.addInitParameter("authenticatorConfigurations","authenticators.xml");
-        context.addFilterDef(filter1definition);
-        
-        FilterMap corsFilterMapping = new FilterMap();
-        corsFilterMapping.setFilterName("CORS Filter");
-        corsFilterMapping.addURLPattern("/user-store/*");
-        corsFilterMapping.addURLPattern("/services/registry/*");
-        corsFilterMapping.addURLPattern("/services/server/*");
-        corsFilterMapping.addURLPattern("/services/experiment/*");
-        context.addFilterMap(corsFilterMapping);
-
-        FilterMap filter1mapping = new FilterMap();
-        filter1mapping.setFilterName("AuthenticationFilter");
-        filter1mapping.addURLPattern("/user-store/*");
-        filter1mapping.addURLPattern("/services/registry/*");
-        filter1mapping.addURLPattern("/services/server/*");
-        filter1mapping.addURLPattern("/services/experiment/*");
-        context.addFilterMap(filter1mapping);
-        registryServlet.addMapping("/services/registry/*");
-        configurationServlet.addMapping("/services/server/*");
-        experimentServlet.addMapping("/services/experiment/*");
-        context.addApplicationListener("org.apache.airavata.rest.mappings.utils.RegistryListener");
-
-        tomcat.start();
-    }
-
-    /**
-     * This method Stops the Tomcat server.
-     */
-    public void stopTomcat() throws Exception {
-        // Stop the embedded server
-        embedded.stop();
-    }
-
-
-    public static void main(String args[]) {
-        try {
-            new Thread(){
-                public void run(){
-                    ServerMain tomcat = new ServerMain();
-                    try {
-                        tomcat.startTomcat();
-                    } catch (Exception e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    }
-                }
-            }.start();
-           while(true){
-               Thread.sleep(10000);
-           }
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-    }
+	private static void startAllServers() {
+		for (IServer server : servers) {
+			try {
+				server.start();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }
