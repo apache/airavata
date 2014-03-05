@@ -31,7 +31,9 @@ import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.external.GridFtp;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.GramJobSubmissionListener;
+import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
+import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.TransferState;
 import org.apache.airavata.model.workspace.experiment.TransferStatus;
 import org.apache.airavata.registry.cpi.ChildDataType;
@@ -112,11 +114,12 @@ public class GramDirectorySetupHandler extends  AbstractHandler {
                     pe = new GFacHandlerException("URI is malformatted:" + e.getMessage(), e);
 
                 } catch (Exception e) {
-                    pe = new GFacHandlerException(e.getMessage(), e);
+              	pe = new GFacHandlerException(e.getMessage(), e);
                 }
             }
             if (success == false) {
-                throw pe;
+            	GFacUtils.saveErrorDetails(pe.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE,  jobExecutionContext.getTaskData().getTaskID());
+        		throw pe;
             }
         } catch (SecurityException e) {
             throw new GFacHandlerException(e.getMessage(), e);

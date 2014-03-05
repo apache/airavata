@@ -50,6 +50,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     private static final Logger logger = LoggerFactory.getLogger(AiravataServerHandler.class);
     public static final String ORCHESTRATOR_SERVER_HOST = "localhost";
     public static final int ORCHESTRATOR_SERVER_PORT = 8940;
+    private OrchestratorService.Client orchestratorClient;
     /**
      * Query Airavata to fetch the API version
      */
@@ -269,26 +270,41 @@ public class AiravataServerHandler implements Airavata.Iface {
      *                               if more security credentials are enables, then the structure ExecutionSecurityParameters should be used.
      *                               Note: This parameter is not persisted within Airavata Registry for security reasons.
      * @return This method call does not have a return value.
-     * @throws org.apache.airavata.api.error.InvalidRequestException     For any incorrect forming of the request itself.
-     * @throws org.apache.airavata.api.error.ExperimentNotFoundException If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
-     * @throws org.apache.airavata.api.error.AiravataClientException     The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-     *                                                                   <p/>
-     *                                                                   UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
-     *                                                                   step, then Airavata Registry will not have a provenance area setup. The client has to follow
-     *                                                                   gateway registration steps and retry this request.
-     *                                                                   <p/>
-     *                                                                   AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
-     *                                                                   For now this is a place holder.
-     *                                                                   <p/>
-     *                                                                   INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
-     *                                                                   is implemented, the authorization will be more substantial.
-     * @throws org.apache.airavata.api.error.AiravataSystemException     This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
-     *                                                                   rather an Airavata Administrator will be notified to take corrective action.
+     * @throws org.apache.airavata.api.error.InvalidRequestException
+     *          For any incorrect forming of the request itself.
+     * @throws org.apache.airavata.api.error.ExperimentNotFoundException
+     *          If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+     * @throws org.apache.airavata.api.error.AiravataClientException
+     *          The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+     *          <p/>
+     *          UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+     *          step, then Airavata Registry will not have a provenance area setup. The client has to follow
+     *          gateway registration steps and retry this request.
+     *          <p/>
+     *          AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+     *          For now this is a place holder.
+     *          <p/>
+     *          INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+     *          is implemented, the authorization will be more substantial.
+     * @throws org.apache.airavata.api.error.AiravataSystemException
+     *          This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+     *          rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
     public void launchExperiment(String airavataExperimentId, String airavataCredStoreToken) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
-        OrchestratorService.Client orchestratorClient = OrchestratorClientFactory.createOrchestratorClient(ORCHESTRATOR_SERVER_HOST, ORCHESTRATOR_SERVER_PORT);
-        orchestratorClient.launchExperiment(airavataExperimentId);
+        if(orchestratorClient == null){
+            orchestratorClient = OrchestratorClientFactory.createOrchestratorClient(ORCHESTRATOR_SERVER_HOST, ORCHESTRATOR_SERVER_PORT);
+        }
+        final String expID = airavataExperimentId;
+        (new Thread(){
+            public void run(){
+                try {
+                    orchestratorClient.launchExperiment(expID);
+                } catch (TException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+            }
+        }).start();
     }
 
     /**

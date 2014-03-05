@@ -37,7 +37,9 @@ import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.OutputUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
+import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
+import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.TransferState;
 import org.apache.airavata.model.workspace.experiment.TransferStatus;
 import org.apache.airavata.persistance.registry.jpa.model.DataTransferDetail;
@@ -119,6 +121,7 @@ public class SCPOutputHandler extends AbstractHandler{
          	    status.setTransferState(TransferState.FAILED);
  				detail.setTransferStatus(status);
  				registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
+ 				GFacUtils.saveErrorDetails(e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE,  jobExecutionContext.getTaskData().getTaskID());
   			} catch (Exception e1) {
   			    throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
   		   }

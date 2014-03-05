@@ -65,6 +65,11 @@ public class CreateLaunchExperiment {
             System.out.println("Experiment ID : " + expId);
             launchExperiment(airavata, expId);
             System.out.println("Launched successfully");
+            try {
+                Thread.sleep(20000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
             Thread monitor = (new Thread(){
                  public void run() {
                      Map<String, JobStatus> jobStatuses = null;
