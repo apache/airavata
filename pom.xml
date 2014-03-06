@@ -446,7 +446,7 @@
                 <module>modules/gfac</module>
                 <module>modules/ws-messenger</module>
                 <module>modules/workflow-model</module>
-                <module>modules/xbaya-gui</module>
+                <!--module>modules/xbaya-gui</module-->
                 <module>modules/commons</module>
                 <module>modules/registry</module>
                 <module>modules/airavata-client</module>
