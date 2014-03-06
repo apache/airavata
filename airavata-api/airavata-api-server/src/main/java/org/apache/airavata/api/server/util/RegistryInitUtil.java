@@ -41,7 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RegistryInitUtil {
-    public static final String CONFIGURATION_TABLE = "Configuration";
+    public static final String CONFIGURATION_TABLE = "CONFIGURATION";
     private static final Logger logger = LoggerFactory.getLogger(RegistryInitUtil.class);
     public static final String REGISTRY_JDBC_DRIVER = "registry.jdbc.driver";
     public static final String REGISTRY_JDBC_URL = "registry.jdbc.url";
