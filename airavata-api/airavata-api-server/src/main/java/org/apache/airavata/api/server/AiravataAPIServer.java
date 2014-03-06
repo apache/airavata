@@ -28,6 +28,7 @@ import org.apache.airavata.api.server.handler.AiravataServerHandler;
 import org.apache.airavata.api.server.util.RegistryInitUtil;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.IServer;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TSimpleServer;
 import org.apache.thrift.transport.TServerSocket;
@@ -41,7 +42,7 @@ public class AiravataAPIServer implements IServer{
     private final static Logger logger = LoggerFactory.getLogger(AiravataAPIServer.class);
 
     //FIXME: Read the port from airavata-server.config file
-    private static final int THRIFT_SERVER_PORT = 8930;
+    private static final String THRIFT_SERVER_PORT = "apiserver.server.port";
     private ServerStatus status;
 
 	private TSimpleServer server;
@@ -54,7 +55,7 @@ public class AiravataAPIServer implements IServer{
         try {
             AiravataUtils.setExecutionAsServer();
             RegistryInitUtil.initializeDB();
-            TServerTransport serverTransport = new TServerSocket(THRIFT_SERVER_PORT);
+            TServerTransport serverTransport = new TServerSocket(Integer.parseInt(ServerSettings.getSetting(THRIFT_SERVER_PORT,"8930")));
             server = new TSimpleServer(
                     new TServer.Args(serverTransport).processor(mockAiravataServer));
             logger.info("Starting Airavata Mock Airavata Server on Port " + THRIFT_SERVER_PORT);
@@ -63,6 +64,8 @@ public class AiravataAPIServer implements IServer{
 				public void run() {
 					server.serve();
 					RegistryInitUtil.stopDerbyInServerMode();
+					setStatus(ServerStatus.STOPPED);
+					logger.info("Airavata API Server Stopped.");
 				}
 			}.start();
 			setStatus(ServerStatus.STARTED);
@@ -78,15 +81,6 @@ public class AiravataAPIServer implements IServer{
     	try {
 			AiravataAPIServer server = new AiravataAPIServer();
 			server.start();
-//			System.out.println(server.getStatus()+":"+server.getStatus().getTime());
-//			Thread.sleep(3000);
-//			server.stop();
-//			System.out.println(server.getStatus()+":"+server.getStatus().getTime());
-//			Thread.sleep(3000);
-//			server.start();
-//			System.out.println(server.getStatus()+":"+server.getStatus().getTime());
-//			Thread.sleep(3000);
-//			server.stop();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -104,8 +98,6 @@ public class AiravataAPIServer implements IServer{
 	public void stop() throws Exception {
 		if (server.isServing()){
 			server.stop();
-			setStatus(ServerStatus.STOPPED);
-			logger.info("Airavata API Server Stopped.");
 		}
 		
 	}
