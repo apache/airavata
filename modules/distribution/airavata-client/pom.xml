@@ -252,7 +252,7 @@
             <artifactId>airavata-client-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-message-monitor</artifactId>
             <version>${project.version}</version>
@@ -276,7 +276,7 @@
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-workflow-tracking</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>gsissh</artifactId>
