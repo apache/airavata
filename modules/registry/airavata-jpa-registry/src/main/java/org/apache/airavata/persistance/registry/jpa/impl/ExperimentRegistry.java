@@ -25,6 +25,7 @@ import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
+import org.apache.airavata.persistance.registry.jpa.model.ErrorDetail;
 import org.apache.airavata.persistance.registry.jpa.model.WorkflowNodeDetail;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.apache.airavata.persistance.registry.jpa.utils.ThriftDataModelConversion;
@@ -50,7 +51,7 @@ public class ExperimentRegistry {
     }
 
     public String addExperiment(Experiment experiment) throws Exception {
-        String experimentID = "";
+        String experimentID;
         try {
             if (!ResourceUtils.isUserExist(experiment.getUserName())) {
                 logger.error("User does not exist in the system..");
@@ -98,12 +99,22 @@ public class ExperimentRegistry {
             ExperimentStatus experimentStatus = experiment.getExperimentStatus();
             if (experimentStatus != null){
                 updateExperimentStatus(experimentStatus, experimentID);
+            }else {
+                experimentStatus = new ExperimentStatus();
+                experimentStatus.setExperimentState(ExperimentState.CREATED);
+                updateExperimentStatus(experimentStatus, experimentID);
             }
 
             List<WorkflowNodeDetails> workflowNodeDetailsList = experiment.getWorkflowNodeDetailsList();
             if (workflowNodeDetailsList != null && !workflowNodeDetailsList.isEmpty()){
                 for (WorkflowNodeDetails wf : workflowNodeDetailsList){
                     addWorkflowNodeDetails(wf, experimentID);
+                }
+            }
+            List<ErrorDetails> errors = experiment.getErrors();
+            if (errors != null && !errors.isEmpty()){
+                for (ErrorDetails errror : errors){
+                    addErrorDetails(errror, experimentID);
                 }
             }
         } catch (Exception e) {
@@ -631,16 +642,39 @@ public class ExperimentRegistry {
             resource.setCreationTime(getTime(nodeDetails.getCreationTime()));
             resource.setNodeInstanceId(getNodeInstanceID(nodeDetails.getNodeName()));
             resource.save();
+            String nodeId = resource.getNodeInstanceId();
             List<DataObjectType> nodeInputs = nodeDetails.getNodeInputs();
             if (nodeInputs != null) {
                 addWorkflowInputs(nodeDetails.getNodeInputs(), resource);
             }
             List<DataObjectType> nodeOutputs = nodeDetails.getNodeOutputs();
             if (nodeOutputs != null && !nodeOutputs.isEmpty()){
-                CompositeIdentifier ids = new CompositeIdentifier(expId, resource.getNodeInstanceId());
+                CompositeIdentifier ids = new CompositeIdentifier(expId, nodeId);
                 addNodeOutputs(nodeOutputs, ids);
             }
-            return resource.getNodeInstanceId();
+            WorkflowNodeStatus workflowNodeStatus = nodeDetails.getWorkflowNodeStatus();
+            if (workflowNodeStatus != null){
+                WorkflowNodeStatus status = getWorkflowNodeStatus(nodeId);
+                if (status != null){
+                    updateWorkflowNodeStatus(workflowNodeStatus, nodeId);
+                }else {
+                    CompositeIdentifier ids = new CompositeIdentifier(expId, nodeId);
+                    addWorkflowNodeStatus(workflowNodeStatus,ids);
+                }
+            }
+            List<TaskDetails> taskDetails = nodeDetails.getTaskDetailsList();
+            if (taskDetails != null && !taskDetails.isEmpty()){
+                for (TaskDetails task : taskDetails){
+                    addTaskDetails(task, nodeId);
+                }
+            }
+            List<ErrorDetails> errors = nodeDetails.getErrors();
+            if (errors != null && !errors.isEmpty()){
+                for (ErrorDetails error : errors){
+                    addErrorDetails(error, nodeId);
+                }
+            }
+            return nodeId;
         } catch (Exception e) {
             logger.error("Error while adding workflow node details...", e.getMessage());
             throw new Exception(e);
@@ -651,11 +685,11 @@ public class ExperimentRegistry {
         try {
             ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode(nodeId);
-            workflowNode.setExperimentResource(experiment);
             workflowNode.setNodeName(nodeDetails.getNodeName());
             workflowNode.setCreationTime(getTime(nodeDetails.getCreationTime()));
             workflowNode.setNodeInstanceId(getNodeInstanceID(nodeDetails.getNodeName()));
             workflowNode.save();
+            String expID = workflowNode.getExperimentResource().getExpID();
             List<DataObjectType> nodeInputs = nodeDetails.getNodeInputs();
             if (nodeInputs != null) {
                 updateWorkflowInputs(nodeDetails.getNodeInputs(), workflowNode);
@@ -663,6 +697,32 @@ public class ExperimentRegistry {
             List<DataObjectType> nodeOutputs = nodeDetails.getNodeOutputs();
             if (nodeOutputs != null && !nodeOutputs.isEmpty()){
                 updateNodeOutputs(nodeOutputs, nodeId);
+            }
+            WorkflowNodeStatus workflowNodeStatus = nodeDetails.getWorkflowNodeStatus();
+            if (workflowNodeStatus != null){
+                if (isWFNodeExist(nodeId)){
+                    updateWorkflowNodeStatus(workflowNodeStatus, nodeId);
+                }else {
+                    CompositeIdentifier ids = new CompositeIdentifier(expID, nodeId);
+                    addWorkflowNodeStatus(workflowNodeStatus,ids);
+                }
+            }
+            List<TaskDetails> taskDetails = nodeDetails.getTaskDetailsList();
+            if (taskDetails != null && !taskDetails.isEmpty()){
+                for (TaskDetails task : taskDetails){
+                    String taskID = task.getTaskID();
+                    if(isTaskDetailExist(taskID)){
+                        updateTaskDetails(task, taskID);
+                    }else {
+                        addTaskDetails(task, nodeId);
+                    }
+                }
+            }
+            List<ErrorDetails> errors = nodeDetails.getErrors();
+            if (errors != null && !errors.isEmpty()){
+                for (ErrorDetails error : errors){
+                    addErrorDetails(error, nodeId);
+                }
             }
         } catch (Exception e) {
             logger.error("Error while updating workflow node details...", e.getMessage());
@@ -1010,6 +1070,17 @@ public class ExperimentRegistry {
             resource.setTransferDescription(transferDetails.getTransferDescription());
             resource.setCreationTime(getTime(transferDetails.getCreationTime()));
             resource.save();
+            String transferId = resource.getTransferId();
+            TransferStatus transferStatus = transferDetails.getTransferStatus();
+            if (transferStatus != null){
+                TransferStatus status = getDataTransferStatus(transferId);
+                if (status != null){
+                    updateTransferStatus(transferStatus, transferId);
+                }else {
+                    CompositeIdentifier ids = new CompositeIdentifier(taskId, transferId);
+                    addTransferStatus(transferStatus, ids);
+                }
+            }
             return resource.getTransferId();
         } catch (Exception e) {
             logger.error("Error while adding transfer details...", e.getMessage());
@@ -1027,6 +1098,17 @@ public class ExperimentRegistry {
             resource.setTransferDescription(transferDetails.getTransferDescription());
             resource.setCreationTime(getTime(transferDetails.getCreationTime()));
             resource.save();
+            String taskId = resource.getTaskDetailResource().getTaskId();
+            TransferStatus transferStatus = transferDetails.getTransferStatus();
+            if (transferStatus != null){
+                TransferStatus status = getDataTransferStatus(transferId);
+                if (status != null){
+                    updateTransferStatus(transferStatus, transferId);
+                }else {
+                    CompositeIdentifier ids = new CompositeIdentifier(taskId, transferId);
+                    addTransferStatus(transferStatus, ids);
+                }
+            }
             return resource.getTransferId();
         } catch (Exception e) {
             logger.error("Error while updating transfer details...", e.getMessage());
@@ -1327,6 +1409,12 @@ public class ExperimentRegistry {
                     updateWorkflowNodeDetails(wf, wf.getNodeInstanceId());
                 }
             }
+            List<ErrorDetails> errors = experiment.getErrors();
+            if (errors != null && !errors.isEmpty()){
+                for (ErrorDetails errror : errors){
+                    addErrorDetails(errror, expId);
+                }
+            }
         } catch (Exception e) {
             logger.error("Error while updating experiment...", e.getMessage());
             throw new Exception(e);
@@ -1342,7 +1430,7 @@ public class ExperimentRegistry {
             resource.setAiravataAutoSchedule(configData.isAiravataAutoSchedule());
             resource.setOverrideManualParams(configData.isOverrideManualScheduledParams());
             resource.setShareExp(configData.isShareExperimentPublicly());
-
+            resource.save();
             ComputationalResourceScheduling resourceScheduling = configData.getComputationalResourceScheduling();
             if (resourceScheduling != null) {
                 updateSchedulingData(resourceScheduling, experiment);
@@ -1360,7 +1448,6 @@ public class ExperimentRegistry {
             if (qosParams != null) {
                 updateQosParams(qosParams, experiment);
             }
-            resource.save();
         } catch (Exception e) {
             logger.error("Error while updating user config data...", e.getMessage());
             throw new Exception(e);
