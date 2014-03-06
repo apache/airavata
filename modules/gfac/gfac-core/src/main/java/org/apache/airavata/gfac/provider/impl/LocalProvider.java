@@ -41,6 +41,7 @@ import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.InputStreamToFileWriter;
 import org.apache.airavata.gfac.utils.InputUtils;
 import org.apache.airavata.gfac.utils.OutputUtils;
+import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.registry.api.workflow.ApplicationJob;
 import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
@@ -126,9 +127,11 @@ public class LocalProvider extends AbstractProvider implements GFacProvider{
         jobExecutionContext.getNotifier().publish(new StartExecutionEvent());
          ApplicationDeploymentDescriptionType app = jobExecutionContext.
                  getApplicationContext().getApplicationDeploymentDescription().getType();
-
+        JobDetails jobDetails = new JobDetails();
         try {
         	jobId= jobExecutionContext.getTaskData().getTaskID();
+            jobDetails.setJobID(jobId);
+            jobExecutionContext.setJobDetails(jobDetails);
             details.setJobID(jobId);
             GFacUtils.saveJobStatus(details, JobState.SETUP, jobExecutionContext.getTaskData().getTaskID());
         	// running cmd
@@ -147,11 +150,11 @@ public class LocalProvider extends AbstractProvider implements GFacProvider{
             standardErrorWriter.setDaemon(true);
             standardOutWriter.start();
             standardErrorWriter.start();
-//            GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId, ApplicationJobStatus.EXECUTING);
+            GFacUtils.updateJobStatus(jobDetails, JobState.ACTIVE);
             // wait for the process (application) to finish executing
             int returnValue = process.waitFor();
             //todo fix how to incoperate orchestrator with gfac
-//            GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId, ApplicationJobStatus.FINALIZE);
+            GFacUtils.updateJobStatus(jobDetails, JobState.COMPLETE);
 
             // make sure other two threads are done
             standardOutWriter.join();
