@@ -61,7 +61,7 @@ public class CreateLaunchExperiment {
             final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavata.GetAPIVersion());
             addDescriptors();
-            final String expId = createLocalExperiment(airavata);
+            final String expId = createExperiment(airavata);
             System.out.println("Experiment ID : " + expId);
             launchExperiment(airavata, expId);
             System.out.println("Launched successfully");
@@ -122,8 +122,8 @@ public class CreateLaunchExperiment {
         try {
             DocumentCreator documentCreator = new DocumentCreator(getAiravataAPI());
             documentCreator.createEchoAppLocalHostDocs();
-//            documentCreator.createEchoAppGramDocs();
-//            documentCreator.createEchoAppGSISSHDocs();
+            documentCreator.createEchoAppGramDocs();
+            documentCreator.createEchoAppGSISSHDocs();
         } catch (AiravataAPIInvocationException e) {
             logger.error("Unable to create airavata API", e.getMessage());
             throw new AiravataAPIInvocationException(e);

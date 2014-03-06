@@ -184,6 +184,7 @@
                 <include>commons-collections:commons-collections</include>
                 <include>commons-configuration:commons-configuration</include>
                 <include>commons-lang:commons-lang</include>
+                <include>commons-io:commons-io</include>
                 <include>org.ogce:xpp3:jar</include>
                 <include>org.ogce:xpp5:jar</include>
                 <include>org.ogce:xsul:jar</include>
