@@ -418,12 +418,12 @@
             <artifactId>airavata-api-server</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!--dependency>
 	    <groupId>org.apache.airavata</groupId>
 	    <artifactId>apache-airavata-samples</artifactId>
 	    <type>zip</type>
             <version>${project.version}</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk16</artifactId>
