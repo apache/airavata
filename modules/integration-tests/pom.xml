@@ -162,12 +162,12 @@
             <artifactId>ant-nodeps</artifactId>
             <version>1.8.1</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>apache-airavata-samples</artifactId>
             <version>${project.version}</version>
 			<type>zip</type>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>distribution</artifactId>
