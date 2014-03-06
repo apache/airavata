@@ -66,8 +66,8 @@ public class OrchestratorClientSample {
             registry = RegistryFactory.getRegistry(gateway, sysUser, sysUserPwd);
             documentCreator = new DocumentCreator(getAiravataAPI());
             documentCreator.createLocalHostDocs();
-            documentCreator.createGramDocs();
-            documentCreator.createGSISSHDocs();
+//            documentCreator.createGramDocs();
+//            documentCreator.createGSISSHDocs();
             storeExperimentDetail();
         } catch (ApplicationSettingsException e) {
             e.printStackTrace();
