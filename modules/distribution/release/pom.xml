@@ -52,20 +52,6 @@
 									<type>tar.gz</type>
 									<classifier>bin</classifier>
 								</artifactItem>
-								<artifactItem>
-									<groupId>org.apache.airavata</groupId>
-									<artifactId>apache-airavata-server</artifactId>
-						            <version>${project.version}</version>
-									<type>zip</type>
-									<classifier>war</classifier>
-								</artifactItem>
-								<artifactItem>
-									<groupId>org.apache.airavata</groupId>
-									<artifactId>apache-airavata-server</artifactId>
-						            <version>${project.version}</version>
-									<type>tar.gz</type>
-									<classifier>war</classifier>
-								</artifactItem>
 								<!--Airavata Client Distributions-->
 								<artifactItem>
 									<groupId>org.apache.airavata</groupId>

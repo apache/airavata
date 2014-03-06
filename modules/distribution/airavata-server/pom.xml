@@ -24,7 +24,7 @@
 
     <build>
         <plugins>
-            <plugin>
+            <!--plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>2.4</version>
@@ -78,7 +78,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin-->
             <plugin>
                 <groupId>org.codehaus.gmaven</groupId>
                 <artifactId>gmaven-plugin</artifactId>
@@ -622,8 +622,8 @@
         <airavata.bin.zip>${project.build.directory}/${airavata.dist.name}-bin.zip</airavata.bin.zip>
         <airavata.bin.tar.gz>${project.build.directory}/${airavata.dist.name}-bin.tar.gz</airavata.bin.tar.gz>
         <airavata.webapp.dir>${project.build.directory}/airavata-axis2</airavata.webapp.dir>
-        <airavata.war.dir>${project.build.directory}/test</airavata.war.dir>
+        <!--airavata.war.dir>${project.build.directory}/test</airavata.war.dir>
         <airavata.webapp.war.zip>${project.build.directory}/${airavata.dist.name}.war.zip</airavata.webapp.war.zip>
-        <airavata.webapp.war.tar.gz>${project.build.directory}/${airavata.dist.name}.war.tar.gz</airavata.webapp.war.tar.gz>
+        <airavata.webapp.war.tar.gz>${project.build.directory}/${airavata.dist.name}.war.tar.gz</airavata.webapp.war.tar.gz-->
     </properties>
 </project>

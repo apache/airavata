@@ -104,15 +104,6 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>../../rest/webapp/src/main/resources
-            </directory>
-            <outputDirectory>bin
-            </outputDirectory>
-            <includes>
-                <include>authenticators.xml</include>
-            </includes>
-        </fileSet>
-        <fileSet>
             <directory>src/main/resources/bin</directory>
             <outputDirectory>bin</outputDirectory>
             <fileMode>777</fileMode>

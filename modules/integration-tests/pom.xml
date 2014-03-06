@@ -23,7 +23,7 @@
     
     <build>
         <plugins>
-            <plugin>
+            <!--plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>2.8</version>
@@ -94,13 +94,12 @@
 				    <additionalClasspathElement>${project.build.directory}/samples/workflows</additionalClasspathElement>
 				  </additionalClasspathElements>
 				</configuration>
-			</plugin>
-            <plugin>
+			</plugin-->
+            <!--plugin>
                 <groupId>org.codehaus.cargo</groupId>
                 <artifactId>cargo-maven2-plugin</artifactId>
                 <version>1.3.1</version>
                 <configuration>
-                    <!--wait>true</wait-->
 
                     <container>
                         <containerId>tomcat${major.tomcat.version}x</containerId>
@@ -142,46 +141,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.5</version>
-                <configuration>
-                    <failIfNoTests>false</failIfNoTests>
-                    <systemPropertyVariables>
-                        <test.server.port>${test.running.port}</test.server.port>
-                        <test.server.url>localhost</test.server.url>
-                        <test.server.context>${rest.service.context}</test.server.context>
-                        <log4j.configuration>file:${basedir}/src/test/resources/log4j.properties</log4j.configuration>
-                        <property>
-                            <name>log4j.configuration</name>
-                            <value>file:${project.build.directory}/test-classes/log4j.properties</value>
-                        </property>
-                    </systemPropertyVariables>
-
-                    <includes>
-                        <include>**/*IT.java</include>
-                    </includes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>integration-test</id>
-                        <phase>integration-test</phase>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>verify</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+            </plugin-->
         </plugins>
     </build>
 
@@ -212,17 +172,6 @@
             <groupId>org.apache.airavata</groupId>
             <artifactId>distribution</artifactId>
             <type>pom</type>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-rest-client</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
@@ -341,7 +290,6 @@
         <test.running.port>8080</test.running.port>
 		<tomcat.extract.dir>${project.build.directory}</tomcat.extract.dir>
         <tomcat.work.dir>${tomcat.extract.dir}/apache-tomcat-${tomcat.version}</tomcat.work.dir>
-        <rest.service.context>airavata</rest.service.context>
         <local.tomcat.distribution>${settings.localRepository}/org/apache/airavata/integration/tomcat/apache-tomcat/${tomcat.version}/apache-tomcat-${tomcat.version}.zip</local.tomcat.distribution>
     </properties>
 </project>

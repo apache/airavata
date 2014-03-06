@@ -227,4 +227,8 @@ public abstract class ApplicationSettings {
     public static Properties getProperties() {
         return properties;
     }
+    
+    public static void mergeSettings(Properties properties){
+    	properties.putAll(properties);
+    }
 }
