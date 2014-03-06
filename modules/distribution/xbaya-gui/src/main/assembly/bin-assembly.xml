@@ -124,8 +124,6 @@
                 <include>org.apache.airavata:airavata-message-monitor:jar</include>
                 <include>org.apache.airavata:airavata-client-api:jar</include>
                 <include>org.apache.airavata:airavata-jpa-registry:jar</include>
-                <include>org.apache.airavata:airavata-rest-mappings:jar</include>
-                <include>org.apache.airavata:airavata-rest-client:jar</include>
                 <include>org.apache.airavata:airavata-interpreter-service-client:jar</include>
                 <include>org.apache.airavata:airavata-interpreter-service:jar</include>
                 <include>org.apache.airavata:airavata-interpreter-service-handler:jar</include>
