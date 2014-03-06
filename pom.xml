@@ -446,7 +446,7 @@
                 <module>modules/gfac</module>
                 <module>modules/ws-messenger</module>
                 <module>modules/workflow-model</module>
-                <module>modules/xbaya-gui</module>
+                <!--module>modules/xbaya-gui</module-->
                 <module>modules/commons</module>
                 <module>modules/registry</module>
                 <module>modules/airavata-client</module>
@@ -455,7 +455,7 @@
                 <!--module>modules/rest</module-->
                 <module>modules/orchestrator</module>
                 <module>tools</module>
-                <module>samples</module>
+                <!--module>samples</module-->
                 <module>modules/server</module>
                 <module>modules/test-suite</module>
                 <module>modules/distribution</module>

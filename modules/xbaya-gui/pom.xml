@@ -60,7 +60,7 @@
                             <excludeTransitive>false</excludeTransitive>
                         </configuration>
                     </execution>
-                    <execution>
+                    <!--execution>
                         <id>unpack-dependencies</id>
                         <phase>compile</phase>
                         <goals>
@@ -76,7 +76,7 @@
                                 </artifactItem>
 	                        </artifactItems>
                         </configuration>
-                    </execution>
+                    </execution-->
                 </executions>
             </plugin>
 			<plugin>
@@ -100,13 +100,13 @@
     </build>
 
     <dependencies>
-        <dependency>
+        <!--dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>apache-airavata-samples</artifactId>
             <version>${project.version}</version>
 	    <type>zip</type>
 	    <optional>true</optional>
-        </dependency>
+        </dependency-->
 
         <dependency>
             <groupId>org.ogce</groupId>
@@ -259,11 +259,6 @@
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-registry-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-rest-client</artifactId>
             <version>${project.version}</version>
         </dependency>
 

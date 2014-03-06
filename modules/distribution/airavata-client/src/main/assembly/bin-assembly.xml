@@ -107,10 +107,10 @@
 		<include>org.apache.airavata:airavata-credential-store:jar</include>
 		<include>org.apache.airavata:airavata-gfac-core:jar</include>
 		<include>org.apache.airavata:airavata-client-api:jar</include>
-		<include>org.apache.airavata:airavata-message-monitor:jar</include>
+		<!--include>org.apache.airavata:airavata-message-monitor:jar</include>
 		<include>org.apache.airavata:airavata-workflow-model-core:jar</include>
 		<include>org.apache.airavata:airavata-messenger-commons:jar</include>
-		<include>org.apache.airavata:airavata-messenger-client:jar</include>
+		<include>org.apache.airavata:airavata-messenger-client:jar</include-->
 		<include>org.apache.airavata:airavata-workflow-tracking:jar</include>
 		<include>org.apache.airavata:gsissh:jar</include>
 		<include>org.apache.airavata:airavata-model-utils:jar</include>
@@ -126,7 +126,6 @@
                 <include>org.codehaus.jackson:jackson-xc</include>
                 <include>com.sun.jersey:jersey-core:jar</include>
                 <include>com.sun.jersey:jersey-client:jar</include>
-                <include>org.apache.airavata:airavata-rest-mappings:jar</include>
                 <include>org.apache.airavata:json</include>
                 <include>commons-codec:commons-codec:jar</include>
                 <include>wsdl4j:wsdl4j:jar</include>
