@@ -78,6 +78,7 @@ public class AiravataAPIServer implements IServer{
     	try {
 			AiravataAPIServer server = new AiravataAPIServer();
 			server.start();
+			//FIXME: Remove code below if not needed.
 //			System.out.println(server.getStatus()+":"+server.getStatus().getTime());
 //			Thread.sleep(3000);
 //			server.stop();
