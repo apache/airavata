@@ -534,7 +534,7 @@ public class TaskDetailResource extends AbstractResource {
     }
 
     public DataTransferDetailResource getDataTransferDetail (String dataTransferId){
-        return (DataTransferDetailResource)get(ResourceType.TASK_DETAIL, dataTransferId);
+        return (DataTransferDetailResource)get(ResourceType.DATA_TRANSFER_DETAIL, dataTransferId);
     }
 
 }

@@ -65,7 +65,7 @@ public class OrchestratorClientSample {
             orchestratorClient = OrchestratorClientFactory.createOrchestratorClient("localhost", 8940);
             registry = RegistryFactory.getRegistry(gateway, sysUser, sysUserPwd);
             documentCreator = new DocumentCreator(getAiravataAPI());
-            documentCreator.createLocalHostDocs();
+            documentCreator.createEchoAppLocalHostDocs();
 //            documentCreator.createGramDocs();
 //            documentCreator.createGSISSHDocs();
             storeExperimentDetail();

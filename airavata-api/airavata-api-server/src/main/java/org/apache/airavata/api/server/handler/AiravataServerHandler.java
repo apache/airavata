@@ -48,7 +48,9 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     private Registry registry;
     private static final Logger logger = LoggerFactory.getLogger(AiravataServerHandler.class);
+	 //FIXME: these go in a configuration file or a "constants" class. 
     public static final String ORCHESTRATOR_SERVER_HOST = "localhost";
+	 //FIXME: these go in a configuration file or a "constants" class. 
     public static final int ORCHESTRATOR_SERVER_PORT = 8940;
     private OrchestratorService.Client orchestratorClient;
     /**
