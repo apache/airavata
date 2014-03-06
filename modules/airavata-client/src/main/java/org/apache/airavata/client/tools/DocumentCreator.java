@@ -47,7 +47,7 @@ public class DocumentCreator {
         this.airavataAPI = airavataAPI;
     }
 
-    public void createLocalHostDocs() {
+    public void createEchoAppLocalHostDocs() {
         HostDescription descriptor = new HostDescription();
         descriptor.getType().setHostName("localhost");
         descriptor.getType().setHostAddress("127.0.0.1");
@@ -105,7 +105,7 @@ public class DocumentCreator {
 
     }
 
-    public void createGramDocs() {
+    public void createEchoAppGramDocs() {
         /*
            creating host descriptor for gram
         */
@@ -208,7 +208,7 @@ public class DocumentCreator {
         }
     }
 
-    public void createGSISSHDocs() {
+    public void createEchoAppGSISSHDocs() {
         HostDescription host = new HostDescription(GsisshHostType.type);
         host.getType().setHostAddress(hpcHostAddress);
         host.getType().setHostName(gsiSshHostName);

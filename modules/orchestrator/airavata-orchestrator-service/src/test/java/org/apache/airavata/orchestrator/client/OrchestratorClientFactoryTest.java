@@ -56,9 +56,9 @@ public class OrchestratorClientFactoryTest {
         registry = RegistryFactory.getDefaultRegistry();
         AiravataUtils.setExecutionAsServer();
         documentCreator = new DocumentCreator(getAiravataAPI());
-        documentCreator.createLocalHostDocs();
-        documentCreator.createGramDocs();
-        documentCreator.createGSISSHDocs();
+        documentCreator.createEchoAppLocalHostDocs();
+        documentCreator.createEchoAppGramDocs();
+        documentCreator.createEchoAppGSISSHDocs();
     }
 
     private AiravataAPI getAiravataAPI() {
