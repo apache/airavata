@@ -18,25 +18,21 @@
  * under the License.
  *
 */
-package org.apache.airavata.gsi.ssh.impl;
+package org.apache.airavata.gsi.ssh.api.job;
 
-import com.jcraft.jsch.*;
-import org.apache.airavata.gsi.ssh.api.*;
-import org.apache.airavata.gsi.ssh.api.authentication.*;
-import org.apache.airavata.gsi.ssh.api.job.JobManagerConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.airavata.gsi.ssh.impl.RawCommandInfo;
 
+public interface JobManagerConfiguration {
 
-/**
- * This is the default implementation of a cluster.
- * this has most of the methods to be used by the end user of the
- * library.
- */
-public class PBSCluster extends GSISSHAbstractCluster {
-    private static final Logger log = LoggerFactory.getLogger(PBSCluster.class);
+    public RawCommandInfo getCancelCommand(String jobID);
 
-    public PBSCluster(ServerInfo serverInfo, AuthenticationInfo authenticationInfo, JobManagerConfiguration config) throws SSHApiException {
-        super(serverInfo, authenticationInfo,config);
-    }
+    public String getJobDescriptionTemplateName();
+
+    public RawCommandInfo getMonitorCommand(String jobID);
+
+    public String getScriptExtension();
+
+     public RawCommandInfo getSubmitCommand(String workingDirectory,String pbsFilePath);
+
+    public OutputParser getParser();
 }

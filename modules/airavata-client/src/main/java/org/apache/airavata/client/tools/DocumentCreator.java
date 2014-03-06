@@ -208,7 +208,7 @@ public class DocumentCreator {
         }
     }
 
-    public void createGSISSHDocs() {
+    public void createPBSDocs() {
         HostDescription host = new HostDescription(GsisshHostType.type);
         host.getType().setHostAddress(hpcHostAddress);
         host.getType().setHostName(gsiSshHostName);
@@ -300,6 +300,106 @@ public class DocumentCreator {
 
         try {
             airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, gsiSshHostName, appDesc);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+    public void createSlurmDocs() {
+        HostDescription host = new HostDescription(GsisshHostType.type);
+        host.getType().setHostAddress("stampede.tacc.xsede.org");
+        host.getType().setHostName("stampede-host");
+        ((GsisshHostType) host.getType()).setJobManager("slurm");
+        ((GsisshHostType) host.getType()).setPort(2222);
+
+
+        try {
+            airavataAPI.getApplicationManager().saveHostDescription(host);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        /*
+        * Service Description creation and saving
+        */
+        String serviceName = "SimpleEcho2";
+        ServiceDescription serv = new ServiceDescription();
+        serv.getType().setName(serviceName);
+
+        List<InputParameterType> inputList = new ArrayList<InputParameterType>();
+        List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
+
+
+        InputParameterType input = InputParameterType.Factory.newInstance();
+        input.setParameterName("echo_input");
+        ParameterType parameterType = input.addNewParameterType();
+        parameterType.setType(DataType.STRING);
+        parameterType.setName("String");
+
+        OutputParameterType output = OutputParameterType.Factory.newInstance();
+        output.setParameterName("echo_output");
+        ParameterType parameterType1 = output.addNewParameterType();
+        parameterType1.setType(DataType.STRING);
+        parameterType1.setName("String");
+
+        inputList.add(input);
+        outputList.add(output);
+
+        InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList.size()]);
+        OutputParameterType[] outputParamList = outputList.toArray(new OutputParameterType[outputList.size()]);
+
+        serv.getType().setInputParametersArray(inputParamList);
+        serv.getType().setOutputParametersArray(outputParamList);
+        try {
+            airavataAPI.getApplicationManager().saveServiceDescription(serv);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        /*
+           Application descriptor creation and saving
+        */
+        ApplicationDescription appDesc = new ApplicationDescription(HpcApplicationDeploymentType.type);
+        HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) appDesc.getType();
+        ApplicationDeploymentDescriptionType.ApplicationName name = ApplicationDeploymentDescriptionType.ApplicationName.Factory.newInstance();
+        name.setStringValue("EchoLocal");
+        app.setApplicationName(name);
+        ProjectAccountType projectAccountType = app.addNewProjectAccount();
+        projectAccountType.setProjectAccountNumber("TG-STA110014S");
+
+        QueueType queueType = app.addNewQueue();
+        queueType.setQueueName("normal");
+
+        app.setCpuCount(1);
+        app.setJobType(JobTypeType.SERIAL);
+        app.setNodeCount(1);
+        app.setProcessorsPerNode(1);
+        app.setMaxWallTime(10);
+        /*
+        * Use bat file if it is compiled on Windows
+        */
+        app.setExecutableLocation("/bin/echo");
+
+        /*
+        * Default tmp location
+        */
+        String tempDir = "/home1/01437/ogce";
+        String date = (new Date()).toString();
+        date = date.replaceAll(" ", "_");
+        date = date.replaceAll(":", "_");
+
+        tempDir = tempDir + File.separator
+                + "SimpleEcho" + "_" + date + "_" + UUID.randomUUID();
+
+        app.setScratchWorkingDirectory(tempDir);
+        app.setStaticWorkingDirectory(tempDir);
+        app.setInputDataDirectory(tempDir + File.separator + "inputData");
+        app.setOutputDataDirectory(tempDir + File.separator + "outputData");
+        app.setStandardOutput(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stdout");
+        app.setStandardError(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stderr");
+        app.setInstalledParentPath("/usr/bin/");
+
+        try {
+            airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, "stampede-host", appDesc);
         } catch (AiravataAPIInvocationException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }

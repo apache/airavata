@@ -38,7 +38,7 @@ public interface Cluster {
      * @return jobId after successful job submission
      * @throws SSHApiException throws exception during error
      */
-    public String submitBatchJobWithPBS(String pbsFilePath, String workingDirectory) throws SSHApiException;
+    public String submitBatchJobWithScript(String pbsFilePath, String workingDirectory) throws SSHApiException;
 
     /**
      * This will submit the given job and not performing any monitoring
@@ -48,15 +48,6 @@ public interface Cluster {
      * @throws SSHApiException  throws exception during error
      */
     public String submitBatchJob(JobDescriptor jobDescriptor) throws SSHApiException;
-
-    /**
-     * This will get all the information about the cluster and store them as parameters
-     * So that api user can extract required information about the cluster
-     *
-     * @return return a cluster which consists of information about nodes etc.
-     * @throws SSHApiException throws exception during error
-     */
-    public Cluster loadCluster() throws SSHApiException;
 
     /**
      * This will copy the localFile to remoteFile location in configured cluster
@@ -103,9 +94,13 @@ public interface Cluster {
 
     /**
      * This will get the job status of the the job associated with this jobId
+     *
      * @param jobID jobId of the job user want to get the status
      * @return job status of the given jobID
      * @throws SSHApiException throws exception during error
      */
     public JobStatus getJobStatus(String jobID) throws SSHApiException;
+
+
+
 }
