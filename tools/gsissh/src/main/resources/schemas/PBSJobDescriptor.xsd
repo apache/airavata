@@ -15,11 +15,15 @@
 	<complexType name="pbsParams">
 		<sequence>
             <element name="jobID" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="userName" type="xsd:string" minOccurs="0" maxOccurs="1"/>
 			<element name="shellName" type="xsd:string" minOccurs="0" maxOccurs="1" default="/bin/bash"/>
             <element name="queueName" type="xsd:string" minOccurs="0" maxOccurs="1" default="normal"/>
             <element name="jobName" type="xsd:string" minOccurs="0" maxOccurs="1"/>
             <element name="allEnvExport" type="xsd:boolean" minOccurs="0 " maxOccurs="1" default="true"/>
 			<element name="mailOptions" type="xsd:string" minOccurs="0" maxOccurs="1" />
+            <element name="mailAddress" type="xsd:string" minOccurs="0" maxOccurs="1" />
+            <element name="partition" type="xsd:string" minOccurs="0" maxOccurs="1" />
+            <element name="mailType" type="xsd:string" minOccurs="0" maxOccurs="1" />
 			<element name="acountString" type="xsd:string" minOccurs="0" maxOccurs="1" />
 			<element name="maxWallTime" type="xsd:string" minOccurs="0" maxOccurs="1" default="1:00:00"/>
             <element name="standardOutFile" type="xsd:string" minOccurs="0" maxOccurs="1" />
@@ -28,6 +32,7 @@
             <element name="inputDirectory" type="xsd:string" minOccurs="0" maxOccurs="1" />
             <element name="nodes" type="xsd:int" minOccurs="0" maxOccurs="1" default="1"/>
             <element name="processesPerNode" type="xsd:int" minOccurs="0" maxOccurs="1" default="1" />
+            <element name="nodeList" type="xsd:string" minOccurs="0" maxOccurs="1" default="1" />
             <element name="workingDirectory" type="xsd:string" minOccurs="0" maxOccurs="1" />
             <element name="executablePath" type="xsd:string" minOccurs="0" maxOccurs="1" />
             <element name="inputs" type="gsissh:inputList" minOccurs="1" maxOccurs="1"/>

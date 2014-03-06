@@ -58,7 +58,8 @@ public class OrchestratorClientFactoryTest {
         documentCreator = new DocumentCreator(getAiravataAPI());
         documentCreator.createLocalHostDocs();
         documentCreator.createGramDocs();
-        documentCreator.createGSISSHDocs();
+        documentCreator.createPBSDocs();
+        documentCreator.createSlurmDocs();
     }
 
     private AiravataAPI getAiravataAPI() {
@@ -103,8 +104,8 @@ public class OrchestratorClientFactoryTest {
                                 "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
                         simpleExperiment.setExperimentOutputs(exOut);
 
-                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0, 1, "sds128");
-                        scheduling.setResourceHostId("gsissh-trestles");
+                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org", 1, 1, 1, "normal", 0, 0, 1, "TG-STA110014S");
+                        scheduling.setResourceHostId("stampede-host");
                         UserConfigurationData userConfigurationData = new UserConfigurationData();
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);

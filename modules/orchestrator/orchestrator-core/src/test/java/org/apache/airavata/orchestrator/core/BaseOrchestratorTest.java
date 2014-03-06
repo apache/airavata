@@ -28,7 +28,6 @@ import org.apache.airavata.client.tools.DocumentCreator;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.orchestrator.core.util.Initialize;
-import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 
@@ -52,7 +51,7 @@ public class BaseOrchestratorTest {
         documentCreator = new DocumentCreator(getAiravataAPI());
         documentCreator.createLocalHostDocs();
         documentCreator.createGramDocs();
-        documentCreator.createGSISSHDocs();
+        documentCreator.createPBSDocs();
     }
 
     public void tearDown() throws Exception {

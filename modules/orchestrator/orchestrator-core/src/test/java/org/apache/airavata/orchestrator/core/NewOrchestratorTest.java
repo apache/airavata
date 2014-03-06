@@ -101,16 +101,14 @@ public class NewOrchestratorTest extends BaseOrchestratorTest {
 
     private AiravataAPI getAiravataAPI() {
         AiravataAPI airavataAPI = null;
-        if (airavataAPI == null) {
-            try {
-                String systemUserName = ServerSettings.getSystemUser();
-                String gateway = ServerSettings.getSystemUserGateway();
-                airavataAPI = AiravataAPIFactory.getAPI(gateway, systemUserName);
-            } catch (ApplicationSettingsException e) {
-                e.printStackTrace();
-            } catch (AiravataAPIInvocationException e) {
-                e.printStackTrace();
-            }
+        try {
+            String systemUserName = ServerSettings.getSystemUser();
+            String gateway = ServerSettings.getSystemUserGateway();
+            airavataAPI = AiravataAPIFactory.getAPI(gateway, systemUserName);
+        } catch (ApplicationSettingsException e) {
+            e.printStackTrace();
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();
         }
         return airavataAPI;
     }

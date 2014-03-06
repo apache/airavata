@@ -220,10 +220,22 @@ public class JobDescriptor {
         this.getJobDescriptorDocument().getJobDescriptor().getPostJobCommands().addCommand(command);
     }
 
-    public void setJobSubmitter(String jobSubmitter){
-        this.getJobDescriptorDocument().getJobDescriptor().setJobSubmitterCommand(jobSubmitter);
+    public void setPartition(String partition){
+        this.getJobDescriptorDocument().getJobDescriptor().setPartition(partition);
     }
 
+     public void setUserName(String userName){
+        this.getJobDescriptorDocument().getJobDescriptor().setUserName(userName);
+    }
+     public void setNodeList(String nodeList){
+        this.getJobDescriptorDocument().getJobDescriptor().setNodeList(nodeList);
+    }
+    public void setJobSubmitter(String jobSubmitter){
+           this.getJobDescriptorDocument().getJobDescriptor().setJobSubmitterCommand(jobSubmitter);
+    }
+    public String getNodeList(){
+        return this.getJobDescriptorDocument().getJobDescriptor().getNodeList();
+    }
     public String getExecutablePath() {
         return this.getJobDescriptorDocument().getJobDescriptor().getExecutablePath();
     }
@@ -351,5 +363,14 @@ public class JobDescriptor {
     public String getJobSubmitterCommand(){
           return this.getJobDescriptorDocument().getJobDescriptor().getJobSubmitterCommand();
     }
+
+    public String getPartition(){
+        return this.getJobDescriptorDocument().getJobDescriptor().getPartition();
+    }
+
+    public String getUserName(){
+        return this.getJobDescriptorDocument().getJobDescriptor().getUserName();
+    }
+
 }
 

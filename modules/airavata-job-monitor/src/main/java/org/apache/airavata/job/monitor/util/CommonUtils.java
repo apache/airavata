@@ -20,12 +20,32 @@
 */
 package org.apache.airavata.job.monitor.util;
 
+import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.job.monitor.MonitorID;
+import org.apache.airavata.schemas.gfac.GsisshHostType;
 
 public class CommonUtils {
+    public static boolean isPBSHost(HostDescription host){
+        if("pbs".equals(((GsisshHostType)host.getType()).getJobManager()) ||
+                "".equals(((GsisshHostType)host.getType()).getJobManager())){
+         return true;
+        }else{
+            // default is pbs so we return true
+            return false;
+        }
+    }
+    public static boolean isSlurm(HostDescription host){
+        if("slurm".equals(((GsisshHostType)host.getType()).getJobManager())){
+         return true;
+        }else{
+            // default is pbs so we return true
+            return false;
+        }
+    }
     public static String getChannelID(MonitorID monitorID) {
         return monitorID.getUserName() + "-" + monitorID.getHost().getType().getHostName();
     }
+
     public static String getRoutingKey(MonitorID monitorID) {
         return "*." + monitorID.getUserName() + "." + monitorID.getHost().getType().getHostAddress();
     }

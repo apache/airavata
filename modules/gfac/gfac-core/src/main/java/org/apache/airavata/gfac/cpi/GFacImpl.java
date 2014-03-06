@@ -48,10 +48,12 @@ import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.ServerInfo;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
+import org.apache.airavata.gsi.ssh.api.job.JobManagerConfiguration;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
+import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.registry.api.AiravataRegistry2;
@@ -61,6 +63,7 @@ import org.apache.airavata.schemas.gfac.*;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.schemas.wec.SecurityContextDocument;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
+import org.apache.xmlbeans.XmlObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -376,8 +379,21 @@ public class GFacImpl implements GFac {
 
                 Cluster pbsCluster = null;
                 try {
-                    pbsCluster = new PBSCluster(serverInfo, authenticationInfo,
-                            (((HpcApplicationDeploymentType) jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath()));
+                    JobManagerConfiguration jConfig = null;
+                    String installedParentPath = ((HpcApplicationDeploymentType)
+                            jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath();
+                    String jobManager = ((GsisshHostType) registeredHost.getType()).getJobManager();
+                    if(jobManager == null){
+                         log.error("No Job Manager is configured, so we are picking pbs as the default job manager");
+                        jConfig = CommonUtils.getPBSJobManager(installedParentPath);
+                    }else{
+                        if("pbs".equalsIgnoreCase(jobManager)){
+                            jConfig = CommonUtils.getPBSJobManager(installedParentPath);
+                        }else if("slurm".equalsIgnoreCase(jobManager)){
+                            jConfig = CommonUtils.getSLURMJobManager(installedParentPath);
+                        }
+                    }
+                    pbsCluster = new PBSCluster(serverInfo, authenticationInfo,jConfig);
                 } catch (SSHApiException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
@@ -409,8 +425,10 @@ public class GFacImpl implements GFac {
 
                 Cluster pbsCluster = null;
                 try {
+                    String installedParentPath = ((HpcApplicationDeploymentType)
+                            jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath();
                     pbsCluster = new PBSCluster(serverInfo, authenticationInfo,
-                            (((HpcApplicationDeploymentType) jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath()));
+                            CommonUtils.getPBSJobManager(installedParentPath));
                 } catch (SSHApiException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
