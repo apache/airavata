@@ -212,6 +212,8 @@ public class DocumentCreator {
         HostDescription host = new HostDescription(GsisshHostType.type);
         host.getType().setHostAddress(hpcHostAddress);
         host.getType().setHostName(gsiSshHostName);
+        ((GsisshHostType) host.getType()).setPort(22);
+        ((GsisshHostType) host.getType()).setInstalledPath("/opt/torque/bin/");
 
         try {
             airavataAPI.getApplicationManager().saveHostDescription(host);
@@ -321,7 +323,7 @@ public class DocumentCreator {
         /*
         * Service Description creation and saving
         */
-        String serviceName = "SimpleEcho2";
+        String serviceName = "SimpleEcho3";
         ServiceDescription serv = new ServiceDescription();
         serv.getType().setName(serviceName);
 
