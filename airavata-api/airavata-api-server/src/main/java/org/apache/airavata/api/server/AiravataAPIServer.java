@@ -25,6 +25,7 @@ import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.error.AiravataErrorType;
 import org.apache.airavata.api.error.AiravataSystemException;
 import org.apache.airavata.api.server.handler.AiravataServerHandler;
+import org.apache.airavata.api.server.util.Constants;
 import org.apache.airavata.api.server.util.RegistryInitUtil;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.IServer;
@@ -42,7 +43,6 @@ public class AiravataAPIServer implements IServer{
     private final static Logger logger = LoggerFactory.getLogger(AiravataAPIServer.class);
 
     //FIXME: Read the port from airavata-server.config file
-    private static final String THRIFT_SERVER_PORT = "apiserver.server.port";
     private ServerStatus status;
 
 	private TSimpleServer server;
@@ -55,10 +55,11 @@ public class AiravataAPIServer implements IServer{
         try {
             AiravataUtils.setExecutionAsServer();
             RegistryInitUtil.initializeDB();
-            TServerTransport serverTransport = new TServerSocket(Integer.parseInt(ServerSettings.getSetting(THRIFT_SERVER_PORT,"8930")));
+            int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.THRIFT_SERVER_PORT,"8930"));
+			TServerTransport serverTransport = new TServerSocket(serverPort);
             server = new TSimpleServer(
                     new TServer.Args(serverTransport).processor(mockAiravataServer));
-            logger.info("Starting Airavata Mock Airavata Server on Port " + THRIFT_SERVER_PORT);
+            logger.info("Starting Airavata Mock Airavata Server on Port " + serverPort);
             logger.info("Listening to Airavata Clients ....");
             new Thread() {
 				public void run() {
@@ -122,5 +123,15 @@ public class AiravataAPIServer implements IServer{
 	private void setStatus(ServerStatus stat){
 		status=stat;
 		status.updateTime();
+	}
+
+	@Override
+	public void waitForServerStart() throws Exception {
+		while((getStatus()==ServerStatus.STARTING || getStatus()==ServerStatus.STARTED) && !server.isServing()){
+			Thread.sleep(100);
+		}
+		if (!(getStatus()==ServerStatus.STARTING || getStatus()==ServerStatus.STARTED)){
+			throw new Exception("The server did not start!!!");
+		}
 	}
 }

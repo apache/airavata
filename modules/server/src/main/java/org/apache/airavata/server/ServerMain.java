@@ -23,17 +23,40 @@ package org.apache.airavata.server;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.airavata.api.server.AiravataAPIServer;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.IServer;
-import org.apache.airavata.orchestrator.server.OrchestratorServer;
+import org.apache.airavata.common.utils.ServerSettings;
 
 public class ServerMain {
 	private static List<IServer> servers;
-
+	private static final String SERVERS_KEY="servers";
 	static {
 		servers = new ArrayList<IServer>();
-		servers.add(new AiravataAPIServer());
-		servers.add(new OrchestratorServer());
+		try {
+			String serversString = ServerSettings.getSetting(SERVERS_KEY);
+			if (serversString!=null){
+				String[] serversList = serversString.split(",");
+				for (String serverString : serversList) {
+					String serverClassName = ServerSettings.getSetting(serverString);
+					Class<?> classInstance = ServerMain.class
+                            .getClassLoader().loadClass(
+                            		serverClassName);
+					servers.add((IServer)classInstance.newInstance());
+				}
+			}
+		} catch (ApplicationSettingsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public static void main(String args[]) {
@@ -70,6 +93,7 @@ public class ServerMain {
 		for (IServer server : servers) {
 			try {
 				server.start();
+				server.waitForServerStart();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
