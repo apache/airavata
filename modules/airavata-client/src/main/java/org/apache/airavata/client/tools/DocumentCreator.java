@@ -266,7 +266,7 @@ public class DocumentCreator {
         name.setStringValue("EchoLocal");
         app.setApplicationName(name);
         ProjectAccountType projectAccountType = app.addNewProjectAccount();
-        projectAccountType.setProjectAccountNumber("sds128");
+        projectAccountType.setProjectAccountNumber("uot111");
 
         QueueType queueType = app.addNewQueue();
         queueType.setQueueName("normal");
@@ -284,7 +284,7 @@ public class DocumentCreator {
         /*
            * Default tmp location
            */
-        String tempDir = "/home/ogce/scratch";
+        String tempDir = "/oasis/projects/nsf/uot111/us3/airavata-workdirs/";
         String date = (new Date()).toString();
         date = date.replaceAll(" ", "_");
         date = date.replaceAll(":", "_");
@@ -307,6 +307,118 @@ public class DocumentCreator {
         }
     }
 
+    public void createMPIPBSDocs() {
+        HostDescription host = new HostDescription(GsisshHostType.type);
+        host.getType().setHostAddress(hpcHostAddress);
+        host.getType().setHostName(gsiSshHostName);
+        ((GsisshHostType) host.getType()).setPort(22);
+        ((GsisshHostType) host.getType()).setInstalledPath("/opt/torque/bin/");
+
+        try {
+            airavataAPI.getApplicationManager().saveHostDescription(host);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        /*
+        * Service Description creation and saving
+        */
+        String serviceName = "UltrascanAPP";
+        ServiceDescription serv = new ServiceDescription();
+        serv.getType().setName(serviceName);
+
+        List<InputParameterType> inputList = new ArrayList<InputParameterType>();
+        List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
+
+
+        InputParameterType input = InputParameterType.Factory.newInstance();
+        input.setParameterName("input");
+        ParameterType parameterType = input.addNewParameterType();
+        parameterType.setType(DataType.URI);
+        parameterType.setName("URI");
+
+        OutputParameterType output = OutputParameterType.Factory.newInstance();
+        output.setParameterName("output");
+        ParameterType parameterType1 = output.addNewParameterType();
+        parameterType1.setType(DataType.URI);
+        parameterType1.setName("URI");
+        
+        OutputParameterType output1 = OutputParameterType.Factory.newInstance();
+        output1.setParameterName("stdout");
+        ParameterType parameterType2 = output1.addNewParameterType();
+        parameterType2.setType(DataType.STD_OUT);
+        parameterType2.setName("StdOut");
+        
+        OutputParameterType output2 = OutputParameterType.Factory.newInstance();
+        output2.setParameterName("stderr");
+        ParameterType parameterType3 = output2.addNewParameterType();
+        parameterType3.setType(DataType.STD_ERR);
+        parameterType3.setName("StdErr");
+
+        inputList.add(input);
+        outputList.add(output);
+        outputList.add(output1);
+        outputList.add(output2);
+        
+        InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList.size()]);
+        OutputParameterType[] outputParamList = outputList.toArray(new OutputParameterType[outputList.size()]);
+
+        serv.getType().setInputParametersArray(inputParamList);
+        serv.getType().setOutputParametersArray(outputParamList);
+        try {
+            airavataAPI.getApplicationManager().saveServiceDescription(serv);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        /*
+            Application descriptor creation and saving
+         */
+        ApplicationDescription appDesc = new ApplicationDescription(HpcApplicationDeploymentType.type);
+        HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) appDesc.getType();
+        ApplicationDeploymentDescriptionType.ApplicationName name = ApplicationDeploymentDescriptionType.ApplicationName.Factory.newInstance();
+        name.setStringValue("UltrascanAPP");
+        app.setApplicationName(name);
+        ProjectAccountType projectAccountType = app.addNewProjectAccount();
+        projectAccountType.setProjectAccountNumber("uot111");
+
+        QueueType queueType = app.addNewQueue();
+        queueType.setQueueName("normal");
+
+        app.setCpuCount(1);
+        app.setJobType(JobTypeType.MPI);
+        app.setNodeCount(32);
+        app.setProcessorsPerNode(2);
+        app.setMaxWallTime(10);
+        /*
+           * Use bat file if it is compiled on Windows
+           */
+        app.setExecutableLocation("/home/us3/trestles/bin/us_mpi_analysis");
+
+        /*
+           * Default tmp location
+           */
+        String tempDir = "/oasis/projects/nsf/uot111/us3/airavata-workdirs/";
+        String date = (new Date()).toString();
+        date = date.replaceAll(" ", "_");
+        date = date.replaceAll(":", "_");
+
+        tempDir = tempDir + File.separator
+                + "Ultrascan" + "_" + date + "_" + UUID.randomUUID();
+
+        app.setScratchWorkingDirectory(tempDir);
+        app.setStaticWorkingDirectory(tempDir);
+        app.setInputDataDirectory(tempDir + File.separator + "inputData");
+        app.setOutputDataDirectory(tempDir + File.separator + "outputData");
+        app.setStandardOutput(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stdout");
+        app.setStandardError(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stderr");
+        app.setInstalledParentPath("/opt/torque/bin/");
+        app.setJobSubmitterCommand("/opt/mvapich2/pgi/ib/bin/mpiexec");
+        try {
+            airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, gsiSshHostName, appDesc);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
     public void createSlurmDocs() {
         HostDescription host = new HostDescription(GsisshHostType.type);
         host.getType().setHostAddress("stampede.tacc.xsede.org");
