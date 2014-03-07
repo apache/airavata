@@ -31,6 +31,7 @@ import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.impl.push.amqp.AMQPMonitor;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
+import org.apache.axiom.om.util.CommonUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -93,7 +94,8 @@ public class AMQPMonitorTest {
         ServerInfo serverInfo = new ServerInfo("ogce", "trestles.sdsc.edu");
 
 
-        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, "/opt/torque/bin/");
+        Cluster pbsCluster = new
+                PBSCluster(serverInfo, authenticationInfo, org.apache.airavata.gsi.ssh.util.CommonUtils.getPBSJobManager("/opt/torque/bin/"));
 
 
         // Execute command

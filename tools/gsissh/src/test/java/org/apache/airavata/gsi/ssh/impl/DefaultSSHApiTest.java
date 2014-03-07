@@ -45,17 +45,19 @@ public class DefaultSSHApiTest {
     private String certificateLocation;
     private String pbsFilePath;
     private String workingDirectory;
+    private String slurmWorkingDirectory;
     private String jobID;
 
     @BeforeTest
     public void setUp() throws Exception {
-//        System.setProperty("myproxy.user", "ogce");
-//        System.setProperty("myproxy.password", "");
-//        System.setProperty("basedir", "/Users/lahirugunathilake/work/airavata/sandbox/gsissh");
-//        System.setProperty("gsi.working.directory","/home/ogce");
+        System.setProperty("myproxy.user", "ogce");
+        System.setProperty("myproxy.password", "");
+        System.setProperty("basedir", "/Users/lahirugunathilake/Downloads");
+        System.setProperty("gsi.working.directory", "/home/ogce");
         myProxyUserName = System.getProperty("myproxy.user");
         myProxyPassword = System.getProperty("myproxy.password");
         workingDirectory = System.getProperty("gsi.working.directory");
+        slurmWorkingDirectory = "/home1/01437/ogce";
         String pomDirectory = System.getProperty("basedir");
 
         File pomFileDirectory = new File(pomDirectory);
@@ -96,10 +98,8 @@ public class DefaultSSHApiTest {
     }
 
 
-
-
     @Test
-    public void testSubmitAsyncJob() throws Exception {
+    public void testPBSAsync() throws Exception {
         // Create authentication
         GSIAuthenticationInfo authenticationInfo
                 = new MyProxyAuthenticationInfo(myProxyUserName, myProxyPassword, "myproxy.teragrid.org",
@@ -109,7 +109,7 @@ public class DefaultSSHApiTest {
         ServerInfo serverInfo = new ServerInfo("ogce", "trestles.sdsc.edu");
 
 
-        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, "/opt/torque/bin/");
+        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/bin/"));
 
 
         // Execute command
@@ -139,6 +139,72 @@ public class DefaultSSHApiTest {
 
 //        Cluster cluster = sshApi.getCluster(serverInfo, authenticationInfo);
         Thread.sleep(1000);
+        JobDescriptor jobById = pbsCluster.getJobDescriptorById(jobID);
+
+        //printing job data got from previous call
+        AssertJUnit.assertEquals(jobById.getJobId(), jobID);
+        System.out.println(jobById.getAcountString());
+        System.out.println(jobById.getAllEnvExport());
+        System.out.println(jobById.getCompTime());
+        System.out.println(jobById.getExecutablePath());
+        System.out.println(jobById.getEllapsedTime());
+        System.out.println(jobById.getQueueName());
+        System.out.println(jobById.getExecuteNode());
+        System.out.println(jobById.getJobName());
+        System.out.println(jobById.getCTime());
+        System.out.println(jobById.getSTime());
+        System.out.println(jobById.getMTime());
+        System.out.println(jobById.getCompTime());
+        System.out.println(jobById.getOwner());
+        System.out.println(jobById.getQTime());
+        System.out.println(jobById.getUsedCPUTime());
+        System.out.println(jobById.getUsedMemory());
+        System.out.println(jobById.getVariableList());
+    }
+
+    @Test
+    public void testSLURMAsync() throws Exception {
+        // Create authentication
+        GSIAuthenticationInfo authenticationInfo
+                = new MyProxyAuthenticationInfo(myProxyUserName, myProxyPassword, "myproxy.teragrid.org",
+                7512, 17280000, certificateLocation);
+
+        // Server info
+        ServerInfo serverInfo = new ServerInfo("ogce", "stampede.tacc.xsede.org");
+        serverInfo.setPort(2222);
+
+        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getSLURMJobManager("/usr/bin/"));
+
+
+        // Execute command
+        System.out.println("Target SLURM file path: " + slurmWorkingDirectory);
+        // constructing the job object
+        JobDescriptor jobDescriptor = new JobDescriptor();
+        jobDescriptor.setWorkingDirectory(slurmWorkingDirectory);
+        jobDescriptor.setShellName("/bin/sh");
+        jobDescriptor.setJobName("GSI_SSH_SLEEP_JOB");
+        jobDescriptor.setExecutablePath("/bin/echo");
+        jobDescriptor.setAllEnvExport(true);
+        jobDescriptor.setMailOptions("n");
+        jobDescriptor.setStandardOutFile("" + File.separator + "application.out");
+        jobDescriptor.setStandardErrorFile("/home1/01437/ogce" + File.separator + "application.err");
+        jobDescriptor.setNodes(1);
+        jobDescriptor.setProcessesPerNode(1);
+        jobDescriptor.setQueueName("normal");
+        jobDescriptor.setMaxWallTime("60");
+        jobDescriptor.setAcountString("TG-STA110014S");
+        jobDescriptor.setJobSubmitter("sbatch");
+        List<String> inputs = new ArrayList<String>();
+        inputs.add("Hello World");
+        jobDescriptor.setInputValues(inputs);
+        //finished construction of job object
+        System.out.println(jobDescriptor.toXML());
+        jobID = pbsCluster.submitBatchJob(jobDescriptor);
+        System.out.println("JobID returned : " + jobID);
+
+//        Cluster cluster = sshApi.getCluster(serverInfo, authenticationInfo);
+//    Thread.sleep(1000);
+
         JobDescriptor jobById = pbsCluster.getJobDescriptorById(jobID);
 
         //printing job data got from previous call
@@ -192,7 +258,7 @@ public class DefaultSSHApiTest {
         // Server info
         ServerInfo serverInfo = new ServerInfo("ogce", "trestles.sdsc.edu");
 
-        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, "/opt/torque/bin/");
+        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/bin/"));
 
         // Execute command
         System.out.println("Target PBS file path: " + workingDirectory);
@@ -235,7 +301,7 @@ public class DefaultSSHApiTest {
         ServerInfo serverInfo = new ServerInfo("ogce", "trestles.sdsc.edu");
 
 
-        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, "/opt/torque/bin/");
+        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/bin/"));
 
 
         // Execute command
@@ -325,7 +391,7 @@ public class DefaultSSHApiTest {
         ServerInfo serverInfo = new ServerInfo("ogce", "trestles.sdsc.edu");
 
 
-        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, "/opt/torque/bin/");
+        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/bin/"));
 
 
         // Execute command

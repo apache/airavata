@@ -163,7 +163,8 @@ public class GSISSHProvider extends AbstractProvider implements GFacProvider{
             String jobID = cluster.submitBatchJob(jobDescriptor);
             jobDetails.setJobID(jobID);
             jobExecutionContext.setJobDetails(jobDetails);
-            GFacUtils.saveJobStatus(jobDetails,JobState.QUEUED,taskID);
+            GFacUtils.saveJobStatus(jobDetails, JobState.SUBMITTED, taskID);
+
         } catch (SSHApiException e) {
             String error = "Error submitting the job to host " + host.getHostAddress() + e.getMessage();
             log.error(error);

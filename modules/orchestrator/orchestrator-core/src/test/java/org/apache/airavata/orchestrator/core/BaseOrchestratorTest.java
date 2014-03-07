@@ -49,9 +49,9 @@ public class BaseOrchestratorTest {
         userResource.setPassword("admin");
 
         documentCreator = new DocumentCreator(getAiravataAPI());
-        documentCreator.createEchoAppLocalHostDocs();
-        documentCreator.createEchoAppGramDocs();
-        documentCreator.createEchoAppGSISSHDocs();
+        documentCreator.createLocalHostDocs();
+        documentCreator.createGramDocs();
+        documentCreator.createPBSDocs();
     }
 
     public void tearDown() throws Exception {

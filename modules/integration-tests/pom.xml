@@ -8,7 +8,8 @@
     ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
     the License. -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>airavata</artifactId>
@@ -20,9 +21,49 @@
     <artifactId>integration-tests</artifactId>
     <name>Airavata Integration Tests</name>
     <url>http://airavata.apache.org/</url>
-    
+
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <failIfNoTests>false</failIfNoTests>
+                    <systemPropertyVariables>
+                        <test.server.port>${test.running.port}</test.server.port>
+                        <test.server.url>localhost</test.server.url>
+                        <log4j.configuration>file:${basedir}/src/test/resources/log4j.properties</log4j.configuration>
+                        <property>
+                            <name>log4j.configuration</name>
+                            <value>file:${project.build.directory}/test-classes/log4j.properties</value>
+                        </property>
+                        <myproxy.user>${user}</myproxy.user>
+                        <myproxy.password>${pwd}</myproxy.password>
+                        <trusted.cert.location>${cert}</trusted.cert.location>
+                    </systemPropertyVariables>
+
+                    <includes>
+                        <include>**/*IT.java</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>verify</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <!--plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -84,17 +125,12 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.16</version>
             </plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.16</version>
-				<configuration>
-				  <additionalClasspathElements>
-				    <additionalClasspathElement>${project.build.directory}/samples/workflows</additionalClasspathElement>
-				  </additionalClasspathElements>
-				</configuration>
-			</plugin-->
             <!--plugin>
                 <groupId>org.codehaus.cargo</groupId>
                 <artifactId>cargo-maven2-plugin</artifactId>
@@ -214,6 +250,41 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-data-models</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-standalone-server</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-orchestrator-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-orchestrator-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-model-utils</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-api-stubs</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.thrift</groupId>
+            <artifactId>libthrift</artifactId>
+            <version>${thrift.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
         </dependency>
@@ -223,50 +294,8 @@
             <version>6.1.1</version>
             <scope>test</scope>
         </dependency>
-   		<dependency>
-			<scope>test</scope>
-   			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-json</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<scope>test</scope>
-   			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-client</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
         <dependency>
-			<scope>test</scope>
-            <groupId>com.sun.jersey.contribs</groupId>
-            <artifactId>jersey-multipart</artifactId>
-            <version>${jersey.version}</version>
-        </dependency>
-        <dependency>
-			<scope>test</scope>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.9.2</version>
-        </dependency>
-        <dependency>
-			<scope>test</scope>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-xc</artifactId>
-            <version>1.9.2</version>
-        </dependency>
-        <dependency>
-			<scope>test</scope>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-jaxrs</artifactId>
-            <version>1.9.2</version>
-        </dependency>
-        <dependency>
-			<scope>test</scope>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-core-asl</artifactId>
-            <version>1.9.2</version>
-        </dependency>
-        <dependency>
-			<scope>test</scope>
+            <scope>test</scope>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
             <version>2.2.3-1</version>
@@ -275,12 +304,15 @@
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
             <version>2.2.2</version>
-			<scope>test</scope>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <properties>
-		<jersey.version>1.13</jersey.version>
+        <jersey.version>1.13</jersey.version>
+        <user></user>
+        <pwd></pwd>
+        <cert></cert>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <archieve.name>apache-airavata</archieve.name>
         <used.axis2.release>${axis2.version}</used.axis2.release>
@@ -288,8 +320,10 @@
         <cargo.debug.address>8000</cargo.debug.address>
         <cargo.debug.suspend>y</cargo.debug.suspend>
         <test.running.port>8080</test.running.port>
-		<tomcat.extract.dir>${project.build.directory}</tomcat.extract.dir>
+        <tomcat.extract.dir>${project.build.directory}</tomcat.extract.dir>
         <tomcat.work.dir>${tomcat.extract.dir}/apache-tomcat-${tomcat.version}</tomcat.work.dir>
-        <local.tomcat.distribution>${settings.localRepository}/org/apache/airavata/integration/tomcat/apache-tomcat/${tomcat.version}/apache-tomcat-${tomcat.version}.zip</local.tomcat.distribution>
+        <local.tomcat.distribution>
+            ${settings.localRepository}/org/apache/airavata/integration/tomcat/apache-tomcat/${tomcat.version}/apache-tomcat-${tomcat.version}.zip
+        </local.tomcat.distribution>
     </properties>
 </project>

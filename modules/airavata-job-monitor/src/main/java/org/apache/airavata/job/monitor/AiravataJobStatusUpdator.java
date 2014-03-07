@@ -108,14 +108,13 @@ public class AiravataJobStatusUpdator{
             }
         }
     }
-    public static void updateJobStatus(String jobID, JobState state) throws Exception {
-  			Registry registry = RegistryFactory.getDefaultRegistry();
+    public  void updateJobStatus(String jobID, JobState state) throws Exception {
   			JobDetails details = new JobDetails();
   			org.apache.airavata.model.workspace.experiment.JobStatus status = new org.apache.airavata.model.workspace.experiment.JobStatus();
   			status.setJobState(state);
   			status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
           	details.setJobStatus(status);
           	details.setJobID(jobID);
-  			registry.update(org.apache.airavata.registry.cpi.DataType.JOB_DETAIL, details, jobID);
+  			airavataRegistry.update(org.apache.airavata.registry.cpi.DataType.JOB_DETAIL, details, jobID);
   	}
 }

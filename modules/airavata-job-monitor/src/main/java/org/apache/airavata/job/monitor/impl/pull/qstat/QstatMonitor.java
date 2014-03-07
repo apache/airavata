@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
@@ -73,7 +74,7 @@ public class QstatMonitor extends PullMonitor implements Runnable {
             try {
                 startPulling();
                 // After finishing one iteration of the full queue this thread sleeps 1 second
-                Thread.sleep(1000);
+                Thread.sleep(5000);
             } catch (Exception e){
                 // we catch all the exceptions here because no matter what happens we do not stop running this
                 // thread, but ideally we should report proper error messages, but this is handled in startPulling
@@ -96,43 +97,53 @@ public class QstatMonitor extends PullMonitor implements Runnable {
         JobStatus jobStatus = new JobStatus();
         while (!this.queue.isEmpty()) {
             try {
-                take = this.queue.take();
-                long monitorDiff = 0;
-                long startedDiff = 0;
-                if (take.getLastMonitored() != null) {
-                    monitorDiff = (new Timestamp((new Date()).getTime())).getTime() - take.getLastMonitored().getTime();
-                    startedDiff = (new Timestamp((new Date()).getTime())).getTime() - take.getJobStartedTime().getTime();
-                    //todo implement an algorithm to delay the monitor based no start time, we have to delay monitoring
-                    //todo  for long running jobs
+                Iterator<MonitorID> iterator = this.queue.iterator();
+                // no need to check iterator.hasNext because its already checked
+                MonitorID next = iterator.next();
+                // we check whether the job is type of gsissh otherwise we return the job back to the queue
+                // Here we use iterator because it not fair to take the object from the queue unless its
+                // the correct host type,so if its not the right type it will remain in the queue
+                if(next.getHost().getType() instanceof GsisshHostType){
+                    take = this.queue.take();
+                    long monitorDiff = 0;
+                    long startedDiff = 0;
+                    if (take.getLastMonitored() != null) {
+                        monitorDiff = (new Timestamp((new Date()).getTime())).getTime() - take.getLastMonitored().getTime();
+                        startedDiff = (new Timestamp((new Date()).getTime())).getTime() - take.getJobStartedTime().getTime();
+                        //todo implement an algorithm to delay the monitor based no start time, we have to delay monitoring
+                        //todo  for long running jobs
 //                    System.out.println(monitorDiff + "-" + startedDiff);
-                    if ((monitorDiff / 1000) < 5) {
-                        // its too early to monitor this job, so we put it at the tail of the queue
-                        this.queue.put(take);
-                    }
-                }
-                if (take.getLastMonitored() == null || ((monitorDiff / 1000) >= 5)) {
-                    GsisshHostType gsisshHostType = (GsisshHostType) take.getHost().getType();
-                    String hostName = gsisshHostType.getHostAddress();
-                    ResourceConnection connection = null;
-                    if (connections.containsKey(hostName)) {
-                        logger.debug("We already have this connection so not going to create one");
-                        connection = connections.get(hostName);
-                    } else {
-                        if(gsisshHostType.getInstalledPath() == null){
-                            connection = new ResourceConnection(take, "/opt/torque/bin");
-                        }else{
-                            connection = new ResourceConnection(take, gsisshHostType.getInstalledPath());
+                        if ((monitorDiff / 1000) < 5) {
+                            // its too early to monitor this job, so we put it at the tail of the queue
+                            this.queue.put(take);
                         }
-                        connections.put(hostName, connection);
                     }
-                    jobStatus.setMonitorID(take);
-                    jobStatus.setState(connection.getJobStatus(take));
-                    publisher.publish(jobStatus);
-                    // if the job is completed we do not have to put the job to the queue again
-                    if (!jobStatus.getState().equals(JobState.COMPLETE)) {
-                        take.setLastMonitored(new Timestamp((new Date()).getTime()));
-                        this.queue.put(take);
+                    if (take.getLastMonitored() == null || ((monitorDiff / 1000) >= 5)) {
+                        GsisshHostType gsisshHostType = (GsisshHostType) take.getHost().getType();
+                        String hostName = gsisshHostType.getHostAddress();
+                        ResourceConnection connection = null;
+                        if (connections.containsKey(hostName)) {
+                            logger.debug("We already have this connection so not going to create one");
+                            connection = connections.get(hostName);
+                        } else {
+                            if (gsisshHostType.getInstalledPath() == null) {
+                                connection = new ResourceConnection(take, gsisshHostType.getInstalledPath());
+                            } else {
+                                connection = new ResourceConnection(take, gsisshHostType.getInstalledPath());
+                            }
+                            connections.put(hostName, connection);
+                        }
+                        jobStatus.setMonitorID(take);
+                        jobStatus.setState(connection.getJobStatus(take));
+                        publisher.publish(jobStatus);
+                        // if the job is completed we do not have to put the job to the queue again
+                        if (!jobStatus.getState().equals(JobState.COMPLETE)) {
+                            take.setLastMonitored(new Timestamp((new Date()).getTime()));
+                            this.queue.put(take);
+                        }
                     }
+                } else {
+                    logger.debug("Qstat Monitor doesn't handle non-gsissh hosts");
                 }
             } catch (InterruptedException e) {
                 if(!this.queue.contains(take)){
