@@ -123,7 +123,7 @@ public class CreateLaunchExperiment {
             DocumentCreator documentCreator = new DocumentCreator(getAiravataAPI());
             documentCreator.createLocalHostDocs();
             documentCreator.createGramDocs();
-            documentCreator.createGSISSHDocs();
+            documentCreator.createSlurmDocs();
         } catch (AiravataAPIInvocationException e) {
             logger.error("Unable to create airavata API", e.getMessage());
             throw new AiravataAPIInvocationException(e);
@@ -165,11 +165,13 @@ public class CreateLaunchExperiment {
             output.setValue("");
             exOut.add(output);
 
-            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
+            Experiment simpleExperiment =
+                    ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0, 1, "sds128");
-            scheduling.setResourceHostId("gsissh-trestles");
+            ComputationalResourceScheduling scheduling =
+                    ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org", 1, 1, 1, "normal", 0, 0, 1, "TG-STA110014S");
+            scheduling.setResourceHostId("stampede-host");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
@@ -192,7 +194,7 @@ public class CreateLaunchExperiment {
     }
 
     public static void launchExperiment (Airavata.Client client, String expId)
-            throws ExperimentNotFoundException, AiravataSystemException, InvalidRequestException,AiravataClientException, TException{
+            throws TException{
         try {
             client.launchExperiment(expId, "testToken");
         } catch (ExperimentNotFoundException e) {

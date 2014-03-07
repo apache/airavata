@@ -375,7 +375,9 @@ public class GFacImpl implements GFac {
                 GSIAuthenticationInfo authenticationInfo
                         = new MyProxyAuthenticationInfo(requestData.getMyProxyUserName(), requestData.getMyProxyPassword(), requestData.getMyProxyServerUrl(),
                         requestData.getMyProxyPort(), requestData.getMyProxyLifeTime(), System.getProperty(Constants.TRUSTED_CERTIFICATE_SYSTEM_PROPERTY));
-                ServerInfo serverInfo = new ServerInfo(requestData.getMyProxyUserName(), registeredHost.getType().getHostAddress());
+                GsisshHostType gsisshHostType = (GsisshHostType)registeredHost.getType();
+                ServerInfo serverInfo = new ServerInfo(requestData.getMyProxyUserName(), registeredHost.getType().getHostAddress(),
+                        gsisshHostType.getPort());
 
                 Cluster pbsCluster = null;
                 try {
@@ -383,17 +385,17 @@ public class GFacImpl implements GFac {
                     String installedParentPath = ((HpcApplicationDeploymentType)
                             jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath();
                     String jobManager = ((GsisshHostType) registeredHost.getType()).getJobManager();
-                    if(jobManager == null){
-                         log.error("No Job Manager is configured, so we are picking pbs as the default job manager");
+                    if (jobManager == null) {
+                        log.error("No Job Manager is configured, so we are picking pbs as the default job manager");
                         jConfig = CommonUtils.getPBSJobManager(installedParentPath);
-                    }else{
-                        if("pbs".equalsIgnoreCase(jobManager)){
+                    } else {
+                        if ("pbs".equalsIgnoreCase(jobManager)) {
                             jConfig = CommonUtils.getPBSJobManager(installedParentPath);
-                        }else if("slurm".equalsIgnoreCase(jobManager)){
+                        } else if ("slurm".equalsIgnoreCase(jobManager)) {
                             jConfig = CommonUtils.getSLURMJobManager(installedParentPath);
                         }
                     }
-                    pbsCluster = new PBSCluster(serverInfo, authenticationInfo,jConfig);
+                    pbsCluster = new PBSCluster(serverInfo, authenticationInfo, jConfig);
                 } catch (SSHApiException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }

@@ -39,6 +39,7 @@ import org.apache.airavata.gsi.ssh.api.ServerInfo;
 import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
+import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.schemas.gfac.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -191,7 +192,7 @@ public class GSISSHProviderTest {
         ServerInfo serverInfo = new ServerInfo("ogce", "trestles.sdsc.edu");
         Cluster pbsCluster = null;
         try {
-            pbsCluster = new PBSCluster(serverInfo, authenticationInfo, app.getInstalledParentPath());
+            pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager(app.getInstalledParentPath()));
         } catch (SSHApiException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
