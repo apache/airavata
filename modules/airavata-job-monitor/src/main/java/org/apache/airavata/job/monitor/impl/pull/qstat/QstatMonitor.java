@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
@@ -73,7 +74,7 @@ public class QstatMonitor extends PullMonitor implements Runnable {
             try {
                 startPulling();
                 // After finishing one iteration of the full queue this thread sleeps 1 second
-                Thread.sleep(1000);
+                Thread.sleep(5000);
             } catch (Exception e){
                 // we catch all the exceptions here because no matter what happens we do not stop running this
                 // thread, but ideally we should report proper error messages, but this is handled in startPulling
@@ -96,8 +97,14 @@ public class QstatMonitor extends PullMonitor implements Runnable {
         JobStatus jobStatus = new JobStatus();
         while (!this.queue.isEmpty()) {
             try {
-                take = this.queue.take();
-                if (take.getHost().getType() instanceof GsisshHostType) {
+                Iterator<MonitorID> iterator = this.queue.iterator();
+                // no need to check iterator.hasNext because its already checked
+                MonitorID next = iterator.next();
+                // we check whether the job is type of gsissh otherwise we return the job back to the queue
+                // Here we use iterator because it not fair to take the object from the queue unless its
+                // the correct host type,so if its not the right type it will remain in the queue
+                if(next.getHost().getType() instanceof GsisshHostType){
+                    take = this.queue.take();
                     long monitorDiff = 0;
                     long startedDiff = 0;
                     if (take.getLastMonitored() != null) {
@@ -136,8 +143,7 @@ public class QstatMonitor extends PullMonitor implements Runnable {
                         }
                     }
                 } else {
-                    //Qstat doesn't handle other jobs eexcept GsisshHostTypes
-                    this.queue.put(take);
+                    logger.debug("Qstat Monitor doesn't handle non-gsissh hosts");
                 }
             } catch (InterruptedException e) {
                 if(!this.queue.contains(take)){
