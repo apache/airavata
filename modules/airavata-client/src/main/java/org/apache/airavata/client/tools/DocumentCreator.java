@@ -212,6 +212,7 @@ public class DocumentCreator {
         HostDescription host = new HostDescription(GsisshHostType.type);
         host.getType().setHostAddress(hpcHostAddress);
         host.getType().setHostName(gsiSshHostName);
+        ((GsisshHostType) host.getType()).setPort(22);
 
         try {
             airavataAPI.getApplicationManager().saveHostDescription(host);
