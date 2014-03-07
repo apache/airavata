@@ -49,7 +49,7 @@ import java.util.Set;
 public class CreateLaunchExperiment {
 
     //FIXME: Read from a config file
-    public static final String THRIFT_SERVER_HOST = "149.165.228.109";
+    public static final String THRIFT_SERVER_HOST = "localhost";
     public static final int THRIFT_SERVER_PORT = 8930;
     private final static Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "defauly.registry.user";
@@ -60,7 +60,7 @@ public class CreateLaunchExperiment {
             AiravataUtils.setExecutionAsClient();
             final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavata.GetAPIVersion());
-           addDescriptors();
+            addDescriptors();
             final String expId = createExperimentForTrestles(airavata);
 //           final String expId = createUS3ExperimentForTrestles(airavata);
 //            final String expId = createExperimentForStampede(airavata);
@@ -126,6 +126,7 @@ public class CreateLaunchExperiment {
             documentCreator.createLocalHostDocs();
             documentCreator.createGramDocs();
             documentCreator.createPBSDocs();
+            documentCreator.createPBSDocsForOGCE();
             documentCreator.createMPIPBSDocs();
             documentCreator.createSlurmDocs();
         } catch (AiravataAPIInvocationException e) {
@@ -173,7 +174,7 @@ public class CreateLaunchExperiment {
                     ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0, 1, "uot111");
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0, 1, "sds128");
             scheduling.setResourceHostId("gsissh-trestles");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);

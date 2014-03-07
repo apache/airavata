@@ -80,8 +80,9 @@ public class BaseCaseIT extends WorkflowIntegrationTestBase {
 
     @Test(groups = {"echoGroup"}, dependsOnGroups = {"setupTests"})
     public void testEchoService() throws Exception {
+        log.info("Running job in trestles...");
         DocumentCreator documentCreator = new DocumentCreator(airavataAPI);
-        documentCreator.createPBSDocs();
+        documentCreator.createPBSDocsForOGCE();
         List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
         DataObjectType input = new DataObjectType();
         input.setKey("echo_input");
@@ -140,6 +141,77 @@ public class BaseCaseIT extends WorkflowIntegrationTestBase {
             }
         });
             monitor.start();
+        try {
+            monitor.join();
+        } catch (InterruptedException e) {
+            log.error("Thread interrupted..", e.getMessage());
+        }
+
+    }
+
+    @Test(groups = {"echoGroup"}, dependsOnGroups = {"setupTests"})
+    public void testEchoServiceStampede() throws Exception {
+        log.info("Running job in Stampede...");
+        DocumentCreator documentCreator = new DocumentCreator(airavataAPI);
+        documentCreator.createSlurmDocs();
+        List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
+        DataObjectType input = new DataObjectType();
+        input.setKey("echo_input");
+        input.setType(DataType.STRING.toString());
+        input.setValue("echo_output=Hello World");
+        exInputs.add(input);
+
+        List<DataObjectType> exOut = new ArrayList<DataObjectType>();
+        DataObjectType output = new DataObjectType();
+        output.setKey("echo_output");
+        output.setType(DataType.STRING.toString());
+        output.setValue("");
+        exOut.add(output);
+
+        Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho3", "SimpleEcho3", exInputs);
+        simpleExperiment.setExperimentOutputs(exOut);
+
+        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org", 1, 1, 1, "normal", 0, 0, 1, "TG-STA110014S");
+        scheduling.setResourceHostId("stampede-host");
+        UserConfigurationData userConfigurationData = new UserConfigurationData();
+        userConfigurationData.setAiravataAutoSchedule(false);
+        userConfigurationData.setOverrideManualScheduledParams(false);
+        userConfigurationData.setComputationalResourceScheduling(scheduling);
+        simpleExperiment.setUserConfigurationData(userConfigurationData);
+        final String expId = createExperiment(simpleExperiment);
+        System.out.println("Experiment Id returned : " + expId);
+        log.info("Experiment Id returned : " + expId );
+        launchExperiment(expId);
+        System.out.println("Launched successfully");
+
+        Thread monitor = (new Thread(){
+            public void run() {
+                Map<String, JobStatus> jobStatuses = null;
+                while (true) {
+                    try {
+                        jobStatuses = client.getJobStatuses(expId);
+                        Set<String> strings = jobStatuses.keySet();
+                        for (String key : strings) {
+                            JobStatus jobStatus = jobStatuses.get(key);
+                            if(jobStatus == null){
+                                return;
+                            }else {
+                                if (JobState.COMPLETE.equals(jobStatus.getJobState())) {
+                                    log.info("Job completed Job ID: " + key);
+                                    return;
+                                }else{
+                                    log.info("Job ID:" + key + "  Job Status : " + jobStatuses.get(key).getJobState().toString());
+                                }
+                            }
+                        }
+                        Thread.sleep(5000);
+                    } catch (Exception e) {
+                        log.error("Thread interrupted", e.getMessage());
+                    }
+                }
+            }
+        });
+        monitor.start();
         try {
             monitor.join();
         } catch (InterruptedException e) {
