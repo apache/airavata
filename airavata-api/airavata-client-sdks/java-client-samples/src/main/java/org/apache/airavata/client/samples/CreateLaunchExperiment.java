@@ -49,7 +49,7 @@ import java.util.Set;
 public class CreateLaunchExperiment {
 
     //FIXME: Read from a config file
-    public static final String THRIFT_SERVER_HOST = "localhost";
+    public static final String THRIFT_SERVER_HOST = "149.165.228.109";
     public static final int THRIFT_SERVER_PORT = 8930;
     private final static Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "defauly.registry.user";
@@ -60,8 +60,10 @@ public class CreateLaunchExperiment {
             AiravataUtils.setExecutionAsClient();
             final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavata.GetAPIVersion());
-            addDescriptors();
-            final String expId = createExperimentForStampede(airavata);
+           addDescriptors();
+            final String expId = createExperimentForTrestles(airavata);
+//           final String expId = createUS3ExperimentForTrestles(airavata);
+//            final String expId = createExperimentForStampede(airavata);
             System.out.println("Experiment ID : " + expId);
             launchExperiment(airavata, expId);
             System.out.println("Launched successfully");
@@ -124,6 +126,7 @@ public class CreateLaunchExperiment {
             documentCreator.createLocalHostDocs();
             documentCreator.createGramDocs();
             documentCreator.createPBSDocs();
+            documentCreator.createMPIPBSDocs();
             documentCreator.createSlurmDocs();
         } catch (AiravataAPIInvocationException e) {
             logger.error("Unable to create airavata API", e.getMessage());
@@ -170,8 +173,62 @@ public class CreateLaunchExperiment {
                     ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling =
-                    ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0, 1, "sds128");
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0, 1, "uot111");
+            scheduling.setResourceHostId("gsissh-trestles");
+            UserConfigurationData userConfigurationData = new UserConfigurationData();
+            userConfigurationData.setAiravataAutoSchedule(false);
+            userConfigurationData.setOverrideManualScheduledParams(false);
+            userConfigurationData.setComputationalResourceScheduling(scheduling);
+            simpleExperiment.setUserConfigurationData(userConfigurationData);
+            return client.createExperiment(simpleExperiment);
+        } catch (AiravataSystemException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataSystemException(e);
+        } catch (InvalidRequestException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new InvalidRequestException(e);
+        } catch (AiravataClientException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataClientException(e);
+        }catch (TException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new TException(e);
+        }
+    }
+    
+    public static String createUS3ExperimentForTrestles (Airavata.Client client) throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException  {
+        try{
+            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
+            DataObjectType input = new DataObjectType();
+            input.setKey("input");
+            input.setType(DataType.URI.toString());
+            input.setValue("file:///home/airavata/input/hpcinput.tar");
+            exInputs.add(input);
+
+            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
+            DataObjectType output = new DataObjectType();
+            output.setKey("output");
+            output.setType(DataType.URI.toString());
+            output.setValue("");
+            DataObjectType output1 = new DataObjectType();
+            output1.setKey("stdout");
+            output1.setType(DataType.STD_OUT.toString());
+            output1.setValue("");
+            DataObjectType output2 = new DataObjectType();
+            output2.setKey("stderr");
+            output2.setType(DataType.STD_ERR.toString());
+            output2.setValue("");
+            exOut.add(output);
+            exOut.add(output1);
+            exOut.add(output2);
+            
+
+            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("project1", "admin", "US3Experiment", "UltrascanApp", "UltrascanApp", exInputs);
+            simpleExperiment.setExperimentOutputs(exOut);
+
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 2, 32, 0, "normal", 0, 0, 0, "uot111");
+
+
             scheduling.setResourceHostId("gsissh-trestles");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);
