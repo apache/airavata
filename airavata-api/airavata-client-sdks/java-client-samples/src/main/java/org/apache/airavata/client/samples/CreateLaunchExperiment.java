@@ -61,7 +61,9 @@ public class CreateLaunchExperiment {
             final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavata.GetAPIVersion());
            addDescriptors();
-            final String expId = createExperiment(airavata);
+            final String expId = createExperimentForTrestles(airavata);
+//           final String expId = createUS3ExperimentForTrestles(airavata);
+//            final String expId = createExperimentForStampede(airavata);
             System.out.println("Experiment ID : " + expId);
             launchExperiment(airavata, expId);
             System.out.println("Launched successfully");
@@ -121,10 +123,11 @@ public class CreateLaunchExperiment {
     public static void addDescriptors() throws AiravataAPIInvocationException,ApplicationSettingsException  {
         try {
             DocumentCreator documentCreator = new DocumentCreator(getAiravataAPI());
-//            documentCreator.createEchoAppLocalHostDocs();
-//            documentCreator.createEchoAppGramDocs();
-            documentCreator.createEchoAppGSISSHDocs();
-//            documentCreator.createUltrascanGSISSHDocs();
+            documentCreator.createLocalHostDocs();
+            documentCreator.createGramDocs();
+            documentCreator.createPBSDocs();
+            documentCreator.createMPIPBSDocs();
+            documentCreator.createSlurmDocs();
         } catch (AiravataAPIInvocationException e) {
             logger.error("Unable to create airavata API", e.getMessage());
             throw new AiravataAPIInvocationException(e);
@@ -150,7 +153,7 @@ public class CreateLaunchExperiment {
         return airavataAPI;
     }
 
-    public static String createExperiment (Airavata.Client client) throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException  {
+    public static String createExperimentForTrestles(Airavata.Client client) throws TException  {
         try{
             List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
             DataObjectType input = new DataObjectType();
@@ -166,7 +169,8 @@ public class CreateLaunchExperiment {
             output.setValue("");
             exOut.add(output);
 
-            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
+            Experiment simpleExperiment =
+                    ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0, 1, "uot111");
@@ -192,7 +196,7 @@ public class CreateLaunchExperiment {
         }
     }
     
-    public static String createUS3Experiment (Airavata.Client client) throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException  {
+    public static String createUS3ExperimentForTrestles (Airavata.Client client) throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException  {
         try{
             List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
             DataObjectType input = new DataObjectType();
@@ -223,6 +227,8 @@ public class CreateLaunchExperiment {
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 2, 32, 0, "normal", 0, 0, 0, "uot111");
+
+
             scheduling.setResourceHostId("gsissh-trestles");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);
@@ -244,8 +250,7 @@ public class CreateLaunchExperiment {
             throw new TException(e);
         }
     }
-
-    public static String createLocalExperiment (Airavata.Client client) throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException  {
+    public static String createExperimentForStampede(Airavata.Client client) throws TException  {
         try{
             List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
             DataObjectType input = new DataObjectType();
@@ -261,11 +266,13 @@ public class CreateLaunchExperiment {
             output.setValue("");
             exOut.add(output);
 
-            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "Echo", "Echo", exInputs);
+            Experiment simpleExperiment =
+                    ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("localhost", 1, 1, 1, "normal", 0, 0, 1, "sds128");
-            scheduling.setResourceHostId("localhost");
+            ComputationalResourceScheduling scheduling =
+                    ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org", 1, 1, 1, "normal", 0, 0, 1, "TG-STA110014S");
+            scheduling.setResourceHostId("stampede-host");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
@@ -288,7 +295,7 @@ public class CreateLaunchExperiment {
     }
 
     public static void launchExperiment (Airavata.Client client, String expId)
-            throws ExperimentNotFoundException, AiravataSystemException, InvalidRequestException,AiravataClientException, TException{
+            throws TException{
         try {
             client.launchExperiment(expId, "testToken");
         } catch (ExperimentNotFoundException e) {

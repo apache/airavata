@@ -2485,7 +2485,9 @@ public class ExperimentRegistry {
     }
 
     public Timestamp getTime(long time) {
-        Date date = new Date(time);
-        return new Timestamp(date.getTime());
+        if (time == 0){
+          return getCurrentTimestamp();
+        }
+        return new Timestamp(time);
     }
 }

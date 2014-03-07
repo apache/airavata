@@ -27,6 +27,7 @@ import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.config.ConfigReader;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
+import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.testng.AssertJUnit;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
@@ -114,7 +115,7 @@ public class VanilaSSHTest {
         }
         // Server info
         ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
-        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, "/opt/torque/torque-4.2.3.1/bin/");
+        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
 
         String date = new Date().toString();
         date = date.replaceAll(" ", "_");
@@ -197,7 +198,7 @@ public class VanilaSSHTest {
         }
         // Server info
         ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
-        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, "/opt/torque/torque-4.2.3.1/bin/");
+        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
 
         String date = new Date().toString();
         date = date.replaceAll(" ", "_");

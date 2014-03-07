@@ -61,6 +61,7 @@ import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
+import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.schemas.gfac.*;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
@@ -461,8 +462,10 @@ public class EmbeddedGFacInvoker implements Invoker {
 
                 Cluster pbsCluster = null;
                 try {
+                    String installedParentPath = ((HpcApplicationDeploymentType)
+                            jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath();
                     pbsCluster = new PBSCluster(serverInfo, authenticationInfo,
-                            (((HpcApplicationDeploymentType) jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath()));
+                            (CommonUtils.getPBSJobManager(installedParentPath)));
                 } catch (SSHApiException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
@@ -495,8 +498,10 @@ public class EmbeddedGFacInvoker implements Invoker {
 
                 Cluster pbsCluster = null;
                 try {
+                    String installedParentPath = ((HpcApplicationDeploymentType)
+                            jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath();
                     pbsCluster = new PBSCluster(serverInfo, authenticationInfo,
-                            (((HpcApplicationDeploymentType) jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath()));
+                            (CommonUtils.getPBSJobManager(installedParentPath)));
                 } catch (SSHApiException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }

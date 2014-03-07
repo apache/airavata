@@ -20,13 +20,15 @@
 */
 package org.apache.airavata.gsi.ssh.util;
 
-import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
+import org.apache.airavata.gsi.ssh.api.job.*;
 import org.apache.airavata.gsi.ssh.impl.JobStatus;
+import org.apache.airavata.gsi.ssh.impl.RawCommandInfo;
 
 public class CommonUtils {
     /**
      * This returns true if the give job is finished
      * otherwise false
+     *
      * @param job
      * @return
      */
@@ -40,6 +42,7 @@ public class CommonUtils {
 
     /**
      * This will read
+     *
      * @param maxWalltime
      * @return
      */
@@ -51,5 +54,12 @@ public class CommonUtils {
             int hours = maxWalltime / 60;
             return hours + ":" + minutes + ":00";
         }
+    }
+    public static JobManagerConfiguration getPBSJobManager(String installedPath) {
+        return new PBSJobConfiguration("PBSTemplate.xslt",".pbs", installedPath, new PBSOutputParser());
+    }
+
+    public static JobManagerConfiguration getSLURMJobManager(String installedPath) {
+        return new SlurmJobConfiguration("SLURMTemplate.xslt", ".slurm", installedPath, new SlurmOutputParser());
     }
 }

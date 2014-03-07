@@ -56,27 +56,24 @@ public class WorkflowSamplesCaseIT extends WorkflowIntegrationTestBase {
     private final Logger log = LoggerFactory.getLogger(WorkflowSamplesCaseIT.class);
 
     public WorkflowSamplesCaseIT() throws Exception {
-        setUpEnvironment();
+//        setUpEnvironment();
     }
 
     @BeforeTest
     public void setUp() throws Exception {
-
-        PasswordCallback passwordCallback = new PasswordCallbackImpl();
-        this.airavataAPI = AiravataAPIFactory.getAPI(new URI(getRegistryURL()), getGatewayName(), getUserName(),
-                passwordCallback);
+        this.airavataAPI = getAiravataAPI();
     }
 
-    @Test(groups = {"workflowSamplesGroup"}/*, dependsOnGroups = { "forEachGroup" }*/)
-    public void testWorkflowSamples() throws Exception {
-        log("Running tests .............................");
-        executeExperiment("target/samples/workflows/SimpleEcho.xwf", Arrays.asList("Test_Value"), "Test_Value");
-        executeExperiment("target/samples/workflows/LevenshteinDistance.xwf", Arrays.asList("abc", "def"), Arrays.asList("3"));
+//    @Test(groups = {"workflowSamplesGroup"}/*, dependsOnGroups = { "forEachGroup" }*/)
+//    public void testWorkflowSamples() throws Exception {
+//        log("Running tests .............................");
+//        executeExperiment("target/samples/workflows/SimpleEcho.xwf", Arrays.asList("Test_Value"), "Test_Value");
+//        executeExperiment("target/samples/workflows/LevenshteinDistance.xwf", Arrays.asList("abc", "def"), Arrays.asList("3"));
 //        executeExperiment("target/samples/workflows/SimpleForEach.xwf", Arrays.asList("1,2","3,4"), Arrays.asList("4","6"));
 //        executeExperiment("target/samples/workflows/ComplexMath.xwf", Arrays.asList("15","16","18","21","25","30","36","43"), "5554");
 //		executeExperiment("target/samples/workflows/SimpleMath.xwf", Arrays.asList("15","16","18","21","25","30","36","43"), "204");
 //		executeExperiment("target/samples/workflows/ComplexForEach.xwf", Arrays.asList("1,2","3,4","5,6","7,8","9,10","11,12","13,14","15,16"), Arrays.asList("2027025","10321920"));
-    }
+//    }
 
     private void executeExperiment(String workflowFilePath,
                                    List<String> inputs, Object outputs) throws GraphException,
@@ -96,8 +93,6 @@ public class WorkflowSamplesCaseIT extends WorkflowIntegrationTestBase {
     }
 
     protected void runWorkFlow(Workflow workflow, List<String> inputValues, Object outputValue) throws Exception {
-        AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(new URI(getRegistryURL()), getGatewayName(), getUserName(),
-                new PasswordCallbackImpl());
         List<WorkflowInput> workflowInputs = setupInputs(workflow, inputValues);
         String workflowName = workflow.getName();
         ExperimentAdvanceOptions options = airavataAPI.getExecutionManager().createExperimentAdvanceOptions(
@@ -114,8 +109,6 @@ public class WorkflowSamplesCaseIT extends WorkflowIntegrationTestBase {
     }
 
     protected void verifyOutput(String experimentId, Object outputVerifyingString) throws Exception {
-        AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(new URI(getRegistryURL()), getGatewayName(), getUserName(),
-                new PasswordCallbackImpl());
         log.info("Experiment ID Returned : " + experimentId);
 
         ExperimentData experimentData = airavataAPI.getProvenanceManager().getExperimentData(experimentId);
