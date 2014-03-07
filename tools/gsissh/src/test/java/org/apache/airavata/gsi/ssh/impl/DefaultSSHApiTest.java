@@ -51,7 +51,7 @@ public class DefaultSSHApiTest {
     @BeforeTest
     public void setUp() throws Exception {
         System.setProperty("myproxy.user", "ogce");
-        System.setProperty("myproxy.password", "0Gce3098");
+        System.setProperty("myproxy.password", "");
         System.setProperty("basedir", "/Users/lahirugunathilake/Downloads");
         System.setProperty("gsi.working.directory", "/home/ogce");
         myProxyUserName = System.getProperty("myproxy.user");
