@@ -213,7 +213,10 @@ public class DocumentCreator {
         host.getType().setHostAddress(hpcHostAddress);
         host.getType().setHostName(gsiSshHostName);
         ((GsisshHostType) host.getType()).setPort(22);
+<<<<<<< HEAD
         ((GsisshHostType) host.getType()).setInstalledPath("/opt/torque/bin/");
+=======
+>>>>>>> 219063e0df324509d24b68dfdd2bc65032219e1b
 
         try {
             airavataAPI.getApplicationManager().saveHostDescription(host);
