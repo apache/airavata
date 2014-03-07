@@ -90,8 +90,10 @@ public class ResourceConnection {
                 return JobState.FAILED;
             }else if ("PR".equals(status)) {
                 return JobState.FAILED;
+            }else if ("U".equals(status)){
+                return JobState.UNKNOWN;
             }
         }
-        return null;
+        return JobState.UNKNOWN;
     }
 }

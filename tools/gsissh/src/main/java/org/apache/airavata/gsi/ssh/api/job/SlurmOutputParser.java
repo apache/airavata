@@ -103,14 +103,11 @@ public class SlurmOutputParser implements OutputParser {
         String lastString = info[info.length -1];
         if (lastString.contains("JOBID") || lastString.contains("PARTITION")) {
             // because there's no state
-            return JobStatus.valueOf("F");
+            return JobStatus.valueOf("U");
         }else{
             int column = 0;
-            System.out.println(lastString);
             for(String each:lastString.split(" ")){
-                if(each.trim().isEmpty()){
-                    continue;
-                }else{
+                if(!each.trim().isEmpty()){
                     switch (column){
                         case 0:
                             column++;
