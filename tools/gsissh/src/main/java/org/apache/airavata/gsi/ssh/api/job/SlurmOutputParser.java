@@ -21,13 +21,16 @@
 package org.apache.airavata.gsi.ssh.api.job;
 
 import org.apache.airavata.gsi.ssh.impl.JobStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.print.attribute.standard.JobState;
 import java.util.Map;
 
 public class SlurmOutputParser implements OutputParser {
+    private static final Logger log = LoggerFactory.getLogger(PBSOutputParser.class);
     public void parse(JobDescriptor descriptor, String rawOutput) {
-        System.out.println(rawOutput);
+        log.debug(rawOutput);
         String[] info = rawOutput.split("\n");
         String lastString = info[info.length -1];
         if (lastString.contains("JOB ID")) {
@@ -98,19 +101,16 @@ public class SlurmOutputParser implements OutputParser {
     }
 
     public JobStatus parse(String jobID, String rawOutput) {
-        System.out.println(rawOutput);
+        log.debug(rawOutput);
         String[] info = rawOutput.split("\n");
         String lastString = info[info.length -1];
         if (lastString.contains("JOBID") || lastString.contains("PARTITION")) {
             // because there's no state
-            return JobStatus.valueOf("F");
+            return JobStatus.valueOf("U");
         }else{
             int column = 0;
-            System.out.println(lastString);
             for(String each:lastString.split(" ")){
-                if(each.trim().isEmpty()){
-                    continue;
-                }else{
+                if(!each.trim().isEmpty()){
                     switch (column){
                         case 0:
                             column++;

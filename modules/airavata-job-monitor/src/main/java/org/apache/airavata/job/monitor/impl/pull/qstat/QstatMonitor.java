@@ -152,6 +152,7 @@ public class QstatMonitor extends PullMonitor implements Runnable {
                 logger.error("Error handling the job with Job ID:" + take.getJobID());
                 throw new AiravataMonitorException(e);
             } catch (SSHApiException e) {
+                logger.error(e.getMessage());
                 if(e.getMessage().contains("Unknown Job Id Error")){
                     // in this case job is finished or may be the given job ID is wrong
                     jobStatus.setState(JobState.UNKNOWN);
@@ -180,6 +181,7 @@ public class QstatMonitor extends PullMonitor implements Runnable {
                         e1.printStackTrace();
                     }
                 } else {
+                    logger.error(e.getMessage());
                     logger.error("Tryied to monitor the job 3 times, so dropping of the the Job with ID: " + take.getJobID());
                 }
                 throw new AiravataMonitorException("Error retrieving the job status", e);
