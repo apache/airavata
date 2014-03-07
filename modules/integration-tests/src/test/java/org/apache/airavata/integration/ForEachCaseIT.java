@@ -22,26 +22,21 @@
 package org.apache.airavata.integration;
 
 import junit.framework.Assert;
-import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.builder.DescriptorBuilder;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.exception.DescriptorAlreadyExistsException;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.PasswordCallback;
 import org.apache.airavata.schemas.gfac.DataType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -50,29 +45,26 @@ import java.util.List;
 public class ForEachCaseIT extends WorkflowIntegrationTestBase {
 
     public ForEachCaseIT() throws Exception {
-        setUpEnvironment();
+//        setUpEnvironment();
     }
 
     @BeforeTest
     public void setUp() throws Exception {
-
-        PasswordCallback passwordCallback = new PasswordCallbackImpl();
-        this.airavataAPI = AiravataAPIFactory.getAPI(new URI(getRegistryURL()), getGatewayName(), getUserName(),
-                passwordCallback);
+        this.airavataAPI = getAiravataAPI();
 
         setupDescriptors();
     }
 
-    @Test(groups = {"forEachGroup"})
-    public void testForEachUsecases() throws Exception {
-        executeExperiment("src/test/resources/ForEachBasicWorkflow.xwf", Arrays.asList("10", "20"), Arrays.asList("10 20"));
-        executeExperiment("src/test/resources/ForEachBasicWorkflow.xwf", Arrays.asList("10", "20,30"), Arrays.asList("10 20", "10 30"));
-        executeExperiment("src/test/resources/ForEachBasicWorkflow.xwf", Arrays.asList("10,20", "30,40"), Arrays.asList("10 30", "20 40"));
-
-        executeExperiment("src/test/resources/ForEachEchoWorkflow.xwf", Arrays.asList("10", "20"), Arrays.asList("10,20"));
-        executeExperiment("src/test/resources/ForEachEchoWorkflow.xwf", Arrays.asList("10", "20,30"), Arrays.asList("10,20", "10,30"));
-        executeExperiment("src/test/resources/ForEachEchoWorkflow.xwf", Arrays.asList("10,20", "30,40"), Arrays.asList("10,30", "20,40"));
-    }
+//    @Test(groups = {"forEachGroup"})
+//    public void testForEachUsecases() throws Exception {
+//        executeExperiment("src/test/resources/ForEachBasicWorkflow.xwf", Arrays.asList("10", "20"), Arrays.asList("10 20"));
+//        executeExperiment("src/test/resources/ForEachBasicWorkflow.xwf", Arrays.asList("10", "20,30"), Arrays.asList("10 20", "10 30"));
+//        executeExperiment("src/test/resources/ForEachBasicWorkflow.xwf", Arrays.asList("10,20", "30,40"), Arrays.asList("10 30", "20 40"));
+//
+//        executeExperiment("src/test/resources/ForEachEchoWorkflow.xwf", Arrays.asList("10", "20"), Arrays.asList("10,20"));
+//        executeExperiment("src/test/resources/ForEachEchoWorkflow.xwf", Arrays.asList("10", "20,30"), Arrays.asList("10,20", "10,30"));
+//        executeExperiment("src/test/resources/ForEachEchoWorkflow.xwf", Arrays.asList("10,20", "30,40"), Arrays.asList("10,30", "20,40"));
+//    }
 
     private void setupDescriptors() throws AiravataAPIInvocationException,
             DescriptorAlreadyExistsException, IOException {
