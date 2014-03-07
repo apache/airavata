@@ -48,7 +48,6 @@ public class MonitorID {
 
     private HostDescription host;
 
-    private int port = 22;
 
     private AuthenticationInfo authenticationInfo = null;
 
@@ -123,14 +122,6 @@ public class MonitorID {
 
     public void setJobStartedTime(Timestamp jobStartedTime) {
         this.jobStartedTime = jobStartedTime;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
     }
 
     public AuthenticationInfo getAuthenticationInfo() {

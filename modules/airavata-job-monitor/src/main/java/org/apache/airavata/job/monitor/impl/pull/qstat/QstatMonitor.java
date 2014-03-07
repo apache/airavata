@@ -126,11 +126,7 @@ public class QstatMonitor extends PullMonitor implements Runnable {
                             logger.debug("We already have this connection so not going to create one");
                             connection = connections.get(hostName);
                         } else {
-                            if (gsisshHostType.getInstalledPath() == null) {
-                                connection = new ResourceConnection(take, gsisshHostType.getInstalledPath());
-                            } else {
-                                connection = new ResourceConnection(take, gsisshHostType.getInstalledPath());
-                            }
+                            connection = new ResourceConnection(take, gsisshHostType.getInstalledPath());
                             connections.put(hostName, connection);
                         }
                         jobStatus.setMonitorID(take);

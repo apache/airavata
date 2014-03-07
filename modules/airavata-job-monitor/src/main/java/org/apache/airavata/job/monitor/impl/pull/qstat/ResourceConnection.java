@@ -42,7 +42,6 @@ public class ResourceConnection {
         AuthenticationInfo authenticationInfo = monitorID.getAuthenticationInfo();
         String hostAddress = monitorID.getHost().getType().getHostAddress();
         String userName = monitorID.getUserName();
-        int port = monitorID.getPort();
         String jobManager = ((GsisshHostType)monitorID.getHost().getType()).getJobManager();
         JobManagerConfiguration jConfig = null;
         if (jobManager == null) {
@@ -56,7 +55,7 @@ public class ResourceConnection {
             }
             //todo support br2 etc
         }
-        ServerInfo serverInfo = new ServerInfo(monitorID.getUserName(), hostAddress, monitorID.getPort());
+        ServerInfo serverInfo = new ServerInfo(userName, hostAddress, ((GsisshHostType)monitorID.getHost().getType()).getPort());
         cluster = new PBSCluster(serverInfo, authenticationInfo, jConfig);
     }
 
