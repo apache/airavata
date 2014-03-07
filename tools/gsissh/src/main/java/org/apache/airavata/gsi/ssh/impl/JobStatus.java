@@ -33,7 +33,7 @@
   * S -  (Unicos only) job is suspend.
   */
  public enum JobStatus {
-     C, E, H, Q, R, T, W, S,U;
+     C, E, H, Q, R, T, W, S,U,F,CA,CD,CF,CG,NF,PD,PR,TO;
 
      public static JobStatus fromString(String status){
         if(status != null){
@@ -53,6 +53,28 @@
                 return JobStatus.W;
             }else if("S".equals(status)){
                 return JobStatus.S;
+            }else if("F".equals(status)){
+                return JobStatus.F;
+            }else if("S".equals(status)){
+                return JobStatus.S;
+            }else if("CA".equals(status)){
+                return JobStatus.CA;
+            }else if("CF".equals(status)){
+                return JobStatus.CF;
+            }else if("CD".equals(status)){
+                return JobStatus.CD;
+            }else if("CG".equals(status)){
+                return JobStatus.CG;
+            }else if("NF".equals(status)){
+                return JobStatus.NF;
+            }else if("PD".equals(status)){
+                return JobStatus.PD;
+            }else if("PR".equals(status)){
+                return JobStatus.PR;
+            }else if("TO".equals(status)){
+                return JobStatus.TO;
+            }else if("U".equals(status)){
+                return JobStatus.U;
             }
         }
          return JobStatus.U;
