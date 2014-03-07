@@ -22,6 +22,7 @@ package org.apache.airavata.gsi.ssh.api.job;
 
 import org.apache.airavata.gsi.ssh.impl.JobStatus;
 
+import javax.print.attribute.standard.JobState;
 import java.util.Map;
 
 public class SlurmOutputParser implements OutputParser {
@@ -97,7 +98,48 @@ public class SlurmOutputParser implements OutputParser {
     }
 
     public JobStatus parse(String jobID, String rawOutput) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        System.out.println(rawOutput);
+        String[] info = rawOutput.split("\n");
+        String lastString = info[info.length -1];
+        if (lastString.contains("JOBID") || lastString.contains("PARTITION")) {
+            // because there's no state
+            return JobStatus.valueOf("F");
+        }else{
+            int column = 0;
+            System.out.println(lastString);
+            for(String each:lastString.split(" ")){
+                if(each.trim().isEmpty()){
+                    continue;
+                }else{
+                    switch (column){
+                        case 0:
+                            column++;
+                            break;
+                        case 1:
+                            column++;
+                            break;
+                        case 2:
+                            column++;
+                            break;
+                        case 3:
+                            column++;
+                            break;
+                        case 4:
+                            return JobStatus.valueOf((each));
+                        case 5:
+                            column++;
+                            break;
+                        case 6:
+                            column++;
+                            break;
+                        case 7:
+                            column++;
+                            break;
+                    }
+                }
+            }
+        }
+        return JobStatus.valueOf("U");
     }
 
     public void parse(Map<String, JobStatus> statusMap, String rawOutput) {
