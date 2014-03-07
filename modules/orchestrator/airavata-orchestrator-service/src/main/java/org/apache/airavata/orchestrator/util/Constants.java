@@ -19,29 +19,9 @@
  *
  */
 
-package org.apache.airavata.common.utils;
+package org.apache.airavata.orchestrator.util;
 
-import java.util.Calendar;
-import java.util.Date;
+public class Constants {
+    public static final String ORCHESTRATOT_SERVER_PORT = "orchestrator.server.port";
 
-public interface IServer {
-	public enum ServerStatus{
-		STOPPED,
-		STARTING,
-		STARTED,
-		FAILED;
-		public void updateTime(){
-			now=Calendar.getInstance().getTime();
-		}
-		private Date now;
-		public Date getTime(){
-			return now;
-		}
-	}
-	public void start() throws Exception;
-	public void stop() throws Exception;
-	public void restart() throws Exception;
-	public void configure() throws Exception;
-	public ServerStatus getStatus() throws Exception;
-	public void waitForServerStart() throws Exception;
 }

@@ -22,7 +22,10 @@
 package org.apache.airavata.orchestrator.server;
 
 import org.apache.airavata.common.utils.IServer;
+import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.IServer.ServerStatus;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
+import org.apache.airavata.orchestrator.util.Constants;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TSimpleServer;
 import org.apache.thrift.transport.TServerSocket;
@@ -35,8 +38,6 @@ public class OrchestratorServer implements IServer{
 
     private final static Logger logger = LoggerFactory.getLogger(OrchestratorServer.class);
 
-    //FIXME: Read the port from airavata-server.config file
-    private static final int ORCHESTRATOT_SERVER_PORT = 8940;
     private ServerStatus status;
 
 	private TSimpleServer server;
@@ -49,14 +50,17 @@ public class OrchestratorServer implements IServer{
     public void StartOrchestratorServer(OrchestratorService.Processor<OrchestratorServerHandler> orchestratorServerHandlerProcessor)
             throws Exception {
         try {
-            TServerTransport serverTransport = new TServerSocket(ORCHESTRATOT_SERVER_PORT);
+            int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.ORCHESTRATOT_SERVER_PORT,"8940"));
+			TServerTransport serverTransport = new TServerSocket(serverPort);
             server = new TSimpleServer(
                     new TServer.Args(serverTransport).processor(orchestratorServerHandlerProcessor));
-            logger.info("Starting Orchestrator Server on Port " + ORCHESTRATOT_SERVER_PORT);
+            logger.info("Starting Orchestrator Server on Port " + serverPort);
             logger.info("Listening to Orchestrator Clients ....");
             new Thread() {
 				public void run() {
 					server.serve();
+					setStatus(ServerStatus.STOPPED);
+					logger.info("Orchestrator Server Stopped.");
 				}
 			}.start();
 			setStatus(ServerStatus.STARTED);
@@ -86,8 +90,6 @@ public class OrchestratorServer implements IServer{
 	public void stop() throws Exception {
 		if (server.isServing()){
 			server.stop();
-			setStatus(ServerStatus.STOPPED);
-			logger.info("Orchestrator Server Stopped.");
 		}
 		
 	}
@@ -112,6 +114,16 @@ public class OrchestratorServer implements IServer{
 	private void setStatus(ServerStatus stat){
 		status=stat;
 		status.updateTime();
+	}
+
+	@Override
+	public void waitForServerStart() throws Exception {
+		while((getStatus()==ServerStatus.STARTING || getStatus()==ServerStatus.STARTED) && !server.isServing()){
+			Thread.sleep(100);
+		}
+		if (!(getStatus()==ServerStatus.STARTING || getStatus()==ServerStatus.STARTED)){
+			throw new Exception("The server did not start!!!");
+		}
 	}
 
 }
