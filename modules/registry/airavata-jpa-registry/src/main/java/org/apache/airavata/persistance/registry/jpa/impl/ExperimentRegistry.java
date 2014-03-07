@@ -2485,6 +2485,9 @@ public class ExperimentRegistry {
     }
 
     public Timestamp getTime(long time) {
+        if (time == 0){
+          return getCurrentTimestamp();
+        }
         return new Timestamp(time);
     }
 }
