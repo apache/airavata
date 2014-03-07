@@ -43,7 +43,22 @@ public class JobStatus {
     }
 
     public void setState(JobState state) {
-        this.state = state;
+        // this is to handle quick change of status and getStatus returns unknown values
+        // because job is already finished and information is removed in the resource
+        if (this.state != null && state.equals(JobState.UNKNOWN)) {
+            switch (this.state) {
+                case ACTIVE:
+                    this.state = JobState.COMPLETE;
+                    break;
+                case QUEUED:
+                    this.state = JobState.COMPLETE;
+                    break;
+
+            }
+        }else{
+            // normal scenario
+            this.state = state;
+        }
     }
 
     public MonitorID getMonitorID() {
