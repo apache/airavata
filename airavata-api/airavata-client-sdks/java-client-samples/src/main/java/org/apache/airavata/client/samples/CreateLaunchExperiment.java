@@ -123,6 +123,7 @@ public class CreateLaunchExperiment {
             DocumentCreator documentCreator = new DocumentCreator(getAiravataAPI());
             documentCreator.createLocalHostDocs();
             documentCreator.createGramDocs();
+            documentCreator.createPBSDocs();
             documentCreator.createSlurmDocs();
         } catch (AiravataAPIInvocationException e) {
             logger.error("Unable to create airavata API", e.getMessage());

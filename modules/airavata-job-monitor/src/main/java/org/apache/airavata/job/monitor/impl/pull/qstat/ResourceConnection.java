@@ -64,7 +64,7 @@ public class ResourceConnection {
         String jobID = monitorID.getJobID();
         //todo so currently we execute the qstat for each job but we can use user based monitoring
         //todo or we should concatenate all the commands and execute them in one go and parse the response
-        return getStatusFromString(cluster.getJobStatus(monitorID.getJobID()).toString());
+        return getStatusFromString(cluster.getJobStatus(jobID).toString());
     }
 
     private JobState getStatusFromString(String status) {
