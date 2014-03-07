@@ -264,7 +264,7 @@ public class DocumentCreator {
         name.setStringValue("EchoLocal");
         app.setApplicationName(name);
         ProjectAccountType projectAccountType = app.addNewProjectAccount();
-        projectAccountType.setProjectAccountNumber("sds128");
+        projectAccountType.setProjectAccountNumber("uot111");
 
         QueueType queueType = app.addNewQueue();
         queueType.setQueueName("normal");
@@ -282,7 +282,7 @@ public class DocumentCreator {
         /*
            * Default tmp location
            */
-        String tempDir = "/home/ogce/scratch";
+        String tempDir = "/oasis/projects/nsf/uot111/us3/airavata-workdirs/";
         String date = (new Date()).toString();
         date = date.replaceAll(" ", "_");
         date = date.replaceAll(":", "_");
