@@ -126,6 +126,7 @@
                 <include>provenance.sql</include>
                 <include>gfac-config.xml</include>
                 <include>PBSTemplate.xslt</include>
+                <include>SLURMTemplate.xslt</include>
                 <include>gsissh.properties</include>
             </includes>
         </fileSet>
