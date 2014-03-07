@@ -424,6 +424,7 @@ public class DocumentCreator {
         host.getType().setHostAddress("stampede.tacc.xsede.org");
         host.getType().setHostName("stampede-host");
         ((GsisshHostType) host.getType()).setJobManager("slurm");
+        ((GsisshHostType) host.getType()).setInstalledPath("/usr/bin/");
         ((GsisshHostType) host.getType()).setPort(2222);
 
 

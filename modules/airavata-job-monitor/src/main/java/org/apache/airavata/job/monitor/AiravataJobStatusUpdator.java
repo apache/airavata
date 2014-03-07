@@ -95,15 +95,18 @@ public class AiravataJobStatusUpdator{
                     break;
                 case CANCELED:
                     logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is CANCELED");
+                    jobsToMonitor.remove(jobStatus.getMonitorID());
                     break;
                 case FAILED:
                     logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is FAILED");
+                    jobsToMonitor.remove(jobStatus.getMonitorID());
                     break;
                 case HELD:
                     logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is HELD");
                     break;
                 case SUSPENDED:
                     logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is SUSPENDED");
+                    jobsToMonitor.remove(jobStatus.getMonitorID());
                     break;
             }
         }

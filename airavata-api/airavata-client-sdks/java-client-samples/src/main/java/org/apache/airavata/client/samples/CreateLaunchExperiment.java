@@ -267,7 +267,7 @@ public class CreateLaunchExperiment {
             exOut.add(output);
 
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
+                    ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho3", "SimpleEcho3", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling =
