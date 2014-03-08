@@ -24,13 +24,33 @@ package org.apache.airavata.common.utils;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class StringUtil {
 	public static final String DELIMETER=",";
 	public static final String QUOTE="\"";
+	
+	public static Map<Integer, String> getContainedParameters(String s) {
+		Map<Integer,String> parameterMap=new HashMap<Integer,String>();
+		int i=0;
+		for(i=0;i<s.length();i++){
+			if (s.charAt(i)=='$' && (i+1)<s.length() && s.charAt(i+1)=='{'){
+				int i2=s.indexOf('{', i+2);
+				int e=s.indexOf('}', i+2);
+				if (e!=-1){
+					if (i2==-1 || e<i2){
+						parameterMap.put(i, s.substring(i,e+1));
+						i=e;
+					}
+				}
+			}
+		}
+		return parameterMap;
+	}
 	
 	// Merits for the following function should go to 
 	// http://blog.houen.net/java-get-url-from-string/ 
