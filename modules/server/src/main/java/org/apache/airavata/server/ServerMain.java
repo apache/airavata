@@ -26,11 +26,15 @@ import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ServerMain {
 	private static List<IServer> servers;
 	private static final String SERVERS_KEY="servers";
-	static {
+    private final static Logger logger = LoggerFactory.getLogger(ServerMain.class);
+
+	private static void loadServers() {
 		servers = new ArrayList<IServer>();
 		try {
 			String serversString = ServerSettings.getSetting(SERVERS_KEY);
@@ -38,28 +42,31 @@ public class ServerMain {
 				String[] serversList = serversString.split(",");
 				for (String serverString : serversList) {
 					String serverClassName = ServerSettings.getSetting(serverString);
-					Class<?> classInstance = ServerMain.class
-                            .getClassLoader().loadClass(
-                            		serverClassName);
-					servers.add((IServer)classInstance.newInstance());
+					Class<?> classInstance;
+					try {
+						classInstance = ServerMain.class
+						        .getClassLoader().loadClass(
+						        		serverClassName);
+						servers.add((IServer)classInstance.newInstance());
+					} catch (ClassNotFoundException e) {
+						logger.error("Error while initiating locating server implementation \""+serverString+"\"!!!",e);
+					} catch (InstantiationException e) {
+						logger.error("Error while initiating server instance \""+serverString+"\"!!!",e);
+					} catch (IllegalAccessException e) {
+						logger.error("Error while initiating server instance \""+serverString+"\"!!!",e);
+					} catch (ClassCastException e){
+						logger.error("Invalid server \""+serverString+"\"!!!",e);
+					}
 				}
 			}
 		} catch (ApplicationSettingsException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error while retrieving server list!!!",e);
 		}
 	}
 
 	public static void main(String args[]) {
+		ServerSettings.mergeSettingsCommandLineArgs(args);
+		loadServers();
 		new Thread() {
 			public void run() {
 				startAllServers();
@@ -99,4 +106,5 @@ public class ServerMain {
 			}
 		}
 	}
+	
 }

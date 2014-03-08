@@ -59,7 +59,7 @@ public class AiravataAPIServer implements IServer{
 			TServerTransport serverTransport = new TServerSocket(serverPort);
             server = new TSimpleServer(
                     new TServer.Args(serverTransport).processor(mockAiravataServer));
-            logger.info("Starting Airavata Mock Airavata Server on Port " + serverPort);
+            logger.info("Starting Airavata API Server on Port " + serverPort);
             logger.info("Listening to Airavata Clients ....");
             new Thread() {
 				public void run() {
