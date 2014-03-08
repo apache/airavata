@@ -103,14 +103,6 @@ public abstract class ApplicationSettings {
     		throw new ApplicationSettingsLoadException(propertyLoadException);
     	}
     }
-    
-    public static String getSetting(String key) throws ApplicationSettingsException{
-    	validateSuccessfulPropertyFileLoad();
-    	if (properties.containsKey(key)){
-    		return properties.getProperty(key);
-    	}
-    	throw new UnspecifiedApplicationSettingsException(key);
-    }
 
     /**
      * Returns the configuration value relevant for the given key.
@@ -121,6 +113,7 @@ public abstract class ApplicationSettings {
      * @return The configuration value. For above example caller will get a value like
      * http://192.2.33.12:8080/axis2/services/RegistryService?wsdl
      * @throws ApplicationSettingsException If an error occurred while reading configurations.
+     * @deprecated use #getSetting(String) instead
      */
     public static String getAbsoluteSetting(String key) throws ApplicationSettingsException {
 
@@ -157,17 +150,41 @@ public abstract class ApplicationSettings {
         return matches;
     }
     
+    public static String getSetting(String key) throws ApplicationSettingsException{
+    	validateSuccessfulPropertyFileLoad();
+    	if (properties.containsKey(key)){
+    		return deriveAbsoluteValue(properties.getProperty(key));
+    	}
+    	throw new UnspecifiedApplicationSettingsException(key);
+    }
+    
     public static String getSetting(String key, String defaultValue){
     	try {
 			validateSuccessfulPropertyFileLoad();
 			if (properties.containsKey(key)){
-				return properties.getProperty(key);
+				return deriveAbsoluteValue(properties.getProperty(key));
 			}
 		} catch (ApplicationSettingsException e) {
 			//we'll ignore this error since a default value is provided
 		}
 		return defaultValue;
     }
+
+	private static String deriveAbsoluteValue(String property) {
+		if (property!=null){
+			Map<Integer, String> containedParameters = StringUtil.getContainedParameters(property);
+			List<String> parametersAlreadyProcessed=new ArrayList<String>();
+			for (String parameter : containedParameters.values()) {
+				if (!parametersAlreadyProcessed.contains(parameter)) {
+					String parameterName = parameter.substring(2,parameter.length() - 1);
+					String parameterValue = getSetting(parameterName,parameter);
+					property = property.replaceAll(Pattern.quote(parameter), parameterValue);
+					parametersAlreadyProcessed.add(parameter);
+				}
+			}
+		}
+		return property;
+	}
     
     public static void setSetting(String key, String value) throws ApplicationSettingsException{
     	properties.setProperty(key, value);
@@ -289,4 +306,5 @@ public abstract class ApplicationSettings {
 			}
 		}
 	}
+	
 }
