@@ -98,6 +98,7 @@ public class AiravataAPIServer implements IServer{
 	@Override
 	public void stop() throws Exception {
 		if (server.isServing()){
+			setStatus(ServerStatus.STOPING);
 			server.stop();
 		}
 		
@@ -126,12 +127,22 @@ public class AiravataAPIServer implements IServer{
 	}
 
 	@Override
-	public void waitForServerStart() throws Exception {
+	public void waitForServerToStart() throws Exception {
 		while((getStatus()==ServerStatus.STARTING || getStatus()==ServerStatus.STARTED) && !server.isServing()){
 			Thread.sleep(100);
 		}
 		if (!(getStatus()==ServerStatus.STARTING || getStatus()==ServerStatus.STARTED)){
-			throw new Exception("The server did not start!!!");
+			throw new Exception("The Airavata API server did not start!!!");
+		}
+	}
+
+	@Override
+	public void waitForServerToStop() throws Exception {
+		while((getStatus()==ServerStatus.STOPING || getStatus()==ServerStatus.STOPPED) && server.isServing()){
+			Thread.sleep(100);
+		}
+		if (!(getStatus()==ServerStatus.STOPING || getStatus()==ServerStatus.STOPPED)){
+			throw new Exception("Error stopping the Airavata API server!!!");
 		}
 	}
 }

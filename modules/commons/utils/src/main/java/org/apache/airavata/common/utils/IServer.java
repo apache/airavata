@@ -26,6 +26,7 @@ import java.util.Date;
 
 public interface IServer {
 	public enum ServerStatus{
+		STOPING,
 		STOPPED,
 		STARTING,
 		STARTED,
@@ -43,5 +44,6 @@ public interface IServer {
 	public void restart() throws Exception;
 	public void configure() throws Exception;
 	public ServerStatus getStatus() throws Exception;
-	public void waitForServerStart() throws Exception;
+	public void waitForServerToStart() throws Exception;
+	public void waitForServerToStop() throws Exception;
 }
