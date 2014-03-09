@@ -27,9 +27,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -39,12 +37,6 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.exception.ApplicationSettingsLoadException;
 import org.apache.airavata.common.exception.ApplicationSettingsStoreException;
 import org.apache.airavata.common.exception.UnspecifiedApplicationSettingsException;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -267,44 +259,7 @@ public abstract class ApplicationSettings {
     }
     
     public static void mergeSettingsCommandLineArgs(String[] args){
-    	properties.putAll(parseCommandLineOptions(args));
+    	properties.putAll(StringUtil.parseCommandLineOptions(args));
     }
     
-    private static Options deriveCommandLineOptions(String[] args){
-    	Options options = new Options();
-        for (String arg : args) {
-            if (arg.startsWith("--")){
-            	arg=arg.substring(2);
-                int pos = arg.indexOf('=');
-                String opt = pos == -1 ? arg : arg.substring(0, pos); 
-                options.addOption(opt, true, "");
-            }
-        }
-        return options;
-    }
-    
-	private static Map<String, String> parseCommandLineOptions(String[] args) {
-		Map<String,String> commandLineOptions=new HashMap<String,String>();
-		CommandLineParser parser = new DynamicOptionPosixParser();
-		try {
-			CommandLine cmdLine = parser.parse(deriveCommandLineOptions(args), args);
-			for (Option s : cmdLine.getOptions()) {
-				commandLineOptions.put(s.getOpt(), s.getValue());
-			}
-		} catch (ParseException e1) {
-			e1.printStackTrace();
-		}
-		return commandLineOptions;
-	}
-	
-	private static class DynamicOptionPosixParser extends PosixParser{
-		@Override
-		protected void processOption(String arg0, @SuppressWarnings("rawtypes") ListIterator arg1)
-				throws ParseException {
-			if (getOptions().hasOption(arg0)){
-				super.processOption(arg0, arg1);
-			}
-		}
-	}
-	
 }

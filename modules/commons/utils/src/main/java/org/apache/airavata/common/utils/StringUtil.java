@@ -26,9 +26,17 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
 
 public class StringUtil {
 	public static final String DELIMETER=",";
@@ -365,5 +373,48 @@ public class StringUtil {
         printStream.flush();
         return byteArrayOutputStream.toString();
     }
+    
+    public static Options deriveCommandLineOptions(String[] args){
+    	Options options = new Options();
+        for (String arg : args) {
+            if (arg.startsWith("--")){
+            	arg=arg.substring(2);
+                int pos = arg.indexOf('=');
+                String opt = pos == -1 ? arg : arg.substring(0, pos); 
+                options.addOption(opt, true, "");
+            }
+        }
+        return options;
+    }
+    
+	public static Map<String, String> parseCommandLineOptions(String[] args) {
+		Map<String,String> commandLineOptions=new HashMap<String,String>();
+		try {
+			CommandLine cmdLine = getCommandLineParser(args);
+			for (Option s : cmdLine.getOptions()) {
+				commandLineOptions.put(s.getOpt(), s.getValue());
+			}
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+		return commandLineOptions;
+	}
+
+	public static CommandLine getCommandLineParser(String[] args)
+			throws ParseException {
+		CommandLineParser parser = new DynamicOptionPosixParser();
+		CommandLine cmdLine = parser.parse(deriveCommandLineOptions(args), args);
+		return cmdLine;
+	}
+	
+	private static class DynamicOptionPosixParser extends PosixParser{
+		@Override
+		protected void processOption(String arg0, @SuppressWarnings("rawtypes") ListIterator arg1)
+				throws ParseException {
+			if (getOptions().hasOption(arg0)){
+				super.processOption(arg0, arg1);
+			}
+		}
+	}
 
 }
