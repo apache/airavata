@@ -33,9 +33,13 @@ public class ServerMain {
 	private static List<IServer> servers;
 	private static final String SERVERS_KEY="servers";
     private final static Logger logger = LoggerFactory.getLogger(ServerMain.class);
-
-	private static void loadServers() {
+    private static boolean serversLoaded=false;
+    
+    static{
 		servers = new ArrayList<IServer>();
+    }
+    
+	private static void loadServers() {
 		try {
 			String serversString = ServerSettings.getSetting(SERVERS_KEY);
 			if (serversString!=null){
@@ -49,7 +53,7 @@ public class ServerMain {
 						        		serverClassName);
 						servers.add((IServer)classInstance.newInstance());
 					} catch (ClassNotFoundException e) {
-						logger.error("Error while initiating locating server implementation \""+serverString+"\"!!!",e);
+						logger.error("Error while locating server implementation \""+serverString+"\"!!!",e);
 					} catch (InstantiationException e) {
 						logger.error("Error while initiating server instance \""+serverString+"\"!!!",e);
 					} catch (IllegalAccessException e) {
@@ -62,45 +66,39 @@ public class ServerMain {
 		} catch (ApplicationSettingsException e) {
 			logger.error("Error while retrieving server list!!!",e);
 		}
-	}
-
-	public static void main(String args[]) {
-		ServerSettings.mergeSettingsCommandLineArgs(args);
-		loadServers();
-		new Thread() {
-			public void run() {
-				startAllServers();
-			}
-		}.start();
+		serversLoaded=true;
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			public void run() {
 				stopAllServers();
 			}
 		});
-		try {
-			while (true) {
-				Thread.sleep(10000);
-			}
-		} catch (InterruptedException e) {
-			stopAllServers();
-		}
 	}
 
-	private static void stopAllServers() {
-		for (IServer server : servers) {
+	public static void main(String args[]) {
+		ServerSettings.mergeSettingsCommandLineArgs(args);
+		startAllServers();
+	}
+
+	public static void stopAllServers() {
+		//stopping should be done in reverse order of starting the servers
+		for(int i=servers.size()-1;i>=0;i--){
 			try {
-				server.stop();
+				servers.get(i).stop();
+				servers.get(i).waitForServerToStop();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	private static void startAllServers() {
+	public static void startAllServers() {
+		if (!serversLoaded){
+			loadServers();
+		}
 		for (IServer server : servers) {
 			try {
 				server.start();
-				server.waitForServerStart();
+				server.waitForServerToStart();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

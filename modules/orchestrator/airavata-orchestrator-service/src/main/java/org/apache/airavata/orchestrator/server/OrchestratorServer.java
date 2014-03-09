@@ -23,7 +23,6 @@ package org.apache.airavata.orchestrator.server;
 
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.IServer.ServerStatus;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.util.Constants;
 import org.apache.thrift.server.TServer;
@@ -88,7 +87,8 @@ public class OrchestratorServer implements IServer{
 
 	@Override
 	public void stop() throws Exception {
-		if (server.isServing()){
+		if (server!=null && server.isServing()){
+			setStatus(ServerStatus.STOPING);
 			server.stop();
 		}
 		
@@ -117,12 +117,22 @@ public class OrchestratorServer implements IServer{
 	}
 
 	@Override
-	public void waitForServerStart() throws Exception {
+	public void waitForServerToStart() throws Exception {
 		while((getStatus()==ServerStatus.STARTING || getStatus()==ServerStatus.STARTED) && !server.isServing()){
 			Thread.sleep(100);
 		}
 		if (!(getStatus()==ServerStatus.STARTING || getStatus()==ServerStatus.STARTED)){
-			throw new Exception("The server did not start!!!");
+			throw new Exception("The Orchestrator server did not start!!!");
+		}
+	}
+
+	@Override
+	public void waitForServerToStop() throws Exception {
+		while((getStatus()==ServerStatus.STOPING || getStatus()==ServerStatus.STOPPED) && server.isServing()){
+			Thread.sleep(100);
+		}
+		if (!(getStatus()==ServerStatus.STOPING || getStatus()==ServerStatus.STOPPED)){
+			throw new Exception("Error stopping the Orchestrator server!!!");
 		}
 	}
 
