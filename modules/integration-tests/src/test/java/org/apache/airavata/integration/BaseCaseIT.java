@@ -22,6 +22,7 @@
 package org.apache.airavata.integration;
 
 import junit.framework.Assert;
+
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.client.tools.DocumentCreator;
 import org.apache.airavata.model.util.ExperimentModelUtil;
@@ -31,6 +32,7 @@ import org.apache.airavata.schemas.gfac.DataType;
 import org.apache.airavata.server.ServerMain;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.ws.monitor.*;
+import org.apache.commons.cli.ParseException;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -53,7 +55,11 @@ public class BaseCaseIT extends WorkflowIntegrationTestBase {
     public void setUp() throws Exception {
         new Thread() {
             public void run() {
-                ServerMain.main(new String[]{});
+                try {
+					ServerMain.main(new String[]{});
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
             }
         }.start();
         Thread.sleep(10000);
