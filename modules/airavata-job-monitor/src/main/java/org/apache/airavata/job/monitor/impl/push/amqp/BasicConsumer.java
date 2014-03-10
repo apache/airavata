@@ -27,8 +27,11 @@ import com.rabbitmq.client.ShutdownSignalException;
 import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.core.MessageParser;
 import org.apache.airavata.job.monitor.event.MonitorPublisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BasicConsumer implements Consumer {
+    private final static Logger logger = LoggerFactory.getLogger(AMQPMonitor.class);
 
     MessageParser parser;
 
@@ -56,7 +59,7 @@ public class BasicConsumer implements Consumer {
                                AMQP.BasicProperties properties,
                                byte[] body) {
 
-        System.out.println("  job update for: " + envelope.getRoutingKey());
+        logger.info("  job update for: " + envelope.getRoutingKey());
 
         String message = new String(body);
         message = message.replaceAll("(?m)^", "    ");
