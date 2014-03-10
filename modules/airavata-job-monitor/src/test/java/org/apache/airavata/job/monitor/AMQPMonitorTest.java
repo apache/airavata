@@ -31,7 +31,6 @@ import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.impl.push.amqp.AMQPMonitor;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
-import org.apache.axiom.om.util.CommonUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -69,7 +68,7 @@ public class AMQPMonitorTest {
         monitorManager = new MonitorManager();
         AMQPMonitor amqpMonitor = new
                 AMQPMonitor(monitorManager.getMonitorPublisher(),
-                monitorManager.getRunningQueue(), monitorManager.getFinishQueue());
+                monitorManager.getPullQueue(), monitorManager.getFinishQueue());
         try {
             monitorManager.addPushMonitor(amqpMonitor);
             monitorManager.launchMonitor();

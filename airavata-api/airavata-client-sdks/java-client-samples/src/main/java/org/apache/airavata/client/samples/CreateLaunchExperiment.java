@@ -61,9 +61,9 @@ public class CreateLaunchExperiment {
             final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavata.GetAPIVersion());
             addDescriptors();
-            final String expId = createExperimentForTrestles(airavata);
+//            final String expId = createExperimentForTrestles(airavata);
 //            final String expId = createUS3ExperimentForTrestles(airavata);
-//            final String expId = createExperimentForStampede(airavata);
+            final String expId = createExperimentForStampede(airavata);
 //            final String expId = createUS3ExperimentForStampede(airavata);
             System.out.println("Experiment ID : " + expId);
             launchExperiment(airavata, expId);
@@ -109,16 +109,17 @@ public class CreateLaunchExperiment {
 
 //            Experiment experiment = airavata.getExperiment(expId);
 //            System.out.println("retrieved exp id : " + experiment.getExperimentID());
-        } catch (TException e) {
+        } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
             e.printStackTrace();
-        } catch (ApplicationSettingsException e) {
-            logger.error("Error while creating airavata API object", e.getMessage());
-            e.printStackTrace();
-        } catch (AiravataAPIInvocationException e) {
-            logger.error("Error while creating airavata API object", e.getMessage());
-            e.printStackTrace();
         }
+//        } catch (ApplicationSettingsException e) {
+//            logger.error("Error while creating airavata API object", e.getMessage());
+//            e.printStackTrace();
+//        } catch (AiravataAPIInvocationException e) {
+//            logger.error("Error while creating airavata API object", e.getMessage());
+//            e.printStackTrace();
+//        }
     }
 
     public static void addDescriptors() throws AiravataAPIInvocationException,ApplicationSettingsException  {
@@ -129,8 +130,8 @@ public class CreateLaunchExperiment {
 //            documentCreator.createPBSDocs();
 //            documentCreator.createPBSDocsForOGCE();
 //            documentCreator.createMPIPBSDocsTrestles();
-//            documentCreator.createSlurmDocs();
-              documentCreator.createMPIPBSDocsStampede();
+            documentCreator.createSlurmDocs();
+//              documentCreator.createMPIPBSDocsStampede();
         } catch (AiravataAPIInvocationException e) {
             logger.error("Unable to create airavata API", e.getMessage());
             throw new AiravataAPIInvocationException(e);
