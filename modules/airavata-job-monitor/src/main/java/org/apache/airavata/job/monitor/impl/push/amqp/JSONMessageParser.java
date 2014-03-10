@@ -23,10 +23,15 @@ package org.apache.airavata.job.monitor.impl.push.amqp;
 import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.core.MessageParser;
 import org.apache.airavata.job.monitor.state.JobStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JSONMessageParser implements MessageParser {
-    public JobStatus parseMessage(String message,MonitorID monitorID) {
+    private final static Logger logger = LoggerFactory.getLogger(JSONMessageParser.class);
+
+    public JobStatus parseMessage(String message, MonitorID monitorID) {
         /*todo write a json message parser here*/
+        logger.info("Mesage parse invoked");
         return new JobStatus();
     }
 }

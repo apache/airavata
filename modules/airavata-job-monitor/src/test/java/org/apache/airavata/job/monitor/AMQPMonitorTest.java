@@ -36,6 +36,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AMQPMonitorTest {
@@ -68,7 +69,8 @@ public class AMQPMonitorTest {
         monitorManager = new MonitorManager();
         AMQPMonitor amqpMonitor = new
                 AMQPMonitor(monitorManager.getMonitorPublisher(),
-                monitorManager.getPullQueue(), monitorManager.getFinishQueue());
+                monitorManager.getPullQueue(), monitorManager.getFinishQueue(),"/Users/lahirugunathilake/Downloads/x509up_u503876","xsede_private",
+                Arrays.asList("info1.dyn.teragrid.org,info2.dyn.teragrid.org".split(",")));
         try {
             monitorManager.addPushMonitor(amqpMonitor);
             monitorManager.launchMonitor();

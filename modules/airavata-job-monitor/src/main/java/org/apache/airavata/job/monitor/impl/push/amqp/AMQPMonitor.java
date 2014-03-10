@@ -75,36 +75,22 @@ public class AMQPMonitor extends PushMonitor {
         this.publisher = publisher;
         this.runningQueue = runningQueue;        // these will be initialized by the MonitorManager
         this.finishQueue = finishQueue;          // these will be initialized by the MonitorManager
-        availableChannels = new HashMap<String, Channel>();
+        this.availableChannels = new HashMap<String, Channel>();
         this.connectionName = connectionName;
         this.proxyPath = proxyPath;
         this.amqpHosts = hosts;
     }
 
-    public void initialize(String proxyPath,String connectionName,List<String> hosts){
+    public void initialize(String proxyPath, String connectionName, List<String> hosts) {
+        this.availableChannels = new HashMap<String, Channel>();
         this.connectionName = connectionName;
         this.proxyPath = proxyPath;
         this.amqpHosts = hosts;
-    }
-
-    public void run() {
-        try {
-            // before going to the while true mode we start unregister thread
-            while (true) {
-                MonitorID take = runningQueue.take();
-                this.registerListener(take);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (AiravataMonitorException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public boolean registerListener(MonitorID monitorID) throws AiravataMonitorException {
-        // do initial check before creating a channel, otherwise resources will be waste
+         // do initial check before creating a channel, otherwise resources will be waste
         // and channel id will be malformed
         // this check is not implemented in MonitorManager because it depends on
         // the Monitoring implementation (what data is required)
@@ -131,8 +117,26 @@ public class AMQPMonitor extends PushMonitor {
                 logger.error("Error creating the connection to finishQueue the job:" + monitorID.getJobID());
             }
         }
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return true;
     }
+
+    public void run() {
+        // before going to the while true mode we start unregister thread
+        while (true) {
+            try {
+                MonitorID take = runningQueue.take();
+                this.registerListener(take);
+            } catch (AiravataMonitorException e) { // catch any exceptino inside the loop
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+
 
     private void checkMonitorID(MonitorID monitorID) throws AiravataMonitorException {
         if (monitorID.getUserName() == null) {
