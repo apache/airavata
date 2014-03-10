@@ -42,6 +42,7 @@ public class ServerMain {
     private final static Logger logger = LoggerFactory.getLogger(ServerMain.class);
     private static boolean serversLoaded=false;
 	private static final String stopFileNamePrefix = "airavata-server-stop";
+	private static int serverIndex=-1;
 	private static final String serverStartedFileNamePrefix = "airavata-server-start";
     static{
 		servers = new ArrayList<IServer>();
@@ -86,14 +87,27 @@ public class ServerMain {
 		CommandLine commandLineParser = StringUtil.getCommandLineParser(args);
 		
 		if (commandLineParser.getArgList().contains("stop")){
+			String serverIndexOption = "serverIndex";
+			if (commandLineParser.hasOption(serverIndexOption)){
+				serverIndex=Integer.parseInt(commandLineParser.getOptionValue(serverIndexOption));
+			}
 			if (isServerRunning()) {
-				logger.info("Requesting airavata server to stop...");
+				logger.info("Requesting airavata server"+(serverIndex==-1? "(s)":" instance "+serverIndex)+" to stop...");
 				requestStop();
+				while(isServerRunning()){
+					try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				logger.info("Server"+(serverIndex==-1? "(s)":" instance "+serverIndex)+" stopped!!!");
 			}else{
-				logger.error("Server is not running!!!");
+				logger.error("Server"+(serverIndex==-1? "":" instance "+serverIndex)+" is not running!!!");
 			}
 		}else{
 			setServerStarted();
+			logger.info("Airavata server instance "+serverIndex+" starting...");
 			ServerSettings.mergeSettingsCommandLineArgs(args);
 			startAllServers();
 			while(!hasStopRequested()){
@@ -105,32 +119,50 @@ public class ServerMain {
 			}
 			if (hasStopRequested()){
 				stopAllServers();
-				stopRequestServed();
+				System.exit(0);
 			}
 		}
 	}
 
+	@SuppressWarnings("resource")
 	private static void requestStop() throws IOException {
 		//FIXME currently stop requests all the servers to stop
-		new File(stopFileNamePrefix).createNewFile();
+		File file = new File(getServerStopFileName());
+		file.createNewFile();
+		new RandomAccessFile(file, "rw").getChannel().lock();
+		file.deleteOnExit();
 	}
 	
 	private static boolean hasStopRequested(){
-		return new File(stopFileNamePrefix).exists();
+		return new File(getServerStopFileName()).exists() || new File(stopFileNamePrefix).exists(); 
 	}
-	
-	private static void stopRequestServed(){
-		new File(stopFileNamePrefix).delete();
+
+	private static String getServerStopFileName() {
+		return (serverIndex==-1)?stopFileNamePrefix:stopFileNamePrefix+serverIndex;
 	}
 
 	private static boolean isServerRunning(){
-		return new File(serverStartedFileNamePrefix).exists();
+		if (serverIndex==-1){
+			String[] files = new File(".").list();
+			for (String file : files) {
+				if (file.contains(serverStartedFileNamePrefix)){
+					return true;
+				}
+			}
+			return false;
+		}else{
+			return new File(getServerStartedFileName()).exists();
+		}
 	}
 	
 	@SuppressWarnings({ "resource" })
 	private static void setServerStarted(){
 		try {
-			File serverStartedFile = new File(serverStartedFileNamePrefix);
+			File serverStartedFile = null;
+			while(serverStartedFile==null || serverStartedFile.exists()){
+				serverIndex++;
+				serverStartedFile = new File(getServerStartedFileName());
+			}
 			serverStartedFile.createNewFile();
 			serverStartedFile.deleteOnExit();
 			new RandomAccessFile(serverStartedFile,"rw").getChannel().lock();
@@ -139,6 +171,10 @@ public class ServerMain {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private static String getServerStartedFileName() {
+		return serverStartedFileNamePrefix+serverIndex;
 	}
 	
 	

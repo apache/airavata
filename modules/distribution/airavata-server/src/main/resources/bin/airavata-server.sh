@@ -26,8 +26,11 @@ then
 fi
 
 JAVA_OPTS=""
-while [ $# -ge 1 ]; do
-    case $1 in
+AIRAVATA_COMMAND=""
+IS_DAEMON_MODE=false
+for var in "$@"
+do
+    case $var in
         -xdebug)
             JAVA_OPTS="$JAVA_OPTS -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,address=8000"
             shift
@@ -36,25 +39,38 @@ while [ $# -ge 1 ]; do
             JAVA_OPTS="$JAVA_OPTS -Djava.security.manager -Djava.security.policy=$AIRAVATA_HOME/conf/axis2.policy -Daxis2.home=$AIRAVATA_HOME"
             shift
         ;;
+	start)
+	    IS_DAEMON_MODE=true
+            shift
+        ;;
         -h)
-            echo "Usage: airavata-server.sh"
-            echo "commands:"
-            echo "  -xdebug    Start Airavata Server under JPDA debugger"
-            echo "  -security  Enable Java 2 security"
-            echo "  -h         help"
+            echo "Usage: airavata-server.sh [command-options]"
+            echo "command options:"
+	    echo "  start                   Start server in daemon mode"
+	    echo "  stop [--serverIndex n]  Stop all airavata servers. Specify serverIndex stop a particular instance"
+	    echo "  --<key>=<value>         Server setting(s) to override or introduce (overrides values in airavata-server.properties)"
+            echo "  -xdebug                 Start Airavata Server under JPDA debugger"
+            echo "  -security               Enable Java 2 security"
+            echo "  -h                      Display this help and exit"
             shift
             exit 0
         ;;
-        *)
-            echo "Error: unknown command:$1"
-            echo "For help: airavata-server.sh -h"
+	*)
+	    AIRAVATA_COMMAND="$AIRAVATA_COMMAND $var"
             shift
-            exit 1
     esac
 done
 
-java $JAVA_OPTS -classpath "$XBAYA_CLASSPATH" \
-    -Djava.endorsed.dirs="$AIRAVATA_HOME/lib/endorsed":"$JAVA_HOME/jre/lib/endorsed":"$JAVA_HOME/lib/endorsed" \
-    org.apache.airavata.server.ServerMain \
-    -repo "$AIRAVATA_HOME"/repository/services -conf "$AIRAVATA_HOME"/conf/axis2.xml $*
+if $IS_DAEMON_MODE ; then
+	echo ,"Starting airavata server in daemon mode..."
+	nohup java $JAVA_OPTS -classpath "$XBAYA_CLASSPATH" \
+	    -Djava.endorsed.dirs="$AIRAVATA_HOME/lib/endorsed":"$JAVA_HOME/jre/lib/endorsed":"$JAVA_HOME/lib/endorsed" \
+	    org.apache.airavata.server.ServerMain $AIRAVATA_COMMAND $* > airavata-server.out & 
+	echo
+	echo
+else
+	java $JAVA_OPTS -classpath "$XBAYA_CLASSPATH" \
+	    -Djava.endorsed.dirs="$AIRAVATA_HOME/lib/endorsed":"$JAVA_HOME/jre/lib/endorsed":"$JAVA_HOME/lib/endorsed" \
+	    org.apache.airavata.server.ServerMain $AIRAVATA_COMMAND $*
+fi
 
