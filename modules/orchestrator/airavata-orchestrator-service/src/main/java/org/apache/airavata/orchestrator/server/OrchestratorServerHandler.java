@@ -44,13 +44,12 @@ import org.apache.airavata.orchestrator.cpi.orchestrator_cpi_serviceConstants;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URL;
+import java.lang.String;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -63,14 +62,11 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 
     private Registry registry;
 
-    private boolean pushMode = true;
-
     GSIAuthenticationInfo authenticationInfo = null;
 
     /**
      * Query orchestrator server to fetch the CPI version
      */
-    @Override
     public String getOrchestratorCPIVersion() throws TException {
 
         return orchestrator_cpi_serviceConstants.ORCHESTRATOR_CPI_VERSION;
@@ -95,34 +91,33 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                     7512, 17280000, certPath);
 
             // loading Monitor configuration
-            String primaryMonitor = properties.getProperty("primaryMonitor");
-            String secondaryMonitor = properties.getProperty("secondaryMonitor");
+            String monitors = properties.getProperty("monitors");
+            List<String> monitorList = Arrays.asList(monitors.split(","));
+            List<String> list = Arrays.asList(properties.getProperty("amqp.hosts").split(","));
+            String proxyPath = properties.getProperty("proxy.file.path");
+            String connectionName = properties.getProperty("connection.name");
 
-
-            if (primaryMonitor == null) {
+            if (monitors == null) {
                 log.error("Error loading primaryMonitor and there has to be a primary monitor");
             } else {
-                Class<? extends Monitor> aClass = Class.forName(primaryMonitor).asSubclass(Monitor.class);
-                Monitor monitor = aClass.newInstance();
-                if (monitor instanceof PullMonitor) {
-                    if(monitor instanceof QstatMonitor){
-                        monitorManager.addQstatMonitor((QstatMonitor)monitor);
+                for (String monitorClass : monitorList) {
+                    Class<? extends Monitor> aClass = Class.forName(monitorClass).asSubclass(Monitor.class);
+                    Monitor monitor = aClass.newInstance();
+                    if (monitor instanceof PullMonitor) {
+                        if (monitor instanceof QstatMonitor) {
+                            monitorManager.addQstatMonitor((QstatMonitor) monitor);
+                        }
+                    } else if (monitor instanceof PushMonitor) {
+                        if (monitor instanceof AMQPMonitor) {
+                            ((AMQPMonitor) monitor).initialize(proxyPath, connectionName, list);
+                            monitorManager.addAMQPMonitor((AMQPMonitor) monitor);
+                        }
+                    } else {
+                        log.error("Wrong class is given to primary Monitor");
                     }
-                    pushMode = false;
-                } else if (monitor instanceof PushMonitor) {
-                    if(monitor instanceof AMQPMonitor){
-                        monitorManager.addAMQPMonitor((AMQPMonitor)monitor);
-                    }
-                } else {
-                    log.error("Wrong class is given to primary Monitor");
                 }
-            }
-            if (secondaryMonitor == null) {
-                log.info("No secondary Monitor has configured !!!!");
-            } else {
-                // todo we do not support a secondary Monitor at this point
-            }
 
+            }
             monitorManager.registerListener(orchestrator);
             // Now Monitor Manager is properly configured, now we have to start the monitoring system.
             // This will initialize all the required threads and required queues
@@ -152,20 +147,19 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
      *
      * @param experimentId
      */
-    @Override
     public boolean launchExperiment(String experimentId) throws TException {
         //TODO: Write the Orchestrator implementaion
         try {
             List<TaskDetails> tasks = orchestrator.createTasks(experimentId);
             MonitorID monitorID = null;
-            if(tasks.size() > 1){
+            if (tasks.size() > 1) {
                 log.info("There are multiple tasks for this experiment, So Orchestrator will launch multiple Jobs");
             }
-            for(TaskDetails taskID:tasks) {
+            for (TaskDetails taskID : tasks) {
                 //iterate through all the generated tasks and performs the job submisssion+monitoring
 
                 Experiment experiment = (Experiment) registry.get(DataType.EXPERIMENT, experimentId);
-                if(experiment == null){
+                if (experiment == null) {
                     log.error("Error retrieving the Experiment by the given experimentID: " + experimentId);
                     return false;
                 }
@@ -174,27 +168,28 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 HostDescription hostDescription = OrchestratorUtils.getHostDescription(orchestrator, taskID);
 
                 // creating monitorID to register with monitoring queue
+                // this is a special case because amqp has to be in place before submitting the job
+                if ((hostDescription instanceof GsisshHostType) &&
+                        Constants.PUSH.equals(((GsisshHostType) hostDescription).getMonitorMode())) {
 
-                if(pushMode){
-                    // during the pull we need the monitorID in the queue inadvance
-                    // For this we have enough data at this point
-                    monitorID = new MonitorID(hostDescription, null,taskID.getTaskID(),experimentId, userName);
+                    monitorID = new MonitorID(hostDescription, null, taskID.getTaskID(), experimentId, userName);
                     monitorManager.addAJobToMonitor(monitorID);
-                }
-                // Launching job for each task
-                String jobID = orchestrator.launchExperiment(experimentId, taskID.getTaskID());
-                log.info("Job Launched to the resource by GFAC and jobID returned : " + jobID);
-                // if the monitoring is pull mode then we add the monitorID for each task after submitting
-                // the job with the jobID, otherwise we don't need the jobID
-                if(!pushMode) {
-                    monitorID = new MonitorID(hostDescription, jobID,taskID.getTaskID(),experimentId, userName, authenticationInfo);
+                    String jobID = orchestrator.launchExperiment(experimentId, taskID.getTaskID());
+                    log.info("Job Launched to the resource by GFAC and jobID returned : " + jobID);
+                } else {
+                    // Launching job for each task
+                    // if the monitoring is pull mode then we add the monitorID for each task after submitting
+                    // the job with the jobID, otherwise we don't need the jobID
+                    String jobID = orchestrator.launchExperiment(experimentId, taskID.getTaskID());
+                    log.info("Job Launched to the resource by GFAC and jobID returned : " + jobID);
+                    monitorID = new MonitorID(hostDescription, jobID, taskID.getTaskID(), experimentId, userName, authenticationInfo);
                     monitorManager.addAJobToMonitor(monitorID);
                 }
             }
         } catch (Exception e) {
             throw new TException(e);
         }
-        return false;
+        return true;
     }
 
     @Override

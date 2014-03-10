@@ -20,12 +20,11 @@
 */
 package org.apache.airavata.job.monitor.core;
 
-import org.apache.airavata.job.monitor.event.MonitorPublisher;
 
 /**
  * This is the primary interface for Monitors,
  * This can be used to implement different methods of monitoring
  */
-public interface Monitor {
+public interface Monitor extends Runnable {
 
 }

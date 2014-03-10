@@ -21,6 +21,7 @@
 package org.apache.airavata.job.monitor.event;
 
 import com.google.common.eventbus.EventBus;
+import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.state.JobStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
