@@ -24,6 +24,7 @@ package org.apache.airavata.common.utils;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -374,9 +375,10 @@ public class StringUtil {
         return byteArrayOutputStream.toString();
     }
     
-    public static Options deriveCommandLineOptions(String[] args){
+    private static Options deriveCommandLineOptions(String[] args){
     	Options options = new Options();
-        for (String arg : args) {
+    	String[] argCopy = getChangedList(args);
+        for (String arg : argCopy) {
             if (arg.startsWith("--")){
             	arg=arg.substring(2);
                 int pos = arg.indexOf('=');
@@ -390,9 +392,9 @@ public class StringUtil {
 	public static Map<String, String> parseCommandLineOptions(String[] args) {
 		Map<String,String> commandLineOptions=new HashMap<String,String>();
 		try {
-			CommandLine cmdLine = getCommandLineParser(args);
-			for (Option s : cmdLine.getOptions()) {
-				commandLineOptions.put(s.getOpt(), s.getValue());
+			CommandLineParameters cmdParameters = getCommandLineParser(args);
+			for (String s : cmdParameters.getParameters().keySet()) {
+				commandLineOptions.put(s, cmdParameters.getParameters().get(s));
 			}
 		} catch (ParseException e1) {
 			e1.printStackTrace();
@@ -400,11 +402,32 @@ public class StringUtil {
 		return commandLineOptions;
 	}
 
-	public static CommandLine getCommandLineParser(String[] args)
+	public static CommandLineParameters getCommandLineParser(String[] args)
 			throws ParseException {
+		String[] argCopy = getChangedList(args);
 		CommandLineParser parser = new DynamicOptionPosixParser();
-		CommandLine cmdLine = parser.parse(deriveCommandLineOptions(args), args);
-		return cmdLine;
+		CommandLine cmdLine = parser.parse(deriveCommandLineOptions(argCopy), argCopy);
+		return new CommandLineParameters(cmdLine);
+	}
+
+	
+	//commons-cli does not support arg names having the period (".")
+	private static final String ARG_DOT_REPLACE="dot_replacement_value";
+	
+	private static String[] getChangedList(String[] args) {
+		String[] argCopy = Arrays.asList(args).toArray(new String []{});
+		for (int i=0;i<argCopy.length; i++) {
+			argCopy[i]=changeOption(argCopy[i]);
+		}
+		return argCopy;
+	}
+	
+	private static String revertOption(String option){
+		return option.replaceAll(Pattern.quote(ARG_DOT_REPLACE), ".");
+	}
+	
+	private static String changeOption(String option){
+		return option.replaceAll(Pattern.quote("."), ARG_DOT_REPLACE);
 	}
 	
 	private static class DynamicOptionPosixParser extends PosixParser{
@@ -414,6 +437,31 @@ public class StringUtil {
 			if (getOptions().hasOption(arg0)){
 				super.processOption(arg0, arg1);
 			}
+		}
+	}
+	
+	public static class CommandLineParameters{
+		private Map<String,String> parameters=new HashMap<String, String>();
+		private List<String> arguments=new ArrayList<String>();
+		protected CommandLineParameters(CommandLine cmd){
+			for(Option opt:cmd.getOptions()){
+				parameters.put(revertOption(opt.getOpt()), revertOption(opt.getValue()));
+			}
+			for(String arg:cmd.getArgs()){
+				arguments.add(revertOption(arg));
+			}
+		}
+		public List<String> getArguments() {
+			return arguments;
+		}
+		public void setArguments(List<String> arguments) {
+			this.arguments = arguments;
+		}
+		public Map<String,String> getParameters() {
+			return parameters;
+		}
+		public void setParameters(Map<String,String> parameters) {
+			this.parameters = parameters;
 		}
 	}
 
