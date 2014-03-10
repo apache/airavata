@@ -433,8 +433,4 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     }
 
-    @Override
-    public String createProject(String projectName, String userName) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
-        return null;
-    }
 }
