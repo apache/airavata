@@ -67,6 +67,8 @@ public class AMQPMonitor extends PushMonitor {
 
     private List<String> amqpHosts;
 
+    private boolean startRegister;
+
     public AMQPMonitor(){
 
     }
@@ -122,7 +124,8 @@ public class AMQPMonitor extends PushMonitor {
 
     public void run() {
         // before going to the while true mode we start unregister thread
-        while (true) {
+        startRegister = true; // this will be unset by someone else
+        while (startRegister) {
             try {
                 MonitorID take = runningQueue.take();
                 this.registerListener(take);
@@ -173,6 +176,11 @@ public class AMQPMonitor extends PushMonitor {
         return true;
     }
 
+    @Override
+    public boolean stopRegister() throws AiravataMonitorException {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public Map<String, Channel> getAvailableChannels() {
         return availableChannels;
     }
@@ -219,5 +227,13 @@ public class AMQPMonitor extends PushMonitor {
 
     public void setAmqpHosts(List<String> amqpHosts) {
         this.amqpHosts = amqpHosts;
+    }
+
+    public boolean isStartRegister() {
+        return startRegister;
+    }
+
+    public void setStartRegister(boolean startRegister) {
+        this.startRegister = startRegister;
     }
 }
