@@ -20,14 +20,11 @@
 . `dirname $0`/setenv.sh
 cd $AIRAVATA_HOME/bin
 LOGO_FILE="logo.txt"
-if [ -e $LOGO_FILE ]
-then
-	cat $LOGO_FILE
-fi
 
 JAVA_OPTS=""
 AIRAVATA_COMMAND=""
 IS_DAEMON_MODE=false
+LOGO=true
 for var in "$@"
 do
     case $var in
@@ -43,12 +40,22 @@ do
 	    IS_DAEMON_MODE=true
             shift
         ;;
+	stop)
+	    LOGO=false
+	    AIRAVATA_COMMAND="$AIRAVATA_COMMAND $var"
+            shift
+        ;;
+	-nologo)
+	    LOGO=false
+            shift
+        ;;
         -h)
             echo "Usage: airavata-server.sh [command-options]"
             echo "command options:"
 	    echo "  start                   Start server in daemon mode"
 	    echo "  stop [--serverIndex n]  Stop all airavata servers. Specify serverIndex stop a particular instance"
 	    echo "  --<key>=<value>         Server setting(s) to override or introduce (overrides values in airavata-server.properties)"
+            echo "  -nologo                 Do not show airavata logo"
             echo "  -xdebug                 Start Airavata Server under JPDA debugger"
             echo "  -security               Enable Java 2 security"
             echo "  -h                      Display this help and exit"
@@ -60,9 +67,14 @@ do
             shift
     esac
 done
-
+if $LOGO ; then
+	if [ -e $LOGO_FILE ]
+	then
+		cat $LOGO_FILE
+	fi
+fi
 if $IS_DAEMON_MODE ; then
-	echo ,"Starting airavata server in daemon mode..."
+	echo "Starting airavata server in daemon mode..."
 	nohup java $JAVA_OPTS -classpath "$XBAYA_CLASSPATH" \
 	    -Djava.endorsed.dirs="$AIRAVATA_HOME/lib/endorsed":"$JAVA_HOME/jre/lib/endorsed":"$JAVA_HOME/lib/endorsed" \
 	    org.apache.airavata.server.ServerMain $AIRAVATA_COMMAND $* > airavata-server.out & 
