@@ -41,6 +41,7 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,7 +111,20 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public List<Experiment> getAllExperimentsInProject(String projectId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            List<Experiment> experiments = new ArrayList<Experiment>();
+            registry = RegistryFactory.getDefaultRegistry();
+            List<Object> list = registry.get(DataType.EXPERIMENT, Constants.FieldConstants.ExperimentConstants.PROJECT_NAME, projectId);
+            if (list != null && !list.isEmpty()){
+                for (Object o : list){
+                    experiments.add((Experiment)o);
+                }
+            }
+            return experiments;
+        } catch (Exception e) {
+            logger.error("Error while retrieving the experiments", e);
+            throw new AiravataSystemException();
+        }
     }
 
     /**
@@ -120,7 +134,20 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public List<Experiment> getAllUserExperiments(String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            List<Experiment> experiments = new ArrayList<Experiment>();
+            registry = RegistryFactory.getDefaultRegistry();
+            List<Object> list = registry.get(DataType.EXPERIMENT, Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
+            if (list != null && !list.isEmpty()){
+                for (Object o : list){
+                    experiments.add((Experiment)o);
+                }
+            }
+            return experiments;
+        } catch (Exception e) {
+            logger.error("Error while retrieving the experiments", e);
+            throw new AiravataSystemException();
+        }
     }
 
     /**
