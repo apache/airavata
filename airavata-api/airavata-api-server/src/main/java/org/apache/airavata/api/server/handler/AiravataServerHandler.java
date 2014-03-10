@@ -27,6 +27,7 @@ import org.apache.airavata.api.error.AiravataClientException;
 import org.apache.airavata.api.error.AiravataSystemException;
 import org.apache.airavata.api.error.ExperimentNotFoundException;
 import org.apache.airavata.api.error.InvalidRequestException;
+import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
@@ -59,6 +60,67 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public String GetAPIVersion() throws TException {
         return airavataAPIConstants.AIRAVATA_API_VERSION;
+    }
+
+    /**
+     * Create a Project
+     *
+     * @param project
+     * @param userName
+     */
+    @Override
+    public String createProject(Project project, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    /**
+     * Update a Project
+     *
+     * @param project
+     */
+    @Override
+    public void updateProject(Project project) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+
+    }
+
+    /**
+     * Get a Project by ID
+     *
+     * @param projectId
+     */
+    @Override
+    public Project getProject(String projectId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    /**
+     * Get all Project by user
+     *
+     * @param userName
+     */
+    @Override
+    public List<Project> getAllUserProjects(String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    /**
+     * Get all Experiments within a Project
+     *
+     * @param projectId
+     */
+    @Override
+    public List<Experiment> getAllExperimentsInProject(String projectId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    /**
+     * Get all Experiments by user
+     *
+     * @param userName
+     */
+    @Override
+    public List<Experiment> getAllUserExperiments(String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
     }
 
     /**
