@@ -31,7 +31,7 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.StringUtil;
-import org.apache.commons.cli.CommandLine;
+import org.apache.airavata.common.utils.StringUtil.CommandLineParameters;
 import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,12 +84,12 @@ public class ServerMain {
 	}
 
 	public static void main(String args[]) throws ParseException, IOException {
-		CommandLine commandLineParser = StringUtil.getCommandLineParser(args);
+		CommandLineParameters commandLineParameters = StringUtil.getCommandLineParser(args);
 		
-		if (commandLineParser.getArgList().contains("stop")){
+		if (commandLineParameters.getArguments().contains("stop")){
 			String serverIndexOption = "serverIndex";
-			if (commandLineParser.hasOption(serverIndexOption)){
-				serverIndex=Integer.parseInt(commandLineParser.getOptionValue(serverIndexOption));
+			if (commandLineParameters.getParameters().containsKey(serverIndexOption)){
+				serverIndex=Integer.parseInt(commandLineParameters.getParameters().get(serverIndexOption));
 			}
 			if (isServerRunning()) {
 				logger.info("Requesting airavata server"+(serverIndex==-1? "(s)":" instance "+serverIndex)+" to stop...");
