@@ -27,6 +27,7 @@ import org.apache.airavata.api.error.AiravataClientException;
 import org.apache.airavata.api.error.AiravataSystemException;
 import org.apache.airavata.api.error.ExperimentNotFoundException;
 import org.apache.airavata.api.error.InvalidRequestException;
+import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
@@ -40,6 +41,7 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +61,93 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public String GetAPIVersion() throws TException {
         return airavataAPIConstants.AIRAVATA_API_VERSION;
+    }
+
+    /**
+     * Create a Project
+     *
+     * @param project
+     * @param userName
+     */
+    @Override
+    public String createProject(Project project, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    /**
+     * Update a Project
+     *
+     * @param project
+     */
+    @Override
+    public void updateProject(Project project) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+
+    }
+
+    /**
+     * Get a Project by ID
+     *
+     * @param projectId
+     */
+    @Override
+    public Project getProject(String projectId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    /**
+     * Get all Project by user
+     *
+     * @param userName
+     */
+    @Override
+    public List<Project> getAllUserProjects(String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    /**
+     * Get all Experiments within a Project
+     *
+     * @param projectId
+     */
+    @Override
+    public List<Experiment> getAllExperimentsInProject(String projectId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            List<Experiment> experiments = new ArrayList<Experiment>();
+            registry = RegistryFactory.getDefaultRegistry();
+            List<Object> list = registry.get(DataType.EXPERIMENT, Constants.FieldConstants.ExperimentConstants.PROJECT_NAME, projectId);
+            if (list != null && !list.isEmpty()){
+                for (Object o : list){
+                    experiments.add((Experiment)o);
+                }
+            }
+            return experiments;
+        } catch (Exception e) {
+            logger.error("Error while retrieving the experiments", e);
+            throw new AiravataSystemException();
+        }
+    }
+
+    /**
+     * Get all Experiments by user
+     *
+     * @param userName
+     */
+    @Override
+    public List<Experiment> getAllUserExperiments(String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            List<Experiment> experiments = new ArrayList<Experiment>();
+            registry = RegistryFactory.getDefaultRegistry();
+            List<Object> list = registry.get(DataType.EXPERIMENT, Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
+            if (list != null && !list.isEmpty()){
+                for (Object o : list){
+                    experiments.add((Experiment)o);
+                }
+            }
+            return experiments;
+        } catch (Exception e) {
+            logger.error("Error while retrieving the experiments", e);
+            throw new AiravataSystemException();
+        }
     }
 
     /**
@@ -371,8 +460,4 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     }
 
-    @Override
-    public String createProject(String projectName, String userName) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
-        return null;
-    }
 }
