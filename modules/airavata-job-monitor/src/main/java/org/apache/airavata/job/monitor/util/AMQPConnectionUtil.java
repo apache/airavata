@@ -29,13 +29,11 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 import java.security.KeyStore;
 import java.util.Collections;
+import java.util.List;
 import java.util.Vector;
 
 public class AMQPConnectionUtil {
-    public static Connection connect(String vhost, String proxyFile) {
-        Vector<String> hosts = new Vector<String>();
-        hosts.add("info1.dyn.teragrid.org");
-        hosts.add("info2.dyn.teragrid.org");
+    public static Connection connect(List<String>hosts,String vhost, String proxyFile) {
         Collections.shuffle(hosts);
         for (String host : hosts) {
             Connection connection = connect(host, vhost, proxyFile);

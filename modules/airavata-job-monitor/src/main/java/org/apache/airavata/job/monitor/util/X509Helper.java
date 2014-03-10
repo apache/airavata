@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.job.monitor.util;
 
+import org.apache.airavata.common.utils.ServerSettings;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMReader;
 
@@ -118,7 +119,7 @@ public class X509Helper {
                                                              KeyStoreException,
                                                              CertificateException,
                                                              NoSuchAlgorithmException {
-        return trustKeyStoreFromCertDir("/Users/chathuri/dev/airavata/cert/certificates");
+        return trustKeyStoreFromCertDir(ServerSettings.getProperties().getProperty("trusted.cert.location"));
     }
 
     public static KeyStore trustKeyStoreFromCertDir(String certDir) throws IOException,

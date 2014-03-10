@@ -101,7 +101,7 @@ public class AMQPMonitor extends PushMonitor {
         // if we already have a channel we do not create one
         if (availableChannels.get(channelID) == null) {
             //todo need to fix this rather getting it from a file
-            Connection connection = AMQPConnectionUtil.connect(connectionName, proxyPath);
+            Connection connection = AMQPConnectionUtil.connect(amqpHosts,connectionName, proxyPath);
             Channel channel = null;
             try {
                 channel = connection.createChannel();
@@ -112,7 +112,7 @@ public class AMQPMonitor extends PushMonitor {
                 String filterString = CommonUtils.getRoutingKey(monitorID);
                 // here we queuebind to a particular user in a particular machine
                 channel.queueBind(queueName, "glue2.computing_activity", filterString);
-                System.out.println(filterString);
+                logger.info("Using filtering string to monitor: " + filterString);
             } catch (IOException e) {
                 logger.error("Error creating the connection to finishQueue the job:" + monitorID.getJobID());
             }
