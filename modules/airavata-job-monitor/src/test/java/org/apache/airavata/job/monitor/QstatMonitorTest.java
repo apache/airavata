@@ -68,7 +68,7 @@ public class QstatMonitorTest {
 
         monitorManager = new MonitorManager();
         QstatMonitor qstatMonitor = new
-                QstatMonitor(monitorManager.getRunningQueue(), monitorManager.getMonitorPublisher());
+                QstatMonitor(monitorManager.getPullQueue(), monitorManager.getMonitorPublisher());
         try {
             monitorManager.addPullMonitor(qstatMonitor);
             monitorManager.launchMonitor();

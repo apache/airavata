@@ -21,6 +21,7 @@
 package org.apache.airavata.job.monitor;
 
 import com.google.common.eventbus.EventBus;
+import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.job.monitor.core.PullMonitor;
 import org.apache.airavata.job.monitor.core.PushMonitor;
 import org.apache.airavata.job.monitor.event.MonitorPublisher;
@@ -29,9 +30,11 @@ import org.apache.airavata.job.monitor.impl.pull.qstat.QstatMonitor;
 import org.apache.airavata.job.monitor.impl.push.amqp.AMQPMonitor;
 import org.apache.airavata.job.monitor.impl.push.amqp.UnRegisterThread;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryImpl;
+import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.constraints.Null;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -50,7 +53,11 @@ public class MonitorManager {
 
     private List<PushMonitor> pushMonitors;   //todo we need to support multiple monitors dynamically
 
-    private BlockingQueue<MonitorID> runningQueue;
+    private BlockingQueue<MonitorID> pullQueue;
+
+    private BlockingQueue<MonitorID> pushQueue;
+
+    private BlockingQueue<MonitorID> localJobQueue;
 
     private BlockingQueue<MonitorID> finishQueue;
 
@@ -62,7 +69,8 @@ public class MonitorManager {
     public MonitorManager() {
         pullMonitors = new ArrayList<PullMonitor>();
         pushMonitors = new ArrayList<PushMonitor>();
-        runningQueue = new LinkedBlockingDeque<MonitorID>();
+        pullQueue = new LinkedBlockingDeque<MonitorID>();
+        pushQueue = new LinkedBlockingDeque<MonitorID>();
         finishQueue = new LinkedBlockingDeque<MonitorID>();
         monitorPublisher = new MonitorPublisher(new EventBus());
         registerListener(new AiravataJobStatusUpdator(new RegistryImpl(), finishQueue));
@@ -77,7 +85,7 @@ public class MonitorManager {
     public void addAMQPMonitor(AMQPMonitor monitor) {
         monitor.setPublisher(this.getMonitorPublisher());
         monitor.setFinishQueue(this.getFinishQueue());
-        monitor.setRunningQueue(this.getRunningQueue());
+        monitor.setRunningQueue(this.getPushQueue());
         addPushMonitor(monitor);
     }
 
@@ -89,7 +97,7 @@ public class MonitorManager {
      */
     public void addQstatMonitor(QstatMonitor qstatMonitor) {
         qstatMonitor.setPublisher(this.getMonitorPublisher());
-        qstatMonitor.setQueue(this.getRunningQueue());
+        qstatMonitor.setQueue(this.getPullQueue());
         addPullMonitor(qstatMonitor);
 
     }
@@ -127,13 +135,19 @@ public class MonitorManager {
      * This is going to be useful during the startup of the launching process
      *
      * @param monitorID
+     * @throws AiravataMonitorException
      */
     public void addAJobToMonitor(MonitorID monitorID) throws AiravataMonitorException {
-        try {
-            runningQueue.put(monitorID);
-        } catch (InterruptedException e) {
-            String error = "Error while putting the job: " + monitorID.getJobID() + " the monitor queue";
-            throw new AiravataMonitorException(error, e);
+        if (monitorID.getHost().getType() instanceof GsisshHostType) {
+            GsisshHostType host = (GsisshHostType) monitorID.getHost().getType();
+            if ("".equals(host.getMonitorMode()) || host.getMonitorMode() == null
+                    || Constants.PULL.equals(host.getMonitorMode())) {
+                pullQueue.add(monitorID);
+            } else if (Constants.PUSH.equals(host.getMonitorMode())) {
+                pushQueue.add(monitorID);
+            }
+        } else {
+            logger.error("We only support Gsissh host types currently");
         }
     }
 
@@ -148,26 +162,19 @@ public class MonitorManager {
      * @throws AiravataMonitorException
      */
     public void launchMonitor() throws AiravataMonitorException {
-        if (pushMonitors.isEmpty()) {
-            if (pullMonitors.isEmpty()) {
-                logger.error("Before launching MonitorManager should have atleast one Monitor");
-                return;
-            } else {
-                //no push monitor is configured so we launch pull monitor
-                QstatMonitor pullMonitor = (QstatMonitor)pullMonitors.get(0);
-                (new Thread(pullMonitor)).start();
-            }
-        } else {
-            // there is a push monitor configured, so we schedule the push monitor
-            // We currently support dealing with one type of monitor
-            AMQPMonitor pushMonitor = (AMQPMonitor) pushMonitors.get(0);
-            (new Thread(pushMonitor)).start();
-
-            UnRegisterThread unRegisterThread = new
-                    UnRegisterThread(pushMonitor.getFinishQueue(), pushMonitor.getAvailableChannels());
-            unRegisterThread.start();
+        //no push monitor is configured so we launch pull monitor
+        for (PullMonitor monitor : pullMonitors) {
+            (new Thread(monitor)).start();
         }
 
+        for (PushMonitor monitor : pushMonitors) {
+            (new Thread(monitor)).start();
+            if (monitor instanceof AMQPMonitor) {
+                UnRegisterThread unRegisterThread = new
+                        UnRegisterThread(((AMQPMonitor) monitor).getFinishQueue(), ((AMQPMonitor) monitor).getAvailableChannels());
+                unRegisterThread.start();
+            }
+        }
     }
 
     /* getter setters for the private variables */
@@ -188,12 +195,12 @@ public class MonitorManager {
         this.pushMonitors = pushMonitors;
     }
 
-    public BlockingQueue<MonitorID> getRunningQueue() {
-        return runningQueue;
+    public BlockingQueue<MonitorID> getPullQueue() {
+        return pullQueue;
     }
 
-    public void setRunningQueue(BlockingQueue<MonitorID> runningQueue) {
-        this.runningQueue = runningQueue;
+    public void setPullQueue(BlockingQueue<MonitorID> pullQueue) {
+        this.pullQueue = pullQueue;
     }
 
     public MonitorPublisher getMonitorPublisher() {
@@ -210,5 +217,21 @@ public class MonitorManager {
 
     public void setFinishQueue(BlockingQueue<MonitorID> finishQueue) {
         this.finishQueue = finishQueue;
+    }
+
+    public BlockingQueue<MonitorID> getPushQueue() {
+        return pushQueue;
+    }
+
+    public void setPushQueue(BlockingQueue<MonitorID> pushQueue) {
+        this.pushQueue = pushQueue;
+    }
+
+    public BlockingQueue<MonitorID> getLocalJobQueue() {
+        return localJobQueue;
+    }
+
+    public void setLocalJobQueue(BlockingQueue<MonitorID> localJobQueue) {
+        this.localJobQueue = localJobQueue;
     }
 }

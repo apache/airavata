@@ -112,6 +112,7 @@
                     <element name="postJobCommands" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
                     <element name="installedPath" type="xsd:string" minOccurs="0" maxOccurs="1" default="/opt/torque/bin"/>
                     <element name="jobManager" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+                    <element name="monitorMode" type="xsd:string" minOccurs="0" maxOccurs="1"/>
                 </sequence>
             </extension>
         </complexContent>

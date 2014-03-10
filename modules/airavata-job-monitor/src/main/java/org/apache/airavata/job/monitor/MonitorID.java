@@ -23,6 +23,9 @@ package org.apache.airavata.job.monitor;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
+import org.apache.airavata.job.monitor.state.JobStatus;
+import org.apache.airavata.model.workspace.experiment.JobState;
+import org.omg.PortableInterceptor.ACTIVE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +62,7 @@ public class MonitorID {
 
     private int failedCount = 0;
 
+    private JobState state;
 
     public MonitorID(HostDescription host, String jobID,String taskID,String experimentID, String userName) {
         this.host = host;
@@ -170,5 +174,26 @@ public class MonitorID {
 
     public void setFailedCount(int failedCount) {
         this.failedCount = failedCount;
+    }
+
+    public JobState getStatus() {
+        return state;
+    }
+
+    public void setStatus(JobState status) {
+        if (this.state != null && status.equals(JobState.UNKNOWN)) {
+            switch (this.state) {
+                case ACTIVE:
+                    this.state = JobState.COMPLETE;
+                    break;
+                case QUEUED:
+                    this.state = JobState.COMPLETE;
+                    break;
+
+            }
+        }else{
+            // normal scenario
+            this.state = status;
+        }
     }
 }
