@@ -20,7 +20,7 @@
 */
 package org.apache.airavata.job.monitor.impl.pull.qstat;
 
-import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.core.PullMonitor;
@@ -29,7 +29,6 @@ import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.state.JobStatus;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
-import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +43,7 @@ import java.util.concurrent.BlockingQueue;
  * This monitor is based on qstat command which can be run
  * in grid resources and retrieve the job status.
  */
-public class QstatMonitor extends PullMonitor implements Runnable {
+public class QstatMonitor extends PullMonitor {
     private final static Logger logger = LoggerFactory.getLogger(QstatMonitor.class);
 
     // I think this should use DelayedBlocking Queue to do the monitoring*/
@@ -95,16 +94,9 @@ public class QstatMonitor extends PullMonitor implements Runnable {
         // at the tail of the queue
         MonitorID take = null;
         JobStatus jobStatus = new JobStatus();
-        while (!this.queue.isEmpty()) {
-            try {
-                Iterator<MonitorID> iterator = this.queue.iterator();
-                // no need to check iterator.hasNext because its already checked
-                MonitorID next = iterator.next();
-                // we check whether the job is type of gsissh otherwise we return the job back to the queue
-                // Here we use iterator because it not fair to take the object from the queue unless its
-                // the correct host type,so if its not the right type it will remain in the queue
-                if(next.getHost().getType() instanceof GsisshHostType){
-                    take = this.queue.take();
+        try {
+                take = this.queue.take();
+                if((take.getHost().getType() instanceof GsisshHostType)){
                     long monitorDiff = 0;
                     long startedDiff = 0;
                     if (take.getLastMonitored() != null) {
@@ -129,8 +121,10 @@ public class QstatMonitor extends PullMonitor implements Runnable {
                             connection = new ResourceConnection(take, gsisshHostType.getInstalledPath());
                             connections.put(hostName, connection);
                         }
+                        take.setStatus(connection.getJobStatus(take));
                         jobStatus.setMonitorID(take);
-                        jobStatus.setState(connection.getJobStatus(take));
+                        jobStatus.setState(take.getStatus());
+                        // we have this JobStatus class to handle amqp monitoring
                         publisher.publish(jobStatus);
                         // if the job is completed we do not have to put the job to the queue again
                         if (!jobStatus.getState().equals(JobState.COMPLETE)) {
@@ -186,7 +180,7 @@ public class QstatMonitor extends PullMonitor implements Runnable {
                 }
                 throw new AiravataMonitorException("Error retrieving the job status", e);
             }
-        }
+
 
 
         return true;

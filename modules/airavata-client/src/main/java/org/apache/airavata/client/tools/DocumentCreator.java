@@ -638,6 +638,7 @@ public class DocumentCreator {
         ((GsisshHostType) host.getType()).setJobManager("slurm");
         ((GsisshHostType) host.getType()).setInstalledPath("/usr/bin/");
         ((GsisshHostType) host.getType()).setPort(2222);
+//        ((GsisshHostType) host.getType()).setMo(2222);
 
 
         try {

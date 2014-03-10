@@ -22,17 +22,21 @@ package org.apache.airavata.job.monitor.impl.push.amqp;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
+import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.core.PushMonitor;
 import org.apache.airavata.job.monitor.event.MonitorPublisher;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.util.AMQPConnectionUtil;
 import org.apache.airavata.job.monitor.util.CommonUtils;
+import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
@@ -41,7 +45,7 @@ import java.util.concurrent.BlockingQueue;
  * rabbitmq client to recieve AMQP based monitoring data from
  * mostly excede resources.
  */
-public class AMQPMonitor extends PushMonitor implements Runnable {
+public class AMQPMonitor extends PushMonitor {
     private final static Logger logger = LoggerFactory.getLogger(AMQPMonitor.class);
 
 
@@ -57,24 +61,36 @@ public class AMQPMonitor extends PushMonitor implements Runnable {
 
     private BlockingQueue<MonitorID> finishQueue;
 
+    private String connectionName;
+
+    private String proxyPath;
+
+    private List<String> amqpHosts;
+
     public AMQPMonitor(){
 
     }
-    public AMQPMonitor(MonitorPublisher publisher, BlockingQueue runningQueue, BlockingQueue finishQueue) {
+    public AMQPMonitor(MonitorPublisher publisher, BlockingQueue runningQueue, BlockingQueue finishQueue,
+                       String proxyPath,String connectionName,List<String> hosts) {
         this.publisher = publisher;
-        this.runningQueue = runningQueue;
-        this.finishQueue = finishQueue;
+        this.runningQueue = runningQueue;        // these will be initialized by the MonitorManager
+        this.finishQueue = finishQueue;          // these will be initialized by the MonitorManager
         availableChannels = new HashMap<String, Channel>();
-//        UnRegisterThread unRegisterThread = new UnRegisterThread(finishQueue,availableChannels);
-//        unRegisterThread.run();
-        System.out.println("Testing");
+        this.connectionName = connectionName;
+        this.proxyPath = proxyPath;
+        this.amqpHosts = hosts;
+    }
+
+    public void initialize(String proxyPath,String connectionName,List<String> hosts){
+        this.connectionName = connectionName;
+        this.proxyPath = proxyPath;
+        this.amqpHosts = hosts;
     }
 
     public void run() {
         try {
             // before going to the while true mode we start unregister thread
             while (true) {
-                // we got a new job to do the monitoring
                 MonitorID take = runningQueue.take();
                 this.registerListener(take);
             }
@@ -99,7 +115,7 @@ public class AMQPMonitor extends PushMonitor implements Runnable {
         // if we already have a channel we do not create one
         if (availableChannels.get(channelID) == null) {
             //todo need to fix this rather getting it from a file
-            Connection connection = AMQPConnectionUtil.connect("xsede_private", "/Users/lahirugunathilake/Downloads/x509up_u503876");
+            Connection connection = AMQPConnectionUtil.connect(connectionName, proxyPath);
             Channel channel = null;
             try {
                 channel = connection.createChannel();
@@ -185,9 +201,19 @@ public class AMQPMonitor extends PushMonitor implements Runnable {
         this.finishQueue = finishQueue;
     }
 
-    /**
-     * implementing a logic to handle the finished job and unsubscribe
-     */
+    public String getProxyPath() {
+        return proxyPath;
+    }
 
+    public void setProxyPath(String proxyPath) {
+        this.proxyPath = proxyPath;
+    }
 
+    public List<String> getAmqpHosts() {
+        return amqpHosts;
+    }
+
+    public void setAmqpHosts(List<String> amqpHosts) {
+        this.amqpHosts = amqpHosts;
+    }
 }
