@@ -27,6 +27,7 @@
 include "airavataErrors.thrift"
 include "airavataDataModel.thrift"
 include "experimentModel.thrift"
+include "workspaceModel.thrift"
 
 namespace java org.apache.airavata.api
 namespace php Airavata.API
@@ -60,40 +61,96 @@ service Airavata {
   string GetAPIVersion(),
   
   /**
-   * Create an experiment for the specified user belonging to the gateway. The gateway identity is not explicitly passed
-   *   but inferred from the authentication header. This experiment is just a persistent place holder. The client
-   *   has to subsequently configure and launch the created experiment. No action is taken on Airavata Server except
-   *   registering the experiment in a persistent store.
-   *
-   * @param basicExperimentMetadata
-   *    The create experiment will require the basic experiment metadata like the name and description, intended user,
-   *      the gateway identifer and if the experiment should be shared public by defualt. During the creation of an experiment
-   *      the ExperimentMetadata is a required field.
-   *
-   * @return
-   *   The server-side generated airavata experiment globally unique identifier.
-   *
-   * @throws org.apache.airavata.api.error.InvalidRequestException
-   *    For any incorrect forming of the request itself.
-   *
-   * @throws org.apache.airavata.api.error.AiravataClientException
-   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-   *
-   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
-   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
-   *         gateway registration steps and retry this request.
-   *
-   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
-   *         For now this is a place holder.
-   *
-   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
-   *         is implemented, the authorization will be more substantial.
-   *
-   * @throws org.apache.airavata.api.error.AiravataSystemException
-   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
-   *       rather an Airavata Administrator will be notified to take corrective action.
+   * Create a Project
    *
   */
+  string createProject (1: required workspaceModel.Project project,
+                        2: required string userName)
+      throws (1: airavataErrors.InvalidRequestException ire,
+              2: airavataErrors.AiravataClientException ace,
+              3: airavataErrors.AiravataSystemException ase)
+
+/**
+   * Update a Project
+   *
+  */
+  void updateProject (1: required workspaceModel.Project project)
+      throws (1: airavataErrors.InvalidRequestException ire,
+              2: airavataErrors.AiravataClientException ace,
+              3: airavataErrors.AiravataSystemException ase)
+
+/**
+   * Get a Project by ID
+   *
+  */
+  workspaceModel.Project getProject (1: required string projectId)
+        throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+
+/**
+   * Get all Project by user
+   *
+  */
+  list<workspaceModel.Project> getAllUserProjects (1: required string userName)
+        throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+
+  /**
+     * Get all Experiments within a Project
+     *
+  */
+  list<experimentModel.Experiment> getAllExperimentsInProject(1: required string projectId)
+          throws (1: airavataErrors.InvalidRequestException ire,
+                  2: airavataErrors.AiravataClientException ace,
+                  3: airavataErrors.AiravataSystemException ase)
+
+  /**
+     * Get all Experiments by user
+     *
+  */
+  list<experimentModel.Experiment> getAllUserExperiments(1: required string userName)
+            throws (1: airavataErrors.InvalidRequestException ire,
+                    2: airavataErrors.AiravataClientException ace,
+                    3: airavataErrors.AiravataSystemException ase)
+
+  /**
+     * Create an experiment for the specified user belonging to the gateway. The gateway identity is not explicitly passed
+     *   but inferred from the authentication header. This experiment is just a persistent place holder. The client
+     *   has to subsequently configure and launch the created experiment. No action is taken on Airavata Server except
+     *   registering the experiment in a persistent store.
+     *
+     * @param basicExperimentMetadata
+     *    The create experiment will require the basic experiment metadata like the name and description, intended user,
+     *      the gateway identifer and if the experiment should be shared public by defualt. During the creation of an experiment
+     *      the ExperimentMetadata is a required field.
+     *
+     * @return
+     *   The server-side generated airavata experiment globally unique identifier.
+     *
+     * @throws org.apache.airavata.api.error.InvalidRequestException
+     *    For any incorrect forming of the request itself.
+     *
+     * @throws org.apache.airavata.api.error.AiravataClientException
+     *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+     *
+     *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+     *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
+     *         gateway registration steps and retry this request.
+     *
+     *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+     *         For now this is a place holder.
+     *
+     *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+     *         is implemented, the authorization will be more substantial.
+     *
+     * @throws org.apache.airavata.api.error.AiravataSystemException
+     *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+     *       rather an Airavata Administrator will be notified to take corrective action.
+     *
+    */
+
   string createExperiment(1: required experimentModel.Experiment experiment)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
@@ -388,11 +445,4 @@ service Airavata {
             2: airavataErrors.ExperimentNotFoundException enf,
             3: airavataErrors.AiravataClientException ace,
             4: airavataErrors.AiravataSystemException ase)
-
-    string createProject (1: string projectName, 2: string userName)
-            throws (1: airavataErrors.InvalidRequestException ire,
-                    2: airavataErrors.ExperimentNotFoundException enf,
-                    3: airavataErrors.AiravataClientException ace,
-                    4: airavataErrors.AiravataSystemException ase)
-
 }
