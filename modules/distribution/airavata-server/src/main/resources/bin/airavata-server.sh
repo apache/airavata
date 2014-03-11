@@ -52,13 +52,13 @@ do
         -h)
             echo "Usage: airavata-server.sh [command-options]"
             echo "command options:"
-	    echo "  start                   Start server in daemon mode"
-	    echo "  stop [--serverIndex n]  Stop all airavata servers. Specify serverIndex stop a particular instance"
-	    echo "  --<key>=<value>         Server setting(s) to override or introduce (overrides values in airavata-server.properties)"
-            echo "  -nologo                 Do not show airavata logo"
-            echo "  -xdebug                 Start Airavata Server under JPDA debugger"
-            echo "  -security               Enable Java 2 security"
-            echo "  -h                      Display this help and exit"
+	    echo "  start                            Start server in daemon mode"
+	    echo "  stop [--serverIndex n] [--force] Stop all airavata servers. Specify serverIndex stop a particular instance"
+	    echo "  --<key>[=<value>]         	     Server setting(s) to override or introduce (overrides values in airavata-server.properties)"
+            echo "  -nologo                 	     Do not show airavata logo"
+            echo "  -xdebug                 	     Start Airavata Server under JPDA debugger"
+            echo "  -security               	     Enable Java 2 security"
+            echo "  -h                               Display this help and exit"
             shift
             exit 0
         ;;

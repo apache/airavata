@@ -229,26 +229,8 @@
 		<include>org.apache.airavata:airavata-api-server:jar</include>
 		<include>org.apache.airavata:airavata-api-stubs:jar</include>
                 <include>org.apache.openjpa:openjpa-all:jar</include>
-                <include>com.sun.jersey:jersey-client:jar</include>
-                <include>com.sun.jersey:jersey-core:jar</include>
                 <include>org.bouncycastle:bcprov-jdk16</include>
-                <include>org.apache.tomcat:tomcat-jasper</include>
-                <include>org.apache.tomcat:tomcat-jasper-el</include>
-                <include>org.apache.tomcat:tomcat-jsp-api</include>
-                <include>org.apache.tomcat.embed:tomcat-embed-core</include>
-                <include>org.apache.tomcat.embed:tomcat-embed-jasper</include>
-                <include>org.apache.tomcat.embed:tomcat-embed-logging-juli</include>
                 <include>javax.servlet:javax.servlet-api</include>
-                <include>org.apache.shiro:shiro-core</include>
-                <include>com.sun.jersey:jersey-servlet</include>
-                <include>com.sun.jersey:jersey-json</include>
-                <include>com.sun.jersey.contribs:jersey-multipart</include>
-                <include>com.sun.jersey:jersey-server</include>
-                <include>com.sun.jersey:jersey-client</include>
-                <include>org.codehaus.jackson:jackson-jaxrs</include>
-                <include>org.codehaus.jackson:jackson-core-asl</include>
-                <include>org.codehaus.jackson:jackson-mapper-asl</include>
-                <include>org.codehaus.jackson:jackson-xc</include>
                 <include>xerces:xercesImpl:jar:2.9.1</include>
                 <include>com.ibm.icu:icu4j</include>
                 <include>com.google.guava:guava</include>

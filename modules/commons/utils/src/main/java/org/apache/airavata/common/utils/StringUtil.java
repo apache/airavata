@@ -404,8 +404,9 @@ public class StringUtil {
 		Map<String,String> commandLineOptions=new HashMap<String,String>();
 		try {
 			CommandLineParameters cmdParameters = getCommandLineParser(args);
-			for (String s : cmdParameters.getParameters().keySet()) {
-				commandLineOptions.put(s, cmdParameters.getParameters().get(s));
+			Map<String, String> parameters = cmdParameters.getParameters();
+			for (String s : parameters.keySet()) {
+				commandLineOptions.put(s, parameters.get(s)==null? "":parameters.get(s));
 			}
 		} catch (ParseException e1) {
 			e1.printStackTrace();

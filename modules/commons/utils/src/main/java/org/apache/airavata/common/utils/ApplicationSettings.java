@@ -54,6 +54,11 @@ public abstract class ApplicationSettings {
 
     private final static Logger logger = LoggerFactory.getLogger(ApplicationSettings.class);
 
+    private static final String SHUTDOWN_STATEGY_STRING="shutdown.strategy";
+    public static enum ShutdownStrategy{
+    	NONE,
+    	SELF_TERMINATE
+    }
     static{
     	loadProperties();
     }
@@ -265,5 +270,15 @@ public abstract class ApplicationSettings {
     public static void mergeSettingsCommandLineArgs(String[] args){
     	properties.putAll(StringUtil.parseCommandLineOptions(args));
     }
-    
+ 
+    public static ShutdownStrategy getShutdownStrategy() throws Exception{
+    	String strategy = null;
+    	try {
+			strategy = getSetting(SHUTDOWN_STATEGY_STRING, ShutdownStrategy.SELF_TERMINATE.toString());
+			return ShutdownStrategy.valueOf(strategy);
+		} catch (Exception e) {
+			//if the string mentioned in config is invalid
+			throw new Exception("Invalid shutdown strategy configured : "+strategy);
+		}
+    }
 }
