@@ -32,10 +32,7 @@ import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.model.workspace.experiment.*;
-import org.apache.airavata.registry.cpi.ChildDataType;
-import org.apache.airavata.registry.cpi.DataType;
-import org.apache.airavata.registry.cpi.ParentDataType;
-import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -71,7 +68,14 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public String createProject(Project project, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            registry = RegistryFactory.getDefaultRegistry();
+            project.setOwner(userName);
+            return (String)registry.add(ParentDataType.PROJECT, project);
+        } catch (RegistryException e) {
+            logger.error("Error while creating the project", e);
+            throw new AiravataSystemException();
+        }
     }
 
     /**
@@ -81,7 +85,13 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public void updateProject(Project project) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-
+        try {
+            registry = RegistryFactory.getDefaultRegistry();
+            registry.update(DataType.PROJECT, project, project.getProjectID());
+        } catch (RegistryException e) {
+            logger.error("Error while updating the project", e);
+            throw new AiravataSystemException();
+        }
     }
 
     /**
@@ -91,7 +101,13 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public Project getProject(String projectId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            registry = RegistryFactory.getDefaultRegistry();
+            return (Project)registry.get(DataType.PROJECT, projectId);
+        } catch (RegistryException e) {
+            logger.error("Error while updating the project", e);
+            throw new AiravataSystemException();
+        }
     }
 
     /**
@@ -101,7 +117,20 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public List<Project> getAllUserProjects(String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        List<Project> projects = new ArrayList<Project>();
+        try {
+            registry = RegistryFactory.getDefaultRegistry();
+            List<Object> list = registry.get(DataType.PROJECT, Constants.FieldConstants.ProjectConstants.OWNER, userName);
+            if (list != null && !list.isEmpty()){
+                for (Object o : list){
+                    projects.add((Project)o);
+                }
+            }
+            return projects;
+        } catch (RegistryException e) {
+            logger.error("Error while updating the project", e);
+            throw new AiravataSystemException();
+        }
     }
 
     /**
