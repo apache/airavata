@@ -1291,10 +1291,16 @@ public class ExperimentRegistry {
                 errorResource.setCreationTime(AiravataUtils.getTime(error.getCreationTime()));
                 errorResource.setActualErrorMsg(error.getActualErrorMessage());
                 errorResource.setUserFriendlyErrorMsg(error.getUserFriendlyMessage());
-                errorResource.setErrorCategory(error.getErrorCategory().toString());
+                if (error.getErrorCategory() != null){
+                    errorResource.setErrorCategory(error.getErrorCategory().toString());
+                }
                 errorResource.setTransientPersistent(error.isTransientOrPersistent());
-                errorResource.setCorrectiveAction(error.getCorrectiveAction().toString());
-                errorResource.setActionableGroup(error.getActionableGroup().toString());
+                if (error.getCorrectiveAction() != null){
+                    errorResource.setCorrectiveAction(error.getCorrectiveAction().toString());
+                }
+                if (error.getActionableGroup() != null){
+                    errorResource.setActionableGroup(error.getActionableGroup().toString());
+                }
                 errorResource.save();
                 return String.valueOf(errorResource.getErrorId());
             }
