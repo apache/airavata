@@ -21,6 +21,7 @@
 
 package org.apache.airavata.persistance.registry.jpa.utils;
 
+import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
@@ -32,6 +33,27 @@ import java.util.List;
 
 public class ThriftDataModelConversion {
     private final static Logger logger = LoggerFactory.getLogger(ThriftDataModelConversion.class);
+
+    public static Project getProject (ProjectResource pr){
+        Project project = new Project();
+        if (pr != null) {
+            project.setProjectID(pr.getName());
+            project.setName(pr.getName());
+            project.setCreationTime(pr.getCreationTime().getTime());
+            project.setDescription(pr.getDescription());
+            project.setOwner(pr.getWorker().getUser());
+            List<ProjectUserResource> projectUserList = pr.getProjectUserList();
+            List<String> sharedUsers = new ArrayList<String>();
+            if (projectUserList != null && !projectUserList.isEmpty()){
+                for (ProjectUserResource resource : projectUserList){
+                    sharedUsers.add(resource.getUserName());
+                }
+            }
+            project.setSharedGroups(sharedUsers);
+        }
+        return project;
+    }
+
 
     public static Experiment getExperiment(ExperimentResource experimentResource){
         Experiment experiment = new Experiment();

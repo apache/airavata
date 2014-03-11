@@ -21,6 +21,9 @@
 
 package org.apache.airavata.common.utils;
 
+import java.sql.Timestamp;
+import java.util.Calendar;
+
 public class AiravataUtils {
 	public static final String EXECUTION_MODE="application.execution.mode";
 	public static void setExecutionMode(ExecutionMode mode){
@@ -50,4 +53,17 @@ public class AiravataUtils {
 	public static void setExecutionAsClient(){
 		setExecutionMode(ExecutionMode.CLIENT);
 	}
+
+    public static Timestamp getCurrentTimestamp() {
+        Calendar calender = Calendar.getInstance();
+        java.util.Date d = calender.getTime();
+        return new Timestamp(d.getTime());
+    }
+
+    public static Timestamp getTime(long time) {
+        if (time == 0 || time < 0){
+            return getCurrentTimestamp();
+        }
+        return new Timestamp(time);
+    }
 }

@@ -28,6 +28,7 @@
         <class>org.apache.airavata.persistance.registry.jpa.model.Users</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.Gateway_Worker</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.Project</class>
+        <class>org.apache.airavata.persistance.registry.jpa.model.ProjectUser</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.Published_Workflow</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.User_Workflow</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.Host_Descriptor</class>
