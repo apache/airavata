@@ -157,7 +157,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             }
             for (TaskDetails taskID : tasks) {
                 //iterate through all the generated tasks and performs the job submisssion+monitoring
-
+                String jobID = null;
                 Experiment experiment = (Experiment) registry.get(DataType.EXPERIMENT, experimentId);
                 if (experiment == null) {
                     log.error("Error retrieving the Experiment by the given experimentID: " + experimentId);
@@ -173,16 +173,26 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                         Constants.PUSH.equals(((GsisshHostType) hostDescription).getMonitorMode())) {
                     monitorID = new MonitorID(hostDescription, null, taskID.getTaskID(), experimentId, userName);
                     monitorManager.addAJobToMonitor(monitorID);
-                    String jobID = orchestrator.launchExperiment(experimentId, taskID.getTaskID());
-                    log.info("Job Launched to the resource by GFAC and jobID returned : " + jobID);
+                    jobID = orchestrator.launchExperiment(experimentId, taskID.getTaskID());
+                    if("none".equals(jobID)) {
+                        log.error("Job submission Failed, so we remove the job from monitoring");
+
+                    }else{
+                        log.info("Job Launched to the resource by GFAC and jobID returned : " + jobID);
+                    }
                 } else {
                     // Launching job for each task
                     // if the monitoring is pull mode then we add the monitorID for each task after submitting
                     // the job with the jobID, otherwise we don't need the jobID
-                    String jobID = orchestrator.launchExperiment(experimentId, taskID.getTaskID());
+                    jobID = orchestrator.launchExperiment(experimentId, taskID.getTaskID());
                     log.info("Job Launched to the resource by GFAC and jobID returned : " + jobID);
                     monitorID = new MonitorID(hostDescription, jobID, taskID.getTaskID(), experimentId, userName, authenticationInfo);
-                    monitorManager.addAJobToMonitor(monitorID);
+                    if("none".equals(jobID)) {
+                        log.error("Job submission Failed, so we remove the job from monitoring");
+
+                    }else{
+                        monitorManager.addAJobToMonitor(monitorID);
+                    }
                 }
             }
         } catch (Exception e) {
