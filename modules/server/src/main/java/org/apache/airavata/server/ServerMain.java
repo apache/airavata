@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ApplicationSettings.ShutdownStrategy;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.IServer.ServerStatus;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -112,12 +113,27 @@ public class ServerMain {
 		if (hasStopRequested()){
             ServerSettings.setStopAllThreads(true);
 			stopAllServers();
-			System.exit(0);
+			ShutdownStrategy shutdownStrategy;
+			try {
+				shutdownStrategy = ServerSettings.getShutdownStrategy();
+			} catch (Exception e) {
+				String strategies="";
+				for(ShutdownStrategy s:ShutdownStrategy.values()){
+					strategies+="/"+s.toString();
+				}
+				logger.warn(e.getMessage());
+				logger.warn("Valid shutdown options are : "+strategies.substring(1));
+				shutdownStrategy=ShutdownStrategy.SELF_TERMINATE;
+			}
+			if (shutdownStrategy==ShutdownStrategy.SELF_TERMINATE) {
+				System.exit(0);
+			}
 		}
 	}
 
 	private static void performServerStopRequest(
 			CommandLineParameters commandLineParameters) throws IOException {
+		deleteOldStartRecords();
 		String serverIndexOption = "serverIndex";
 		if (commandLineParameters.getParameters().containsKey(serverIndexOption)){
 			serverIndex=Integer.parseInt(commandLineParameters.getParameters().get(serverIndexOption));
@@ -171,6 +187,32 @@ public class ServerMain {
 		return (serverIndex==-1)?stopFileNamePrefixForced:stopFileNamePrefixForced+serverIndex;
 	}
 
+	private static void deleteOldStopRequests(){
+		File[] files = new File(".").listFiles();
+		for (File file : files) {
+			if (file.getName().contains(stopFileNamePrefix) || file.getName().contains(stopFileNamePrefixForced)){
+				try {
+					file.delete();
+				} catch (Exception e) {
+					//file is locked which means there's an active process using it
+				}
+			}
+		}
+	}
+	
+	private static void deleteOldStartRecords(){
+		File[] files = new File(".").listFiles();
+		for (File file : files) {
+			if (file.getName().contains(serverStartedFileNamePrefix)){
+				try {
+					file.delete();
+				} catch (Exception e) {
+					//file is locked which means there's an active process using it
+				}
+			}
+		}
+	}
+	
 	private static boolean isServerRunning(){
 		if (serverIndex==-1){
 			String[] files = new File(".").list();
@@ -188,6 +230,7 @@ public class ServerMain {
 	@SuppressWarnings({ "resource" })
 	private static void setServerStarted(){
 		try {
+			deleteOldStopRequests();
 			File serverStartedFile = null;
 			while(serverStartedFile==null || serverStartedFile.exists()){
 				serverIndex++;
