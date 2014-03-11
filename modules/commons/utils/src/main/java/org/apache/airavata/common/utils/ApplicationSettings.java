@@ -244,6 +244,10 @@ public abstract class ApplicationSettings {
         return getSetting("email.from");
     }
 
+    /**
+     * @deprecated use {{@link #getSetting(String)}}
+     * @return
+     */
     public static Properties getProperties() {
         return properties;
     }

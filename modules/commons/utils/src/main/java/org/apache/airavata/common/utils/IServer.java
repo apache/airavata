@@ -39,11 +39,13 @@ public interface IServer {
 			return now;
 		}
 	}
+	public String getName();
+	public String getVersion();
 	public void start() throws Exception;
 	public void stop() throws Exception;
 	public void restart() throws Exception;
 	public void configure() throws Exception;
 	public ServerStatus getStatus() throws Exception;
-	public void waitForServerToStart() throws Exception;
-	public void waitForServerToStop() throws Exception;
+//	public void waitForServerToStart() throws Exception;
+//	public void waitForServerToStop() throws Exception;
 }
