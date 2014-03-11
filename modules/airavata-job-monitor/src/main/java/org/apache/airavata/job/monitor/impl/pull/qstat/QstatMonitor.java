@@ -74,11 +74,12 @@ public class QstatMonitor extends PullMonitor {
             try {
                 startPulling();
                 // After finishing one iteration of the full queue this thread sleeps 1 second
-                Thread.sleep(5000);
+                Thread.sleep(30000);
             } catch (Exception e){
                 // we catch all the exceptions here because no matter what happens we do not stop running this
                 // thread, but ideally we should report proper error messages, but this is handled in startPulling
                 // method, incase something happen in Thread.sleep we handle it with this catch block.
+                e.printStackTrace();
                 logger.error(e.getMessage());
             }
         }
@@ -163,6 +164,7 @@ public class QstatMonitor extends PullMonitor {
                             e1.printStackTrace();
                         }
                     } else {
+                        logger.error(e.getMessage());
                         logger.error("Tried to monitor the job 3 times, so dropping of the the Job with ID: " + take.getJobID());
                     }
                 }
@@ -172,6 +174,8 @@ public class QstatMonitor extends PullMonitor {
                     try {
                         take.setFailedCount(take.getFailedCount() + 1);
                         this.queue.put(take);
+                        // if we get a wrong status we wait for a while and request again
+                            Thread.sleep(10000);
                     } catch (InterruptedException e1) {
                         e1.printStackTrace();
                     }

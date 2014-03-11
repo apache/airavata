@@ -68,6 +68,12 @@ public class CreateLaunchExperiment {
             System.out.println("Experiment ID : " + expId);
             launchExperiment(airavata, expId);
             System.out.println("Launched successfully");
+            List<Experiment> experiments = getExperimentsForUser(airavata, "admin");
+            for (Experiment exp : experiments){
+                System.out.println(" exp id : " + exp.getExperimentID());
+                System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
+            }
+
 //            try {
 //                Thread.sleep(20000);
 //            } catch (InterruptedException e) {
@@ -372,5 +378,20 @@ public class CreateLaunchExperiment {
             logger.error("Error occured while launching the experiment...", e.getMessage());
             throw new TException(e);
         }
+    }
+
+    public static List<Experiment> getExperimentsForUser (Airavata.Client client, String user){
+        try {
+            return client.getAllUserExperiments(user);
+        } catch (AiravataSystemException e) {
+            e.printStackTrace();
+        } catch (InvalidRequestException e) {
+            e.printStackTrace();
+        } catch (AiravataClientException e) {
+            e.printStackTrace();
+        }catch (TException e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }

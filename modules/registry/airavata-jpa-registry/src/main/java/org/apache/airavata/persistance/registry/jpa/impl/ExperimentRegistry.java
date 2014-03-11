@@ -21,6 +21,7 @@
 
 package org.apache.airavata.persistance.registry.jpa.impl;
 
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
@@ -73,7 +74,7 @@ public class ExperimentRegistry {
                 project = workerResource.getProject(experiment.getProjectID());
                 experimentResource.setProject(project);
             }
-            experimentResource.setCreationTime(getTime(experiment.getCreationTime()));
+            experimentResource.setCreationTime(AiravataUtils.getTime(experiment.getCreationTime()));
             experimentResource.setDescription(experiment.getDescription());
             experimentResource.setApplicationId(experiment.getApplicationId());
             experimentResource.setApplicationVersion(experiment.getApplicationVersion());
@@ -243,7 +244,7 @@ public class ExperimentRegistry {
             cmsr.setNumberOfThreads(resourceScheduling.getNumberOfThreads());
             cmsr.setQueueName(resourceScheduling.getQueueName());
             cmsr.setWalltimeLimit(resourceScheduling.getWallTimeLimit());
-            cmsr.setJobStartTime(getTime(resourceScheduling.getJobStartTime()));
+            cmsr.setJobStartTime(AiravataUtils.getTime(resourceScheduling.getJobStartTime()));
             cmsr.setPhysicalMemory(resourceScheduling.getTotalPhysicalMemory());
             cmsr.setProjectName(resourceScheduling.getComputationalProjectAccount());
             cmsr.save();
@@ -402,7 +403,7 @@ public class ExperimentRegistry {
                 status = (StatusResource) experiment.create(ResourceType.STATUS);
             }
             status.setExperimentResource(experiment);
-            status.setStatusUpdateTime(getTime(experimentStatus.getTimeOfStateChange()));
+            status.setStatusUpdateTime(AiravataUtils.getTime(experimentStatus.getTimeOfStateChange()));
             status.setState(experimentStatus.getExperimentState().toString());
             status.setStatusType(StatusType.EXPERIMENT.toString());
             status.save();
@@ -421,7 +422,7 @@ public class ExperimentRegistry {
             statusResource.setExperimentResource(experiment);
             statusResource.setWorkflowNodeDetail(workflowNode);
             statusResource.setStatusType(StatusType.WORKFLOW_NODE.toString());
-            statusResource.setStatusUpdateTime(getTime(status.getTimeOfStateChange()));
+            statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
             statusResource.setState(status.getWorkflowNodeState().toString());
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
@@ -439,7 +440,7 @@ public class ExperimentRegistry {
             statusResource.setExperimentResource(workflowNode.getExperimentResource());
             statusResource.setWorkflowNodeDetail(workflowNode);
             statusResource.setStatusType(StatusType.WORKFLOW_NODE.toString());
-            statusResource.setStatusUpdateTime(getTime(status.getTimeOfStateChange()));
+            statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
             statusResource.setState(status.getWorkflowNodeState().toString());
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
@@ -459,7 +460,7 @@ public class ExperimentRegistry {
             statusResource.setWorkflowNodeDetail(workflowNode);
             statusResource.setTaskDetailResource(taskDetail);
             statusResource.setStatusType(StatusType.TASK.toString());
-            statusResource.setStatusUpdateTime(getTime(status.getTimeOfStateChange()));
+            statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
             statusResource.setState(status.getExecutionState().toString());
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
@@ -479,7 +480,7 @@ public class ExperimentRegistry {
             statusResource.setWorkflowNodeDetail(taskDetail.getWorkflowNodeDetailResource());
             statusResource.setTaskDetailResource(taskDetail);
             statusResource.setStatusType(StatusType.TASK.toString());
-            statusResource.setStatusUpdateTime(getTime(status.getTimeOfStateChange()));
+            statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
             statusResource.setState(status.getExecutionState().toString());
             statusResource.save();
         } catch (Exception e) {
@@ -504,7 +505,7 @@ public class ExperimentRegistry {
             statusResource.setWorkflowNodeDetail(taskDetail.getWorkflowNodeDetailResource());
             statusResource.setTaskDetailResource(taskDetail);
             statusResource.setStatusType(StatusType.JOB.toString());
-            statusResource.setStatusUpdateTime(getTime(status.getTimeOfStateChange()));
+            statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
             statusResource.setState(status.getJobState().toString());
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
@@ -528,7 +529,7 @@ public class ExperimentRegistry {
             statusResource.setWorkflowNodeDetail(workflowNode);
             statusResource.setTaskDetailResource(taskDetail);
             statusResource.setStatusType(StatusType.JOB.toString());
-            statusResource.setStatusUpdateTime(getTime(status.getTimeOfStateChange()));
+            statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
             statusResource.setState(status.getJobState().toString());
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
@@ -554,7 +555,7 @@ public class ExperimentRegistry {
             statusResource.setWorkflowNodeDetail(taskDetail.getWorkflowNodeDetailResource());
             statusResource.setTaskDetailResource(taskDetail);
             statusResource.setStatusType(StatusType.APPLICATION.toString());
-            statusResource.setStatusUpdateTime(getTime(status.getTimeOfStateChange()));
+            statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
             statusResource.setState(status.getApplicationState());
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
@@ -575,7 +576,7 @@ public class ExperimentRegistry {
             statusResource.setWorkflowNodeDetail(jobDetail.getTaskDetailResource().getWorkflowNodeDetailResource());
             statusResource.setTaskDetailResource(jobDetail.getTaskDetailResource());
             statusResource.setStatusType(StatusType.APPLICATION.toString());
-            statusResource.setStatusUpdateTime(getTime(status.getTimeOfStateChange()));
+            statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
             statusResource.setState(status.getApplicationState());
             statusResource.save();
         } catch (Exception e) {
@@ -602,7 +603,7 @@ public class ExperimentRegistry {
             statusResource.setTaskDetailResource(taskDetail);
             statusResource.setDataTransferDetail(dataTransferDetail);
             statusResource.setStatusType(StatusType.DATA_TRANSFER.toString());
-            statusResource.setStatusUpdateTime(getTime(status.getTimeOfStateChange()));
+            statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
             statusResource.setState(status.getTransferState().toString());
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
@@ -624,7 +625,7 @@ public class ExperimentRegistry {
             statusResource.setTaskDetailResource(dataTransferDetail.getTaskDetailResource());
             statusResource.setDataTransferDetail(dataTransferDetail);
             statusResource.setStatusType(StatusType.DATA_TRANSFER.toString());
-            statusResource.setStatusUpdateTime(getTime(status.getTimeOfStateChange()));
+            statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
             statusResource.setState(status.getTransferState().toString());
             statusResource.save();
         } catch (Exception e) {
@@ -639,7 +640,7 @@ public class ExperimentRegistry {
             WorkflowNodeDetailResource resource = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             resource.setExperimentResource(experiment);
             resource.setNodeName(nodeDetails.getNodeName());
-            resource.setCreationTime(getTime(nodeDetails.getCreationTime()));
+            resource.setCreationTime(AiravataUtils.getTime(nodeDetails.getCreationTime()));
             resource.setNodeInstanceId(getNodeInstanceID(nodeDetails.getNodeName()));
             resource.save();
             String nodeId = resource.getNodeInstanceId();
@@ -653,14 +654,23 @@ public class ExperimentRegistry {
                 addNodeOutputs(nodeOutputs, ids);
             }
             WorkflowNodeStatus workflowNodeStatus = nodeDetails.getWorkflowNodeStatus();
-            if (workflowNodeStatus != null){
-                WorkflowNodeStatus status = getWorkflowNodeStatus(nodeId);
-                if (status != null){
-                    updateWorkflowNodeStatus(workflowNodeStatus, nodeId);
+            CompositeIdentifier ids = new CompositeIdentifier(expId, nodeId);
+            if (workflowNodeStatus != null ){
+                if (workflowNodeStatus.getWorkflowNodeState() != null){
+                    WorkflowNodeStatus status = getWorkflowNodeStatus(nodeId);
+                    if (status != null){
+                        updateWorkflowNodeStatus(workflowNodeStatus, nodeId);
+                    }else {
+                        addWorkflowNodeStatus(workflowNodeStatus,ids);
+                    }
                 }else {
-                    CompositeIdentifier ids = new CompositeIdentifier(expId, nodeId);
-                    addWorkflowNodeStatus(workflowNodeStatus,ids);
+                    workflowNodeStatus.setWorkflowNodeState(WorkflowNodeState.UNKNOWN);
+                    addWorkflowNodeStatus(workflowNodeStatus, ids);
                 }
+            }else {
+                WorkflowNodeStatus status = new WorkflowNodeStatus();
+                status.setWorkflowNodeState(WorkflowNodeState.UNKNOWN);
+                addWorkflowNodeStatus(status, ids);
             }
             List<TaskDetails> taskDetails = nodeDetails.getTaskDetailsList();
             if (taskDetails != null && !taskDetails.isEmpty()){
@@ -686,7 +696,7 @@ public class ExperimentRegistry {
             ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode(nodeId);
             workflowNode.setNodeName(nodeDetails.getNodeName());
-            workflowNode.setCreationTime(getTime(nodeDetails.getCreationTime()));
+            workflowNode.setCreationTime(AiravataUtils.getTime(nodeDetails.getCreationTime()));
             workflowNode.setNodeInstanceId(getNodeInstanceID(nodeDetails.getNodeName()));
             workflowNode.save();
             String expID = workflowNode.getExperimentResource().getExpID();
@@ -778,7 +788,7 @@ public class ExperimentRegistry {
             taskDetail.setTaskId(getTaskID(workflowNode.getNodeName()));
             taskDetail.setApplicationId(taskDetails.getApplicationId());
             taskDetail.setApplicationVersion(taskDetails.getApplicationVersion());
-            taskDetail.setCreationTime(getTime(taskDetails.getCreationTime()));
+            taskDetail.setCreationTime(AiravataUtils.getTime(taskDetails.getCreationTime()));
             taskDetail.save();
             List<DataObjectType> applicationInputs = taskDetails.getApplicationInputs();
             if (applicationInputs != null) {
@@ -824,9 +834,18 @@ public class ExperimentRegistry {
             }
 
             TaskStatus taskStatus = taskDetails.getTaskStatus();
+            CompositeIdentifier ids = new CompositeIdentifier(nodeId, taskDetail.getTaskId());
             if (taskStatus != null){
-                CompositeIdentifier ids = new CompositeIdentifier(nodeId, taskDetail.getTaskId());
-                addTaskStatus(taskStatus, ids);
+                if (taskStatus.getExecutionState() != null){
+                    addTaskStatus(taskStatus, ids);
+                }else {
+                    taskStatus.setExecutionState(TaskState.UNKNOWN);
+                    addTaskStatus(taskStatus, ids);
+                }
+            }else {
+                TaskStatus status = new TaskStatus();
+                status.setExecutionState(TaskState.UNKNOWN);
+                addTaskStatus(status, ids);
             }
             return taskDetail.getTaskId();
         } catch (Exception e) {
@@ -844,7 +863,7 @@ public class ExperimentRegistry {
             taskDetail.setTaskId(getTaskID(workflowNode.getNodeName()));
             taskDetail.setApplicationId(taskDetails.getApplicationId());
             taskDetail.setApplicationVersion(taskDetails.getApplicationVersion());
-            taskDetail.setCreationTime(getTime(taskDetails.getCreationTime()));
+            taskDetail.setCreationTime(AiravataUtils.getTime(taskDetails.getCreationTime()));
             taskDetail.save();
             List<DataObjectType> applicationInputs = taskDetails.getApplicationInputs();
             if (applicationInputs != null) {
@@ -981,7 +1000,7 @@ public class ExperimentRegistry {
             JobDetailResource jobDetail = taskDetail.createJobDetail((String) ids.getSecondLevelIdentifier());
             jobDetail.setTaskDetailResource(taskDetail);
             jobDetail.setJobDescription(jobDetails.getJobDescription());
-            jobDetail.setCreationTime(getTime(jobDetails.getCreationTime()));
+            jobDetail.setCreationTime(AiravataUtils.getTime(jobDetails.getCreationTime()));
             jobDetail.setComputeResourceConsumed(jobDetails.getComputeResourceConsumed());
             jobDetail.save();
             JobStatus jobStatus = jobDetails.getJobStatus();
@@ -1024,7 +1043,7 @@ public class ExperimentRegistry {
             TaskDetailResource taskDetailResource = jobDetail.getTaskDetailResource();
             jobDetail.setTaskDetailResource(taskDetailResource);
             jobDetail.setJobDescription(jobDetails.getJobDescription());
-            jobDetail.setCreationTime(getTime(jobDetails.getCreationTime()));
+            jobDetail.setCreationTime(AiravataUtils.getTime(jobDetails.getCreationTime()));
             jobDetail.setComputeResourceConsumed(jobDetails.getComputeResourceConsumed());
             jobDetail.save();
             String taskId = taskDetailResource.getTaskId();
@@ -1068,7 +1087,7 @@ public class ExperimentRegistry {
             resource.setTaskDetailResource(taskDetail);
             resource.setTransferId(getDataTransferID(taskId));
             resource.setTransferDescription(transferDetails.getTransferDescription());
-            resource.setCreationTime(getTime(transferDetails.getCreationTime()));
+            resource.setCreationTime(AiravataUtils.getTime(transferDetails.getCreationTime()));
             resource.save();
             String transferId = resource.getTransferId();
             TransferStatus transferStatus = transferDetails.getTransferStatus();
@@ -1096,7 +1115,7 @@ public class ExperimentRegistry {
             DataTransferDetailResource resource = taskDetail.getDataTransferDetail(transferId);
             resource.setTaskDetailResource(taskDetail);
             resource.setTransferDescription(transferDetails.getTransferDescription());
-            resource.setCreationTime(getTime(transferDetails.getCreationTime()));
+            resource.setCreationTime(AiravataUtils.getTime(transferDetails.getCreationTime()));
             resource.save();
             String taskId = resource.getTaskDetailResource().getTaskId();
             TransferStatus transferStatus = transferDetails.getTransferStatus();
@@ -1137,7 +1156,7 @@ public class ExperimentRegistry {
             schedulingResource.setNumberOfThreads(scheduling.getNumberOfThreads());
             schedulingResource.setQueueName(scheduling.getQueueName());
             schedulingResource.setWalltimeLimit(scheduling.getWallTimeLimit());
-            schedulingResource.setJobStartTime(getTime(scheduling.getJobStartTime()));
+            schedulingResource.setJobStartTime(AiravataUtils.getTime(scheduling.getJobStartTime()));
             schedulingResource.setPhysicalMemory(scheduling.getTotalPhysicalMemory());
             schedulingResource.setProjectName(scheduling.getComputationalProjectAccount());
             schedulingResource.save();
@@ -1269,13 +1288,19 @@ public class ExperimentRegistry {
                         "identifier for job..");
             }
             if (errorResource != null) {
-                errorResource.setCreationTime(getTime(error.getCreationTime()));
+                errorResource.setCreationTime(AiravataUtils.getTime(error.getCreationTime()));
                 errorResource.setActualErrorMsg(error.getActualErrorMessage());
                 errorResource.setUserFriendlyErrorMsg(error.getUserFriendlyMessage());
-                errorResource.setErrorCategory(error.getErrorCategory().toString());
+                if (error.getErrorCategory() != null){
+                    errorResource.setErrorCategory(error.getErrorCategory().toString());
+                }
                 errorResource.setTransientPersistent(error.isTransientOrPersistent());
-                errorResource.setCorrectiveAction(error.getCorrectiveAction().toString());
-                errorResource.setActionableGroup(error.getActionableGroup().toString());
+                if (error.getCorrectiveAction() != null){
+                    errorResource.setCorrectiveAction(error.getCorrectiveAction().toString());
+                }
+                if (error.getActionableGroup() != null){
+                    errorResource.setActionableGroup(error.getActionableGroup().toString());
+                }
                 errorResource.save();
                 return String.valueOf(errorResource.getErrorId());
             }
@@ -1377,7 +1402,7 @@ public class ExperimentRegistry {
                 ProjectResource project = workerResource.createProject(experiment.getProjectID());
                 existingExperiment.setProject(project);
             }
-            existingExperiment.setCreationTime(getTime(experiment.getCreationTime()));
+            existingExperiment.setCreationTime(AiravataUtils.getTime(experiment.getCreationTime()));
             existingExperiment.setDescription(experiment.getDescription());
             existingExperiment.setApplicationId(experiment.getApplicationId());
             existingExperiment.setApplicationVersion(experiment.getApplicationVersion());
@@ -1541,7 +1566,7 @@ public class ExperimentRegistry {
             cmsr.setNumberOfThreads(resourceScheduling.getNumberOfThreads());
             cmsr.setQueueName(resourceScheduling.getQueueName());
             cmsr.setWalltimeLimit(resourceScheduling.getWallTimeLimit());
-            cmsr.setJobStartTime(getTime(resourceScheduling.getJobStartTime()));
+            cmsr.setJobStartTime(AiravataUtils.getTime(resourceScheduling.getJobStartTime()));
             cmsr.setPhysicalMemory(resourceScheduling.getTotalPhysicalMemory());
             cmsr.setProjectName(resourceScheduling.getComputationalProjectAccount());
             cmsr.save();
@@ -2261,8 +2286,7 @@ public class ExperimentRegistry {
 
     public boolean isExperimentExist(String expID) throws Exception {
         try {
-            gatewayResource.isExists(ResourceType.EXPERIMENT, expID);
-            return true;
+            return gatewayResource.isExists(ResourceType.EXPERIMENT, expID);
         } catch (Exception e) {
             logger.error("Error while retrieving experiment...", e.getMessage());
             throw new Exception(e);
@@ -2476,18 +2500,5 @@ public class ExperimentRegistry {
             logger.error("Error while updating QOS data..", e.getMessage());
             throw new Exception(e);
         }
-    }
-
-    public Timestamp getCurrentTimestamp() {
-        Calendar calender = Calendar.getInstance();
-        java.util.Date d = calender.getTime();
-        return new Timestamp(d.getTime());
-    }
-
-    public Timestamp getTime(long time) {
-        if (time == 0 || time < 0){
-          return getCurrentTimestamp();
-        }
-        return new Timestamp(time);
     }
 }

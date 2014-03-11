@@ -21,6 +21,7 @@
 package org.apache.airavata.persistance.registry.jpa.model;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name ="PROJECT")
@@ -29,6 +30,11 @@ public class Project {
     @Column(name = "PROJECT_NAME")
     private String project_name;
 
+    @Column(name = "DESCRIPTION")
+    private String description;
+    @Column(name = "CREATION_TIME")
+    private Timestamp creationTime;
+
     @ManyToOne(cascade=CascadeType.MERGE)
     @JoinColumn(name = "GATEWAY_NAME")
     private Gateway gateway;
@@ -36,6 +42,7 @@ public class Project {
     @ManyToOne(cascade=CascadeType.MERGE)
     @JoinColumn(name = "USER_NAME")
     private Users users;
+
 
     public String getProject_name() {
         return project_name;
@@ -59,6 +66,22 @@ public class Project {
 
     public void setUsers(Users users) {
         this.users = users;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Timestamp getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(Timestamp creationTime) {
+        this.creationTime = creationTime;
     }
 }
 

@@ -193,7 +193,6 @@ public class DocumentCreator {
                 + "SimpleEcho" + "_" + date + "_" + UUID.randomUUID();
 
         app.setScratchWorkingDirectory(tempDir);
-        app.setStaticWorkingDirectory(tempDir);
         app.setInputDataDirectory(tempDir + File.separator + "inputData");
         app.setOutputDataDirectory(tempDir + File.separator + "outputData");
         app.setStandardOutput(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stdout");
@@ -293,7 +292,6 @@ public class DocumentCreator {
                 + "SimpleEcho" + "_" + date + "_" + UUID.randomUUID();
 
         app.setScratchWorkingDirectory(tempDir);
-        app.setStaticWorkingDirectory(tempDir);
         app.setInputDataDirectory(tempDir + File.separator + "inputData");
         app.setOutputDataDirectory(tempDir + File.separator + "outputData");
         app.setStandardOutput(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stdout");
@@ -392,7 +390,6 @@ public class DocumentCreator {
                 + "SimpleEcho" + "_" + date + "_" + UUID.randomUUID();
 
         app.setScratchWorkingDirectory(tempDir);
-        app.setStaticWorkingDirectory(tempDir);
         app.setInputDataDirectory(tempDir + File.separator + "inputData");
         app.setOutputDataDirectory(tempDir + File.separator + "outputData");
         app.setStandardOutput(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stdout");
@@ -505,7 +502,6 @@ public class DocumentCreator {
                 + "Ultrascan" + "_" + date + "_" + UUID.randomUUID();
 
         app.setScratchWorkingDirectory(tempDir);
-        app.setStaticWorkingDirectory(tempDir);
         app.setInputDataDirectory(tempDir + File.separator + "inputData");
         app.setOutputDataDirectory(tempDir + File.separator + "outputData");
         app.setStandardOutput(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stdout");
@@ -618,7 +614,6 @@ public class DocumentCreator {
                 + "Ultrascan" + "_" + date + "_" + UUID.randomUUID();
 
         app.setScratchWorkingDirectory(tempDir);
-        app.setStaticWorkingDirectory(tempDir);
         app.setInputDataDirectory(tempDir + File.separator + "inputData");
         app.setOutputDataDirectory(tempDir + File.separator + "outputData");
         app.setStandardOutput(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stdout");
@@ -720,7 +715,6 @@ public class DocumentCreator {
                 + "SimpleEcho" + "_" + date + "_" + UUID.randomUUID();
 
         app.setScratchWorkingDirectory(tempDir);
-        app.setStaticWorkingDirectory(tempDir);
         app.setInputDataDirectory(tempDir + File.separator + "inputData");
         app.setOutputDataDirectory(tempDir + File.separator + "outputData");
         app.setStandardOutput(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stdout");

@@ -63,7 +63,7 @@ public class SlurmJobConfiguration implements JobManagerConfiguration{
     }
 
     public RawCommandInfo getMonitorCommand(String jobID) {
-        return new RawCommandInfo(this.installedPath + "squeue -v -j " + jobID);
+        return new RawCommandInfo(this.installedPath + "squeue -j " + jobID);
     }
 
     public String getScriptExtension() {

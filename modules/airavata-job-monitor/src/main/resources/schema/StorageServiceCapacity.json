@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://schemas.ogf.org/glue/2013/05/spec_2.0_r1/StorageServiceCapacity.json",
+  "type": "object",
+  "allOf": [{"$ref": "http://schemas.ogf.org/glue/2013/05/spec_2.0_r1/Entity.json"}],
+  "properties": {
+    "Type": {
+      "type": "string",
+      "description": "The type of storage capacity - StorageCapacity_t"
+    },
+    "TotalSize": {
+      "type": "integer",
+      "description": "The total amount of storage of this type (GB)"
+    },
+    "FreeSize": {
+      "type": "integer",
+      "description": "The amount of currently available storage of this type (GB)"
+    },
+    "UsedSize": {
+      "type": "integer",
+      "description": "The amount storage of this type in use (GB)"
+    },
+    "ReservedSize": {
+      "type": "integer",
+      "description": "The amount storage of this type which is not in use, but has been reserved for use in use (GB)"
+    },
+    "StorageServiceID": {
+      "type": "string",
+      "description": "The ID of the StorageService this capacity describes"
+    }
+  },
+  "required": ["Type","StorageServiceID"]
+}
