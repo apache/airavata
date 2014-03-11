@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://schemas.ogf.org/glue/2013/05/spec_2.0_r1/Manager.json",
+  "type": "object",
+  "allOf": [{"$ref": "http://schemas.ogf.org/glue/2013/05/spec_2.0_r1/Entity.json"}],
+  "properties": {
+    "ProductName": {
+      "type": "string",
+      "description": "The name of the software product which implements the Manager"
+    },
+    "ProductVersion": {
+      "type": "string",
+      "description": "The version of the software product which implements the Manager"
+    },
+    "ServiceID": {
+      "type": "string",
+      "description": "The ID of the Service this Share participates in"
+    },
+    "ResourceID": {
+      "type": "array",
+      "description": "ID(s) of Resources associated with this Share",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": ["ProductName","ServiceID","ResourceID"]
+}

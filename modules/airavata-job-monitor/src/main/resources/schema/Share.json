@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://schemas.ogf.org/glue/2013/05/spec_2.0_r1/Share.json",
+  "type": "object",
+  "allOf": [{"$ref": "http://schemas.ogf.org/glue/2013/05/spec_2.0_r1/Entity.json"}],
+  "properties": {
+    "Description": {
+      "type": "string",
+      "description": "A human-readable description of the Share"
+    },
+    "EndpointID": {
+      "type": "array",
+      "description": "The ID(s) of the Endpoints that can be used to access this Share",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ResourceID": {
+      "type": "array",
+      "description": "The ID(s) of the Resources associated with this Share",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ServiceID": {
+      "type": "string",
+      "description": "The ID of the Service this Share participates in"
+    },
+    "ActivityID": {
+      "type": "array",
+      "description": "The ID(s) of Activities consuming from this Share",
+      "items": {
+        "type": "string"
+      }
+    },
+    "MappingPolicyID": {
+      "type": "array",
+      "description": "ID(s) of MappingPolicies associated with this Share",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": ["ServiceID"]
+}

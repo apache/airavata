@@ -272,6 +272,7 @@
 		<include>org.apache.thrift:libthrift:jar:0.9.1</include>
 		<include>commons-cli:commons-cli</include>
 		<include>com.rabbitmq:amqp-client</include>
+                <include>com.fasterxml.jackson.core:jackson-databind</include>
                   <!-- unicore start 
                 <include>eu.unicore:ogsabes-client</include>
 				<include>eu.unicore:ogsabes-types</include>

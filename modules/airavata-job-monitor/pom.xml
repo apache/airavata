@@ -137,7 +137,11 @@
             <artifactId>xmlbeans</artifactId>
             <version>${xmlbeans.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.0.0</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -150,6 +154,22 @@
                     <forkMode>always</forkMode>
                     <failIfNoTests>false</failIfNoTests>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jsonschema2pojo</groupId>
+                <artifactId>jsonschema2pojo-maven-plugin</artifactId>
+                <version>0.4.0</version>
+                <configuration>
+                    <sourceDirectory>${basedir}/src/main/resources/schema</sourceDirectory>
+                    <targetPackage>org.apache.airavata</targetPackage>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

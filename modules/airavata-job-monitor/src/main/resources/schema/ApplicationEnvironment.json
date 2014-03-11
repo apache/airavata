@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://schemas.ogf.org/glue/2013/05/spec_2.0_r1/ApplicationEnvironment.json",
+  "type": "object",
+  "allOf": [{"$ref": "http://schemas.ogf.org/glue/2013/05/spec_2.0_r1/Entity.json"}],
+  "properties": {
+    "AppName": {
+      "type": "string",
+      "description": "The name of the application"
+    },
+    "AppVersion": {
+      "type": "string",
+      "description": "The version of the application"
+    },
+    "State": {
+      "type": "string",
+      "description": "The current installation state of the application - AppEnvState_t"
+    },
+    "RemovalDate": {
+      "type": "string",
+      "description": "The date/time after which the application may be removed - DateTime_t"
+    },
+    "License": {
+      "type": "string",
+      "description": "The license under which the application is usable - License_t"
+    },
+    "Description": {
+      "type": "string",
+      "description": "A human-readable description of the application"
+    },
+    "BestBenchmark": {
+      "type": "array",
+      "description": "The type(s) of the benchmarks which best describe the sensitivity of this application to the performance of the ExecutionEnvironment - Benchmark_t",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ParallelSupport": {
+      "type": "string",
+      "description": "The type of supported parallel execution - ParallelSupport_t"
+    },
+    "MaxSlots": {
+      "type": "integer",
+      "description": "The maximum number of concurrent slots that may be used to run the application"
+    },
+    "MaxJobs": {
+      "type": "integer",
+      "description": "The maximum number of concurrent jobs that can run the application"
+    },
+    "MaxUserSeats": {
+      "type": "integer",
+      "description": "The maximum number of concurrent users that can run the application"
+    },
+    "FreeSlots": {
+      "type": "integer",
+      "description": "The maximum number slots currently available to run the application"
+    },
+    "FreeJobs": {
+      "type": "integer",
+      "description": "The maximum number of additional jobs that can run the application"
+    },
+    "FreeUserSeats": {
+      "type": "integer",
+      "description": "The maximum number of additional users that can run the application"
+    },
+    "ExecutionEnvironmentID": {
+      "type": "array",
+      "description": "ID(s) of ExecutionEnvironments where this ApplicationEnvironment can be used",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ComputingManagerID": {
+      "type": "string",
+      "description": "ID of the ComputingManager this ApplicationEnvironment is associated with"
+    },
+    "ApplicationHandleID": {
+      "type": "array",
+      "description": "ID(s) of the ApplicationHandles that can be used to refer to this environment",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": ["AppName","ComputingManagerID"]
+}
