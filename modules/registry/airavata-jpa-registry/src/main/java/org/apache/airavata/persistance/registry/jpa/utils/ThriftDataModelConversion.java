@@ -39,6 +39,7 @@ public class ThriftDataModelConversion {
             if (experimentResource.getProject()!= null){
                 experiment.setProjectID(experimentResource.getProject().getName());
             }
+            experiment.setExperimentID(experimentResource.getExpID());
             experiment.setCreationTime(experimentResource.getCreationTime().getTime());
             experiment.setUserName(experimentResource.getExecutionUser());
             experiment.setName(experimentResource.getExpName());

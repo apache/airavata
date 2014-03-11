@@ -599,6 +599,7 @@ public class Utils {
                 experimentResource.setProject(projectResource);
             }
             experimentResource.setExpID(o.getExpId());
+            experimentResource.setExpName(o.getExpName());
             experimentResource.setCreationTime(o.getCreationTime());
             experimentResource.setDescription(o.getExpDesc());
             experimentResource.setApplicationId(o.getApplicationId());
