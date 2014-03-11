@@ -37,6 +37,7 @@ public class JSONMessageParser implements MessageParser {
     public JobStatus parseMessage(String message, MonitorID monitorID)throws AiravataMonitorException{
         /*todo write a json message parser here*/
         logger.info("Mesage parse invoked");
+        System.out.println(message);
         ObjectMapper mapper = new ObjectMapper();
         try {
             mapper.readTree(message);
