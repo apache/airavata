@@ -181,19 +181,23 @@ public class MonitorID {
     }
 
     public void setStatus(JobState status) {
-        if (this.state != null && status.equals(JobState.UNKNOWN)) {
-            switch (this.state) {
-                case ACTIVE:
-                    this.state = JobState.COMPLETE;
-                    break;
-                case QUEUED:
-                    this.state = JobState.COMPLETE;
-                    break;
-
+        if (getFailedCount() > 0)
+            if (this.state != null && status.equals(JobState.UNKNOWN)) {
+                if (getFailedCount() > 2) {
+                    switch (this.state) {
+                        case ACTIVE:
+                            this.state = JobState.COMPLETE;
+                            break;
+                        case QUEUED:
+                            this.state = JobState.COMPLETE;
+                            break;
+                    }
+                } else {
+                    setFailedCount(getFailedCount() + 1);
+                }
+            } else {
+                // normal scenario
+                this.state = status;
             }
-        }else{
-            // normal scenario
-            this.state = status;
-        }
     }
 }

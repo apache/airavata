@@ -578,7 +578,7 @@ public class ExperimentResource extends AbstractResource {
         List<Resource> resources = get(ResourceType.STATUS);
         for (Resource resource : resources) {
             StatusResource expStatus = (StatusResource) resource;
-            if(expStatus.getStatusType().equals(StatusType.EXPERIMENT)){
+            if(expStatus.getStatusType().equals(StatusType.EXPERIMENT.toString())){
                 return expStatus;
             }
         }
@@ -590,7 +590,7 @@ public class ExperimentResource extends AbstractResource {
         List<Resource> resources = get(ResourceType.STATUS);
         for (Resource resource : resources) {
             StatusResource workflowNodeStatus = (StatusResource) resource;
-            if(workflowNodeStatus.getStatusType().equals(StatusType.WORKFLOW_NODE)){
+            if(workflowNodeStatus.getStatusType().equals(StatusType.WORKFLOW_NODE.toString())){
                 statuses.add(workflowNodeStatus);
             }
         }

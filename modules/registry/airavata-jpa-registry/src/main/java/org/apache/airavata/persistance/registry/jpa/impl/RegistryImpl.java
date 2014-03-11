@@ -23,6 +23,7 @@ package org.apache.airavata.persistance.registry.jpa.impl;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
@@ -38,7 +39,8 @@ public class RegistryImpl implements Registry {
     private GatewayResource gatewayResource;
     private UserResource user;
     private final static Logger logger = LoggerFactory.getLogger(RegistryImpl.class);
-    ExperimentRegistry experimentRegistry = null;
+    private ExperimentRegistry experimentRegistry = null;
+    private ProjectRegistry projectRegistry = null;
 
     public RegistryImpl() {
         try {
@@ -47,6 +49,7 @@ public class RegistryImpl implements Registry {
             user = ResourceUtils.createUser(ServerSettings.getSystemUser(), ServerSettings.getSystemUserPassword());
             user.save();
             experimentRegistry = new ExperimentRegistry(gatewayResource, user);
+            projectRegistry = new ProjectRegistry(gatewayResource, user);
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read airavata server properties..", e.getMessage());
         }
@@ -58,6 +61,7 @@ public class RegistryImpl implements Registry {
         user = ResourceUtils.createUser(username, password);
         user.save();
         experimentRegistry = new ExperimentRegistry(gatewayResource, user);
+        projectRegistry = new ProjectRegistry(gatewayResource, user);
     }
 
     /**
@@ -74,6 +78,8 @@ public class RegistryImpl implements Registry {
     public Object add(ParentDataType dataType, Object newObjectToAdd) throws RegistryException {
         try {
             switch (dataType) {
+                case PROJECT:
+                    return projectRegistry.addProject((Project)newObjectToAdd);
                 case EXPERIMENT:
                     return experimentRegistry.addExperiment((Experiment) newObjectToAdd);
                 default:
@@ -166,6 +172,9 @@ public class RegistryImpl implements Registry {
     public void update(DataType dataType, Object newObjectToUpdate, Object identifier) throws RegistryException {
         try {
             switch (dataType) {
+                case PROJECT:
+                    projectRegistry.updateProject((Project)newObjectToUpdate, (String)identifier);
+                    break;
                 case EXPERIMENT:
                     experimentRegistry.updateExperiment((Experiment) newObjectToUpdate, (String) identifier);
                     break;
@@ -282,6 +291,8 @@ public class RegistryImpl implements Registry {
     public Object get(DataType dataType, Object identifier) throws RegistryException {
         try {
             switch (dataType) {
+                case PROJECT:
+                    return projectRegistry.getProject((String)identifier);
                 case EXPERIMENT:
                     return experimentRegistry.getExperiment((String) identifier, null);
                 case EXPERIMENT_CONFIGURATION_DATA:
@@ -345,9 +356,15 @@ public class RegistryImpl implements Registry {
         try {
             List<Object> result = new ArrayList<Object>();
             switch (dataType) {
+                case PROJECT:
+                    List<Project> projectList = projectRegistry.getProjectList(fieldName, value);
+                    for (Project project : projectList ){
+                        result.add(project);
+                    }
+                    return result;
                 case EXPERIMENT:
-                    List<Experiment> experimentMetaDataList = experimentRegistry.getExperimentList(fieldName, value);
-                    for (Experiment experiment : experimentMetaDataList) {
+                    List<Experiment> experimentList = experimentRegistry.getExperimentList(fieldName, value);
+                    for (Experiment experiment : experimentList) {
                         result.add(experiment);
                     }
                     return result;
@@ -445,6 +462,8 @@ public class RegistryImpl implements Registry {
     public List<String> getIds(DataType dataType, String fieldName, Object value) throws RegistryException {
         try {
             switch (dataType) {
+                case PROJECT:
+                    return projectRegistry.getProjectIDs(fieldName, value);
                 case EXPERIMENT:
                     return experimentRegistry.getExperimentIDs(fieldName, value);
                 case EXPERIMENT_CONFIGURATION_DATA:
@@ -480,6 +499,9 @@ public class RegistryImpl implements Registry {
     public void remove(DataType dataType, Object identifier) throws RegistryException {
         try {
             switch (dataType) {
+                case PROJECT:
+                    projectRegistry.removeProject((String)identifier);
+                    break;
                 case EXPERIMENT:
                     experimentRegistry.removeExperiment((String) identifier);
                     break;
@@ -534,6 +556,8 @@ public class RegistryImpl implements Registry {
     public boolean isExist(DataType dataType, Object identifier) throws RegistryException {
         try {
             switch (dataType) {
+                case PROJECT:
+                    return projectRegistry.isProjectExist((String)identifier);
                 case EXPERIMENT:
                     return experimentRegistry.isExperimentExist((String) identifier);
                 case EXPERIMENT_CONFIGURATION_DATA:

@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://schemas.ogf.org/glue/2013/05/spec_2.0_r1/Domain.json",
+  "type": "object",
+  "allOf": [{"$ref": "http://schemas.ogf.org/glue/2013/05/spec_2.0_r1/Entity.json"}],
+  "properties": {
+    "Description": {
+      "type": "string",
+      "description": "A description of the Domain"
+    },
+    "WWW": {
+      "type": "array",
+      "description": "URLs of web pages with more information about the Domain",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ContactID": {
+      "type": "array",
+      "description": "IDs of Contacts for this Domain",
+      "items": {
+        "type": "string"
+      }
+    },
+    "LocationID": {
+      "type": "string",
+      "description": "The ID of the primary Location for this Domain"
+    }
+  }
+}

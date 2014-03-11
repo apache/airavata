@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.job.monitor.impl.push.amqp;
 
+import org.apache.airavata.ComputingActivity;
 import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.core.MessageParser;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
@@ -30,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 
 public class JSONMessageParser implements MessageParser {
     private final static Logger logger = LoggerFactory.getLogger(JSONMessageParser.class);
@@ -37,9 +39,16 @@ public class JSONMessageParser implements MessageParser {
     public JobStatus parseMessage(String message, MonitorID monitorID)throws AiravataMonitorException{
         /*todo write a json message parser here*/
         logger.info("Mesage parse invoked");
+        System.out.println(message);
+//        JSONParser parser = new JSONParser();
         ObjectMapper mapper = new ObjectMapper();
         try {
-            mapper.readTree(message);
+            ComputingActivity computingActivity = mapper.readValue(message.getBytes(), ComputingActivity.class);
+            logger.info(computingActivity.getIDFromEndpoint());
+            List<String> stateList = computingActivity.getState();
+            for (String aState : stateList) {
+                logger.info(aState);
+            }
         } catch (IOException e) {
             throw new AiravataMonitorException(e);
         }

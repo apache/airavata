@@ -1,0 +1,147 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://schemas.ogf.org/glue/2013/05/spec_2.0_r1/Endpoint.json",
+  "type": "object",
+  "allOf": [{"$ref": "http://schemas.ogf.org/glue/2013/05/spec_2.0_r1/Entity.json"}],
+  "properties": {
+    "URL": {
+      "type": "string",
+      "description": "Network location of the endpoint"
+    },
+    "Capability": {
+      "type": "array",
+      "description": "Capability_t (open enumeration)",
+      "items": {
+        "type": "string"
+      }
+    },
+    "Technology": {
+      "type": "string",
+      "description": "EndpointTechnology_t"
+    },
+    "InterfaceName": {
+      "type": "string",
+      "description": "InterfaceName_t"
+    },
+    "InterfaceVersion": {
+      "type": "string",
+      "description": "The version of the primary interface protocol (free format)"
+    },
+    "InterfaceExtension": {
+      "type": "array",
+      "description": "URIs identifying supported extensions to the interface protocol",
+      "items": {
+        "type": "string"
+      }
+    },
+    "WSDL": {
+      "type": "array",
+      "description": "URLs of WSDL document(s) describing the interface",
+      "items": {
+        "type": "string"
+      }
+    },
+    "SupportedProfile": {
+      "type": "array",
+      "description": "URI(s) identifying supported profiles for the Endpoint",
+      "items": {
+        "type": "string"
+      }
+    },
+    "Semantics": {
+      "type": "array",
+      "description": "URL(s) of documents providing human-readable descriptions of the semantics of the Endpoint",
+      "items": {
+        "type": "string"
+      }
+    },
+    "Implementor": {
+      "type": "string",
+      "description": "The name of the main organization implementing the Endpoint"
+    },
+    "ImplementationName": {
+      "type": "string",
+      "description": "The name of the implementation of the Endpoint"
+    },
+    "ImplementationVersion": {
+      "type": "string",
+      "description": "The version of the implementation of the Endpoint"
+    },
+    "QualityLevel": {
+      "type": "string",
+      "description": "QualityLevel_t",
+      "enum": ["development","pre-production","production","testing"]
+    },
+    "HealthState": {
+      "type": "string",
+      "description": "The operational status of the Endpoint",
+      "enum": ["critical","ok","other","unknown","warning"]
+    },
+    "HealthStateInfo": {
+      "type": "string",
+      "description": "A human-readable explanation of the HealthState of this Endpoint"
+    },
+    "ServingState": {
+      "type": "string",
+      "description": "If the endpoint is accepting and serving requests",
+      "enum": ["closed","draining","production","queueing"]
+    },
+    "StartTime": {
+      "type": "string",
+      "description": "The start time of the Service associated with this Endpoint (DateTime_t)"
+    },
+    "IssuerCA": {
+      "type": "string",
+      "description": "The DN of the CA issuing the certificate presented by this Endpoint"
+    },
+    "TrustedCA": {
+      "type": "array",
+      "description": "DN(s) of CAs trusted by this Endpoint",
+      "items": {
+        "type": "string"
+      }
+    },
+    "DowntimeAnnounce": {
+      "type": "string",
+      "description": "When the next scheduled downtime was announced (DateTime_t)"
+    },
+    "DowntimeStart": {
+      "type": "string",
+      "description": "When the next scheduled downtime will start (DateTime_t)"
+    },
+    "DowntimeEnd": {
+      "type": "string",
+      "description": "When the next scheduled downtime will end (DateTime_t)"
+    },
+    "DowntimeInfo": {
+      "type": "string",
+      "description": "Human-readable of the next scheduled downtime"
+    },
+    "ServiceID": {
+      "type": "string",
+      "description": "The ID of the Service associated with this Endpoint"
+    },
+    "ShareID": {
+      "type": "array",
+      "description": "The IDs of the Shares accessible from this Endpoint",
+      "items": {
+        "type": "string"
+      }
+    },
+    "AccessPolicyID": {
+      "type": "array",
+      "description": "IDs of AccessPolicies associated with this Endpoint",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ActivityID": {
+      "type": "array",
+      "description": "IDs of Activities being managed through this Endpoint",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": ["InterfaceName","QualityLevel","HealthState","ServingState","ServiceID"]
+}
