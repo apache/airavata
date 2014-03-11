@@ -56,6 +56,7 @@ public class ServerSettings extends ApplicationSettings{
     private static final String REGISTRY_DB_DRIVER ="registry.jdbc.driver";
     private static final String ENABLE_HTTPS = "enable.https";
     private static final String HOST_SCHEDULER = "host.scheduler";
+    private static boolean stopAllThreads = false;
 
     public static String getSystemUser() throws ApplicationSettingsException{
     	return getSetting(SYSTEM_USER);
@@ -170,5 +171,13 @@ public class ServerSettings extends ApplicationSettings{
 
     public static String getHostScheduler() throws ApplicationSettingsException {
         return getSetting(HOST_SCHEDULER);
+    }
+
+    public static boolean isStopAllThreads() {
+        return stopAllThreads;
+    }
+
+    public static void setStopAllThreads(boolean stopAllThreads) {
+        ServerSettings.stopAllThreads = stopAllThreads;
     }
 }

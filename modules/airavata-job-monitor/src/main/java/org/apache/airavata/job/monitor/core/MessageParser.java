@@ -21,6 +21,7 @@
 package org.apache.airavata.job.monitor.core;
 
 import org.apache.airavata.job.monitor.MonitorID;
+import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.state.JobStatus;
 
 /**
@@ -40,5 +41,5 @@ public interface MessageParser {
      * @param monitorID monitorID object
      * @return
      */
-    JobStatus parseMessage(String message,MonitorID monitorID);
+    JobStatus parseMessage(String message,MonitorID monitorID)throws AiravataMonitorException;
 }

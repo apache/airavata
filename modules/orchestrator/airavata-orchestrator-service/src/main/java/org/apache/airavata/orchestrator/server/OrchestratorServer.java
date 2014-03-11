@@ -27,6 +27,7 @@ import org.apache.airavata.common.utils.IServer.ServerStatus;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.util.Constants;
 import org.apache.thrift.server.TServer;
+import org.apache.thrift.server.TServerEventHandler;
 import org.apache.thrift.server.TSimpleServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
@@ -44,7 +45,6 @@ public class OrchestratorServer implements IServer{
 
 	private TSimpleServer server;
 
-    public static final String TESTARGUMENTTOHANDLER = "testing";
 	public OrchestratorServer() {
 		setStatus(ServerStatus.STOPPED);
 	}
@@ -103,7 +103,7 @@ public class OrchestratorServer implements IServer{
 
 	@Override
 	public void stop() throws Exception {
-		if (server!=null && server.isServing()){
+        if (server!=null && server.isServing()){
 			setStatus(ServerStatus.STOPING);
 			server.stop();
 		}
