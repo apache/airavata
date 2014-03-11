@@ -41,6 +41,8 @@ import org.slf4j.LoggerFactory;
 public class AiravataAPIServer implements IServer{
 
     private final static Logger logger = LoggerFactory.getLogger(AiravataAPIServer.class);
+	private static final String SERVER_NAME = "Airavata API Server";
+	private static final String SERVER_VERSION = "1.0";
 
     //FIXME: Read the port from airavata-server.config file
     private ServerStatus status;
@@ -55,12 +57,10 @@ public class AiravataAPIServer implements IServer{
         try {
             AiravataUtils.setExecutionAsServer();
             RegistryInitUtil.initializeDB();
-            int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.THRIFT_SERVER_PORT,"8930"));
+            final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.THRIFT_SERVER_PORT,"8930"));
 			TServerTransport serverTransport = new TServerSocket(serverPort);
             server = new TSimpleServer(
                     new TServer.Args(serverTransport).processor(mockAiravataServer));
-            logger.info("Starting Airavata API Server on Port " + serverPort);
-            logger.info("Listening to Airavata Clients ....");
             new Thread() {
 				public void run() {
 					server.serve();
@@ -69,7 +69,22 @@ public class AiravataAPIServer implements IServer{
 					logger.info("Airavata API Server Stopped.");
 				}
 			}.start();
-			setStatus(ServerStatus.STARTED);
+			new Thread() {
+				public void run() {
+					while(!server.isServing()){
+						try {
+							Thread.sleep(500);
+						} catch (InterruptedException e) {
+							break;
+						}
+					}
+					if (server.isServing()){
+						setStatus(ServerStatus.STARTED);
+			            logger.info("Starting Airavata API Server on Port " + serverPort);
+			            logger.info("Listening to Airavata Clients ....");
+					}
+				}
+			}.start();
         } catch (TTransportException e) {
             logger.error(e.getMessage());
             setStatus(ServerStatus.FAILED);
@@ -127,22 +142,13 @@ public class AiravataAPIServer implements IServer{
 	}
 
 	@Override
-	public void waitForServerToStart() throws Exception {
-		while((getStatus()==ServerStatus.STARTING || getStatus()==ServerStatus.STARTED) && !server.isServing()){
-			Thread.sleep(100);
-		}
-		if (!(getStatus()==ServerStatus.STARTING || getStatus()==ServerStatus.STARTED)){
-			throw new Exception("The Airavata API server did not start!!!");
-		}
+	public String getName() {
+		return SERVER_NAME;
 	}
 
 	@Override
-	public void waitForServerToStop() throws Exception {
-		while((getStatus()==ServerStatus.STOPING || getStatus()==ServerStatus.STOPPED) && server.isServing()){
-			Thread.sleep(100);
-		}
-		if (!(getStatus()==ServerStatus.STOPING || getStatus()==ServerStatus.STOPPED)){
-			throw new Exception("Error stopping the Airavata API server!!!");
-		}
+	public String getVersion() {
+		return SERVER_VERSION;
 	}
+
 }

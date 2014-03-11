@@ -378,13 +378,24 @@ public class StringUtil {
     private static Options deriveCommandLineOptions(String[] args){
     	Options options = new Options();
     	String[] argCopy = getChangedList(args);
+    	int i=0;
         for (String arg : argCopy) {
             if (arg.startsWith("--")){
             	arg=arg.substring(2);
                 int pos = arg.indexOf('=');
-                String opt = pos == -1 ? arg : arg.substring(0, pos); 
-                options.addOption(opt, true, "");
+                String opt;
+                boolean hasArgs=true;
+	            if (pos==-1){ //if not of the form --arg=value
+	            	if (i==argCopy.length-1 || argCopy[i+1].startsWith("-")){ // no value specified 
+	            		hasArgs=false;
+	            	}
+	            	opt=arg;
+	            }else{
+	            	opt=arg.substring(0, pos);
+	            }
+                options.addOption(opt, hasArgs, "");
             }
+            i++;
         }
         return options;
     }
@@ -423,11 +434,11 @@ public class StringUtil {
 	}
 	
 	private static String revertOption(String option){
-		return option.replaceAll(Pattern.quote(ARG_DOT_REPLACE), ".");
+		return option==null? option : option.replaceAll(Pattern.quote(ARG_DOT_REPLACE), ".");
 	}
 	
 	private static String changeOption(String option){
-		return option.replaceAll(Pattern.quote("."), ARG_DOT_REPLACE);
+		return option==null? option : option.replaceAll(Pattern.quote("."), ARG_DOT_REPLACE);
 	}
 	
 	private static class DynamicOptionPosixParser extends PosixParser{

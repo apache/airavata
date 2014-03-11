@@ -23,6 +23,7 @@ package org.apache.airavata.orchestrator.server;
 
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.IServer.ServerStatus;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.util.Constants;
 import org.apache.thrift.server.TServer;
@@ -36,6 +37,8 @@ import org.slf4j.LoggerFactory;
 public class OrchestratorServer implements IServer{
 
     private final static Logger logger = LoggerFactory.getLogger(OrchestratorServer.class);
+	private static final String SERVER_NAME = "Orchestrator Server";
+	private static final String SERVER_VERSION = "1.0";
 
     private ServerStatus status;
 
@@ -49,12 +52,10 @@ public class OrchestratorServer implements IServer{
     public void StartOrchestratorServer(OrchestratorService.Processor<OrchestratorServerHandler> orchestratorServerHandlerProcessor)
             throws Exception {
         try {
-            int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.ORCHESTRATOT_SERVER_PORT,"8940"));
+            final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.ORCHESTRATOT_SERVER_PORT,"8940"));
 			TServerTransport serverTransport = new TServerSocket(serverPort);
             server = new TSimpleServer(
                     new TServer.Args(serverTransport).processor(orchestratorServerHandlerProcessor));
-            logger.info("Starting Orchestrator Server on Port " + serverPort);
-            logger.info("Listening to Orchestrator Clients ....");
             new Thread() {
 				public void run() {
 					server.serve();
@@ -62,7 +63,22 @@ public class OrchestratorServer implements IServer{
 					logger.info("Orchestrator Server Stopped.");
 				}
 			}.start();
-			setStatus(ServerStatus.STARTED);
+			new Thread() {
+				public void run() {
+					while(!server.isServing()){
+						try {
+							Thread.sleep(500);
+						} catch (InterruptedException e) {
+							break;
+						}
+					}
+					if (server.isServing()){
+						setStatus(ServerStatus.STARTED);
+			            logger.info("Starting Orchestrator Server on Port " + serverPort);
+			            logger.info("Listening to Orchestrator Clients ....");
+					}
+				}
+			}.start();
         } catch (TTransportException e) {
             logger.error(e.getMessage());
             setStatus(ServerStatus.FAILED);
@@ -117,23 +133,13 @@ public class OrchestratorServer implements IServer{
 	}
 
 	@Override
-	public void waitForServerToStart() throws Exception {
-		while((getStatus()==ServerStatus.STARTING || getStatus()==ServerStatus.STARTED) && !server.isServing()){
-			Thread.sleep(100);
-		}
-		if (!(getStatus()==ServerStatus.STARTING || getStatus()==ServerStatus.STARTED)){
-			throw new Exception("The Orchestrator server did not start!!!");
-		}
+	public String getName() {
+		return SERVER_NAME;
 	}
 
 	@Override
-	public void waitForServerToStop() throws Exception {
-		while((getStatus()==ServerStatus.STOPING || getStatus()==ServerStatus.STOPPED) && server.isServing()){
-			Thread.sleep(100);
-		}
-		if (!(getStatus()==ServerStatus.STOPING || getStatus()==ServerStatus.STOPPED)){
-			throw new Exception("Error stopping the Orchestrator server!!!");
-		}
+	public String getVersion() {
+		return SERVER_VERSION;
 	}
 
 }

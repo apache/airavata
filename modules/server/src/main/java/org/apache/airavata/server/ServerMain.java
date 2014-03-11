@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.IServer;
+import org.apache.airavata.common.utils.IServer.ServerStatus;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.StringUtil.CommandLineParameters;
@@ -42,8 +43,10 @@ public class ServerMain {
     private final static Logger logger = LoggerFactory.getLogger(ServerMain.class);
     private static boolean serversLoaded=false;
 	private static final String stopFileNamePrefix = "airavata-server-stop";
+	private static final String stopFileNamePrefixForced = "airavata-server-stop-forced";
 	private static int serverIndex=-1;
 	private static final String serverStartedFileNamePrefix = "airavata-server-start";
+	private static boolean forcedStop=false; 
     static{
 		servers = new ArrayList<IServer>();
     }
@@ -85,60 +88,84 @@ public class ServerMain {
 
 	public static void main(String args[]) throws ParseException, IOException {
 		CommandLineParameters commandLineParameters = StringUtil.getCommandLineParser(args);
-		
 		if (commandLineParameters.getArguments().contains("stop")){
-			String serverIndexOption = "serverIndex";
-			if (commandLineParameters.getParameters().containsKey(serverIndexOption)){
-				serverIndex=Integer.parseInt(commandLineParameters.getParameters().get(serverIndexOption));
-			}
-			if (isServerRunning()) {
-				logger.info("Requesting airavata server"+(serverIndex==-1? "(s)":" instance "+serverIndex)+" to stop...");
-				requestStop();
-				while(isServerRunning()){
-					try {
-						Thread.sleep(5000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-				logger.info("Server"+(serverIndex==-1? "(s)":" instance "+serverIndex)+" stopped!!!");
-			}else{
-				logger.error("Server"+(serverIndex==-1? "":" instance "+serverIndex)+" is not running!!!");
-			}
+			performServerStopRequest(commandLineParameters);
 		}else{
-			setServerStarted();
-			logger.info("Airavata server instance "+serverIndex+" starting...");
-			ServerSettings.mergeSettingsCommandLineArgs(args);
-			startAllServers();
-			while(!hasStopRequested()){
+			performServerStart(args);
+		}
+	}
+
+	private static void performServerStart(String[] args) {
+		setServerStarted();
+		logger.info("Airavata server instance "+serverIndex+" starting...");
+		ServerSettings.mergeSettingsCommandLineArgs(args);
+		startAllServers();
+		while(!hasStopRequested()){
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				stopAllServers();
+			}
+		}
+		if (hasStopRequested()){
+			stopAllServers();
+			System.exit(0);
+		}
+	}
+
+	private static void performServerStopRequest(
+			CommandLineParameters commandLineParameters) throws IOException {
+		String serverIndexOption = "serverIndex";
+		if (commandLineParameters.getParameters().containsKey(serverIndexOption)){
+			serverIndex=Integer.parseInt(commandLineParameters.getParameters().get(serverIndexOption));
+		}
+		String serverForcedStop = "force";
+		if (commandLineParameters.getParameters().containsKey(serverForcedStop)){
+			forcedStop=true;
+		}
+		if (isServerRunning()) {
+			logger.info("Requesting airavata server"+(serverIndex==-1? "(s)":" instance "+serverIndex)+" to stop...");
+			requestStop();
+			while(isServerRunning()){
 				try {
-					Thread.sleep(2000);
+					Thread.sleep(5000);
 				} catch (InterruptedException e) {
-					stopAllServers();
+					e.printStackTrace();
 				}
 			}
-			if (hasStopRequested()){
-				stopAllServers();
-				System.exit(0);
-			}
+			logger.info("Server"+(serverIndex==-1? "(s)":" instance "+serverIndex)+" stopped!!!");
+		}else{
+			logger.error("Server"+(serverIndex==-1? "":" instance "+serverIndex)+" is not running!!!");
 		}
 	}
 
 	@SuppressWarnings("resource")
 	private static void requestStop() throws IOException {
-		//FIXME currently stop requests all the servers to stop
 		File file = new File(getServerStopFileName());
 		file.createNewFile();
 		new RandomAccessFile(file, "rw").getChannel().lock();
 		file.deleteOnExit();
+		if (forcedStop){ 
+			// incase a previous attempt of stopping without forcing is present, best to delete that file
+			File f=new File((serverIndex==-1)? stopFileNamePrefix:stopFileNamePrefix+serverIndex);
+			if (f.exists()){
+				f.deleteOnExit();
+			}
+		}
 	}
 	
 	private static boolean hasStopRequested(){
-		return new File(getServerStopFileName()).exists() || new File(stopFileNamePrefix).exists(); 
+		forcedStop=new File(getServerStopForceFileName()).exists() || new File(stopFileNamePrefixForced).exists();
+		return  forcedStop || new File(getServerStopFileName()).exists() || new File(stopFileNamePrefix).exists(); 
 	}
 
 	private static String getServerStopFileName() {
-		return (serverIndex==-1)?stopFileNamePrefix:stopFileNamePrefix+serverIndex;
+		String filePrefix = forcedStop? stopFileNamePrefixForced : stopFileNamePrefix;
+		return (serverIndex==-1)? filePrefix:filePrefix+serverIndex;
+	}
+	
+	private static String getServerStopForceFileName() {
+		return (serverIndex==-1)?stopFileNamePrefixForced:stopFileNamePrefixForced+serverIndex;
 	}
 
 	private static boolean isServerRunning(){
@@ -177,15 +204,19 @@ public class ServerMain {
 		return serverStartedFileNamePrefix+serverIndex;
 	}
 	
-	
+	private static int DEFAULT_FORCE_STOP_WAIT_INTERVAL=3000;
 	public static void stopAllServers() {
 		//stopping should be done in reverse order of starting the servers
 		for(int i=servers.size()-1;i>=0;i--){
 			try {
 				servers.get(i).stop();
-				servers.get(i).waitForServerToStop();
+				if (forcedStop) {
+					waitForServerToStop(servers.get(i),DEFAULT_FORCE_STOP_WAIT_INTERVAL);
+				}else{
+					waitForServerToStop(servers.get(i),null);
+				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Server Stop Error:",e);
 			}
 		}
 	}
@@ -197,11 +228,40 @@ public class ServerMain {
 		for (IServer server : servers) {
 			try {
 				server.start();
-				server.waitForServerToStart();
+				waitForServerToStart(server,null);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Server Start Error:",e);
 			}
 		}
 	}
-	
+	private static final int SERVER_STATUS_CHANGE_WAIT_INTERVAL=100;
+
+	public static void waitForServerToStart(IServer server,Integer maxWait) throws Exception {
+		int count=0;
+		if (server.getStatus()==ServerStatus.STARTING) {
+			logger.info("Waiting for " + server.getName() + " to start...");
+		}
+		while(server.getStatus()==ServerStatus.STARTING && (maxWait==null || count<maxWait)){
+			Thread.sleep(SERVER_STATUS_CHANGE_WAIT_INTERVAL);
+			count+=SERVER_STATUS_CHANGE_WAIT_INTERVAL;
+		}
+		if (server.getStatus()!=ServerStatus.STARTED){
+			throw new Exception("The "+server.getName()+" did not start!!!");
+		}
+	}
+
+	public static void waitForServerToStop(IServer server,Integer maxWait) throws Exception {
+		int count=0;
+		if (server.getStatus()==ServerStatus.STOPING) {
+			logger.info("Waiting for " + server.getName() + " to stop...");
+		}
+		//we are doing hasStopRequested() check because while we are stuck in the loop to stop there could be a forceStop request 
+		while(server.getStatus()==ServerStatus.STOPING && (maxWait==null || count<maxWait) && hasStopRequested() && !forcedStop){
+			Thread.sleep(SERVER_STATUS_CHANGE_WAIT_INTERVAL);
+			count+=SERVER_STATUS_CHANGE_WAIT_INTERVAL;
+		}
+		if (server.getStatus()!=ServerStatus.STOPPED){
+			throw new Exception("Error stopping the "+server.getName()+"!!!");
+		}
+	}
 }
