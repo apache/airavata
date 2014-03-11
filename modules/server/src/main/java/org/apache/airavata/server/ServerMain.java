@@ -47,6 +47,7 @@ public class ServerMain {
 	private static int serverIndex=-1;
 	private static final String serverStartedFileNamePrefix = "airavata-server-start";
 	private static boolean forcedStop=false; 
+	private static boolean systemShutDown=false;
     static{
 		servers = new ArrayList<IServer>();
     }
@@ -81,6 +82,7 @@ public class ServerMain {
 		serversLoaded=true;
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			public void run() {
+				setSystemShutDown(true);
 				stopAllServers();
 			}
 		});
@@ -156,7 +158,7 @@ public class ServerMain {
 	
 	private static boolean hasStopRequested(){
 		forcedStop=new File(getServerStopForceFileName()).exists() || new File(stopFileNamePrefixForced).exists();
-		return  forcedStop || new File(getServerStopFileName()).exists() || new File(stopFileNamePrefix).exists(); 
+		return  isSystemShutDown() || forcedStop || new File(getServerStopFileName()).exists() || new File(stopFileNamePrefix).exists(); 
 	}
 
 	private static String getServerStopFileName() {
@@ -236,11 +238,11 @@ public class ServerMain {
 	}
 	private static final int SERVER_STATUS_CHANGE_WAIT_INTERVAL=100;
 
-	public static void waitForServerToStart(IServer server,Integer maxWait) throws Exception {
+	private static void waitForServerToStart(IServer server,Integer maxWait) throws Exception {
 		int count=0;
-		if (server.getStatus()==ServerStatus.STARTING) {
-			logger.info("Waiting for " + server.getName() + " to start...");
-		}
+//		if (server.getStatus()==ServerStatus.STARTING) {
+//			logger.info("Waiting for " + server.getName() + " to start...");
+//		}
 		while(server.getStatus()==ServerStatus.STARTING && (maxWait==null || count<maxWait)){
 			Thread.sleep(SERVER_STATUS_CHANGE_WAIT_INTERVAL);
 			count+=SERVER_STATUS_CHANGE_WAIT_INTERVAL;
@@ -250,18 +252,26 @@ public class ServerMain {
 		}
 	}
 
-	public static void waitForServerToStop(IServer server,Integer maxWait) throws Exception {
+	private static void waitForServerToStop(IServer server,Integer maxWait) throws Exception {
 		int count=0;
 		if (server.getStatus()==ServerStatus.STOPING) {
 			logger.info("Waiting for " + server.getName() + " to stop...");
 		}
 		//we are doing hasStopRequested() check because while we are stuck in the loop to stop there could be a forceStop request 
-		while(server.getStatus()==ServerStatus.STOPING && (maxWait==null || count<maxWait) && hasStopRequested() && !forcedStop){
+		while(server.getStatus()==ServerStatus.STOPING && (maxWait==null || count<maxWait) && hasStopRequested() && (maxWait!=null || !forcedStop)){
 			Thread.sleep(SERVER_STATUS_CHANGE_WAIT_INTERVAL);
 			count+=SERVER_STATUS_CHANGE_WAIT_INTERVAL;
 		}
 		if (server.getStatus()!=ServerStatus.STOPPED){
 			throw new Exception("Error stopping the "+server.getName()+"!!!");
 		}
+	}
+
+	private static boolean isSystemShutDown() {
+		return systemShutDown;
+	}
+
+	private static void setSystemShutDown(boolean systemShutDown) {
+		ServerMain.systemShutDown = systemShutDown;
 	}
 }
