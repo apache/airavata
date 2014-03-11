@@ -49,4 +49,12 @@ public abstract class PushMonitor extends AiravataAbstractMonitor {
      * @return
      */
     public abstract boolean unRegisterListener(MonitorID monitorID)throws AiravataMonitorException;
+
+    /**
+     * This can be used to stop the registration thread
+     * @return
+     * @throws AiravataMonitorException
+     */
+    public abstract boolean stopRegister()throws AiravataMonitorException;
+
 }

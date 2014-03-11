@@ -67,6 +67,8 @@ public class AMQPMonitor extends PushMonitor {
 
     private List<String> amqpHosts;
 
+    private boolean startRegister;
+
     public AMQPMonitor(){
 
     }
@@ -101,7 +103,7 @@ public class AMQPMonitor extends PushMonitor {
         // if we already have a channel we do not create one
         if (availableChannels.get(channelID) == null) {
             //todo need to fix this rather getting it from a file
-            Connection connection = AMQPConnectionUtil.connect(connectionName, proxyPath);
+            Connection connection = AMQPConnectionUtil.connect(amqpHosts,connectionName, proxyPath);
             Channel channel = null;
             try {
                 channel = connection.createChannel();
@@ -112,7 +114,7 @@ public class AMQPMonitor extends PushMonitor {
                 String filterString = CommonUtils.getRoutingKey(monitorID);
                 // here we queuebind to a particular user in a particular machine
                 channel.queueBind(queueName, "glue2.computing_activity", filterString);
-                System.out.println(filterString);
+                logger.info("Using filtering string to monitor: " + filterString);
             } catch (IOException e) {
                 logger.error("Error creating the connection to finishQueue the job:" + monitorID.getJobID());
             }
@@ -122,7 +124,8 @@ public class AMQPMonitor extends PushMonitor {
 
     public void run() {
         // before going to the while true mode we start unregister thread
-        while (true) {
+        startRegister = true; // this will be unset by someone else
+        while (startRegister) {
             try {
                 MonitorID take = runningQueue.take();
                 this.registerListener(take);
@@ -173,6 +176,11 @@ public class AMQPMonitor extends PushMonitor {
         return true;
     }
 
+    @Override
+    public boolean stopRegister() throws AiravataMonitorException {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public Map<String, Channel> getAvailableChannels() {
         return availableChannels;
     }
@@ -219,5 +227,13 @@ public class AMQPMonitor extends PushMonitor {
 
     public void setAmqpHosts(List<String> amqpHosts) {
         this.amqpHosts = amqpHosts;
+    }
+
+    public boolean isStartRegister() {
+        return startRegister;
+    }
+
+    public void setStartRegister(boolean startRegister) {
+        this.startRegister = startRegister;
     }
 }
