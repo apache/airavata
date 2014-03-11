@@ -17,71 +17,61 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
+
 package org.apache.airavata.persistance.registry.jpa.model;
 
+
 import javax.persistence.*;
-import java.sql.Timestamp;
 
 @Entity
-@Table(name ="PROJECT")
-public class Project {
+@IdClass(ProjectUser_PK.class)
+@Table(name = "PROJECT_USER")
+public class ProjectUser {
     @Id
     @Column(name = "PROJECT_NAME")
-    private String project_name;
-
-    @Column(name = "DESCRIPTION")
-    private String description;
-    @Column(name = "CREATION_TIME")
-    private Timestamp creationTime;
+    private String projectName;
+    @Id
+    @Column(name = "USER_NAME")
+    private String userName;
 
     @ManyToOne(cascade=CascadeType.MERGE)
-    @JoinColumn(name = "GATEWAY_NAME")
-    private Gateway gateway;
+    @JoinColumn(name = "PROJECT_NAME")
+    private Project project;
 
     @ManyToOne(cascade=CascadeType.MERGE)
     @JoinColumn(name = "USER_NAME")
-    private Users users;
+    private Users user;
 
-
-    public String getProject_name() {
-        return project_name;
+    public String getProjectName() {
+        return projectName;
     }
 
-    public Gateway getGateway() {
-        return gateway;
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 
-    public void setProject_name(String project_name) {
-        this.project_name = project_name;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setGateway(Gateway gateway) {
-        this.gateway = gateway;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public Users getUsers() {
-        return users;
+    public Project getProject() {
+        return project;
     }
 
-    public void setUsers(Users users) {
-        this.users = users;
+    public void setProject(Project project) {
+        this.project = project;
     }
 
-    public String getDescription() {
-        return description;
+    public Users getUser() {
+        return user;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Timestamp getCreationTime() {
-        return creationTime;
-    }
-
-    public void setCreationTime(Timestamp creationTime) {
-        this.creationTime = creationTime;
+    public void setUser(Users user) {
+        this.user = user;
     }
 }
-
