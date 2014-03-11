@@ -172,6 +172,9 @@ public class AMQPMonitor extends PushMonitor {
                 logger.error("Error unregistering the listener");
                 throw new AiravataMonitorException("Error unregistering the listener");
             }
+
+
+
         }
         return true;
     }

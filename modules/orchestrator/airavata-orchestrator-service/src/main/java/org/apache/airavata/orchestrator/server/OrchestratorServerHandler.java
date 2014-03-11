@@ -171,7 +171,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 // this is a special case because amqp has to be in place before submitting the job
                 if ((hostDescription instanceof GsisshHostType) &&
                         Constants.PUSH.equals(((GsisshHostType) hostDescription).getMonitorMode())) {
-
                     monitorID = new MonitorID(hostDescription, null, taskID.getTaskID(), experimentId, userName);
                     monitorManager.addAJobToMonitor(monitorID);
                     String jobID = orchestrator.launchExperiment(experimentId, taskID.getTaskID());

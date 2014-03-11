@@ -67,6 +67,7 @@ public class ResourceConnection {
     }
 
     private JobState getStatusFromString(String status) {
+        log.info("parsing the job status returned : " + status);
         if(status != null){
             if("C".equals(status) || "CD".equals(status)){
                 return JobState.COMPLETE;

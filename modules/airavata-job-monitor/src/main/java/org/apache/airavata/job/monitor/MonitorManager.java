@@ -34,11 +34,10 @@ import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.constraints.Null;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /*
 this is the manager class for monitoring system of airavata,
@@ -69,9 +68,9 @@ public class MonitorManager {
     public MonitorManager() {
         pullMonitors = new ArrayList<PullMonitor>();
         pushMonitors = new ArrayList<PushMonitor>();
-        pullQueue = new LinkedBlockingDeque<MonitorID>();
-        pushQueue = new LinkedBlockingDeque<MonitorID>();
-        finishQueue = new LinkedBlockingDeque<MonitorID>();
+        pullQueue = new LinkedBlockingQueue<MonitorID>();
+        pushQueue = new LinkedBlockingQueue<MonitorID>();
+        finishQueue = new LinkedBlockingQueue<MonitorID>();
         monitorPublisher = new MonitorPublisher(new EventBus());
         registerListener(new AiravataJobStatusUpdator(new RegistryImpl(), finishQueue));
     }
