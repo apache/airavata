@@ -74,7 +74,7 @@ public class QstatMonitor extends PullMonitor {
             try {
                 startPulling();
                 // After finishing one iteration of the full queue this thread sleeps 1 second
-                Thread.sleep(5000);
+                Thread.sleep(30000);
             } catch (Exception e){
                 // we catch all the exceptions here because no matter what happens we do not stop running this
                 // thread, but ideally we should report proper error messages, but this is handled in startPulling
