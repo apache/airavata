@@ -71,6 +71,7 @@ public class CreateLaunchExperiment {
             List<Experiment> experiments = getExperimentsForUser(airavata, "admin");
             for (Experiment exp : experiments){
                 System.out.println(" exp id : " + exp.getExperimentID());
+                System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
             }
 
 //            try {

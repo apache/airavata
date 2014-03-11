@@ -80,16 +80,16 @@ public class ThriftDataModelConversion {
                 experiment.setExperimentStatus(getExperimentStatus(experimentStatus));
             }
             List<StatusResource> changeList = experimentResource.getWorkflowNodeStatuses();
-            if (changeList != null){
+            if (changeList != null && !changeList.isEmpty()){
                 experiment.setStateChangeList(getWorkflowNodeStatusList(changeList));
             }
 
             List<WorkflowNodeDetailResource> workflowNodeDetails = experimentResource.getWorkflowNodeDetails();
-            if (workflowNodeDetails != null){
+            if (workflowNodeDetails != null && !workflowNodeDetails.isEmpty()){
                 experiment.setWorkflowNodeDetailsList(getWfNodeList(workflowNodeDetails));
             }
             List<ErrorDetailResource> errorDetails = experimentResource.getErrorDetails();
-            if (errorDetails!= null){
+            if (errorDetails!= null && !errorDetails.isEmpty()){
                 experiment.setErrors(getErrorDetailList(errorDetails));
             }
             String expID = experimentResource.getExpID();

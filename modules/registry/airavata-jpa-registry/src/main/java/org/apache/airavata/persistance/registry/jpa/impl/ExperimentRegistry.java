@@ -654,14 +654,23 @@ public class ExperimentRegistry {
                 addNodeOutputs(nodeOutputs, ids);
             }
             WorkflowNodeStatus workflowNodeStatus = nodeDetails.getWorkflowNodeStatus();
-            if (workflowNodeStatus != null){
-                WorkflowNodeStatus status = getWorkflowNodeStatus(nodeId);
-                if (status != null){
-                    updateWorkflowNodeStatus(workflowNodeStatus, nodeId);
+            CompositeIdentifier ids = new CompositeIdentifier(expId, nodeId);
+            if (workflowNodeStatus != null ){
+                if (workflowNodeStatus.getWorkflowNodeState() != null){
+                    WorkflowNodeStatus status = getWorkflowNodeStatus(nodeId);
+                    if (status != null){
+                        updateWorkflowNodeStatus(workflowNodeStatus, nodeId);
+                    }else {
+                        addWorkflowNodeStatus(workflowNodeStatus,ids);
+                    }
                 }else {
-                    CompositeIdentifier ids = new CompositeIdentifier(expId, nodeId);
-                    addWorkflowNodeStatus(workflowNodeStatus,ids);
+                    workflowNodeStatus.setWorkflowNodeState(WorkflowNodeState.UNKNOWN);
+                    addWorkflowNodeStatus(workflowNodeStatus, ids);
                 }
+            }else {
+                WorkflowNodeStatus status = new WorkflowNodeStatus();
+                status.setWorkflowNodeState(WorkflowNodeState.UNKNOWN);
+                addWorkflowNodeStatus(status, ids);
             }
             List<TaskDetails> taskDetails = nodeDetails.getTaskDetailsList();
             if (taskDetails != null && !taskDetails.isEmpty()){
@@ -825,9 +834,18 @@ public class ExperimentRegistry {
             }
 
             TaskStatus taskStatus = taskDetails.getTaskStatus();
+            CompositeIdentifier ids = new CompositeIdentifier(nodeId, taskDetail.getTaskId());
             if (taskStatus != null){
-                CompositeIdentifier ids = new CompositeIdentifier(nodeId, taskDetail.getTaskId());
-                addTaskStatus(taskStatus, ids);
+                if (taskStatus.getExecutionState() != null){
+                    addTaskStatus(taskStatus, ids);
+                }else {
+                    taskStatus.setExecutionState(TaskState.UNKNOWN);
+                    addTaskStatus(taskStatus, ids);
+                }
+            }else {
+                TaskStatus status = new TaskStatus();
+                status.setExecutionState(TaskState.UNKNOWN);
+                addTaskStatus(status, ids);
             }
             return taskDetail.getTaskId();
         } catch (Exception e) {
