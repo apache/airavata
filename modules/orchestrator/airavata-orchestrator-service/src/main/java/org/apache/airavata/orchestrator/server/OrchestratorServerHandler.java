@@ -191,6 +191,14 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         return true;
     }
 
+    public MonitorManager getMonitorManager() {
+        return monitorManager;
+    }
+
+    public void setMonitorManager(MonitorManager monitorManager) {
+        this.monitorManager = monitorManager;
+    }
+
     @Override
     public boolean terminateExperiment(String experimentId) throws TException {
         return false;

@@ -110,6 +110,7 @@ public class ServerMain {
 			}
 		}
 		if (hasStopRequested()){
+            ServerSettings.setStopAllThreads(true);
 			stopAllServers();
 			System.exit(0);
 		}

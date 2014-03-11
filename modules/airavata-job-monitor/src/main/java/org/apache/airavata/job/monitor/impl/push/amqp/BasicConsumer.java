@@ -27,6 +27,7 @@ import com.rabbitmq.client.ShutdownSignalException;
 import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.core.MessageParser;
 import org.apache.airavata.job.monitor.event.MonitorPublisher;
+import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +67,11 @@ public class BasicConsumer implements Consumer {
         // Here we parse the message and get the job status and push it
         // to the Event bus, this will be picked by
         // AiravataJobStatusUpdator and store in to registry
-        publisher.publish(parser.parseMessage(message,monitorID));
+        try {
+            publisher.publish(parser.parseMessage(message,monitorID));
+        } catch (AiravataMonitorException e) {
+            e.printStackTrace();
+        }
     }
 
     public void handleRecoverOk(java.lang.String consumerTag) {

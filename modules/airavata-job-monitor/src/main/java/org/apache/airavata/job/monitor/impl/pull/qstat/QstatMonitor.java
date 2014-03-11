@@ -21,6 +21,7 @@
 package org.apache.airavata.job.monitor.impl.pull.qstat;
 
 import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.core.PullMonitor;
@@ -69,7 +70,7 @@ public class QstatMonitor extends PullMonitor {
         monitoring
          */
         this.startPulling = true;
-        while (this.startPulling) {
+        while (this.startPulling || !ServerSettings.isStopAllThreads()) {
             try {
                 startPulling();
                 // After finishing one iteration of the full queue this thread sleeps 1 second

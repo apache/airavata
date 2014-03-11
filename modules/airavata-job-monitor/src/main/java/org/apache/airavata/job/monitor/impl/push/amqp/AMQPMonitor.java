@@ -23,6 +23,7 @@ package org.apache.airavata.job.monitor.impl.push.amqp;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.core.PushMonitor;
 import org.apache.airavata.job.monitor.event.MonitorPublisher;
@@ -34,10 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -125,7 +123,7 @@ public class AMQPMonitor extends PushMonitor {
     public void run() {
         // before going to the while true mode we start unregister thread
         startRegister = true; // this will be unset by someone else
-        while (startRegister) {
+        while (startRegister || !ServerSettings.isStopAllThreads()) {
             try {
                 MonitorID take = runningQueue.take();
                 this.registerListener(take);
@@ -135,6 +133,15 @@ public class AMQPMonitor extends PushMonitor {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             } catch (Exception e){
                 e.printStackTrace();
+            }
+        }
+        Set<String> strings = availableChannels.keySet();
+        for(String key:strings) {
+            Channel channel = availableChannels.get(key);
+            try {
+                channel.close();
+            } catch (IOException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
         }
     }
