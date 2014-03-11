@@ -23,6 +23,11 @@ package org.apache.airavata.registry.cpi.utils;
 
 public class Constants {
     public final class FieldConstants {
+        public final class ProjectConstants {
+            public static final String PROJECT_ID = "projectID";
+            public static final String OWNER = "owner";
+        }
+
         public final class ExperimentConstants {
             public static final String EXPERIMENT_NAME = "experimentName";
             public static final String USER_NAME = "userName";

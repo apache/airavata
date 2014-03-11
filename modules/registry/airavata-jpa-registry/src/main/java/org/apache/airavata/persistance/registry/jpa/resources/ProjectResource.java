@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.persistance.registry.jpa.resources;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +40,8 @@ public class ProjectResource extends AbstractResource {
     private String name;
     private GatewayResource gateway;
     private WorkerResource worker;
+    private String description;
+    private Timestamp creationTime;
 
     /**
      *
@@ -70,7 +73,13 @@ public class ProjectResource extends AbstractResource {
             experimentResource.setExecutionUser(worker.getUser());
             experimentResource.setProject(this);
             return experimentResource;
-        } else {
+        } else if (type == ResourceType.PROJECT_USER){
+            ProjectUserResource pr = new ProjectUserResource();
+            pr.setProjectName(name);
+            pr.setUserName(worker.getUser());
+            return pr;
+        }
+        else {
             logger.error("Unsupported resource type for project resource.", new IllegalArgumentException());
             throw new IllegalArgumentException("Unsupported resource type for project resource.");
         }
@@ -89,6 +98,12 @@ public class ProjectResource extends AbstractResource {
         	generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
         	Query q = generator.deleteQuery(em);
         	q.executeUpdate();
+        }else if (type == ResourceType.PROJECT_USER){
+            QueryGenerator generator = new QueryGenerator(PROJECT_USER);
+            generator.setParameter(ProjectUserConstants.USERNAME, name);
+            generator.setParameter(ProjectUserConstants.PROJECT_NAME, this.name);
+            Query q = generator.deleteQuery(em);
+            q.executeUpdate();
         }else {
             logger.error("Unsupported resource type for project resource.", new IllegalArgumentException());
             throw new IllegalArgumentException("Unsupported resource type for project resource.");
@@ -116,11 +131,23 @@ public class ProjectResource extends AbstractResource {
             em.getTransaction().commit();
             em.close();
             return experimentResource;
+        } else if (type == ResourceType.PROJECT_USER){
+            EntityManager em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            QueryGenerator generator = new QueryGenerator(PROJECT_USER);
+            generator.setParameter(ProjectUserConstants.USERNAME, name);
+            generator.setParameter(ProjectUserConstants.PROJECT_NAME, this.name);
+            Query q = generator.selectQuery(em);
+            ProjectUser prUser = (ProjectUser) q.getSingleResult();
+            ExperimentResource experimentResource = (ExperimentResource)
+                    Utils.getResource(ResourceType.PROJECT_USER, prUser);
+            em.getTransaction().commit();
+            em.close();
+            return experimentResource;
         }else{
             logger.error("Unsupported resource type for project resource.", new IllegalArgumentException());
             throw new IllegalArgumentException("Unsupported resource type for project resource.");
         }
-
     }
 
     /**
@@ -130,7 +157,6 @@ public class ProjectResource extends AbstractResource {
      */
     public List<Resource> get(ResourceType type) {
         List<Resource> resourceList = new ArrayList<Resource>();
-
         if (type == ResourceType.EXPERIMENT) {
             EntityManager em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
@@ -148,7 +174,24 @@ public class ProjectResource extends AbstractResource {
             }
             em.getTransaction().commit();
             em.close();
-        } else {
+        }else if (type == ResourceType.PROJECT_USER) {
+            EntityManager em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            QueryGenerator generator = new QueryGenerator(PROJECT_USER);
+            generator.setParameter(ProjectUserConstants.PROJECT_NAME, name);
+            Query q = generator.selectQuery(em);
+            List<?> results = q.getResultList();
+            if (results.size() != 0) {
+                for (Object result : results) {
+                    ProjectUser projectUser = (ProjectUser) result;
+                    ProjectUserResource pr = (ProjectUserResource)
+                            Utils.getResource(ResourceType.PROJECT_USER, projectUser);
+                    resourceList.add(pr);
+                }
+            }
+            em.getTransaction().commit();
+            em.close();
+        }else {
             logger.error("Unsupported resource type for project resource.", new IllegalArgumentException());
             throw new IllegalArgumentException("Unsupported resource type for project resource.");
         }
@@ -171,18 +214,21 @@ public class ProjectResource extends AbstractResource {
         project.setGateway(modelGateway);
         Users user = em.find(Users.class, worker.getUser());
         project.setUsers(user);
+        project.setDescription(description);
+        project.setCreationTime(creationTime);
 
         if(existingprojectResource != null){
            existingprojectResource.setGateway(modelGateway);
-            existingprojectResource.setUsers(user);
-            project = em.merge(existingprojectResource);
+           existingprojectResource.setUsers(user);
+           existingprojectResource.setDescription(description);
+           existingprojectResource.setCreationTime(creationTime);
+           project = em.merge(existingprojectResource);
         }else {
             em.persist(project);
         }
 
         em.getTransaction().commit();
         em.close();
-
     }
 
     /**
@@ -233,6 +279,22 @@ public class ProjectResource extends AbstractResource {
 		this.gateway = gateway;
 	}
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Timestamp getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(Timestamp creationTime) {
+        this.creationTime = creationTime;
+    }
+
     /**
      *
      * @param experimentId experiment ID
@@ -282,5 +344,16 @@ public class ProjectResource extends AbstractResource {
     public void removeExperiment(String experimentId){
 		remove(ResourceType.EXPERIMENT, experimentId);
 	}
+
+    public List<ProjectUserResource> getProjectUserList (){
+        List<Resource> resources = get(ResourceType.PROJECT_USER);
+        List<ProjectUserResource> projectUserResources = new ArrayList<ProjectUserResource>();
+        if (resources != null && !resources.isEmpty()){
+            for (Resource r : resources){
+                projectUserResources.add((ProjectUserResource)r);
+            }
+        }
+        return projectUserResources;
+    }
 
 }

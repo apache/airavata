@@ -212,6 +212,13 @@ public class Utils {
                     logger.error("Object should be a Project.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Project.");
                 }
+            case PROJECT_USER:
+                if (o instanceof  ProjectUser){
+                    return createProjectUser((ProjectUser)o);
+                }else {
+                    logger.error("Object should be a ProjectUser.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a ProjectUser.");
+                }
             case CONFIGURATION:
                 if(o instanceof Configuration){
                     return createConfiguration((Configuration) o);
@@ -427,9 +434,20 @@ public class Utils {
             gateway_worker.setUser(o.getUsers());
             WorkerResource workerResource = (WorkerResource) createGatewayWorker(gateway_worker);
             projectResource.setWorker(workerResource);
+            projectResource.setDescription(o.getDescription());
+            projectResource.setCreationTime(o.getCreationTime());
         }
 
         return projectResource;
+    }
+
+    private static Resource createProjectUser(ProjectUser o) {
+        ProjectUserResource projectUserResource = new ProjectUserResource();
+        if (o != null){
+            projectUserResource.setUserName(o.getUser().getUser_name());
+            projectUserResource.setProjectName(o.getProjectName());
+        }
+        return projectUserResource;
     }
 
     /**

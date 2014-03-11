@@ -33,6 +33,7 @@ public abstract class AbstractResource implements Resource {
 	public static final String USERS = "Users";
 	public static final String GATEWAY_WORKER = "Gateway_Worker";
 	public static final String PROJECT = "Project";
+	public static final String PROJECT_USER = "ProjectUser";
 	public static final String PUBLISHED_WORKFLOW = "Published_Workflow";
 	public static final String USER_WORKFLOW = "User_Workflow";
 	public static final String HOST_DESCRIPTOR = "Host_Descriptor";
@@ -93,6 +94,12 @@ public abstract class AbstractResource implements Resource {
 		public static final String USERNAME = "user_name";
 		public static final String PROJECT_NAME = "project_name";
 	}
+
+    // Project table
+    public final class ProjectUserConstants {
+        public static final String USERNAME = "userName";
+        public static final String PROJECT_NAME = "projectName";
+    }
 
 	// Published_Workflow table
 	public final class PublishedWorkflowConstants {
