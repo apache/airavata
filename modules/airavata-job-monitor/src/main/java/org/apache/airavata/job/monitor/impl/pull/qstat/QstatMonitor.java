@@ -79,6 +79,7 @@ public class QstatMonitor extends PullMonitor {
                 // we catch all the exceptions here because no matter what happens we do not stop running this
                 // thread, but ideally we should report proper error messages, but this is handled in startPulling
                 // method, incase something happen in Thread.sleep we handle it with this catch block.
+                e.printStackTrace();
                 logger.error(e.getMessage());
             }
         }
@@ -163,6 +164,7 @@ public class QstatMonitor extends PullMonitor {
                             e1.printStackTrace();
                         }
                     } else {
+                        logger.error(e.getMessage());
                         logger.error("Tried to monitor the job 3 times, so dropping of the the Job with ID: " + take.getJobID());
                     }
                 }
