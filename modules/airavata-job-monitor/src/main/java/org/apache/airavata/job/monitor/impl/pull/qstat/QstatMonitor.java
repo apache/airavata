@@ -174,6 +174,8 @@ public class QstatMonitor extends PullMonitor {
                     try {
                         take.setFailedCount(take.getFailedCount() + 1);
                         this.queue.put(take);
+                        // if we get a wrong status we wait for a while and request again
+                            Thread.sleep(10000);
                     } catch (InterruptedException e1) {
                         e1.printStackTrace();
                     }
