@@ -38,6 +38,7 @@ public class JSONMessageParser implements MessageParser {
         /*todo write a json message parser here*/
         logger.info("Mesage parse invoked");
         System.out.println(message);
+//        JSONParser parser = new JSONParser();
         ObjectMapper mapper = new ObjectMapper();
         try {
             mapper.readTree(message);

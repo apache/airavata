@@ -101,7 +101,7 @@ public class SlurmOutputParser implements OutputParser {
     }
 
     public JobStatus parse(String jobID, String rawOutput) {
-        log.debug(rawOutput);
+        log.info(rawOutput);
         String[] info = rawOutput.split("\n");
         String lastString = info[info.length -1];
         if (lastString.contains("JOBID") || lastString.contains("PARTITION")) {
