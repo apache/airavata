@@ -134,9 +134,9 @@ public abstract class WorkflowIntegrationTestBase {
     public void setUpEnvironment() throws Exception {
 
         log("..................Validating myproxy username, password set properly .............................");
-//        System.setProperty("myproxy.user", "ogce");
-//        System.setProperty("myproxy.password", "");
-//        System.setProperty("trusted.cert.location", "/Users/chathuri/dev/airavata/cert/certificates");
+        System.setProperty("myproxy.user", "ogce");
+        System.setProperty("myproxy.password", "/Users/chathuri/dev/airavata/cert/certificates");
+        System.setProperty("trusted.cert.location", "/Users/chathuri/dev/airavata/cert/certificates");
         String myProxyUserName = System.getProperty("myproxy.user");
         String myProxyPassword = System.getProperty("myproxy.password");
         String certLocation = System.getProperty("trusted.cert.location");
