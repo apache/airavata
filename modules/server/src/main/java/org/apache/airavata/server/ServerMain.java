@@ -132,7 +132,7 @@ public class ServerMain {
 
 	private static void performServerStopRequest(
 			CommandLineParameters commandLineParameters) throws IOException {
-		deleteOldStartRecords();
+//		deleteOldStartRecords();
 		String serverIndexOption = "serverIndex";
 		if (commandLineParameters.getParameters().containsKey(serverIndexOption)){
 			serverPID=Integer.parseInt(commandLineParameters.getParameters().get(serverIndexOption));
