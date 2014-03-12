@@ -102,5 +102,11 @@ public interface Cluster {
     public JobStatus getJobStatus(String jobID) throws SSHApiException;
 
 
+    /**
+     * This method can be used to close the connections initialized
+     * to handle graceful shutdown of the system
+     * @throws SSHApiException
+     */
+    public void disconnect() throws SSHApiException;
 
 }

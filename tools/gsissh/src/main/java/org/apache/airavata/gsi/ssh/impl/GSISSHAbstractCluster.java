@@ -414,4 +414,7 @@ public class GSISSHAbstractCluster implements Cluster {
         return stdOutputString;
     }
 
+    public void disconnect() throws SSHApiException {
+        getSession().disconnect();
+    }
 }
