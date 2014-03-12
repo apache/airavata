@@ -29,6 +29,7 @@ import org.apache.airavata.orchestrator.util.Constants;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TServerEventHandler;
 import org.apache.thrift.server.TSimpleServer;
+import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
@@ -43,7 +44,7 @@ public class OrchestratorServer implements IServer{
 
     private ServerStatus status;
 
-	private TSimpleServer server;
+	private TServer server;
 
 	public OrchestratorServer() {
 		setStatus(ServerStatus.STOPPED);
@@ -54,8 +55,10 @@ public class OrchestratorServer implements IServer{
         try {
             final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.ORCHESTRATOT_SERVER_PORT,"8940"));
 			TServerTransport serverTransport = new TServerSocket(serverPort);
-            server = new TSimpleServer(
-                    new TServer.Args(serverTransport).processor(orchestratorServerHandlerProcessor));
+            //server = new TSimpleServer(
+              //      new TServer.Args(serverTransport).processor(orchestratorServerHandlerProcessor));
+            server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(orchestratorServerHandlerProcessor));
+
             new Thread() {
 				public void run() {
 					server.serve();
