@@ -34,8 +34,9 @@ public class DataTransferDetail {
     private String taskId;
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
+    @Lob
     @Column(name = "TRANSFER_DESC")
-    private String transferDesc;
+    private char[] transferDesc;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "TASK_ID")
@@ -65,11 +66,11 @@ public class DataTransferDetail {
         this.creationTime = creationTime;
     }
 
-    public String getTransferDesc() {
+    public char[] getTransferDesc() {
         return transferDesc;
     }
 
-    public void setTransferDesc(String transferDesc) {
+    public void setTransferDesc(char[] transferDesc) {
         this.transferDesc = transferDesc;
     }
 
