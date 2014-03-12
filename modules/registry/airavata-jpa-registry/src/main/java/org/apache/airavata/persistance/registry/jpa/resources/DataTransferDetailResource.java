@@ -183,13 +183,17 @@ public class DataTransferDetailResource extends AbstractResource {
         dataTransferDetail.setTask(taskDetail);
         dataTransferDetail.setTaskId(taskDetailResource.getTaskId());
         dataTransferDetail.setCreationTime(creationTime);
-        dataTransferDetail.setTransferDesc(transferDescription);
+        if (transferDescription != null){
+            dataTransferDetail.setTransferDesc(transferDescription.toCharArray());
+        }
         if (existingDF != null){
             existingDF.setTransferId(transferId);
             existingDF.setTask(taskDetail);
             existingDF.setTaskId(taskDetailResource.getTaskId());
             existingDF.setCreationTime(creationTime);
-            existingDF.setTransferDesc(transferDescription);
+            if (transferDescription != null){
+                existingDF.setTransferDesc(transferDescription.toCharArray());
+            }
             dataTransferDetail = em.merge(existingDF);
         }else {
             em.merge(dataTransferDetail);
@@ -202,7 +206,7 @@ public class DataTransferDetailResource extends AbstractResource {
         List<Resource> resources = get(ResourceType.STATUS);
         for (Resource resource : resources) {
             StatusResource dataTransferStatus = (StatusResource) resource;
-            if(dataTransferStatus.getStatusType().equals(StatusType.DATA_TRANSFER)){
+            if(dataTransferStatus.getStatusType().equals(StatusType.DATA_TRANSFER.toString())){
                 return dataTransferStatus;
             }
         }
