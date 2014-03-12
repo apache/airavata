@@ -130,11 +130,13 @@ public class AdvanceInputDataHandlingResource extends AbstractResource {
         em.getTransaction().begin();
         AdvancedInputDataHandling dataHandling = new AdvancedInputDataHandling();
         Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-        TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+        if (taskDetailResource !=null){
+            TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+            dataHandling.setTaskId(taskDetailResource.getTaskId());
+            dataHandling.setTask(taskDetail);
+        }
         dataHandling.setExpId(experimentResource.getExpID());
         dataHandling.setExperiment(experiment);
-        dataHandling.setTaskId(taskDetailResource.getTaskId());
-        dataHandling.setTask(taskDetail);
         dataHandling.setWorkingDir(workingDir);
         dataHandling.setParentWorkingDir(workingDirParent);
         dataHandling.setStageInputsToWorkingDir(stageInputFiles);

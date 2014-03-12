@@ -195,6 +195,12 @@ public class MonitorID {
                             break;
                     }
                 } else {
+                    try {
+                        // when state becomes unknown we sleep for a while
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
                     setFailedCount(getFailedCount() + 1);
                 }
             } else {
