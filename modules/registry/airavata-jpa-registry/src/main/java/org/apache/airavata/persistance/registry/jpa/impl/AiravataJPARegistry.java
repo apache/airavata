@@ -24,6 +24,7 @@ import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataJobState;
 import org.apache.airavata.common.utils.DBUtil;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -101,9 +102,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     	
         initializeCustomRegistries();
         String apiVersion = getVersion().toString();
-        String registryVersion;
+        String registryVersion = null;
         int tries=0;
-        while(true){
+        while(!ServerSettings.isStopAllThreads()){
 			try {
 				tries++;
 				registryVersion = getConfiguration("registry.version").toString();
