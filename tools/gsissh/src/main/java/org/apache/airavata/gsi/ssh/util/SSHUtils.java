@@ -21,6 +21,7 @@
 package org.apache.airavata.gsi.ssh.util;
 
 import com.jcraft.jsch.*;
+
 import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.ServerInfo;
@@ -30,6 +31,8 @@ import org.apache.airavata.gsi.ssh.jsch.ExtendedJSch;
 import org.slf4j.*;
 
 import java.io.*;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This class is going to be useful to SCP a file to a remote grid machine using my proxy credentials
@@ -609,6 +612,38 @@ public class SSHUtils {
         }
 
         channel.disconnect();
+    }
+
+    public static List<String> listDirectory(String path, Session session) throws IOException, JSchException, SSHApiException {
+
+        // exec 'scp -t rfile' remotely
+        String command = "ls " + path;
+        Channel channel = session.openChannel("exec");
+        StandardOutReader stdOutReader = new StandardOutReader();
+
+        ((ChannelExec) channel).setCommand(command);
+
+
+        ((ChannelExec) channel).setErrStream(stdOutReader.getStandardError());
+        try {
+            channel.connect();
+        } catch (JSchException e) {
+
+            channel.disconnect();
+            session.disconnect();
+
+            throw new SSHApiException("Unable to retrieve command output. Command - " + command +
+                    " on server - " + session.getHost() + ":" + session.getPort() +
+                    " connecting user name - "
+                    + session.getUserName(), e);
+        }
+        stdOutReader.onOutput(channel);
+        stdOutReader.getStdOutputString();
+        if (!stdOutReader.getStdErrorString().equals("")) {
+            throw new SSHApiException(stdOutReader.getStdErrorString());
+        }
+        channel.disconnect();
+        return Arrays.asList(stdOutReader.getStdOutputString().split("\n"));
     }
 
     static int checkAck(InputStream in) throws IOException {

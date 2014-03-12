@@ -21,6 +21,7 @@
 package org.apache.airavata.gsi.ssh.impl;
 
 import com.jcraft.jsch.*;
+
 import org.apache.airavata.gsi.ssh.api.*;
 import org.apache.airavata.gsi.ssh.api.authentication.*;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
@@ -39,12 +40,14 @@ import org.slf4j.LoggerFactory;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
 import java.security.SecureRandom;
+import java.util.List;
 
 public class GSISSHAbstractCluster implements Cluster {
     static {
@@ -376,6 +379,17 @@ public class GSISSHAbstractCluster implements Cluster {
         }
     }
 
+    public List<String> listDirectory(String directoryPath) throws SSHApiException {
+        try {
+            return SSHUtils.listDirectory(directoryPath, session);
+        } catch (IOException e) {
+            throw new SSHApiException("Failed during creating directory:" + directoryPath + " to remote file "
+                    + serverInfo.getHost() + ":rFile", e);
+        } catch (JSchException e) {
+            throw new SSHApiException("Failed during creating directory :" + directoryPath + " to remote file "
+                    + serverInfo.getHost() + ":rFile", e);
+        }
+    }
 
     public ServerInfo getServerInfo() {
         return serverInfo;
