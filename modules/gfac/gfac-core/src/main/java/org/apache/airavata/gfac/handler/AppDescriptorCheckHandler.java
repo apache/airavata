@@ -56,15 +56,15 @@ public class AppDescriptorCheckHandler implements GFacHandler {
 
             appDesc.setStaticWorkingDirectory(tmpDir);
         }
-
+        //FIXME: Move this input/output to application descriptor 
         /*
         * Input and Output Directory
         */
         if (appDesc.getInputDataDirectory() == null || "".equals(appDesc.getInputDataDirectory())) {
-            appDesc.setInputDataDirectory(appDesc.getStaticWorkingDirectory() + File.separator + "inputData");
+            appDesc.setInputDataDirectory(appDesc.getStaticWorkingDirectory() + File.separator + "input");
         }
         if (appDesc.getOutputDataDirectory() == null || "".equals(appDesc.getOutputDataDirectory())) {
-            appDesc.setOutputDataDirectory(appDesc.getStaticWorkingDirectory() + File.separator + "outputData");
+            appDesc.setOutputDataDirectory(appDesc.getStaticWorkingDirectory() + File.separator + "output");
         }
 
         /*

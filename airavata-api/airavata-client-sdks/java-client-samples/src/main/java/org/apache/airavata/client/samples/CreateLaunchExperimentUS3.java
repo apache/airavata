@@ -76,7 +76,7 @@ public class CreateLaunchExperimentUS3 {
                                      }
                                  }
                              }
-                             Thread.sleep(5000);
+                             Thread.sleep(20000);
                          } catch (Exception e) {
                              e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                          }
@@ -100,9 +100,9 @@ public class CreateLaunchExperimentUS3 {
     public static void addDescriptors() throws AiravataAPIInvocationException,ApplicationSettingsException  {
         try {
             UltrascanDocumentCreator documentCreator = new UltrascanDocumentCreator(getAiravataAPI());
-//            documentCreator.createMPIPBSDocsTrestles();
-//            documentCreator.createEchoPBSDocsforTestles();
-//            documentCreator.createEchoSlurmDocsofStampede();
+            documentCreator.createMPIPBSDocsTrestles();
+            documentCreator.createEchoPBSDocsforTestles();
+            documentCreator.createEchoSlurmDocsofStampede();
             documentCreator.createMPISLURMDocsStampede();
         } catch (AiravataAPIInvocationException e) {
             logger.error("Unable to create airavata API", e.getMessage());
@@ -146,10 +146,10 @@ public class CreateLaunchExperimentUS3 {
             exOut.add(output);
 
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
+                    ExperimentModelUtil.createSimpleExperiment("project1", "admin", "US3EchoExperimentTrestles", "US3EchoTrestles", "US3EchoTrestles", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0, 1, "sds128");
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "shared", 0, 0, 1, "sds128");
             scheduling.setResourceHostId("gsissh-trestles");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);
@@ -199,10 +199,10 @@ public class CreateLaunchExperimentUS3 {
             exOut.add(output2);
             
 
-            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("project1", "admin", "US3Experiment", "UltrascanAppTrestles", "UltrascanAppTrestles", exInputs);
+            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("project1", "admin", "US3ExperimentTrestles", "US3AppTrestles", "US3AppTrestles", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 2, 32, 0, "normal", 0, 0, 0, "uot111");
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 2, 32, 0, "shared", 0, 0, 0, "uot111");
 
 
             scheduling.setResourceHostId("gsissh-trestles");
@@ -256,7 +256,7 @@ public class CreateLaunchExperimentUS3 {
             Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("project1", "admin", "US3ExperimentStampede", "US3AppStampede", "US3AppStampede", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org", 2, 32, 0, "normal", 0, 0, 0, "TG-MCB070039N");
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org", 2, 32, 0, "development", 0, 0, 0, "TG-MCB070039N");
 
 
             scheduling.setResourceHostId("gsissh-stampede");
@@ -297,12 +297,12 @@ public class CreateLaunchExperimentUS3 {
             exOut.add(output);
 
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho3", "SimpleEcho3", exInputs);
+                    ExperimentModelUtil.createSimpleExperiment("project1", "admin", "US3EchoExperimentStatus", "US3EchoStampede", "US3EchoStampede", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling =
-                    ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org", 1, 1, 1, "normal", 0, 0, 1, "TG-STA110014S");
-            scheduling.setResourceHostId("stampede-host");
+                    ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org", 1, 1, 1, "development", 0, 0, 1, "TG-MCB070039N");
+            scheduling.setResourceHostId("gsissh-stampede");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
