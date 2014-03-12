@@ -784,7 +784,10 @@ public class Utils {
             transferDetailResource.setTaskDetailResource(taskDetailResource);
             transferDetailResource.setTransferId(o.getTransferId());
             transferDetailResource.setCreationTime(o.getCreationTime());
-            transferDetailResource.setTransferDescription(o.getTransferDesc());
+            if (o.getTransferDesc() != null){
+                transferDetailResource.setTransferDescription(new String(o.getTransferDesc()));
+            }
+
         }
         return transferDetailResource;
     }
