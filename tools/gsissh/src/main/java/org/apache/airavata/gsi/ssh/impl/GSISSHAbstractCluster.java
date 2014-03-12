@@ -214,7 +214,6 @@ public class GSISSHAbstractCluster implements Cluster {
                     " connecting user name - "
                     + serverInfo.getUserName(), e);
         }
-        System.out.println(session.isConnected());
     }
 
     public JobDescriptor cancelJob(String jobID) throws SSHApiException {
