@@ -97,4 +97,12 @@ public class ResourceConnection {
         }
         return JobState.UNKNOWN;
     }
+
+    public PBSCluster getCluster() {
+        return cluster;
+    }
+
+    public void setCluster(PBSCluster cluster) {
+        this.cluster = cluster;
+    }
 }

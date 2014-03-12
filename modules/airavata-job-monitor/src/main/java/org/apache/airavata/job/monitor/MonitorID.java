@@ -181,7 +181,9 @@ public class MonitorID {
     }
 
     public void setStatus(JobState status) {
-        if (getFailedCount() > 0)
+        // this logic is going to be useful for fast finishing jobs
+        // because in some machines job state vanishes quicckly when the job is done
+        // during that case job state comes as unknown.so we handle it here.
             if (this.state != null && status.equals(JobState.UNKNOWN)) {
                 if (getFailedCount() > 2) {
                     switch (this.state) {
