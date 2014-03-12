@@ -120,11 +120,14 @@ public class AdvancedOutputDataHandlingResource extends AbstractResource {
         em.getTransaction().begin();
         AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
         Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-        TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+        if (taskDetailResource !=null){
+            TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+            dataHandling.setTaskId(taskDetailResource.getTaskId());
+            dataHandling.setTask(taskDetail);
+        }
+
         dataHandling.setExpId(experimentResource.getExpID());
         dataHandling.setExperiment(experiment);
-        dataHandling.setTaskId(taskDetailResource.getTaskId());
-        dataHandling.setTask(taskDetail);
         dataHandling.setDataRegUrl(dataRegUrl);
         dataHandling.setOutputDataDir(outputDataDir);
         dataHandling.setPersistOutputData(persistOutputData);
