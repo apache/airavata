@@ -37,11 +37,7 @@ import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.OutputUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
-import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
-import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
-import org.apache.airavata.model.workspace.experiment.ErrorCategory;
-import org.apache.airavata.model.workspace.experiment.TransferState;
-import org.apache.airavata.model.workspace.experiment.TransferStatus;
+import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.persistance.registry.jpa.model.DataTransferDetail;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
@@ -75,9 +71,22 @@ public class SCPOutputHandler extends AbstractHandler{
 
             // Get the Stdouts and StdErrs
             String timeStampedServiceName = GFacUtils.createUniqueNameForService(jobExecutionContext.getServiceName());
-            File localStdOutFile = File.createTempFile(timeStampedServiceName, "stdout");
-            File localStdErrFile = File.createTempFile(timeStampedServiceName, "stderr");
 
+            TaskDetails taskData = jobExecutionContext.getTaskData();
+            String outputDataDir = null;
+            File localStdOutFile;
+            File localStdErrFile;
+
+            if (taskData.getAdvancedOutputDataHandling() != null) {
+                outputDataDir = taskData.getAdvancedOutputDataHandling().getOutputDataDir();
+            }
+            if (outputDataDir != null) {
+                localStdOutFile = new File(outputDataDir + File.separator + timeStampedServiceName + "stdout");
+                localStdErrFile = new File(outputDataDir + File.separator + timeStampedServiceName + "stderr");
+            } else {
+                localStdOutFile = File.createTempFile(timeStampedServiceName, "stdout");
+                localStdErrFile = File.createTempFile(timeStampedServiceName, "stderr");
+            }
             log.info("Downloading file : " + app.getStandardError() + " to : " + localStdErrFile.getAbsolutePath());
             cluster.scpFrom(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
             log.info("Downloading file : " + app.getStandardOutput() + " to : " + localStdOutFile.getAbsolutePath());
