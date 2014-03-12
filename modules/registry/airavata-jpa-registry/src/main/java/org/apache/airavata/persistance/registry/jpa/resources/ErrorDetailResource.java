@@ -178,6 +178,7 @@ public class ErrorDetailResource extends AbstractResource {
         errorDetail.setErrorID(errorId);
         Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
         errorDetail.setExperiment(experiment);
+        errorDetail.setExpId(experimentResource.getExpID());
         if (taskDetailResource != null){
             TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
             errorDetail.setTask(taskDetail);

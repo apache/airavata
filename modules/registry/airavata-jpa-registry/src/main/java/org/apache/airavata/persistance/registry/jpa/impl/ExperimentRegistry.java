@@ -1250,15 +1250,17 @@ public class ExperimentRegistry {
             WorkflowNodeDetailResource workflowNode;
             // figure out the id is an experiment, node task or job
             if (id instanceof String) {
-                if (isExperimentExist((String) id)) {
-                    experiment = gatewayResource.getExperiment((String) id);
-                    errorResource = (ErrorDetailResource) experiment.create(ResourceType.ERROR_DETAIL);
-                } else if (isWFNodeExist((String) id)) {
-                    experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-                    workflowNode = experiment.getWorkflowNode((String) id);
-                    errorResource = (ErrorDetailResource) workflowNode.create(ResourceType.ERROR_DETAIL);
-                    errorResource.setExperimentResource(workflowNode.getExperimentResource());
-                } else if (isTaskDetailExist((String) id)) {
+                // FIXME : for .12 we only save task related errors
+//                if (isExperimentExist((String) id)) {
+//                    experiment = gatewayResource.getExperiment((String) id);
+//                    errorResource = (ErrorDetailResource) experiment.create(ResourceType.ERROR_DETAIL);
+//                } else if (isWFNodeExist((String) id)) {
+//                    experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
+//                    workflowNode = experiment.getWorkflowNode((String) id);
+//                    errorResource = (ErrorDetailResource) workflowNode.create(ResourceType.ERROR_DETAIL);
+//                    errorResource.setExperimentResource(workflowNode.getExperimentResource());
+//                } else
+                  if (isTaskDetailExist((String) id)) {
                     experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
                     workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
                     taskDetail = workflowNode.getTaskDetail((String) id);

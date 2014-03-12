@@ -90,7 +90,7 @@ public class GSISSHProvider extends AbstractProvider implements GFacProvider{
             }
             // This installed path is a mandetory field, because this could change based on the computing resource
             JobDescriptor jobDescriptor = new JobDescriptor();
-            jobDescriptor.setWorkingDirectory(app.getStaticWorkingDirectory());
+            jobDescriptor.setWorkingDirectory(app.getScratchWorkingDirectory());
             jobDescriptor.setShellName("/bin/bash");
             Random random = new Random();
             int i = random.nextInt();
@@ -173,12 +173,14 @@ public class GSISSHProvider extends AbstractProvider implements GFacProvider{
         } catch (SSHApiException e) {
             String error = "Error submitting the job to host " + host.getHostAddress() + e.getMessage();
             log.error(error);
+            jobDetails.setJobID("none");
         	GFacUtils.saveJobStatus(jobDetails,JobState.FAILED,taskID);
          	GFacUtils.saveErrorDetails(error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
             throw new GFacProviderException(error, e);
         } catch (Exception e) {
         	String error = "Error submitting the job to host " + host.getHostAddress() + e.getMessage();
          	log.error(error);
+            jobDetails.setJobID("none");
         	GFacUtils.saveJobStatus(jobDetails,JobState.FAILED,taskID);
          	GFacUtils.saveErrorDetails(error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
             throw new GFacProviderException(error, e);
