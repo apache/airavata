@@ -25,6 +25,7 @@ THRIFT_IDL_DIR='thrift-interface-descriptions'
 BASE_TARGET_DIR='target'
 DATAMODEL_SRC_DIR='airavata-data-models/src/main/java'
 JAVA_API_SDK_DIR='airavata-api-stubs/src/main/java'
+CPP_SDK_DIR='airavata-client-sdks/airavata-cpp-sdk/airavata-stubs'
 
 # The Funcation fail prints error messages on failure and quits the script.
 fail() {
@@ -106,9 +107,9 @@ THRIFT_ARGS="-r -o ${BASE_TARGET_DIR}"
 # Ensure the required target directories exists, if not create.
 mkdir -p ${BASE_TARGET_DIR}
 
-##############################
-# Update Airavata Data Model #
-##############################
+#######################################
+# Generate/Update Airavata Data Model #
+#######################################
 
 #Java Beans generation directory
 JAVA_BEAN_GEN_DIR=${BASE_TARGET_DIR}/gen-javabean
@@ -127,10 +128,10 @@ add_license_header ${JAVA_BEAN_GEN_DIR}
 # Compare the newly generated beans with existing sources and replace the changed ones.
 copy_changed_files ${JAVA_BEAN_GEN_DIR} ${DATAMODEL_SRC_DIR}
 
-######################################################################
-# Update source used by Airavata Server Skeltons & Java Client Stubs #
-#  JAVA server and client both use generated api-boilerplate-code    #
-######################################################################
+###############################################################################
+# Generate/Update source used by Airavata Server Skeltons & Java Client Stubs #
+#  JAVA server and client both use generated api-boilerplate-code             #
+###############################################################################
 
 #Java generation directory
 JAVA_GEN_DIR=${BASE_TARGET_DIR}/gen-java
@@ -149,6 +150,30 @@ add_license_header $JAVA_GEN_DIR
 #  Only copying the API related classes and avoiding copy of any data models which already exist in the data-models.
 copy_changed_files ${JAVA_GEN_DIR}/org/apache/airavata/api ${JAVA_API_SDK_DIR}/org/apache/airavata/api
 
+####################################
+# Generate/Update C++ Client Stubs #
+####################################
+
+#Java generation directory
+CPP_GEN_DIR=${BASE_TARGET_DIR}/gen-cpp
+
+# As a precausion  remove and previously generated files if exists
+rm -rf ${CPP_GEN_DIR}
+
+# Using thrify Java generator, generate the java classes based on Airavata API. This
+#   The airavataAPI.thrift includes rest of data models.
+thrift ${THRIFT_ARGS} --gen cpp ${THRIFT_IDL_DIR}/airavataAPI.thrift || fail unable to generate C++ thrift classes
+
+# For the generated java classes add the ASF V2 License header
+## TODO Write C++ license parser
+
+# Compare the newly generated classes with existing java generated skelton/stub sources and replace the changed ones.
+#  Only copying the API related classes and avoiding copy of any data models which already exist in the data-models.
+copy_changed_files ${CPP_GEN_DIR} ${CPP_SDK_DIR}
+
+####################
+# Cleanup and Exit #
+####################
 # CleanUp: Delete the base target build directory
 rm -rf ${BASE_TARGET_DIR}
 
