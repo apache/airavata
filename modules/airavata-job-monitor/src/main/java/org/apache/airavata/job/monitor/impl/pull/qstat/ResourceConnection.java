@@ -69,15 +69,13 @@ public class ResourceConnection {
     private JobState getStatusFromString(String status) {
         log.info("parsing the job status returned : " + status);
         if(status != null){
-            if("C".equals(status) || "CD".equals(status)){
-                return JobState.COMPLETE;
-            }else if("E".equals(status)){
+            if("C".equals(status) || "CD".equals(status)|| "E".equals(status) || "CG".equals(status)){
                 return JobState.COMPLETE;
             }else if("H".equals(status)){
                 return JobState.HELD;
             }else if("Q".equals(status)){
                 return JobState.QUEUED;
-            }else if("R".equals(status) || "CG".equals(status) || "CF".equals(status)){
+            }else if("R".equals(status)  || "CF".equals(status)){
                 return JobState.ACTIVE;
             }else if ("T".equals(status)) {
                 return JobState.HELD;

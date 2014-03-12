@@ -162,6 +162,7 @@ public class MonitorManager {
      */
     public void launchMonitor() throws AiravataMonitorException {
         //no push monitor is configured so we launch pull monitor
+        int index = 0;
         for (PullMonitor monitor : pullMonitors) {
             (new Thread(monitor)).start();
         }
