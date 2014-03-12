@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.job.monitor.impl.push.amqp;
 
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import org.apache.airavata.ComputingActivity;
 import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.core.MessageParser;
@@ -41,9 +43,10 @@ public class JSONMessageParser implements MessageParser {
         logger.info("Mesage parse invoked");
         System.out.println(message);
 //        JSONParser parser = new JSONParser();
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(org.codehaus.jackson.map.DeserializationConfig.Feature.UNWRAP_ROOT_VALUE, true);
         try {
-            ComputingActivity computingActivity = mapper.readValue(message.getBytes(), ComputingActivity.class);
+            ComputingActivity computingActivity = objectMapper.readValue(message.getBytes(), ComputingActivity.class);
             logger.info(computingActivity.getIDFromEndpoint());
             List<String> stateList = computingActivity.getState();
             for (String aState : stateList) {
