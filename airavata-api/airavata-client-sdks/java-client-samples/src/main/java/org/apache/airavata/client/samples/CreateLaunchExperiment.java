@@ -61,10 +61,9 @@ public class CreateLaunchExperiment {
             final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavata.GetAPIVersion());
             addDescriptors();
-//            final String expId = createExperimentForTrestles(airavata);
+            final String expId = createExperimentForTrestles(airavata);
 //            final String expId = createUS3ExperimentForTrestles(airavata);
-            final String expId = createExperimentForStampede(airavata);
-//            final String expId = createUS3ExperimentForStampede(airavata);
+//            final String expId = createExperimentForStampede(airavata);
             System.out.println("Experiment ID : " + expId);
             launchExperiment(airavata, expId);
             System.out.println("Launched successfully");
@@ -119,25 +118,15 @@ public class CreateLaunchExperiment {
             logger.error("Error while connecting with server", e.getMessage());
             e.printStackTrace();
         }
-//        } catch (ApplicationSettingsException e) {
-//            logger.error("Error while creating airavata API object", e.getMessage());
-//            e.printStackTrace();
-//        } catch (AiravataAPIInvocationException e) {
-//            logger.error("Error while creating airavata API object", e.getMessage());
-//            e.printStackTrace();
-//        }
     }
 
     public static void addDescriptors() throws AiravataAPIInvocationException,ApplicationSettingsException  {
         try {
             DocumentCreator documentCreator = new DocumentCreator(getAiravataAPI());
-//            documentCreator.createLocalHostDocs();
-//            documentCreator.createGramDocs();
-//            documentCreator.createPBSDocs();
-//            documentCreator.createPBSDocsForOGCE();
-//            documentCreator.createMPIPBSDocsTrestles();
+            documentCreator.createLocalHostDocs();
+            documentCreator.createGramDocs();
+            documentCreator.createPBSDocsForOGCE();
             documentCreator.createSlurmDocs();
-//              documentCreator.createMPIPBSDocsStampede();
         } catch (AiravataAPIInvocationException e) {
             logger.error("Unable to create airavata API", e.getMessage());
             throw new AiravataAPIInvocationException(e);
@@ -205,115 +194,7 @@ public class CreateLaunchExperiment {
             throw new TException(e);
         }
     }
-    
-    public static String createUS3ExperimentForTrestles (Airavata.Client client) throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException  {
-        try{
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("input");
-            input.setType(DataType.URI.toString());
-            input.setValue("file:///home/airavata/input/hpcinput.tar");
-            exInputs.add(input);
-
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("output");
-            output.setType(DataType.URI.toString());
-            output.setValue("");
-            DataObjectType output1 = new DataObjectType();
-            output1.setKey("stdout");
-            output1.setType(DataType.STD_OUT.toString());
-            output1.setValue("");
-            DataObjectType output2 = new DataObjectType();
-            output2.setKey("stderr");
-            output2.setType(DataType.STD_ERR.toString());
-            output2.setValue("");
-            exOut.add(output);
-            exOut.add(output1);
-            exOut.add(output2);
-            
-
-            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("project1", "admin", "US3Experiment", "UltrascanAppTrestles", "UltrascanAppTrestles", exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
-
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 2, 32, 0, "normal", 0, 0, 0, "uot111");
-
-
-            scheduling.setResourceHostId("gsissh-trestles");
-            UserConfigurationData userConfigurationData = new UserConfigurationData();
-            userConfigurationData.setAiravataAutoSchedule(false);
-            userConfigurationData.setOverrideManualScheduledParams(false);
-            userConfigurationData.setComputationalResourceScheduling(scheduling);
-            simpleExperiment.setUserConfigurationData(userConfigurationData);
-            return client.createExperiment(simpleExperiment);
-        } catch (AiravataSystemException e) {
-            logger.error("Error occured while creating the experiment...", e.getMessage());
-            throw new AiravataSystemException(e);
-        } catch (InvalidRequestException e) {
-            logger.error("Error occured while creating the experiment...", e.getMessage());
-            throw new InvalidRequestException(e);
-        } catch (AiravataClientException e) {
-            logger.error("Error occured while creating the experiment...", e.getMessage());
-            throw new AiravataClientException(e);
-        }catch (TException e) {
-            logger.error("Error occured while creating the experiment...", e.getMessage());
-            throw new TException(e);
-        }
-    }
-    public static String createUS3ExperimentForStampede (Airavata.Client client) throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException  {
-        try{
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("input");
-            input.setType(DataType.URI.toString());
-            input.setValue("file:///home/airavata/input/hpcinput.tar");
-            exInputs.add(input);
-
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("output");
-            output.setType(DataType.URI.toString());
-            output.setValue("");
-            DataObjectType output1 = new DataObjectType();
-            output1.setKey("stdout");
-            output1.setType(DataType.STD_OUT.toString());
-            output1.setValue("");
-            DataObjectType output2 = new DataObjectType();
-            output2.setKey("stderr");
-            output2.setType(DataType.STD_ERR.toString());
-            output2.setValue("");
-            exOut.add(output);
-            exOut.add(output1);
-            exOut.add(output2);
-            
-
-            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("project1", "admin", "US3Experiment", "UltrascanAppStampede", "UltrascanAppStampede", exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
-
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org", 2, 32, 0, "normal", 0, 0, 0, "TG-MCB070039N");
-
-
-            scheduling.setResourceHostId("gsissh-stampede");
-            UserConfigurationData userConfigurationData = new UserConfigurationData();
-            userConfigurationData.setAiravataAutoSchedule(false);
-            userConfigurationData.setOverrideManualScheduledParams(false);
-            userConfigurationData.setComputationalResourceScheduling(scheduling);
-            simpleExperiment.setUserConfigurationData(userConfigurationData);
-            return client.createExperiment(simpleExperiment);
-        } catch (AiravataSystemException e) {
-            logger.error("Error occured while creating the experiment...", e.getMessage());
-            throw new AiravataSystemException(e);
-        } catch (InvalidRequestException e) {
-            logger.error("Error occured while creating the experiment...", e.getMessage());
-            throw new InvalidRequestException(e);
-        } catch (AiravataClientException e) {
-            logger.error("Error occured while creating the experiment...", e.getMessage());
-            throw new AiravataClientException(e);
-        }catch (TException e) {
-            logger.error("Error occured while creating the experiment...", e.getMessage());
-            throw new TException(e);
-        }
-    }
+   
     public static String createExperimentForStampede(Airavata.Client client) throws TException  {
         try{
             List<DataObjectType> exInputs = new ArrayList<DataObjectType>();

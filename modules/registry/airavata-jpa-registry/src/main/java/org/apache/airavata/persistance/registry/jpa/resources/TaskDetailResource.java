@@ -247,6 +247,7 @@ public class TaskDetailResource extends AbstractResource {
             case JOB_DETAIL:
                 generator = new QueryGenerator(JOB_DETAIL);
                 generator.setParameter(JobDetailConstants.JOB_ID, name);
+                generator.setParameter(JobDetailConstants.TASK_ID, taskId);
                 q = generator.selectQuery(em);
                 JobDetail jobDetail = (JobDetail)q.getSingleResult();
                 JobDetailResource jobDetailResource = (JobDetailResource)Utils.getResource(ResourceType.JOB_DETAIL, jobDetail);

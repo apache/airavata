@@ -20,18 +20,25 @@
 */
 package org.apache.airavata.client.tools;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.schemas.gfac.*;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.airavata.schemas.gfac.DataType;
+import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.GsisshHostType;
+import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.InputParameterType;
+import org.apache.airavata.schemas.gfac.JobTypeType;
+import org.apache.airavata.schemas.gfac.OutputParameterType;
+import org.apache.airavata.schemas.gfac.ParameterType;
+import org.apache.airavata.schemas.gfac.ProjectAccountType;
+import org.apache.airavata.schemas.gfac.QueueType;
 
 public class DocumentCreator {
 
@@ -185,121 +192,12 @@ public class DocumentCreator {
            * Default tmp location
            */
         String tempDir = "/home/ogce/scratch";
-        String date = (new Date()).toString();
-        date = date.replaceAll(" ", "_");
-        date = date.replaceAll(":", "_");
-
-        tempDir = tempDir + File.separator
-                + "SimpleEcho" + "_" + date + "_" + UUID.randomUUID();
-
         app.setScratchWorkingDirectory(tempDir);
-        app.setInputDataDirectory(tempDir + File.separator + "inputData");
-        app.setOutputDataDirectory(tempDir + File.separator + "outputData");
-        app.setStandardOutput(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stdout");
-        app.setStandardError(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stderr");
         app.setMaxMemory(10);
 
 
         try {
             airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, gramHostName, appDesc);
-        } catch (AiravataAPIInvocationException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-    }
-
-    public void createPBSDocs() {
-        HostDescription host = new HostDescription(GsisshHostType.type);
-        host.getType().setHostAddress(hpcHostAddress);
-        host.getType().setHostName(gsiSshHostName);
-        ((GsisshHostType) host.getType()).setPort(22);
-        ((GsisshHostType) host.getType()).setInstalledPath("/opt/torque/bin/");
-
-        try {
-            airavataAPI.getApplicationManager().saveHostDescription(host);
-        } catch (AiravataAPIInvocationException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        /*
-        * Service Description creation and saving
-        */
-        String serviceName = "SimpleEcho2";
-        ServiceDescription serv = new ServiceDescription();
-        serv.getType().setName(serviceName);
-
-        List<InputParameterType> inputList = new ArrayList<InputParameterType>();
-        List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
-
-
-        InputParameterType input = InputParameterType.Factory.newInstance();
-        input.setParameterName("echo_input");
-        ParameterType parameterType = input.addNewParameterType();
-        parameterType.setType(DataType.STRING);
-        parameterType.setName("String");
-
-        OutputParameterType output = OutputParameterType.Factory.newInstance();
-        output.setParameterName("echo_output");
-        ParameterType parameterType1 = output.addNewParameterType();
-        parameterType1.setType(DataType.STRING);
-        parameterType1.setName("String");
-
-        inputList.add(input);
-        outputList.add(output);
-
-        InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList.size()]);
-        OutputParameterType[] outputParamList = outputList.toArray(new OutputParameterType[outputList.size()]);
-
-        serv.getType().setInputParametersArray(inputParamList);
-        serv.getType().setOutputParametersArray(outputParamList);
-        try {
-            airavataAPI.getApplicationManager().saveServiceDescription(serv);
-        } catch (AiravataAPIInvocationException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-
-        /*
-            Application descriptor creation and saving
-         */
-        ApplicationDescription appDesc = new ApplicationDescription(HpcApplicationDeploymentType.type);
-        HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) appDesc.getType();
-        ApplicationDeploymentDescriptionType.ApplicationName name = ApplicationDeploymentDescriptionType.ApplicationName.Factory.newInstance();
-        name.setStringValue("EchoLocal");
-        app.setApplicationName(name);
-        ProjectAccountType projectAccountType = app.addNewProjectAccount();
-        projectAccountType.setProjectAccountNumber("uot111");
-
-        QueueType queueType = app.addNewQueue();
-        queueType.setQueueName("normal");
-
-        app.setCpuCount(1);
-        app.setJobType(JobTypeType.SERIAL);
-        app.setNodeCount(1);
-        app.setProcessorsPerNode(1);
-        app.setMaxWallTime(10);
-        /*
-           * Use bat file if it is compiled on Windows
-           */
-        app.setExecutableLocation("/bin/echo");
-
-        /*
-           * Default tmp location
-           */
-        String tempDir = "/oasis/projects/nsf/uot111/us3/airavata-workdirs/";
-        String date = (new Date()).toString();
-        date = date.replaceAll(" ", "_");
-        date = date.replaceAll(":", "_");
-
-        tempDir = tempDir + File.separator
-                + "SimpleEcho" + "_" + date + "_" + UUID.randomUUID();
-
-        app.setScratchWorkingDirectory(tempDir);
-        app.setInputDataDirectory(tempDir + File.separator + "inputData");
-        app.setOutputDataDirectory(tempDir + File.separator + "outputData");
-        app.setStandardOutput(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stdout");
-        app.setStandardError(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stderr");
-        app.setInstalledParentPath("/opt/torque/bin/");
-
-        try {
-            airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, gsiSshHostName, appDesc);
         } catch (AiravataAPIInvocationException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
@@ -382,18 +280,8 @@ public class DocumentCreator {
            * Default tmp location
            */
         String tempDir = "/home/ogce/scratch";
-        String date = (new Date()).toString();
-        date = date.replaceAll(" ", "_");
-        date = date.replaceAll(":", "_");
-
-        tempDir = tempDir + File.separator
-                + "SimpleEcho" + "_" + date + "_" + UUID.randomUUID();
-
+     
         app.setScratchWorkingDirectory(tempDir);
-        app.setInputDataDirectory(tempDir + File.separator + "inputData");
-        app.setOutputDataDirectory(tempDir + File.separator + "outputData");
-        app.setStandardOutput(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stdout");
-        app.setStandardError(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stderr");
         app.setInstalledParentPath("/opt/torque/bin/");
 
         try {
@@ -403,229 +291,7 @@ public class DocumentCreator {
         }
     }
 
-    public void createMPIPBSDocsTrestles() {
-        HostDescription host = new HostDescription(GsisshHostType.type);
-        host.getType().setHostAddress(hpcHostAddress);
-        host.getType().setHostName(gsiSshHostName);
-        ((GsisshHostType) host.getType()).setPort(22);
-        ((GsisshHostType) host.getType()).setInstalledPath("/opt/torque/bin/");
-
-        try {
-            airavataAPI.getApplicationManager().saveHostDescription(host);
-        } catch (AiravataAPIInvocationException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        /*
-        * Service Description creation and saving
-        */
-        String serviceName = "UltrascanAppTrestles";
-        ServiceDescription serv = new ServiceDescription();
-        serv.getType().setName(serviceName);
-
-        List<InputParameterType> inputList = new ArrayList<InputParameterType>();
-        List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
-
-
-        InputParameterType input = InputParameterType.Factory.newInstance();
-        input.setParameterName("input");
-        ParameterType parameterType = input.addNewParameterType();
-        parameterType.setType(DataType.URI);
-        parameterType.setName("URI");
-
-        OutputParameterType output = OutputParameterType.Factory.newInstance();
-        output.setParameterName("output");
-        ParameterType parameterType1 = output.addNewParameterType();
-        parameterType1.setType(DataType.URI);
-        parameterType1.setName("URI");
-        
-        OutputParameterType output1 = OutputParameterType.Factory.newInstance();
-        output1.setParameterName("stdout");
-        ParameterType parameterType2 = output1.addNewParameterType();
-        parameterType2.setType(DataType.STD_OUT);
-        parameterType2.setName("StdOut");
-        
-        OutputParameterType output2 = OutputParameterType.Factory.newInstance();
-        output2.setParameterName("stderr");
-        ParameterType parameterType3 = output2.addNewParameterType();
-        parameterType3.setType(DataType.STD_ERR);
-        parameterType3.setName("StdErr");
-
-        inputList.add(input);
-        outputList.add(output);
-        outputList.add(output1);
-        outputList.add(output2);
-        
-        InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList.size()]);
-        OutputParameterType[] outputParamList = outputList.toArray(new OutputParameterType[outputList.size()]);
-
-        serv.getType().setInputParametersArray(inputParamList);
-        serv.getType().setOutputParametersArray(outputParamList);
-        try {
-            airavataAPI.getApplicationManager().saveServiceDescription(serv);
-        } catch (AiravataAPIInvocationException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-
-        /*
-            Application descriptor creation and saving
-         */
-        ApplicationDescription appDesc = new ApplicationDescription(HpcApplicationDeploymentType.type);
-        HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) appDesc.getType();
-        ApplicationDeploymentDescriptionType.ApplicationName name = ApplicationDeploymentDescriptionType.ApplicationName.Factory.newInstance();
-        name.setStringValue("UltrascanAppTrestles");
-        app.setApplicationName(name);
-        ProjectAccountType projectAccountType = app.addNewProjectAccount();
-        projectAccountType.setProjectAccountNumber("uot111");
-
-        QueueType queueType = app.addNewQueue();
-        queueType.setQueueName("normal");
-
-        app.setCpuCount(1);
-        app.setJobType(JobTypeType.MPI);
-        app.setNodeCount(32);
-        app.setProcessorsPerNode(2);
-        app.setMaxWallTime(10);
-        /*
-           * Use bat file if it is compiled on Windows
-           */
-        app.setExecutableLocation("/home/us3/trestles/bin/us_mpi_analysis");
-
-        /*
-           * Default tmp location
-           */
-        String tempDir = "/oasis/projects/nsf/uot111/us3/airavata-workdirs/";
-        String date = (new Date()).toString();
-        date = date.replaceAll(" ", "_");
-        date = date.replaceAll(":", "_");
-
-        tempDir = tempDir + File.separator
-                + "Ultrascan" + "_" + date + "_" + UUID.randomUUID();
-
-        app.setScratchWorkingDirectory(tempDir);
-        app.setInputDataDirectory(tempDir + File.separator + "inputData");
-        app.setOutputDataDirectory(tempDir + File.separator + "outputData");
-        app.setStandardOutput(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stdout");
-        app.setStandardError(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stderr");
-        app.setInstalledParentPath("/opt/torque/bin/");
-        app.setJobSubmitterCommand("/opt/mvapich2/pgi/ib/bin/mpiexec");
-        try {
-            airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, gsiSshHostName, appDesc);
-        } catch (AiravataAPIInvocationException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-    }
-    public void createMPIPBSDocsStampede() {
-        HostDescription host = new HostDescription(GsisshHostType.type);
-        host.getType().setHostAddress("stampede.tacc.xsede.org");
-        host.getType().setHostName("gsissh-stampede");
-        ((GsisshHostType) host.getType()).setJobManager("slurm");
-        ((GsisshHostType) host.getType()).setInstalledPath("/usr/bin/");
-        ((GsisshHostType) host.getType()).setPort(2222);
-      
-        try {
-            airavataAPI.getApplicationManager().saveHostDescription(host);
-        } catch (AiravataAPIInvocationException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        /*
-        * Service Description creation and saving
-        */
-        String serviceName = "UltrascanAppStampede";
-        ServiceDescription serv = new ServiceDescription();
-        serv.getType().setName(serviceName);
-
-        List<InputParameterType> inputList = new ArrayList<InputParameterType>();
-        List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
-
-
-        InputParameterType input = InputParameterType.Factory.newInstance();
-        input.setParameterName("input");
-        ParameterType parameterType = input.addNewParameterType();
-        parameterType.setType(DataType.URI);
-        parameterType.setName("URI");
-
-        OutputParameterType output = OutputParameterType.Factory.newInstance();
-        output.setParameterName("output");
-        ParameterType parameterType1 = output.addNewParameterType();
-        parameterType1.setType(DataType.URI);
-        parameterType1.setName("URI");
-        
-        OutputParameterType output1 = OutputParameterType.Factory.newInstance();
-        output1.setParameterName("stdout");
-        ParameterType parameterType2 = output1.addNewParameterType();
-        parameterType2.setType(DataType.STD_OUT);
-        parameterType2.setName("StdOut");
-        
-        OutputParameterType output2 = OutputParameterType.Factory.newInstance();
-        output2.setParameterName("stderr");
-        ParameterType parameterType3 = output2.addNewParameterType();
-        parameterType3.setType(DataType.STD_ERR);
-        parameterType3.setName("StdErr");
-
-        inputList.add(input);
-        outputList.add(output);
-        outputList.add(output1);
-        outputList.add(output2);
-        
-        InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList.size()]);
-        OutputParameterType[] outputParamList = outputList.toArray(new OutputParameterType[outputList.size()]);
-
-        serv.getType().setInputParametersArray(inputParamList);
-        serv.getType().setOutputParametersArray(outputParamList);
-        try {
-            airavataAPI.getApplicationManager().saveServiceDescription(serv);
-        } catch (AiravataAPIInvocationException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-
-        /*
-            Application descriptor creation and saving
-         */
-        ApplicationDescription appDesc = new ApplicationDescription(HpcApplicationDeploymentType.type);
-        HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) appDesc.getType();
-        ApplicationDeploymentDescriptionType.ApplicationName name = ApplicationDeploymentDescriptionType.ApplicationName.Factory.newInstance();
-        name.setStringValue("UltrascanAppStampede");
-        app.setApplicationName(name);
-        ProjectAccountType projectAccountType = app.addNewProjectAccount();
-        projectAccountType.setProjectAccountNumber("TG-MCB070039N");
-
-        QueueType queueType = app.addNewQueue();
-        queueType.setQueueName("normal");
-
-        app.setCpuCount(1);
-        app.setJobType(JobTypeType.MPI);
-        app.setNodeCount(32);
-        app.setProcessorsPerNode(2);
-        app.setMaxWallTime(10);
-        /*
-           * Use bat file if it is compiled on Windows
-           */
-        app.setExecutableLocation("/home1/01623/us3/bin/us_mpi_analysis");
-
-        /*
-           * Default tmp location
-           */
-        String tempDir = "/home1/01623/us3";
-        String date = (new Date()).toString();
-        date = date.replaceAll(" ", "_");
-        date = date.replaceAll(":", "_");
-
-        tempDir = tempDir + File.separator
-                + "Ultrascan" + "_" + date + "_" + UUID.randomUUID();
-
-        app.setScratchWorkingDirectory(tempDir);
-        app.setInputDataDirectory(tempDir + File.separator + "inputData");
-        app.setOutputDataDirectory(tempDir + File.separator + "outputData");
-        app.setStandardOutput(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stdout");
-        app.setStandardError(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stderr");
-        app.setInstalledParentPath("/usr/bin/");
-        app.setJobSubmitterCommand("/usr/local/bin/ibrun");
-        try {
-            airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, "gsissh-stampede", appDesc);
-        } catch (AiravataAPIInvocationException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-    }
+   
     public void createSlurmDocs() {
         HostDescription host = new HostDescription(GsisshHostType.type);
         host.getType().setHostAddress("stampede.tacc.xsede.org");
@@ -633,7 +299,7 @@ public class DocumentCreator {
         ((GsisshHostType) host.getType()).setJobManager("slurm");
         ((GsisshHostType) host.getType()).setInstalledPath("/usr/bin/");
         ((GsisshHostType) host.getType()).setPort(2222);
-//        ((GsisshHostType) host.getType()).setMonitorMode("push");
+        ((GsisshHostType) host.getType()).setMonitorMode("push");
 //        ((GsisshHostType) host.getType()).setMo(2222);
 
 
@@ -707,18 +373,9 @@ public class DocumentCreator {
         * Default tmp location
         */
         String tempDir = "/home1/01437/ogce";
-        String date = (new Date()).toString();
-        date = date.replaceAll(" ", "_");
-        date = date.replaceAll(":", "_");
 
-        tempDir = tempDir + File.separator
-                + "SimpleEcho" + "_" + date + "_" + UUID.randomUUID();
 
         app.setScratchWorkingDirectory(tempDir);
-        app.setInputDataDirectory(tempDir + File.separator + "inputData");
-        app.setOutputDataDirectory(tempDir + File.separator + "outputData");
-        app.setStandardOutput(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stdout");
-        app.setStandardError(tempDir + File.separator + app.getApplicationName().getStringValue() + ".stderr");
         app.setInstalledParentPath("/usr/bin/");
 
         try {

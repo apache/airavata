@@ -1,0 +1,7 @@
+Apache Airavata Thrift C++ Software Development Kit.
+
+Prerequisites:
+Since C++ thrift libraries are platform dependent, we encourage you to compile apache thrift locally.
+
+Conveniance Binaries:
+Airavata will bundle conveniance binaries, but again we encourage to build from source.
