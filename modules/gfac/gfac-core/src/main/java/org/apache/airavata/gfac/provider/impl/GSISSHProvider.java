@@ -90,7 +90,7 @@ public class GSISSHProvider extends AbstractProvider implements GFacProvider{
             }
             // This installed path is a mandetory field, because this could change based on the computing resource
             JobDescriptor jobDescriptor = new JobDescriptor();
-            jobDescriptor.setWorkingDirectory(app.getStaticWorkingDirectory());
+            jobDescriptor.setWorkingDirectory(app.getScratchWorkingDirectory());
             jobDescriptor.setShellName("/bin/bash");
             Random random = new Random();
             int i = random.nextInt();
