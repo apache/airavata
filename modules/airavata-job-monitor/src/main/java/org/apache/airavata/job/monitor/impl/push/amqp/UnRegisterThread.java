@@ -21,6 +21,7 @@
 package org.apache.airavata.job.monitor.impl.push.amqp;
 
 import com.rabbitmq.client.Channel;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.util.CommonUtils;
@@ -42,7 +43,7 @@ public class UnRegisterThread extends Thread {
     }
 
     public void run() {
-        while (true) {
+        while (!ServerSettings.isStopAllThreads()) {
             try {
                 MonitorID monitorID = this.finishQueue.take();
                 unRegisterListener(monitorID);
