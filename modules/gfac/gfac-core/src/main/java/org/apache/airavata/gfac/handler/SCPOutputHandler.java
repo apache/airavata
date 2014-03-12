@@ -74,13 +74,13 @@ public class SCPOutputHandler extends AbstractHandler{
 
             TaskDetails taskData = jobExecutionContext.getTaskData();
             String outputDataDir = null;
-            File localStdOutFile = null;
-            File localStdErrFile = null;
+            File localStdOutFile;
+            File localStdErrFile;
 
             if (taskData.getAdvancedOutputDataHandling() != null) {
                 outputDataDir = taskData.getAdvancedOutputDataHandling().getOutputDataDir();
             }
-            if (outputDataDir == null) {
+            if (outputDataDir != null) {
                 localStdOutFile = new File(outputDataDir + File.separator + timeStampedServiceName + "stdout");
                 localStdErrFile = new File(outputDataDir + File.separator + timeStampedServiceName + "stderr");
             } else {
