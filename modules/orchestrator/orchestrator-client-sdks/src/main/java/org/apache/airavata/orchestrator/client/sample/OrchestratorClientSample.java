@@ -67,7 +67,7 @@ public class OrchestratorClientSample {
             documentCreator = new DocumentCreator(getAiravataAPI());
             documentCreator.createLocalHostDocs();
             documentCreator.createGramDocs();
-            documentCreator.createPBSDocs();
+            documentCreator.createPBSDocsForOGCE();
             storeExperimentDetail();
         } catch (ApplicationSettingsException e) {
             e.printStackTrace();

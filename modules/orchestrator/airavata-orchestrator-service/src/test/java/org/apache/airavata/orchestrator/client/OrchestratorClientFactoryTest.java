@@ -58,7 +58,7 @@ public class OrchestratorClientFactoryTest {
         documentCreator = new DocumentCreator(getAiravataAPI());
         documentCreator.createLocalHostDocs();
         documentCreator.createGramDocs();
-        documentCreator.createPBSDocs();
+        documentCreator.createPBSDocsForOGCE();
         documentCreator.createSlurmDocs();
     }
 

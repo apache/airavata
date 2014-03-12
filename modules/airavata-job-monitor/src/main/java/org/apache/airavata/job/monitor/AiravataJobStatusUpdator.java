@@ -26,6 +26,7 @@ import org.apache.airavata.job.monitor.state.JobStatus;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
+import org.apache.airavata.registry.cpi.CompositeIdentifier;
 import org.apache.airavata.registry.cpi.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +71,9 @@ public class AiravataJobStatusUpdator{
         JobState state = jobStatus.getState();
         if (state != null) {
             try {
-                updateJobStatus(jobStatus.getMonitorID().getJobID(), state);
+                String taskID = jobStatus.getMonitorID().getTaskID();
+                String jobID = jobStatus.getMonitorID().getJobID();
+                updateJobStatus(taskID, jobID, state);
             } catch (Exception e) {
                 logger.error("Error persisting data" + e.getLocalizedMessage(), e);
             }
@@ -111,13 +114,14 @@ public class AiravataJobStatusUpdator{
             }
         }
     }
-    public  void updateJobStatus(String jobID, JobState state) throws Exception {
-  			JobDetails details = new JobDetails();
-  			org.apache.airavata.model.workspace.experiment.JobStatus status = new org.apache.airavata.model.workspace.experiment.JobStatus();
-  			status.setJobState(state);
-  			status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
-          	details.setJobStatus(status);
-          	details.setJobID(jobID);
-  			airavataRegistry.update(org.apache.airavata.registry.cpi.DataType.JOB_DETAIL, details, jobID);
-  	}
+    public  void updateJobStatus(String taskId, String jobID, JobState state) throws Exception {
+        JobDetails details = new JobDetails();
+        org.apache.airavata.model.workspace.experiment.JobStatus status = new org.apache.airavata.model.workspace.experiment.JobStatus();
+        status.setJobState(state);
+        status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
+        details.setJobStatus(status);
+        details.setJobID(jobID);
+        CompositeIdentifier ids = new CompositeIdentifier(taskId, jobID);
+        airavataRegistry.update(org.apache.airavata.registry.cpi.DataType.JOB_DETAIL, details, ids);
+    }
 }

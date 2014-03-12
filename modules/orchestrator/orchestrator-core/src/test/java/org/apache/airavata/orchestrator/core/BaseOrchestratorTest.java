@@ -51,7 +51,7 @@ public class BaseOrchestratorTest {
         documentCreator = new DocumentCreator(getAiravataAPI());
         documentCreator.createLocalHostDocs();
         documentCreator.createGramDocs();
-        documentCreator.createPBSDocs();
+        documentCreator.createPBSDocsForOGCE();
     }
 
     public void tearDown() throws Exception {
