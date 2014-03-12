@@ -206,10 +206,10 @@ public class RegistryImpl implements Registry {
                     experimentRegistry.updateTaskStatus((TaskStatus) newObjectToUpdate, (String) identifier);
                     break;
                 case JOB_DETAIL:
-                    experimentRegistry.updateJobDetails((JobDetails) newObjectToUpdate, (String) identifier);
+                    experimentRegistry.updateJobDetails((JobDetails) newObjectToUpdate, (CompositeIdentifier) identifier);
                     break;
                 case JOB_STATUS:
-                    experimentRegistry.updateJobStatus((JobStatus) newObjectToUpdate, (String) identifier);
+                    experimentRegistry.updateJobStatus((JobStatus) newObjectToUpdate, (CompositeIdentifier) identifier);
                     break;
                 case APPLICATION_STATUS:
                     experimentRegistry.updateApplicationStatus((ApplicationStatus) newObjectToUpdate, (String) identifier);

@@ -26,8 +26,6 @@ import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
-import org.apache.airavata.persistance.registry.jpa.model.ErrorDetail;
-import org.apache.airavata.persistance.registry.jpa.model.WorkflowNodeDetail;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.apache.airavata.persistance.registry.jpa.utils.ThriftDataModelConversion;
 import org.apache.airavata.registry.cpi.CompositeIdentifier;
@@ -37,8 +35,9 @@ import org.apache.airavata.registry.cpi.utils.StatusType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class ExperimentRegistry {
     private GatewayResource gatewayResource;
@@ -515,14 +514,13 @@ public class ExperimentRegistry {
         }
     }
 
-    public String updateJobStatus(JobStatus status, String jobId) throws Exception {
+    public String updateJobStatus(JobStatus status, CompositeIdentifier ids) throws Exception {
         try {
             ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
-            TaskDetailResource taskDetail = (TaskDetailResource) workflowNode.create(ResourceType.TASK_DETAIL);
-            JobDetailResource jobDetail = taskDetail.getJobDetail(jobId);
+            TaskDetailResource taskDetail = workflowNode.getTaskDetail((String)ids.getTopLevelIdentifier());
+            JobDetailResource jobDetail = taskDetail.getJobDetail((String)ids.getSecondLevelIdentifier());
             StatusResource statusResource = jobDetail.getJobStatus();
-            taskDetail = jobDetail.getTaskDetailResource();
             workflowNode = taskDetail.getWorkflowNodeDetailResource();
             experiment = workflowNode.getExperimentResource();
             statusResource.setExperimentResource(experiment);
@@ -884,7 +882,8 @@ public class ExperimentRegistry {
             List<JobDetails> jobDetailsList = taskDetails.getJobDetailsList();
             if (jobDetailsList != null && !jobDetailsList.isEmpty()){
                 for (JobDetails job : jobDetailsList){
-                    updateJobDetails(job, job.getJobID());
+                    CompositeIdentifier ids = new CompositeIdentifier(taskId, job.getJobID());
+                    updateJobDetails(job, ids);
                 }
             }
 
@@ -1007,7 +1006,7 @@ public class ExperimentRegistry {
             if (jobStatus != null){
                 JobStatus status = getJobStatus(ids);
                 if (status != null){
-                    updateJobStatus(jobStatus, (String)ids.getSecondLevelIdentifier());
+                    updateJobStatus(jobStatus, ids);
                 }else {
                     addJobStatus(jobStatus, ids);
                 }
@@ -1034,25 +1033,25 @@ public class ExperimentRegistry {
         }
     }
 
-    public void updateJobDetails(JobDetails jobDetails, String jobId) throws Exception {
+    // ids - taskId + jobid
+    public void updateJobDetails(JobDetails jobDetails, CompositeIdentifier ids) throws Exception {
         try {
             ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
-            TaskDetailResource taskDetail = (TaskDetailResource) workflowNode.create(ResourceType.TASK_DETAIL);
+            String taskId = (String) ids.getTopLevelIdentifier();
+            TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
+            String jobId = (String) ids.getSecondLevelIdentifier();
             JobDetailResource jobDetail = taskDetail.getJobDetail(jobId);
-            TaskDetailResource taskDetailResource = jobDetail.getTaskDetailResource();
-            jobDetail.setTaskDetailResource(taskDetailResource);
+            jobDetail.setTaskDetailResource(taskDetail);
             jobDetail.setJobDescription(jobDetails.getJobDescription());
             jobDetail.setCreationTime(AiravataUtils.getTime(jobDetails.getCreationTime()));
             jobDetail.setComputeResourceConsumed(jobDetails.getComputeResourceConsumed());
             jobDetail.save();
-            String taskId = taskDetailResource.getTaskId();
-            CompositeIdentifier ids = new CompositeIdentifier(taskId, jobId);
             JobStatus jobStatus = jobDetails.getJobStatus();
             if (jobStatus != null){
                 JobStatus status = getJobStatus(ids);
                 if (status != null){
-                    updateJobStatus(jobStatus, jobId);
+                    updateJobStatus(jobStatus, ids);
                 }else {
                     addJobStatus(jobStatus, ids);
                 }
