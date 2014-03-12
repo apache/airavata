@@ -26,6 +26,7 @@ BASE_TARGET_DIR='target'
 DATAMODEL_SRC_DIR='airavata-data-models/src/main/java'
 JAVA_API_SDK_DIR='airavata-api-stubs/src/main/java'
 CPP_SDK_DIR='airavata-client-sdks/airavata-cpp-sdk/airavata-stubs'
+PHP_SDK_DIR='airavata-client-sdks/airavata-php-sdk/lib'
 
 # The Funcation fail prints error messages on failure and quits the script.
 fail() {
@@ -154,7 +155,7 @@ copy_changed_files ${JAVA_GEN_DIR}/org/apache/airavata/api ${JAVA_API_SDK_DIR}/o
 # Generate/Update C++ Client Stubs #
 ####################################
 
-#Java generation directory
+#CPP generation directory
 CPP_GEN_DIR=${BASE_TARGET_DIR}/gen-cpp
 
 # As a precausion  remove and previously generated files if exists
@@ -170,6 +171,27 @@ thrift ${THRIFT_ARGS} --gen cpp ${THRIFT_IDL_DIR}/airavataAPI.thrift || fail una
 # Compare the newly generated classes with existing java generated skelton/stub sources and replace the changed ones.
 #  Only copying the API related classes and avoiding copy of any data models which already exist in the data-models.
 copy_changed_files ${CPP_GEN_DIR} ${CPP_SDK_DIR}
+
+####################################
+# Generate/Update PHP Stubs #
+####################################
+
+#PHP generation directory
+PHP_GEN_DIR=${BASE_TARGET_DIR}/gen-php
+
+# As a precausion  remove and previously generated files if exists
+rm -rf ${PHP_GEN_DIR}
+
+# Using thrify Java generator, generate the java classes based on Airavata API. This
+#   The airavataAPI.thrift includes rest of data models.
+thrift ${THRIFT_ARGS} --gen php ${THRIFT_IDL_DIR}/airavataAPI.thrift || fail unable to generate PHP thrift classes
+
+# For the generated java classes add the ASF V2 License header
+## TODO Write PHP license parser
+
+# Compare the newly generated classes with existing java generated skelton/stub sources and replace the changed ones.
+#  Only copying the API related classes and avoiding copy of any data models which already exist in the data-models.
+copy_changed_files ${PHP_GEN_DIR} ${PHP_SDK_DIR}
 
 ####################
 # Cleanup and Exit #
