@@ -31,7 +31,7 @@ public class PBSOutputParser implements OutputParser {
     private static final Logger log = LoggerFactory.getLogger(PBSOutputParser.class);
 
     public void parse(JobDescriptor jobDescriptor, String rawOutput) {
-        log.info(rawOutput);
+        log.debug(rawOutput);
         String[] info = rawOutput.split("\n");
         String[] line;
         for (int i = 0; i < info.length; i++) {
@@ -117,13 +117,13 @@ public class PBSOutputParser implements OutputParser {
     }
 
     public String parse(String rawOutput) {
-        log.info(rawOutput);
+        log.debug(rawOutput);
         return rawOutput;  //In PBS stdout is going to be directly the jobID
     }
 
     public JobStatus parse(String jobID, String rawOutput) {
         boolean jobFount = false;
-        log.info(rawOutput);
+        log.debug(rawOutput);
         String[] info = rawOutput.split("\n");
         String[] line = null;
         int index = 0;

@@ -30,7 +30,7 @@ import java.util.Map;
 public class SlurmOutputParser implements OutputParser {
     private static final Logger log = LoggerFactory.getLogger(PBSOutputParser.class);
     public void parse(JobDescriptor descriptor, String rawOutput) {
-        log.info(rawOutput);
+        log.debug(rawOutput);
         String[] info = rawOutput.split("\n");
         String lastString = info[info.length -1];
         if (lastString.contains("JOB ID")) {
@@ -90,7 +90,7 @@ public class SlurmOutputParser implements OutputParser {
      * @return
      */
     public String parse(String rawOutput) {
-        log.info(rawOutput);
+        log.debug(rawOutput);
         String[] info = rawOutput.split("\n");
         for (String anInfo : info) {
             if (anInfo.contains("Submitted batch job")) {
@@ -102,7 +102,7 @@ public class SlurmOutputParser implements OutputParser {
     }
 
     public JobStatus parse(String jobID, String rawOutput) {
-        log.info(rawOutput);
+        log.debug(rawOutput);
         String[] info = rawOutput.split("\n");
         String lastString = info[info.length -1];
         if (lastString.contains("JOBID") || lastString.contains("PARTITION")) {

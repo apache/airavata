@@ -70,7 +70,7 @@ public class QstatMonitor extends PullMonitor {
         monitoring
          */
         this.startPulling = true;
-        while (this.startPulling || !ServerSettings.isStopAllThreads()) {
+        while (this.startPulling && !ServerSettings.isStopAllThreads()) {
             try {
                 startPulling();
                 // After finishing one iteration of the full queue this thread sleeps 1 second
@@ -81,6 +81,17 @@ public class QstatMonitor extends PullMonitor {
                 // method, incase something happen in Thread.sleep we handle it with this catch block.
                 e.printStackTrace();
                 logger.error(e.getMessage());
+            }
+        }
+        // thread is going to return so we close all the connections
+        Iterator<String> iterator = connections.keySet().iterator();
+        while(iterator.hasNext()){
+            String next = iterator.next();
+            ResourceConnection resourceConnection = connections.get(next);
+            try {
+                resourceConnection.getCluster().disconnect();
+            } catch (SSHApiException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
         }
     }
