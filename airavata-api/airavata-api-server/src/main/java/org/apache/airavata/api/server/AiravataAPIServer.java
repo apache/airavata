@@ -32,6 +32,7 @@ import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TSimpleServer;
+import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
@@ -47,7 +48,7 @@ public class AiravataAPIServer implements IServer{
     //FIXME: Read the port from airavata-server.config file
     private ServerStatus status;
 
-	private TSimpleServer server;
+	private TServer server;
 
 	public AiravataAPIServer() {
 		setStatus(ServerStatus.STOPPED);
@@ -59,8 +60,9 @@ public class AiravataAPIServer implements IServer{
             RegistryInitUtil.initializeDB();
             final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.THRIFT_SERVER_PORT,"8930"));
 			TServerTransport serverTransport = new TServerSocket(serverPort);
-            server = new TSimpleServer(
-                    new TServer.Args(serverTransport).processor(mockAiravataServer));
+            //server = new TSimpleServer(
+              //      new TServer.Args(serverTransport).processor(mockAiravataServer));
+            server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(mockAiravataServer));
             new Thread() {
 				public void run() {
 					server.serve();
