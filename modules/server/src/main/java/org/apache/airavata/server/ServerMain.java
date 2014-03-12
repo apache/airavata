@@ -22,12 +22,14 @@ package org.apache.airavata.server;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ApplicationSettings.ShutdownStrategy;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.IServer.ServerStatus;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -43,10 +45,8 @@ public class ServerMain {
     private final static Logger logger = LoggerFactory.getLogger(ServerMain.class);
     private static boolean serversLoaded=false;
 	private static final String stopFileNamePrefix = "airavata-server-stop";
-	private static final String stopFileNamePrefixForced = "airavata-server-stop-forced";
-	private static int serverIndex=-1;
-	private static final String serverStartedFileNamePrefix = "airavata-server-start";
-	private static boolean forcedStop=false; 
+	private static int serverPID=-1;
+	private static final String serverStartedFileNamePrefix = "server-start";
 	private static boolean systemShutDown=false;
     static{
 		servers = new ArrayList<IServer>();
@@ -99,7 +99,7 @@ public class ServerMain {
 
 	private static void performServerStart(String[] args) {
 		setServerStarted();
-		logger.info("Airavata server instance "+serverIndex+" starting...");
+		logger.info("Airavata server instance starting...");
 		ServerSettings.mergeSettingsCommandLineArgs(args);
 		startAllServers();
 		while(!hasStopRequested()){
@@ -112,22 +112,33 @@ public class ServerMain {
 		if (hasStopRequested()){
             ServerSettings.setStopAllThreads(true);
 			stopAllServers();
-			System.exit(0);
+			ShutdownStrategy shutdownStrategy;
+			try {
+				shutdownStrategy = ServerSettings.getShutdownStrategy();
+			} catch (Exception e) {
+				String strategies="";
+				for(ShutdownStrategy s:ShutdownStrategy.values()){
+					strategies+="/"+s.toString();
+				}
+				logger.warn(e.getMessage());
+				logger.warn("Valid shutdown options are : "+strategies.substring(1));
+				shutdownStrategy=ShutdownStrategy.SELF_TERMINATE;
+			}
+			if (shutdownStrategy==ShutdownStrategy.SELF_TERMINATE) {
+				System.exit(0);
+			}
 		}
 	}
 
 	private static void performServerStopRequest(
 			CommandLineParameters commandLineParameters) throws IOException {
+		deleteOldStartRecords();
 		String serverIndexOption = "serverIndex";
 		if (commandLineParameters.getParameters().containsKey(serverIndexOption)){
-			serverIndex=Integer.parseInt(commandLineParameters.getParameters().get(serverIndexOption));
-		}
-		String serverForcedStop = "force";
-		if (commandLineParameters.getParameters().containsKey(serverForcedStop)){
-			forcedStop=true;
+			serverPID=Integer.parseInt(commandLineParameters.getParameters().get(serverIndexOption));
 		}
 		if (isServerRunning()) {
-			logger.info("Requesting airavata server"+(serverIndex==-1? "(s)":" instance "+serverIndex)+" to stop...");
+			logger.info("Requesting airavata server"+(serverPID==-1? "(s)":" instance "+serverPID)+" to stop...");
 			requestStop();
 			while(isServerRunning()){
 				try {
@@ -136,9 +147,9 @@ public class ServerMain {
 					e.printStackTrace();
 				}
 			}
-			logger.info("Server"+(serverIndex==-1? "(s)":" instance "+serverIndex)+" stopped!!!");
+			logger.info("Server"+(serverPID==-1? "(s)":" instance "+serverPID)+" stopped!!!");
 		}else{
-			logger.error("Server"+(serverIndex==-1? "":" instance "+serverIndex)+" is not running!!!");
+			logger.error("Server"+(serverPID==-1? "":" instance "+serverPID)+" is not running!!!");
 		}
 	}
 
@@ -148,31 +159,41 @@ public class ServerMain {
 		file.createNewFile();
 		new RandomAccessFile(file, "rw").getChannel().lock();
 		file.deleteOnExit();
-		if (forcedStop){ 
-			// incase a previous attempt of stopping without forcing is present, best to delete that file
-			File f=new File((serverIndex==-1)? stopFileNamePrefix:stopFileNamePrefix+serverIndex);
-			if (f.exists()){
-				f.deleteOnExit();
+	}
+	
+	private static boolean hasStopRequested(){
+		return  isSystemShutDown() || new File(getServerStopFileName()).exists() || new File(stopFileNamePrefix).exists(); 
+	}
+
+	private static String getServerStopFileName() {
+		return stopFileNamePrefix;
+	}
+	
+	private static void deleteOldStopRequests(){
+		File[] files = new File(".").listFiles();
+		for (File file : files) {
+			if (file.getName().contains(stopFileNamePrefix)){
+				file.delete();
 			}
 		}
 	}
 	
-	private static boolean hasStopRequested(){
-		forcedStop=new File(getServerStopForceFileName()).exists() || new File(stopFileNamePrefixForced).exists();
-		return  isSystemShutDown() || forcedStop || new File(getServerStopFileName()).exists() || new File(stopFileNamePrefix).exists(); 
-	}
-
-	private static String getServerStopFileName() {
-		String filePrefix = forcedStop? stopFileNamePrefixForced : stopFileNamePrefix;
-		return (serverIndex==-1)? filePrefix:filePrefix+serverIndex;
+	private static void deleteOldStartRecords(){
+		File[] files = new File(".").listFiles();
+		for (File file : files) {
+			if (file.getName().contains(serverStartedFileNamePrefix)){
+				try {
+					new FileOutputStream(file);
+					file.delete();
+				} catch (Exception e) {
+					//file is locked which means there's an active process using it
+				}
+			}
+		}
 	}
 	
-	private static String getServerStopForceFileName() {
-		return (serverIndex==-1)?stopFileNamePrefixForced:stopFileNamePrefixForced+serverIndex;
-	}
-
 	private static boolean isServerRunning(){
-		if (serverIndex==-1){
+		if (serverPID==-1){
 			String[] files = new File(".").list();
 			for (String file : files) {
 				if (file.contains(serverStartedFileNamePrefix)){
@@ -188,11 +209,10 @@ public class ServerMain {
 	@SuppressWarnings({ "resource" })
 	private static void setServerStarted(){
 		try {
+			serverPID = getPID();
+			deleteOldStopRequests();
 			File serverStartedFile = null;
-			while(serverStartedFile==null || serverStartedFile.exists()){
-				serverIndex++;
-				serverStartedFile = new File(getServerStartedFileName());
-			}
+			serverStartedFile = new File(getServerStartedFileName());
 			serverStartedFile.createNewFile();
 			serverStartedFile.deleteOnExit();
 			new RandomAccessFile(serverStartedFile,"rw").getChannel().lock();
@@ -204,20 +224,15 @@ public class ServerMain {
 	}
 
 	private static String getServerStartedFileName() {
-		return serverStartedFileNamePrefix+serverIndex;
+		return serverStartedFileNamePrefix+"_"+Integer.toString(serverPID);
 	}
-	
-	private static int DEFAULT_FORCE_STOP_WAIT_INTERVAL=3000;
+
 	public static void stopAllServers() {
 		//stopping should be done in reverse order of starting the servers
 		for(int i=servers.size()-1;i>=0;i--){
 			try {
 				servers.get(i).stop();
-				if (forcedStop) {
-					waitForServerToStop(servers.get(i),DEFAULT_FORCE_STOP_WAIT_INTERVAL);
-				}else{
-					waitForServerToStop(servers.get(i),null);
-				}
+				waitForServerToStop(servers.get(i),null);
 			} catch (Exception e) {
 				logger.error("Server Stop Error:",e);
 			}
@@ -259,7 +274,7 @@ public class ServerMain {
 			logger.info("Waiting for " + server.getName() + " to stop...");
 		}
 		//we are doing hasStopRequested() check because while we are stuck in the loop to stop there could be a forceStop request 
-		while(server.getStatus()==ServerStatus.STOPING && (maxWait==null || count<maxWait) && hasStopRequested() && (maxWait!=null || !forcedStop)){
+		while(server.getStatus()==ServerStatus.STOPING && (maxWait==null || count<maxWait)){
 			Thread.sleep(SERVER_STATUS_CHANGE_WAIT_INTERVAL);
 			count+=SERVER_STATUS_CHANGE_WAIT_INTERVAL;
 		}
@@ -274,5 +289,25 @@ public class ServerMain {
 
 	private static void setSystemShutDown(boolean systemShutDown) {
 		ServerMain.systemShutDown = systemShutDown;
+	}
+	
+	private static int getPID(){
+		try {
+			java.lang.management.RuntimeMXBean runtime = java.lang.management.ManagementFactory
+					.getRuntimeMXBean();
+			java.lang.reflect.Field jvm = runtime.getClass()
+					.getDeclaredField("jvm");
+			jvm.setAccessible(true);
+			sun.management.VMManagement mgmt = (sun.management.VMManagement) jvm
+					.get(runtime);
+			java.lang.reflect.Method pid_method = mgmt.getClass()
+					.getDeclaredMethod("getProcessId");
+			pid_method.setAccessible(true);
+
+			int pid = (Integer) pid_method.invoke(mgmt);
+			return pid;
+		} catch (Exception e) {
+			return -1;
+		}
 	}
 }

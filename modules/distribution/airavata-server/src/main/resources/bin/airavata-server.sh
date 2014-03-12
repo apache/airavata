@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements. See the NOTICE file
@@ -25,6 +25,8 @@ JAVA_OPTS=""
 AIRAVATA_COMMAND=""
 IS_DAEMON_MODE=false
 LOGO=true
+STOP=false
+FORCE=false
 for var in "$@"
 do
     case $var in
@@ -42,7 +44,12 @@ do
         ;;
 	stop)
 	    LOGO=false
+	    STOP=true
 	    AIRAVATA_COMMAND="$AIRAVATA_COMMAND $var"
+            shift
+        ;;
+	--force)
+	    FORCE=true
             shift
         ;;
 	-nologo)
@@ -52,13 +59,13 @@ do
         -h)
             echo "Usage: airavata-server.sh [command-options]"
             echo "command options:"
-	    echo "  start                   Start server in daemon mode"
-	    echo "  stop [--serverIndex n]  Stop all airavata servers. Specify serverIndex stop a particular instance"
-	    echo "  --<key>=<value>         Server setting(s) to override or introduce (overrides values in airavata-server.properties)"
-            echo "  -nologo                 Do not show airavata logo"
-            echo "  -xdebug                 Start Airavata Server under JPDA debugger"
-            echo "  -security               Enable Java 2 security"
-            echo "  -h                      Display this help and exit"
+	    echo "  start              Start server in daemon mode"
+	    echo "  stop [--force]     Stop all airavata servers."
+	    echo "  --<key>[=<value>]  Server setting(s) to override or introduce (overrides values in airavata-server.properties)"
+            echo "  -nologo            Do not show airavata logo"
+            echo "  -xdebug            Start Airavata Server under JPDA debugger"
+            echo "  -security          Enable Java 2 security"
+            echo "  -h                 Display this help and exit"
             shift
             exit 0
         ;;
@@ -73,16 +80,36 @@ if $LOGO ; then
 		cat $LOGO_FILE
 	fi
 fi
-if $IS_DAEMON_MODE ; then
-	echo "Starting airavata server in daemon mode..."
-	nohup java $JAVA_OPTS -classpath "$XBAYA_CLASSPATH" \
-	    -Djava.endorsed.dirs="$AIRAVATA_HOME/lib/endorsed":"$JAVA_HOME/jre/lib/endorsed":"$JAVA_HOME/lib/endorsed" \
-	    org.apache.airavata.server.ServerMain $AIRAVATA_COMMAND $* > airavata-server.out & 
-	echo
-	echo
+if $STOP && $FORCE ; 
+then
+	for f in `find . -name "server-start_*"`; do 
+		f_split=(${f//_/ });
+		echo "Found process file : $f" 
+		echo -n "    Sending kill signals to process ${f_split[1]}..."
+		out=`kill -9 ${f_split[1]} 2>&1`
+		if [ -z "$out" ]; then
+		    echo "done"
+		else
+		    echo "failed (REASON: $out)"
+		fi
+		echo -n "    Removing process file..."
+		out=`rm $f 2>&1`
+		if [ -z "$out" ]; then
+		    echo "done"
+		else
+		    echo "failed (REASON: $out)"
+		fi
+	done
 else
-	java $JAVA_OPTS -classpath "$XBAYA_CLASSPATH" \
-	    -Djava.endorsed.dirs="$AIRAVATA_HOME/lib/endorsed":"$JAVA_HOME/jre/lib/endorsed":"$JAVA_HOME/lib/endorsed" \
-	    org.apache.airavata.server.ServerMain $AIRAVATA_COMMAND $*
+	if $IS_DAEMON_MODE ; then
+		echo "Starting airavata server in daemon mode..."
+		nohup java $JAVA_OPTS -classpath "$XBAYA_CLASSPATH" \
+		    -Djava.endorsed.dirs="$AIRAVATA_HOME/lib/endorsed":"$JAVA_HOME/jre/lib/endorsed":"$JAVA_HOME/lib/endorsed" \
+		    org.apache.airavata.server.ServerMain $AIRAVATA_COMMAND $* > airavata-server.out & 
+ 	else
+		java $JAVA_OPTS -classpath "$XBAYA_CLASSPATH" \
+		    -Djava.endorsed.dirs="$AIRAVATA_HOME/lib/endorsed":"$JAVA_HOME/jre/lib/endorsed":"$JAVA_HOME/lib/endorsed" \
+		    org.apache.airavata.server.ServerMain $AIRAVATA_COMMAND $*
+	fi
 fi
 
