@@ -1301,9 +1301,13 @@ public class ExperimentRegistry {
                 errorResource.setTransientPersistent(error.isTransientOrPersistent());
                 if (error.getCorrectiveAction() != null){
                     errorResource.setCorrectiveAction(error.getCorrectiveAction().toString());
+                }else {
+                    errorResource.setCorrectiveAction(CorrectiveAction.CONTACT_SUPPORT.toString());
                 }
                 if (error.getActionableGroup() != null){
                     errorResource.setActionableGroup(error.getActionableGroup().toString());
+                }else {
+                    errorResource.setActionableGroup(ActionableGroup.GATEWAYS_ADMINS.toString());
                 }
                 errorResource.save();
                 return String.valueOf(errorResource.getErrorId());
