@@ -31,6 +31,7 @@ public class PBSOutputParser implements OutputParser {
     private static final Logger log = LoggerFactory.getLogger(PBSOutputParser.class);
 
     public void parse(JobDescriptor jobDescriptor, String rawOutput) {
+        log.info(rawOutput);
         String[] info = rawOutput.split("\n");
         String[] line;
         for (int i = 0; i < info.length; i++) {
@@ -116,18 +117,34 @@ public class PBSOutputParser implements OutputParser {
     }
 
     public String parse(String rawOutput) {
-        return rawOutput;  //In PBS stdoutu is giong to be directly the jobID
+        log.info(rawOutput);
+        return rawOutput;  //In PBS stdout is going to be directly the jobID
     }
 
     public JobStatus parse(String jobID, String rawOutput) {
+        boolean jobFount = false;
+        log.info(rawOutput);
         String[] info = rawOutput.split("\n");
         String[] line = null;
+        int index = 0;
         for (String anInfo : info) {
-            if (anInfo.contains("=")) {
-                line = anInfo.split("=", 2);
-                if (line.length != 0) {
-                    if (line[0].contains("job_state")) {
-                        return JobStatus.valueOf(line[1].replaceAll(" ", ""));
+            index++;
+            if (anInfo.contains("Job Id:")) {
+                if (anInfo.contains(jobID)) {
+                    jobFount = true;
+                    break;
+                }
+            }
+        }
+        if (jobFount) {
+            for (int i=index;i<info.length;i++) {
+                String anInfo = info[i];
+                if (anInfo.contains("=")) {
+                    line = anInfo.split("=", 2);
+                    if (line.length != 0) {
+                        if (line[0].contains("job_state")) {
+                            return JobStatus.valueOf(line[1].replaceAll(" ", ""));
+                        }
                     }
                 }
             }
