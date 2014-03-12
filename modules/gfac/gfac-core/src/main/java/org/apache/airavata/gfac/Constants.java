@@ -39,8 +39,8 @@ public class Constants {
 	public static final String GFAC_CONFIG_CLASS_ATTRIBUTE = "class";
 	public static final String GFAC_CONFIG_APPLICATION_NAME_ATTRIBUTE = "class";
 	public static final String NEWLINE = System.getProperty("line.separator");
-	public static final String INPUT_DATA_DIR_VAR_NAME = "inputData";
-	public static final String OUTPUT_DATA_DIR_VAR_NAME = "outputData";
+	public static final String INPUT_DATA_DIR_VAR_NAME = "input";
+	public static final String OUTPUT_DATA_DIR_VAR_NAME = "output";
 	public static final int DEFAULT_GSI_FTP_PORT = 2811;
 	public static final String _127_0_0_1 = "127.0.0.1";
 	public static final String LOCALHOST = "localhost";

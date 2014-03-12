@@ -21,6 +21,7 @@
 package org.apache.airavata.gfac.handler;
 
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
+import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
@@ -56,15 +57,15 @@ public class AppDescriptorCheckHandler implements GFacHandler {
 
             appDesc.setStaticWorkingDirectory(tmpDir);
         }
-
+        //FIXME: Move this input/output to application descrpitor 
         /*
         * Input and Output Directory
         */
         if (appDesc.getInputDataDirectory() == null || "".equals(appDesc.getInputDataDirectory())) {
-            appDesc.setInputDataDirectory(appDesc.getStaticWorkingDirectory() + File.separator + "inputData");
+            appDesc.setInputDataDirectory(appDesc.getStaticWorkingDirectory() + File.separator + Constants.INPUT_DATA_DIR_VAR_NAME);
         }
         if (appDesc.getOutputDataDirectory() == null || "".equals(appDesc.getOutputDataDirectory())) {
-            appDesc.setOutputDataDirectory(appDesc.getStaticWorkingDirectory() + File.separator + "outputData");
+            appDesc.setOutputDataDirectory(appDesc.getStaticWorkingDirectory() + File.separator + Constants.OUTPUT_DATA_DIR_VAR_NAME);
         }
 
         /*
