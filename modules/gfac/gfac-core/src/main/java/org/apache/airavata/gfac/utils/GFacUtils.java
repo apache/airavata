@@ -204,116 +204,24 @@ public class GFacUtils {
             } else {
                 ((URIParameterType) actualParameter.getType()).setValue("");
             }
-//        } else if ("StringArray".equals(parameter.getParameterType().getName())) {
-//            actualParameter = new ActualParameter(StringArrayType.type);
-//            Iterator value = element.getChildrenWithLocalName("value");
-//            int i = 0;
-//            if (!"".equals(element.getText())) {
-//                String[] list = StringUtil.getElementsFromString(element.getText());
-//                for (String arrayValue : list) {
-//                    ((StringArrayType) actualParameter.getType()).insertValue(i++, arrayValue);
-//                }
-//            } else {
-//                while (value.hasNext()) {
-//                    innerelement = (OMElement) value.next();
-//                    ((StringArrayType) actualParameter.getType()).insertValue(i++, innerelement.getText());
-//                }
-//            }
-//        } else if ("DoubleArray".equals(parameter.getParameterType().getName())) {
-//            actualParameter = new ActualParameter(DoubleArrayType.type);
-//            Iterator value = element.getChildrenWithLocalName("value");
-//            int i = 0;
-//            if (!"".equals(element.getText())) {
-//                String[] list = StringUtil.getElementsFromString(element.getText());
-//                for (String arrayValue : list) {
-//                    ((DoubleArrayType) actualParameter.getType()).insertValue(i++, new Double(arrayValue));
-//                }
-//            } else {
-//                while (value.hasNext()) {
-//                    innerelement = (OMElement) value.next();
-//                    ((DoubleArrayType) actualParameter.getType()).insertValue(i++, new Double(innerelement.getText()));
-//                }
-//            }
-//
-//        } else if ("IntegerArray".equals(parameter.getParameterType().getName())) {
-//            actualParameter = new ActualParameter(IntegerArrayType.type);
-//            Iterator value = element.getChildrenWithLocalName("value");
-//            int i = 0;
-//            if (!"".equals(element.getText())) {
-//                String[] list = StringUtil.getElementsFromString(element.getText());
-//                for (String arrayValue : list) {
-//                    ((IntegerArrayType) actualParameter.getType()).insertValue(i++, new Integer(arrayValue));
-//                }
-//            } else {
-//                while (value.hasNext()) {
-//                    innerelement = (OMElement) value.next();
-//                    ((IntegerArrayType) actualParameter.getType()).insertValue(i++, new Integer(innerelement.getText()));
-//                }
-//            }
-//        } else if ("FloatArray".equals(parameter.getParameterType().getName())) {
-//            actualParameter = new ActualParameter(FloatArrayType.type);
-//            Iterator value = element.getChildrenWithLocalName("value");
-//            int i = 0;
-//            if (!"".equals(element.getText())) {
-//                String[] list = StringUtil.getElementsFromString(element.getText());
-//                for (String arrayValue : list) {
-//                    ((FloatArrayType) actualParameter.getType()).insertValue(i++, new Float(arrayValue));
-//                }
-//            } else {
-//
-//                while (value.hasNext()) {
-//                    innerelement = (OMElement) value.next();
-//                    ((FloatArrayType) actualParameter.getType()).insertValue(i++, new Float(innerelement.getText()));
-//                }
-//            }
-//        } else if ("BooleanArray".equals(parameter.getParameterType().getName())) {
-//            actualParameter = new ActualParameter(BooleanArrayType.type);
-//            Iterator value = element.getChildrenWithLocalName("value");
-//            int i = 0;
-//            if (!"".equals(element.getText())) {
-//                String[] list = StringUtil.getElementsFromString(element.getText());
-//                for (String arrayValue : list) {
-//                    ((BooleanArrayType) actualParameter.getType()).insertValue(i++, new Boolean(arrayValue));
-//                }
-//            } else {
-//
-//                while (value.hasNext()) {
-//                    innerelement = (OMElement) value.next();
-//                    ((BooleanArrayType) actualParameter.getType()).insertValue(i++, new Boolean(innerelement.getText()));
-//                }
-//            }
-//        } else if ("FileArray".equals(parameter.getParameterType().getName())) {
-//            actualParameter = new ActualParameter(FileArrayType.type);
-//            Iterator value = element.getChildrenWithLocalName("value");
-//            int i = 0;
-//            if (!"".equals(element.getText())) {
-//                String[] list = StringUtil.getElementsFromString(element.getText());
-//                for (String arrayValue : list) {
-//                    ((FileArrayType) actualParameter.getType()).insertValue(i++, arrayValue);
-//                }
-//            } else {
-//
-//                while (value.hasNext()) {
-//                    innerelement = (OMElement) value.next();
-//                    ((FileArrayType) actualParameter.getType()).insertValue(i++, innerelement.getText());
-//                }
-//            }
-//        } else if ("URIArray".equals(parameter.getParameterType().getName())) {
-//            actualParameter = new ActualParameter(URIArrayType.type);
-//            Iterator value = element.getChildrenWithLocalName("value");
-//            int i = 0;
-//            if (!"".equals(element.getText())) {
-//                String[] list = StringUtil.getElementsFromString(element.getText());
-//                for (String arrayValue : list) {
-//                    ((URIArrayType) actualParameter.getType()).insertValue(i++, arrayValue);
-//                }
-//            } else {
-//
-//                while (value.hasNext()) {
-//                    innerelement = (OMElement) value.next();
-//                    ((URIArrayType) actualParameter.getType()).insertValue(i++, innerelement.getText());
-//                }
-//            }
+
+        } else if ("StdOut".equals(parameter.getParameterType().getName())) {
+            actualParameter = new ActualParameter(StdOutParameterType.type);
+            if (!"".equals(element.getValue())) {
+                ((StdOutParameterType) actualParameter.getType()).setValue(element.getValue());
+            } else {
+                ((StdOutParameterType) actualParameter.getType()).setValue("");
+            }
+
+        }
+        else if ("StdErr".equals(parameter.getParameterType().getName())) {
+            actualParameter = new ActualParameter(StdErrParameterType.type);
+            if (!"".equals(element.getValue())) {
+                ((StdErrParameterType) actualParameter.getType()).setValue(element.getValue());
+            } else {
+                ((StdErrParameterType) actualParameter.getType()).setValue("");
+            }
+
         }
         return actualParameter;
     }
