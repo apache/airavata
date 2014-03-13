@@ -22,8 +22,11 @@ package org.apache.airavata.gfac.handler;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.transport.TransportException;
@@ -42,6 +45,7 @@ import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.persistance.registry.jpa.model.DataTransferDetail;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,7 +114,24 @@ public class SCPOutputHandler extends AbstractHandler{
 
             Map<String, ActualParameter> stringMap = new HashMap<String, ActualParameter>();
             Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
-            stringMap = OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
+            Set<String> keys = output.keySet();
+            for (String paramName : keys) {
+            ActualParameter actualParameter = (ActualParameter) output.get(paramName);
+            if ("URI".equals(actualParameter.getType().getType().toString())) {
+            	
+            	List<String> outputList = cluster.listDirectory(app.getOutputDataDirectory());
+				if (outputList.size() == 0 || outputList.get(0).isEmpty()) {
+					stringMap = OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
+				} else {
+					String valueList = outputList.get(0);
+					((URIParameterType) actualParameter.getType()).setValue(valueList);
+					stringMap = new HashMap<String, ActualParameter>();
+					stringMap.put(paramName, actualParameter);
+				}
+			}else{
+				 stringMap = OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
+			}
+            }
             if (stringMap == null || stringMap.isEmpty()) {
                 throw new GFacHandlerException(
                         "Empty Output returned from the Application, Double check the application"

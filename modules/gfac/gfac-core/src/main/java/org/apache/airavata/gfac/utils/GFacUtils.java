@@ -38,6 +38,7 @@ import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.model.workspace.experiment.ActionableGroup;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
@@ -734,6 +735,7 @@ public class GFacUtils {
 		ErrorDetails details = new ErrorDetails();
     	details.setActualErrorMessage(errorMessage);
     	details.setCorrectiveAction(action);
+    	details.setActionableGroup(ActionableGroup.GATEWAYS_ADMINS);
     	details.setCreationTime(Calendar.getInstance().getTimeInMillis());
     	details.setErrorCategory(errorCatogory);
     	registry.add(ChildDataType.ERROR_DETAIL, details, id);
