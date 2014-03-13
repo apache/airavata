@@ -84,17 +84,17 @@ public class SCPOutputHandler extends AbstractHandler{
 
             if (taskData.getAdvancedOutputDataHandling() != null) {
                 outputDataDir = taskData.getAdvancedOutputDataHandling().getOutputDataDir();
+                AdvancedOutputDataHandling advancedOutputDataHandling = taskData.getAdvancedOutputDataHandling();
             }
             if (outputDataDir != null) {
+                app.setOutputDataDirectory(outputDataDir);    // These will be useful if we are doing third party transfer
                 localStdOutFile = new File(outputDataDir + File.separator + timeStampedServiceName + "stdout");
                 localStdErrFile = new File(outputDataDir + File.separator + timeStampedServiceName + "stderr");
             } else {
                 localStdOutFile = File.createTempFile(timeStampedServiceName, "stdout");
                 localStdErrFile = File.createTempFile(timeStampedServiceName, "stderr");
             }
-            log.info("Downloading file : " + app.getStandardError() + " to : " + localStdErrFile.getAbsolutePath());
             cluster.scpFrom(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
-            log.info("Downloading file : " + app.getStandardOutput() + " to : " + localStdOutFile.getAbsolutePath());
             cluster.scpFrom(app.getStandardError(), localStdErrFile.getAbsolutePath());
 
             String stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
@@ -103,12 +103,12 @@ public class SCPOutputHandler extends AbstractHandler{
             detail.setTransferStatus(status);
             detail.setTransferDescription("STDOUT:" + stdOutStr);
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
-          
+
             status.setTransferState(TransferState.COMPLETE);
             detail.setTransferStatus(status);
             detail.setTransferDescription("STDERR:" + stdErrStr);
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
-          
+
 
             Map<String, ActualParameter> stringMap = new HashMap<String, ActualParameter>();
             Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
@@ -138,7 +138,12 @@ public class SCPOutputHandler extends AbstractHandler{
             status.setTransferState(TransferState.DOWNLOAD);
             detail.setTransferStatus(status);
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
-        
+
+            app.setStandardError(localStdErrFile.getAbsolutePath());
+            app.setStandardOutput(localStdOutFile.getAbsolutePath());
+            if (outputDataDir != null) {
+                app.setOutputDataDirectory(outputDataDir);
+            }
         } catch (XmlException e) {
             throw new GFacHandlerException("Cannot read output:" + e.getMessage(), e);
         } catch (ConnectionException e) {
