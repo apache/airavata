@@ -48,6 +48,9 @@ import java.util.Map;
                         <property name="userName" value="airavata"/>
                         <property name="hostName" value="gw98.iu.xsede.org"/>
                         <property name="outputPath" value="/home/airavata/outputData"/>
+                        <property name="passPhrase" value="/home/airavata/outputData"/>
+                        <property name="password" value="/home/airavata/outputData"/>
+
  */
 public class AdvancedSCPOutputHandler extends AbstractHandler {
     private static final Logger log = LoggerFactory.getLogger(AdvancedSCPOutputHandler.class);
@@ -97,6 +100,7 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
             Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
             outputPath = outputPath + File.separator + jobExecutionContext.getExperimentID() + "-" + jobExecutionContext.getTaskData().getTaskID()
             + File.separator;
+            pbsCluster.makeDirectory(outputPath);
             pbsCluster.scpTo(outputPath, standardError);
             pbsCluster.scpTo(outputPath,standardOutput);
             for(String files:jobExecutionContext.getOutputFiles()){
