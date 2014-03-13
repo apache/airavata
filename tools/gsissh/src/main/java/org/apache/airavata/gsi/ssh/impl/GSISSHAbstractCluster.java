@@ -344,6 +344,9 @@ public class GSISSHAbstractCluster implements Cluster {
 
     public void scpTo(String remoteFile, String localFile) throws SSHApiException {
         try {
+            if(!session.isConnected()){
+                session.connect();
+            }
             log.info("Transfering file:/" + localFile + " To:" + serverInfo.getHost() + ":" + remoteFile);
             SSHUtils.scpTo(remoteFile, localFile, session);
         } catch (IOException e) {
@@ -357,7 +360,10 @@ public class GSISSHAbstractCluster implements Cluster {
 
     public void scpFrom(String remoteFile, String localFile) throws SSHApiException {
         try {
-            log.info("Transfering from:"+ serverInfo + ":" + remoteFile + " To:" + "file:/" + localFile);
+            if(!session.isConnected()){
+                session.connect();
+            }
+            log.info("Transfering from:"+ serverInfo.getHost() + ":" + remoteFile + " To:" + "file:/" + localFile);
             SSHUtils.scpFrom(remoteFile, localFile, session);
         } catch (IOException e) {
             throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
@@ -370,6 +376,9 @@ public class GSISSHAbstractCluster implements Cluster {
 
     public void makeDirectory(String directoryPath) throws SSHApiException {
         try {
+            if(!session.isConnected()){
+                session.connect();
+            }
             log.info("Creating directory: " + serverInfo.getHost() + ":" + directoryPath);
             SSHUtils.makeDirectory(directoryPath, session);
         } catch (IOException e) {
@@ -383,6 +392,9 @@ public class GSISSHAbstractCluster implements Cluster {
 
     public List<String> listDirectory(String directoryPath) throws SSHApiException {
         try {
+            if(!session.isConnected()){
+                session.connect();
+            }
             log.info("Listing directory: " + serverInfo.getHost() + ":" + directoryPath);
             return SSHUtils.listDirectory(directoryPath, session);
         } catch (IOException e) {
