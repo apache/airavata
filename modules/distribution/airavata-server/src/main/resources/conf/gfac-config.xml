@@ -71,13 +71,27 @@
             <Handler class="org.apache.airavata.gfac.handler.SCPOutputHandler"/>
         </OutHandlers>
     </Provider>
-     <Provider class="org.apache.airavata.gfac.provider.impl.GSISSHProvider" host="org.apache.airavata.schemas.gfac.impl.GsisshHostTypeImpl">
-         <InHandlers>
-            <Handler class="org.apache.airavata.gfac.handler.SCPDirectorySetupHandler"/>
-            <Handler class="org.apache.airavata.gfac.handler.SCPInputHandler"/>
-        </InHandlers>
-        <OutHandlers>
-            <Handler class="org.apache.airavata.gfac.handler.SCPOutputHandler"/>
-        </OutHandlers>
-    </Provider>
+    <Provider class="org.apache.airavata.gfac.provider.impl.GSISSHProvider" host="org.apache.airavata.schemas.gfac.impl.GsisshHostTypeImpl">
+             <InHandlers>
+                <Handler class="org.apache.airavata.gfac.handler.SCPDirectorySetupHandler"/>
+                 <!--Handler class="org.apache.airavata.gfac.handler.AdvancedSCPInputHandler">
+                            <property name="privateKeyPath" value="/Users/lahirugunathilake/.ssh/id_dsa"/>
+                            <property name="publicKeyPath" value="/Users/lahirugunathilake/.ssh/id_dsa.pub"/>
+                        <property name="userName" value="root"/>
+                        <property name="hostName" value="gw98.iu.xsede.org"/>
+                        <property name="outputPath" value="/tmp"/>
+                </Handler-->
+                <Handler class="org.apache.airavata.gfac.handler.SCPInputHandler"/>
+            </InHandlers>
+            <OutHandlers>
+                <Handler class="org.apache.airavata.gfac.handler.SCPOutputHandler"/>
+                <!--Handler class="org.apache.airavata.gfac.handler.AdvancedSCPOutputHandler">
+                            <property name="privateKeyPath" value="/Users/lahirugunathilake/.ssh/id_dsa"/>
+                            <property name="publicKeyPath" value="/Users/lahirugunathilake/.ssh/id_dsa.pub"/>
+                        <property name="userName" value="root"/>
+                        <property name="hostName" value="gw111.iu.xsede.org"/>
+                        <property name="outputPath" value="/tmp"/>
+                </Handler-->
+            </OutHandlers>
+        </Provider>
 </GFac>
