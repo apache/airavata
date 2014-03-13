@@ -51,10 +51,10 @@ public class OutputUtils {
             if (actual == null) {
                 continue;
             }
-            if ("StdOut".equals(actual.getType().getType().toString()) && paramName == "stdout") {
+            if ("StdOut".equals(actual.getType().getType().toString())) {
                 ((StdOutParameterType) actual.getType()).setValue(stdout);
                 result.put(paramName, actual);
-            } else if ("StdErr".equals(actual.getType().getType().toString()) && paramName == "stderr") {
+            } else if ("StdErr".equals(actual.getType().getType().toString())) {
                 ((StdErrParameterType) actual.getType()).setValue(stderr);
                 result.put(paramName, actual);
             }else if("URI".equals(actual.getType().getType().toString())){
