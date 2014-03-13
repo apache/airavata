@@ -26,12 +26,9 @@ public class UltrascanDocumentCreator {
 
 	private AiravataAPI airavataAPI = null;
     private String hpcHostAddress = "trestles.sdsc.edu";
-    private String gramHostName = "gram-trestles";
     private String gsiSshHostNameTrestles = "gsissh-trestles";
     private String gsiSshHostNameStampede = "gsissh-stampede";
-    private String gridftpAddress = "gsiftp://trestles-dm1.sdsc.edu:2811";
-    private String gramAddress = "trestles-login1.sdsc.edu:2119/jobmanager-pbstest2";
-
+  
 
     public UltrascanDocumentCreator(AiravataAPI airavataAPI) {
         this.airavataAPI = airavataAPI;
