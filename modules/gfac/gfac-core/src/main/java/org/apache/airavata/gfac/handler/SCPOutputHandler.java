@@ -84,16 +84,15 @@ public class SCPOutputHandler extends AbstractHandler{
 
             if (taskData.getAdvancedOutputDataHandling() != null) {
                 outputDataDir = taskData.getAdvancedOutputDataHandling().getOutputDataDir();
-                AdvancedOutputDataHandling advancedOutputDataHandling = taskData.getAdvancedOutputDataHandling();
             }
-            if (outputDataDir != null) {
-                app.setOutputDataDirectory(outputDataDir);    // These will be useful if we are doing third party transfer
-                localStdOutFile = new File(outputDataDir + File.separator + timeStampedServiceName + "stdout");
-                localStdErrFile = new File(outputDataDir + File.separator + timeStampedServiceName + "stderr");
-            } else {
-                localStdOutFile = File.createTempFile(timeStampedServiceName, "stdout");
-                localStdErrFile = File.createTempFile(timeStampedServiceName, "stderr");
+            if(outputDataDir == null) {
+                outputDataDir = File.separator + "tmp" + jobExecutionContext.getExperimentID() + "-" +jobExecutionContext.getTaskData().getTaskID();
             }
+            app.setOutputDataDirectory(outputDataDir);    // These will be useful if we are doing third party transfer
+            localStdOutFile = new File(outputDataDir + File.separator + timeStampedServiceName + "stdout");
+            localStdErrFile = new File(outputDataDir + File.separator + timeStampedServiceName + "stderr");
+            cluster.makeDirectory(outputDataDir);
+
             cluster.scpFrom(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
             cluster.scpFrom(app.getStandardError(), localStdErrFile.getAbsolutePath());
 
@@ -116,12 +115,13 @@ public class SCPOutputHandler extends AbstractHandler{
             for (String paramName : keys) {
             ActualParameter actualParameter = (ActualParameter) output.get(paramName);
             if ("URI".equals(actualParameter.getType().getType().toString())) {
-            	
-            	List<String> outputList = cluster.listDirectory(app.getOutputDataDirectory());
-				if (outputList.size() == 0 || outputList.get(0).isEmpty()) {
-					stringMap = OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
-				} else {
+
+                List<String> outputList = cluster.listDirectory(app.getOutputDataDirectory());
+                if (outputList.size() == 0 || outputList.get(0).isEmpty()) {
+                    stringMap = OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
+                } else {
 					String valueList = outputList.get(0);
+                    cluster.scpFrom(valueList, outputDataDir);
 					((URIParameterType) actualParameter.getType()).setValue(valueList);
 					stringMap = new HashMap<String, ActualParameter>();
 					stringMap.put(paramName, actualParameter);
