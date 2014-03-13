@@ -19,6 +19,7 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ClientSettings;
 import org.apache.airavata.model.util.ExperimentModelUtil;
+import org.apache.airavata.model.workspace.experiment.AdvancedOutputDataHandling;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
@@ -45,9 +46,9 @@ public class CreateLaunchExperimentUS3 {
             System.out.println("API version is " + airavata.GetAPIVersion());
 //            addDescriptors();
 //            final String expId = createExperimentForTrestles(airavata);
-//            final String expId = createUS3ExperimentForTrestles(airavata);
+            final String expId = createUS3ExperimentForTrestles(airavata);
 //            final String expId = createExperimentForStampede(airavata);
-            final String expId = createUS3ExperimentForStampede(airavata);
+//            final String expId = createUS3ExperimentForStampede(airavata);
             System.out.println("Experiment ID : " + expId);
             launchExperiment(airavata, expId);
             System.out.println("Launched successfully");
@@ -149,7 +150,7 @@ public class CreateLaunchExperimentUS3 {
                     ExperimentModelUtil.createSimpleExperiment("project1", "admin", "US3EchoExperimentTrestles", "US3EchoTrestles", "US3EchoTrestles", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "shared", 0, 0, 1, "sds128");
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "shared", 0, 0, 1, "uot111");
             scheduling.setResourceHostId("gsissh-trestles");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);
@@ -203,12 +204,16 @@ public class CreateLaunchExperimentUS3 {
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 2, 32, 0, "shared", 0, 0, 0, "uot111");
-
-
-            scheduling.setResourceHostId("gsissh-trestles");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
+            
+            scheduling.setResourceHostId("gsissh-trestles");
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
+        
+            AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
+            dataHandling.setOutputDataDir("/home/airavata/output/");
+            userConfigurationData.setAdvanceOutputDataHandling(dataHandling);
+        
             userConfigurationData.setComputationalResourceScheduling(scheduling);
             simpleExperiment.setUserConfigurationData(userConfigurationData);
             return client.createExperiment(simpleExperiment);
@@ -256,14 +261,19 @@ public class CreateLaunchExperimentUS3 {
             Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("project1", "admin", "US3ExperimentStampede", "US3AppStampede", "US3AppStampede", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org", 2, 32, 0, "development", 0, 0, 0, "TG-MCB070039N");
-
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org", 2, 32, 0, "normal", 0, 0, 0, "TG-MCB070039N");
 
             scheduling.setResourceHostId("gsissh-stampede");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
+           
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
             userConfigurationData.setComputationalResourceScheduling(scheduling);
+        
+            AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
+            dataHandling.setOutputDataDir("/home/airavata/output/");
+            userConfigurationData.setAdvanceOutputDataHandling(dataHandling);
+        
             simpleExperiment.setUserConfigurationData(userConfigurationData);
             return client.createExperiment(simpleExperiment);
         } catch (AiravataSystemException e) {
