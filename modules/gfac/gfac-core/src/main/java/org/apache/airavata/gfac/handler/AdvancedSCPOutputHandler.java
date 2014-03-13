@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -94,10 +95,10 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
         ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
         try {
             Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
-            String parentPath = outputPath + File.separator + jobExecutionContext.getExperimentID() + File.separator + jobExecutionContext.getTaskData().getTaskID();
-            pbsCluster.makeDirectory(parentPath);
-            pbsCluster.scpTo(parentPath, standardError);
-            pbsCluster.scpTo(parentPath, standardOutput);
+            List<String> strings = pbsCluster.listDirectory(outputDataDirectory);
+            for(String files:strings){
+                pbsCluster.scpTo(outputDataDirectory,files);
+            }
         } catch (SSHApiException e) {
             log.error("Error transfering files to remote host : " + hostName + " with the user: " + userName);
             log.error(e.getMessage());

@@ -86,13 +86,16 @@ public class SCPOutputHandler extends AbstractHandler{
                 outputDataDir = taskData.getAdvancedOutputDataHandling().getOutputDataDir();
             }
             if(outputDataDir == null) {
-                outputDataDir = File.separator + "tmp" + jobExecutionContext.getExperimentID() + "-" +jobExecutionContext.getTaskData().getTaskID();
+                outputDataDir = File.separator + "tmp";
             }
+            outputDataDir = outputDataDir + jobExecutionContext.getExperimentID() + "-" +jobExecutionContext.getTaskData().getTaskID();
+            (new File(outputDataDir)).mkdirs();
             app.setOutputDataDirectory(outputDataDir);    // These will be useful if we are doing third party transfer
+
+
             localStdOutFile = new File(outputDataDir + File.separator + timeStampedServiceName + "stdout");
             localStdErrFile = new File(outputDataDir + File.separator + timeStampedServiceName + "stderr");
-            cluster.makeDirectory(outputDataDir);
-
+//            cluster.makeDirectory(outputDataDir);
             cluster.scpFrom(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
             cluster.scpFrom(app.getStandardError(), localStdErrFile.getAbsolutePath());
 
