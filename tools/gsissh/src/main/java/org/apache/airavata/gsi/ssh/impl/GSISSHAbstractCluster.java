@@ -21,6 +21,7 @@
 package org.apache.airavata.gsi.ssh.impl;
 
 import com.jcraft.jsch.*;
+
 import org.apache.airavata.gsi.ssh.api.*;
 import org.apache.airavata.gsi.ssh.api.authentication.*;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
@@ -39,12 +40,14 @@ import org.slf4j.LoggerFactory;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
 import java.security.SecureRandom;
+import java.util.List;
 
 public class GSISSHAbstractCluster implements Cluster {
     static {
@@ -211,7 +214,6 @@ public class GSISSHAbstractCluster implements Cluster {
                     " connecting user name - "
                     + serverInfo.getUserName(), e);
         }
-        System.out.println(session.isConnected());
     }
 
     public JobDescriptor cancelJob(String jobID) throws SSHApiException {
@@ -342,6 +344,7 @@ public class GSISSHAbstractCluster implements Cluster {
 
     public void scpTo(String remoteFile, String localFile) throws SSHApiException {
         try {
+            log.info("Transfering file:/" + localFile + " To:" + serverInfo.getHost() + ":" + remoteFile);
             SSHUtils.scpTo(remoteFile, localFile, session);
         } catch (IOException e) {
             throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
@@ -354,6 +357,7 @@ public class GSISSHAbstractCluster implements Cluster {
 
     public void scpFrom(String remoteFile, String localFile) throws SSHApiException {
         try {
+            log.info("Transfering from:"+ serverInfo + ":" + remoteFile + " To:" + "file:/" + localFile);
             SSHUtils.scpFrom(remoteFile, localFile, session);
         } catch (IOException e) {
             throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
@@ -366,6 +370,7 @@ public class GSISSHAbstractCluster implements Cluster {
 
     public void makeDirectory(String directoryPath) throws SSHApiException {
         try {
+            log.info("Creating directory: " + serverInfo.getHost() + ":" + directoryPath);
             SSHUtils.makeDirectory(directoryPath, session);
         } catch (IOException e) {
             throw new SSHApiException("Failed during creating directory:" + directoryPath + " to remote file "
@@ -376,6 +381,18 @@ public class GSISSHAbstractCluster implements Cluster {
         }
     }
 
+    public List<String> listDirectory(String directoryPath) throws SSHApiException {
+        try {
+            log.info("Listing directory: " + serverInfo.getHost() + ":" + directoryPath);
+            return SSHUtils.listDirectory(directoryPath, session);
+        } catch (IOException e) {
+            throw new SSHApiException("Failed during creating directory:" + directoryPath + " to remote file "
+                    + serverInfo.getHost() + ":rFile", e);
+        } catch (JSchException e) {
+            throw new SSHApiException("Failed during creating directory :" + directoryPath + " to remote file "
+                    + serverInfo.getHost() + ":rFile", e);
+        }
+    }
 
     public ServerInfo getServerInfo() {
         return serverInfo;

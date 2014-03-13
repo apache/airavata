@@ -22,8 +22,11 @@ package org.apache.airavata.gfac.handler;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.transport.TransportException;
@@ -37,14 +40,12 @@ import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.OutputUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
-import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
-import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
-import org.apache.airavata.model.workspace.experiment.ErrorCategory;
-import org.apache.airavata.model.workspace.experiment.TransferState;
-import org.apache.airavata.model.workspace.experiment.TransferStatus;
+import org.apache.airavata.gsi.ssh.util.SSHUtils;
+import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.persistance.registry.jpa.model.DataTransferDetail;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,12 +76,25 @@ public class SCPOutputHandler extends AbstractHandler{
 
             // Get the Stdouts and StdErrs
             String timeStampedServiceName = GFacUtils.createUniqueNameForService(jobExecutionContext.getServiceName());
-            File localStdOutFile = File.createTempFile(timeStampedServiceName, "stdout");
-            File localStdErrFile = File.createTempFile(timeStampedServiceName, "stderr");
 
-            log.info("Downloading file : " + app.getStandardError() + " to : " + localStdErrFile.getAbsolutePath());
+            TaskDetails taskData = jobExecutionContext.getTaskData();
+            String outputDataDir = null;
+            File localStdOutFile;
+            File localStdErrFile;
+
+            if (taskData.getAdvancedOutputDataHandling() != null) {
+                outputDataDir = taskData.getAdvancedOutputDataHandling().getOutputDataDir();
+                AdvancedOutputDataHandling advancedOutputDataHandling = taskData.getAdvancedOutputDataHandling();
+            }
+            if (outputDataDir != null) {
+                app.setOutputDataDirectory(outputDataDir);    // These will be useful if we are doing third party transfer
+                localStdOutFile = new File(outputDataDir + File.separator + timeStampedServiceName + "stdout");
+                localStdErrFile = new File(outputDataDir + File.separator + timeStampedServiceName + "stderr");
+            } else {
+                localStdOutFile = File.createTempFile(timeStampedServiceName, "stdout");
+                localStdErrFile = File.createTempFile(timeStampedServiceName, "stderr");
+            }
             cluster.scpFrom(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
-            log.info("Downloading file : " + app.getStandardOutput() + " to : " + localStdOutFile.getAbsolutePath());
             cluster.scpFrom(app.getStandardError(), localStdErrFile.getAbsolutePath());
 
             String stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
@@ -89,16 +103,33 @@ public class SCPOutputHandler extends AbstractHandler{
             detail.setTransferStatus(status);
             detail.setTransferDescription("STDOUT:" + stdOutStr);
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
-          
+
             status.setTransferState(TransferState.COMPLETE);
             detail.setTransferStatus(status);
             detail.setTransferDescription("STDERR:" + stdErrStr);
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
-          
+
 
             Map<String, ActualParameter> stringMap = new HashMap<String, ActualParameter>();
             Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
-            stringMap = OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
+            Set<String> keys = output.keySet();
+            for (String paramName : keys) {
+            ActualParameter actualParameter = (ActualParameter) output.get(paramName);
+            if ("URI".equals(actualParameter.getType().getType().toString())) {
+            	
+            	List<String> outputList = cluster.listDirectory(app.getOutputDataDirectory());
+				if (outputList.size() == 0 || outputList.get(0).isEmpty()) {
+					stringMap = OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
+				} else {
+					String valueList = outputList.get(0);
+					((URIParameterType) actualParameter.getType()).setValue(valueList);
+					stringMap = new HashMap<String, ActualParameter>();
+					stringMap.put(paramName, actualParameter);
+				}
+			}else{
+				 stringMap = OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
+			}
+            }
             if (stringMap == null || stringMap.isEmpty()) {
                 throw new GFacHandlerException(
                         "Empty Output returned from the Application, Double check the application"
@@ -107,7 +138,12 @@ public class SCPOutputHandler extends AbstractHandler{
             status.setTransferState(TransferState.DOWNLOAD);
             detail.setTransferStatus(status);
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
-        
+
+            app.setStandardError(localStdErrFile.getAbsolutePath());
+            app.setStandardOutput(localStdOutFile.getAbsolutePath());
+            if (outputDataDir != null) {
+                app.setOutputDataDirectory(outputDataDir);
+            }
         } catch (XmlException e) {
             throw new GFacHandlerException("Cannot read output:" + e.getMessage(), e);
         } catch (ConnectionException e) {

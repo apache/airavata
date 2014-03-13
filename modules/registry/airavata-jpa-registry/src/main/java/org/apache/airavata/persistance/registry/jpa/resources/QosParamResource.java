@@ -120,11 +120,13 @@ public class QosParamResource extends AbstractResource {
         em.getTransaction().begin();
         QosParam qosParam = new QosParam();
         Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-        TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+        if (taskDetailResource != null){
+            TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+            qosParam.setTaskId(taskDetailResource.getTaskId());
+            qosParam.setTask(taskDetail);
+        }
         qosParam.setExpId(experimentResource.getExpID());
         qosParam.setExperiment(experiment);
-        qosParam.setTaskId(taskDetailResource.getTaskId());
-        qosParam.setTask(taskDetail);
         qosParam.setStartExecutionAt(startExecutionAt);
         qosParam.setExecuteBefore(executeBefore);
         qosParam.setNoOfRetries(noOfRetries);
