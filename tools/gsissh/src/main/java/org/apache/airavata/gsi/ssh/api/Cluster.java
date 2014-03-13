@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.gsi.ssh.api;
 
+import java.util.List;
+
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.impl.JobStatus;
 
@@ -100,6 +102,13 @@ public interface Cluster {
      * @throws SSHApiException throws exception during error
      */
     public JobStatus getJobStatus(String jobID) throws SSHApiException;
+    
+    /**
+     * This will list directories in computing resources
+     * @param directoryPath the full qualified path for the directory user wants to create
+     * @throws SSHApiException throws during error
+     */
+    public List<String> listDirectory(String directoryPath) throws SSHApiException;
 
 
     /**
