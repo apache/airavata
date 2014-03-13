@@ -51,13 +51,16 @@ public class OutputUtils {
             if (actual == null) {
                 continue;
             }
-            if ("StdOut".equals(actual.getType().getType().toString())) {
+            if ("StdOut".equals(actual.getType().getType().toString()) && paramName == "stdout") {
                 ((StdOutParameterType) actual.getType()).setValue(stdout);
                 result.put(paramName, actual);
-            } else if ("StdErr".equals(actual.getType().getType().toString())) {
+            } else if ("StdErr".equals(actual.getType().getType().toString()) && paramName == "stderr") {
                 ((StdErrParameterType) actual.getType()).setValue(stderr);
                 result.put(paramName, actual);
-            } else {
+            }else if("URI".equals(actual.getType().getType().toString())){
+            	continue;
+            } 
+            else {
                 String parseStdout = parseStdout(stdout, paramName);
                 if (parseStdout != null) {
                     MappingFactory.fromString(actual, parseStdout);
