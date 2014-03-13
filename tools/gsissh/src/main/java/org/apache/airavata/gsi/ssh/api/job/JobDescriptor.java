@@ -114,6 +114,21 @@ public class JobDescriptor {
         this.getJobDescriptorDocument().getJobDescriptor().setProcessesPerNode(name);
     }
 
+    public String getOutputDirectory() {
+        return this.getJobDescriptorDocument().getJobDescriptor().getOutputDirectory();
+    }
+
+    public String getInputDirectory() {
+        return this.getJobDescriptorDocument().getJobDescriptor().getInputDirectory();
+    }
+    public void setOutputDirectory(String name) {
+        this.getJobDescriptorDocument().getJobDescriptor().setOutputDirectory(name);
+    }
+
+    public void setInputDirectory(String name) {
+        this.getJobDescriptorDocument().getJobDescriptor().setInputDirectory(name);
+    }
+
     /**
      * Users can pass the minute count for maxwalltime
      * @param minutes

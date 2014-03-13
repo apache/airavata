@@ -297,8 +297,8 @@ public class GFacImpl implements GFac {
             JobDescriptor jobDescriptor = JobDescriptor.fromXML(jobDescription);
             applicationDeploymentDescription.getType().setScratchWorkingDirectory(
                     jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getWorkingDirectory());
-            applicationDeploymentDescription.getType().setInputDataDirectory(jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getInputDirectory());
-            applicationDeploymentDescription.getType().setOutputDataDirectory(jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getOutputDirectory());
+            applicationDeploymentDescription.getType().setInputDataDirectory(jobDescriptor.getInputDirectory());
+            applicationDeploymentDescription.getType().setOutputDataDirectory(jobDescriptor.getOutputDirectory());
             applicationDeploymentDescription.getType().setStandardError(jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getStandardErrorFile());
             applicationDeploymentDescription.getType().setStandardOutput(jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getStandardOutFile());
         } catch (Exception e) {
