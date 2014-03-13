@@ -1320,19 +1320,23 @@ public class ExperimentRegistry {
     }
 
     public String getNodeInstanceID(String nodeName) {
-        return nodeName + "_" + UUID.randomUUID();
+        String node = nodeName.replaceAll("\\s", "");
+        return node + "_" + UUID.randomUUID();
     }
 
     public String getExperimentID(String experimentName) {
-        return experimentName + "_" + UUID.randomUUID();
+        String exp = experimentName.replaceAll("\\s", "");
+        return exp + "_" + UUID.randomUUID();
     }
 
     public String getTaskID(String nodeName) {
-        return nodeName + "_" + UUID.randomUUID();
+        String node = nodeName.replaceAll("\\s", "");
+        return node + "_" + UUID.randomUUID();
     }
 
     public String getDataTransferID(String taskId) {
-        return taskId + "_" + UUID.randomUUID();
+        String task = taskId.replaceAll("\\s", "");
+        return task + "_" + UUID.randomUUID();
     }
 
     public void updateExperimentField(String expID, String fieldName, Object value) throws Exception {
