@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.gsi.ssh.api.job;
 
+import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.impl.JobStatus;
 
 import java.util.List;
@@ -32,14 +33,14 @@ public interface OutputParser {
      * @param descriptor
      * @return
      */
-    public void parse(JobDescriptor descriptor,String rawOutput);
+    public void parse(JobDescriptor descriptor,String rawOutput)throws SSHApiException;
 
     /**
      * This can be used to parse the result of a job submission to get the JobID
      * @param rawOutput
      * @return
      */
-    public String parse(String rawOutput);
+    public String parse(String rawOutput)throws SSHApiException;
 
 
     /**
@@ -47,12 +48,12 @@ public interface OutputParser {
      * @param jobID
      * @param rawOutput
      */
-    public JobStatus parse(String jobID, String rawOutput);
+    public JobStatus parse(String jobID, String rawOutput)throws SSHApiException;
 
     /**
      * This can be used to parse a big output and get multipleJob statuses
      * @param statusMap list of status map will return and key will be the job ID
      * @param rawOutput
      */
-    public void parse(Map<String,JobStatus> statusMap, String rawOutput);
+    public void parse(Map<String,JobStatus> statusMap, String rawOutput)throws SSHApiException;
 }

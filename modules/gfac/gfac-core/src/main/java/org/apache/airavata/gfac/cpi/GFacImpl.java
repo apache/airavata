@@ -48,6 +48,7 @@ import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.ServerInfo;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
+import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.api.job.JobManagerConfiguration;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
@@ -55,6 +56,7 @@ import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthe
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
+import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.cpi.DataType;
@@ -288,9 +290,21 @@ public class GFacImpl implements GFac {
         try {
             jobExecutionContext = createJEC(experimentID, taskID);
             Scheduler.schedule(jobExecutionContext);
+            ApplicationDescription applicationDeploymentDescription = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
+            TaskDetails taskData = (TaskDetails) registry.get(DataType.TASK_DETAIL, taskID);
+            JobDetails jobDetails = taskData.getJobDetailsList().get(0);
+            String jobDescription = jobDetails.getJobDescription();
+            JobDescriptor jobDescriptor = JobDescriptor.fromXML(jobDescription);
+            applicationDeploymentDescription.getType().setScratchWorkingDirectory(
+                    jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getWorkingDirectory());
+            applicationDeploymentDescription.getType().setInputDataDirectory(jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getInputDirectory());
+            applicationDeploymentDescription.getType().setOutputDataDirectory(jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getOutputDirectory());
+            applicationDeploymentDescription.getType().setStandardError(jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getStandardErrorFile());
+            applicationDeploymentDescription.getType().setStandardOutput(jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getStandardOutFile());
         } catch (Exception e) {
             throw new GFacException(e);
         }
+
         List<GFacHandlerConfig> handlers = jobExecutionContext.getGFacConfiguration().getOutHandlers();
 
         for (GFacHandlerConfig handlerClassName : handlers) {

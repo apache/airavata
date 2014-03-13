@@ -168,6 +168,7 @@ public class ExperimentRegistry {
             if (resource instanceof TaskDetailResource) {
                 TaskDetailResource taskDetailResource = (TaskDetailResource) resource;
                 qosr.setTaskDetailResource(taskDetailResource);
+                qosr.setExperimentResource(taskDetailResource.getWorkflowNodeDetailResource().getExperimentResource());
             }
             qosr.setStartExecutionAt(qosParams.getStartExecutionAt());
             qosr.setExecuteBefore(qosParams.getExecuteBefore());
@@ -190,6 +191,7 @@ public class ExperimentRegistry {
             if (resource instanceof TaskDetailResource) {
                 TaskDetailResource taskDetailResource = (TaskDetailResource) resource;
                 adodh.setTaskDetailResource(taskDetailResource);
+                adodh.setExperimentResource(taskDetailResource.getWorkflowNodeDetailResource().getExperimentResource());
             }
             adodh.setOutputDataDir(outputDataHandling.getOutputDataDir());
             adodh.setDataRegUrl(outputDataHandling.getDataRegistryURL());
@@ -212,6 +214,7 @@ public class ExperimentRegistry {
             if (resource instanceof TaskDetailResource) {
                 TaskDetailResource taskDetailResource = (TaskDetailResource) resource;
                 adidh.setTaskDetailResource(taskDetailResource);
+                adidh.setExperimentResource(taskDetailResource.getWorkflowNodeDetailResource().getExperimentResource());
             }
             adidh.setWorkingDir(inputDataHandling.getUniqueWorkingDirectory());
             adidh.setWorkingDirParent(inputDataHandling.getParentWorkingDirectory());
@@ -1298,9 +1301,13 @@ public class ExperimentRegistry {
                 errorResource.setTransientPersistent(error.isTransientOrPersistent());
                 if (error.getCorrectiveAction() != null){
                     errorResource.setCorrectiveAction(error.getCorrectiveAction().toString());
+                }else {
+                    errorResource.setCorrectiveAction(CorrectiveAction.CONTACT_SUPPORT.toString());
                 }
                 if (error.getActionableGroup() != null){
                     errorResource.setActionableGroup(error.getActionableGroup().toString());
+                }else {
+                    errorResource.setActionableGroup(ActionableGroup.GATEWAYS_ADMINS.toString());
                 }
                 errorResource.save();
                 return String.valueOf(errorResource.getErrorId());

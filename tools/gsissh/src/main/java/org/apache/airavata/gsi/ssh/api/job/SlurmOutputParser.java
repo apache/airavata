@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.gsi.ssh.api.job;
 
+import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.impl.JobStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,13 +30,14 @@ import java.util.Map;
 
 public class SlurmOutputParser implements OutputParser {
     private static final Logger log = LoggerFactory.getLogger(PBSOutputParser.class);
-    public void parse(JobDescriptor descriptor, String rawOutput) {
+
+    public void parse(JobDescriptor descriptor, String rawOutput)throws SSHApiException {
         log.debug(rawOutput);
         String[] info = rawOutput.split("\n");
         String lastString = info[info.length -1];
         if (lastString.contains("JOB ID")) {
             // because there's no state
-            descriptor.setStatus("E");
+            descriptor.setStatus("U");
         }else{
             int column = 0;
             System.out.println(lastString);
@@ -89,7 +91,7 @@ public class SlurmOutputParser implements OutputParser {
      * @param rawOutput
      * @return
      */
-    public String parse(String rawOutput) {
+    public String parse(String rawOutput) throws SSHApiException {
         log.debug(rawOutput);
         String[] info = rawOutput.split("\n");
         for (String anInfo : info) {
@@ -98,10 +100,10 @@ public class SlurmOutputParser implements OutputParser {
                 return split[1].trim();
             }
         }
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new SSHApiException(rawOutput);  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public JobStatus parse(String jobID, String rawOutput) {
+    public JobStatus parse(String jobID, String rawOutput)throws SSHApiException {
         log.debug(rawOutput);
         String[] info = rawOutput.split("\n");
         String lastString = info[info.length -1];
@@ -143,7 +145,7 @@ public class SlurmOutputParser implements OutputParser {
         return JobStatus.valueOf("U");
     }
 
-    public void parse(Map<String, JobStatus> statusMap, String rawOutput) {
+    public void parse(Map<String, JobStatus> statusMap, String rawOutput)throws SSHApiException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }
