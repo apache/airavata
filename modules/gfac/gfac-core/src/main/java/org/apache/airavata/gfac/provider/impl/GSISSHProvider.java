@@ -111,7 +111,8 @@ public class GSISSHProvider extends AbstractProvider implements GFacProvider{
                 jobDescriptor.setQueueName(app.getQueue().getQueueName());
             }
             jobDescriptor.setOwner(((PBSCluster) cluster).getServerInfo().getUserName());
-            
+            jobDescriptor.setInputDirectory(app.getInputDataDirectory());
+            jobDescriptor.setOutputDirectory(app.getOutputDataDirectory());
             TaskDetails taskData = jobExecutionContext.getTaskData();
             if(taskData != null && taskData.isSetTaskScheduling()){
             	ComputationalResourceScheduling computionnalResource = taskData.getTaskScheduling();
