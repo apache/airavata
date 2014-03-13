@@ -88,7 +88,7 @@ public class SCPOutputHandler extends AbstractHandler{
             if(outputDataDir == null) {
                 outputDataDir = File.separator + "tmp";
             }
-            outputDataDir = outputDataDir + jobExecutionContext.getExperimentID() + "-" +jobExecutionContext.getTaskData().getTaskID();
+            outputDataDir = outputDataDir + File.separator + jobExecutionContext.getExperimentID() + "-" +jobExecutionContext.getTaskData().getTaskID();
             (new File(outputDataDir)).mkdirs();
             app.setOutputDataDirectory(outputDataDir);    // These will be useful if we are doing third party transfer
 
