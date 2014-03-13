@@ -79,6 +79,7 @@ public class JobExecutionContext extends AbstractContext{
     
     private String status;
 
+    private List<String> outputFileList;
     /**
      *  Security context is used to handle authentication for input handlers and providers.
      *  There can be multiple security requirement for a single job so this allows you to add multiple security types
@@ -90,6 +91,7 @@ public class JobExecutionContext extends AbstractContext{
         this.gfacConfiguration = gFacConfiguration;
         notifier = new GFacNotifier();
         setServiceName(serviceName);
+        outputFileList = new ArrayList<String>();
     }
 
     public String getExperimentID() {
@@ -228,5 +230,12 @@ public class JobExecutionContext extends AbstractContext{
 
     public void setJobDetails(JobDetails jobDetails) {
         this.jobDetails = jobDetails;
+    }
+
+    public void addOutputFile(String file) {
+        outputFileList.add(file);
+    }
+    public List<String> getOutputFiles(){
+        return outputFileList;
     }
 }

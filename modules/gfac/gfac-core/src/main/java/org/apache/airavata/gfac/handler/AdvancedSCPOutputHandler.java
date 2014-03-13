@@ -95,9 +95,12 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
         ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
         try {
             Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
-            List<String> strings = pbsCluster.listDirectory(outputDataDirectory);
-            for(String files:strings){
-                pbsCluster.scpTo(outputDataDirectory,files);
+            outputPath = outputPath + File.separator + jobExecutionContext.getExperimentID() + "-" + jobExecutionContext.getTaskData().getTaskID()
+            + File.separator;
+            pbsCluster.scpTo(outputPath, standardError);
+            pbsCluster.scpTo(outputPath,standardOutput);
+            for(String files:jobExecutionContext.getOutputFiles()){
+                pbsCluster.scpTo(outputPath,files);
             }
         } catch (SSHApiException e) {
             log.error("Error transfering files to remote host : " + hostName + " with the user: " + userName);
