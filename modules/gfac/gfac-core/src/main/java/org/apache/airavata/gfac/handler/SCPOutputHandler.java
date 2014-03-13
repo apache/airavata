@@ -124,7 +124,7 @@ public class SCPOutputHandler extends AbstractHandler{
                     stringMap = OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
                 } else {
 					String valueList = outputList.get(0);
-                    cluster.scpFrom(valueList, outputDataDir);
+                    cluster.scpFrom(app.getOutputDataDirectory() + File.separator + valueList, outputDataDir);
 					((URIParameterType) actualParameter.getType()).setValue(valueList);
 					stringMap = new HashMap<String, ActualParameter>();
 					stringMap.put(paramName, actualParameter);
