@@ -124,6 +124,7 @@ public class SCPOutputHandler extends AbstractHandler{
                 } else {
 					String valueList = outputList.get(0);
                     cluster.scpFrom(app.getOutputDataDirectory() + File.separator + valueList, outputDataDir);
+                    jobExecutionContext.addOutputFile(outputDataDir + File.separator + valueList);
 					((URIParameterType) actualParameter.getType()).setValue(valueList);
 					stringMap = new HashMap<String, ActualParameter>();
 					stringMap.put(paramName, actualParameter);
@@ -143,9 +144,7 @@ public class SCPOutputHandler extends AbstractHandler{
 
             app.setStandardError(localStdErrFile.getAbsolutePath());
             app.setStandardOutput(localStdOutFile.getAbsolutePath());
-            if (outputDataDir != null) {
-                app.setOutputDataDirectory(outputDataDir);
-            }
+            app.setOutputDataDirectory(outputDataDir);
         } catch (XmlException e) {
             throw new GFacHandlerException("Cannot read output:" + e.getMessage(), e);
         } catch (ConnectionException e) {
