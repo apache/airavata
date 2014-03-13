@@ -102,7 +102,7 @@ public class AdvancedSCPInputHandler extends AbstractHandler{
             // not really dealing with monitoring or job submission, so we pa
             pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
             String parentPath = inputPath + File.separator + jobExecutionContext.getExperimentID() + File.separator + jobExecutionContext.getTaskData().getTaskID();
-            pbsCluster.makeDirectory(parentPath);
+           (new File(parentPath)).mkdirs();
             MessageContext input = jobExecutionContext.getInMessageContext();
             Set<String> parameters = input.getParameters().keySet();
             for (String paramName : parameters) {
