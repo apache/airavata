@@ -53,9 +53,9 @@ import java.util.*;
                             <property name="publicKeyPath" value="/Users/lahirugunathilake/.ssh/id_dsa.pub"/>
                         <property name="userName" value="airavata"/>
                         <property name="hostName" value="gw98.iu.xsede.org"/>
-                        <property name="outputPath" value="/home/airavata/outputData"/>
+                        <property name="inputPath" value="/home/airavata/outputData"/>
  */
-public class AdvancedSCPInputHandler {
+public class AdvancedSCPInputHandler extends AbstractHandler{
     private static final Logger log = LoggerFactory.getLogger(AdvancedSCPInputHandler.class);
 
     private String password = null;
@@ -70,7 +70,7 @@ public class AdvancedSCPInputHandler {
 
     private String hostName;
 
-    private String outputPath;
+    private String inputPath;
 
     public void initProperties(Map<String, String> properties) throws GFacHandlerException, GFacException {
         password = properties.get("password");
@@ -79,15 +79,12 @@ public class AdvancedSCPInputHandler {
         publicKeyPath = properties.get("publicKeyPath");
         userName = properties.get("userName");
         hostName = properties.get("hostName");
-        outputPath = properties.get("outputPath");
+        inputPath = properties.get("inputPath");
     }
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException, GFacException {
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext()
                 .getApplicationDeploymentDescription().getType();
-        String standardError = app.getStandardError();
-        String standardOutput = app.getStandardOutput();
-        String outputDataDirectory = app.getOutputDataDirectory();
 
         AuthenticationInfo authenticationInfo = null;
         if (password != null) {
@@ -101,8 +98,10 @@ public class AdvancedSCPInputHandler {
         Cluster pbsCluster = null;
         MessageContext inputNew = new MessageContext();
         try {
+            // here doesn't matter what the job manager is because we are only doing some file handling
+            // not really dealing with monitoring or job submission, so we pa
             pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
-            String parentPath = outputPath + File.separator + jobExecutionContext.getExperimentID() + File.separator + jobExecutionContext.getTaskData().getTaskID();
+            String parentPath = inputPath + File.separator + jobExecutionContext.getExperimentID() + File.separator + jobExecutionContext.getTaskData().getTaskID();
             pbsCluster.makeDirectory(parentPath);
             MessageContext input = jobExecutionContext.getInMessageContext();
             Set<String> parameters = input.getParameters().keySet();
