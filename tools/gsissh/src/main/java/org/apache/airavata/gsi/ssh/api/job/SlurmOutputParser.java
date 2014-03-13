@@ -37,7 +37,7 @@ public class SlurmOutputParser implements OutputParser {
         String lastString = info[info.length -1];
         if (lastString.contains("JOB ID")) {
             // because there's no state
-            descriptor.setStatus("E");
+            descriptor.setStatus("U");
         }else{
             int column = 0;
             System.out.println(lastString);
