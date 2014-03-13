@@ -94,9 +94,7 @@ public class SCPOutputHandler extends AbstractHandler{
                 localStdOutFile = File.createTempFile(timeStampedServiceName, "stdout");
                 localStdErrFile = File.createTempFile(timeStampedServiceName, "stderr");
             }
-            log.info("Downloading file : " + app.getStandardError() + " to : " + localStdErrFile.getAbsolutePath());
             cluster.scpFrom(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
-            log.info("Downloading file : " + app.getStandardOutput() + " to : " + localStdOutFile.getAbsolutePath());
             cluster.scpFrom(app.getStandardError(), localStdErrFile.getAbsolutePath());
 
             String stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
