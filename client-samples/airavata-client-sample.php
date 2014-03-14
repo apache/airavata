@@ -35,6 +35,7 @@ $protocol = new TBinaryProtocol($transport);
 $airavataclient = new AiravataClient($protocol);
 $transport->open();
 
+echo "\n\n\n\n";
 echo "Airavata Server Version is: " . $airavataclient->GetAPIVersion();
 
 echo "<br><br>"."Creating New Experiment.... "."<br>";
