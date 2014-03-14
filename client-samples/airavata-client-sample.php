@@ -28,6 +28,7 @@ use Thrift\Protocol\TBinaryProtocol;
 use Thrift\Transport\TSocket;
 use Airavata\API\AiravataClient;
 use Airavata\Model\Workspace\Experiment\Experiment;
+use Airavata\Model\Workspace\Experiment\ExperimentState;
 
 $transport = new TSocket('gw111.iu.xsede.org', 8930);
 $protocol = new TBinaryProtocol($transport);
@@ -35,7 +36,6 @@ $protocol = new TBinaryProtocol($transport);
 $airavataclient = new AiravataClient($protocol);
 $transport->open();
 
-echo "\n\n\n\n";
 echo "Airavata Server Version is: " . $airavataclient->GetAPIVersion();
 
 echo "<br><br>"."Creating New Experiment.... "."<br>";
@@ -89,7 +89,8 @@ try {
     echo "<br><br>"."Checking Experiment Status.... "."<br>";
     $experimentStatus = $airavataclient->getExperimentStatus($expId);
     echo "Experiment Status: "."<br>";
-    echo "State: ".$experimentStatus->ExperimentState ."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".
+    
+    echo "State: ".ExperimentState::$__names[$experimentStatus->experimentState] ."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".
         "Time of last state change:". $experimentStatus->timeOfStateChange;
 
     echo "<br><br>"."Checking Job Status.... "."<br>";
