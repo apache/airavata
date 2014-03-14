@@ -82,20 +82,20 @@ try {
     $expId = $airavataclient->createExperiment($experiment);
     echo "Experiment Id created is: " . $expId;
 
-    echo "<br><br>"."Launching Experiment.... "."<br>";
+    echo "<br><br>\n\n"."Launching Experiment.... "."<br>\n";
     $airavataclient->launchExperiment($expId, "airavataToken");
     echo "....Launched Experiment ".$expId."<br>";
 
-    echo "<br><br>"."Checking Experiment Status.... "."<br>";
+    echo "<br><br>\n\n"."Checking Experiment Status.... "."<br>\n";
     $experimentStatus = $airavataclient->getExperimentStatus($expId);
     echo "Experiment Status: "."<br>";
     echo "State: ".$experimentStatus->ExperimentState ."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".
         "Time of last state change:". $experimentStatus->timeOfStateChange;
 
-    echo "<br><br>"."Checking Job Status.... "."<br>";
+    echo "<br><br>\n\n"."Checking Job Status.... "."<br>\n";
     $jobStatus = $airavataclient->getJobStatuses($expId);
-    echo "Job Status: "."<br>";
-    echo "State: "."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".
+    echo "Job Status: "."<br>\n";
+    echo "State: "."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\t".
         "Time of last state change:";
 
 } catch (TException $texp) {
