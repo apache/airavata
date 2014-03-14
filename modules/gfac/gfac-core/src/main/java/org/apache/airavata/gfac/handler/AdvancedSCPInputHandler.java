@@ -41,8 +41,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URI;
 import java.util.*;
 
 /**
@@ -132,12 +130,9 @@ public class AdvancedSCPInputHandler extends AbstractHandler{
     private String stageInputFiles(Cluster cluster, String paramValue, String parentPath) throws GFacException {
         try {
             cluster.scpFrom(paramValue, parentPath);
-            return "file://" + parentPath + File.separator + URI.create(paramValue).toURL().getFile();
+            return "file://" + parentPath + File.separator + (new File(paramValue)).getName();
         } catch (SSHApiException e) {
             log.error("Error tranfering remote file to local file, remote path: " + paramValue);
-            throw new GFacException(e);
-        } catch (MalformedURLException e) {
-            log.error("Error processing input URL");
             throw new GFacException(e);
         }
     }
