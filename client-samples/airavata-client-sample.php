@@ -92,13 +92,8 @@ try {
     
     echo "State: ".ExperimentState::$__names[$experimentStatus->experimentState] ."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".
         "Time of last state change:". $experimentStatus->timeOfStateChange;
-
-    echo "<br><br>\n\n"."Checking Job Status.... "."<br>\n";
-    $jobStatus = $airavataclient->getJobStatuses($expId);
-    echo "Job Status: "."<br>\n";
-    echo "State: "."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\t".
-        "Time of last state change:";
-
+    
+    
 } catch (TException $texp) {
     print 'Exception: ' . $texp->getMessage()."\n";
 } catch (AiravataSystemException $ase) {
