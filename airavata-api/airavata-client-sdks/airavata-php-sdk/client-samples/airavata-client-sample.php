@@ -37,30 +37,50 @@ $transport->open();
 
 echo "Airavata Server Version is: " . $airavataclient->GetAPIVersion();
 
+echo "<br><br>"."Creating New Experiment.... "."<br>";
+
 //Create a Experiment
 $experiment = new Experiment();
-$experiment->name = "Test Experiment";
-$experiment->userName = "TestUser";
-$experiment->projectID = "TestProject";
+$experiment->name = "PHPTest";
+$experiment->description = "Testingfromphp";
+$experiment->userName = "admin";
+$experiment->projectID = "project1";
+$experiment->applicationId = "US3AppTrestles";
 
-$experimentInputs = new DataObjectType;
-$experimentInputs->key = "echo_input";
-$experimentInputs->value = "echo_output=Hello World";
+$experimentInputs = new DataObjectType();
+$experimentInputs->key = "input";
+$experimentInputs->value = "file:///home/airavata/input/hpcinput.tar";
+$experiment->experimentInputs = array($experimentInputs);
 
-$experiment->applicationId = "SimpleEcho2";
-$experiment->experimentInputs = $experimentInputs;
-
-$scheduling = new ComputationalResourceScheduling;
+$scheduling = new ComputationalResourceScheduling();
 $scheduling->resourceHostId = "gsissh-trestles";
 
-$userConfigData = new UserConfigurationData;
+$userConfigData = new UserConfigurationData();
 $userConfigData->computationalResourceScheduling = $scheduling;
+$userConfigData->overrideManualScheduledParams = False;
+$userConfigData->airavataAutoSchedule = False;
 $experiment->userConfigurationData = $userConfigData;
-
 
 try {
 
-    echo "Experiment Id created is: " . $airavataclient->createExperiment($experiment);
+    $expId = $airavataclient->createExperiment($experiment);
+    echo "Experiment Id created is: " . $expId;
+
+    echo "<br><br>"."Launching Experiment.... "."<br>";
+    $airavataclient->launchExperiment($expId, "airavataToken");
+    echo "....Launched Experiment ".$expId."<br>";
+
+    echo "<br><br>"."Checking Experiment Status.... "."<br>";
+    $experimentStatus = $airavataclient->getExperimentStatus($expId);
+    echo "Experiment Status: "."<br>";
+    echo "State: ".$experimentStatus->ExperimentState ."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".
+        "Time of last state change:". $experimentStatus->timeOfStateChange;
+
+    echo "<br><br>"."Checking Job Status.... "."<br>";
+    $jobStatus = $airavataclient->getJobStatuses($expId);
+    echo "Job Status: "."<br>";
+    echo "State: "."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".
+        "Time of last state change:";
 
 } catch (TException $texp) {
     print 'Exception: ' . $texp->getMessage()."\n";
