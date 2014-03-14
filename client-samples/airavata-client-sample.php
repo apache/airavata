@@ -52,6 +52,21 @@ $experimentInputs->key = "input";
 $experimentInputs->value = "file:///home/airavata/input/hpcinput.tar";
 $experiment->experimentInputs = array($experimentInputs);
 
+$experimentOutput1 = new DataObjectType();
+$experimentOutput1->key = "output";
+$experimentOutput1->value = "";
+
+$experimentOutput2 = new DataObjectType();
+$experimentOutput2->key = "stdout";
+$experimentOutput2->value = "";
+
+$experimentOutput3 = new DataObjectType();
+$experimentOutput3->key = "stderr";
+$experimentOutput3->value = "";
+
+$experiment->experimentOutputs = array($experimentOutput1, $experimentOutput2, $experimentOutput3);
+
+
 $scheduling = new ComputationalResourceScheduling();
 $scheduling->resourceHostId = "gsissh-trestles";
 
