@@ -184,7 +184,7 @@ rm -rf ${PHP_GEN_DIR}
 
 # Using thrify Java generator, generate the java classes based on Airavata API. This
 #   The airavataAPI.thrift includes rest of data models.
-thrift ${THRIFT_ARGS} --gen php ${THRIFT_IDL_DIR}/airavataAPI.thrift || fail unable to generate PHP thrift classes
+thrift ${THRIFT_ARGS} --gen php:autoload ${THRIFT_IDL_DIR}/airavataAPI.thrift || fail unable to generate PHP thrift classes
 
 # For the generated java classes add the ASF V2 License header
 ## TODO Write PHP license parser
@@ -197,7 +197,7 @@ copy_changed_files ${PHP_GEN_DIR} ${PHP_SDK_DIR}
 # Cleanup and Exit #
 ####################
 # CleanUp: Delete the base target build directory
-rm -rf ${BASE_TARGET_DIR}
+#rm -rf ${BASE_TARGET_DIR}
 
 echo "Successfully generated new sources, compared against exiting code and replaced the changed files"
 exit 0
