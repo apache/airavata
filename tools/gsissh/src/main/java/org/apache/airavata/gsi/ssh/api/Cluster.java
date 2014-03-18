@@ -25,6 +25,8 @@ import java.util.List;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.impl.JobStatus;
 
+import com.jcraft.jsch.Session;
+
 /**
  * This interface represents a Cluster machine
  * End users of the API can implement this and come up with their own
@@ -110,7 +112,13 @@ public interface Cluster {
      */
     public List<String> listDirectory(String directoryPath) throws SSHApiException;
 
-
+    /**
+     * This method can be used to get created ssh session
+     * to reuse the created session.
+     * @throws SSHApiException
+     */
+    public Session getSession() throws SSHApiException;
+    
     /**
      * This method can be used to close the connections initialized
      * to handle graceful shutdown of the system
