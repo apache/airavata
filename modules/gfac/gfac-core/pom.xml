@@ -95,13 +95,7 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!-- SSH -->
-        <dependency>
-            <groupId>net.schmizz</groupId>
-            <artifactId>sshj</artifactId>
-            <version>0.8.0</version>
-        </dependency>
-
+   
         <!-- Credential Store -->
         <dependency>
             <groupId>org.apache.airavata</groupId>

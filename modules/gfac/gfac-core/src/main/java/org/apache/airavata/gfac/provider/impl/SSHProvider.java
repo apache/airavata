@@ -31,13 +31,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
-import net.schmizz.sshj.connection.ConnectionException;
-import net.schmizz.sshj.connection.channel.direct.Session;
-import net.schmizz.sshj.connection.channel.direct.Session.Command;
-import net.schmizz.sshj.transport.TransportException;
-import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
@@ -49,6 +42,11 @@ import org.apache.airavata.gfac.context.security.SSHSecurityContext;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.utils.GFacUtils;
+import org.apache.airavata.gsi.ssh.api.Cluster;
+import org.apache.airavata.gsi.ssh.api.CommandExecutor;
+import org.apache.airavata.gsi.ssh.api.SSHApiException;
+import org.apache.airavata.gsi.ssh.impl.RawCommandInfo;
+import org.apache.airavata.gsi.ssh.impl.StandardOutReader;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.NameValuePairType;
@@ -64,7 +62,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  */
 public class SSHProvider extends AbstractProvider implements GFacProvider{
     private static final Logger log = LoggerFactory.getLogger(SSHProvider.class);
-    private SSHSecurityContext securityContext;
+    private Cluster cluster;
     private String jobID = null;
     private String taskID = null;
     // we keep gsisshprovider to support qsub submission incase of hpc scenario with ssh
@@ -75,18 +73,17 @@ public class SSHProvider extends AbstractProvider implements GFacProvider{
     	taskID = jobExecutionContext.getTaskData().getTaskID();
 		if (!((SSHHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType()).getHpcResource()) {
             jobID = "SSH_" + jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress() + "_" + Calendar.getInstance().getTimeInMillis();
-
-            securityContext = (SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT);
+            cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
+            
             ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
             String remoteFile = app.getStaticWorkingDirectory() + File.separatorChar + Constants.EXECUTABLE_NAME;
             details.setJobDescription(remoteFile);
             GFacUtils.saveJobStatus(details, JobState.SETUP, taskID);
             log.info(remoteFile);
             try {
-                File runscript = createShellScript(jobExecutionContext);
-                SCPFileTransfer fileTransfer = securityContext.getSSHClient().newSCPFileTransfer();
-                fileTransfer.upload(runscript.getAbsolutePath(), remoteFile);
-            } catch (IOException e) {
+            	File runscript = createShellScript(jobExecutionContext);
+                cluster.scpTo(remoteFile, runscript.getAbsolutePath());
+            } catch (Exception e) {
                 throw new GFacProviderException(e.getLocalizedMessage(), e);
             }
         }else{
@@ -98,41 +95,32 @@ public class SSHProvider extends AbstractProvider implements GFacProvider{
     public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
         if (gsiSshProvider == null) {
             ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
-            Session session = null;
             try {
-                session = securityContext.getSession(jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress());
                 /*
                  * Execute
                  */
                 String execuable = app.getStaticWorkingDirectory() + File.separatorChar + Constants.EXECUTABLE_NAME;
                 details.setJobDescription(execuable);
                 GFacUtils.updateJobStatus(details, JobState.SUBMITTED);
-                Command cmd = session.exec("/bin/chmod 755 " + execuable + "; " + execuable);
-                log.info("stdout=" + GFacUtils.readFromStream(session.getInputStream()));
-                cmd.join(Constants.COMMAND_EXECUTION_TIMEOUT, TimeUnit.SECONDS);
+                RawCommandInfo rawCommandInfo = new RawCommandInfo("/bin/chmod 755 " + execuable + "; " + execuable);
 
-                /*
-                 * check return value. usually not very helpful to draw conclusions
-                 * based on return values so don't bother. just provide warning in
-                 * the log messages
-                 */
-                if (cmd.getExitStatus() != 0) {
-                    log.error("Process finished with non zero return value. Process may have failed");
-                } else {
-                    log.info("Process finished with return value of zero.");
-                }
+                StandardOutReader jobIDReaderCommandOutput = new StandardOutReader();
+                
+                CommandExecutor.executeCommand(rawCommandInfo, cluster.getSession(), jobIDReaderCommandOutput);
+                String stdOutputString = getOutputifAvailable(jobIDReaderCommandOutput, "Error submitting job to resource");
+
+                log.info("stdout=" + stdOutputString);
+             
                 GFacUtils.updateJobStatus(details, JobState.COMPLETE);
-            } catch (ConnectionException e) {
-                throw new GFacProviderException(e.getMessage(), e);
-            } catch (TransportException e) {
-                throw new GFacProviderException(e.getMessage(), e);
-            } catch (IOException e) {
-                throw new GFacProviderException(e.getMessage(), e);
-            }catch (Exception e) {
+            } catch (Exception e) {
                 throw new GFacProviderException(e.getMessage(), e);
             } finally {
-                if (securityContext != null) {
-                    securityContext.closeSession(session);
+                if (cluster != null) {
+                	try {
+						cluster.disconnect();
+					} catch (SSHApiException e) {
+						throw new GFacProviderException(e.getMessage(), e);
+					}
                 }
             }
         } else {
@@ -245,5 +233,23 @@ public class SSHProvider extends AbstractProvider implements GFacProvider{
             }
         }
     }
+    /**
+     * This method will read standard output and if there's any it will be parsed
+     * @param jobIDReaderCommandOutput
+     * @param errorMsg
+     * @return
+     * @throws SSHApiException
+     */
+    private String getOutputifAvailable(StandardOutReader jobIDReaderCommandOutput, String errorMsg) throws SSHApiException {
+        String stdOutputString = jobIDReaderCommandOutput.getStdOutputString();
+        String stdErrorString = jobIDReaderCommandOutput.getStdErrorString();
+
+        if(stdOutputString == null || stdOutputString.isEmpty() || (stdErrorString != null && !stdErrorString.isEmpty())){
+            log.error("Standard Error output : " + stdErrorString);
+            throw new SSHApiException(errorMsg + stdErrorString);
+        }
+        return stdOutputString;
+    }
+
 
 }
