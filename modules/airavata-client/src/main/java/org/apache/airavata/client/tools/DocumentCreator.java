@@ -64,10 +64,11 @@ public class DocumentCreator {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
+        String serviceName = "SimpleEcho0";
         ServiceDescription serviceDescription = new ServiceDescription();
         List<InputParameterType> inputParameters = new ArrayList<InputParameterType>();
         List<OutputParameterType> outputParameters = new ArrayList<OutputParameterType>();
-        serviceDescription.getType().setName("Echo");
+        serviceDescription.getType().setName(serviceName);
         serviceDescription.getType().setDescription("Echo service");
         // Creating input parameters
         InputParameterType parameter = InputParameterType.Factory.newInstance();
@@ -105,7 +106,7 @@ public class DocumentCreator {
         applicationDeploymentDescriptionType.setScratchWorkingDirectory("/tmp");
 
         try {
-            airavataAPI.getApplicationManager().saveApplicationDescription("Echo", "localhost", applicationDeploymentDescription);
+            airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, "localhost", applicationDeploymentDescription);
         } catch (AiravataAPIInvocationException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }

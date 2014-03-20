@@ -35,17 +35,15 @@ import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
+import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.model.workspace.experiment.ActionableGroup;
-import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
-import org.apache.airavata.model.workspace.experiment.DataObjectType;
-import org.apache.airavata.model.workspace.experiment.ErrorCategory;
-import org.apache.airavata.model.workspace.experiment.ErrorDetails;
-import org.apache.airavata.model.workspace.experiment.JobDetails;
-import org.apache.airavata.model.workspace.experiment.JobState;
-import org.apache.airavata.model.workspace.experiment.JobStatus;
+import org.apache.airavata.gfac.context.MessageContext;
+import org.apache.airavata.gsi.ssh.api.Cluster;
+import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
+import org.apache.airavata.gsi.ssh.impl.PBSCluster;
+import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.api.workflow.ApplicationJob;
 import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
@@ -690,5 +688,87 @@ public class GFacUtils {
             }
         }
         return stringObjectHashMap;
+    }
+
+    public static JobDescriptor createJobDescriptor(JobExecutionContext jobExecutionContext,
+                                                    ApplicationDeploymentDescriptionType app, Cluster cluster) {
+        JobDescriptor jobDescriptor = new JobDescriptor();
+        // this is common for any application descriptor
+        jobDescriptor.setInputDirectory(app.getInputDataDirectory());
+        jobDescriptor.setOutputDirectory(app.getOutputDataDirectory());
+        jobDescriptor.setExecutablePath(app.getExecutableLocation());
+        jobDescriptor.setStandardOutFile(app.getStandardOutput());
+        jobDescriptor.setStandardErrorFile(app.getStandardError());
+        Random random = new Random();
+        int i = random.nextInt();
+        jobDescriptor.setJobName(app.getApplicationName().getStringValue() + String.valueOf(i));
+        jobDescriptor.setWorkingDirectory(app.getStaticWorkingDirectory());
+
+
+        List<String> inputValues = new ArrayList<String>();
+        MessageContext input = jobExecutionContext.getInMessageContext();
+        Map<String, Object> inputs = input.getParameters();
+        Set<String> keys = inputs.keySet();
+        for (String paramName : keys) {
+            ActualParameter actualParameter = (ActualParameter) inputs.get(paramName);
+            if ("URIArray".equals(actualParameter.getType().getType().toString()) || "StringArray".equals(actualParameter.getType().getType().toString())
+                    || "FileArray".equals(actualParameter.getType().getType().toString())) {
+                String[] values = null;
+                if (actualParameter.getType() instanceof URIArrayType) {
+                    values = ((URIArrayType) actualParameter.getType()).getValueArray();
+                } else if (actualParameter.getType() instanceof StringArrayType) {
+                    values = ((StringArrayType) actualParameter.getType()).getValueArray();
+                } else if (actualParameter.getType() instanceof FileArrayType) {
+                    values = ((FileArrayType) actualParameter.getType()).getValueArray();
+                }
+                String value = StringUtil.createDelimiteredString(values, " ");
+                inputValues.add(value);
+            } else {
+                String paramValue = MappingFactory.toString(actualParameter);
+                inputValues.add(paramValue);
+            }
+        }
+        jobDescriptor.setInputValues(inputValues);
+
+        // this part will fill out the hpcApplicationDescriptor
+        if (app instanceof HpcApplicationDeploymentType) {
+            HpcApplicationDeploymentType applicationDeploymentType
+                    = (HpcApplicationDeploymentType) app;
+            jobDescriptor.setShellName("/bin/bash");
+            jobDescriptor.setAllEnvExport(true);
+            jobDescriptor.setMailOptions("n");
+            jobDescriptor.setNodes(applicationDeploymentType.getNodeCount());
+            jobDescriptor.setProcessesPerNode(applicationDeploymentType.getProcessorsPerNode());
+            jobDescriptor.setMaxWallTime(String.valueOf(applicationDeploymentType.getMaxWallTime()));
+            jobDescriptor.setJobSubmitter(applicationDeploymentType.getJobSubmitterCommand());
+            if (applicationDeploymentType.getProjectAccount().getProjectAccountNumber() != null) {
+                jobDescriptor.setAcountString(applicationDeploymentType.getProjectAccount().getProjectAccountNumber());
+            }
+            if (applicationDeploymentType.getQueue().getQueueName() != null) {
+                jobDescriptor.setQueueName(applicationDeploymentType.getQueue().getQueueName());
+            }
+            jobDescriptor.setOwner(((PBSCluster) cluster).getServerInfo().getUserName());
+            TaskDetails taskData = jobExecutionContext.getTaskData();
+            if (taskData != null && taskData.isSetTaskScheduling()) {
+                ComputationalResourceScheduling computionnalResource = taskData.getTaskScheduling();
+                if (computionnalResource.getNodeCount() > 0) {
+                    jobDescriptor.setNodes(computionnalResource.getNodeCount());
+                }
+                if (computionnalResource.getComputationalProjectAccount() != null) {
+                    jobDescriptor.setAcountString(computionnalResource.getComputationalProjectAccount());
+                }
+                if (computionnalResource.getQueueName() != null) {
+                    jobDescriptor.setQueueName(computionnalResource.getQueueName());
+                }
+                if (computionnalResource.getTotalCPUCount() > 0) {
+                    jobDescriptor.setProcessesPerNode(computionnalResource.getTotalCPUCount());
+                }
+                if (computionnalResource.getWallTimeLimit() > 0) {
+                    jobDescriptor.setMaxWallTime(String.valueOf(computionnalResource.getWallTimeLimit()));
+                }
+            }
+
+        }
+        return jobDescriptor;
     }
 }

@@ -89,73 +89,7 @@ public class GSISSHProvider extends AbstractProvider implements GFacProvider{
                 log.info("Successfully retrieved the Security Context");
             }
             // This installed path is a mandetory field, because this could change based on the computing resource
-            JobDescriptor jobDescriptor = new JobDescriptor();
-            jobDescriptor.setWorkingDirectory(app.getStaticWorkingDirectory());
-            jobDescriptor.setShellName("/bin/bash");
-            Random random = new Random();
-            int i = random.nextInt();
-            jobDescriptor.setJobName(app.getApplicationName().getStringValue() + String.valueOf(i));
-            jobDescriptor.setExecutablePath(app.getExecutableLocation());
-            jobDescriptor.setAllEnvExport(true);
-            jobDescriptor.setMailOptions("n");
-            jobDescriptor.setStandardOutFile(app.getStandardOutput());
-            jobDescriptor.setStandardErrorFile(app.getStandardError());
-            jobDescriptor.setNodes(app.getNodeCount());
-            jobDescriptor.setProcessesPerNode(app.getProcessorsPerNode());
-            jobDescriptor.setMaxWallTime(String.valueOf(app.getMaxWallTime()));
-            jobDescriptor.setJobSubmitter(app.getJobSubmitterCommand());
-            if (app.getProjectAccount().getProjectAccountNumber() != null) {
-                jobDescriptor.setAcountString(app.getProjectAccount().getProjectAccountNumber());
-            }
-            if (app.getQueue().getQueueName() != null) {
-                jobDescriptor.setQueueName(app.getQueue().getQueueName());
-            }
-            jobDescriptor.setOwner(((PBSCluster) cluster).getServerInfo().getUserName());
-            jobDescriptor.setInputDirectory(app.getInputDataDirectory());
-            jobDescriptor.setOutputDirectory(app.getOutputDataDirectory());
-            TaskDetails taskData = jobExecutionContext.getTaskData();
-            if(taskData != null && taskData.isSetTaskScheduling()){
-            	ComputationalResourceScheduling computionnalResource = taskData.getTaskScheduling();
-                if(computionnalResource.getNodeCount() > 0){
-                	jobDescriptor.setNodes(computionnalResource.getNodeCount());
-                }
-                if(computionnalResource.getComputationalProjectAccount() != null){
-                	jobDescriptor.setAcountString(computionnalResource.getComputationalProjectAccount());
-                }
-                if(computionnalResource.getQueueName() != null){
-                	jobDescriptor.setQueueName(computionnalResource.getQueueName());
-                }
-                if(computionnalResource.getTotalCPUCount() > 0){
-                	jobDescriptor.setProcessesPerNode(computionnalResource.getTotalCPUCount());
-                }
-                if(computionnalResource.getWallTimeLimit() > 0){
-                	jobDescriptor.setMaxWallTime(String.valueOf(computionnalResource.getWallTimeLimit()));
-                }
-            }
-            List<String> inputValues = new ArrayList<String>();
-            MessageContext input = jobExecutionContext.getInMessageContext();
-            Map<String, Object> inputs = input.getParameters();
-            Set<String> keys = inputs.keySet();
-            for (String paramName : keys) {
-                ActualParameter actualParameter = (ActualParameter) inputs.get(paramName);
-                if ("URIArray".equals(actualParameter.getType().getType().toString()) || "StringArray".equals(actualParameter.getType().getType().toString())
-                        || "FileArray".equals(actualParameter.getType().getType().toString())) {
-                    String[] values = null;
-                    if (actualParameter.getType() instanceof URIArrayType) {
-                        values = ((URIArrayType) actualParameter.getType()).getValueArray();
-                    } else if (actualParameter.getType() instanceof StringArrayType) {
-                        values = ((StringArrayType) actualParameter.getType()).getValueArray();
-                    } else if (actualParameter.getType() instanceof FileArrayType) {
-                        values = ((FileArrayType) actualParameter.getType()).getValueArray();
-                    }
-                    String value = StringUtil.createDelimiteredString(values, " ");
-                    inputValues.add(value);
-                } else {
-                    String paramValue = MappingFactory.toString(actualParameter);
-                    inputValues.add(paramValue);
-                }
-            }
-            jobDescriptor.setInputValues(inputValues);
+            JobDescriptor jobDescriptor = GFacUtils.createJobDescriptor(jobExecutionContext, app, cluster);
 
             log.info(jobDescriptor.toXML());
             

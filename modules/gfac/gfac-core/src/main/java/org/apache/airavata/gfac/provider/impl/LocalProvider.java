@@ -41,6 +41,7 @@ import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.InputStreamToFileWriter;
 import org.apache.airavata.gfac.utils.InputUtils;
 import org.apache.airavata.gfac.utils.OutputUtils;
+import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.registry.api.workflow.ApplicationJob;
@@ -131,17 +132,14 @@ public class LocalProvider extends AbstractProvider implements GFacProvider{
         try {
         	jobId= jobExecutionContext.getTaskData().getTaskID();
             jobDetails.setJobID(jobId);
+            jobDetails.setJobDescription(app.toString());
             jobExecutionContext.setJobDetails(jobDetails);
-            details.setJobID(jobId);
-            GFacUtils.saveJobStatus(details, JobState.SETUP, jobExecutionContext.getTaskData().getTaskID());
+            JobDescriptor jobDescriptor = GFacUtils.createJobDescriptor(jobExecutionContext, app, null);
+            jobDetails.setJobDescription(jobDescriptor.toXML());
+            GFacUtils.saveJobStatus(jobDetails, JobState.SETUP, jobExecutionContext.getTaskData().getTaskID());
         	// running cmd
             Process process = builder.start();
-            
-            //todo fix how to incoperate orchestrator with gfac
-//            if(jobExecutionContext.getGFacConfiguration().getAiravataAPI() != null){
-//        		saveApplicationJob(jobExecutionContext);
-//        	}
-//            GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId, ApplicationJobStatus.INITIALIZE);
+
             Thread standardOutWriter = new InputStreamToFileWriter(process.getInputStream(), app.getStandardOutput());
             Thread standardErrorWriter = new InputStreamToFileWriter(process.getErrorStream(), app.getStandardError());
 
@@ -150,11 +148,8 @@ public class LocalProvider extends AbstractProvider implements GFacProvider{
             standardErrorWriter.setDaemon(true);
             standardOutWriter.start();
             standardErrorWriter.start();
-            GFacUtils.updateJobStatus(jobDetails, JobState.ACTIVE);
-            // wait for the process (application) to finish executing
+
             int returnValue = process.waitFor();
-            //todo fix how to incoperate orchestrator with gfac
-            GFacUtils.updateJobStatus(jobDetails, JobState.COMPLETE);
 
             // make sure other two threads are done
             standardOutWriter.join();
@@ -165,10 +160,8 @@ public class LocalProvider extends AbstractProvider implements GFacProvider{
              * just provide warning in the log messages
              */
             if (returnValue != 0) {
-//            	GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId, ApplicationJobStatus.FAILED);
                 log.error("Process finished with non zero return value. Process may have failed");
             } else {
-//            	GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId, ApplicationJobStatus.FINISHED);
                 log.info("Process finished with return value of zero.");
             }
 
@@ -177,10 +170,7 @@ public class LocalProvider extends AbstractProvider implements GFacProvider{
                     .append(" on the localHost, working directory = ").append(app.getStaticWorkingDirectory())
                     .append(" tempDirectory = ").append(app.getScratchWorkingDirectory()).append(" With the status ")
                     .append(String.valueOf(returnValue));
-            details.setJobDescription(buf.toString());
-            GFacUtils.updateJobStatus(details, JobState.COMPLETE);
             log.info(buf.toString());
-
         } catch (IOException io) {
             throw new GFacProviderException(io.getMessage(), io);
         } catch (InterruptedException e) {
@@ -228,7 +218,6 @@ public class LocalProvider extends AbstractProvider implements GFacProvider{
         }
     }
 
-    @Override
     public void cancelJob(String jobId, JobExecutionContext jobExecutionContext) throws GFacException {
         throw new NotImplementedException();
     }

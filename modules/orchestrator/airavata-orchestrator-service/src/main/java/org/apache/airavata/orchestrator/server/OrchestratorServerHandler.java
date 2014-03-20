@@ -32,6 +32,7 @@ import org.apache.airavata.job.monitor.core.Monitor;
 import org.apache.airavata.job.monitor.core.PullMonitor;
 import org.apache.airavata.job.monitor.core.PushMonitor;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
+import org.apache.airavata.job.monitor.impl.LocalJobMonitor;
 import org.apache.airavata.job.monitor.impl.pull.qstat.QstatMonitor;
 import org.apache.airavata.job.monitor.impl.push.amqp.AMQPMonitor;
 import org.apache.airavata.model.workspace.experiment.Experiment;
@@ -112,6 +113,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                             ((AMQPMonitor) monitor).initialize(proxyPath, connectionName, list);
                             monitorManager.addAMQPMonitor((AMQPMonitor) monitor);
                         }
+                    } else if(monitor instanceof LocalJobMonitor){
+                        monitorManager.addLocalMonitor((LocalJobMonitor)monitor);
                     } else {
                         log.error("Wrong class is given to primary Monitor");
                     }
@@ -191,7 +194,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                         log.error("Job submission Failed, so we remove the job from monitoring");
 
                     }else{
-                        monitorManager.addAJobToMonitor(monitorID);
+                            monitorManager.addAJobToMonitor(monitorID);
                     }
                 }
             }
@@ -209,7 +212,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         this.monitorManager = monitorManager;
     }
 
-    @Override
     public boolean terminateExperiment(String experimentId) throws TException {
         return false;
     }

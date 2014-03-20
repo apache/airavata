@@ -22,15 +22,19 @@ package org.apache.airavata.job.monitor;
 
 import com.google.common.eventbus.EventBus;
 import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.job.monitor.core.Monitor;
 import org.apache.airavata.job.monitor.core.PullMonitor;
 import org.apache.airavata.job.monitor.core.PushMonitor;
 import org.apache.airavata.job.monitor.event.MonitorPublisher;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
+import org.apache.airavata.job.monitor.impl.LocalJobMonitor;
 import org.apache.airavata.job.monitor.impl.pull.qstat.QstatMonitor;
 import org.apache.airavata.job.monitor.impl.push.amqp.AMQPMonitor;
 import org.apache.airavata.job.monitor.impl.push.amqp.UnRegisterThread;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryImpl;
+import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
+import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +66,8 @@ public class MonitorManager {
 
     private MonitorPublisher monitorPublisher;
 
+    private Monitor localJobMonitor;
+
     /**
      * This will initialize the major monitoring system.
      */
@@ -71,6 +77,7 @@ public class MonitorManager {
         pullQueue = new LinkedBlockingQueue<MonitorID>();
         pushQueue = new LinkedBlockingQueue<MonitorID>();
         finishQueue = new LinkedBlockingQueue<MonitorID>();
+        localJobQueue = new LinkedBlockingQueue<MonitorID>();
         monitorPublisher = new MonitorPublisher(new EventBus());
         registerListener(new AiravataJobStatusUpdator(new RegistryImpl(), finishQueue));
     }
@@ -86,6 +93,19 @@ public class MonitorManager {
         monitor.setFinishQueue(this.getFinishQueue());
         monitor.setRunningQueue(this.getPushQueue());
         addPushMonitor(monitor);
+    }
+
+
+    /**
+     * This can be use to add an empty AMQPMonitor object to the monitor system
+     * and tihs method will take care of the initialization
+     * todo may be we need to move this to some other class
+     * @param monitor
+     */
+    public void addLocalMonitor(LocalJobMonitor monitor) {
+        monitor.setPublisher(this.getMonitorPublisher());
+        monitor.setJobQueue(this.getLocalJobQueue());
+        localJobMonitor = monitor;
     }
 
     /**
@@ -145,8 +165,11 @@ public class MonitorManager {
             } else if (Constants.PUSH.equals(host.getMonitorMode())) {
                 pushQueue.add(monitorID);
             }
+        } else if(monitorID.getHost().getType() instanceof GlobusHostType){
+            logger.error("Monitoring does not support GlubusHostType resources");
         } else {
-            logger.error("We only support Gsissh host types currently");
+            // we assume this is a type of localJobtype
+            localJobQueue.add(monitorID);
         }
     }
 
@@ -163,6 +186,10 @@ public class MonitorManager {
     public void launchMonitor() throws AiravataMonitorException {
         //no push monitor is configured so we launch pull monitor
         int index = 0;
+        if(localJobMonitor != null){
+            (new Thread(localJobMonitor)).start();
+        }
+
         for (PullMonitor monitor : pullMonitors) {
             (new Thread(monitor)).start();
         }

@@ -38,6 +38,15 @@ public class JobStatus {
     private MonitorID monitorID;
 
 
+    // this constructor can be used in Qstat monitor to handle errors
+    public JobStatus() {
+    }
+
+    public JobStatus(MonitorID monitorID, JobState state) {
+        this.monitorID = monitorID;
+        this.state = state;
+    }
+
     public JobState getState() {
         return state;
     }
