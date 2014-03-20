@@ -311,6 +311,17 @@
                 <role>committer</role>
             </roles>
         </developer>
+        <developer>
+            <id>viknes</id>
+            <name>Viknes Balasubramanee</name>
+            <email>viknesb@apache.org</email>
+            <timezone>-7</timezone>
+            <organization>Dish Network</organization>
+            <organizationUrl>http://about.dish.com/company-info</organizationUrl>
+            <roles>
+                <role>committer</role>
+            </roles>
+        </developer>
     </developers>
 
     <dependencyManagement>
