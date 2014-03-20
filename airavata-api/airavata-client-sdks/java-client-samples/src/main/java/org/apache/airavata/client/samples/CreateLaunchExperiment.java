@@ -49,7 +49,7 @@ import java.util.Set;
 public class CreateLaunchExperiment {
 
     //FIXME: Read from a config file
-    public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
+    public static final String THRIFT_SERVER_HOST = "localhost";
     public static final int THRIFT_SERVER_PORT = 8930;
     private final static Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "defauly.registry.user";
@@ -61,7 +61,7 @@ public class CreateLaunchExperiment {
             final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavata.GetAPIVersion());
             addDescriptors();
-            final String expId = createExperimentForTrestles(airavata);
+            final String expId = createExperimentForLocalHost(airavata);
 //            final String expId = createUS3ExperimentForTrestles(airavata);
 //            final String expId = createExperimentForStampede(airavata);
             System.out.println("Experiment ID : " + expId);
@@ -194,7 +194,48 @@ public class CreateLaunchExperiment {
             throw new TException(e);
         }
     }
-   
+    public static String createExperimentForLocalHost(Airavata.Client client) throws TException  {
+        try{
+            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
+            DataObjectType input = new DataObjectType();
+            input.setKey("echo_input");
+            input.setType(DataType.STRING.toString());
+            input.setValue("echo_output=Hello World");
+            exInputs.add(input);
+
+            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
+            DataObjectType output = new DataObjectType();
+            output.setKey("echo_output");
+            output.setType(DataType.STRING.toString());
+            output.setValue("");
+            exOut.add(output);
+
+            Experiment simpleExperiment =
+                    ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho0", "SimpleEcho0", exInputs);
+            simpleExperiment.setExperimentOutputs(exOut);
+
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("localhost", 1, 1, 1, "normal", 0, 0, 1, "sds128");
+            scheduling.setResourceHostId("localhost");
+            UserConfigurationData userConfigurationData = new UserConfigurationData();
+            userConfigurationData.setAiravataAutoSchedule(false);
+            userConfigurationData.setOverrideManualScheduledParams(false);
+            userConfigurationData.setComputationalResourceScheduling(scheduling);
+            simpleExperiment.setUserConfigurationData(userConfigurationData);
+            return client.createExperiment(simpleExperiment);
+        } catch (AiravataSystemException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataSystemException(e);
+        } catch (InvalidRequestException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new InvalidRequestException(e);
+        } catch (AiravataClientException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataClientException(e);
+        }catch (TException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new TException(e);
+        }
+    }
     public static String createExperimentForStampede(Airavata.Client client) throws TException  {
         try{
             List<DataObjectType> exInputs = new ArrayList<DataObjectType>();

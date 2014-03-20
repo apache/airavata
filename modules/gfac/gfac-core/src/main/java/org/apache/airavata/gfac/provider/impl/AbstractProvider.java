@@ -30,9 +30,9 @@ import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
 
 public abstract class AbstractProvider{
-	protected Registry registry = null;
-	protected JobDetails details;
-	protected JobStatus status;
+    protected Registry registry = null;
+	protected JobDetails details;     //todo we need to remove this and add methods to fill Job details, this is not a property of a provider
+	protected JobStatus status;   //todo we need to remove this and add methods to fill Job details, this is not a property of a provider
 
 	public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
 		registry = RegistryFactory.getDefaultRegistry();

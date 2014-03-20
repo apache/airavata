@@ -27,6 +27,7 @@ import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.CompositeIdentifier;
+import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,13 +116,16 @@ public class AiravataJobStatusUpdator{
         }
     }
     public  void updateJobStatus(String taskId, String jobID, JobState state) throws Exception {
-        JobDetails details = new JobDetails();
+        CompositeIdentifier ids = new CompositeIdentifier(taskId, jobID);
+        JobDetails details = (JobDetails)airavataRegistry.get(DataType.JOB_DETAIL, ids);
+        if(details == null) {
+            details = new JobDetails();
+        }
         org.apache.airavata.model.workspace.experiment.JobStatus status = new org.apache.airavata.model.workspace.experiment.JobStatus();
         status.setJobState(state);
         status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
         details.setJobStatus(status);
         details.setJobID(jobID);
-        CompositeIdentifier ids = new CompositeIdentifier(taskId, jobID);
         airavataRegistry.update(org.apache.airavata.registry.cpi.DataType.JOB_DETAIL, details, ids);
     }
 }

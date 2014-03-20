@@ -294,14 +294,16 @@ public class GFacImpl implements GFac {
             TaskDetails taskData = (TaskDetails) registry.get(DataType.TASK_DETAIL, taskID);
             JobDetails jobDetails = taskData.getJobDetailsList().get(0);
             String jobDescription = jobDetails.getJobDescription();
-            JobDescriptor jobDescriptor = JobDescriptor.fromXML(jobDescription);
-            applicationDeploymentDescription.getType().setScratchWorkingDirectory(
-                    jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getWorkingDirectory());
-            applicationDeploymentDescription.getType().setInputDataDirectory(jobDescriptor.getInputDirectory());
-            applicationDeploymentDescription.getType().setOutputDataDirectory(jobDescriptor.getOutputDirectory());
-            applicationDeploymentDescription.getType().setStandardError(jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getStandardErrorFile());
-            applicationDeploymentDescription.getType().setStandardOutput(jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getStandardOutFile());
-        } catch (Exception e) {
+            if(jobDescription != null) {
+                JobDescriptor jobDescriptor = JobDescriptor.fromXML(jobDescription);
+                applicationDeploymentDescription.getType().setScratchWorkingDirectory(
+                        jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getWorkingDirectory());
+                applicationDeploymentDescription.getType().setInputDataDirectory(jobDescriptor.getInputDirectory());
+                applicationDeploymentDescription.getType().setOutputDataDirectory(jobDescriptor.getOutputDirectory());
+                applicationDeploymentDescription.getType().setStandardError(jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getStandardErrorFile());
+                applicationDeploymentDescription.getType().setStandardOutput(jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getStandardOutFile());
+            }
+            } catch (Exception e) {
             throw new GFacException(e);
         }
 
