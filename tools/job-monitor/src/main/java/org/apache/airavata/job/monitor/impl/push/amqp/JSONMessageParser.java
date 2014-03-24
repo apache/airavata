@@ -20,16 +20,15 @@
 */
 package org.apache.airavata.job.monitor.impl.push.amqp;
 
-import com.fasterxml.jackson.databind.DeserializationConfig;
-import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.airavata.ComputingActivity;
+import org.apache.airavata.job.monitor.HostMonitorData;
 import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.UserMonitorData;
 import org.apache.airavata.job.monitor.core.MessageParser;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.state.JobStatus;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.apache.airavata.model.workspace.experiment.JobState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,23 +38,45 @@ import java.util.List;
 public class JSONMessageParser implements MessageParser {
     private final static Logger logger = LoggerFactory.getLogger(JSONMessageParser.class);
 
-    public JobStatus parseMessage(String message, UserMonitorData userMonitorData)throws AiravataMonitorException{
+    public JobStatus parseMessage(String message, HostMonitorData userMonitorData)throws AiravataMonitorException{
         /*todo write a json message parser here*/
-        logger.info("Mesage parse invoked");
-        System.out.println(message);
-//        JSONParser parser = new JSONParser();
+        logger.debug(message);
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(org.codehaus.jackson.map.DeserializationConfig.Feature.UNWRAP_ROOT_VALUE, true);
         try {
             ComputingActivity computingActivity = objectMapper.readValue(message.getBytes(), ComputingActivity.class);
             logger.info(computingActivity.getIDFromEndpoint());
             List<String> stateList = computingActivity.getState();
+            JobState jobState = null;
             for (String aState : stateList) {
-                logger.info(aState);
+                jobState = getStatusFromString(aState);
             }
+            // we get the last value of the state array
+            return new JobStatus(null, jobState);
         } catch (IOException e) {
             throw new AiravataMonitorException(e);
         }
-        return new JobStatus();
     }
+
+private JobState getStatusFromString(String status) {
+        logger.info("parsing the job status returned : " + status);
+        if(status != null){
+            if("ipf:finished".equals(status)){
+                return JobState.COMPLETE;
+            }else if("ipf:pending".equals(status)|| "ipf:starting".equals(status)){
+                return JobState.QUEUED;
+            }else if("ipf:running".equals(status) || "ipf:finishing".equals(status)){
+                return JobState.ACTIVE;
+            }else if ("ipf:held".equals(status) || "ipf:teminating".equals(status) || "ipf:teminated".equals(status)) {
+                return JobState.HELD;
+            } else if ("ipf:suspending".equals(status)) {
+                return JobState.SUSPENDED;
+            }else if ("ipf:failed".equals(status)) {
+                return JobState.FAILED;
+            }else if ("ipf:unknown".equals(status)){
+                return JobState.UNKNOWN;
+            }
+        }
+        return JobState.UNKNOWN;
+    }
+
 }

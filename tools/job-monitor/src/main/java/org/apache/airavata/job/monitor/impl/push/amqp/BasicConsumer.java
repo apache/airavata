@@ -24,12 +24,17 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.Envelope;
 import com.rabbitmq.client.ShutdownSignalException;
+import org.apache.airavata.job.monitor.HostMonitorData;
+import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.UserMonitorData;
 import org.apache.airavata.job.monitor.core.MessageParser;
 import org.apache.airavata.job.monitor.event.MonitorPublisher;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
+import org.apache.airavata.job.monitor.state.JobStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public class BasicConsumer implements Consumer {
     private final static Logger logger = LoggerFactory.getLogger(AMQPMonitor.class);
@@ -38,12 +43,12 @@ public class BasicConsumer implements Consumer {
 
     MonitorPublisher publisher;
 
-    UserMonitorData userMonitorData;
+    HostMonitorData hostMonitorData;
 
-    public BasicConsumer(MessageParser parser, MonitorPublisher publisher, UserMonitorData userMonitorData) {
+    public BasicConsumer(MessageParser parser, MonitorPublisher publisher, HostMonitorData hostMonitorData) {
         this.parser = parser;
         this.publisher = publisher;
-        this.userMonitorData = userMonitorData;
+        this.hostMonitorData = hostMonitorData;
     }
 
     public void handleCancel(java.lang.String consumerTag) {
@@ -60,15 +65,30 @@ public class BasicConsumer implements Consumer {
                                AMQP.BasicProperties properties,
                                byte[] body) {
 
-        logger.info("  job update for: " + envelope.getRoutingKey());
+        logger.debug("  job update for: " + envelope.getRoutingKey());
 
         String message = new String(body);
         message = message.replaceAll("(?m)^", "    ");
         // Here we parse the message and get the job status and push it
         // to the Event bus, this will be picked by
-        // AiravataJobStatusUpdator and store in to registry
+//        AiravataJobStatusUpdator and store in to registry
         try {
-            publisher.publish(parser.parseMessage(message, userMonitorData));
+            String jobID = envelope.getRoutingKey().split("\\.")[0];
+            List<MonitorID> monitorIDs = hostMonitorData.getMonitorIDs();
+            MonitorID currentMonitorID = null;
+            for(MonitorID iMonitorID:monitorIDs){
+                if(jobID.equals(iMonitorID.getJobID())){
+                   currentMonitorID = iMonitorID;
+                   break;
+                }
+            }
+            if(currentMonitorID == null) {
+                logger.error("Wrong message came for the Consumer, so skipping this notification");
+                return;
+            }
+            JobStatus jobStatus = parser.parseMessage(message, hostMonitorData);
+            jobStatus.setMonitorID(currentMonitorID);
+            publisher.publish(jobStatus);
         } catch (AiravataMonitorException e) {
             e.printStackTrace();
         }

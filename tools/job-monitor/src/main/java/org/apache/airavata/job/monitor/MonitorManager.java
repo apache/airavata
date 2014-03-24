@@ -196,14 +196,14 @@ public class MonitorManager {
         }
 
         //todo fix this
-//        for (PushMonitor monitor : pushMonitors) {
-//            (new Thread(monitor)).start();
-//            if (monitor instanceof AMQPMonitor) {
-//                UnRegisterThread unRegisterThread = new
-//                        UnRegisterThread(((AMQPMonitor) monitor).getFinishQueue(), ((AMQPMonitor) monitor).getAvailableChannels());
-//                unRegisterThread.start();
-//            }
-//        }
+        for (PushMonitor monitor : pushMonitors) {
+            (new Thread(monitor)).start();
+            if (monitor instanceof AMQPMonitor) {
+                UnRegisterThread unRegisterThread = new
+                        UnRegisterThread(((AMQPMonitor) monitor).getFinishQueue(), ((AMQPMonitor) monitor).getAvailableChannels());
+                unRegisterThread.start();
+            }
+        }
     }
 
     /* getter setters for the private variables */
