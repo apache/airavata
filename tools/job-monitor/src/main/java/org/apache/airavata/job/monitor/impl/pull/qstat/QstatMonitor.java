@@ -20,24 +20,23 @@
 */
 package org.apache.airavata.job.monitor.impl.pull.qstat;
 
-import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
+import org.apache.airavata.job.monitor.HostMonitorData;
 import org.apache.airavata.job.monitor.MonitorID;
+import org.apache.airavata.job.monitor.UserMonitorData;
 import org.apache.airavata.job.monitor.core.PullMonitor;
 import org.apache.airavata.job.monitor.event.MonitorPublisher;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.state.JobStatus;
+import org.apache.airavata.job.monitor.util.CommonUtils;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -48,7 +47,7 @@ public class QstatMonitor extends PullMonitor {
     private final static Logger logger = LoggerFactory.getLogger(QstatMonitor.class);
 
     // I think this should use DelayedBlocking Queue to do the monitoring*/
-    private BlockingQueue<MonitorID> queue;
+    private BlockingQueue<UserMonitorData> queue;
 
     private boolean startPulling = false;
 
@@ -59,7 +58,7 @@ public class QstatMonitor extends PullMonitor {
     public QstatMonitor(){
         connections = new HashMap<String, ResourceConnection>();
     }
-    public QstatMonitor(BlockingQueue<MonitorID> queue, MonitorPublisher publisher) {
+    public QstatMonitor(BlockingQueue<UserMonitorData> queue, MonitorPublisher publisher) {
         this.queue = queue;
         this.publisher = publisher;
         connections = new HashMap<String, ResourceConnection>();
@@ -105,98 +104,111 @@ public class QstatMonitor extends PullMonitor {
     public boolean startPulling() throws AiravataMonitorException {
         // take the top element in the queue and pull the data and put that element
         // at the tail of the queue
-        MonitorID take = null;
+        //todo this polling will not work with multiple usernames but with single user
+        // and multiple hosts, currently monitoring will work
+        UserMonitorData take = null;
         JobStatus jobStatus = new JobStatus();
+        MonitorID currentMonitorID = null;
         try {
-                take = this.queue.take();
-                if((take.getHost().getType() instanceof GsisshHostType)){
-                    long monitorDiff = 0;
-                    long startedDiff = 0;
-                    if (take.getLastMonitored() != null) {
-                        monitorDiff = (new Timestamp((new Date()).getTime())).getTime() - take.getLastMonitored().getTime();
-                        startedDiff = (new Timestamp((new Date()).getTime())).getTime() - take.getJobStartedTime().getTime();
-                        //todo implement an algorithm to delay the monitor based no start time, we have to delay monitoring
-                        //todo  for long running jobs
-//                    System.out.println(monitorDiff + "-" + startedDiff);
-                        if ((monitorDiff / 1000) < 5) {
-                            // its too early to monitor this job, so we put it at the tail of the queue
-                            this.queue.put(take);
-                        }
+            take = this.queue.take();
+            List<MonitorID> completedJobs = new ArrayList<MonitorID>();
+            List<HostMonitorData> hostMonitorData = take.getHostMonitorData();
+            for (HostMonitorData iHostMonitorData : hostMonitorData) {
+                if (iHostMonitorData.getHost().getType() instanceof GsisshHostType) {
+                    GsisshHostType gsisshHostType = (GsisshHostType) iHostMonitorData.getHost().getType();
+                    String hostName = gsisshHostType.getHostAddress();
+                    ResourceConnection connection = null;
+                    if (connections.containsKey(hostName)) {
+                        logger.debug("We already have this connection so not going to create one");
+                        connection = connections.get(hostName);
+                    } else {
+                        connection = new ResourceConnection(take.getUserName(), iHostMonitorData, gsisshHostType.getInstalledPath());
+                        connections.put(hostName, connection);
                     }
-                    if (take.getLastMonitored() == null || ((monitorDiff / 1000) >= 5)) {
-                        GsisshHostType gsisshHostType = (GsisshHostType) take.getHost().getType();
-                        String hostName = gsisshHostType.getHostAddress();
-                        ResourceConnection connection = null;
-                        if (connections.containsKey(hostName)) {
-                            logger.debug("We already have this connection so not going to create one");
-                            connection = connections.get(hostName);
-                        } else {
-                            connection = new ResourceConnection(take, gsisshHostType.getInstalledPath());
-                            connections.put(hostName, connection);
-                        }
-                        take.setStatus(connection.getJobStatus(take));
-                        jobStatus.setMonitorID(take);
-                        jobStatus.setState(take.getStatus());
+                    List<MonitorID> monitorID = iHostMonitorData.getMonitorIDs();
+                    Map<String, JobState> jobStatuses = connection.getJobStatuses(take.getUserName(), monitorID);
+                    for (MonitorID iMonitorID : monitorID) {
+                        currentMonitorID = iMonitorID;
+                        iMonitorID.setStatus(jobStatuses.get(iMonitorID.getJobID()));
+                        jobStatus.setMonitorID(iMonitorID);
+                        jobStatus.setState(iMonitorID.getStatus());
                         // we have this JobStatus class to handle amqp monitoring
+
                         publisher.publish(jobStatus);
                         // if the job is completed we do not have to put the job to the queue again
+                        iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
+
+                        // After successful monitoring perform following actions to cleanup the queue, if necessary
                         if (!jobStatus.getState().equals(JobState.COMPLETE)) {
-                            take.setLastMonitored(new Timestamp((new Date()).getTime()));
-                            this.queue.put(take);
+                            iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
+                        }else if(iMonitorID.getFailedCount() > 2 && iMonitorID.getStatus().equals(JobState.UNKNOWN)){
+                            completedJobs.add(iMonitorID);
+                        } else {
+                            // if the job is complete we remove it from the Map, if any of these maps
+                            // get empty this userMonitorData will get delete from the queue
+                            completedJobs.add(iMonitorID);
                         }
                     }
                 } else {
                     logger.debug("Qstat Monitor doesn't handle non-gsissh hosts");
                 }
-            } catch (InterruptedException e) {
-                if(!this.queue.contains(take)){
-                    try {
-                        this.queue.put(take);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    }
+            }
+            // We have finished all the HostMonitorData object in userMonitorData, now we need to put it back
+            // now the userMonitorData goes back to the tail of the queue
+            queue.put(take);
+            // cleaning up the completed jobs, this method will remove some of the userMonitorData from the queue if
+            // they become empty
+            for(MonitorID completedJob:completedJobs){
+                CommonUtils.removeMonitorFromQueue(queue,completedJob);
+            }
+        } catch (InterruptedException e) {
+            if (!this.queue.contains(take)) {
+                try {
+                    this.queue.put(take);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
-                logger.error("Error handling the job with Job ID:" + take.getJobID());
-                throw new AiravataMonitorException(e);
-            } catch (SSHApiException e) {
-                logger.error(e.getMessage());
-                if(e.getMessage().contains("Unknown Job Id Error")){
-                    // in this case job is finished or may be the given job ID is wrong
-                    jobStatus.setState(JobState.UNKNOWN);
-                    publisher.publish(jobStatus);
-                }else if(e.getMessage().contains("illegally formed job identifier")){
-                   logger.error("Wrong job ID is given so dropping the job from monitoring system");
-                } else if (!this.queue.contains(take)) {   // we put the job back to the queue only if its state is not unknown
-                    if (take.getFailedCount() < 2) {
-                        try {
-                            take.setFailedCount(take.getFailedCount() + 1);
-                            this.queue.put(take);
-                        } catch (InterruptedException e1) {
-                            e1.printStackTrace();
-                        }
-                    } else {
-                        logger.error(e.getMessage());
-                        logger.error("Tried to monitor the job 3 times, so dropping of the the Job with ID: " + take.getJobID());
-                    }
-                }
-                throw new AiravataMonitorException("Error retrieving the job status", e);
-            } catch (Exception e){
-                if (take.getFailedCount() < 3) {
+            }
+            logger.error("Error handling the job with Job ID:" + currentMonitorID.getJobID());
+            throw new AiravataMonitorException(e);
+        } catch (SSHApiException e) {
+            logger.error(e.getMessage());
+            if (e.getMessage().contains("Unknown Job Id Error")) {
+                // in this case job is finished or may be the given job ID is wrong
+                jobStatus.setState(JobState.UNKNOWN);
+                publisher.publish(jobStatus);
+            } else if (e.getMessage().contains("illegally formed job identifier")) {
+                logger.error("Wrong job ID is given so dropping the job from monitoring system");
+            } else if (!this.queue.contains(take)) {   // we put the job back to the queue only if its state is not unknown
+                if (currentMonitorID.getFailedCount() < 2) {
                     try {
-                        take.setFailedCount(take.getFailedCount() + 1);
+                        currentMonitorID.setFailedCount(currentMonitorID.getFailedCount() + 1);
                         this.queue.put(take);
-                        // if we get a wrong status we wait for a while and request again
-                            Thread.sleep(10000);
                     } catch (InterruptedException e1) {
                         e1.printStackTrace();
                     }
                 } else {
                     logger.error(e.getMessage());
-                    logger.error("Tryied to monitor the job 3 times, so dropping of the the Job with ID: " + take.getJobID());
+                    logger.error("Tried to monitor the job 3 times, so dropping of the the Job with ID: " + currentMonitorID.getJobID());
                 }
-                throw new AiravataMonitorException("Error retrieving the job status", e);
             }
-
+            throw new AiravataMonitorException("Error retrieving the job status", e);
+        } catch (Exception e) {
+            if (currentMonitorID.getFailedCount() < 3) {
+                try {
+                    currentMonitorID.setFailedCount(currentMonitorID.getFailedCount() + 1);
+                    this.queue.put(take);
+                    // if we get a wrong status we wait for a while and request again
+                    Thread.sleep(10000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+            } else {
+                logger.error(e.getMessage());
+                logger.error("Tryied to monitor the job 3 times, so dropping of the the Job with ID: " + currentMonitorID.getJobID());
+            }
+            throw new AiravataMonitorException("Error retrieving the job status", e);
+        }
 
 
         return true;
@@ -221,11 +233,11 @@ public class QstatMonitor extends PullMonitor {
         this.publisher = publisher;
     }
 
-    public BlockingQueue<MonitorID> getQueue() {
+    public BlockingQueue<UserMonitorData> getQueue() {
         return queue;
     }
 
-    public void setQueue(BlockingQueue<MonitorID> queue) {
+    public void setQueue(BlockingQueue<UserMonitorData> queue) {
         this.queue = queue;
     }
 

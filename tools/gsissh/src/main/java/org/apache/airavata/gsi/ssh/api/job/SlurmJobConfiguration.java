@@ -90,4 +90,8 @@ public class SlurmJobConfiguration implements JobManagerConfiguration{
     public void setParser(OutputParser parser) {
         this.parser = parser;
     }
+
+    public RawCommandInfo getUserBasedMonitorCommand(String userName) {
+        return new RawCommandInfo(this.installedPath + "squeue -u " + userName);
+    }
 }

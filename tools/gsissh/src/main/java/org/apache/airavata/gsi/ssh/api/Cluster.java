@@ -21,6 +21,7 @@
 package org.apache.airavata.gsi.ssh.api;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.impl.JobStatus;
@@ -104,7 +105,17 @@ public interface Cluster {
      * @throws SSHApiException throws exception during error
      */
     public JobStatus getJobStatus(String jobID) throws SSHApiException;
-    
+
+    /**
+     * This method can be used to poll the jobstatuses based on the given
+     * user but we should pass the jobID list otherwise we will get unwanted
+     * job statuses which submitted by different middleware outside apache
+     * airavata with the same uername which we are not considering
+     * @param userName userName of the jobs which required to get the status
+     * @param jobIDs precises set of jobIDs
+     * @return
+     */
+    public void getJobStatuses(String userName,Map<String,JobStatus> jobIDs)throws SSHApiException;
     /**
      * This will list directories in computing resources
      * @param directoryPath the full qualified path for the directory user wants to create

@@ -24,7 +24,7 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.Envelope;
 import com.rabbitmq.client.ShutdownSignalException;
-import org.apache.airavata.job.monitor.MonitorID;
+import org.apache.airavata.job.monitor.UserMonitorData;
 import org.apache.airavata.job.monitor.core.MessageParser;
 import org.apache.airavata.job.monitor.event.MonitorPublisher;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
@@ -38,12 +38,12 @@ public class BasicConsumer implements Consumer {
 
     MonitorPublisher publisher;
 
-    MonitorID monitorID;
+    UserMonitorData userMonitorData;
 
-    public BasicConsumer(MessageParser parser, MonitorPublisher publisher, MonitorID monitorID) {
+    public BasicConsumer(MessageParser parser, MonitorPublisher publisher, UserMonitorData userMonitorData) {
         this.parser = parser;
         this.publisher = publisher;
-        this.monitorID = monitorID;
+        this.userMonitorData = userMonitorData;
     }
 
     public void handleCancel(java.lang.String consumerTag) {
@@ -68,7 +68,7 @@ public class BasicConsumer implements Consumer {
         // to the Event bus, this will be picked by
         // AiravataJobStatusUpdator and store in to registry
         try {
-            publisher.publish(parser.parseMessage(message,monitorID));
+            publisher.publish(parser.parseMessage(message, userMonitorData));
         } catch (AiravataMonitorException e) {
             e.printStackTrace();
         }

@@ -21,6 +21,7 @@
 package org.apache.airavata.job.monitor.core;
 
 import org.apache.airavata.job.monitor.MonitorID;
+import org.apache.airavata.job.monitor.UserMonitorData;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.state.JobStatus;
 
@@ -38,8 +39,8 @@ public interface MessageParser {
      * we have to makesure the correct message is given to the messageparser
      * parse method, it will not do any filtering
      * @param message content of the message
-     * @param monitorID monitorID object
+     * @param userMonitorData monitorID object
      * @return
      */
-    JobStatus parseMessage(String message,MonitorID monitorID)throws AiravataMonitorException;
+    JobStatus parseMessage(String message,UserMonitorData userMonitorData)throws AiravataMonitorException;
 }
