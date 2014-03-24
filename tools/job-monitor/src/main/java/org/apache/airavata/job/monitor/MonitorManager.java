@@ -31,10 +31,10 @@ import org.apache.airavata.job.monitor.impl.LocalJobMonitor;
 import org.apache.airavata.job.monitor.impl.pull.qstat.QstatMonitor;
 import org.apache.airavata.job.monitor.impl.push.amqp.AMQPMonitor;
 import org.apache.airavata.job.monitor.impl.push.amqp.UnRegisterThread;
+import org.apache.airavata.job.monitor.util.CommonUtils;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryImpl;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
-import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,9 +56,9 @@ public class MonitorManager {
 
     private List<PushMonitor> pushMonitors;   //todo we need to support multiple monitors dynamically
 
-    private BlockingQueue<MonitorID> pullQueue;
+    private BlockingQueue<UserMonitorData> pullQueue;
 
-    private BlockingQueue<MonitorID> pushQueue;
+    private BlockingQueue<UserMonitorData> pushQueue;
 
     private BlockingQueue<MonitorID> localJobQueue;
 
@@ -74,8 +74,8 @@ public class MonitorManager {
     public MonitorManager() {
         pullMonitors = new ArrayList<PullMonitor>();
         pushMonitors = new ArrayList<PushMonitor>();
-        pullQueue = new LinkedBlockingQueue<MonitorID>();
-        pushQueue = new LinkedBlockingQueue<MonitorID>();
+        pullQueue = new LinkedBlockingQueue<UserMonitorData>();
+        pushQueue = new LinkedBlockingQueue<UserMonitorData>();
         finishQueue = new LinkedBlockingQueue<MonitorID>();
         localJobQueue = new LinkedBlockingQueue<MonitorID>();
         monitorPublisher = new MonitorPublisher(new EventBus());
@@ -156,14 +156,15 @@ public class MonitorManager {
      * @param monitorID
      * @throws AiravataMonitorException
      */
-    public void addAJobToMonitor(MonitorID monitorID) throws AiravataMonitorException {
+    public void addAJobToMonitor(MonitorID monitorID) throws AiravataMonitorException, InterruptedException {
+
         if (monitorID.getHost().getType() instanceof GsisshHostType) {
             GsisshHostType host = (GsisshHostType) monitorID.getHost().getType();
             if ("".equals(host.getMonitorMode()) || host.getMonitorMode() == null
                     || Constants.PULL.equals(host.getMonitorMode())) {
-                pullQueue.add(monitorID);
+                CommonUtils.addMonitortoQueue(pullQueue, monitorID);
             } else if (Constants.PUSH.equals(host.getMonitorMode())) {
-                pushQueue.add(monitorID);
+                CommonUtils.addMonitortoQueue(pushQueue, monitorID);
             }
         } else if(monitorID.getHost().getType() instanceof GlobusHostType){
             logger.error("Monitoring does not support GlubusHostType resources");
@@ -194,14 +195,15 @@ public class MonitorManager {
             (new Thread(monitor)).start();
         }
 
-        for (PushMonitor monitor : pushMonitors) {
-            (new Thread(monitor)).start();
-            if (monitor instanceof AMQPMonitor) {
-                UnRegisterThread unRegisterThread = new
-                        UnRegisterThread(((AMQPMonitor) monitor).getFinishQueue(), ((AMQPMonitor) monitor).getAvailableChannels());
-                unRegisterThread.start();
-            }
-        }
+        //todo fix this
+//        for (PushMonitor monitor : pushMonitors) {
+//            (new Thread(monitor)).start();
+//            if (monitor instanceof AMQPMonitor) {
+//                UnRegisterThread unRegisterThread = new
+//                        UnRegisterThread(((AMQPMonitor) monitor).getFinishQueue(), ((AMQPMonitor) monitor).getAvailableChannels());
+//                unRegisterThread.start();
+//            }
+//        }
     }
 
     /* getter setters for the private variables */
@@ -222,11 +224,11 @@ public class MonitorManager {
         this.pushMonitors = pushMonitors;
     }
 
-    public BlockingQueue<MonitorID> getPullQueue() {
+    public BlockingQueue<UserMonitorData> getPullQueue() {
         return pullQueue;
     }
 
-    public void setPullQueue(BlockingQueue<MonitorID> pullQueue) {
+    public void setPullQueue(BlockingQueue<UserMonitorData> pullQueue) {
         this.pullQueue = pullQueue;
     }
 
@@ -246,11 +248,11 @@ public class MonitorManager {
         this.finishQueue = finishQueue;
     }
 
-    public BlockingQueue<MonitorID> getPushQueue() {
+    public BlockingQueue<UserMonitorData> getPushQueue() {
         return pushQueue;
     }
 
-    public void setPushQueue(BlockingQueue<MonitorID> pushQueue) {
+    public void setPushQueue(BlockingQueue<UserMonitorData> pushQueue) {
         this.pushQueue = pushQueue;
     }
 

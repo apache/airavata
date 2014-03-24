@@ -24,7 +24,9 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.job.monitor.HostMonitorData;
 import org.apache.airavata.job.monitor.MonitorID;
+import org.apache.airavata.job.monitor.UserMonitorData;
 import org.apache.airavata.job.monitor.core.PushMonitor;
 import org.apache.airavata.job.monitor.event.MonitorPublisher;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
@@ -55,7 +57,7 @@ public class AMQPMonitor extends PushMonitor {
 
     private MonitorPublisher publisher;
 
-    private BlockingQueue<MonitorID> runningQueue;
+    private BlockingQueue<UserMonitorData> runningQueue;
 
     private BlockingQueue<MonitorID> finishQueue;
 
@@ -70,7 +72,8 @@ public class AMQPMonitor extends PushMonitor {
     public AMQPMonitor(){
 
     }
-    public AMQPMonitor(MonitorPublisher publisher, BlockingQueue runningQueue, BlockingQueue finishQueue,
+    public AMQPMonitor(MonitorPublisher publisher, BlockingQueue<UserMonitorData> runningQueue,
+                       BlockingQueue<MonitorID> finishQueue,
                        String proxyPath,String connectionName,List<String> hosts) {
         this.publisher = publisher;
         this.runningQueue = runningQueue;        // these will be initialized by the MonitorManager
@@ -89,33 +92,33 @@ public class AMQPMonitor extends PushMonitor {
     }
 
     @Override
-    public boolean registerListener(MonitorID monitorID) throws AiravataMonitorException {
-         // do initial check before creating a channel, otherwise resources will be waste
-        // and channel id will be malformed
-        // this check is not implemented in MonitorManager because it depends on
-        // the Monitoring implementation (what data is required)
-        checkMonitorID(monitorID);
-        String channelID = CommonUtils.getChannelID(monitorID);
-        System.out.println("Going to start monitoring job with ID: " + monitorID.getJobID());
-        logger.info("Going to start monitoring job with ID: " + monitorID.getJobID());
-        // if we already have a channel we do not create one
-        if (availableChannels.get(channelID) == null) {
-            //todo need to fix this rather getting it from a file
-            Connection connection = AMQPConnectionUtil.connect(amqpHosts,connectionName, proxyPath);
-            Channel channel = null;
-            try {
-                channel = connection.createChannel();
-                String queueName = channel.queueDeclare().getQueue();
+    public boolean registerListener(UserMonitorData userMonitorData) throws AiravataMonitorException {
+        List<HostMonitorData> hostNames = userMonitorData.getHostMonitorData();
+        String userName = userMonitorData.getUserName();
+        for (HostMonitorData host : hostNames) {
+            // with amqp monitor we do not use individual monitorID list but
+            // we subscribe to read user-host based subscription
+            String hostAddress = host.getHost().getType().getHostAddress();
+            String channelID = CommonUtils.getChannelID(userName, hostAddress);
+            if (availableChannels.get(channelID) == null) {
+                //todo need to fix this rather getting it from a file
+                Connection connection = AMQPConnectionUtil.connect(amqpHosts, connectionName, proxyPath);
+                Channel channel = null;
+                try {
+                    channel = connection.createChannel();
+                    String queueName = channel.queueDeclare().getQueue();
 
-                BasicConsumer consumer = new BasicConsumer(new JSONMessageParser(), publisher, monitorID);
-                channel.basicConsume(queueName, true, consumer);
-                String filterString = CommonUtils.getRoutingKey(monitorID);
-                // here we queuebind to a particular user in a particular machine
-                channel.queueBind(queueName, "glue2.computing_activity", filterString);
-                logger.info("Using filtering string to monitor: " + filterString);
-            } catch (IOException e) {
-                logger.error("Error creating the connection to finishQueue the job:" + monitorID.getJobID());
+                    BasicConsumer consumer = new BasicConsumer(new JSONMessageParser(), publisher, userMonitorData);
+                    channel.basicConsume(queueName, true, consumer);
+                    String filterString = CommonUtils.getRoutingKey(userName, hostAddress);
+                    // here we queuebind to a particular user in a particular machine
+                    channel.queueBind(queueName, "glue2.computing_activity", filterString);
+                    logger.info("Using filtering string to monitor: " + filterString);
+                } catch (IOException e) {
+                    logger.error("Error creating the connection to finishQueue the job:" + userMonitorData.getUserName());
+                }
             }
+
         }
         return true;
     }
@@ -125,7 +128,7 @@ public class AMQPMonitor extends PushMonitor {
         startRegister = true; // this will be unset by someone else
         while (startRegister || !ServerSettings.isStopAllThreads()) {
             try {
-                MonitorID take = runningQueue.take();
+                UserMonitorData take = runningQueue.take();
                 this.registerListener(take);
             } catch (AiravataMonitorException e) { // catch any exceptino inside the loop
                 e.printStackTrace();
@@ -148,21 +151,7 @@ public class AMQPMonitor extends PushMonitor {
 
 
 
-    private void checkMonitorID(MonitorID monitorID) throws AiravataMonitorException {
-        if (monitorID.getUserName() == null) {
-            String error = "Username has to be given for monitoring";
-            logger.error(error);
-            throw new AiravataMonitorException(error);
-        } else if (monitorID.getHost() == null) {
-            String error = "Host has to be given for monitoring";
-            logger.error(error);
-            throw new AiravataMonitorException(error);
-        } else if (monitorID.getJobID() == null) {
-            String error = "JobID has to be given for monitoring";
-            logger.error(error);
-            throw new AiravataMonitorException(error);
-        }
-    }
+
 
 
     @Override
@@ -207,11 +196,11 @@ public class AMQPMonitor extends PushMonitor {
         this.publisher = publisher;
     }
 
-    public BlockingQueue<MonitorID> getRunningQueue() {
+    public BlockingQueue<UserMonitorData> getRunningQueue() {
         return runningQueue;
     }
 
-    public void setRunningQueue(BlockingQueue<MonitorID> runningQueue) {
+    public void setRunningQueue(BlockingQueue<UserMonitorData> runningQueue) {
         this.runningQueue = runningQueue;
     }
 

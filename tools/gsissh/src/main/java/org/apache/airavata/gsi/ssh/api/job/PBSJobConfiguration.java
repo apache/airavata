@@ -25,7 +25,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 
-public class PBSJobConfiguration implements JobManagerConfiguration{
+public class PBSJobConfiguration implements JobManagerConfiguration {
 
     private String jobDescriptionTemplateName;
 
@@ -35,11 +35,12 @@ public class PBSJobConfiguration implements JobManagerConfiguration{
 
     private OutputParser parser;
 
-    public PBSJobConfiguration(){
+    public PBSJobConfiguration() {
         // this can be used to construct and use setter methods to set all the params in order
     }
+
     public PBSJobConfiguration(String jobDescriptionTemplateName,
-                                   String scriptExtension,String installedPath,OutputParser parser) {
+                               String scriptExtension, String installedPath, OutputParser parser) {
         this.jobDescriptionTemplateName = jobDescriptionTemplateName;
         this.scriptExtension = scriptExtension;
         this.parser = parser;
@@ -70,8 +71,8 @@ public class PBSJobConfiguration implements JobManagerConfiguration{
         return scriptExtension;
     }
 
-    public RawCommandInfo getSubmitCommand(String workingDirectory,String pbsFilePath) {
-          return new RawCommandInfo(this.installedPath + "qsub " +
+    public RawCommandInfo getSubmitCommand(String workingDirectory, String pbsFilePath) {
+        return new RawCommandInfo(this.installedPath + "qsub " +
                 workingDirectory + File.separator + FilenameUtils.getName(pbsFilePath));
     }
 
@@ -89,5 +90,9 @@ public class PBSJobConfiguration implements JobManagerConfiguration{
 
     public void setParser(OutputParser parser) {
         this.parser = parser;
+    }
+
+    public RawCommandInfo getUserBasedMonitorCommand(String userName) {
+        return new RawCommandInfo(this.installedPath + "qstat -u " + userName);
     }
 }

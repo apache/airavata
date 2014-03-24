@@ -48,6 +48,7 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.util.List;
+import java.util.Map;
 
 public class GSISSHAbstractCluster implements Cluster {
     static {
@@ -404,6 +405,14 @@ public class GSISSHAbstractCluster implements Cluster {
             throw new SSHApiException("Failed during creating directory :" + directoryPath + " to remote file "
                     + serverInfo.getHost() + ":rFile", e);
         }
+    }
+
+    public void getJobStatuses(String userName, Map<String,JobStatus> jobIDs)throws SSHApiException {
+        RawCommandInfo rawCommandInfo = jobManagerConfiguration.getUserBasedMonitorCommand(userName);
+        StandardOutReader stdOutReader = new StandardOutReader();
+        CommandExecutor.executeCommand(rawCommandInfo, this.getSession(), stdOutReader);
+        String result = getOutputifAvailable(stdOutReader, "Error getting job information from the resource !");
+        jobManagerConfiguration.getParser().parse(userName,jobIDs, result);
     }
 
     public ServerInfo getServerInfo() {

@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import org.apache.airavata.ComputingActivity;
 import org.apache.airavata.job.monitor.MonitorID;
+import org.apache.airavata.job.monitor.UserMonitorData;
 import org.apache.airavata.job.monitor.core.MessageParser;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.state.JobStatus;
@@ -38,7 +39,7 @@ import java.util.List;
 public class JSONMessageParser implements MessageParser {
     private final static Logger logger = LoggerFactory.getLogger(JSONMessageParser.class);
 
-    public JobStatus parseMessage(String message, MonitorID monitorID)throws AiravataMonitorException{
+    public JobStatus parseMessage(String message, UserMonitorData userMonitorData)throws AiravataMonitorException{
         /*todo write a json message parser here*/
         logger.info("Mesage parse invoked");
         System.out.println(message);

@@ -20,11 +20,15 @@
 */
 package org.apache.airavata.gsi.ssh.api.job;
 
+import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.impl.JobStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.print.attribute.standard.JobState;
 import javax.validation.constraints.Null;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class PBSOutputParser implements OutputParser {
@@ -152,7 +156,32 @@ public class PBSOutputParser implements OutputParser {
         return null;
     }
 
-    public void parse(Map<String, JobStatus> statusMap, String rawOutput) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void parse(String userName, Map<String, JobStatus> statusMap, String rawOutput) {
+        log.debug(rawOutput);
+        String[] info = rawOutput.split("\n");
+
+        int lastStop = 0;
+        for (String jobID : statusMap.keySet()) {
+            for(int i=lastStop;i<info.length;i++){
+               if(jobID.contains(info[i].split(" ")[0]) && !"".equals(info[i].split(" ")[0])){
+                   // now starts processing this line
+                   log.info(info[i]);
+                   String correctLine = info[i];
+                   String[] columns = correctLine.split(" ");
+                   List<String> columnList = new ArrayList<String>();
+                   for (String s : columns) {
+                       if (!"".equals(s)) {
+                           columnList.add(s);
+                       }
+                   }
+                   lastStop = i+1;
+                   statusMap.put(jobID, JobStatus.valueOf(columnList.get(9)));
+                   break;
+               }
+            }
+
+        }
     }
+
+
 }

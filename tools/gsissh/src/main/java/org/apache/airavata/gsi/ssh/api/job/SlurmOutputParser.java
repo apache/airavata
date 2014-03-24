@@ -145,7 +145,7 @@ public class SlurmOutputParser implements OutputParser {
         return JobStatus.valueOf("U");
     }
 
-    public void parse(Map<String, JobStatus> statusMap, String rawOutput)throws SSHApiException {
+    public void parse(String userName, Map<String, JobStatus> statusMap, String rawOutput) throws SSHApiException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }

@@ -55,5 +55,5 @@ public interface OutputParser {
      * @param statusMap list of status map will return and key will be the job ID
      * @param rawOutput
      */
-    public void parse(Map<String,JobStatus> statusMap, String rawOutput)throws SSHApiException;
+    public void parse(String userName,Map<String,JobStatus> statusMap, String rawOutput)throws SSHApiException;
 }

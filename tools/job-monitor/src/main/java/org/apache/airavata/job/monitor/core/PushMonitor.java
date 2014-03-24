@@ -21,6 +21,7 @@
 package org.apache.airavata.job.monitor.core;
 
 import org.apache.airavata.job.monitor.MonitorID;
+import org.apache.airavata.job.monitor.UserMonitorData;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 
 /**
@@ -38,7 +39,7 @@ public abstract class PushMonitor extends AiravataAbstractMonitor {
      * @param monitorID
      * @return
      */
-    public abstract boolean registerListener(MonitorID monitorID)throws AiravataMonitorException;
+    public abstract boolean registerListener(UserMonitorData monitorID)throws AiravataMonitorException;
 
     /**
      * This method can be invoked to unregister a listener with the

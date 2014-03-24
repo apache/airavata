@@ -43,7 +43,7 @@ public class LocalJobMonitor extends AiravataAbstractMonitor {
                 MonitorID take = jobQueue.take();
                 getPublisher().publish(new JobStatus(take, JobState.COMPLETE));
             } catch (Exception e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e.printStackTrace();
             }
         } while (!ServerSettings.isStopAllThreads());
     }
