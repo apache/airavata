@@ -206,28 +206,28 @@
                 <include>com.amazonaws:aws-java-sdk</include>
                 <include>net.java.dev.jets3t:jets3t</include>
                 <include>org.apache.airavata:airavata-standalone-server:jar</include>
-		<include>org.apache.airavata:airavata-common-utils:jar</include>
-		<include>org.apache.airavata:airavata-orchestrator-service:jar</include>
-		<include>org.apache.airavata:airavata-orchestrator-core:jar</include>
-		<include>org.apache.airavata:airavata-registry-api:jar</include>
-		<include>org.apache.airavata:airavata-gfac-schema-utils:jar</include>
-		<include>org.apache.airavata:airavata-workflow-execution-context:jar</include>
-		<include>org.apache.airavata:airavata-registry-cpi:jar</include>
-		<include>org.apache.airavata:airavata-jpa-registry:jar</include>
-		<include>org.apache.airavata:airavata-data-models:jar</include>
-		<include>org.apache.airavata:airavata-credential-store:jar</include>
-		<include>org.apache.airavata:airavata-gfac-core:jar</include>
-		<include>org.apache.airavata:airavata-client-api:jar</include>
-		<include>org.apache.airavata:airavata-message-monitor:jar</include>
-		<include>org.apache.airavata:airavata-workflow-model-core:jar</include>
-		<include>org.apache.airavata:airavata-messenger-commons:jar</include>
-		<include>org.apache.airavata:airavata-messenger-client:jar</include>
-		<include>org.apache.airavata:airavata-workflow-tracking:jar</include>
-		<include>org.apache.airavata:gsissh:jar</include>
-		<include>org.apache.airavata:airavata-model-utils:jar</include>
-		<include>org.apache.airavata:airavata-job-monitor:jar</include>
-		<include>org.apache.airavata:airavata-api-server:jar</include>
-		<include>org.apache.airavata:airavata-api-stubs:jar</include>
+                <include>org.apache.airavata:airavata-common-utils:jar</include>
+                <include>org.apache.airavata:airavata-orchestrator-service:jar</include>
+                <include>org.apache.airavata:airavata-orchestrator-core:jar</include>
+                <include>org.apache.airavata:airavata-registry-api:jar</include>
+                <include>org.apache.airavata:airavata-gfac-schema-utils:jar</include>
+                <include>org.apache.airavata:airavata-workflow-execution-context:jar</include>
+                <include>org.apache.airavata:airavata-registry-cpi:jar</include>
+                <include>org.apache.airavata:airavata-jpa-registry:jar</include>
+                <include>org.apache.airavata:airavata-data-models:jar</include>
+                <include>org.apache.airavata:airavata-credential-store:jar</include>
+                <include>org.apache.airavata:airavata-gfac-core:jar</include>
+                <include>org.apache.airavata:airavata-client-api:jar</include>
+                <include>org.apache.airavata:airavata-message-monitor:jar</include>
+                <include>org.apache.airavata:airavata-workflow-model-core:jar</include>
+                <include>org.apache.airavata:airavata-messenger-commons:jar</include>
+                <include>org.apache.airavata:airavata-messenger-client:jar</include>
+                <include>org.apache.airavata:airavata-workflow-tracking:jar</include>
+                <include>org.apache.airavata:gsissh:jar</include>
+                <include>org.apache.airavata:airavata-model-utils:jar</include>
+                <include>org.apache.airavata:airavata-job-monitor:jar</include>
+                <include>org.apache.airavata:airavata-api-server:jar</include>
+                <include>org.apache.airavata:airavata-api-stubs:jar</include>
                 <include>org.apache.openjpa:openjpa-all:jar</include>
                 <include>org.bouncycastle:bcprov-jdk16</include>
                 <include>javax.servlet:javax.servlet-api</include>
@@ -249,54 +249,56 @@
                 <include>de.odysseus.staxon:staxon:jar:1.2</include>
                 <include>de.odysseus.staxon:staxon-jackson:jar:1.2</include>
                 <include>org.ebaysf.web:cors-filter:jar:1.0.0</include>
-		<include>org.ogce:bcgss</include>	
-		<include>org.apache.xmlbeans:xmlbeans</include>
-		<include>org.apache.thrift:libthrift:jar:0.9.1</include>
-		<include>commons-cli:commons-cli</include>
-		<include>com.rabbitmq:amqp-client</include>
+                <include>org.ogce:bcgss</include>
+                <include>org.apache.xmlbeans:xmlbeans</include>
+                <include>org.apache.thrift:libthrift:jar:0.9.1</include>
+                <include>commons-cli:commons-cli</include>
+                <include>com.rabbitmq:amqp-client</include>
                 <include>com.fasterxml.jackson.core:jackson-databind</include>
-                  <!-- unicore start 
-                <include>eu.unicore:ogsabes-client</include>
-				<include>eu.unicore:ogsabes-types</include>
-				<include>de.fzj.unicore:jsdl-xmlbeans</include>
-				<include>eu.unicore:cis-u6-infoprovider-types</include>
-				<include>eu.unicore.services:use-wsrftypes</include>
-				<include>eu.unicore:uas-types</include>
-				<include>eu.unicore:uas-client</include>
-				<include>eu.unicore.services:use-wsrfclient</include>
-				<include>org.apache.xmlbeans:xmlbeans-xpath</include>
-				<include>net.sf.saxon:saxon</include>
-				<include>net.sf.saxon:saxon-dom</include>
-				<include>net.sf.saxon:saxon-xpath</include>
-				<include>eu.unicore.security:secutils-cxf</include>
-				<include>eu.unicore.security:securityLibrary</include>
-				<include>log4j:apache-log4j-extras</include>
-				<include>eu.eu-emi.security:canl</include>
-				<include>org.bouncycastle:bcpkix-jdk15on</include>
-				<include>pl.edu.icm.saml:samly2</include>
-				<include>eu.unicore.security:SAMLtypes</include>
-				<include>org.apache.ws.security:wss4j</include>
-				<include>org.json:json</include>
-				<include>org.apache.cxf:cxf-rt-databinding-xmlbeans</include>
-				<include>org.apache.cxf:cxf-api</include>
-				<include>org.codehaus.woodstox:woodstox-core-asl</include>
-				<include>org.codehaus.woodstox:stax2-api</include>
-				<include>org.apache.ws.xmlschema:xmlschema-core</include>
-				<include>org.apache.cxf:cxf-rt-core</include>
-				<include>com.sun.xml.bind:jaxb-impl</include>
-				<include>org.apache.cxf:cxf-rt-frontend-jaxws</include>
-				<include>xml-resolver:xml-resolver</include>
-				<include>asm:asm</include>
-				<include>org.apache.cxf:cxf-rt-bindings-soap</include>
-				<include>org.apache.cxf:cxf-rt-databinding-jaxb</include>
-				<include>org.apache.cxf:cxf-rt-bindings-xml</include>
-				<include>org.apache.cxf:cxf-rt-frontend-simple</include>
-				<include>org.apache.cxf:cxf-rt-ws-addr</include>
-				<include>org.apache.cxf:cxf-rt-ws-policy</include>
-				<include>org.apache.cxf:cxf-rt-transports-http</include>
-				<include>org.apache.cxf:cxf-rt-features-clustering</include>
-				<include>eu.unicore:uftp-core</include>
-				unicore end-->
+                <include>com.fasterxml.jackson.core:jackson-core</include>
+                <include>com.fasterxml.jackson.core:jackson-annotations</include>
+                <!-- unicore start
+                    <include>eu.unicore:ogsabes-client</include>
+                    <include>eu.unicore:ogsabes-types</include>
+                    <include>de.fzj.unicore:jsdl-xmlbeans</include>
+                    <include>eu.unicore:cis-u6-infoprovider-types</include>
+                    <include>eu.unicore.services:use-wsrftypes</include>
+                    <include>eu.unicore:uas-types</include>
+                    <include>eu.unicore:uas-client</include>
+                    <include>eu.unicore.services:use-wsrfclient</include>
+                    <include>org.apache.xmlbeans:xmlbeans-xpath</include>
+                    <include>net.sf.saxon:saxon</include>
+                    <include>net.sf.saxon:saxon-dom</include>
+                    <include>net.sf.saxon:saxon-xpath</include>
+                    <include>eu.unicore.security:secutils-cxf</include>
+                    <include>eu.unicore.security:securityLibrary</include>
+                    <include>log4j:apache-log4j-extras</include>
+                    <include>eu.eu-emi.security:canl</include>
+                    <include>org.bouncycastle:bcpkix-jdk15on</include>
+                    <include>pl.edu.icm.saml:samly2</include>
+                    <include>eu.unicore.security:SAMLtypes</include>
+                    <include>org.apache.ws.security:wss4j</include>
+                    <include>org.json:json</include>
+                    <include>org.apache.cxf:cxf-rt-databinding-xmlbeans</include>
+                    <include>org.apache.cxf:cxf-api</include>
+                    <include>org.codehaus.woodstox:woodstox-core-asl</include>
+                    <include>org.codehaus.woodstox:stax2-api</include>
+                    <include>org.apache.ws.xmlschema:xmlschema-core</include>
+                    <include>org.apache.cxf:cxf-rt-core</include>
+                    <include>com.sun.xml.bind:jaxb-impl</include>
+                    <include>org.apache.cxf:cxf-rt-frontend-jaxws</include>
+                    <include>xml-resolver:xml-resolver</include>
+                    <include>asm:asm</include>
+                    <include>org.apache.cxf:cxf-rt-bindings-soap</include>
+                    <include>org.apache.cxf:cxf-rt-databinding-jaxb</include>
+                    <include>org.apache.cxf:cxf-rt-bindings-xml</include>
+                    <include>org.apache.cxf:cxf-rt-frontend-simple</include>
+                    <include>org.apache.cxf:cxf-rt-ws-addr</include>
+                    <include>org.apache.cxf:cxf-rt-ws-policy</include>
+                    <include>org.apache.cxf:cxf-rt-transports-http</include>
+                    <include>org.apache.cxf:cxf-rt-features-clustering</include>
+                    <include>eu.unicore:uftp-core</include>
+                    unicore end-->
             </includes>
         </dependencySet>
         

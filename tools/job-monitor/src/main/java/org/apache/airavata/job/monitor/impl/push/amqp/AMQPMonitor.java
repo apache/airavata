@@ -108,7 +108,7 @@ public class AMQPMonitor extends PushMonitor {
                     channel = connection.createChannel();
                     String queueName = channel.queueDeclare().getQueue();
 
-                    BasicConsumer consumer = new BasicConsumer(new JSONMessageParser(), publisher, userMonitorData);
+                    BasicConsumer consumer = new BasicConsumer(new JSONMessageParser(), publisher, host);
                     channel.basicConsume(queueName, true, consumer);
                     String filterString = CommonUtils.getRoutingKey(userName, hostAddress);
                     // here we queuebind to a particular user in a particular machine
