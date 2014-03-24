@@ -139,14 +139,17 @@ public class QstatMonitor extends PullMonitor {
                         iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
 
                         // After successful monitoring perform following actions to cleanup the queue, if necessary
-                        if (!jobStatus.getState().equals(JobState.COMPLETE)) {
+                        if (jobStatus.getState().equals(JobState.COMPLETE)) {
+                            completedJobs.add(iMonitorID);
+                        } else if (iMonitorID.getFailedCount() > 2 && iMonitorID.getStatus().equals(JobState.UNKNOWN)) {
+                            logger.error("Tried to monitor the job with ID " + iMonitorID.getJobID() + " But failed 3 times, so skip this Job from Monitor");
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
-                        }else if(iMonitorID.getFailedCount() > 2 && iMonitorID.getStatus().equals(JobState.UNKNOWN)){
                             completedJobs.add(iMonitorID);
                         } else {
+                            // Everything is good but jjob is not yet completed, so we just change the last monitor
+                            iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
                             // if the job is complete we remove it from the Map, if any of these maps
                             // get empty this userMonitorData will get delete from the queue
-                            completedJobs.add(iMonitorID);
                         }
                     }
                 } else {

@@ -26,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.print.attribute.standard.JobState;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class SlurmOutputParser implements OutputParser {
@@ -146,6 +148,32 @@ public class SlurmOutputParser implements OutputParser {
     }
 
     public void parse(String userName, Map<String, JobStatus> statusMap, String rawOutput) throws SSHApiException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        log.debug(rawOutput);
+        String[] info = rawOutput.split("\n");
+        String lastString = info[info.length -1];
+        if (lastString.contains("JOBID") || lastString.contains("PARTITION")) {
+            // There are no jobs for this username
+            return;
+        }
+        int lastStop = 0;
+        for (String jobID : statusMap.keySet()) {
+            for(int i=lastStop;i<info.length;i++){
+               if(info[i].contains(jobID)){
+                   // now starts processing this line
+                   log.info(info[i]);
+                   String correctLine = info[i];
+                   String[] columns = correctLine.split(" ");
+                   List<String> columnList = new ArrayList<String>();
+                   for (String s : columns) {
+                       if (!"".equals(s)) {
+                           columnList.add(s);
+                       }
+                   }
+                   lastStop = i+1;
+                   statusMap.put(jobID, JobStatus.valueOf(columnList.get(4)));
+                   break;
+               }
+            }
+        }
     }
 }

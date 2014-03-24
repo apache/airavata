@@ -159,7 +159,6 @@ public class PBSOutputParser implements OutputParser {
     public void parse(String userName, Map<String, JobStatus> statusMap, String rawOutput) {
         log.debug(rawOutput);
         String[] info = rawOutput.split("\n");
-
         int lastStop = 0;
         for (String jobID : statusMap.keySet()) {
             for(int i=lastStop;i<info.length;i++){
@@ -179,7 +178,6 @@ public class PBSOutputParser implements OutputParser {
                    break;
                }
             }
-
         }
     }
 
