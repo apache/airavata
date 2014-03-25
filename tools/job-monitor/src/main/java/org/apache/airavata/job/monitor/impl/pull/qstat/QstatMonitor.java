@@ -146,7 +146,7 @@ public class QstatMonitor extends PullMonitor {
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
                             completedJobs.add(iMonitorID);
                         } else {
-                            // Everything is good but jjob is not yet completed, so we just change the last monitor
+                            // Evey
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
                             // if the job is complete we remove it from the Map, if any of these maps
                             // get empty this userMonitorData will get delete from the queue

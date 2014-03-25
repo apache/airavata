@@ -32,6 +32,7 @@
             <modules>
                 <module>gfac-core</module>
                 <module>gfac-ec2</module>
+		<module>gfac-monitor</module>
             </modules>
         </profile>
     </profiles>
