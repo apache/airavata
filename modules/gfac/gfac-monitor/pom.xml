@@ -32,7 +32,7 @@
 	<!-- monitoring tool from tools/job-monitor -->
 	 <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-job-monitor</artifactId>
+            <artifactId>job-monitor-tool</artifactId>
             <version>${project.version}</version>
         </dependency>
 

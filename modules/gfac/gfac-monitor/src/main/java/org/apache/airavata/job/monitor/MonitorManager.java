@@ -30,7 +30,7 @@ import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.impl.LocalJobMonitor;
 import org.apache.airavata.job.monitor.impl.pull.qstat.QstatMonitor;
 import org.apache.airavata.job.monitor.impl.push.amqp.AMQPMonitor;
-import org.apache.airavata.job.monitor.impl.push.amqp.UnRegisterThread;
+import org.apache.airavata.job.monitor.impl.push.amqp.UnRegisterWorker;
 import org.apache.airavata.job.monitor.util.CommonUtils;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryImpl;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
@@ -69,6 +69,7 @@ public class MonitorManager {
 
     private Monitor localJobMonitor;
 
+
     /**
      * This will initialize the major monitoring system.
      */
@@ -94,6 +95,7 @@ public class MonitorManager {
         monitor.setFinishQueue(this.getFinishQueue());
         monitor.setRunningQueue(this.getPushQueue());
         addPushMonitor(monitor);
+        registerListener(new UnRegisterWorker(monitor.getAvailableChannels()));
     }
 
 
@@ -202,11 +204,6 @@ public class MonitorManager {
         //todo fix this
         for (PushMonitor monitor : pushMonitors) {
             (new Thread(monitor)).start();
-            if (monitor instanceof AMQPMonitor) {
-                UnRegisterThread unRegisterThread = new
-                        UnRegisterThread(((AMQPMonitor) monitor).getFinishQueue(), ((AMQPMonitor) monitor).getAvailableChannels());
-                unRegisterThread.start();
-            }
         }
     }
 

@@ -115,6 +115,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                     } else if (monitor instanceof PushMonitor) {
                         if (monitor instanceof AMQPMonitor) {
                             ((AMQPMonitor) monitor).initialize(proxyPath, connectionName, list);
+                            monitorManager.registerListener(monitor);
                             monitorManager.addAMQPMonitor((AMQPMonitor) monitor);
                         }
                     } else if(monitor instanceof LocalJobMonitor){

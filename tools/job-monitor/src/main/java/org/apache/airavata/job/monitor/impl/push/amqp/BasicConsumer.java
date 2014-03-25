@@ -66,12 +66,14 @@ public class BasicConsumer implements Consumer {
                                byte[] body) {
 
         logger.debug("  job update for: " + envelope.getRoutingKey());
-
         String message = new String(body);
         message = message.replaceAll("(?m)^", "    ");
         // Here we parse the message and get the job status and push it
         // to the Event bus, this will be picked by
 //        AiravataJobStatusUpdator and store in to registry
+        logger.debug("************************************************************");
+        logger.debug("AMQP Message recieved \n" + message);
+        logger.debug("************************************************************");
         try {
             String jobID = envelope.getRoutingKey().split("\\.")[0];
             List<MonitorID> monitorIDs = hostMonitorData.getMonitorIDs();

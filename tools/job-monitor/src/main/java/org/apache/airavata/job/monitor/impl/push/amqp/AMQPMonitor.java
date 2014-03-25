@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.job.monitor.impl.push.amqp;
 
+import com.google.common.eventbus.Subscribe;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -97,13 +98,16 @@ public class AMQPMonitor extends PushMonitor {
             // with amqp monitor we do not use individual monitorID list but
             // we subscribe to read user-host based subscription
             String hostAddress = host.getHost().getType().getHostAddress();
-            String channelID = CommonUtils.getChannelID(userName, hostAddress);
-            if (availableChannels.get(channelID) == null) {
-                //todo need to fix this rather getting it from a file
-                Connection connection = AMQPConnectionUtil.connect(amqpHosts, connectionName, proxyPath);
-                Channel channel = null;
-                try {
+            // in amqp case there are no multiple jobs per each host, because once a job is put in to the queue it
+            // will be picked by the Monitor, so always new usermonitorData object will get create
+            MonitorID monitorID = host.getMonitorIDs().get(0);
+            String channelID = CommonUtils.getChannelID(monitorID);
+            try {
+                    //todo need to fix this rather getting it from a file
+                    Connection connection = AMQPConnectionUtil.connect(amqpHosts, connectionName, proxyPath);
+                    Channel channel = null;
                     channel = connection.createChannel();
+                    availableChannels.put(channelID, channel);
                     String queueName = channel.queueDeclare().getQueue();
 
                     BasicConsumer consumer = new BasicConsumer(new JSONMessageParser(), publisher, host);
@@ -112,9 +116,8 @@ public class AMQPMonitor extends PushMonitor {
                     // here we queuebind to a particular user in a particular machine
                     channel.queueBind(queueName, "glue2.computing_activity", filterString);
                     logger.info("Using filtering string to monitor: " + filterString);
-                } catch (IOException e) {
-                    logger.error("Error creating the connection to finishQueue the job:" + userMonitorData.getUserName());
-                }
+            } catch (IOException e) {
+                logger.error("Error creating the connection to finishQueue the job:" + userMonitorData.getUserName());
             }
 
         }
@@ -152,7 +155,7 @@ public class AMQPMonitor extends PushMonitor {
 
 
 
-    @Override
+    @Subscribe
     public boolean unRegisterListener(MonitorID monitorID) throws AiravataMonitorException {
         String channelID = CommonUtils.getChannelID(monitorID);
         Channel channel = availableChannels.get(channelID);
@@ -162,13 +165,12 @@ public class AMQPMonitor extends PushMonitor {
         } else {
             try {
                 channel.queueUnbind(channel.queueDeclare().getQueue(), "glue2.computing_activity", CommonUtils.getRoutingKey(monitorID));
+                channel.close();
+                channel.getConnection().close();
             } catch (IOException e) {
                 logger.error("Error unregistering the listener");
                 throw new AiravataMonitorException("Error unregistering the listener");
             }
-
-
-
         }
         return true;
     }

@@ -50,7 +50,7 @@ public class CommonUtils {
         }
     }
     public static String getChannelID(MonitorID monitorID) {
-        return monitorID.getUserName() + "-" + monitorID.getHost().getType().getHostName();
+        return monitorID.getUserName() + "-" + monitorID.getHost().getType().getHostName() + "-" + monitorID.getJobID();
     }
 
     public static String getRoutingKey(MonitorID monitorID) {
