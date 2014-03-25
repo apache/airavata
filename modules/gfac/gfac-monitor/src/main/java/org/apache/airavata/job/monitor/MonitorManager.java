@@ -35,6 +35,7 @@ import org.apache.airavata.job.monitor.util.CommonUtils;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryImpl;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
+import org.apache.airavata.schemas.gfac.SSHHostType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -168,6 +169,9 @@ public class MonitorManager {
             }
         } else if(monitorID.getHost().getType() instanceof GlobusHostType){
             logger.error("Monitoring does not support GlubusHostType resources");
+        } else if(monitorID.getHost().getType() instanceof SSHHostType) {
+            logger.error("Monitoring does not support GlubusHostType resources");
+            localJobQueue.add(monitorID);
         } else {
             // we assume this is a type of localJobtype
             localJobQueue.add(monitorID);

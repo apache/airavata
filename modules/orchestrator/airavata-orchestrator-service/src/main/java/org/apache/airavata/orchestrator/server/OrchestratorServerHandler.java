@@ -93,6 +93,10 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 
             // loading Monitor configuration
             String monitors = properties.getProperty("monitors");
+            if(monitors == null) {
+                log.error("No Monitor is configured, so job monitoring will not monitor any job");
+                return;
+            }
             List<String> monitorList = Arrays.asList(monitors.split(","));
             List<String> list = Arrays.asList(properties.getProperty("amqp.hosts").split(","));
             String proxyPath = properties.getProperty("proxy.file.path");
