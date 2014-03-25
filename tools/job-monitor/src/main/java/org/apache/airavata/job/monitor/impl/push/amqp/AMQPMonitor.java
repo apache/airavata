@@ -22,7 +22,6 @@ package org.apache.airavata.job.monitor.impl.push.amqp;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
-import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.job.monitor.HostMonitorData;
 import org.apache.airavata.job.monitor.MonitorID;
@@ -32,7 +31,6 @@ import org.apache.airavata.job.monitor.event.MonitorPublisher;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.util.AMQPConnectionUtil;
 import org.apache.airavata.job.monitor.util.CommonUtils;
-import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
