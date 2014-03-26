@@ -60,7 +60,7 @@ public class SCPDirectorySetupHandler extends AbstractHandler{
             }
             if (cluster == null) {
                 throw new GFacHandlerException("Security context is not set properly");
-            } else {
+            } else { 
                 log.info("Successfully retrieved the Security Context");
             }
 		ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();

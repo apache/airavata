@@ -39,6 +39,7 @@ import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.ParameterType;
 import org.apache.airavata.schemas.gfac.ProjectAccountType;
 import org.apache.airavata.schemas.gfac.QueueType;
+import org.apache.airavata.schemas.gfac.SSHHostType;
 
 public class DocumentCreator {
 
@@ -107,6 +108,65 @@ public class DocumentCreator {
 
         try {
             airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, "localhost", applicationDeploymentDescription);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+    }
+    
+    public void createSSHHostDocs() {
+        HostDescription descriptor = new HostDescription(SSHHostType.type);
+        descriptor.getType().setHostName("gw111.iu.xsede.org");
+        descriptor.getType().setHostAddress("gw111.iu.xsede.org");
+        try {
+            airavataAPI.getApplicationManager().saveHostDescription(descriptor);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        String serviceName = "SSHEcho1";
+        ServiceDescription serviceDescription = new ServiceDescription();
+        List<InputParameterType> inputParameters = new ArrayList<InputParameterType>();
+        List<OutputParameterType> outputParameters = new ArrayList<OutputParameterType>();
+        serviceDescription.getType().setName(serviceName);
+        serviceDescription.getType().setDescription("Echo service");
+        // Creating input parameters
+        InputParameterType parameter = InputParameterType.Factory.newInstance();
+        parameter.setParameterName("echo_input");
+        parameter.setParameterDescription("echo input");
+        ParameterType parameterType = parameter.addNewParameterType();
+        parameterType.setType(DataType.STRING);
+        parameterType.setName("String");
+        inputParameters.add(parameter);
+
+        // Creating output parameters
+        OutputParameterType outputParameter = OutputParameterType.Factory.newInstance();
+        outputParameter.setParameterName("echo_output");
+        outputParameter.setParameterDescription("Echo output");
+        ParameterType outputParaType = outputParameter.addNewParameterType();
+        outputParaType.setType(DataType.STRING);
+        outputParaType.setName("String");
+        outputParameters.add(outputParameter);
+
+        // Setting input and output parameters to serviceDescriptor
+        serviceDescription.getType().setInputParametersArray(inputParameters.toArray(new InputParameterType[]{}));
+        serviceDescription.getType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[]{}));
+
+        try {
+            airavataAPI.getApplicationManager().saveServiceDescription(serviceDescription);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        ApplicationDescription applicationDeploymentDescription = new ApplicationDescription();
+        ApplicationDeploymentDescriptionType applicationDeploymentDescriptionType = applicationDeploymentDescription
+                .getType();
+        applicationDeploymentDescriptionType.addNewApplicationName().setStringValue("SSHEchoApplication");
+        applicationDeploymentDescriptionType.setExecutableLocation("/bin/echo");
+        applicationDeploymentDescriptionType.setScratchWorkingDirectory("/tmp");
+
+        try {
+            airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, "gw111.iu.xsede.org", applicationDeploymentDescription);
         } catch (AiravataAPIInvocationException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }

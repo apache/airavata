@@ -20,6 +20,11 @@
 */
 package org.apache.airavata.job.monitor;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
@@ -28,18 +33,13 @@ import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
-import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
-import org.apache.airavata.job.monitor.impl.pull.qstat.QstatMonitor;
+import org.apache.airavata.job.monitor.impl.push.amqp.AMQPMonitor;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-public class QstatMonitorTest {
+public class AMQPMonitorTest {
     private MonitorManager monitorManager;
 
     private String myProxyUserName;
@@ -67,22 +67,24 @@ public class QstatMonitorTest {
         }
 
         monitorManager = new MonitorManager();
-        QstatMonitor qstatMonitor = new
-                QstatMonitor(monitorManager.getPullQueue(), monitorManager.getMonitorPublisher());
+        AMQPMonitor amqpMonitor = new
+                AMQPMonitor(monitorManager.getMonitorPublisher(),
+                monitorManager.getPullQueue(), monitorManager.getFinishQueue(),"/Users/lahirugunathilake/Downloads/x509up_u503876","xsede_private",
+                Arrays.asList("info1.dyn.teragrid.org,info2.dyn.teragrid.org".split(",")));
         try {
-            monitorManager.addPullMonitor(qstatMonitor);
+            monitorManager.addPushMonitor(amqpMonitor);
             monitorManager.launchMonitor();
         } catch (AiravataMonitorException e) {
             e.printStackTrace();
         }
 
         hostDescription = new HostDescription(GsisshHostType.type);
-        hostDescription.getType().setHostAddress("trestles.sdsc.edu");
+        hostDescription.getType().setHostAddress("gordon.sdsc.xsede.org");
         hostDescription.getType().setHostName("gsissh-gordon");
     }
 
     @Test
-    public void testQstatMonitor() throws SSHApiException {
+    public void testAMQPMonitor() throws SSHApiException {
         /* now have to submit a job to some machine and add that job to the queue */
         //Create authentication
         GSIAuthenticationInfo authenticationInfo
@@ -90,10 +92,11 @@ public class QstatMonitorTest {
                 7512, 17280000, certificateLocation);
 
         // Server info
-        ServerInfo serverInfo = new ServerInfo("ogce", hostDescription.getType().getHostAddress());
+        ServerInfo serverInfo = new ServerInfo("ogce", "trestles.sdsc.edu");
 
 
-        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/bin/"));
+        Cluster pbsCluster = new
+                PBSCluster(serverInfo, authenticationInfo, org.apache.airavata.gsi.ssh.util.CommonUtils.getPBSJobManager("/opt/torque/bin/"));
 
 
         // Execute command
@@ -119,20 +122,20 @@ public class QstatMonitorTest {
         jobDescriptor.setInputValues(inputs);
         //finished construction of job object
         System.out.println(jobDescriptor.toXML());
-        for (int i = 0; i < 1; i++) {
-            String jobID = pbsCluster.submitBatchJob(jobDescriptor);
-            MonitorID monitorID = new MonitorID(hostDescription, jobID,null,null, "ogce");
-            monitorID.setAuthenticationInfo(authenticationInfo);
-            try {
-                monitorManager.addAJobToMonitor(monitorID);
-            } catch (AiravataMonitorException e) {
-                e.printStackTrace();
-            }
+        String jobID = pbsCluster.submitBatchJob(jobDescriptor);
+        System.out.println(jobID);
+        try {
+            monitorManager.addAJobToMonitor(new MonitorID(hostDescription, jobID,null,null, "ogce"));
+        }catch (InterruptedException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } 
+        catch (AiravataMonitorException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         try {
-            Thread.sleep(10000000);
+            Thread.sleep(10000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
 }

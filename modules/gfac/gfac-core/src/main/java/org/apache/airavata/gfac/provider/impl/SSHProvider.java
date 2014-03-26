@@ -45,6 +45,7 @@ import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.CommandExecutor;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
+import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.impl.RawCommandInfo;
 import org.apache.airavata.gsi.ssh.impl.StandardOutReader;
 import org.apache.airavata.model.workspace.experiment.JobState;
@@ -77,7 +78,12 @@ public class SSHProvider extends AbstractProvider implements GFacProvider{
             
             ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
             String remoteFile = app.getStaticWorkingDirectory() + File.separatorChar + Constants.EXECUTABLE_NAME;
+            details.setJobID(taskID);
             details.setJobDescription(remoteFile);
+            jobExecutionContext.setJobDetails(details);
+            JobDescriptor jobDescriptor = GFacUtils.createJobDescriptor(jobExecutionContext, app, null);
+            details.setJobDescription(jobDescriptor.toXML());
+         
             GFacUtils.saveJobStatus(details, JobState.SETUP, taskID);
             log.info(remoteFile);
             try {
@@ -101,7 +107,8 @@ public class SSHProvider extends AbstractProvider implements GFacProvider{
                  */
                 String execuable = app.getStaticWorkingDirectory() + File.separatorChar + Constants.EXECUTABLE_NAME;
                 details.setJobDescription(execuable);
-                GFacUtils.updateJobStatus(details, JobState.SUBMITTED);
+
+//                GFacUtils.updateJobStatus(details, JobState.SUBMITTED);
                 RawCommandInfo rawCommandInfo = new RawCommandInfo("/bin/chmod 755 " + execuable + "; " + execuable);
 
                 StandardOutReader jobIDReaderCommandOutput = new StandardOutReader();
@@ -111,7 +118,7 @@ public class SSHProvider extends AbstractProvider implements GFacProvider{
 
                 log.info("stdout=" + stdOutputString);
              
-                GFacUtils.updateJobStatus(details, JobState.COMPLETE);
+//                GFacUtils.updateJobStatus(details, JobState.COMPLETE);
             } catch (Exception e) {
                 throw new GFacProviderException(e.getMessage(), e);
             } finally {
