@@ -38,7 +38,7 @@ import java.util.List;
 public class JSONMessageParser implements MessageParser {
     private final static Logger logger = LoggerFactory.getLogger(JSONMessageParser.class);
 
-    public JobStatus parseMessage(String message, HostMonitorData userMonitorData)throws AiravataMonitorException{
+    public JobState parseMessage(String message)throws AiravataMonitorException{
         /*todo write a json message parser here*/
         logger.debug(message);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -51,7 +51,7 @@ public class JSONMessageParser implements MessageParser {
                 jobState = getStatusFromString(aState);
             }
             // we get the last value of the state array
-            return new JobStatus(null, jobState);
+            return jobState;
         } catch (IOException e) {
             throw new AiravataMonitorException(e);
         }
