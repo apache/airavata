@@ -289,7 +289,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-job-monitor</artifactId>
+            <artifactId>gfac-monitor</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

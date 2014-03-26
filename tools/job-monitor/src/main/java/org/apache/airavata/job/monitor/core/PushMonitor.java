@@ -39,7 +39,7 @@ public abstract class PushMonitor extends AiravataAbstractMonitor {
      * @param monitorID
      * @return
      */
-    public abstract boolean registerListener(UserMonitorData monitorID)throws AiravataMonitorException;
+    public abstract boolean registerListener(MonitorID monitorID)throws AiravataMonitorException;
 
     /**
      * This method can be invoked to unregister a listener with the

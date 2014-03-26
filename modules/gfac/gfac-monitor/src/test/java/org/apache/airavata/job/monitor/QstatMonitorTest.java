@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.job.monitor;
 
+import com.google.common.eventbus.EventBus;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
@@ -28,9 +29,10 @@ import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
-import org.apache.airavata.gsi.ssh.util.CommonUtils;
+import org.apache.airavata.job.monitor.event.MonitorPublisher;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.impl.pull.qstat.QstatMonitor;
+import org.apache.airavata.job.monitor.util.CommonUtils;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,17 +40,17 @@ import org.junit.Test;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 
 public class QstatMonitorTest {
-    private MonitorManager monitorManager;
-
     private String myProxyUserName;
     private String myProxyPassword;
     private String certificateLocation;
     private String pbsFilePath;
     private String workingDirectory;
     private HostDescription hostDescription;
-
+    private BlockingQueue<UserMonitorData> q;
+    private QstatMonitor qstatMonitor;
     @Before
     public void setUp() throws Exception {
         System.setProperty("myproxy.user", "ogce");
@@ -66,19 +68,13 @@ public class QstatMonitorTest {
             throw new Exception("Need my proxy user name password to run tests.");
         }
 
-        monitorManager = new MonitorManager();
-        QstatMonitor qstatMonitor = new
-                QstatMonitor(monitorManager.getPullQueue(), monitorManager.getMonitorPublisher());
-        try {
-            monitorManager.addPullMonitor(qstatMonitor);
-            monitorManager.launchMonitor();
-        } catch (AiravataMonitorException e) {
-            e.printStackTrace();
-        }
+        qstatMonitor = new
+                QstatMonitor(q, new MonitorPublisher(new EventBus()));
 
         hostDescription = new HostDescription(GsisshHostType.type);
         hostDescription.getType().setHostAddress("trestles.sdsc.edu");
         hostDescription.getType().setHostName("gsissh-gordon");
+        qstatMonitor.startPulling();
     }
 
     @Test
@@ -93,7 +89,7 @@ public class QstatMonitorTest {
         ServerInfo serverInfo = new ServerInfo("ogce", hostDescription.getType().getHostAddress());
 
 
-        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/bin/"));
+        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, org.apache.airavata.gsi.ssh.util.CommonUtils.getPBSJobManager("/opt/torque/bin/"));
 
 
         // Execute command
@@ -124,11 +120,8 @@ public class QstatMonitorTest {
             MonitorID monitorID = new MonitorID(hostDescription, jobID,null,null, "ogce");
             monitorID.setAuthenticationInfo(authenticationInfo);
             try {
-                monitorManager.addAJobToMonitor(monitorID);
-            }catch (InterruptedException e) {
-                e.printStackTrace();  
-            }
-            catch (AiravataMonitorException e) {
+                CommonUtils.addMonitortoQueue(q,monitorID);
+            } catch (AiravataMonitorException e) {
                 e.printStackTrace();
             }
         }
