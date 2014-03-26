@@ -28,18 +28,18 @@ import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
+import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
-import org.apache.airavata.job.monitor.impl.push.amqp.AMQPMonitor;
+import org.apache.airavata.job.monitor.impl.pull.qstat.QstatMonitor;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class AMQPMonitorTest {
+public class QstatMonitorTest {
     private MonitorManager monitorManager;
 
     private String myProxyUserName;
@@ -67,24 +67,22 @@ public class AMQPMonitorTest {
         }
 
         monitorManager = new MonitorManager();
-        AMQPMonitor amqpMonitor = new
-                AMQPMonitor(monitorManager.getMonitorPublisher(),
-                monitorManager.getPullQueue(), monitorManager.getFinishQueue(),"/Users/lahirugunathilake/Downloads/x509up_u503876","xsede_private",
-                Arrays.asList("info1.dyn.teragrid.org,info2.dyn.teragrid.org".split(",")));
+        QstatMonitor qstatMonitor = new
+                QstatMonitor(monitorManager.getPullQueue(), monitorManager.getMonitorPublisher());
         try {
-            monitorManager.addPushMonitor(amqpMonitor);
+            monitorManager.addPullMonitor(qstatMonitor);
             monitorManager.launchMonitor();
         } catch (AiravataMonitorException e) {
             e.printStackTrace();
         }
 
         hostDescription = new HostDescription(GsisshHostType.type);
-        hostDescription.getType().setHostAddress("gordon.sdsc.xsede.org");
+        hostDescription.getType().setHostAddress("trestles.sdsc.edu");
         hostDescription.getType().setHostName("gsissh-gordon");
     }
 
     @Test
-    public void testAMQPMonitor() throws SSHApiException {
+    public void testQstatMonitor() throws SSHApiException {
         /* now have to submit a job to some machine and add that job to the queue */
         //Create authentication
         GSIAuthenticationInfo authenticationInfo
@@ -92,11 +90,10 @@ public class AMQPMonitorTest {
                 7512, 17280000, certificateLocation);
 
         // Server info
-        ServerInfo serverInfo = new ServerInfo("ogce", "trestles.sdsc.edu");
+        ServerInfo serverInfo = new ServerInfo("ogce", hostDescription.getType().getHostAddress());
 
 
-        Cluster pbsCluster = new
-                PBSCluster(serverInfo, authenticationInfo, org.apache.airavata.gsi.ssh.util.CommonUtils.getPBSJobManager("/opt/torque/bin/"));
+        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/bin/"));
 
 
         // Execute command
@@ -122,17 +119,23 @@ public class AMQPMonitorTest {
         jobDescriptor.setInputValues(inputs);
         //finished construction of job object
         System.out.println(jobDescriptor.toXML());
-        String jobID = pbsCluster.submitBatchJob(jobDescriptor);
-        System.out.println(jobID);
-        try {
-            monitorManager.addAJobToMonitor(new MonitorID(hostDescription, jobID,null,null, "ogce"));
-        } catch (AiravataMonitorException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        for (int i = 0; i < 1; i++) {
+            String jobID = pbsCluster.submitBatchJob(jobDescriptor);
+            MonitorID monitorID = new MonitorID(hostDescription, jobID,null,null, "ogce");
+            monitorID.setAuthenticationInfo(authenticationInfo);
+            try {
+                monitorManager.addAJobToMonitor(monitorID);
+            }catch (InterruptedException e) {
+                e.printStackTrace();  
+            }
+            catch (AiravataMonitorException e) {
+                e.printStackTrace();
+            }
         }
         try {
-            Thread.sleep(10000);
+            Thread.sleep(10000000);
         } catch (InterruptedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
     }
 }

@@ -431,7 +431,6 @@ public class GFacImpl implements GFac {
             String sshPassword = configurationProperties.getProperty(Constants.SSH_PASSWORD);
             String sshPublicKey = configurationProperties.getProperty(Constants.SSH_PUBLIC_KEY);
             SSHSecurityContext sshSecurityContext = new SSHSecurityContext();
-            if (((SSHHostType) registeredHost.getType()).getHpcResource()) {
                 AuthenticationInfo authenticationInfo = null;
                 // we give higher preference to the password over keypair ssh authentication
                 if (sshPassword != null) {
@@ -443,8 +442,11 @@ public class GFacImpl implements GFac {
 
                 Cluster pbsCluster = null;
                 try {
-                    String installedParentPath = ((HpcApplicationDeploymentType)
-                            jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath();
+                    String installedParentPath = "/";
+                    if(((SSHHostType) registeredHost.getType()).getHpcResource()){
+                    	installedParentPath = ((HpcApplicationDeploymentType)
+                                jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath();
+                    }
                     pbsCluster = new PBSCluster(serverInfo, authenticationInfo,
                             CommonUtils.getPBSJobManager(installedParentPath));
                 } catch (SSHApiException e) {
@@ -452,13 +454,7 @@ public class GFacImpl implements GFac {
                 }
                 sshSecurityContext.setPbsCluster(pbsCluster);
                 sshSecurityContext.setUsername(sshUserName);
-            } else {
-                sshSecurityContext = new SSHSecurityContext();
-                sshSecurityContext.setUsername(sshUserName);
-                sshSecurityContext.setPrivateKeyLoc(sshPrivateKey);
-                sshSecurityContext.setKeyPass(sshPrivateKeyPass);
-            }
-            jobExecutionContext.addSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT, sshSecurityContext);
+           jobExecutionContext.addSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT, sshSecurityContext);
         }
     }
 
