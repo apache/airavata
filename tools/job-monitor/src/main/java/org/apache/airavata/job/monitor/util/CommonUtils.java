@@ -25,7 +25,10 @@ import org.apache.airavata.job.monitor.HostMonitorData;
 import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.UserMonitorData;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
+import org.apache.airavata.job.monitor.impl.push.amqp.AMQPMonitor;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 import java.util.List;
@@ -33,6 +36,8 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
 public class CommonUtils {
+    private final static Logger logger = LoggerFactory.getLogger(CommonUtils.class);
+
     public static boolean isPBSHost(HostDescription host){
         if("pbs".equals(((GsisshHostType)host.getType()).getJobManager()) ||
                 "".equals(((GsisshHostType)host.getType()).getJobManager())){
@@ -99,7 +104,16 @@ public class CommonUtils {
             throw new AiravataMonitorException(e);
         }
     }
-
+    public static boolean isTheLastJobInQueue(BlockingQueue<MonitorID> queue,MonitorID monitorID){
+        Iterator<MonitorID> iterator = queue.iterator();
+        while(iterator.hasNext()){
+            MonitorID next = iterator.next();
+            if(monitorID.getUserName().equals(next.getUserName()) && CommonUtils.isEqual(monitorID.getHost(),next.getHost())){
+                return false;
+            }
+        }
+        return true;
+    }
     public static void removeMonitorFromQueue(BlockingQueue<UserMonitorData> queue,MonitorID monitorID) throws AiravataMonitorException {
         Iterator<UserMonitorData> iterator = queue.iterator();
         while(iterator.hasNext()){
@@ -132,5 +146,21 @@ public class CommonUtils {
         throw new AiravataMonitorException("Cannot find the given MonitorID in the queue with userName " +
                 monitorID.getUserName() + "  and jobID " + monitorID.getJobID());
 
+    }
+
+    public static boolean isEqual(HostDescription host1,HostDescription host2) {
+        if ((host1.getType() instanceof GsisshHostType) && (host2.getType() instanceof GsisshHostType)) {
+            GsisshHostType hostType1 = (GsisshHostType)host1.getType();
+            GsisshHostType hostType2 = (GsisshHostType)host2.getType();
+            if(hostType1.getHostAddress().equals(hostType2.getHostAddress())
+                    && hostType1.getJobManager().equals(hostType2.getJobManager())
+                    && (hostType1.getPort() == hostType2.getPort())
+                    && hostType1.getMonitorMode().equals(hostType2.getMonitorMode())){
+                return true;
+            }
+        } else {
+            logger.error("This method is only impmlemented to handle Gsissh host types");
+        }
+        return false;
     }
 }
