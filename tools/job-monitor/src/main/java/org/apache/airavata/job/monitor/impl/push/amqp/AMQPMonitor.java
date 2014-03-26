@@ -87,6 +87,8 @@ public class AMQPMonitor extends PushMonitor {
         this.connectionName = connectionName;
         this.proxyPath = proxyPath;
         this.amqpHosts = hosts;
+        this.localPublisher = new MonitorPublisher(new EventBus());
+        this.localPublisher.registerListener(this);
     }
 
     public void initialize(String proxyPath, String connectionName, List<String> hosts) {
