@@ -106,7 +106,7 @@ public class AMQPMonitor extends PushMonitor {
         HostDescription host = monitorID.getHost();
         String hostAddress = host.getType().getHostAddress();
         // in amqp case there are no multiple jobs per each host, because once a job is put in to the queue it
-        // will be picked by the Monitor, so always new usermonitorData object will get create
+        // will be picked by the Monitor, so jobs will not stay in this queueu but jobs will stay in finishQueue
         String channelID = CommonUtils.getChannelID(monitorID);
         if(availableChannels.get(channelID) == null){
         try {
@@ -159,11 +159,10 @@ public class AMQPMonitor extends PushMonitor {
 
     @Subscribe
     public boolean unRegisterListener(MonitorID monitorID) throws AiravataMonitorException {
-        String channelID = CommonUtils.getChannelID(monitorID);
         Iterator<MonitorID> iterator = finishQueue.iterator();
         MonitorID next = null;
         while(iterator.hasNext()){
-             next = iterator.next();
+            next = iterator.next();
             if(next.getJobID().endsWith(monitorID.getJobID())){
                 break;
             }
@@ -172,21 +171,29 @@ public class AMQPMonitor extends PushMonitor {
             logger.error("Job has removed from the queue, old obsolete message recieved");
             return false;
         }
+        String channelID = CommonUtils.getChannelID(next);
         if (JobState.FAILED.equals(monitorID.getStatus()) || JobState.COMPLETE.equals(monitorID.getStatus())) {
             finishQueue.remove(next);
-            Channel channel = availableChannels.get(channelID);
-            if (channel == null) {
-                logger.error("Already Unregistered the listener");
-                throw new AiravataMonitorException("Already Unregistered the listener");
-            } else {
-                try {
-                    channel.queueUnbind(channel.queueDeclare().getQueue(), "glue2.computing_activity", CommonUtils.getRoutingKey(monitorID));
-                    channel.close();
-                    channel.getConnection().close();
-                    availableChannels.remove(channelID);
-                } catch (IOException e) {
-                    logger.error("Error unregistering the listener");
-                    throw new AiravataMonitorException("Error unregistering the listener");
+
+            // if this is the last job in the queue at this point with the same username and same host we
+            // close the channel and close the connection and remove it from availableChannels
+            if (CommonUtils.isTheLastJobInQueue(finishQueue, next)) {
+                logger.info("There are no jobs to monitor for common ChannelID:" + channelID + " , so we unsubscribe it" +
+                        ", incase new job created we do subscribe again");
+                Channel channel = availableChannels.get(channelID);
+                if (channel == null) {
+                    logger.error("Already Unregistered the listener");
+                    throw new AiravataMonitorException("Already Unregistered the listener");
+                } else {
+                    try {
+                        channel.queueUnbind(channel.queueDeclare().getQueue(), "glue2.computing_activity", CommonUtils.getRoutingKey(next));
+                        channel.close();
+                        channel.getConnection().close();
+                        availableChannels.remove(channelID);
+                    } catch (IOException e) {
+                        logger.error("Error unregistering the listener");
+                        throw new AiravataMonitorException("Error unregistering the listener");
+                    }
                 }
             }
         }

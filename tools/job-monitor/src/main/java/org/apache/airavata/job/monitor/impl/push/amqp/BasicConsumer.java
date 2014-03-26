@@ -64,7 +64,7 @@ public class BasicConsumer implements Consumer {
                                AMQP.BasicProperties properties,
                                byte[] body) {
 
-        logger.debug("  job update for: " + envelope.getRoutingKey());
+        logger.debug("job update for: " + envelope.getRoutingKey());
         String message = new String(body);
         message = message.replaceAll("(?m)^", "    ");
         // Here we parse the message and get the job status and push it
