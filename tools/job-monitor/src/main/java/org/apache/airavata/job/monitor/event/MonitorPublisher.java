@@ -41,4 +41,8 @@ public class MonitorPublisher {
     public void publish(JobStatus jobState) {
         eventBus.post(jobState);
     }
+
+    public void publish(MonitorID monitorID){
+        eventBus.post(monitorID);
+    }
 }

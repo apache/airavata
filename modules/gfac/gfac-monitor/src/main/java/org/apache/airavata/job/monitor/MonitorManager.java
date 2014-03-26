@@ -30,7 +30,6 @@ import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.impl.LocalJobMonitor;
 import org.apache.airavata.job.monitor.impl.pull.qstat.QstatMonitor;
 import org.apache.airavata.job.monitor.impl.push.amqp.AMQPMonitor;
-import org.apache.airavata.job.monitor.impl.push.amqp.UnRegisterWorker;
 import org.apache.airavata.job.monitor.util.CommonUtils;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryImpl;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
@@ -59,7 +58,7 @@ public class MonitorManager {
 
     private BlockingQueue<UserMonitorData> pullQueue;
 
-    private BlockingQueue<UserMonitorData> pushQueue;
+    private BlockingQueue<MonitorID> pushQueue;
 
     private BlockingQueue<MonitorID> localJobQueue;
 
@@ -77,11 +76,11 @@ public class MonitorManager {
         pullMonitors = new ArrayList<PullMonitor>();
         pushMonitors = new ArrayList<PushMonitor>();
         pullQueue = new LinkedBlockingQueue<UserMonitorData>();
-        pushQueue = new LinkedBlockingQueue<UserMonitorData>();
+        pushQueue = new LinkedBlockingQueue<MonitorID>();
         finishQueue = new LinkedBlockingQueue<MonitorID>();
         localJobQueue = new LinkedBlockingQueue<MonitorID>();
         monitorPublisher = new MonitorPublisher(new EventBus());
-        registerListener(new AiravataJobStatusUpdator(new RegistryImpl(), finishQueue));
+        registerListener(new AiravataJobStatusUpdator(new RegistryImpl(), getFinishQueue()));
     }
 
     /**
@@ -95,7 +94,6 @@ public class MonitorManager {
         monitor.setFinishQueue(this.getFinishQueue());
         monitor.setRunningQueue(this.getPushQueue());
         addPushMonitor(monitor);
-        registerListener(new UnRegisterWorker(monitor.getAvailableChannels()));
     }
 
 
@@ -167,7 +165,8 @@ public class MonitorManager {
                     || Constants.PULL.equals(host.getMonitorMode())) {
                 CommonUtils.addMonitortoQueue(pullQueue, monitorID);
             } else if (Constants.PUSH.equals(host.getMonitorMode())) {
-                CommonUtils.addMonitortoQueue(pushQueue, monitorID);
+                pushQueue.put(monitorID);
+                finishQueue.put(monitorID);
             }
         } else if(monitorID.getHost().getType() instanceof GlobusHostType){
             logger.error("Monitoring does not support GlubusHostType resources");
@@ -249,11 +248,11 @@ public class MonitorManager {
         this.finishQueue = finishQueue;
     }
 
-    public BlockingQueue<UserMonitorData> getPushQueue() {
+    public BlockingQueue<MonitorID> getPushQueue() {
         return pushQueue;
     }
 
-    public void setPushQueue(BlockingQueue<UserMonitorData> pushQueue) {
+    public void setPushQueue(BlockingQueue<MonitorID> pushQueue) {
         this.pushQueue = pushQueue;
     }
 

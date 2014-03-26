@@ -31,24 +31,23 @@ import org.apache.airavata.job.monitor.core.MessageParser;
 import org.apache.airavata.job.monitor.event.MonitorPublisher;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.state.JobStatus;
+import org.apache.airavata.model.workspace.experiment.JobState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Map;
 
 public class BasicConsumer implements Consumer {
     private final static Logger logger = LoggerFactory.getLogger(AMQPMonitor.class);
 
-    MessageParser parser;
+    private MessageParser parser;
 
-    MonitorPublisher publisher;
+    private MonitorPublisher publisher;
 
-    HostMonitorData hostMonitorData;
-
-    public BasicConsumer(MessageParser parser, MonitorPublisher publisher, HostMonitorData hostMonitorData) {
+    public BasicConsumer(MessageParser parser, MonitorPublisher publisher) {
         this.parser = parser;
         this.publisher = publisher;
-        this.hostMonitorData = hostMonitorData;
     }
 
     public void handleCancel(java.lang.String consumerTag) {
@@ -71,26 +70,15 @@ public class BasicConsumer implements Consumer {
         // Here we parse the message and get the job status and push it
         // to the Event bus, this will be picked by
 //        AiravataJobStatusUpdator and store in to registry
+
         logger.debug("************************************************************");
         logger.debug("AMQP Message recieved \n" + message);
         logger.debug("************************************************************");
         try {
             String jobID = envelope.getRoutingKey().split("\\.")[0];
-            List<MonitorID> monitorIDs = hostMonitorData.getMonitorIDs();
-            MonitorID currentMonitorID = null;
-            for(MonitorID iMonitorID:monitorIDs){
-                if(jobID.equals(iMonitorID.getJobID())){
-                   currentMonitorID = iMonitorID;
-                   break;
-                }
-            }
-            if(currentMonitorID == null) {
-                logger.error("Wrong message came for the Consumer, so skipping this notification");
-                return;
-            }
-            JobStatus jobStatus = parser.parseMessage(message, hostMonitorData);
-            jobStatus.setMonitorID(currentMonitorID);
-            publisher.publish(jobStatus);
+            MonitorID monitorID = new MonitorID(null, jobID, null, null, null);
+            monitorID.setStatus(parser.parseMessage(message));
+            publisher.publish(monitorID);
         } catch (AiravataMonitorException e) {
             e.printStackTrace();
         }

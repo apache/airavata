@@ -29,6 +29,7 @@ import org.apache.airavata.schemas.gfac.GsisshHostType;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
 public class CommonUtils {
@@ -50,7 +51,7 @@ public class CommonUtils {
         }
     }
     public static String getChannelID(MonitorID monitorID) {
-        return monitorID.getUserName() + "-" + monitorID.getHost().getType().getHostName() + "-" + monitorID.getJobID();
+        return monitorID.getUserName() + "-" + monitorID.getHost().getType().getHostName();
     }
 
     public static String getRoutingKey(MonitorID monitorID) {
@@ -132,4 +133,88 @@ public class CommonUtils {
                 monitorID.getUserName() + "  and jobID " + monitorID.getJobID());
 
     }
+
+    public static void addJobToMonitor(Map<String, UserMonitorData> queue, MonitorID monitorID) throws AiravataMonitorException {
+        Iterator<UserMonitorData> iterator = queue.values().iterator();
+        while (iterator.hasNext()) {
+            UserMonitorData next = iterator.next();
+            if (next.getUserName().equals(monitorID.getUserName())) {
+                // then this is the right place to update
+                List<HostMonitorData> monitorIDs = next.getHostMonitorData();
+                for (HostMonitorData host : monitorIDs) {
+                    if (host.getHost().equals(monitorID.getHost())) {
+                        // ok we found right place to add this monitorID
+                        host.addMonitorIDForHost(monitorID);
+                        return;
+                    }
+                }
+                // there is a userMonitor object for this user name but no Hosts for this host
+                // so we have to create new Hosts
+                HostMonitorData hostMonitorData = new HostMonitorData(monitorID.getHost());
+                hostMonitorData.addMonitorIDForHost(monitorID);
+                next.addHostMonitorData(hostMonitorData);
+                return;
+            }
+        }
+        HostMonitorData hostMonitorData = new HostMonitorData(monitorID.getHost());
+        hostMonitorData.addMonitorIDForHost(monitorID);
+
+        UserMonitorData userMonitorData = new UserMonitorData(monitorID.getUserName());
+        userMonitorData.addHostMonitorData(hostMonitorData);
+        queue.put(monitorID.getUserName(), userMonitorData);
+    }
+
+    public static HostMonitorData getHostMonitorData(Map<String, UserMonitorData> queue, MonitorID monitorID) throws AiravataMonitorException {
+        Iterator<UserMonitorData> iterator = queue.values().iterator();
+        while (iterator.hasNext()) {
+            UserMonitorData next = iterator.next();
+            if (next.getUserName().equals(monitorID.getUserName())) {
+                // then this is the right place to update
+                List<HostMonitorData> monitorIDs = next.getHostMonitorData();
+                for (HostMonitorData host : monitorIDs) {
+                    if (host.getHost().equals(monitorID.getHost())) {
+                        // ok we found right place to add this monitorID
+                        return host;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public static void removeJobFromMonitor(BlockingQueue<UserMonitorData> queue,MonitorID monitorID) throws AiravataMonitorException {
+        Iterator<UserMonitorData> iterator = queue.iterator();
+        while(iterator.hasNext()){
+            UserMonitorData next = iterator.next();
+            if(next.getUserName().equals(monitorID.getUserName())){
+                // then this is the right place to update
+                List<HostMonitorData> hostMonitorData = next.getHostMonitorData();
+                for(HostMonitorData iHostMonitorID:hostMonitorData){
+                    if(iHostMonitorID.getHost().equals(monitorID.getHost())) {
+                        List<MonitorID> monitorIDs = iHostMonitorID.getMonitorIDs();
+                        for(MonitorID iMonitorID:monitorIDs){
+                            if(iMonitorID.getJobID().equals(monitorID.getJobID())) {
+                                // OK we found the object, we cannot do list.remove(object) states of two objects
+                                // could be different, thats why we check the jobID
+                                monitorIDs.remove(iMonitorID);
+                                if(monitorIDs.size()==0) {
+                                    hostMonitorData.remove(iHostMonitorID);
+                                    if (hostMonitorData.size() == 0) {
+                                        // no useful data so we have to remove the element from the queue
+                                        queue.remove(next);
+                                    }
+                                }
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        throw new AiravataMonitorException("Cannot find the given MonitorID in the queue with userName " +
+                monitorID.getUserName() + "  and jobID " + monitorID.getJobID());
+
+    }
+
+
 }
