@@ -62,4 +62,8 @@ public class CommonUtils {
     public static JobManagerConfiguration getSLURMJobManager(String installedPath) {
         return new SlurmJobConfiguration("SLURMTemplate.xslt", ".slurm", installedPath, new SlurmOutputParser());
     }
+
+     public static JobManagerConfiguration getSGEJobManager(String installedPath) {
+        return new PBSJobConfiguration("SGETemplate.xslt", ".pbs", installedPath, new SGEOutputParser());
+    }
 }

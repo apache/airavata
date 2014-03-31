@@ -55,6 +55,14 @@ public class CommonUtils {
             return false;
         }
     }
+    public static boolean isSGE(HostDescription host){
+        if("sge".equals(((GsisshHostType)host.getType()).getJobManager())){
+         return true;
+        }else{
+            // default is pbs so we return true
+            return false;
+        }
+    }
     public static String getChannelID(MonitorID monitorID) {
         return monitorID.getUserName() + "-" + monitorID.getHost().getType().getHostName();
     }

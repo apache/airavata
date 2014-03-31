@@ -59,6 +59,8 @@ public class ResourceConnection {
                 jConfig = CommonUtils.getPBSJobManager(installedPath);
             } else if(org.apache.airavata.job.monitor.util.CommonUtils.isSlurm(monitorID.getHost())) {
                 jConfig = CommonUtils.getSLURMJobManager(installedPath);
+            } else if(org.apache.airavata.job.monitor.util.CommonUtils.isSGE(monitorID.getHost())) {
+                jConfig = CommonUtils.getSGEJobManager(installedPath);
             }
             //todo support br2 etc
         }
@@ -79,6 +81,8 @@ public class ResourceConnection {
                 jConfig = CommonUtils.getPBSJobManager(installedPath);
             } else if(org.apache.airavata.job.monitor.util.CommonUtils.isSlurm(hostMonitorData.getHost())) {
                 jConfig = CommonUtils.getSLURMJobManager(installedPath);
+            }else if(org.apache.airavata.job.monitor.util.CommonUtils.isSGE(hostMonitorData.getHost())) {
+                jConfig = CommonUtils.getSGEJobManager(installedPath);
             }
             //todo support br2 etc
         }
@@ -113,11 +117,11 @@ public class ResourceConnection {
         if(status != null){
             if("C".equals(status) || "CD".equals(status)|| "E".equals(status) || "CG".equals(status)){
                 return JobState.COMPLETE;
-            }else if("H".equals(status)){
+            }else if("H".equals(status) || "h".equals(status)){
                 return JobState.HELD;
-            }else if("Q".equals(status)){
+            }else if("Q".equals(status) || "qw".equals(status)){
                 return JobState.QUEUED;
-            }else if("R".equals(status)  || "CF".equals(status)){
+            }else if("R".equals(status)  || "CF".equals(status) || "r".equals(status)){
                 return JobState.ACTIVE;
             }else if ("T".equals(status)) {
                 return JobState.HELD;
@@ -129,7 +133,7 @@ public class ResourceConnection {
                 return JobState.CANCELED;
             }else if ("F".equals(status) || "NF".equals(status) || "TO".equals(status)) {
                 return JobState.FAILED;
-            }else if ("PR".equals(status)) {
+            }else if ("PR".equals(status) || "Er".equals(status)) {
                 return JobState.FAILED;
             }else if ("U".equals(status)){
                 return JobState.UNKNOWN;
