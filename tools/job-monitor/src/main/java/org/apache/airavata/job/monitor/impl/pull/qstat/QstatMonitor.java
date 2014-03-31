@@ -21,6 +21,7 @@
 package org.apache.airavata.job.monitor.impl.pull.qstat;
 
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.job.monitor.HostMonitorData;
 import org.apache.airavata.job.monitor.MonitorID;
@@ -109,12 +110,14 @@ public class QstatMonitor extends PullMonitor {
         UserMonitorData take = null;
         JobStatus jobStatus = new JobStatus();
         MonitorID currentMonitorID = null;
+        HostDescription currentHostDescription = null;
         try {
             take = this.queue.take();
             List<MonitorID> completedJobs = new ArrayList<MonitorID>();
             List<HostMonitorData> hostMonitorData = take.getHostMonitorData();
             for (HostMonitorData iHostMonitorData : hostMonitorData) {
                 if (iHostMonitorData.getHost().getType() instanceof GsisshHostType) {
+                    currentHostDescription = iHostMonitorData.getHost();
                     GsisshHostType gsisshHostType = (GsisshHostType) iHostMonitorData.getHost().getType();
                     String hostName = gsisshHostType.getHostAddress();
                     ResourceConnection connection = null;
@@ -183,16 +186,21 @@ public class QstatMonitor extends PullMonitor {
             } else if (e.getMessage().contains("illegally formed job identifier")) {
                 logger.error("Wrong job ID is given so dropping the job from monitoring system");
             } else if (!this.queue.contains(take)) {   // we put the job back to the queue only if its state is not unknown
-                if (currentMonitorID.getFailedCount() < 2) {
-                    try {
-                        currentMonitorID.setFailedCount(currentMonitorID.getFailedCount() + 1);
-                        this.queue.put(take);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
+                if (currentMonitorID == null) {
+                    logger.error("Monitoring the jobs failed, for user: " + take.getUserName()
+                            + " in Host: " + currentHostDescription.getType().getHostAddress());
                 } else {
-                    logger.error(e.getMessage());
-                    logger.error("Tried to monitor the job 3 times, so dropping of the the Job with ID: " + currentMonitorID.getJobID());
+                    if (currentMonitorID.getFailedCount() < 2) {
+                        try {
+                            currentMonitorID.setFailedCount(currentMonitorID.getFailedCount() + 1);
+                            this.queue.put(take);
+                        } catch (InterruptedException e1) {
+                            e1.printStackTrace();
+                        }
+                    } else {
+                        logger.error(e.getMessage());
+                        logger.error("Tried to monitor the job 3 times, so dropping of the the Job with ID: " + currentMonitorID.getJobID());
+                    }
                 }
             }
             throw new AiravataMonitorException("Error retrieving the job status", e);
