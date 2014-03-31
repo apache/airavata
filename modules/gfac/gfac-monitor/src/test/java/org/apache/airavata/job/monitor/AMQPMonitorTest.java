@@ -20,13 +20,6 @@
 */
 package org.apache.airavata.job.monitor;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
@@ -35,24 +28,27 @@ import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
-import org.apache.airavata.job.monitor.event.MonitorPublisher;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.impl.push.amqp.AMQPMonitor;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.eventbus.EventBus;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class AMQPMonitorTest {
+    private MonitorManager monitorManager;
+
     private String myProxyUserName;
     private String myProxyPassword;
     private String certificateLocation;
+    private String pbsFilePath;
     private String workingDirectory;
     private HostDescription hostDescription;
-    private BlockingQueue<MonitorID> amqpQueue;
-    private BlockingQueue<MonitorID> finishQueue;
-    private AMQPMonitor amqpMonitor;
+
     @Before
     public void setUp() throws Exception {
         System.setProperty("myproxy.user", "ogce");
@@ -69,12 +65,19 @@ public class AMQPMonitorTest {
                     "E.g :- mvn clean install -Dmyproxy.user=xxx -Dmyproxy.password=xxx -Dgsi.working.directory=/path<<<<<<<");
             throw new Exception("Need my proxy user name password to run tests.");
         }
-        amqpQueue = new LinkedBlockingQueue<MonitorID>();
-        finishQueue = new LinkedBlockingQueue<MonitorID>();
-        amqpMonitor = new
-                AMQPMonitor(new MonitorPublisher(new EventBus()),
-                amqpQueue,finishQueue,"/Users/lahirugunathilake/Downloads/x509up_u503876","xsede_private",
+
+        monitorManager = new MonitorManager();
+        AMQPMonitor amqpMonitor = new
+                AMQPMonitor(monitorManager.getMonitorPublisher(),
+                monitorManager.getPushQueue(), monitorManager.getFinishQueue(),"/Users/lahirugunathilake/Downloads/x509up_u503876","xsede_private",
                 Arrays.asList("info1.dyn.teragrid.org,info2.dyn.teragrid.org".split(",")));
+        try {
+            monitorManager.addPushMonitor(amqpMonitor);
+            monitorManager.launchMonitor();
+        } catch (AiravataMonitorException e) {
+            e.printStackTrace();
+        }
+
         hostDescription = new HostDescription(GsisshHostType.type);
         hostDescription.getType().setHostAddress("gordon.sdsc.xsede.org");
         hostDescription.getType().setHostName("gsissh-gordon");
@@ -122,8 +125,10 @@ public class AMQPMonitorTest {
         String jobID = pbsCluster.submitBatchJob(jobDescriptor);
         System.out.println(jobID);
         try {
-             amqpMonitor.registerListener(new MonitorID(hostDescription,jobID,null,null,myProxyUserName));
+            monitorManager.addAJobToMonitor(new MonitorID(hostDescription, jobID,null,null, "ogce"));
         } catch (AiravataMonitorException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (InterruptedException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         try {
