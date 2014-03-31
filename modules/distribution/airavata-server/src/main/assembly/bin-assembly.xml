@@ -127,6 +127,7 @@
                 <include>gfac-config.xml</include>
                 <include>PBSTemplate.xslt</include>
                 <include>SLURMTemplate.xslt</include>
+                <include>SGETemplate.xslt</include>
                 <include>gsissh.properties</include>
             </includes>
         </fileSet>
