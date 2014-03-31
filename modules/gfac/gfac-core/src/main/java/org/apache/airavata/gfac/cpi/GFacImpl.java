@@ -80,6 +80,9 @@ import java.util.*;
 public class GFacImpl implements GFac {
     private static final Logger log = LoggerFactory.getLogger(GFacImpl.class);
     public static final String ERROR_SENT = "ErrorSent";
+    public static final String PBS_JOB_MANAGER = "pbs";
+    public static final String SLURM_JOB_MANAGER = "slurm";
+    public static final String SUN_GRID_ENGINE_JOB_MANAGER = "sge";
 
     private Registry registry;
 
@@ -405,10 +408,12 @@ public class GFacImpl implements GFac {
                         log.error("No Job Manager is configured, so we are picking pbs as the default job manager");
                         jConfig = CommonUtils.getPBSJobManager(installedParentPath);
                     } else {
-                        if ("pbs".equalsIgnoreCase(jobManager)) {
+                        if (PBS_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
                             jConfig = CommonUtils.getPBSJobManager(installedParentPath);
-                        } else if ("slurm".equalsIgnoreCase(jobManager)) {
+                        } else if (SLURM_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
                             jConfig = CommonUtils.getSLURMJobManager(installedParentPath);
+                        } else if(SUN_GRID_ENGINE_JOB_MANAGER.equalsIgnoreCase(jobManager)){
+                            jConfig = CommonUtils.getSGEJobManager(installedParentPath);
                         }
                     }
                     pbsCluster = new PBSCluster(serverInfo, authenticationInfo, jConfig);

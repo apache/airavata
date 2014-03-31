@@ -446,6 +446,94 @@ public class DocumentCreator {
         }
     }
 
+    public void createSGEDocs() {
+        HostDescription host = new HostDescription(GsisshHostType.type);
+        host.getType().setHostAddress("lonestar.tacc.utexas.edu");
+        host.getType().setHostName("lonestar-host");
+        ((GsisshHostType) host.getType()).setJobManager("sge");
+        ((GsisshHostType) host.getType()).setInstalledPath("/opt/sge6.2/bin/lx24-amd64/");
+        ((GsisshHostType) host.getType()).setPort(22);
+        try {
+            airavataAPI.getApplicationManager().saveHostDescription(host);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        /*
+        * Service Description creation and saving
+        */
+        String serviceName = "SimpleEcho4";
+        ServiceDescription serv = new ServiceDescription();
+        serv.getType().setName(serviceName);
+
+        List<InputParameterType> inputList = new ArrayList<InputParameterType>();
+        List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
+
+
+        InputParameterType input = InputParameterType.Factory.newInstance();
+        input.setParameterName("echo_input");
+        ParameterType parameterType = input.addNewParameterType();
+        parameterType.setType(DataType.STRING);
+        parameterType.setName("String");
+
+        OutputParameterType output = OutputParameterType.Factory.newInstance();
+        output.setParameterName("echo_output");
+        ParameterType parameterType1 = output.addNewParameterType();
+        parameterType1.setType(DataType.STRING);
+        parameterType1.setName("String");
+
+        inputList.add(input);
+        outputList.add(output);
+
+        InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList.size()]);
+        OutputParameterType[] outputParamList = outputList.toArray(new OutputParameterType[outputList.size()]);
+
+        serv.getType().setInputParametersArray(inputParamList);
+        serv.getType().setOutputParametersArray(outputParamList);
+        try {
+            airavataAPI.getApplicationManager().saveServiceDescription(serv);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        /*
+           Application descriptor creation and saving
+        */
+        ApplicationDescription appDesc = new ApplicationDescription(HpcApplicationDeploymentType.type);
+        HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) appDesc.getType();
+        ApplicationDeploymentDescriptionType.ApplicationName name = ApplicationDeploymentDescriptionType.ApplicationName.Factory.newInstance();
+        name.setStringValue("EchoLocal");
+        app.setApplicationName(name);
+        ProjectAccountType projectAccountType = app.addNewProjectAccount();
+        projectAccountType.setProjectAccountNumber("TG-STA110014S");
+
+        QueueType queueType = app.addNewQueue();
+        queueType.setQueueName("normal");
+
+        app.setCpuCount(1);
+        app.setJobType(JobTypeType.SERIAL);
+        app.setNodeCount(1);
+        app.setProcessorsPerNode(1);
+        app.setMaxWallTime(10);
+        /*
+        * Use bat file if it is compiled on Windows
+        */
+        app.setExecutableLocation("/bin/echo");
+
+        /*
+        * Default tmp location
+        */
+        String tempDir = "/home1/01437/ogce";
+
+
+        app.setScratchWorkingDirectory(tempDir);
+        app.setInstalledParentPath("/opt/sge6.2/bin/lx24-amd64/");
+
+        try {
+            airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, "lonestar-host", appDesc);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
     public AiravataAPI getAiravataAPI() {
         return airavataAPI;
     }

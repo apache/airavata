@@ -60,8 +60,8 @@ public class CreateLaunchExperiment {
             AiravataUtils.setExecutionAsClient();
             final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavata.GetAPIVersion());
-            addDescriptors();
-            final String expId = createExperimentForLocalHost(airavata);
+//            addDescriptors();
+            final String expId = createExperimentForLonestar(airavata);
 //            final String expId = createExperimentForSSHHost(airavata);
 //            final String expId = createUS3ExperimentForTrestles(airavata);
 //            final String expId = createExperimentForStampede(airavata);
@@ -129,6 +129,7 @@ public class CreateLaunchExperiment {
             documentCreator.createGramDocs();
             documentCreator.createPBSDocsForOGCE();
             documentCreator.createSlurmDocs();
+            documentCreator.createSGEDocs();
         } catch (AiravataAPIInvocationException e) {
             logger.error("Unable to create airavata API", e.getMessage());
             throw new AiravataAPIInvocationException(e);
@@ -196,6 +197,8 @@ public class CreateLaunchExperiment {
             throw new TException(e);
         }
     }
+
+
     public static String createExperimentForLocalHost(Airavata.Client client) throws TException  {
         try{
             List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
@@ -324,7 +327,49 @@ public class CreateLaunchExperiment {
             throw new TException(e);
         }
     }
+       public static String createExperimentForLonestar(Airavata.Client client) throws TException  {
+        try{
+            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
+            DataObjectType input = new DataObjectType();
+            input.setKey("echo_input");
+            input.setType(DataType.STRING.toString());
+            input.setValue("echo_output=Hello World");
+            exInputs.add(input);
 
+            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
+            DataObjectType output = new DataObjectType();
+            output.setKey("echo_output");
+            output.setType(DataType.STRING.toString());
+            output.setValue("");
+            exOut.add(output);
+
+            Experiment simpleExperiment =
+                    ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho4", "SimpleEcho4", exInputs);
+            simpleExperiment.setExperimentOutputs(exOut);
+
+            ComputationalResourceScheduling scheduling =
+                    ExperimentModelUtil.createComputationResourceScheduling("lonestar.tacc.utexas.edu", 1, 1, 1, "normal", 0, 0, 1, "TG-STA110014S");
+            scheduling.setResourceHostId("lonestar-host");
+            UserConfigurationData userConfigurationData = new UserConfigurationData();
+            userConfigurationData.setAiravataAutoSchedule(false);
+            userConfigurationData.setOverrideManualScheduledParams(false);
+            userConfigurationData.setComputationalResourceScheduling(scheduling);
+            simpleExperiment.setUserConfigurationData(userConfigurationData);
+            return client.createExperiment(simpleExperiment);
+        } catch (AiravataSystemException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataSystemException(e);
+        } catch (InvalidRequestException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new InvalidRequestException(e);
+        } catch (AiravataClientException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataClientException(e);
+        }catch (TException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new TException(e);
+        }
+    }
     public static void launchExperiment (Airavata.Client client, String expId)
             throws TException{
         try {

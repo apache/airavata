@@ -20,6 +20,8 @@
 */
  package org.apache.airavata.gsi.ssh.impl;
 
+ import javax.print.attribute.standard.JobState;
+
  /**
   * This will contains all the PBS specific job statuses.
   * C -     Job is completed after having run/
@@ -33,7 +35,7 @@
   * S -  (Unicos only) job is suspend.
   */
  public enum JobStatus {
-     C, E, H, Q, R, T, W, S,U,F,CA,CD,CF,CG,NF,PD,PR,TO;
+     C, E, H, Q, R, T, W, S,U,F,CA,CD,CF,CG,NF,PD,PR,TO,qw,t,r,h,Er;
 
      public static JobStatus fromString(String status){
         if(status != null){
@@ -75,6 +77,16 @@
                 return JobStatus.TO;
             }else if("U".equals(status)){
                 return JobStatus.U;
+            }else if("qw".equals(status)){
+                return JobStatus.qw;
+            }else if("t".equals(status)){
+                return JobStatus.t;
+            }else if("r".equals(status)){
+                return JobStatus.r;
+            }else if("h".equals(status)){
+                return JobStatus.h;
+            }else if("Er".equals(status)){
+                return JobStatus.Er;
             }
         }
          return JobStatus.U;
