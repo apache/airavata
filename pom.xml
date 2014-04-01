@@ -445,6 +445,11 @@
                             <failIfNoTests>false</failIfNoTests>
                             <skipTests>${skipTests}</skipTests>
                             <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
+                            <!-- making sure that the sure-fire plugin doesn't run the integration tests-->
+                            <!-- Integration tests are run using the fail-safe plugin in the module pom-->
+                            <excludes>
+                                <exclude>**/IT.java</exclude>
+                            </excludes>
                         </configuration>
                     </plugin>
                 </plugins>

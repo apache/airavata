@@ -27,8 +27,12 @@ import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AiravataClientFactory {
+
+    private final static Logger logger = LoggerFactory.getLogger(AiravataClientFactory.class);
 
     public static Airavata.Client createAiravataClient(String serverHost, int serverPort){
         try {
@@ -37,7 +41,7 @@ public class AiravataClientFactory {
             TProtocol protocol = new TBinaryProtocol(transport);
             return new Airavata.Client(protocol);
         } catch (TTransportException e) {
-            e.printStackTrace();
+            logger.error("Unable to connect to the server at "+serverHost+":"+serverPort);
         }
         return null;
     }
