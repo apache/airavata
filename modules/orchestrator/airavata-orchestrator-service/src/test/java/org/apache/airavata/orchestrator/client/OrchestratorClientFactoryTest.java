@@ -33,7 +33,9 @@ import org.apache.airavata.model.workspace.experiment.ComputationalResourceSched
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
+import org.apache.airavata.orchestrator.client.util.Initialize;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
+import org.apache.airavata.orchestrator.server.OrchestratorServer;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.ParentDataType;
 import org.apache.airavata.registry.cpi.Registry;
@@ -50,16 +52,20 @@ public class OrchestratorClientFactoryTest {
     private OrchestratorService.Client orchestratorClient;
     private Registry registry;
     private int NUM_CONCURRENT_REQUESTS = 1;
+    Initialize initialize;
     @Before
     public void setUp() {
-        orchestratorClient = OrchestratorClientFactory.createOrchestratorClient("localhost", 8940);
+        initialize = new Initialize("registry-derby.sql");
+        initialize.initializeDB();
+        try {
+            new OrchestratorServer().start();
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
         registry = RegistryFactory.getDefaultRegistry();
         AiravataUtils.setExecutionAsServer();
         documentCreator = new DocumentCreator(getAiravataAPI());
         documentCreator.createLocalHostDocs();
-        documentCreator.createGramDocs();
-        documentCreator.createPBSDocsForOGCE();
-        documentCreator.createSlurmDocs();
     }
 
     private AiravataAPI getAiravataAPI() {
@@ -82,6 +88,8 @@ public class OrchestratorClientFactoryTest {
 
     @Test
     public void storeExperimentDetail() {
+        orchestratorClient = OrchestratorClientFactory.createOrchestratorClient("localhost", 8940);
+
             for (int i = 0; i < NUM_CONCURRENT_REQUESTS; i++) {
                 Thread thread = new Thread() {
                     public void run() {
@@ -101,11 +109,11 @@ public class OrchestratorClientFactoryTest {
                         exOut.add(output);
 
                         Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("project1",
-                                "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
+                                "admin", "echoExperiment", "SimpleEcho0", "SimpleEcho0", exInputs);
                         simpleExperiment.setExperimentOutputs(exOut);
 
-                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org", 1, 1, 1, "normal", 0, 0, 1, "TG-STA110014S");
-                        scheduling.setResourceHostId("stampede-host");
+                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("localhost", 1, 1, 1, "normal", 0, 0, 1, "TG-STA110014S");
+                        scheduling.setResourceHostId("localhost");
                         UserConfigurationData userConfigurationData = new UserConfigurationData();
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);

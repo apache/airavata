@@ -23,28 +23,7 @@
     <name>Provenance Registry Handler Sample</name>
     <url>http://airavata.apache.org/</url>
 
-    <!-- Edit the following properties. -->
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${surefire.version}</version>
-                <configuration>
-                    <includes>
-                        <include>**/*Suite.java</include>
-                    </includes>
-                    <excludes>
-                        <exclude>**/*Test.java</exclude>
-                        <exclude>**/*Tests.java</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
     <dependencies>
-
         <!-- AIRAVATA modules -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
