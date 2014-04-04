@@ -29,11 +29,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-message-monitor</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.axis2</groupId>
             <artifactId>axis2-codegen</artifactId>
             <version>${axis2.version}</version>
@@ -62,6 +57,11 @@
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-client-configuration</artifactId>
             <version>${project.version}</version>
+        </dependency>
+	<dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-message-monitor</artifactId>
+	    <version>${project.version}</version>
         </dependency>
     </dependencies>
 
