@@ -51,7 +51,13 @@
                 <include>INSTALL</include>
             </includes>
         </fileSet>
-
+	<fileSet>
+            <directory>${project.build.directory}/conf</directory>
+            <outputDirectory>conf</outputDirectory>
+	    <includes>
+                <include>*.properties</include>
+            </includes>
+        </fileSet>
         <fileSet>
             <directory>../../../samples/airavata-client</directory>
             <outputDirectory>samples</outputDirectory>

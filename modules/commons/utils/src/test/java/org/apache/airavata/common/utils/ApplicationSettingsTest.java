@@ -41,15 +41,15 @@ public class ApplicationSettingsTest extends TestCase {
 
         System.setProperty(AiravataUtils.EXECUTION_MODE, "SERVER");
         String url = ApplicationSettings.getAbsoluteSetting("registry.service.wsdl");
-        Assert.assertEquals("http://192.2.33.12:8080/airavata-server/services/RegistryService?wsdl", url);
+        Assert.assertEquals("http://localhost:8080/airavata-server/services/RegistryService?wsdl", url);
 
     }
 
     public void testGetAbsoluteSettingWithSpecialCharacters() throws Exception {
 
         System.setProperty(AiravataUtils.EXECUTION_MODE, "SERVER");
-        String url = ApplicationSettings.getAbsoluteSetting("registry.service.wsdl2");
-        Assert.assertEquals("http://localhost:8080/airavata-server/services/RegistryService?wsdl", url);
+        String url = ApplicationSettings.getAbsoluteSetting("system.user");
+        Assert.assertEquals("admin", url);
 
     }
 
