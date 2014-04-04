@@ -50,6 +50,11 @@
             <artifactId>airavata-api-server</artifactId>
             <version>${project.version}</version>
         </dependency>
+	<dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-server-configuration</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     
     <build>

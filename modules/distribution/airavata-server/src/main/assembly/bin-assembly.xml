@@ -32,28 +32,6 @@
     </formats>
 
     <fileSets>
-        <!-- ********************** copy axis2 distribution dependencies ********************** -->
-        <fileSet>
-            <directory>target/axis2-${used.axis2.release}/WEB-INF/lib</directory>
-            <outputDirectory>lib</outputDirectory>
-            <includes>
-                <include>*.jar</include>
-            </includes>
-            <excludes>
-                <exclude>commons-logging*.jar</exclude>
-                <exclude>xom*.jar</exclude>
-                <exclude>xercesImpl*.jar</exclude>
-                <exclude>icu4j*.jar</exclude>
-            </excludes>
-        </fileSet>
-        <fileSet>
-            <directory>target/axis2-${used.axis2.release}/WEB-INF/</directory>
-            <outputDirectory>repository</outputDirectory>
-            <includes>
-                <include>services/*</include>
-                <include>modules/*</include>
-            </includes>
-        </fileSet>
 
         <!-- ********************** copy release notes files ********************** -->
         <fileSet>
@@ -115,7 +93,7 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>src/main/resources/conf</directory>
+            <directory>${project.build.directory}/conf</directory>
             <outputDirectory>bin</outputDirectory>
             <includes>
                 <include>airavata-server.properties</include>

@@ -325,5 +325,10 @@
             <artifactId>httpcore</artifactId>
             <version>4.3</version>
         </dependency>
+	<dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-client-configuration</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
