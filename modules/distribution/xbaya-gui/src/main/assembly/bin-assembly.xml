@@ -64,11 +64,11 @@
                 <include>*.sh</include>
             </includes>
         </fileSet>
-        <fileSet>
-            <directory>src/main/resources/conf</directory>
+	<fileSet>
+            <directory>${project.build.directory}/</directory>
             <outputDirectory>bin</outputDirectory>
-            <includes>
-                <include>**/*</include>
+	    <includes>
+                <include>*.properties</include>
             </includes>
         </fileSet>
         <fileSet>
