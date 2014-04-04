@@ -19,6 +19,9 @@ http://airavata.apache.org/community/mailing-lists.html
 
 Description of Airavata Directory Structure
 ==================================
+    - airavata-api
+      This directory contains Airavata API related data models, api methods, generated server skeletons, client stubs, server implementations and client samples. 
+
     - modules
       This contains the source code of all the airavata maven projects organized as libraries, services and distributions
 
