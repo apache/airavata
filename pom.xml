@@ -462,7 +462,6 @@
             <modules>
                 <module>airavata-api</module>
                 <module>modules/gfac</module>
-                <module>modules/ws-messenger</module>
                 <module>modules/workflow-model</module>
                 <module>modules/commons</module>
                 <module>modules/registry</module>
@@ -475,6 +474,8 @@
                 <module>modules/test-suite</module>
                 <module>modules/distribution</module>
                 <module>modules/integration-tests</module>
+		<module>modules/configuration</module>
+		<module>modules/ws-messenger</module>
                 <!--module>modules/rest</module-->
                 <!--module>samples</module-->
                 <!--module>modules/xbaya-gui</module-->

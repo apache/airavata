@@ -63,6 +63,7 @@ public class RegistrySettings {
         } catch (Exception e) {
         	propertyLoadException=e;
         }
+        System.out.println(url);
     }
     
     private static void validateSuccessfulPropertyFileLoad() throws RegistrySettingsException{
