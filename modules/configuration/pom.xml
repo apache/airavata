@@ -17,7 +17,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>configuration</artifactId>
+    <artifactId>airavata-configuration</artifactId>
     <name>Airavata Configuration</name>
     <packaging>pom</packaging>
     <url>http://airavata.apache.org/</url>
