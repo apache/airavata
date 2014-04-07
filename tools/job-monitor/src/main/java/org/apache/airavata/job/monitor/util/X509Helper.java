@@ -20,17 +20,27 @@
 */
 package org.apache.airavata.job.monitor.util;
 
-import org.apache.airavata.common.utils.ServerSettings;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openssl.PEMReader;
-
-import java.io.*;
-import java.security.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.security.KeyPair;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
+
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.openssl.PEMReader;
 
 public class X509Helper {
 
@@ -118,8 +128,8 @@ public class X509Helper {
     public static KeyStore trustKeyStoreFromCertDir() throws IOException,
                                                              KeyStoreException,
                                                              CertificateException,
-                                                             NoSuchAlgorithmException {
-        return trustKeyStoreFromCertDir(ServerSettings.getProperties().getProperty("trusted.cert.location"));
+                                                             NoSuchAlgorithmException, ApplicationSettingsException {
+        return trustKeyStoreFromCertDir(ServerSettings.getSetting("trusted.cert.location"));
     }
 
     public static KeyStore trustKeyStoreFromCertDir(String certDir) throws IOException,

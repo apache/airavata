@@ -51,6 +51,11 @@
             <artifactId>airavata-model-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
+	<dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-server-configuration</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <properties>

@@ -57,6 +57,11 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+	<dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-server-configuration</artifactId>
+            <scope>test</scope>
+        </dependency>
         <!-- Axis2 for test only -->
         <dependency>
             <groupId>org.apache.axis2</groupId>

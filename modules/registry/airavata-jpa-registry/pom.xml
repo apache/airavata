@@ -113,6 +113,11 @@
             <version>${derby.version}</version>
             <scope>test</scope>
         </dependency>
+	<dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-client-configuration</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

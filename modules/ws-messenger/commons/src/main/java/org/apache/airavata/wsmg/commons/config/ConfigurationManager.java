@@ -54,7 +54,7 @@ public class ConfigurationManager {
         return Integer.parseInt(getConfig(configName, Integer.toString(defaultVal)));
     }
 
-    public long getConfig(String configName, long defaultVal) {
+    public long getConfig(String configName, long defaultVal) throws ApplicationSettingsException {
         return Long.parseLong(getConfig(configName, Long.toString(defaultVal)));
     }
 }

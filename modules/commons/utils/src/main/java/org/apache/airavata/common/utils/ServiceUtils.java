@@ -38,7 +38,7 @@ public class ServiceUtils {
     public static final String PORT = "port";
 
 	public static String generateServiceURLFromConfigurationContext(
-			ConfigurationContext context, String serviceName) throws IOException {
+			ConfigurationContext context, String serviceName) throws IOException, ApplicationSettingsException {
 //		URL url = ServiceUtils.class.getClassLoader()
 //				.getResource(REPOSITORY_PROPERTIES);
 		 String localAddress = null;

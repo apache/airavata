@@ -25,6 +25,7 @@ import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.Properties;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;
@@ -66,7 +67,11 @@ public class GSISecurityContext extends AbstractSecurityContext {
     // Set trusted cert path and add provider
     static {
         Security.addProvider(new GlobusProvider());
-        setUpTrustedCertificatePath();
+        try {
+			setUpTrustedCertificatePath();
+		} catch (ApplicationSettingsException e) {
+			log.error(e.getLocalizedMessage(), e);
+		}
     }
 
     public static void setUpTrustedCertificatePath(String trustedCertificatePath) {
@@ -82,10 +87,9 @@ public class GSISecurityContext extends AbstractSecurityContext {
         }
     }
 
-    private static void setUpTrustedCertificatePath() {
+    private static void setUpTrustedCertificatePath() throws ApplicationSettingsException {
 
-        Properties properties = ServerSettings.getProperties();
-        String trustedCertificatePath  = properties.getProperty(Constants.TRUSTED_CERT_LOCATION);
+        String trustedCertificatePath  = ServerSettings.getSetting(Constants.TRUSTED_CERT_LOCATION);
 
         setUpTrustedCertificatePath(trustedCertificatePath);
     }
@@ -118,8 +122,9 @@ public class GSISecurityContext extends AbstractSecurityContext {
      * remaining life time is less than CREDENTIAL_RENEWING_THRESH_HOLD, then renew credentials.
      * @return GSSCredentials to be used.
      * @throws GFacException If an error occurred while creating credentials.
+     * @throws ApplicationSettingsException 
      */
-    public GSSCredential getGssCredentials() throws GFacException {
+    public GSSCredential getGssCredentials() throws GFacException, ApplicationSettingsException {
 
         if (gssCredentials == null) {
 
@@ -157,8 +162,9 @@ public class GSISecurityContext extends AbstractSecurityContext {
      * use user name and password to renew credentials.
      * @return Renewed credentials.
      * @throws GFacException If an error occurred while renewing credentials.
+     * @throws ApplicationSettingsException 
      */
-    public GSSCredential renewCredentials() throws GFacException {
+    public GSSCredential renewCredentials() throws GFacException, ApplicationSettingsException {
 
         // First try to renew credentials as a trusted renewer
         try {
@@ -217,8 +223,9 @@ public class GSISecurityContext extends AbstractSecurityContext {
      * Gets the default proxy certificate.
      * @return Default my proxy credentials.
      * @throws GFacException If an error occurred while retrieving credentials.
+     * @throws ApplicationSettingsException 
      */
-    public GSSCredential getDefaultCredentials() throws GFacException{
+    public GSSCredential getDefaultCredentials() throws GFacException, ApplicationSettingsException{
         MyProxy myproxy = new MyProxy(getRequestData().getMyProxyServerUrl(), getRequestData().getMyProxyPort());
         try {
             return myproxy.get(getRequestData().getMyProxyUserName(), getRequestData().getMyProxyPassword(),
@@ -232,8 +239,9 @@ public class GSISecurityContext extends AbstractSecurityContext {
      * Gets a new proxy certificate given current credentials.
      * @return The short lived GSSCredentials
      * @throws GFacException If an error is occurred while retrieving credentials.
+     * @throws ApplicationSettingsException 
      */
-    public GSSCredential getProxyCredentials() throws GFacException {
+    public GSSCredential getProxyCredentials() throws GFacException, ApplicationSettingsException {
 
         MyProxy myproxy = new MyProxy(getRequestData().getMyProxyServerUrl(), getRequestData().getMyProxyPort());
         try {
@@ -256,8 +264,9 @@ public class GSISecurityContext extends AbstractSecurityContext {
      * > myproxy-init -A --cert /tmp/x509up_u501 --key /tmp/x509up_u501 -l ogce -s myproxy.teragrid.org
      * @return  Renewed credentials.
      * @throws GFacException If an error occurred while renewing credentials.
+     * @throws ApplicationSettingsException 
      */
-    public GSSCredential renewCredentialsAsATrustedHost() throws GFacException {
+    public GSSCredential renewCredentialsAsATrustedHost() throws GFacException, ApplicationSettingsException {
         MyProxy myproxy = new MyProxy(getRequestData().getMyProxyServerUrl(), getRequestData().getMyProxyPort());
 
         GetParams getParams = new GetParams();

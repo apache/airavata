@@ -104,7 +104,11 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-
+	    <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-server-configuration</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

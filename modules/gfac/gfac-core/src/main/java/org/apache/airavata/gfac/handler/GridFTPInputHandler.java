@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
@@ -109,7 +110,7 @@ public class GridFTPInputHandler extends AbstractHandler {
         jobExecutionContext.setInMessageContext(inputNew);
     }
 
-    private static String stageInputFiles(JobExecutionContext jobExecutionContext, String paramValue) throws URISyntaxException, SecurityException, ToolsException, IOException,GFacException {
+    private static String stageInputFiles(JobExecutionContext jobExecutionContext, String paramValue) throws URISyntaxException, SecurityException, ToolsException, IOException,GFacException, ApplicationSettingsException {
         URI gridftpURL = new URI(paramValue);
 
         String[] gridFTPEndpointArray = null;

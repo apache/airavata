@@ -86,6 +86,11 @@ the License. -->
             <version>6.1.1</version>
             <scope>test</scope>
         </dependency>
+	<dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-server-configuration</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

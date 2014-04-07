@@ -21,16 +21,17 @@
 
 package org.apache.airavata.wsmg.client.amqp;
 
-import org.apache.airavata.common.utils.ApplicationSettings;
-import org.apache.airavata.wsmg.client.amqp.rabbitmq.AMQPTopicReceiverImpl;
 import java.util.Properties;
+
+import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.wsmg.client.amqp.rabbitmq.AMQPTopicReceiverImpl;
 
 public class TopicSubscriber {
     public static void main(String args[]) throws AMQPException {
-        String host = ApplicationSettings.getSetting(AMQPUtil.CONFIG_AMQP_PROVIDER_HOST, "localhost");
-        String port = ApplicationSettings.getSetting(AMQPUtil.CONFIG_AMQP_PROVIDER_PORT, "5672");
-        String username = ApplicationSettings.getSetting(AMQPUtil.CONFIG_AMQP_PROVIDER_USERNAME, "guest");
-        String password = ApplicationSettings.getSetting(AMQPUtil.CONFIG_AMQP_PROVIDER_PASSWORD, "guest");
+        String host = ServerSettings.getSetting(AMQPUtil.CONFIG_AMQP_PROVIDER_HOST, "localhost");
+        String port = ServerSettings.getSetting(AMQPUtil.CONFIG_AMQP_PROVIDER_PORT, "5672");
+        String username = ServerSettings.getSetting(AMQPUtil.CONFIG_AMQP_PROVIDER_USERNAME, "guest");
+        String password = ServerSettings.getSetting(AMQPUtil.CONFIG_AMQP_PROVIDER_PASSWORD, "guest");
 
         Properties properties = new Properties();
         properties.setProperty(AMQPUtil.CONFIG_AMQP_PROVIDER_HOST, host);

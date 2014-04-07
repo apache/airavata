@@ -20,6 +20,10 @@
  */
 package org.apache.airavata.integration;
 
+import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.api.error.AiravataClientException;
@@ -29,18 +33,15 @@ import org.apache.airavata.api.error.InvalidRequestException;
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.ApplicationSettings;
+import org.apache.airavata.common.utils.ClientSettings;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.model.workspace.experiment.JobStatus;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 
 /**
  * this class contains the common utils across the single application integration tests
@@ -58,11 +59,9 @@ public class SingleAppIntegrationTestBase {
     //initializes the server
     protected void init() {
 
-        Properties clientProperties = new Properties();
         try {
-            clientProperties.load(getClass().getClassLoader().getResourceAsStream("airavata-client.properties"));
-            THRIFT_SERVER_HOST = clientProperties.getProperty("thrift.server.host");
-            THRIFT_SERVER_PORT = Integer.parseInt(clientProperties.getProperty("thrift.server.port"));
+            THRIFT_SERVER_HOST = ClientSettings.getSetting("thrift.server.host");
+            THRIFT_SERVER_PORT = Integer.parseInt(ClientSettings.getSetting("thrift.server.port"));
 
             //check the server startup + initialize the thrift client
             initClient();

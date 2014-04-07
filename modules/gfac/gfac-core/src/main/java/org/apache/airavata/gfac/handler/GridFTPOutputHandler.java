@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
@@ -271,7 +272,7 @@ public class GridFTPOutputHandler extends AbstractHandler {
         return buffer.toString();
     }
 
-    private static void stageOutputFiles(JobExecutionContext jobExecutionContext, String outputFileStagingPath) throws GFacProviderException,GFacException {
+    private static void stageOutputFiles(JobExecutionContext jobExecutionContext, String outputFileStagingPath) throws GFacProviderException,GFacException, ApplicationSettingsException {
 
 
     	   HostDescriptionType hostType = jobExecutionContext.getApplicationContext().getHostDescription().getType();

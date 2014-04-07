@@ -41,11 +41,17 @@ import org.apache.airavata.client.api.UserManager;
 import org.apache.airavata.client.api.WorkflowManager;
 import org.apache.airavata.client.api.builder.DescriptorBuilder;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.client.impl.*;
+import org.apache.airavata.client.impl.AiravataManagerImpl;
+import org.apache.airavata.client.impl.ApplicationManagerImpl;
+import org.apache.airavata.client.impl.CredentialStoreManagerImpl;
+import org.apache.airavata.client.impl.ExecutionManagerImpl;
+import org.apache.airavata.client.impl.PasswordCallBackImpl;
+import org.apache.airavata.client.impl.ProvenanceManagerImpl;
+import org.apache.airavata.client.impl.UserManagerImpl;
+import org.apache.airavata.client.impl.WorkflowManagerImpl;
 import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ApplicationSettings;
-import org.apache.airavata.common.utils.ClientSettings;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataRegistryFactory;
@@ -173,7 +179,7 @@ public class AiravataClient extends Observable implements AiravataAPI {
     private String getRegistryWebServiceWSDLUrl() throws AiravataAPIInvocationException {
         String registryUrl = null;
         try {
-            registryUrl = ApplicationSettings.getAbsoluteSetting("registry.service.wsdl");
+            registryUrl = ServerSettings.getSetting("registry.service.wsdl");
         } catch (ApplicationSettingsException e) {
             String msg = "Configuration registry.service.wsdl is not specified in the configuration file";
             log.warn(msg);

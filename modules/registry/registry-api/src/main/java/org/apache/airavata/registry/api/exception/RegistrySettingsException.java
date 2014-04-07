@@ -21,7 +21,9 @@
 
 package org.apache.airavata.registry.api.exception;
 
-public class RegistrySettingsException extends RegistryException {
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+
+public class RegistrySettingsException extends ApplicationSettingsException {
 
 	private static final long serialVersionUID = -4901850535475160411L;
 

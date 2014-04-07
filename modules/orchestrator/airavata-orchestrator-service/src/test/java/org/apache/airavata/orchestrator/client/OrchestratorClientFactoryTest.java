@@ -28,24 +28,12 @@ import org.apache.airavata.client.tools.DocumentCreator;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.model.util.ExperimentModelUtil;
-import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
-import org.apache.airavata.model.workspace.experiment.DataObjectType;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
 import org.apache.airavata.orchestrator.client.util.Initialize;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.server.OrchestratorServer;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.ParentDataType;
 import org.apache.airavata.registry.cpi.Registry;
-import org.apache.airavata.schemas.gfac.DataType;
-import org.apache.thrift.TException;
-import org.junit.Before;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class OrchestratorClientFactoryTest {
     private DocumentCreator documentCreator;
@@ -80,8 +68,8 @@ public class OrchestratorClientFactoryTest {
     private AiravataAPI getAiravataAPI() {
         AiravataAPI airavataAPI = null;
             try {
-                String systemUserName = ServerSettings.getSystemUser();
-                String gateway = ServerSettings.getSystemUserGateway();
+                String systemUserName = ServerSettings.getDefaultUser();
+                String gateway = ServerSettings.getDefaultUserGateway();
                 airavataAPI = AiravataAPIFactory.getAPI(gateway, systemUserName);
             } catch (ApplicationSettingsException e) {
                 e.printStackTrace();

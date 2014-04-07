@@ -41,6 +41,11 @@ public class ServerSettings extends ApplicationSettings{
     private static final String SYSTEM_USER="system.user";
     private static final String SYSTEM_USER_PASSWORD="system.password";
     private static final String SYSTEM_USER_GATEWAY="system.gateway";
+    
+    private static final String DEFAULT_USER="default.registry.user";
+    private static final String DEFAULT_USER_PASSWORD="default.registry.password";
+    private static final String DEFAULT_USER_GATEWAY="default.registry.gateway";
+    
     private static final String TOMCAT_PORT = "port";
     private static final String SERVER_CONTEXT_ROOT="server.context-root";
     private static String tomcatPort=null;
@@ -58,6 +63,18 @@ public class ServerSettings extends ApplicationSettings{
     private static final String HOST_SCHEDULER = "host.scheduler";
     private static boolean stopAllThreads = false;
 
+    public static String getDefaultUser() throws ApplicationSettingsException{
+    	return getSetting(DEFAULT_USER);
+    }
+    
+    public static String getDefaultUserPassword() throws ApplicationSettingsException{
+    	return getSetting(DEFAULT_USER_PASSWORD);
+    }
+    
+    public static String getDefaultUserGateway() throws ApplicationSettingsException{
+    	return getSetting(DEFAULT_USER_GATEWAY);
+    }
+    
     public static String getSystemUser() throws ApplicationSettingsException{
     	return getSetting(SYSTEM_USER);
     }
