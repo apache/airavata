@@ -44,6 +44,7 @@ public class OrchestratorClientFactoryTest {
     OrchestratorServer service;
     @Test
     public void setUp() {
+    	AiravataUtils.setExecutionAsServer();
         initialize = new Initialize("registry-derby.sql");
         initialize.initializeDB();
         try {

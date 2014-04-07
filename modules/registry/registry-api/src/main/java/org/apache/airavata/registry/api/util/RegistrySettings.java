@@ -22,10 +22,15 @@
 package org.apache.airavata.registry.api.util;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ApplicationSettings;
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.registry.api.exception.RegistrySettingsException;
 import org.apache.airavata.registry.api.exception.RegistrySettingsLoadException;
 
@@ -73,20 +78,39 @@ public class RegistrySettings {
     }
     
     public static String getSetting(String key) throws RegistrySettingsException{
-    	validateSuccessfulPropertyFileLoad();
-    	if (properties.containsKey(key)){
-    		return properties.getProperty(key);
+    	String rawValue=null;
+    	if (System.getProperties().containsKey(key)){
+    		rawValue=System.getProperties().getProperty(key);
+    	}else{
+    		validateSuccessfulPropertyFileLoad();
+	    	if (properties.containsKey(key)){
+	    		rawValue=properties.getProperty(key);
+	    	}else{
+	    		return null;		
+	    	}
     	}
-        return null;
+    	return deriveAbsoluteValueImpl(rawValue);
 //    	throw new UnspecifiedRegistrySettingsException(key);
     }
     
+	private static String deriveAbsoluteValueImpl(String property){
+		if (property!=null){
+			Map<Integer, String> containedParameters = StringUtil.getContainedParameters(property);
+			List<String> parametersAlreadyProcessed=new ArrayList<String>();
+			for (String parameter : containedParameters.values()) {
+				if (!parametersAlreadyProcessed.contains(parameter)) {
+					String parameterName = parameter.substring(2,parameter.length() - 1);
+					String parameterValue = getSetting(parameterName,parameter);
+					property = property.replaceAll(Pattern.quote(parameter), parameterValue);
+					parametersAlreadyProcessed.add(parameter);
+				}
+			}
+		}
+		return property;
+	}
     public static String getSetting(String key, String defaultValue){
     	try {
-			validateSuccessfulPropertyFileLoad();
-			if (properties.containsKey(key)){
-				return properties.getProperty(key);
-			}
+    		return getSetting(key);
 		} catch (RegistrySettingsException e) {
 			//we'll ignore this error since a default value is provided
 		}

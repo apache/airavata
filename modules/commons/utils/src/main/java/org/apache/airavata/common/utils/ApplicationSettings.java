@@ -43,6 +43,9 @@ import org.slf4j.LoggerFactory;
 public class ApplicationSettings {
     public static final String SERVER_PROPERTIES="airavata-server.properties";
     public static final String CLIENT_PROPERTIES="airavata-client.properties";
+    
+	public static String ADDITIONAL_SETTINGS_FILES = "external.settings";
+
 	protected Properties properties = new Properties();
     private Exception propertyLoadException;
 
@@ -69,6 +72,10 @@ public class ApplicationSettings {
 		URL url = getPropertyFileURL();
         try {
             properties.load(url.openStream());
+            URL[] externalSettingsFileURLs = getExternalSettingsFileURLs();
+            for (URL externalSettings : externalSettingsFileURLs) {
+				mergeSettingsImpl(externalSettings.openStream());
+			}
         } catch (Exception e) {
         	propertyLoadException=e;
         }
@@ -84,6 +91,22 @@ public class ApplicationSettings {
 		return url;
 	}
 	
+	protected URL[] getExternalSettingsFileURLs(){
+		try {
+			List<URL> externalSettingsFileURLs=new ArrayList<URL>();
+			String externalSettingsFileNames = getSettingImpl(ADDITIONAL_SETTINGS_FILES);
+			String[] externalSettingFiles = externalSettingsFileNames.split(",");
+			for (String externalSettingFile : externalSettingFiles) {
+				URL externalSettingFileURL = ApplicationSettings.class.getClassLoader().getResource(externalSettingFile);
+				if (externalSettingFileURL!=null){
+					externalSettingsFileURLs.add(externalSettingFileURL);
+				}
+			}
+			return externalSettingsFileURLs.toArray(new URL[]{});
+		} catch (ApplicationSettingsException e) {
+			return new URL[]{};
+		}
+	}
 	protected static ApplicationSettings getInstance(){
 		if (INSTANCE==null){
 			INSTANCE=new ApplicationSettings();
@@ -161,11 +184,18 @@ public class ApplicationSettings {
     }
     
     public String getSettingImpl(String key) throws ApplicationSettingsException{
-    	validateSuccessfulPropertyFileLoad();
-    	if (properties.containsKey(key)){
-    		return deriveAbsoluteValueImpl(properties.getProperty(key));
+    	String rawValue=null;
+    	if (System.getProperties().containsKey(key)){
+    		rawValue=System.getProperties().getProperty(key);
+    	}else{
+    		validateSuccessfulPropertyFileLoad();
+	    	if (properties.containsKey(key)){
+	    		rawValue=properties.getProperty(key);
+	    	}else{
+	    		throw new UnspecifiedApplicationSettingsException(key);		
+	    	}
     	}
-    	throw new UnspecifiedApplicationSettingsException(key);
+    	return deriveAbsoluteValueImpl(rawValue);
     }
     
     public String getSettingImpl(String key, String defaultValue){
