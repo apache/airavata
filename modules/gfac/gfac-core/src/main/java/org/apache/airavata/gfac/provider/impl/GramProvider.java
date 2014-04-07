@@ -24,7 +24,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.util.Calendar;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
@@ -45,12 +44,7 @@ import org.apache.airavata.gfac.utils.GramJobSubmissionListener;
 import org.apache.airavata.gfac.utils.GramProviderUtils;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
-import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
-import org.apache.airavata.model.workspace.experiment.JobStatus;
-import org.apache.airavata.registry.api.workflow.ApplicationJob;
-import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
-import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.globus.gram.GramException;
@@ -162,7 +156,9 @@ public class GramProvider extends AbstractProvider implements GFacProvider{
 
             submitJobs(gateKeeper, jobExecutionContext, host);
 
-        } finally {
+        } catch (ApplicationSettingsException e) {
+        	throw new GFacException(e.getMessage(), e);
+		} finally {
             if (job != null) {
                 try {
                 	 /*
@@ -299,10 +295,9 @@ public class GramProvider extends AbstractProvider implements GFacProvider{
 
     private void renewCredentials(GramJob gramJob, JobExecutionContext jobExecutionContext) throws GFacException {
 
-        GSSCredential gssCred = ((GSISecurityContext)jobExecutionContext.
-                getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).renewCredentials();
-
         try {
+        	GSSCredential gssCred = ((GSISecurityContext)jobExecutionContext.
+                    getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).renewCredentials();
             gramJob.renew(gssCred);
         } catch (GramException e1) {
             throw new GFacException("Unable to renew credentials. Job Id - "
@@ -310,7 +305,9 @@ public class GramProvider extends AbstractProvider implements GFacProvider{
         } catch (GSSException e1) {
             throw new GFacException("Unable to renew credentials. Job Id - "
                     + gramJob.getIDAsString(), e1);
-        }
+        } catch (ApplicationSettingsException e) {
+        	throw new GFacException(e.getLocalizedMessage(), e);
+		}
     }
 
     private void reSubmitJob(String gateKeeper,
@@ -389,23 +386,27 @@ public class GramProvider extends AbstractProvider implements GFacProvider{
 
         } else {
 
-            GSSCredential gssCred = ((GSISecurityContext)context.
-                    getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getGssCredentials();
-
-            GramJob gramJob = new GramJob(null);
             try {
-                gramJob.setID(jobId);
-            } catch (MalformedURLException e) {
-                throw new GFacException("Invalid job id - " + jobId, e);
-            }
-            gramJob.setCredentials(gssCred);
+				GSSCredential gssCred = ((GSISecurityContext)context.
+				        getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getGssCredentials();
 
-            synchronized (this) {
-                if (gramJob.getStatus() != GRAMConstants.STATUS_DONE ||
-                        gramJob.getStatus() != GRAMConstants.STATUS_FAILED) {
-                    cancelJob(gramJob, context);
-                }
-            }
+				GramJob gramJob = new GramJob(null);
+				try {
+				    gramJob.setID(jobId);
+				} catch (MalformedURLException e) {
+				    throw new GFacException("Invalid job id - " + jobId, e);
+				}
+				gramJob.setCredentials(gssCred);
+
+				synchronized (this) {
+				    if (gramJob.getStatus() != GRAMConstants.STATUS_DONE ||
+				            gramJob.getStatus() != GRAMConstants.STATUS_FAILED) {
+				        cancelJob(gramJob, context);
+				    }
+				}
+			} catch (ApplicationSettingsException e) {
+				throw new GFacException(e);
+			}
         }
     }
 

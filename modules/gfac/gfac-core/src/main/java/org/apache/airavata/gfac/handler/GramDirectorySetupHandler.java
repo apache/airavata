@@ -24,6 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
@@ -123,7 +124,9 @@ public class GramDirectorySetupHandler extends  AbstractHandler {
             }
         } catch (SecurityException e) {
             throw new GFacHandlerException(e.getMessage(), e);
-        }
+        } catch (ApplicationSettingsException e1) {
+        	throw new GFacHandlerException(e1.getMessage(), e1);
+		}
     }
 
     public void initProperties(Map<String, String> properties) throws GFacHandlerException, GFacException {

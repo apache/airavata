@@ -21,6 +21,10 @@
 
 package org.apache.airavata.orchestrator.server;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -40,8 +44,8 @@ import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
-import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.orchestrator.cpi.orchestrator_cpi_serviceConstants;
+import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.Registry;
@@ -49,10 +53,6 @@ import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.lang.String;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
 
 public class OrchestratorServerHandler implements OrchestratorService.Iface {
     private static Logger log = LoggerFactory.getLogger(OrchestratorServerHandler.class);
@@ -75,7 +75,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 
 
     public OrchestratorServerHandler() {
-        Properties properties = ServerSettings.getProperties();
         try {
             // first constructing the monitorManager and orchestrator, then fill the required properties
             monitorManager = new MonitorManager();
@@ -84,23 +83,23 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 
             // Filling monitorManager properties
             // we can keep a single user to do all the monitoring authentication for required machine..
-            String myProxyUser = properties.getProperty("myproxy.user");
-            String myProxyPass = properties.getProperty("myproxy.pass");
-            String certPath = properties.getProperty("trusted.cert.location");
-            String myProxyServer = properties.getProperty("myproxy.server");
+            String myProxyUser = ServerSettings.getSetting("myproxy.user");
+            String myProxyPass = ServerSettings.getSetting("myproxy.pass");
+            String certPath = ServerSettings.getSetting("trusted.cert.location");
+            String myProxyServer = ServerSettings.getSetting("myproxy.server");
             authenticationInfo = new MyProxyAuthenticationInfo(myProxyUser, myProxyPass, myProxyServer,
                     7512, 17280000, certPath);
 
             // loading Monitor configuration
-            String monitors = properties.getProperty("monitors");
+            String monitors = ServerSettings.getSetting("monitors");
             if(monitors == null) {
                 log.error("No Monitor is configured, so job monitoring will not monitor any job");
                 return;
             }
             List<String> monitorList = Arrays.asList(monitors.split(","));
-            List<String> list = Arrays.asList(properties.getProperty("amqp.hosts").split(","));
-            String proxyPath = properties.getProperty("proxy.file.path");
-            String connectionName = properties.getProperty("connection.name");
+            List<String> list = Arrays.asList(ServerSettings.getSetting("amqp.hosts").split(","));
+            String proxyPath = ServerSettings.getSetting("proxy.file.path");
+            String connectionName = ServerSettings.getSetting("connection.name");
 
             if (monitors == null) {
                 log.error("Error loading primaryMonitor and there has to be a primary monitor");
@@ -139,7 +138,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             e.printStackTrace();
         } catch (AiravataMonitorException e) {
             e.printStackTrace();
-        }
+        } catch (ApplicationSettingsException e) {
+			e.printStackTrace();
+		}
     }
 
     /**

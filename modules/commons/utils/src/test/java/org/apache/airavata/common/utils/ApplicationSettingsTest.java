@@ -23,12 +23,6 @@ package org.apache.airavata.common.utils;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * User: AmilaJ (amilaj@apache.org)
@@ -40,7 +34,7 @@ public class ApplicationSettingsTest extends TestCase {
     public void testGetAbsoluteSetting() throws Exception {
 
         System.setProperty(AiravataUtils.EXECUTION_MODE, "SERVER");
-        String url = ApplicationSettings.getAbsoluteSetting("registry.service.wsdl");
+        String url = ServerSettings.getSetting("registry.service.wsdl");
         Assert.assertEquals("http://localhost:8080/airavata-server/services/RegistryService?wsdl", url);
 
     }
@@ -48,7 +42,7 @@ public class ApplicationSettingsTest extends TestCase {
     public void testGetAbsoluteSettingWithSpecialCharacters() throws Exception {
 
         System.setProperty(AiravataUtils.EXECUTION_MODE, "SERVER");
-        String url = ApplicationSettings.getAbsoluteSetting("system.user");
+        String url = ServerSettings.getSetting("system.user");
         Assert.assertEquals("admin", url);
 
     }

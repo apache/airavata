@@ -102,7 +102,11 @@
             <artifactId>airavata-registry-service</artifactId>
             <version>${project.version}</version>
         </dependency-->
-
+	<dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-client-configuration</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>

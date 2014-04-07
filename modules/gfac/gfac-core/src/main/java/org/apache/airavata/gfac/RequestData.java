@@ -27,9 +27,8 @@ package org.apache.airavata.gfac;
  * Time: 3:28 PM
  */
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-
-import java.util.Properties;
 
 /**
  * Encapsulates GFac specific data that are coming in the request.
@@ -87,13 +86,10 @@ public class RequestData {
         this.gatewayId = gatewayId;
     }
 
-    public String getMyProxyServerUrl() {
-
+    public String getMyProxyServerUrl() throws ApplicationSettingsException {
         if (myProxyServerUrl == null) {
-            Properties properties = ServerSettings.getProperties();
-            myProxyServerUrl = properties.getProperty(Constants.MYPROXY_SERVER);
+            myProxyServerUrl = ServerSettings.getSetting(Constants.MYPROXY_SERVER);
         }
-
         return myProxyServerUrl;
     }
 
@@ -104,14 +100,8 @@ public class RequestData {
     public int getMyProxyPort() {
 
         if (myProxyPort == 0) {
-            Properties properties = ServerSettings.getProperties();
-            String sPort = properties.getProperty(Constants.MYPROXY_SERVER_PORT);
-
-            if (sPort != null) {
-                myProxyPort = Integer.parseInt(sPort);
-            } else {
-                myProxyPort = DEFAULT_MY_PROXY_PORT;
-            }
+            String sPort = ServerSettings.getSetting(Constants.MYPROXY_SERVER_PORT, Integer.toString(DEFAULT_MY_PROXY_PORT));
+            myProxyPort = Integer.parseInt(sPort);
         }
 
         return myProxyPort;
@@ -121,10 +111,9 @@ public class RequestData {
         this.myProxyPort = myProxyPort;
     }
 
-    public String getMyProxyUserName() {
+    public String getMyProxyUserName() throws ApplicationSettingsException {
         if (myProxyUserName == null) {
-            Properties properties = ServerSettings.getProperties();
-            myProxyUserName = properties.getProperty(Constants.MYPROXY_USER);
+            myProxyUserName = ServerSettings.getSetting(Constants.MYPROXY_USER);
         }
 
         return myProxyUserName;
@@ -134,27 +123,19 @@ public class RequestData {
         this.myProxyUserName = myProxyUserName;
     }
 
-    public String getMyProxyPassword() {
+    public String getMyProxyPassword() throws ApplicationSettingsException {
 
         if (myProxyPassword == null) {
-            Properties properties = ServerSettings.getProperties();
-            myProxyPassword = properties.getProperty(Constants.MYPROXY_PASS);
+            myProxyPassword = ServerSettings.getSetting(Constants.MYPROXY_PASS);
         }
 
         return myProxyPassword;
     }
 
     public int getMyProxyLifeTime() {
-
-        Properties properties = ServerSettings.getProperties();
-        String life = properties.getProperty(Constants.MYPROXY_LIFE);
-
-        if (life == null) {
-            return myProxyLifeTime;
-        } else {
-            myProxyLifeTime = Integer.parseInt(life);
-            return myProxyLifeTime;
-        }
+        String life = ServerSettings.getSetting(Constants.MYPROXY_LIFE,Integer.toString(myProxyLifeTime));
+        myProxyLifeTime = Integer.parseInt(life);
+        return myProxyLifeTime;
     }
 
     public void setMyProxyLifeTime(int myProxyLifeTime) {

@@ -34,6 +34,7 @@ import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.exception.AiravataConfigurationException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.orchestrator.core.OrchestratorConfiguration;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
@@ -129,7 +130,9 @@ public abstract class AbstractOrchestrator implements Orchestrator {
             logger.error("Failed to initializing Orchestrator - Error parsing configuration files");
             OrchestratorException orchestratorException = new OrchestratorException(e);
             throw orchestratorException;
-        }
+		} catch (ApplicationSettingsException e) {
+			throw new OrchestratorException(e);
+		}
     }
 	
 	//get the registry URL and the credentials from the property file

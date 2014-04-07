@@ -21,6 +21,7 @@
 package org.apache.airavata.gfac.cpi;
 
 import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -339,7 +340,7 @@ public class GFacImpl implements GFac {
     }
 
     private void addSecurityContext(HostDescription registeredHost, Properties configurationProperties,
-                                    JobExecutionContext jobExecutionContext) throws GFacException {
+                                    JobExecutionContext jobExecutionContext) throws GFacException, ApplicationSettingsException {
         RequestData requestData;
         if (registeredHost.getType() instanceof GlobusHostType || registeredHost.getType() instanceof UnicoreHostType
                 || registeredHost.getType() instanceof GsisshHostType) {

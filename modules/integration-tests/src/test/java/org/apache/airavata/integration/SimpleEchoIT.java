@@ -21,30 +21,20 @@
 
 package org.apache.airavata.integration;
 
-import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.api.error.AiravataClientException;
-import org.apache.airavata.api.error.AiravataSystemException;
-import org.apache.airavata.api.error.ExperimentNotFoundException;
-import org.apache.airavata.api.error.InvalidRequestException;
-import org.apache.airavata.client.AiravataAPIFactory;
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.airavata.client.tools.DocumentCreator;
 import org.apache.airavata.model.util.ExperimentModelUtil;
-import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.model.workspace.experiment.DataObjectType;
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
 import org.apache.airavata.schemas.gfac.DataType;
-import org.apache.airavata.server.ServerMain;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class SimpleEchoIT extends SingleAppIntegrationTestBase {
     private final static Logger log = LoggerFactory.getLogger(SimpleEchoIT.class);

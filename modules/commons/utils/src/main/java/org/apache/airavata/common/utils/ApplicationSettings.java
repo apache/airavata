@@ -40,11 +40,11 @@ import org.apache.airavata.common.exception.UnspecifiedApplicationSettingsExcept
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class ApplicationSettings {
+public class ApplicationSettings {
     public static final String SERVER_PROPERTIES="airavata-server.properties";
     public static final String CLIENT_PROPERTIES="airavata-client.properties";
-	private static Properties properties = new Properties();
-    private static Exception propertyLoadException;
+	protected Properties properties = new Properties();
+    private Exception propertyLoadException;
 
 
     protected static final String TRUST_STORE_PATH="trust.store";
@@ -55,15 +55,17 @@ public abstract class ApplicationSettings {
     private final static Logger logger = LoggerFactory.getLogger(ApplicationSettings.class);
 
     private static final String SHUTDOWN_STATEGY_STRING="shutdown.strategy";
+    
+    protected static ApplicationSettings INSTANCE;
     public static enum ShutdownStrategy{
     	NONE,
     	SELF_TERMINATE
     }
-    static{
+    {
     	loadProperties();
     }
 
-	private static void loadProperties() {
+	private void loadProperties() {
 		URL url = getPropertyFileURL();
         try {
             properties.load(url.openStream());
@@ -72,7 +74,7 @@ public abstract class ApplicationSettings {
         }
 	}
 
-	private static URL getPropertyFileURL() {
+	protected URL getPropertyFileURL() {
 		URL url;
 		if (AiravataUtils.isClient()){
             url=ApplicationSettings.class.getClassLoader().getResource(CLIENT_PROPERTIES);
@@ -82,7 +84,18 @@ public abstract class ApplicationSettings {
 		return url;
 	}
 	
-	private static void saveProperties() throws ApplicationSettingsStoreException{
+	protected static ApplicationSettings getInstance(){
+		if (INSTANCE==null){
+			INSTANCE=new ApplicationSettings();
+		}
+		return INSTANCE;
+	}
+	
+	protected static void setInstance(ApplicationSettings settingsInstance){
+		INSTANCE=settingsInstance;
+	}
+	
+	private void saveProperties() throws ApplicationSettingsStoreException{
 		URL url = getPropertyFileURL();
 		if (url.getProtocol().equalsIgnoreCase("file")){
 			try {
@@ -95,7 +108,7 @@ public abstract class ApplicationSettings {
 		}
 	}
 	
-    private static void validateSuccessfulPropertyFileLoad() throws ApplicationSettingsException{
+    private void validateSuccessfulPropertyFileLoad() throws ApplicationSettingsException{
     	if (propertyLoadException!=null){
     		throw new ApplicationSettingsLoadException(propertyLoadException);
     	}
@@ -112,7 +125,7 @@ public abstract class ApplicationSettings {
      * @throws ApplicationSettingsException If an error occurred while reading configurations.
      * @deprecated use #getSetting(String) instead
      */
-    public static String getAbsoluteSetting(String key) throws ApplicationSettingsException {
+    public String getAbsoluteSetting(String key) throws ApplicationSettingsException {
 
         String configurationValueWithVariables = ApplicationSettings.getSetting(key);
 
@@ -147,27 +160,24 @@ public abstract class ApplicationSettings {
         return matches;
     }
     
-    public static String getSetting(String key) throws ApplicationSettingsException{
+    public String getSettingImpl(String key) throws ApplicationSettingsException{
     	validateSuccessfulPropertyFileLoad();
     	if (properties.containsKey(key)){
-    		return deriveAbsoluteValue(properties.getProperty(key));
+    		return deriveAbsoluteValueImpl(properties.getProperty(key));
     	}
     	throw new UnspecifiedApplicationSettingsException(key);
     }
     
-    public static String getSetting(String key, String defaultValue){
+    public String getSettingImpl(String key, String defaultValue){
     	try {
-			validateSuccessfulPropertyFileLoad();
-			if (properties.containsKey(key)){
-				return deriveAbsoluteValue(properties.getProperty(key));
-			}
+    		return getSettingImpl(key);
 		} catch (ApplicationSettingsException e) {
 			//we'll ignore this error since a default value is provided
 		}
 		return defaultValue;
     }
 
-	private static String deriveAbsoluteValue(String property) {
+	private String deriveAbsoluteValueImpl(String property){
 		if (property!=null){
 			Map<Integer, String> containedParameters = StringUtil.getContainedParameters(property);
 			List<String> parametersAlreadyProcessed=new ArrayList<String>();
@@ -183,14 +193,121 @@ public abstract class ApplicationSettings {
 		return property;
 	}
     
-    public static void setSetting(String key, String value) throws ApplicationSettingsException{
+    public void setSettingImpl(String key, String value) throws ApplicationSettingsException{
     	properties.setProperty(key, value);
     	saveProperties();
     }
     
-    public static boolean isSettingDefined(String key) throws ApplicationSettingsException{
+    public boolean isSettingDefinedImpl(String key) throws ApplicationSettingsException{
     	validateSuccessfulPropertyFileLoad();
     	return properties.containsKey(key);
+    }
+
+    public String getTrustStorePathImpl() throws ApplicationSettingsException {
+        return getSetting(TRUST_STORE_PATH);
+    }
+
+    public String getTrustStorePasswordImpl() throws ApplicationSettingsException {
+        return getSetting(TRUST_STORE_PASSWORD);
+    }
+
+    public String getCredentialStoreKeyStorePathImpl() throws ApplicationSettingsException {
+        return getSetting("credential.store.keystore.url");
+    }
+
+    public String getCredentialStoreKeyAliasImpl() throws ApplicationSettingsException {
+        return getSetting("credential.store.keystore.alias");
+    }
+
+    public String getCredentialStoreKeyStorePasswordImpl() throws ApplicationSettingsException {
+        return getSetting("credential.store.keystore.password");
+    }
+
+    public String getCredentialStoreNotifierEnabledImpl() throws ApplicationSettingsException {
+        return getSetting("notifier.enabled");
+    }
+
+    public String getCredentialStoreNotifierDurationImpl() throws ApplicationSettingsException {
+        return getSetting("notifier.duration");
+    }
+
+    public String getCredentialStoreEmailServerImpl() throws ApplicationSettingsException {
+        return getSetting("email.server");
+    }
+
+    public String getCredentialStoreEmailServerPortImpl() throws ApplicationSettingsException {
+        return getSetting("email.server.port");
+    }
+
+    public String getCredentialStoreEmailUserImpl() throws ApplicationSettingsException {
+        return getSetting("email.user");
+    }
+
+    public String getCredentialStoreEmailPasswordImpl() throws ApplicationSettingsException {
+        return getSetting("email.password");
+    }
+
+    public String getCredentialStoreEmailSSLConnectImpl() throws ApplicationSettingsException {
+        return getSetting("email.ssl");
+    }
+
+    public String getCredentialStoreEmailFromEmailImpl() throws ApplicationSettingsException {
+        return getSetting("email.from");
+    }
+
+    /**
+     * @deprecated use {{@link #getSetting(String)}}
+     * @return
+     */
+    public Properties getPropertiesImpl() {
+        return properties;
+    }
+    
+    public void mergeSettingsImpl(Map<String,String> props){
+    	properties.putAll(props);
+    }
+    
+    public void mergeSettingsImpl(InputStream stream) throws IOException{
+    	Properties tmpProp = new Properties();
+    	tmpProp.load(stream);
+    	properties.putAll(tmpProp);
+    }
+    
+    public void mergeSettingsCommandLineArgsImpl(String[] args){
+    	properties.putAll(StringUtil.parseCommandLineOptions(args));
+    }
+ 
+    public ShutdownStrategy getShutdownStrategyImpl() throws Exception{
+    	String strategy = null;
+    	try {
+			strategy = getSetting(SHUTDOWN_STATEGY_STRING, ShutdownStrategy.SELF_TERMINATE.toString());
+			return ShutdownStrategy.valueOf(strategy);
+		} catch (Exception e) {
+			//if the string mentioned in config is invalid
+			throw new Exception("Invalid shutdown strategy configured : "+strategy);
+		}
+    }
+    
+    /*
+     * Static methods which will be used by the users
+     */
+    
+    public static String getSetting(String key) throws ApplicationSettingsException{
+    	return getInstance().getSettingImpl(key);
+    }
+    
+    public static String getSetting(String key, String defaultValue){
+    	return getInstance().getSettingImpl(key,defaultValue);
+
+    }
+    
+    public static void setSetting(String key, String value) throws ApplicationSettingsException{
+    	getInstance().properties.setProperty(key, value);
+    	getInstance().saveProperties();
+    }
+    
+    public static boolean isSettingDefined(String key) throws ApplicationSettingsException{
+    	return getInstance().properties.containsKey(key);
     }
 
     public static String getTrustStorePath() throws ApplicationSettingsException {
@@ -252,33 +369,25 @@ public abstract class ApplicationSettings {
     /**
      * @deprecated use {{@link #getSetting(String)}}
      * @return
+     * @throws ApplicationSettingsException 
      */
-    public static Properties getProperties() {
-        return properties;
+    public static Properties getProperties() throws ApplicationSettingsException {
+        return getInstance().properties;
     }
     
-    public static void mergeSettings(Map<String,String> props){
-    	properties.putAll(props);
+    public static void mergeSettings(Map<String,String> props) {
+    	getInstance().mergeSettingsImpl(props);
     }
     
     public static void mergeSettings(InputStream stream) throws IOException{
-    	Properties tmpProp = new Properties();
-    	tmpProp.load(stream);
-    	properties.putAll(tmpProp);
+    	getInstance().mergeSettingsImpl(stream);
     }
     
     public static void mergeSettingsCommandLineArgs(String[] args){
-    	properties.putAll(StringUtil.parseCommandLineOptions(args));
+    	getInstance().mergeSettingsCommandLineArgsImpl(args);
     }
  
     public static ShutdownStrategy getShutdownStrategy() throws Exception{
-    	String strategy = null;
-    	try {
-			strategy = getSetting(SHUTDOWN_STATEGY_STRING, ShutdownStrategy.SELF_TERMINATE.toString());
-			return ShutdownStrategy.valueOf(strategy);
-		} catch (Exception e) {
-			//if the string mentioned in config is invalid
-			throw new Exception("Invalid shutdown strategy configured : "+strategy);
-		}
+    	return getInstance().getShutdownStrategyImpl();
     }
 }

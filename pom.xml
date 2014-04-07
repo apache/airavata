@@ -360,6 +360,16 @@
                 <artifactId>bcprov-jdk16</artifactId>
                 <version>${bouncy.castle.version}</version>
             </dependency>
+	    <dependency>
+		 <groupId>org.apache.airavata</groupId>
+		 <artifactId>airavata-server-configuration</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+	    <dependency>
+		 <groupId>org.apache.airavata</groupId>
+		 <artifactId>airavata-client-configuration</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

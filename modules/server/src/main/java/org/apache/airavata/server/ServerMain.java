@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ApplicationSettings.ShutdownStrategy;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.IServer.ServerStatus;
@@ -89,6 +90,7 @@ public class ServerMain {
 	}
 
 	public static void main(String args[]) throws ParseException, IOException {
+		AiravataUtils.setExecutionAsServer();
 		CommandLineParameters commandLineParameters = StringUtil.getCommandLineParser(args);
 		if (commandLineParameters.getArguments().contains("stop")){
 			performServerStopRequest(commandLineParameters);

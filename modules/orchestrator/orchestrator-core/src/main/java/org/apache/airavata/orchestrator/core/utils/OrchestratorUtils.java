@@ -20,9 +20,11 @@
 */
 package org.apache.airavata.orchestrator.core.utils;
 
+import java.io.IOException;
+
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.orchestrator.core.OrchestratorConfiguration;
@@ -36,27 +38,22 @@ import org.apache.airavata.registry.api.exception.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.*;
-
 /**
  * This contains orchestrator specific utilities
  */
 public class OrchestratorUtils {
     private final static Logger logger = LoggerFactory.getLogger(OrchestratorUtils.class);
 
-    public static OrchestratorConfiguration loadOrchestratorConfiguration() throws OrchestratorException, IOException {
+    public static OrchestratorConfiguration loadOrchestratorConfiguration() throws OrchestratorException, IOException, NumberFormatException, ApplicationSettingsException {
         OrchestratorConfiguration orchestratorConfiguration = new OrchestratorConfiguration();
-        Properties orchestratorProps = ServerSettings.getProperties();
-        orchestratorConfiguration.setNewJobSubmitterClass((String) orchestratorProps.get(OrchestratorConstants.JOB_SUBMITTER));
-        orchestratorConfiguration.setSubmitterInterval(Integer.parseInt((String) orchestratorProps.get(OrchestratorConstants.SUBMIT_INTERVAL)));
-        orchestratorConfiguration.setThreadPoolSize(Integer.parseInt((String) orchestratorProps.get(OrchestratorConstants.THREAD_POOL_SIZE)));
-        orchestratorConfiguration.setStartSubmitter(Boolean.valueOf(orchestratorProps.getProperty(OrchestratorConstants.START_SUBMITTER)));
-        orchestratorConfiguration.setEmbeddedMode(Boolean.valueOf(orchestratorProps.getProperty(OrchestratorConstants.EMBEDDED_MODE)));
-        orchestratorConfiguration.setEnableValidation(Boolean.valueOf(orchestratorProps.getProperty(OrchestratorConstants.ENABLE_VALIDATION)));
+        orchestratorConfiguration.setNewJobSubmitterClass((String) ServerSettings.getSetting(OrchestratorConstants.JOB_SUBMITTER));
+        orchestratorConfiguration.setSubmitterInterval(Integer.parseInt((String) ServerSettings.getSetting(OrchestratorConstants.SUBMIT_INTERVAL)));
+        orchestratorConfiguration.setThreadPoolSize(Integer.parseInt((String) ServerSettings.getSetting(OrchestratorConstants.THREAD_POOL_SIZE)));
+        orchestratorConfiguration.setStartSubmitter(Boolean.valueOf(ServerSettings.getSetting(OrchestratorConstants.START_SUBMITTER)));
+        orchestratorConfiguration.setEmbeddedMode(Boolean.valueOf(ServerSettings.getSetting(OrchestratorConstants.EMBEDDED_MODE)));
+        orchestratorConfiguration.setEnableValidation(Boolean.valueOf(ServerSettings.getSetting(OrchestratorConstants.ENABLE_VALIDATION)));
         if (orchestratorConfiguration.isEnableValidation()) {
-            orchestratorConfiguration.setValidatorClass((String) orchestratorProps.get(OrchestratorConstants.JOB_VALIDATOR));
+            orchestratorConfiguration.setValidatorClass((String) ServerSettings.getSetting(OrchestratorConstants.JOB_VALIDATOR));
         }
         return orchestratorConfiguration;
     }

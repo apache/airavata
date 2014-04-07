@@ -21,9 +21,10 @@
 
 package org.apache.airavata.wsmg.client.amqp;
 
+import java.util.Properties;
+
 import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.wsmg.client.amqp.rabbitmq.AMQPBroadcastReceiverImpl;
-import java.util.Properties;
 
 public class BroadcastSubscriber {
     public static void main(String args[]) throws AMQPException {

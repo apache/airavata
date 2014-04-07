@@ -34,7 +34,7 @@ public class AiravataUtils {
 		if (System.getProperties().containsKey(EXECUTION_MODE)) {
 			return ExecutionMode.valueOf(System.getProperty(EXECUTION_MODE));
 		}else{
-			return null;
+			return ExecutionMode.CLIENT;
 		}
 	}
 	
