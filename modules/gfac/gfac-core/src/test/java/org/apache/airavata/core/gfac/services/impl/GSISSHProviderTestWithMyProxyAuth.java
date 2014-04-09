@@ -40,6 +40,8 @@ import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.schemas.gfac.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,12 +59,28 @@ public class GSISSHProviderTestWithMyProxyAuth {
     //FIXME: move job properties to configuration file
     private static final String hostAddress = "trestles.sdsc.edu";
     private static final String hostName = "trestles";
-    private static final String myProxyUserName = "ogce";
-    private static final String myProxyPassword = "";
-    private static final String certificateLocation = "/Users/raminder/.globus/certificates/";
+    private String myProxyUserName;
+    private String myProxyPassword;
+    private String workingDirectory;
+    private String certificateLocation = "/Users/lahirugunathilake/Downloads/certificates";
 
     @Before
     public void setUp() throws Exception {
+        System.setProperty("myproxy.user", "ogce");
+        System.setProperty("myproxy.password", "");
+        System.setProperty("basedir", "/Users/lahirugunathilake/Downloads");
+        System.setProperty("gsi.working.directory", "/home/ogce");
+        System.setProperty("gsi.certificate.path", "/Users/lahirugunathilake/Downloads/certificates");
+        certificateLocation = System.getProperty("gsi.certificate.path");
+        myProxyUserName = System.getProperty("myproxy.user");
+        myProxyPassword = System.getProperty("myproxy.password");
+        workingDirectory = System.getProperty("gsi.working.directory");
+
+        if (myProxyUserName == null || myProxyPassword == null || certificateLocation == null) {
+            System.out.println(">>>>>> Please run tests with my proxy user name and password. " +
+                    "E.g :- mvn clean install -Dmyproxy.user=xxx -Dmyproxy.password=xxx -Dgsi.working.directory=/path<<<<<<<");
+            throw new Exception("Need my proxy user name password to run tests.");
+        }
         URL resource = GSISSHProviderTestWithMyProxyAuth.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         assert resource != null;
         System.out.println(resource.getFile());
@@ -116,7 +134,7 @@ public class GSISSHProviderTestWithMyProxyAuth {
         date = date.replaceAll(" ", "_");
         date = date.replaceAll(":", "_");
 
-        tempDir = tempDir + File.separator
+        tempDir = workingDirectory + File.separator
                 + "SimpleEcho" + "_" + date + "_" + UUID.randomUUID();
 
         System.out.println(tempDir);
@@ -159,7 +177,7 @@ public class GSISSHProviderTestWithMyProxyAuth {
 
         jobExecutionContext = new JobExecutionContext(gFacConfiguration, serv.getType().getName());
         // Adding security context
-        jobExecutionContext.addSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT, getSecurityContext(app));
+        jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT, getSecurityContext(app));
         ApplicationContext applicationContext = new ApplicationContext();
         jobExecutionContext.setApplicationContext(applicationContext);
         applicationContext.setServiceDescription(serv);
@@ -178,7 +196,8 @@ public class GSISSHProviderTestWithMyProxyAuth {
         ActualParameter echo_out = new ActualParameter();
 //		((StringParameterType)echo_input.getType()).setValue("echo_output=hello");
         outMessage.addParameter("echo_output", echo_out);
-
+        jobExecutionContext.setRegistry(RegistryFactory.getLoggingRegistry());
+        jobExecutionContext.setTaskData(new TaskDetails("11323"));
         jobExecutionContext.setOutMessageContext(outMessage);
 
     }
@@ -203,6 +222,8 @@ public class GSISSHProviderTestWithMyProxyAuth {
     public void testGramProvider() throws GFacException {
         GFacImpl gFacAPI = new GFacImpl();
         gFacAPI.submitJob(jobExecutionContext);
+        System.out.println(jobExecutionContext.getJobDetails().getJobDescription());
+        System.out.println(jobExecutionContext.getJobDetails().getJobID());
     }
 
 }

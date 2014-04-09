@@ -29,7 +29,10 @@ public abstract class AbstractHandler implements GFacHandler {
 	protected Registry registry = null;
 
 	public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException, GFacException {
-		registry = RegistryFactory.getDefaultRegistry();
+		registry = jobExecutionContext.getRegistry();
+        if(registry == null){
+            registry = RegistryFactory.getDefaultRegistry();
+        }
 	}
 
 }

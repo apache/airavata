@@ -43,7 +43,6 @@ import org.slf4j.LoggerFactory;
 
 public class SCPDirectorySetupHandler extends AbstractHandler{
     private static final Logger log = LoggerFactory.getLogger(SCPDirectorySetupHandler.class);
-    private List<String> errors = new ArrayList<String>();
 
 	public void invoke(JobExecutionContext jobExecutionContext) throws GFacException {
 		log.info("Setup SSH job directorties");

@@ -26,6 +26,7 @@ import org.apache.airavata.gsi.ssh.api.ServerInfo;
 import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.util.SSHUtils;
+import org.junit.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -40,35 +41,41 @@ public class SCPFromTestWithMyProxyAuth {
     public void setUp() throws Exception {
 //        System.setProperty("myproxy.user", "ogce");
 //        System.setProperty("myproxy.password", "");
-//        System.setProperty("basedir", "/Users/lahirugunathilake/work/airavata/sandbox/gsissh");
+//        System.setProperty("gsi.certificate.path", "/Users/lahirugunathilake/Downloads/certificates");
         myProxyUserName = System.getProperty("myproxy.user");
         myProxyPassword = System.getProperty("myproxy.password");
-        String pomDirectory = System.getProperty("basedir");
+        certificateLocation = System.getProperty("gsi.certificate.path");
 
-        File pomFileDirectory = new File(pomDirectory);
-
-        System.out.println("POM directory ----------------- " + pomFileDirectory.getAbsolutePath());
-
-        certificateLocation = pomFileDirectory.getAbsolutePath() + "/certificates";
-
-
-        lFilePath = pomDirectory + File.separator + "pom.xml";
-        rFilePath = "/tmp/";
+        System.out.println(myProxyPassword + "," + myProxyUserName + "," + certificateLocation);
+        if ((myProxyUserName == null) || (myProxyPassword == null) || (certificateLocation == null)) {
+            System.out.println(">>>>>> Please run tests with my proxy user name and password. " +
+                    "E.g :- mvn clean install -Dmyproxy.user=xxx -Dmyproxy.password=xxx -Dgsi.working.directory=/path<<<<<<<" +
+                    "gsi.certificate.path=/cert/path");
+            throw new Exception("Need my proxy user name password to run tests.");
+        }
     }
 
 
     @Test
     public void testExecuteCommand() throws Exception {
-         // Create authentication
+        // Create authentication
+        File test = new File("test");
+        if(!test.exists()){
+            test.createNewFile();
+        }
+        lFilePath = test.getAbsolutePath();
+        System.out.println(lFilePath);
         GSIAuthenticationInfo authenticationInfo
                 = new MyProxyAuthenticationInfo(myProxyUserName, myProxyPassword, "myproxy.teragrid.org",
-                7512, 17280000,certificateLocation);
-        ServerInfo serverInfo = new ServerInfo("ogce" ,"trestles.sdsc.edu");
+                7512, 17280000, certificateLocation);
+        ServerInfo serverInfo = new ServerInfo("ogce", "trestles.sdsc.edu");
         SSHUtils SSHUtils = new SSHUtils(serverInfo, authenticationInfo, this.certificateLocation, new ConfigReader());
-        SSHUtils.scpTo(rFilePath, lFilePath);
+        SSHUtils.scpTo("/tmp", lFilePath);
         Thread.sleep(1000);
-        SSHUtils.scpFrom(File.separator + "tmp" + File.separator + "pom.xml", System.getProperty("basedir"));
+        SSHUtils.scpFrom(File.separator + "tmp" + File.separator + "test", lFilePath);
+        boolean delete = test.delete();
+        Assert.assertTrue(delete);
     }
-
+    /* add more test cases for each ssh operation */
 
 }
