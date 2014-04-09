@@ -50,20 +50,17 @@ public class DefaultSSHApiTestWithMyProxyAuth {
 
     @BeforeTest
     public void setUp() throws Exception {
-//        System.setProperty("myproxy.user", "ogce");
-//        System.setProperty("myproxy.password", "");
-//        System.setProperty("basedir", "/Users/lahirugunathilake/Downloads");
-//        System.setProperty("gsi.working.directory", "/home/ogce");
+        System.out.println("Test case name " + this.getClass().getName());
+        System.setProperty("myproxy.user", "ogce");
+        System.setProperty("myproxy.password", "");
+        System.setProperty("gsi.certificate.path", "/Users/lahirugunathilake/Downloads/certificates");
+        System.setProperty("gsi.working.directory", "/home/ogce");
+
         certificateLocation = System.getProperty("gsi.certificate.path");
         myProxyUserName = System.getProperty("myproxy.user");
         myProxyPassword = System.getProperty("myproxy.password");
         workingDirectory = System.getProperty("gsi.working.directory");
         slurmWorkingDirectory = "/home1/01437/ogce";
-        String pomDirectory = System.getProperty("basedir");
-
-        File pomFileDirectory = new File(pomDirectory);
-
-        System.out.println("POM directory ----------------- " + pomFileDirectory.getAbsolutePath());
 
         if (myProxyUserName == null || myProxyPassword == null || workingDirectory == null) {
             System.out.println(">>>>>> Please run tests with my proxy user name and password. " +
@@ -199,50 +196,6 @@ public class DefaultSSHApiTestWithMyProxyAuth {
         System.out.println(jobDescriptor.toXML());
         jobID = pbsCluster.submitBatchJob(jobDescriptor);
         System.out.println("JobID returned : " + jobID);
-
-//        Cluster cluster = sshApi.getCluster(serverInfo, authenticationInfo);
-//    Thread.sleep(1000);
-
-        JobDescriptor jobById = pbsCluster.getJobDescriptorById(jobID);
-
-        //printing job data got from previous call
-        AssertJUnit.assertEquals(jobById.getJobId(), jobID);
-        System.out.println(jobById.getAcountString());
-        System.out.println(jobById.getAllEnvExport());
-        System.out.println(jobById.getCompTime());
-        System.out.println(jobById.getExecutablePath());
-        System.out.println(jobById.getEllapsedTime());
-        System.out.println(jobById.getQueueName());
-        System.out.println(jobById.getExecuteNode());
-        System.out.println(jobById.getJobName());
-        System.out.println(jobById.getCTime());
-        System.out.println(jobById.getSTime());
-        System.out.println(jobById.getMTime());
-        System.out.println(jobById.getCompTime());
-        System.out.println(jobById.getOwner());
-        System.out.println(jobById.getQTime());
-        System.out.println(jobById.getUsedCPUTime());
-        System.out.println(jobById.getUsedMemory());
-        System.out.println(jobById.getVariableList());
-    }
-
-
-    @Test
-    public void testGetCluster() throws Exception {
-//        GSIAuthenticationInfo authenticationInfo
-//                = new MyProxyAuthenticationInfo(myProxyUserName, myProxyPassword, "myproxy.teragrid.org",
-//                7512, 17280000);
-//        // Server info
-//        ServerInfo serverInfo = new ServerInfo("ogce", "trestles.sdsc.edu");
-//        // Get the API
-//        SSHApi sshApi = SSHApiFactory.createSSHApi(this.certificateLocation);
-//        Cluster cluster = sshApi.getCluster(serverInfo, authenticationInfo);
-//        System.out.println(cluster.getNodes()[0].getName());
-//        System.out.println(cluster.getNodes()[0].getNp());
-//        System.out.println(cluster.getNodes()[0].getState());
-//        System.out.println(cluster.getNodes()[0].getCores()[0].getId());
-//        System.out.println(cluster.getNodes()[0].getName());
-
     }
 
 
@@ -332,9 +285,6 @@ public class DefaultSSHApiTestWithMyProxyAuth {
         } catch (Exception e) {
             log.error("Error during job status monitoring");
             throw new SSHApiException("Error during job status monitoring", e);
-        }
-        while (!listener.isJobDone()) {
-            Thread.sleep(10000);
         }
     }
 

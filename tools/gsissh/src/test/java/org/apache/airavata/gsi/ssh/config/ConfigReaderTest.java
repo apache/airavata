@@ -29,6 +29,7 @@ public class ConfigReaderTest {
     @Test
     public void testGetConfiguration() throws Exception {
 
+        System.out.println("Test case name " + this.getClass().getName());
         ConfigReader configReader = new ConfigReader();
         Assert.assertEquals(configReader.getConfiguration("StrictHostKeyChecking"), "no");
 
