@@ -51,57 +51,27 @@ public class VanilaTestWithSSHAuth {
     @BeforeTest
     public void setUp() throws Exception {
         System.out.println("Test case name " + this.getClass().getName());
-        this.hostName = "trestles.sdsc.edu";
+        this.hostName = "bigred2.uits.iu.edu";        //default ssh host
+        System.setProperty("ssh.user", "lginnali");
+        System.setProperty("ssh.private.key.path", "/Users/lahirugunathilake/.ssh/id_dsa");
+        System.setProperty("ssh.public.key.path", "/Users/lahirugunathilake/.ssh/id_dsa.pub");
+        System.setProperty("ssh.working.directory", "/tmp");
 
-//        this.userName = System.setProperty("my.ssh.user", "lginnali");
-//        this.password = System.setProperty("my.ssh.password", "");
-//        this.workingDirectory = System.setProperty("working.directory", "/N/u/lginnali/BigRed2/myjob");
-//        System.setProperty("basedir","/Users/lahirugunathilake/work/airavata/sandbox/gsissh");
-        this.userName = System.getProperty("my.ssh.user");
-        this.password = System.getProperty("my.ssh.password");
-        this.privateKeyPath = System.getProperty("my.private.key.path");
-        this.publicKeyPath = System.getProperty("my.public.key.path");
-        this.passPhrase = System.getProperty("my.ssh.user.pass.phrase");
+        this.hostName = System.getProperty("ssh.host");
+        this.userName = System.getProperty("ssh.user");
+        this.password = System.getProperty("ssh.password");
+        this.privateKeyPath = System.getProperty("ssh.private.key.path");
+        this.publicKeyPath = System.getProperty("ssh.public.key.path");
+        this.passPhrase = System.getProperty("ssh.private.key.passphrase");
         this.workingDirectory = System.getProperty("ssh.working.directory");
 
 
-        System.out.println();
-
-
-        if (this.userName == null || (this.userName != null && this.password == null)
+        if (this.userName == null
                 || (this.password==null && (this.publicKeyPath == null || this.privateKeyPath == null)) || this.workingDirectory == null) {
             System.out.println("########### In order to test you have to either username password or private,public keys");
-            System.out.println("Use -Dmy.ssh.user=xxx -Dmy.ssh.user.password=yyy -Dmy.ssh.user.pass.phrase=zzz " +
-                    "-Dmy.private.key.path -Dmy.public.key.path -Dssh.working.directory ");
+            System.out.println("Use -Dssh.user=xxx -Dssh.password=yyy -Dssh.private.key.passphrase=zzz " +
+                    "-Dssh.private.key.path -Dssh.public.key.path -Dssh.working.directory ");
         }
-    }
-
-
-    @Test
-    public void testSimpleCommand1() throws Exception {
-
-        System.out.println("Starting vanila SSH test ....");
-        AuthenticationInfo authenticationInfo = null;
-        if (password != null) {
-            authenticationInfo = new DefaultPasswordAuthenticationInfo(this.password);
-        } else {
-            new DefaultPublicKeyFileAuthentication(this.publicKeyPath, this.privateKeyPath,
-                    this.passPhrase);
-        }
-
-        // Create command
-        CommandInfo commandInfo = new RawCommandInfo("/opt/torque/bin/qstat");
-
-        // Server info
-        ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
-
-        // Output
-        CommandOutput commandOutput = new SystemCommandOutput();
-
-        // Execute command
-        CommandExecutor.executeCommand(commandInfo, serverInfo, authenticationInfo, commandOutput, new ConfigReader());
-
-
     }
 
 
@@ -112,12 +82,12 @@ public class VanilaTestWithSSHAuth {
         if (password != null) {
             authenticationInfo = new DefaultPasswordAuthenticationInfo(this.password);
         } else {
-            new DefaultPublicKeyFileAuthentication(this.publicKeyPath, this.privateKeyPath,
+            authenticationInfo = new DefaultPublicKeyFileAuthentication(this.publicKeyPath, this.privateKeyPath,
                     this.passPhrase);
         }
         // Server info
         ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
-        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/bin/"));
+        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
 
         String date = new Date().toString();
         date = date.replaceAll(" ", "_");
@@ -189,25 +159,28 @@ public class VanilaTestWithSSHAuth {
     }
 
     @Test
-    public void testSCPFrom() throws Exception {
+    public void testSCPFromAndSCPTo() throws Exception {
 
         AuthenticationInfo authenticationInfo = null;
         if (password != null) {
             authenticationInfo = new DefaultPasswordAuthenticationInfo(this.password);
         } else {
-            new DefaultPublicKeyFileAuthentication(this.publicKeyPath, this.privateKeyPath,
+            authenticationInfo = new DefaultPublicKeyFileAuthentication(this.publicKeyPath, this.privateKeyPath,
                     this.passPhrase);
         }
         // Server info
         ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
-        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/bin/"));
+        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
 
         String date = new Date().toString();
         date = date.replaceAll(" ", "_");
         date = date.replaceAll(":", "_");
 
-        String pomFile = System.getProperty("basedir") + File.separator + "pom.xml";
-
+        String pomFile = (new File(".")).getAbsolutePath() + File.separator + "pom.xml";
+        File file = new File(pomFile);
+        if(!file.exists()){
+            file.createNewFile();
+        }
         // Constructing theworking directory for demonstration and creating directories in the remote
         // resource
         workingDirectory = workingDirectory + File.separator
@@ -215,7 +188,7 @@ public class VanilaTestWithSSHAuth {
         pbsCluster.makeDirectory(workingDirectory);
         pbsCluster.scpTo(workingDirectory, pomFile);
         Thread.sleep(1000);
-        pbsCluster.scpFrom(workingDirectory + File.separator + "pom.xml", System.getProperty("basedir"));
+        pbsCluster.scpFrom(workingDirectory + File.separator + "pom.xml", (new File(".")).getAbsolutePath());
     }
 
 

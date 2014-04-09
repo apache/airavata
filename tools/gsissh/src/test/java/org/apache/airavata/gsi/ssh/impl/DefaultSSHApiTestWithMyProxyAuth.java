@@ -28,6 +28,7 @@ import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.config.ConfigReader;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
+import org.apache.airavata.gsi.ssh.util.SSHUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.AssertJUnit;
@@ -45,14 +46,15 @@ public class DefaultSSHApiTestWithMyProxyAuth {
     private String certificateLocation;
     private String pbsFilePath;
     private String workingDirectory;
-    private String slurmWorkingDirectory;
     private String jobID;
+    private String lFilePath;
+    private String rFilePath;
 
     @BeforeTest
     public void setUp() throws Exception {
         System.out.println("Test case name " + this.getClass().getName());
         System.setProperty("myproxy.user", "ogce");
-        System.setProperty("myproxy.password", "");
+        System.setProperty("myproxy.password", "0Gce3098");
         System.setProperty("gsi.certificate.path", "/Users/lahirugunathilake/Downloads/certificates");
         System.setProperty("gsi.working.directory", "/home/ogce");
 
@@ -60,7 +62,6 @@ public class DefaultSSHApiTestWithMyProxyAuth {
         myProxyUserName = System.getProperty("myproxy.user");
         myProxyPassword = System.getProperty("myproxy.password");
         workingDirectory = System.getProperty("gsi.working.directory");
-        slurmWorkingDirectory = "/home1/01437/ogce";
 
         if (myProxyUserName == null || myProxyPassword == null || workingDirectory == null) {
             System.out.println(">>>>>> Please run tests with my proxy user name and password. " +
@@ -96,6 +97,9 @@ public class DefaultSSHApiTestWithMyProxyAuth {
     @Test
     public void testPBSAsync() throws Exception {
         // Create authentication
+        System.out.println(myProxyUserName);
+        System.out.println(myProxyPassword);
+        System.out.println(certificateLocation);
         GSIAuthenticationInfo authenticationInfo
                 = new MyProxyAuthenticationInfo(myProxyUserName, myProxyPassword, "myproxy.teragrid.org",
                 7512, 17280000, certificateLocation);
@@ -132,7 +136,7 @@ public class DefaultSSHApiTestWithMyProxyAuth {
         jobID = pbsCluster.submitBatchJob(jobDescriptor);
         System.out.println("JobID returned : " + jobID);
 
-//        Cluster cluster = sshApi.getCluster(serverInfo, authenticationInfo);
+        //Cluster cluster = sshApi.getCluster(serverInfo, authenticationInfo);
         Thread.sleep(1000);
         JobDescriptor jobById = pbsCluster.getJobDescriptorById(jobID);
 
@@ -157,136 +161,6 @@ public class DefaultSSHApiTestWithMyProxyAuth {
         System.out.println(jobById.getVariableList());
     }
 
-    @Test
-    public void testSLURMAsync() throws Exception {
-        // Create authentication
-        GSIAuthenticationInfo authenticationInfo
-                = new MyProxyAuthenticationInfo(myProxyUserName, myProxyPassword, "myproxy.teragrid.org",
-                7512, 17280000, certificateLocation);
-
-        // Server info
-        ServerInfo serverInfo = new ServerInfo("ogce", "stampede.tacc.xsede.org");
-        serverInfo.setPort(2222);
-
-        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getSLURMJobManager("/usr/bin/"));
-
-
-        // Execute command
-        System.out.println("Target SLURM file path: " + slurmWorkingDirectory);
-        // constructing the job object
-        JobDescriptor jobDescriptor = new JobDescriptor();
-        jobDescriptor.setWorkingDirectory(slurmWorkingDirectory);
-        jobDescriptor.setShellName("/bin/sh");
-        jobDescriptor.setJobName("GSI_SSH_SLEEP_JOB");
-        jobDescriptor.setExecutablePath("/bin/echo");
-        jobDescriptor.setAllEnvExport(true);
-        jobDescriptor.setMailOptions("n");
-        jobDescriptor.setStandardOutFile("" + File.separator + "application.out");
-        jobDescriptor.setStandardErrorFile("/home1/01437/ogce" + File.separator + "application.err");
-        jobDescriptor.setNodes(1);
-        jobDescriptor.setProcessesPerNode(1);
-        jobDescriptor.setQueueName("normal");
-        jobDescriptor.setMaxWallTime("60");
-        jobDescriptor.setAcountString("TG-STA110014S");
-        jobDescriptor.setJobSubmitter("sbatch");
-        List<String> inputs = new ArrayList<String>();
-        inputs.add("Hello World");
-        jobDescriptor.setInputValues(inputs);
-        //finished construction of job object
-        System.out.println(jobDescriptor.toXML());
-        jobID = pbsCluster.submitBatchJob(jobDescriptor);
-        System.out.println("JobID returned : " + jobID);
-    }
-
-
-    @Test
-    public void testsubmitAsyncJobWithFailure() throws Exception {
-        // Create authentication
-        GSIAuthenticationInfo authenticationInfo
-                = new MyProxyAuthenticationInfo(myProxyUserName, myProxyPassword, "myproxy.teragrid.org",
-                7512, 17280000, certificateLocation);
-
-        // Server info
-        ServerInfo serverInfo = new ServerInfo("ogce", "trestles.sdsc.edu");
-
-        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/bin/"));
-
-        // Execute command
-        System.out.println("Target PBS file path: " + workingDirectory);
-        System.out.println("Local PBS File path: " + pbsFilePath);
-        String workingDirectory = File.separator + "home" + File.separator + "ogce" + File.separator + "gsissh";
-        JobDescriptor jobDescriptor = new JobDescriptor();
-        jobDescriptor.setWorkingDirectory(workingDirectory);
-        jobDescriptor.setShellName("/bin/bash");
-        jobDescriptor.setJobName("GSI_SSH_SLEEP_JOB");
-        jobDescriptor.setExecutablePath("/bin/sleep");
-        jobDescriptor.setAllEnvExport(true);
-        jobDescriptor.setMailOptions("n");
-        jobDescriptor.setStandardOutFile(workingDirectory + File.separator + "application.out");
-        jobDescriptor.setStandardErrorFile(workingDirectory + File.separator + "application.err");
-        jobDescriptor.setNodes(1);
-        jobDescriptor.setProcessesPerNode(100);
-        jobDescriptor.setQueueName("normal");
-        jobDescriptor.setMaxWallTime("60");
-        jobDescriptor.setAcountString("sds128");
-        List<String> inputs = new ArrayList<String>();
-        inputs.add("Hello World");
-        jobDescriptor.setInputValues(inputs);
-        System.out.println(jobDescriptor.toXML());
-        try {
-            String jobID = pbsCluster.submitBatchJob(jobDescriptor);
-            System.out.println("JobID returned : " + jobID);
-        } catch (SSHApiException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    @Test
-    public void testSubmitAsyncJobWithListener() throws Exception {
-        // Create authentication
-        GSIAuthenticationInfo authenticationInfo
-                = new MyProxyAuthenticationInfo(myProxyUserName, myProxyPassword, "myproxy.teragrid.org",
-                7512, 17280000, certificateLocation);
-
-        // Server info
-        ServerInfo serverInfo = new ServerInfo("ogce", "trestles.sdsc.edu");
-
-
-        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/bin/"));
-
-
-        // Execute command
-        System.out.println("Target PBS file path: " + workingDirectory);
-        System.out.println("Local PBS File path: " + pbsFilePath);
-        String workingDirectory = File.separator + "home" + File.separator + "ogce" + File.separator + "gsissh";
-        JobDescriptor jobDescriptor = new JobDescriptor();
-        jobDescriptor.setWorkingDirectory(workingDirectory);
-        jobDescriptor.setShellName("/bin/bash");
-        jobDescriptor.setJobName("GSI_SSH_SLEEP_JOB");
-        jobDescriptor.setExecutablePath("/bin/sleep");
-        jobDescriptor.setAllEnvExport(true);
-        jobDescriptor.setMailOptions("n");
-        jobDescriptor.setStandardOutFile(workingDirectory + File.separator + "application.out");
-        jobDescriptor.setStandardErrorFile(workingDirectory + File.separator + "application.err");
-        jobDescriptor.setNodes(1);
-        jobDescriptor.setProcessesPerNode(1);
-//        jobDescriptor.setMaxWallTime("1:00:00");
-        jobDescriptor.setQueueName("normal");
-        jobDescriptor.setAcountString("sds128");
-        List<String> inputs = new ArrayList<String>();
-        inputs.add("1000");
-        jobDescriptor.setInputValues(inputs);
-        System.out.println(jobDescriptor.toXML());
-        DefaultJobSubmissionListener listener = new DefaultJobSubmissionListener();
-        String jobID = pbsCluster.submitBatchJob(jobDescriptor);
-        try {
-            JobStatus jobStatus = pbsCluster.getJobStatus(jobID);
-            org.junit.Assert.assertTrue(true);
-        } catch (Exception e) {
-            log.error("Error during job status monitoring");
-            throw new SSHApiException("Error during job status monitoring", e);
-        }
-    }
 
     @Test
     public void testJobCancel() throws Exception {
@@ -332,6 +206,27 @@ public class DefaultSSHApiTestWithMyProxyAuth {
             }
         }
 
+    }
+
+    @Test
+    public void testSCPToAndSCPFrom() throws Exception {
+        // Create authentication
+        File test = new File("test");
+        if(!test.exists()){
+            test.createNewFile();
+        }
+        lFilePath = test.getAbsolutePath();
+        System.out.println(lFilePath);
+        GSIAuthenticationInfo authenticationInfo
+                = new MyProxyAuthenticationInfo(myProxyUserName, myProxyPassword, "myproxy.teragrid.org",
+                7512, 17280000, certificateLocation);
+        ServerInfo serverInfo = new ServerInfo("ogce", "trestles.sdsc.edu");
+        SSHUtils SSHUtils = new SSHUtils(serverInfo, authenticationInfo, this.certificateLocation, new ConfigReader());
+        SSHUtils.scpTo("/tmp", lFilePath);
+        Thread.sleep(1000);
+        SSHUtils.scpFrom(File.separator + "tmp" + File.separator + "test", lFilePath);
+        boolean delete = test.delete();
+        org.junit.Assert.assertTrue(delete);
     }
 
 }
