@@ -50,7 +50,7 @@ public class VanilaTestWithSSHAuth {
 
     @BeforeTest
     public void setUp() throws Exception {
-        this.hostName = "bigred2.uits.iu.edu";
+        this.hostName = "trestles.sdsc.edu";
 
 //        this.userName = System.setProperty("my.ssh.user", "lginnali");
 //        this.password = System.setProperty("my.ssh.password", "");
@@ -62,6 +62,7 @@ public class VanilaTestWithSSHAuth {
         this.publicKeyPath = System.getProperty("my.public.key.path");
         this.passPhrase = System.getProperty("my.ssh.user.pass.phrase");
         this.workingDirectory = System.getProperty("ssh.working.directory");
+
 
         System.out.println();
 
@@ -88,7 +89,7 @@ public class VanilaTestWithSSHAuth {
         }
 
         // Create command
-        CommandInfo commandInfo = new RawCommandInfo("/opt/torque/torque-4.2.3.1/bin/qstat");
+        CommandInfo commandInfo = new RawCommandInfo("/opt/torque/bin/qstat");
 
         // Server info
         ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
@@ -115,7 +116,7 @@ public class VanilaTestWithSSHAuth {
         }
         // Server info
         ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
-        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
+        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/bin/"));
 
         String date = new Date().toString();
         date = date.replaceAll(" ", "_");
@@ -198,7 +199,7 @@ public class VanilaTestWithSSHAuth {
         }
         // Server info
         ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
-        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
+        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/bin/"));
 
         String date = new Date().toString();
         date = date.replaceAll(" ", "_");

@@ -33,6 +33,7 @@ import org.apache.airavata.gfac.notification.GFacNotifier;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.registry.cpi.Registry;
 
 public class JobExecutionContext extends AbstractContext{
 
@@ -80,6 +81,8 @@ public class JobExecutionContext extends AbstractContext{
     private String status;
 
     private List<String> outputFileList;
+
+    private Registry registry;
     /**
      *  Security context is used to handle authentication for input handlers and providers.
      *  There can be multiple security requirement for a single job so this allows you to add multiple security types
@@ -237,5 +240,13 @@ public class JobExecutionContext extends AbstractContext{
     }
     public List<String> getOutputFiles(){
         return outputFileList;
+    }
+
+    public Registry getRegistry() {
+        return registry;
+    }
+
+    public void setRegistry(Registry registry) {
+        this.registry = registry;
     }
 }

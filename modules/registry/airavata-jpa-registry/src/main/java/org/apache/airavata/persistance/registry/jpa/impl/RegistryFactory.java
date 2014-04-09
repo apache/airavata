@@ -39,4 +39,11 @@ public class RegistryFactory {
         }
         return registry;
     }
+
+    public static Registry getLoggingRegistry() {
+        if(registry == null) {
+            registry = new LoggingRegistryImpl();
+        }
+        return registry;
+    }
 }

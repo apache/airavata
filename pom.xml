@@ -484,14 +484,14 @@
                 <module>modules/test-suite</module>
                 <module>modules/distribution</module>
                 <module>modules/integration-tests</module>
-		<module>modules/configuration</module>
-		<module>modules/ws-messenger</module>
+                <module>modules/configuration</module>
+                <module>modules/ws-messenger</module>
                 <!--module>modules/rest</module-->
                 <!--module>samples</module-->
                 <!--module>modules/xbaya-gui</module-->
             </modules>
         </profile>
-        <!--profile>
+        <profile>
             <id>gridTests</id>
             <build>
                 <plugins>
@@ -556,9 +556,6 @@
                     </plugin>
                 </plugins>
             </build>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <modules>
                 <module>airavata-api</module>
                 <module>modules/gfac</module>
@@ -572,13 +569,13 @@
                 <module>modules/orchestrator</module>
                 <module>tools</module>
                 <module>modules/server</module>
-		<module>modules/configuration</module>
+                <module>modules/configuration</module>
                 <module>modules/test-suite</module>
                 <module>modules/distribution</module>
                 <module>modules/integration-tests</module>
             </modules>
         </profile>
-        <profile>
+        <!--profile>
             <id>ec2Tests</id>
             <build>
                 <plugins>
