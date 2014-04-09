@@ -39,6 +39,7 @@ public class SCPFromTestWithMyProxyAuth {
 
     @BeforeTest
     public void setUp() throws Exception {
+        System.out.println("Test case name " + this.getClass().getName());
 //        System.setProperty("myproxy.user", "ogce");
 //        System.setProperty("myproxy.password", "");
 //        System.setProperty("gsi.certificate.path", "/Users/lahirugunathilake/Downloads/certificates");

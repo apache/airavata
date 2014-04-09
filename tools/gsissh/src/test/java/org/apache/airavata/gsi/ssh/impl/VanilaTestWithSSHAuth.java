@@ -50,6 +50,7 @@ public class VanilaTestWithSSHAuth {
 
     @BeforeTest
     public void setUp() throws Exception {
+        System.out.println("Test case name " + this.getClass().getName());
         this.hostName = "trestles.sdsc.edu";
 
 //        this.userName = System.setProperty("my.ssh.user", "lginnali");
