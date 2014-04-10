@@ -61,6 +61,10 @@ public class ServerSettings extends ApplicationSettings{
     private static final String REGISTRY_DB_DRIVER ="registry.jdbc.driver";
     private static final String ENABLE_HTTPS = "enable.https";
     private static final String HOST_SCHEDULER = "host.scheduler";
+    private static final String MY_PROXY_SERVER = "myproxy.server";
+    private static final String MY_PROXY_USER = "myproxy.user";
+    private static final String MY_PROXY_PASSWORD = "myproxy.password";
+    private static final String MY_PROXY_LIFETIME = "myproxy.life";
     private static boolean stopAllThreads = false;
 
     public static String getDefaultUser() throws ApplicationSettingsException{
@@ -196,5 +200,17 @@ public class ServerSettings extends ApplicationSettings{
 
     public static void setStopAllThreads(boolean stopAllThreads) {
         ServerSettings.stopAllThreads = stopAllThreads;
+    }
+    public static String getMyProxyServer() throws ApplicationSettingsException {
+        return getSetting(MY_PROXY_SERVER);
+    }
+    public static String getMyProxyUser() throws ApplicationSettingsException {
+        return getSetting(MY_PROXY_USER);
+    }
+    public static String getMyProxyPassword() throws ApplicationSettingsException {
+        return getSetting(MY_PROXY_PASSWORD);
+    }
+    public static int getMyProxyLifetime() throws ApplicationSettingsException {
+        return Integer.parseInt(getSetting(MY_PROXY_LIFETIME));
     }
 }
