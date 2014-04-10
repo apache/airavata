@@ -55,7 +55,7 @@ public class GSISecurityContextTestWithMyProxyAuth extends DatabaseTestCases {
         AiravataUtils.setExecutionAsServer();
 
         System.setProperty("myproxy.user", "ogce");
-        System.setProperty("myproxy.password", "0Gce3098");
+        System.setProperty("myproxy.password", "");
         userName = System.getProperty("myproxy.user");
         password = System.getProperty("myproxy.password");
 

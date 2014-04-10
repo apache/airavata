@@ -741,11 +741,15 @@ public class GFacUtils {
             jobDescriptor.setProcessesPerNode(applicationDeploymentType.getProcessorsPerNode());
             jobDescriptor.setMaxWallTime(String.valueOf(applicationDeploymentType.getMaxWallTime()));
             jobDescriptor.setJobSubmitter(applicationDeploymentType.getJobSubmitterCommand());
-            if (applicationDeploymentType.getProjectAccount().getProjectAccountNumber() != null) {
-                jobDescriptor.setAcountString(applicationDeploymentType.getProjectAccount().getProjectAccountNumber());
+            if (applicationDeploymentType.getProjectAccount() != null) {
+                if (applicationDeploymentType.getProjectAccount().getProjectAccountNumber() != null) {
+                    jobDescriptor.setAcountString(applicationDeploymentType.getProjectAccount().getProjectAccountNumber());
+                }
             }
-            if (applicationDeploymentType.getQueue().getQueueName() != null) {
-                jobDescriptor.setQueueName(applicationDeploymentType.getQueue().getQueueName());
+            if (applicationDeploymentType.getQueue() != null) {
+                if (applicationDeploymentType.getQueue().getQueueName() != null) {
+                    jobDescriptor.setQueueName(applicationDeploymentType.getQueue().getQueueName());
+                }
             }
             jobDescriptor.setOwner(((PBSCluster) cluster).getServerInfo().getUserName());
             TaskDetails taskData = jobExecutionContext.getTaskData();

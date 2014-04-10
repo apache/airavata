@@ -45,7 +45,7 @@ public class SSHSecurityContext implements SecurityContext {
 	private SSHClient sshClient;
 	private Session session;
 
-    Cluster pbsCluster;
+    private Cluster pbsCluster;
 
 	public String getUsername() {
 		return username;
@@ -115,6 +115,6 @@ public class SSHSecurityContext implements SecurityContext {
     }
 
     public Cluster getPbsCluster() {
-        return pbsCluster;
+        return this.pbsCluster;
     }
 }

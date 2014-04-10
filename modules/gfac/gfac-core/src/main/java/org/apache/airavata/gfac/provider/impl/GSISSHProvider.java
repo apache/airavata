@@ -106,14 +106,14 @@ public class GSISSHProvider extends AbstractProvider implements GFacProvider{
             }
 
         } catch (SSHApiException e) {
-            String error = "Error submitting the job to host " + host.getHostAddress() + e.getMessage();
+            String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
             log.error(error);
             jobDetails.setJobID("none");
         	GFacUtils.saveJobStatus(jobDetails,JobState.FAILED,taskID);
          	GFacUtils.saveErrorDetails(error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
             throw new GFacProviderException(error, e);
         } catch (Exception e) {
-        	String error = "Error submitting the job to host " + host.getHostAddress() + e.getMessage();
+        	String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
          	log.error(error);
             jobDetails.setJobID("none");
         	GFacUtils.saveJobStatus(jobDetails,JobState.FAILED,taskID);
