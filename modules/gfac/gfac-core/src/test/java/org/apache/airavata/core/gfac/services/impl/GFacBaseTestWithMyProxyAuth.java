@@ -102,11 +102,11 @@ public class GFacBaseTestWithMyProxyAuth extends DatabaseTestCases {
     }
 
     public GSISecurityContext getSecurityContext() throws Exception {
-        GSISecurityContext.setUpTrustedCertificatePath("/Users/raminder/.globus/certificates");
+        GSISecurityContext.setUpTrustedCertificatePath(System.getProperty("gsi.certificate.path"));
         RequestData requestData = new RequestData();
         requestData.setMyProxyServerUrl("myproxy.teragrid.org");
-        requestData.setMyProxyUserName("******");
-        requestData.setMyProxyPassword("*******");
+        requestData.setMyProxyUserName(System.getProperty("myproxy.user"));
+        requestData.setMyProxyPassword(System.getProperty("myproxy.password"));
         requestData.setMyProxyLifeTime(3600);
         CredentialReader credentialReader = new CredentialReaderImpl(getDbUtil());
         return new GSISecurityContext(credentialReader, requestData);

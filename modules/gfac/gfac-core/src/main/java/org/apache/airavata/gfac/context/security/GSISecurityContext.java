@@ -268,12 +268,10 @@ public class GSISecurityContext extends AbstractSecurityContext {
      */
     public GSSCredential renewCredentialsAsATrustedHost() throws GFacException, ApplicationSettingsException {
         MyProxy myproxy = new MyProxy(getRequestData().getMyProxyServerUrl(), getRequestData().getMyProxyPort());
-
         GetParams getParams = new GetParams();
         getParams.setAuthzCreds(gssCredentials);
         getParams.setUserName(getRequestData().getMyProxyUserName());
         getParams.setLifetime(getRequestData().getMyProxyLifeTime());
-
         try {
             return myproxy.get(gssCredentials, getParams);
         } catch (MyProxyException e) {
