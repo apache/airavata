@@ -39,10 +39,14 @@ import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.gsi.ssh.api.job.JobManagerConfiguration;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
+import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.schemas.gfac.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.net.URL;
@@ -54,20 +58,39 @@ import java.util.UUID;
 public class BigRed2TestWithSSHAuth {
     private JobExecutionContext jobExecutionContext;
 
-    private static final String hostAddress = "bigred2";
-    private static final String hostName = "bigred2.uits.iu.edu";
-    private static  String userName = "lginnali";
-    private static  String password = "";
+    private String userName;
+    private String password;
+    private String passPhrase;
+    private String hostName;
+    private String workingDirectory;
+    private String privateKeyPath;
+    private String publicKeyPath;
 
-    @Before
+    @BeforeClass
     public void setUp() throws Exception {
 
-        if(System.getProperty("bigred2.password") == null || System.getProperty("bigred2.username") == null){
-            System.out.println("set the bigred2 password/username in maven command : mvn clean install -Dbigred2.username=xxx -Dbigred2.password=yyy");
-            throw new Exception("Wrong inputs given");
+        System.out.println("Test case name " + this.getClass().getName());
+//        System.setProperty("ssh.host","bigred2.uits.iu.edu");        //default ssh host
+//        System.setProperty("ssh.user", "lginnali");
+//        System.setProperty("ssh.private.key.path", "/Users/lahirugunathilake/.ssh/id_dsa");
+//        System.setProperty("ssh.public.key.path", "/Users/lahirugunathilake/.ssh/id_dsa.pub");
+//        System.setProperty("ssh.working.directory", "/tmp");
+
+        this.hostName = System.getProperty("ssh.host");
+        this.userName = System.getProperty("ssh.user");
+        this.password = System.getProperty("ssh.password");
+        this.privateKeyPath = System.getProperty("ssh.private.key.path");
+        this.publicKeyPath = System.getProperty("ssh.public.key.path");
+        this.passPhrase = System.getProperty("ssh.private.key.passphrase");
+        this.workingDirectory = System.getProperty("ssh.working.directory");
+
+
+         if (this.userName == null
+                || (this.password==null && (this.publicKeyPath == null || this.privateKeyPath == null)) || this.workingDirectory == null) {
+            System.out.println("########### In order to test you have to either username password or private,public keys");
+            System.out.println("Use -Dssh.user=xxx -Dssh.password=yyy -Dssh.private.key.passphrase=zzz " +
+                    "-Dssh.private.key.path -Dssh.public.key.path -Dssh.working.directory ");
         }
-        userName = System.getProperty("bigred2.username");
-        password = System.getProperty("bigred2.password");
         URL resource = GramProviderTestWithMyProxyAuth.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         assert resource != null;
         System.out.println(resource.getFile());
@@ -86,7 +109,7 @@ public class BigRed2TestWithSSHAuth {
         * Host
         */
         HostDescription host = new HostDescription(SSHHostType.type);
-        host.getType().setHostAddress(hostAddress);
+        host.getType().setHostAddress(hostName);
         host.getType().setHostName(hostName);
         ((SSHHostType)host.getType()).setHpcResource(true);
         /*
@@ -111,7 +134,7 @@ public class BigRed2TestWithSSHAuth {
         /*
         * Default tmp location
         */
-        String tempDir = "~/";
+        String tempDir = "/tmp";
         String date = (new Date()).toString();
         date = date.replaceAll(" ", "_");
         date = date.replaceAll(":", "_");
@@ -179,29 +202,43 @@ public class BigRed2TestWithSSHAuth {
         ActualParameter echo_out = new ActualParameter();
 //		((StringParameterType)echo_input.getType()).setValue("echo_output=hello");
         outMessage.addParameter("echo_output", echo_out);
-
-        jobExecutionContext.setOutMessageContext(   outMessage);
+        jobExecutionContext.setRegistry(RegistryFactory.getLoggingRegistry());
+        jobExecutionContext.setTaskData(new TaskDetails("11323"));
+        jobExecutionContext.setOutMessageContext(outMessage);
 
     }
 
+
     private SecurityContext getSecurityContext(HpcApplicationDeploymentType app) {
-        AuthenticationInfo authenticationInfo = new DefaultPasswordAuthenticationInfo(this.password);
+         try {
+
+        AuthenticationInfo authenticationInfo = null;
+        if (password != null) {
+            authenticationInfo = new DefaultPasswordAuthenticationInfo(this.password);
+        } else {
+            authenticationInfo = new DefaultPublicKeyFileAuthentication(this.publicKeyPath, this.privateKeyPath,
+                    this.passPhrase);
+        }
         // Server info
         ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
 
         Cluster pbsCluster = null;
-        try {
+        SSHSecurityContext sshSecurityContext = null;
+
             JobManagerConfiguration pbsJobManager = CommonUtils.getPBSJobManager(app.getInstalledParentPath());
-             pbsCluster = new PBSCluster(serverInfo, authenticationInfo,pbsJobManager);
+            pbsCluster = new PBSCluster(serverInfo, authenticationInfo, pbsJobManager);
+
+
+            sshSecurityContext = new SSHSecurityContext();
+            sshSecurityContext.setPbsCluster(pbsCluster);
+            sshSecurityContext.setUsername(userName);
+            sshSecurityContext.setKeyPass(passPhrase);
+            sshSecurityContext.setPrivateKeyLoc(privateKeyPath);
+             return sshSecurityContext;
         } catch (SSHApiException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-
-
-        SSHSecurityContext sshSecurityContext = new SSHSecurityContext();
-        sshSecurityContext.setPbsCluster(pbsCluster);
-        sshSecurityContext.setUsername(userName);
-        return sshSecurityContext;
+        return null;
     }
 
     @Test

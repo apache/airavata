@@ -246,6 +246,10 @@ public class JobExecutionContext extends AbstractContext{
         return registry;
     }
 
+    public Map<String, SecurityContext>  getAllSecurityContexts(){
+        return securityContext;
+    }
+
     public void setRegistry(Registry registry) {
         this.registry = registry;
     }

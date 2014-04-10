@@ -43,8 +43,9 @@ import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.schemas.gfac.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.net.URL;
@@ -64,13 +65,13 @@ public class GSISSHProviderTestWithMyProxyAuth {
     private String workingDirectory;
     private String certificateLocation = "/Users/lahirugunathilake/Downloads/certificates";
 
-    @Before
+    @BeforeClass
     public void setUp() throws Exception {
-        System.setProperty("myproxy.user", "ogce");
-        System.setProperty("myproxy.password", "");
-        System.setProperty("basedir", "/Users/lahirugunathilake/Downloads");
-        System.setProperty("gsi.working.directory", "/home/ogce");
-        System.setProperty("gsi.certificate.path", "/Users/lahirugunathilake/Downloads/certificates");
+//        System.setProperty("myproxy.user", "ogce");
+//        System.setProperty("myproxy.password", "");
+//        System.setProperty("basedir", "/Users/lahirugunathilake/Downloads");
+//        System.setProperty("gsi.working.directory", "/home/ogce");
+//        System.setProperty("gsi.certificate.path", "/Users/lahirugunathilake/Downloads/certificates");
         certificateLocation = System.getProperty("gsi.certificate.path");
         myProxyUserName = System.getProperty("myproxy.user");
         myProxyPassword = System.getProperty("myproxy.password");

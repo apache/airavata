@@ -185,7 +185,11 @@ public class GFacImpl implements GFac {
         jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
         jobExecutionContext.setExperimentID(experimentID);
 
-        addSecurityContext(hostDescription, configurationProperties, jobExecutionContext);
+        // only in test cases we set the security context outside the gfacimpl, otherwise we setit here
+        // but in future we might set multiple security contexts
+        if(jobExecutionContext.getAllSecurityContexts().size()==0){
+            addSecurityContext(hostDescription, configurationProperties, jobExecutionContext);
+        }
         return jobExecutionContext;
     }
 

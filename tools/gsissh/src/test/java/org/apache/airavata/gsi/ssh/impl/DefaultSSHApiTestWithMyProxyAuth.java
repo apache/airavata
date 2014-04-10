@@ -221,12 +221,29 @@ public class DefaultSSHApiTestWithMyProxyAuth {
                 = new MyProxyAuthenticationInfo(myProxyUserName, myProxyPassword, "myproxy.teragrid.org",
                 7512, 17280000, certificateLocation);
         ServerInfo serverInfo = new ServerInfo("ogce", "trestles.sdsc.edu");
-        SSHUtils SSHUtils = new SSHUtils(serverInfo, authenticationInfo, this.certificateLocation, new ConfigReader());
-        SSHUtils.scpTo("/tmp", lFilePath);
+        PBSCluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, null);
+        pbsCluster.scpTo("/tmp", lFilePath);
         Thread.sleep(1000);
-        SSHUtils.scpFrom(File.separator + "tmp" + File.separator + "test", lFilePath);
+        pbsCluster.scpFrom(File.separator + "tmp" + File.separator + "test", lFilePath);
         boolean delete = test.delete();
         org.junit.Assert.assertTrue(delete);
     }
 
+    @Test
+    public void testlistDirectory() throws Exception {
+        // Create authentication
+        File test = new File("test");
+        if (!test.exists()) {
+            test.createNewFile();
+        }
+        lFilePath = test.getAbsolutePath();
+        System.out.println(lFilePath);
+        GSIAuthenticationInfo authenticationInfo
+                = new MyProxyAuthenticationInfo(myProxyUserName, myProxyPassword, "myproxy.teragrid.org",
+                7512, 17280000, certificateLocation);
+        ServerInfo serverInfo = new ServerInfo("ogce", "trestles.sdsc.edu");
+        PBSCluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, null);
+        List<String> strings = pbsCluster.listDirectory("/tmp");
+        org.junit.Assert.assertNotNull(strings);
+    }
 }
