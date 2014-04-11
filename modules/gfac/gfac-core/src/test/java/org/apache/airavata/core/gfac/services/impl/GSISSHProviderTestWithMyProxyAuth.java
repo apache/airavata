@@ -72,14 +72,14 @@ public class GSISSHProviderTestWithMyProxyAuth {
 //        System.setProperty("basedir", "/Users/lahirugunathilake/Downloads");
 //        System.setProperty("gsi.working.directory", "/home/ogce");
 //        System.setProperty("gsi.certificate.path", "/Users/lahirugunathilake/Downloads/certificates");
-        certificateLocation = System.getProperty("gsi.certificate.path");
-        myProxyUserName = System.getProperty("myproxy.user");
+        certificateLocation = System.getProperty("trusted.cert.location");
+        myProxyUserName = System.getProperty("myproxy.username");
         myProxyPassword = System.getProperty("myproxy.password");
         workingDirectory = System.getProperty("gsi.working.directory");
 
         if (myProxyUserName == null || myProxyPassword == null || certificateLocation == null) {
             System.out.println(">>>>>> Please run tests with my proxy user name and password. " +
-                    "E.g :- mvn clean install -Dmyproxy.user=xxx -Dmyproxy.password=xxx -Dgsi.working.directory=/path<<<<<<<");
+                    "E.g :- mvn clean install -Dmyproxy.username=xxx -Dmyproxy.password=xxx -Dgsi.working.directory=/path<<<<<<<");
             throw new Exception("Need my proxy user name password to run tests.");
         }
         URL resource = GSISSHProviderTestWithMyProxyAuth.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
@@ -220,7 +220,7 @@ public class GSISSHProviderTestWithMyProxyAuth {
         return sshSecurityContext;
     }
     @Test
-    public void testGramProvider() throws GFacException {
+    public void testGSISSHProvider() throws GFacException {
         GFacImpl gFacAPI = new GFacImpl();
         gFacAPI.submitJob(jobExecutionContext);
         System.out.println(jobExecutionContext.getJobDetails().getJobDescription());

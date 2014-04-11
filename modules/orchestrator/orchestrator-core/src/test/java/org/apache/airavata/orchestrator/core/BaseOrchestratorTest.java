@@ -91,4 +91,8 @@ public class BaseOrchestratorTest {
     public void setDocumentCreator(DocumentCreator documentCreator) {
         this.documentCreator = documentCreator;
     }
+
+    private void settingServerProperties(){
+
+    }
 }

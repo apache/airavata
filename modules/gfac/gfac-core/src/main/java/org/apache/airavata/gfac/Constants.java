@@ -57,8 +57,8 @@ public class Constants {
     public static final String TRUSTED_CERTIFICATE_SYSTEM_PROPERTY = "X509_CERT_DIR";
     public static final String MYPROXY_SERVER = "myproxy.server";
     public static final String MYPROXY_SERVER_PORT = "myproxy.port";
-    public static final String MYPROXY_USER = "myproxy.user";
-    public static final String MYPROXY_PASS = "myproxy.pass";
+    public static final String MYPROXY_USER = "myproxy.username";
+    public static final String MYPROXY_PASS = "myproxy.password";
     public static final String MYPROXY_LIFE = "myproxy.life";
     /*
      * SSH properties
