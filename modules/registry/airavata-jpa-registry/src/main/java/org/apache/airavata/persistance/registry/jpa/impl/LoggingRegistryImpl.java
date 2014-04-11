@@ -21,10 +21,14 @@
 package org.apache.airavata.persistance.registry.jpa.impl;
 
 import org.apache.airavata.registry.cpi.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class LoggingRegistryImpl implements Registry {
+    private final static Logger logger = LoggerFactory.getLogger(LoggingRegistryImpl.class);
+
     public Object add(ChildDataType dataType, Object newObjectToAdd, Object dependentIdentifiers) throws RegistryException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }

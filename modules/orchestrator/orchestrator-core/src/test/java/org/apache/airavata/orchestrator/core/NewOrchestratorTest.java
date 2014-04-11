@@ -27,24 +27,32 @@ import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.model.util.ExperimentModelUtil;
+import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.orchestrator.cpi.Orchestrator;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
+import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryImpl;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.registry.cpi.ParentDataType;
 import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.schemas.gfac.DataType;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class NewOrchestratorTest extends BaseOrchestratorTest {
     private static final Logger log = LoggerFactory.getLogger(NewOrchestratorTest.class);
 
     private Orchestrator orchestrator;
     private String experimentID;
+    private List<TaskDetails> tasks;
 
     @BeforeTest
     public void setUp() throws Exception {
@@ -52,51 +60,52 @@ public class NewOrchestratorTest extends BaseOrchestratorTest {
         super.setUp();
         orchestrator = new SimpleOrchestratorImpl();
         createJobRequestWithDocuments(getAiravataAPI());
+        // System.setProperty("myproxy.user", "ogce");
+//         System.setProperty("myproxy.pass", "");
+//         System.setProperty("trusted.cert.location", "/Users/lahirugunathilake/Downloads/certificates");
+         //this is the same propertySystem.getProperty("myproxy.user");
+//         System.setProperty("myproxy.pass",System.getProperty("myproxy.password"));
+//        System.setProperty("trusted.cert.location",System.getProperty("gsi.working.directory"));
     }
 
     private void createJobRequestWithDocuments(AiravataAPI airavataAPI) throws Exception{
         // creating host description
+        List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
+        DataObjectType input = new DataObjectType();
+        input.setKey("echo_input");
+        input.setType(DataType.STRING.toString());
+        input.setValue("echo_output=Hello World");
+        exInputs.add(input);
 
-        //Using new airavata-api methods to store experiment metadata
-//        BasicMetadata basicMetadata = new BasicMetadata();
-//        basicMetadata.setExperimentName("test123");
-//        basicMetadata.setUserName("admin");
-//        basicMetadata.setUserNameIsSet(true);
-//        basicMetadata.setProjectID("default");
-//
-//        AdvancedInputDataHandling advancedInputDataHandling = new AdvancedInputDataHandling();
-//        AdvancedOutputDataHandling advancedOutputDataHandling = new AdvancedOutputDataHandling();
-//        ComputationalResourceScheduling computationalResourceScheduling = new ComputationalResourceScheduling();
-//        QualityOfServiceParams qualityOfServiceParams = new QualityOfServiceParams();
-//        ConfigurationData configurationData = new ConfigurationData();
-//
-//
-//        HashMap<String, String> exInputs = new HashMap<String, String>();
-//        exInputs.put("echo_input", "echo_output=hello");
-//
-//        configurationData.setExperimentInputs(exInputs);
-//        configurationData.setAdvanceInputDataHandling(advancedInputDataHandling);
-//        configurationData.setAdvanceOutputDataHandling(advancedOutputDataHandling);
-//        configurationData.setComputationalResourceScheduling(computationalResourceScheduling);
-//        configurationData.setQosParams(qualityOfServiceParams);
-//        configurationData.setApplicationId("Echo");
-//
-//        Registry registry = new RegistryImpl();
-//        experimentID = (String) registry.add(ParentDataType.EXPERIMENT, basicMetadata);
-//        registry.add(ChildDataType.EXPERIMENT_CONFIGURATION_DATA, configurationData, experimentID);
+        List<DataObjectType> exOut = new ArrayList<DataObjectType>();
+        DataObjectType output = new DataObjectType();
+        output.setKey("echo_output");
+        output.setType(DataType.STRING.toString());
+        output.setValue("");
+        exOut.add(output);
+
+        Experiment simpleExperiment =
+                ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho0", "SimpleEcho0", exInputs);
+        simpleExperiment.setExperimentOutputs(exOut);
+
+        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("localhost", 1, 1, 1, "normal", 0, 0, 1, "sds128");
+        scheduling.setResourceHostId("localhost");
+        UserConfigurationData userConfigurationData = new UserConfigurationData();
+        userConfigurationData.setAiravataAutoSchedule(false);
+        userConfigurationData.setOverrideManualScheduledParams(false);
+        userConfigurationData.setComputationalResourceScheduling(scheduling);
+        simpleExperiment.setUserConfigurationData(userConfigurationData);
+
+        Registry defaultRegistry = RegistryFactory.getDefaultRegistry();
+        experimentID = (String)defaultRegistry.add(ParentDataType.EXPERIMENT, simpleExperiment);
+        tasks = orchestrator.createTasks(experimentID);
     }
 
     @Test
-    public void noDescriptorTest() throws Exception {
-
-//        boolean b = orchestrator.launchExperiment(experimentID);
-
-//        if (b) {
-//            This means orchestrator successfully accepted the job
-//            Assert.assertTrue(true);
-//        } else {
-//            Assert.assertFalse(true);
-//        }
+    public void localHostTest() throws Exception {
+          for(TaskDetails details:tasks) {
+              orchestrator.launchExperiment(experimentID, details.getTaskID());
+          }
     }
 
     private AiravataAPI getAiravataAPI() {

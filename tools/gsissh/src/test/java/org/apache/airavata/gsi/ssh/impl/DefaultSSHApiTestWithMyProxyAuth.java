@@ -53,19 +53,19 @@ public class DefaultSSHApiTestWithMyProxyAuth {
     @BeforeTest
     public void setUp() throws Exception {
         System.out.println("Test case name " + this.getClass().getName());
-        System.setProperty("myproxy.user", "ogce");
-        System.setProperty("myproxy.password", "0Gce3098");
-        System.setProperty("gsi.certificate.path", "/Users/lahirugunathilake/Downloads/certificates");
-        System.setProperty("gsi.working.directory", "/home/ogce");
+//        System.setProperty("myproxy.username", "ogce");
+//        System.setProperty("myproxy.password", "");
+//        System.setProperty("trusted.cert.location", "/Users/lahirugunathilake/Downloads/certificates");
+//        System.setProperty("gsi.working.directory", "/home/ogce");
 
-        certificateLocation = System.getProperty("gsi.certificate.path");
-        myProxyUserName = System.getProperty("myproxy.user");
+        certificateLocation = System.getProperty("trusted.cert.location");
+        myProxyUserName = System.getProperty("myproxy.username");
         myProxyPassword = System.getProperty("myproxy.password");
         workingDirectory = System.getProperty("gsi.working.directory");
 
         if (myProxyUserName == null || myProxyPassword == null || workingDirectory == null) {
             System.out.println(">>>>>> Please run tests with my proxy user name and password. " +
-                    "E.g :- mvn clean install -Dmyproxy.user=xxx -Dmyproxy.password=xxx -Dgsi.working.directory=/path<<<<<<<");
+                    "E.g :- mvn clean install -Dmyproxy.username=xxx -Dmyproxy.password=xxx -Dtrusted.cert.location=/path<<<<<<<");
             throw new Exception("Need my proxy user name password to run tests.");
         }
     }

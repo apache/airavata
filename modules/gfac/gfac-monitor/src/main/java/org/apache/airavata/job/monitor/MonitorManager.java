@@ -32,6 +32,7 @@ import org.apache.airavata.job.monitor.impl.pull.qstat.QstatMonitor;
 import org.apache.airavata.job.monitor.impl.push.amqp.AMQPMonitor;
 import org.apache.airavata.job.monitor.util.CommonUtils;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryImpl;
+import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.apache.airavata.schemas.gfac.SSHHostType;
@@ -83,6 +84,16 @@ public class MonitorManager {
         registerListener(new AiravataJobStatusUpdator(new RegistryImpl(), getFinishQueue()));
     }
 
+    public MonitorManager(Registry registry) {
+        pullMonitors = new ArrayList<PullMonitor>();
+        pushMonitors = new ArrayList<PushMonitor>();
+        pullQueue = new LinkedBlockingQueue<UserMonitorData>();
+        pushQueue = new LinkedBlockingQueue<MonitorID>();
+        finishQueue = new LinkedBlockingQueue<MonitorID>();
+        localJobQueue = new LinkedBlockingQueue<MonitorID>();
+        monitorPublisher = new MonitorPublisher(new EventBus());
+        registerListener(new AiravataJobStatusUpdator(registry, getFinishQueue()));
+    }
     /**
      * This can be use to add an empty AMQPMonitor object to the monitor system
      * and tihs method will take care of the initialization

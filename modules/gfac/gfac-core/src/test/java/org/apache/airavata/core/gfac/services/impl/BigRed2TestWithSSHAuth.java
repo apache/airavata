@@ -76,20 +76,21 @@ public class BigRed2TestWithSSHAuth {
 //        System.setProperty("ssh.public.key.path", "/Users/lahirugunathilake/.ssh/id_dsa.pub");
 //        System.setProperty("ssh.working.directory", "/tmp");
 
+        this.hostName = "bigred2.uits.iu.edu";
         this.hostName = System.getProperty("ssh.host");
-        this.userName = System.getProperty("ssh.user");
+        this.userName = System.getProperty("ssh.username");
         this.password = System.getProperty("ssh.password");
-        this.privateKeyPath = System.getProperty("ssh.private.key.path");
-        this.publicKeyPath = System.getProperty("ssh.public.key.path");
-        this.passPhrase = System.getProperty("ssh.private.key.passphrase");
+        this.privateKeyPath = System.getProperty("private.ssh.key");
+        this.publicKeyPath = System.getProperty("public.ssh.key");
+        this.passPhrase = System.getProperty("ssh.keypass");
         this.workingDirectory = System.getProperty("ssh.working.directory");
 
 
          if (this.userName == null
                 || (this.password==null && (this.publicKeyPath == null || this.privateKeyPath == null)) || this.workingDirectory == null) {
             System.out.println("########### In order to test you have to either username password or private,public keys");
-            System.out.println("Use -Dssh.user=xxx -Dssh.password=yyy -Dssh.private.key.passphrase=zzz " +
-                    "-Dssh.private.key.path -Dssh.public.key.path -Dssh.working.directory ");
+            System.out.println("Use -Dssh.username=xxx -Dssh.password=yyy -Dssh.keypass=zzz " +
+                    "-Dprivate.ssh.key -Dpublic.ssh.key -Dssh.working.directory ");
         }
         URL resource = GramProviderTestWithMyProxyAuth.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         assert resource != null;
@@ -242,9 +243,11 @@ public class BigRed2TestWithSSHAuth {
     }
 
     @Test
-    public void testGramProvider() throws GFacException {
+    public void testSSHProvider() throws GFacException {
         GFacImpl gFacAPI = new GFacImpl();
         gFacAPI.submitJob(jobExecutionContext);
+        org.junit.Assert.assertNotNull(jobExecutionContext.getJobDetails().getJobDescription());
+        org.junit.Assert.assertNotNull(jobExecutionContext.getJobDetails().getJobID());
     }
 
 }

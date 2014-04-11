@@ -31,6 +31,7 @@ import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.impl.pull.qstat.QstatMonitor;
+import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +40,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QstatMonitorTest {
+public class QstatMonitorTestWithMyProxyAuth {
     private MonitorManager monitorManager;
     private String myProxyUserName;
     private String myProxyPassword;
@@ -50,22 +51,22 @@ public class QstatMonitorTest {
 
     @Before
     public void setUp() throws Exception {
-        System.setProperty("myproxy.user", "ogce");
-        System.setProperty("myproxy.password", "");
-        System.setProperty("basedir", "/Users/lahirugunathilake/work/airavata/sandbox/gsissh");
-        System.setProperty("gsi.working.directory", "/home/ogce");
-        myProxyUserName = System.getProperty("myproxy.user");
+//        System.setProperty("myproxy.username", "ogce");
+//        System.setProperty("myproxy.password", "");
+//        System.setProperty("basedir", "/Users/lahirugunathilake/work/airavata/sandbox/gsissh");
+//        System.setProperty("gsi.working.directory", "/home/ogce");
+//        System.setProperty("trusted.cert.location", "/Users/lahirugunathilake/Downloads/certificates");
+        myProxyUserName = System.getProperty("myproxy.username");
         myProxyPassword = System.getProperty("myproxy.password");
         workingDirectory = System.getProperty("gsi.working.directory");
-        String pomDirectory = System.getProperty("basedir");
-        certificateLocation = "/Users/lahirugunathilake/Downloads/certificates";
+        certificateLocation = System.getProperty("trusted.cert.location");
         if (myProxyUserName == null || myProxyPassword == null || workingDirectory == null) {
             System.out.println(">>>>>> Please run tests with my proxy user name and password. " +
-                    "E.g :- mvn clean install -Dmyproxy.user=xxx -Dmyproxy.password=xxx -Dgsi.working.directory=/path<<<<<<<");
+                    "E.g :- mvn clean install -Dmyproxy.username=xxx -Dmyproxy.password=xxx -Dgsi.working.directory=/path<<<<<<<");
             throw new Exception("Need my proxy user name password to run tests.");
         }
 
-        monitorManager = new MonitorManager();
+        monitorManager = new MonitorManager(RegistryFactory.getLoggingRegistry());
         QstatMonitor qstatMonitor = new
                 QstatMonitor(monitorManager.getPullQueue(), monitorManager.getMonitorPublisher());
         try {
@@ -78,6 +79,8 @@ public class QstatMonitorTest {
         hostDescription = new HostDescription(GsisshHostType.type);
         hostDescription.getType().setHostAddress("trestles.sdsc.edu");
         hostDescription.getType().setHostName("gsissh-gordon");
+        ((GsisshHostType) hostDescription.getType()).setPort(22);
+        ((GsisshHostType)hostDescription.getType()).setInstalledPath("/opt/torque/bin/");
     }
 
     @Test
@@ -120,6 +123,7 @@ public class QstatMonitorTest {
         System.out.println(jobDescriptor.toXML());
         for (int i = 0; i < 1; i++) {
             String jobID = pbsCluster.submitBatchJob(jobDescriptor);
+            System.out.println("Job submitted successfully, Job ID: " +  jobID);
             MonitorID monitorID = new MonitorID(hostDescription, jobID,null,null, "ogce");
             monitorID.setAuthenticationInfo(authenticationInfo);
             try {

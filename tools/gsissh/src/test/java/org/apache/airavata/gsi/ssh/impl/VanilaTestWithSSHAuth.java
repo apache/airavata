@@ -52,17 +52,17 @@ public class VanilaTestWithSSHAuth {
     public void setUp() throws Exception {
         System.out.println("Test case name " + this.getClass().getName());
         this.hostName = "bigred2.uits.iu.edu";        //default ssh host
-        System.setProperty("ssh.user", "lginnali");
-        System.setProperty("ssh.private.key.path", "/Users/lahirugunathilake/.ssh/id_dsa");
-        System.setProperty("ssh.public.key.path", "/Users/lahirugunathilake/.ssh/id_dsa.pub");
-        System.setProperty("ssh.working.directory", "/tmp");
+//        System.setProperty("ssh.user", "lginnali");
+//        System.setProperty("ssh.private.key.path", "/Users/lahirugunathilake/.ssh/id_dsa");
+//        System.setProperty("ssh.public.key.path", "/Users/lahirugunathilake/.ssh/id_dsa.pub");
+//        System.setProperty("ssh.working.directory", "/tmp");
 
         this.hostName = System.getProperty("ssh.host");
-        this.userName = System.getProperty("ssh.user");
+        this.userName = System.getProperty("ssh.username");
         this.password = System.getProperty("ssh.password");
-        this.privateKeyPath = System.getProperty("ssh.private.key.path");
-        this.publicKeyPath = System.getProperty("ssh.public.key.path");
-        this.passPhrase = System.getProperty("ssh.private.key.passphrase");
+        this.privateKeyPath = System.getProperty("private.ssh.key");
+        this.publicKeyPath = System.getProperty("public.ssh.key");
+        this.passPhrase = System.getProperty("ssh.keypass");
         this.workingDirectory = System.getProperty("ssh.working.directory");
 
 

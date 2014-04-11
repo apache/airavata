@@ -35,13 +35,6 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.io.File;
-
-/**
- * User: AmilaJ (amilaj@apache.org)
- * Date: 7/12/13
- * Time: 12:58 PM
- */
 
 public class GSISecurityContextTestWithMyProxyAuth extends DatabaseTestCases {
 
@@ -54,13 +47,18 @@ public class GSISecurityContextTestWithMyProxyAuth extends DatabaseTestCases {
     public static void setUpClass() throws Exception {
         AiravataUtils.setExecutionAsServer();
 
-        System.setProperty("myproxy.user", "ogce");
-        System.setProperty("myproxy.password", "");
-        userName = System.getProperty("myproxy.user");
+//        System.setProperty("myproxy.username", "ogce");
+//        System.setProperty("myproxy.password", "");
+        userName = System.getProperty("myproxy.username");
         password = System.getProperty("myproxy.password");
+        System.setProperty("myproxy.server", "myproxy.teragrid.org");
+        System.setProperty("myproxy.life", "3600");
+        System.setProperty("credential.store.keystore.url", "../configuration/server/src/main/resources/airavata.jks");
+        System.setProperty("credential.store.keystore.alias", "airavata");
+        System.setProperty("credential.store.keystore.password", "airavata");
 
         if (userName == null || password == null || userName.trim().equals("") || password.trim().equals("")) {
-            log.error("===== Please set myproxy.user and myproxy.password system properties. =======");
+            log.error("===== Please set myproxy.username and myproxy.password system properties. =======");
             Assert.fail("Please set myproxy.user and myproxy.password system properties.");
         }
 
