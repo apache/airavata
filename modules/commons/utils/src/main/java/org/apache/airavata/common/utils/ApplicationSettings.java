@@ -71,10 +71,13 @@ public class ApplicationSettings {
 	private void loadProperties() {
 		URL url = getPropertyFileURL();
         try {
+        	
             properties.load(url.openStream());
+            logger.info("Settings loaded from "+url.toString());
             URL[] externalSettingsFileURLs = getExternalSettingsFileURLs();
             for (URL externalSettings : externalSettingsFileURLs) {
 				mergeSettingsImpl(externalSettings.openStream());
+				logger.info("External settings merged from "+url.toString());
 			}
         } catch (Exception e) {
         	propertyLoadException=e;
@@ -98,7 +101,9 @@ public class ApplicationSettings {
 			String[] externalSettingFiles = externalSettingsFileNames.split(",");
 			for (String externalSettingFile : externalSettingFiles) {
 				URL externalSettingFileURL = ApplicationSettings.class.getClassLoader().getResource(externalSettingFile);
-				if (externalSettingFileURL!=null){
+				if (externalSettingFileURL==null){
+					logger.warn("Could not file external settings file "+externalSettingFile);
+				}else{
 					externalSettingsFileURLs.add(externalSettingFileURL);
 				}
 			}
