@@ -33,8 +33,6 @@
                 <module>registry-api</module>
                 <module>registry-cpi</module>
                 <module>airavata-jpa-registry</module>
-                <module>airavata-registry-service</module>
-                <!--<module>airavata-registry-test</module>-->
             </modules>
         </profile>
     </profiles>
