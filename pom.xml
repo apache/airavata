@@ -476,7 +476,6 @@
                 <module>modules/commons</module>
                 <module>modules/registry</module>
                 <module>modules/airavata-client</module>
-                <module>modules/security</module>
                 <module>modules/credential-store</module>
                 <module>modules/orchestrator</module>
                 <module>tools</module>
@@ -486,9 +485,6 @@
                 <module>modules/integration-tests</module>
                 <module>modules/configuration</module>
                 <module>modules/ws-messenger</module>
-                <!--module>modules/rest</module-->
-                <!--module>samples</module-->
-                <!--module>modules/xbaya-gui</module-->
             </modules>
         </profile>
         <profile>
