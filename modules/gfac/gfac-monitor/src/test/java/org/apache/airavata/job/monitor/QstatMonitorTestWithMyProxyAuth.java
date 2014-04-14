@@ -33,8 +33,8 @@ import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.impl.pull.qstat.QstatMonitor;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
-import org.junit.Before;
-import org.junit.Test;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public class QstatMonitorTestWithMyProxyAuth {
     private String workingDirectory;
     private HostDescription hostDescription;
 
-    @Before
+    @BeforeClass
     public void setUp() throws Exception {
 //        System.setProperty("myproxy.username", "ogce");
 //        System.setProperty("myproxy.password", "");

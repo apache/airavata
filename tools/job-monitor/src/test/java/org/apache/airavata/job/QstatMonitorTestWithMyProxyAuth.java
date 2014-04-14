@@ -33,14 +33,9 @@ import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.UserMonitorData;
 import org.apache.airavata.job.monitor.event.MonitorPublisher;
-import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.impl.pull.qstat.QstatMonitor;
-import org.apache.airavata.job.monitor.state.JobStatus;
-import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
-import org.junit.Before;
-import org.junit.Test;
-import sun.jvm.hotspot.utilities.Assert;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -59,7 +54,8 @@ public class QstatMonitorTestWithMyProxyAuth {
     private MonitorPublisher monitorPublisher;
     private BlockingQueue<UserMonitorData> pullQueue;
     private Thread monitorThread;
-    @Before
+
+    @org.testng.annotations.BeforeClass
     public void setUp() throws Exception {
 //        System.setProperty("myproxy.username", "ogce");
 //        System.setProperty("myproxy.password", "");
