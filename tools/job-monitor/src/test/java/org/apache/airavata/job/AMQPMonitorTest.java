@@ -18,8 +18,9 @@
  * under the License.
  *
 */
-package org.apache.airavata.job.monitor;
+package org.apache.airavata.job;
 
+import com.google.common.eventbus.EventBus;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
@@ -28,6 +29,9 @@ import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
+import org.apache.airavata.job.monitor.MonitorID;
+import org.apache.airavata.job.monitor.UserMonitorData;
+import org.apache.airavata.job.monitor.event.MonitorPublisher;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.impl.push.amqp.AMQPMonitor;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
@@ -39,9 +43,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class AMQPMonitorTest {
-    private MonitorManager monitorManager;
 
     private String myProxyUserName;
     private String myProxyPassword;
@@ -49,7 +54,10 @@ public class AMQPMonitorTest {
     private String pbsFilePath;
     private String workingDirectory;
     private HostDescription hostDescription;
-
+    private MonitorPublisher monitorPublisher;
+    private BlockingQueue<MonitorID> finishQueue;
+    private BlockingQueue<MonitorID> pushQueue;
+    private Thread pushThread;
     @Before
     public void setUp() throws Exception {
 //        System.setProperty("myproxy.username", "ogce");
@@ -68,15 +76,18 @@ public class AMQPMonitorTest {
             throw new Exception("Need my proxy user name password to run tests.");
         }
 
-        monitorManager = new MonitorManager();
+        monitorPublisher =  new MonitorPublisher(new EventBus());
+        pushQueue = new LinkedBlockingQueue<MonitorID>();
+        finishQueue = new LinkedBlockingQueue<MonitorID>();
+
         AMQPMonitor amqpMonitor = new
-                AMQPMonitor(monitorManager.getMonitorPublisher(),
-                monitorManager.getPushQueue(), monitorManager.getFinishQueue(),"/Users/lahirugunathilake/Downloads/x509up_u503876","xsede",
+                AMQPMonitor(monitorPublisher,
+                pushQueue, finishQueue,"/Users/lahirugunathilake/Downloads/x509up_u503876","xsede",
                 Arrays.asList("info1.dyn.teragrid.org,info2.dyn.teragrid.org".split(",")));
         try {
-            monitorManager.addPushMonitor(amqpMonitor);
-            monitorManager.launchMonitor();
-        } catch (AiravataMonitorException e) {
+            pushThread = (new Thread(amqpMonitor));
+            pushThread.start();
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -131,15 +142,13 @@ public class AMQPMonitorTest {
         String jobID = pbsCluster.submitBatchJob(jobDescriptor);
         System.out.println(jobID);
         try {
-            monitorManager.addAJobToMonitor(new MonitorID(hostDescription, jobID,null,null, "ogce"));
-        } catch (AiravataMonitorException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (InterruptedException e) {
+            pushQueue.add(new MonitorID(hostDescription, jobID,null,null, "ogce"));
+        } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         try {
-            Thread.sleep(5000);
-            Iterator<MonitorID> iterator = monitorManager.getPushQueue().iterator();
+            pushThread.join(5000);
+            Iterator<MonitorID> iterator = pushQueue.iterator();
             MonitorID next = iterator.next();
             org.junit.Assert.assertNotNull(next.getStatus());
         } catch (InterruptedException e) {
