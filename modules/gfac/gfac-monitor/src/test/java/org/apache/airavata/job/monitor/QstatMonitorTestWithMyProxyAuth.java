@@ -38,7 +38,9 @@ import org.junit.Test;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 
 public class QstatMonitorTestWithMyProxyAuth {
     private MonitorManager monitorManager;
@@ -135,8 +137,13 @@ public class QstatMonitorTestWithMyProxyAuth {
             }
         }
         try {
-            Thread.sleep(10000000);
-        } catch (InterruptedException e) {
+            Thread.sleep(5000);
+            BlockingQueue<UserMonitorData> pullQueue = monitorManager.getPullQueue();
+            Iterator<UserMonitorData> iterator = pullQueue.iterator();
+            UserMonitorData next = iterator.next();
+            MonitorID monitorID = next.getHostMonitorData().get(0).getMonitorIDs().get(0);
+            org.junit.Assert.assertNotNull(monitorID.getStatus());
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

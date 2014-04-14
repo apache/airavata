@@ -18,8 +18,9 @@
  * under the License.
  *
 */
-package org.apache.airavata.job.monitor;
+package org.apache.airavata.job;
 
+import com.google.common.eventbus.EventBus;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
@@ -28,28 +29,36 @@ import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
+import org.apache.airavata.gsi.ssh.util.CommonUtils;
+import org.apache.airavata.job.monitor.MonitorID;
+import org.apache.airavata.job.monitor.UserMonitorData;
+import org.apache.airavata.job.monitor.event.MonitorPublisher;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
-import org.apache.airavata.job.monitor.impl.push.amqp.AMQPMonitor;
+import org.apache.airavata.job.monitor.impl.pull.qstat.QstatMonitor;
+import org.apache.airavata.job.monitor.state.JobStatus;
+import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.junit.Before;
 import org.junit.Test;
+import sun.jvm.hotspot.utilities.Assert;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-public class AMQPMonitorTest {
-    private MonitorManager monitorManager;
-
+public class QstatMonitorTestWithMyProxyAuth {
     private String myProxyUserName;
     private String myProxyPassword;
     private String certificateLocation;
     private String pbsFilePath;
     private String workingDirectory;
     private HostDescription hostDescription;
-
+    private MonitorPublisher monitorPublisher;
+    private BlockingQueue<UserMonitorData> pullQueue;
+    private Thread monitorThread;
     @Before
     public void setUp() throws Exception {
 //        System.setProperty("myproxy.username", "ogce");
@@ -61,36 +70,32 @@ public class AMQPMonitorTest {
         myProxyPassword = System.getProperty("myproxy.password");
         workingDirectory = System.getProperty("gsi.working.directory");
         certificateLocation = System.getProperty("trusted.cert.location");
-        System.setProperty("connection.name", "xsede");
         if (myProxyUserName == null || myProxyPassword == null || workingDirectory == null) {
             System.out.println(">>>>>> Please run tests with my proxy user name and password. " +
-                    "E.g :- mvn clean install -Dmyproxy.user=xxx -Dmyproxy.password=xxx -Dgsi.working.directory=/path<<<<<<<");
+                    "E.g :- mvn clean install -Dmyproxy.username=xxx -Dmyproxy.password=xxx -Dgsi.working.directory=/path<<<<<<<");
             throw new Exception("Need my proxy user name password to run tests.");
         }
 
-        monitorManager = new MonitorManager();
-        AMQPMonitor amqpMonitor = new
-                AMQPMonitor(monitorManager.getMonitorPublisher(),
-                monitorManager.getPushQueue(), monitorManager.getFinishQueue(),"/Users/lahirugunathilake/Downloads/x509up_u503876","xsede",
-                Arrays.asList("info1.dyn.teragrid.org,info2.dyn.teragrid.org".split(",")));
+        monitorPublisher =  new MonitorPublisher(new EventBus());
+        pullQueue = new LinkedBlockingQueue<UserMonitorData>();
+        QstatMonitor qstatMonitor = new
+                QstatMonitor(pullQueue, monitorPublisher);
         try {
-            monitorManager.addPushMonitor(amqpMonitor);
-            monitorManager.launchMonitor();
-        } catch (AiravataMonitorException e) {
+            monitorThread = (new Thread(qstatMonitor));
+            monitorThread.start();
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         hostDescription = new HostDescription(GsisshHostType.type);
-        hostDescription.getType().setHostAddress("stampede.tacc.xsede.org");
-        hostDescription.getType().setHostName("stampede-host");
-        ((GsisshHostType) hostDescription.getType()).setJobManager("slurm");
-        ((GsisshHostType) hostDescription.getType()).setInstalledPath("/usr/bin/");
-        ((GsisshHostType) hostDescription.getType()).setPort(2222);
-        ((GsisshHostType) hostDescription.getType()).setMonitorMode("push");
+        hostDescription.getType().setHostAddress("trestles.sdsc.edu");
+        hostDescription.getType().setHostName("gsissh-gordon");
+        ((GsisshHostType) hostDescription.getType()).setPort(22);
+        ((GsisshHostType)hostDescription.getType()).setInstalledPath("/opt/torque/bin/");
     }
 
     @Test
-    public void testAMQPMonitor() throws SSHApiException {
+    public void testQstatMonitor() throws SSHApiException {
         /* now have to submit a job to some machine and add that job to the queue */
         //Create authentication
         GSIAuthenticationInfo authenticationInfo
@@ -98,11 +103,10 @@ public class AMQPMonitorTest {
                 7512, 17280000, certificateLocation);
 
         // Server info
-        ServerInfo serverInfo = new ServerInfo("ogce", "trestles.sdsc.edu");
+        ServerInfo serverInfo = new ServerInfo("ogce", hostDescription.getType().getHostAddress());
 
 
-        Cluster pbsCluster = new
-                PBSCluster(serverInfo, authenticationInfo, org.apache.airavata.gsi.ssh.util.CommonUtils.getPBSJobManager("/opt/torque/bin/"));
+        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/bin/"));
 
 
         // Execute command
@@ -128,22 +132,25 @@ public class AMQPMonitorTest {
         jobDescriptor.setInputValues(inputs);
         //finished construction of job object
         System.out.println(jobDescriptor.toXML());
-        String jobID = pbsCluster.submitBatchJob(jobDescriptor);
-        System.out.println(jobID);
-        try {
-            monitorManager.addAJobToMonitor(new MonitorID(hostDescription, jobID,null,null, "ogce"));
-        } catch (AiravataMonitorException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (InterruptedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        for (int i = 0; i < 1; i++) {
+            String jobID = pbsCluster.submitBatchJob(jobDescriptor);
+            System.out.println("Job submitted successfully, Job ID: " +  jobID);
+            MonitorID monitorID = new MonitorID(hostDescription, jobID,null,null, "ogce");
+            monitorID.setAuthenticationInfo(authenticationInfo);
+            try {
+                org.apache.airavata.job.monitor.util.CommonUtils.addMonitortoQueue(pullQueue, monitorID);
+            } catch (Exception e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
         }
         try {
-            Thread.sleep(5000);
-            Iterator<MonitorID> iterator = monitorManager.getPushQueue().iterator();
-            MonitorID next = iterator.next();
-            org.junit.Assert.assertNotNull(next.getStatus());
-        } catch (InterruptedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            monitorThread.join(5000);
+            Iterator<UserMonitorData> iterator = pullQueue.iterator();
+            UserMonitorData next = iterator.next();
+            MonitorID monitorID = next.getHostMonitorData().get(0).getMonitorIDs().get(0);
+            org.junit.Assert.assertNotNull(monitorID.getStatus());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
