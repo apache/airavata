@@ -1,0 +1,251 @@
+<?xml version="1.0"?>
+<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE file 
+	distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to you under 
+	the Apache License, Version 2.0 (theÏ "License"); you may not use this file except in compliance with the License. You may 
+	obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to 
+	in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF 
+	ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
+	the License. -->
+
+<xwf:workflow xwf:version="3.8.8" xmlns:xwf="http://www.extreme.indiana.edu/xbaya/xwf">
+  <xgr:graph xgr:version="3.8.8" xgr:type="ws"
+    xmlns:xgr="http://www.extreme.indiana.edu/xbaya/graph">
+    <xgr:id>test3</xgr:id>
+    <xgr:name>test3</xgr:name>
+    <xgr:description></xgr:description>
+    <xgr:metadata>
+      <appinfo xmlns="http://www.w3.org/2001/XMLSchema">
+
+</appinfo>
+    </xgr:metadata>
+    <xgr:node xgr:type="ws">
+      <xgr:id>TimestampServicePortType_appendTimeStamp</xgr:id>
+      <xgr:name>TimestampServicePortType:appendTimeStamp</xgr:name>
+      <xgr:outputPort>TimestampServicePortType_appendTimeStamp_out_0</xgr:outputPort>
+      <xgr:inputPort>TimestampServicePortType_appendTimeStamp_in_0</xgr:inputPort>
+      <xgr:controlInPort>TimestampServicePortType_appendTimeStamp_ctrl_in_0</xgr:controlInPort>
+      <xgr:controlOutPort>TimestampServicePortType_appendTimeStamp_ctrl_out_0</xgr:controlOutPort>
+      <xgr:x>35</xgr:x>
+      <xgr:y>122</xgr:y>
+      <xgr:wsdl>_</xgr:wsdl>
+      <xgr:portType>{http://indiana.edu}TimestampServicePortType</xgr:portType>
+      <xgr:operation>appendTimeStamp</xgr:operation>
+    </xgr:node>
+    <xgr:node xgr:type="ws">
+      <xgr:id>TimestampServicePortType_appendTimeStamp_2</xgr:id>
+      <xgr:name>TimestampServicePortType:appendTimeStamp</xgr:name>
+      <xgr:outputPort>TimestampServicePortType_appendTimeStamp_2_out_0</xgr:outputPort>
+      <xgr:inputPort>TimestampServicePortType_appendTimeStamp_2_in_0</xgr:inputPort>
+      <xgr:controlInPort>TimestampServicePortType_appendTimeStamp_2_ctrl_in_0</xgr:controlInPort>
+      <xgr:controlOutPort>TimestampServicePortType_appendTimeStamp_2_ctrl_out_0</xgr:controlOutPort>
+      <xgr:x>179</xgr:x>
+      <xgr:y>228</xgr:y>
+      <xgr:wsdl>_</xgr:wsdl>
+      <xgr:portType>{http://indiana.edu}TimestampServicePortType</xgr:portType>
+      <xgr:operation>appendTimeStamp</xgr:operation>
+    </xgr:node>
+    <xgr:node xgr:type="input">
+      <xgr:id>before</xgr:id>
+      <xgr:name>before</xgr:name>
+      <xgr:outputPort>before_out_0</xgr:outputPort>
+      <xgr:x>24</xgr:x>
+      <xgr:y>47</xgr:y>
+      <xgr:config>
+        <xgr:description></xgr:description>
+        <xgr:dataType>{http://www.w3.org/2001/XMLSchema}string</xgr:dataType>
+      </xgr:config>
+    </xgr:node>
+    <xgr:node xgr:type="output">
+      <xgr:id>return</xgr:id>
+      <xgr:name>return</xgr:name>
+      <xgr:inputPort>return_in_0</xgr:inputPort>
+      <xgr:x>552</xgr:x>
+      <xgr:y>216</xgr:y>
+      <xgr:config>
+        <xgr:description></xgr:description>
+        <xgr:dataType>{http://www.w3.org/2001/XMLSchema}string</xgr:dataType>
+      </xgr:config>
+    </xgr:node>
+    <xgr:port xgr:type="ws">
+      <xgr:id>TimestampServicePortType_appendTimeStamp_in_0</xgr:id>
+      <xgr:name>before</xgr:name>
+      <xgr:node>TimestampServicePortType_appendTimeStamp</xgr:node>
+    </xgr:port>
+    <xgr:port xgr:type="ws">
+      <xgr:id>TimestampServicePortType_appendTimeStamp_out_0</xgr:id>
+      <xgr:name>return</xgr:name>
+      <xgr:node>TimestampServicePortType_appendTimeStamp</xgr:node>
+    </xgr:port>
+    <xgr:port xgr:type="control">
+      <xgr:id>TimestampServicePortType_appendTimeStamp_ctrl_in_0</xgr:id>
+      <xgr:name>control</xgr:name>
+      <xgr:node>TimestampServicePortType_appendTimeStamp</xgr:node>
+    </xgr:port>
+    <xgr:port xgr:type="control">
+      <xgr:id>TimestampServicePortType_appendTimeStamp_ctrl_out_0</xgr:id>
+      <xgr:name>control</xgr:name>
+      <xgr:node>TimestampServicePortType_appendTimeStamp</xgr:node>
+    </xgr:port>
+    <xgr:port xgr:type="ws">
+      <xgr:id>TimestampServicePortType_appendTimeStamp_2_in_0</xgr:id>
+      <xgr:name>before</xgr:name>
+      <xgr:node>TimestampServicePortType_appendTimeStamp_2</xgr:node>
+    </xgr:port>
+    <xgr:port xgr:type="ws">
+      <xgr:id>TimestampServicePortType_appendTimeStamp_2_out_0</xgr:id>
+      <xgr:name>return</xgr:name>
+      <xgr:node>TimestampServicePortType_appendTimeStamp_2</xgr:node>
+    </xgr:port>
+    <xgr:port xgr:type="control">
+      <xgr:id>TimestampServicePortType_appendTimeStamp_2_ctrl_in_0</xgr:id>
+      <xgr:name>control</xgr:name>
+      <xgr:node>TimestampServicePortType_appendTimeStamp_2</xgr:node>
+    </xgr:port>
+    <xgr:port xgr:type="control">
+      <xgr:id>TimestampServicePortType_appendTimeStamp_2_ctrl_out_0</xgr:id>
+      <xgr:name>control</xgr:name>
+      <xgr:node>TimestampServicePortType_appendTimeStamp_2</xgr:node>
+    </xgr:port>
+    <xgr:port xgr:type="systemData">
+      <xgr:id>before_out_0</xgr:id>
+      <xgr:name>Parameter</xgr:name>
+      <xgr:node>before</xgr:node>
+    </xgr:port>
+    <xgr:port xgr:type="systemData">
+      <xgr:id>return_in_0</xgr:id>
+      <xgr:name>Parameter</xgr:name>
+      <xgr:node>return</xgr:node>
+    </xgr:port>
+    <xgr:edge xgr:type="data">
+      <xgr:fromPort>before_out_0</xgr:fromPort>
+      <xgr:toPort>TimestampServicePortType_appendTimeStamp_in_0</xgr:toPort>
+    </xgr:edge>
+    <xgr:edge xgr:type="data">
+      <xgr:fromPort>TimestampServicePortType_appendTimeStamp_out_0</xgr:fromPort>
+      <xgr:toPort>TimestampServicePortType_appendTimeStamp_2_in_0</xgr:toPort>
+    </xgr:edge>
+    <xgr:edge xgr:type="data">
+      <xgr:fromPort>TimestampServicePortType_appendTimeStamp_2_out_0</xgr:fromPort>
+      <xgr:toPort>return_in_0</xgr:toPort>
+    </xgr:edge>
+  </xgr:graph>
+  <xwf:wsdls>
+    <xwf:wsdl xwf:id="_">&lt;wsdl:definitions targetNamespace="http://indiana.edu" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://indiana.edu"
+  xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  &lt;wsdl:types>
+    &lt;xs:schema targetNamespace="http://indiana.edu">
+            &lt;xs:element name="appendTimeStamp">
+                &lt;xs:complexType>
+                    &lt;xs:sequence>
+                        &lt;xs:element minOccurs="0" name="before" nillable="true" type="xs:string" />
+                    &lt;/xs:sequence>
+                &lt;/xs:complexType>
+            &lt;/xs:element>
+            &lt;xs:element name="appendTimeStampResponse">
+                &lt;xs:complexType>
+                    &lt;xs:sequence>
+                        &lt;xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    &lt;/xs:sequence>
+                &lt;/xs:complexType>
+            &lt;/xs:element>
+        &lt;/xs:schema>
+  &lt;/wsdl:types>
+  &lt;wsdl:message name="appendTimeStampResponse">
+    &lt;wsdl:part name="parameters" element="ns:appendTimeStampResponse">
+    &lt;/wsdl:part>
+  &lt;/wsdl:message>
+  &lt;wsdl:message name="appendTimeStampRequest">
+    &lt;wsdl:part name="parameters" element="ns:appendTimeStamp">
+    &lt;/wsdl:part>
+  &lt;/wsdl:message>
+  &lt;wsdl:portType name="TimestampServicePortType">
+    &lt;wsdl:operation name="appendTimeStamp">
+      &lt;wsdl:input wsaw:Action="urn:appendTimeStamp" message="ns:appendTimeStampRequest">
+    &lt;/wsdl:input>
+      &lt;wsdl:output wsaw:Action="urn:appendTimeStampResponse" message="ns:appendTimeStampResponse">
+    &lt;/wsdl:output>
+    &lt;/wsdl:operation>
+  &lt;/wsdl:portType>
+  &lt;wsdl:binding name="TimestampServiceSoap11Binding" type="ns:TimestampServicePortType">
+    &lt;soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+    &lt;wsdl:operation name="appendTimeStamp">
+      &lt;soap:operation soapAction="urn:appendTimeStamp" style="document" />
+      &lt;wsdl:input>
+        &lt;soap:body use="literal" />
+      &lt;/wsdl:input>
+      &lt;wsdl:output>
+        &lt;soap:body use="literal" />
+      &lt;/wsdl:output>
+    &lt;/wsdl:operation>
+  &lt;/wsdl:binding>
+  &lt;wsdl:service name="TimestampService">
+    &lt;wsdl:port name="TimestampServiceHttpSoap11Endpoint" binding="ns:TimestampServiceSoap11Binding">
+      &lt;soap:address location="http://pagodatree.cs.indiana.edu:8081/axis2/services/TimestampService" />
+    &lt;/wsdl:port>
+  &lt;/wsdl:service>
+&lt;/wsdl:definitions></xwf:wsdl>
+  </xwf:wsdls>
+  <xwf:image>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
+AQDgd/8B2MLNSngBKtIAAAAASUVORK5CYII=
+</xwf:image>
+</xwf:workflow>

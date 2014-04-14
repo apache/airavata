@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ~ Licensed to the Apache Software Foundation (ASF) under one ~ or more
+    contributor license agreements. See the NOTICE file ~ distributed with this
+    work for additional information ~ regarding copyright ownership. The ASF
+    licenses this file ~ to you under the Apache License, Version 2.0 (the ~
+    "License"); you may not use this file except in compliance ~ with the License.
+    You may obtain a copy of the License at ~ ~ http://www.apache.org/licenses/LICENSE-2.0
+    ~ ~ Unless required by applicable law or agreed to in writing, ~ software
+    distributed under the License is distributed on an ~ "AS IS" BASIS, WITHOUT
+    WARRANTIES OR CONDITIONS OF ANY ~ KIND, either express or implied. See the
+    License for the ~ specific language governing permissions and limitations
+    ~ under the License. -->
+
+<!--
+This file contains a sample authenticator configuration. We can define all authenticators in this file. Each authenticator
+configuration has to start with tag "authenticator". The name is the name given to the authenticator. The actual
+authenticator implementation is implemented in the class. There are configurations specific to authenticators.
+Those configurations are reside inside &lt;specificConfigurations&gt; tags.
+-->
+
+<authenticators enabled="false">
+    <authenticator name="dbAuthenticator1" class="org.apache.airavata.security.configurations.TestDBAuthenticator1"
+                   enabled="true" priority="6" userstore="org.apache.airavata.security.userstore.JDBCUserStore">
+        <specificConfigurations>
+            <database>
+                <jdbcUrl>jdbc:sql:thin:@//myhost:1521/mysql1</jdbcUrl>
+                <userName>mysql1</userName>
+                <password>secret1</password>
+                <databaseDriver>org.apache.derby.jdbc.ClientDriver</databaseDriver>
+                <sessionTable>Session1</sessionTable>
+                <sessionColumn>sessioncolumn</sessionColumn>
+                <comparingColumn>comparecolumn</comparingColumn>
+                <!-- TODO add datasource.name></datasource.name -->
+            </database>
+        </specificConfigurations>
+    </authenticator>
+
+    <authenticator name="dbAuthenticator2" class="org.apache.airavata.security.configurations.TestDBAuthenticator2"
+                   enabled="true" priority="7" userstore="org.apache.airavata.security.userstore.JDBCUserStore">
+        <specificConfigurations>
+            <database>
+                <jdbcUrl>jdbc:sql:thin:@//myhost:1521/mysql2</jdbcUrl>
+                <userName>mysql2</userName>
+                <password>secret2</password>
+                <databaseDriver>org.apache.derby.jdbc.ClientDriver</databaseDriver>
+                <sessionTable>Session2</sessionTable>
+                <sessionColumn>sessioncolumn2</sessionColumn>
+                <comparingColumn>comparecolumn2</comparingColumn>
+            </database>
+        </specificConfigurations>
+    </authenticator>
+
+    <authenticator name="dbAuthenticator4" class="org.apache.airavata.security.configurations.TestDBAuthenticator2"
+                   enabled="false" priority="7" userstore="org.apache.airavata.security.userstore.JDBCUserStore">
+        <specificConfigurations>
+            <database>
+                <jdbcUrl>jdbc:sql:thin:@//myhost:1521/mysql2</jdbcUrl>
+                <userName>mysql2</userName>
+                <password>secret2</password>
+                <databaseDriver>org.apache.derby.jdbc.ClientDriver</databaseDriver>
+                <sessionTable>Session2</sessionTable>
+                <sessionColumn>sessioncolumn2</sessionColumn>
+                <comparingColumn>comparecolumn2</comparingColumn>
+            </database>
+        </specificConfigurations>
+    </authenticator>
+
+    <authenticator name="dbAuthenticator3" class="org.apache.airavata.security.configurations.TestDBAuthenticator3"
+                   enabled="true" priority="8" userstore="org.apache.airavata.security.userstore.JDBCUserStore">
+        <specificConfigurations>
+            <database>
+                <jdbcUrl>jdbc:sql:thin:@//myhost:1521/mysql3</jdbcUrl>
+                <userName>mysql3</userName>
+                <password>secret3</password>
+                <databaseDriver>org.apache.derby.jdbc.ClientDriver</databaseDriver>
+                <sessionTable>Session3</sessionTable>
+                <sessionColumn>sessioncolumn3</sessionColumn>
+                <comparingColumn>comparecolumn3</comparingColumn>
+            </database>
+        </specificConfigurations>
+    </authenticator>
+
+</authenticators>
