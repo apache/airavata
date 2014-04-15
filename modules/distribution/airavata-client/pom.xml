@@ -143,6 +143,11 @@
             <artifactId>commons-codec</artifactId>
             <version>1.6</version>
         </dependency>
+	<dependency>
+            <groupId>commons-cli</groupId>
+            <artifactId>commons-cli</artifactId>
+            <version>1.2</version>
+        </dependency>  
         <dependency>
             <groupId>org.python</groupId>
             <artifactId>jython</artifactId>
@@ -372,7 +377,11 @@
             <artifactId>libthrift</artifactId>
             <version>0.9.1</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-api-stubs</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     <properties>
         <jersey.version>1.13</jersey.version>
