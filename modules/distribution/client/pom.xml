@@ -13,12 +13,12 @@
         <groupId>org.apache.airavata</groupId>
         <artifactId>airavata</artifactId>
         <version>0.12-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>distribution</artifactId>
-    <name>distribution</name>
+    <artifactId>airavata-client-parent</artifactId>
+    <name>Airavata Client Distribution Parent</name>
     <packaging>pom</packaging>
     <url>http://airavata.apache.org/</url>
     <profiles>
@@ -28,9 +28,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
-                <module>server</module>
-                <module>client</module>
-		<module>release</module>
+                <module>java</module>
             </modules>
         </profile>
     </profiles>
