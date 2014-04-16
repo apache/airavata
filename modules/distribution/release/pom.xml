@@ -41,47 +41,32 @@
 								<artifactItem>
 									<groupId>org.apache.airavata</groupId>
 									<artifactId>apache-airavata-server</artifactId>
-						            <version>${project.version}</version>
+						            		<version>${project.version}</version>
 									<type>zip</type>
 									<classifier>bin</classifier>
 								</artifactItem>
 								<artifactItem>
 									<groupId>org.apache.airavata</groupId>
 									<artifactId>apache-airavata-server</artifactId>
-						            <version>${project.version}</version>
+						            		<version>${project.version}</version>
 									<type>tar.gz</type>
 									<classifier>bin</classifier>
 								</artifactItem>
 								<!--Airavata Client Distributions-->
 								<artifactItem>
 									<groupId>org.apache.airavata</groupId>
-									<artifactId>apache-airavata-client</artifactId>
-						            <version>${project.version}</version>
+									<artifactId>apache-airavata-client-java</artifactId>
+						           		<version>${project.version}</version>
 									<type>zip</type>
 									<classifier>bin</classifier>
 								</artifactItem>
 								<artifactItem>
 									<groupId>org.apache.airavata</groupId>
-									<artifactId>apache-airavata-client</artifactId>
-						            <version>${project.version}</version>
+									<artifactId>apache-airavata-client-java</artifactId>
+						            		<version>${project.version}</version>
 									<type>tar.gz</type>
 									<classifier>bin</classifier>
 								</artifactItem>
-								<!--Airavata XBaya-GUI Distributions-->
-								<!--artifactItem>
-									<groupId>org.apache.airavata</groupId>
-									<artifactId>apache-airavata-xbaya-gui</artifactId>
-						            <version>${project.version}</version>
-									<type>zip</type>
-									<classifier>bin</classifier>
-								</artifactItem>
-								<artifactItem>
-									<groupId>org.apache.airavata</groupId>
-									<artifactId>apache-airavata-xbaya-gui</artifactId>
-						            <version>${project.version}</version>
-									<type>tar.gz</type>
-									<classifier>bin</classifier>
-								</artifactItem-->
 							</artifactItems>
 							<outputDirectory>${project.build.directory}/release-artifacts</outputDirectory>
 						</configuration>
