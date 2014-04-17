@@ -21,25 +21,32 @@
 
 package org.apache.airavata.integration;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import junit.framework.Assert;
 
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.client.tools.DocumentCreator;
 import org.apache.airavata.model.util.ExperimentModelUtil;
-import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.model.workspace.experiment.DataObjectType;
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.workspace.experiment.JobStatus;
+import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
 import org.apache.airavata.registry.api.workflow.ApplicationJob;
 import org.apache.airavata.schemas.gfac.DataType;
-import org.apache.airavata.server.ServerMain;
 import org.apache.airavata.workflow.model.wf.Workflow;
-import org.apache.airavata.ws.monitor.*;
-import org.apache.commons.cli.ParseException;
+import org.apache.airavata.ws.monitor.EventData;
+import org.apache.airavata.ws.monitor.EventDataListenerAdapter;
+import org.apache.airavata.ws.monitor.EventDataRepository;
+import org.apache.airavata.ws.monitor.Monitor;
+import org.apache.airavata.ws.monitor.MonitorUtil;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Integration test class.
@@ -53,16 +60,6 @@ public class BaseCaseIT extends WorkflowIntegrationTestBase {
 
     @BeforeTest
     public void setUp() throws Exception {
-        new Thread() {
-            public void run() {
-                try {
-					ServerMain.main(new String[]{});
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-            }
-        }.start();
-        Thread.sleep(10000);
         this.airavataAPI = getAiravataAPI();
         this.client = getClient();
     }

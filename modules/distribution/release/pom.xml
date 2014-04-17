@@ -41,47 +41,63 @@
 								<artifactItem>
 									<groupId>org.apache.airavata</groupId>
 									<artifactId>apache-airavata-server</artifactId>
-						            <version>${project.version}</version>
+						            		<version>${project.version}</version>
 									<type>zip</type>
 									<classifier>bin</classifier>
 								</artifactItem>
 								<artifactItem>
 									<groupId>org.apache.airavata</groupId>
 									<artifactId>apache-airavata-server</artifactId>
-						            <version>${project.version}</version>
+						            		<version>${project.version}</version>
 									<type>tar.gz</type>
 									<classifier>bin</classifier>
 								</artifactItem>
 								<!--Airavata Client Distributions-->
+								<!--Java SDK-->
 								<artifactItem>
 									<groupId>org.apache.airavata</groupId>
-									<artifactId>apache-airavata-client</artifactId>
-						            <version>${project.version}</version>
+									<artifactId>apache-airavata-client-java-sdk</artifactId>
+						           		<version>${project.version}</version>
 									<type>zip</type>
 									<classifier>bin</classifier>
 								</artifactItem>
 								<artifactItem>
 									<groupId>org.apache.airavata</groupId>
-									<artifactId>apache-airavata-client</artifactId>
-						            <version>${project.version}</version>
+									<artifactId>apache-airavata-client-java-sdk</artifactId>
+						            		<version>${project.version}</version>
 									<type>tar.gz</type>
 									<classifier>bin</classifier>
 								</artifactItem>
-								<!--Airavata XBaya-GUI Distributions-->
-								<!--artifactItem>
+								<!--PHP SDK-->
+								<artifactItem>
 									<groupId>org.apache.airavata</groupId>
-									<artifactId>apache-airavata-xbaya-gui</artifactId>
-						            <version>${project.version}</version>
+									<artifactId>apache-airavata-client-php-sdk</artifactId>
+						           		<version>${project.version}</version>
 									<type>zip</type>
 									<classifier>bin</classifier>
 								</artifactItem>
 								<artifactItem>
 									<groupId>org.apache.airavata</groupId>
-									<artifactId>apache-airavata-xbaya-gui</artifactId>
-						            <version>${project.version}</version>
+									<artifactId>apache-airavata-client-php-sdk</artifactId>
+						            		<version>${project.version}</version>
 									<type>tar.gz</type>
 									<classifier>bin</classifier>
-								</artifactItem-->
+								</artifactItem>
+								<!--CPP SDK-->
+								<artifactItem>
+									<groupId>org.apache.airavata</groupId>
+									<artifactId>apache-airavata-client-cpp-sdk</artifactId>
+						           		<version>${project.version}</version>
+									<type>zip</type>
+									<classifier>bin</classifier>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.apache.airavata</groupId>
+									<artifactId>apache-airavata-client-cpp-sdk</artifactId>
+						            		<version>${project.version}</version>
+									<type>tar.gz</type>
+									<classifier>bin</classifier>
+								</artifactItem>
 							</artifactItems>
 							<outputDirectory>${project.build.directory}/release-artifacts</outputDirectory>
 						</configuration>

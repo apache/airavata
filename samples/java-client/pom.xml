@@ -17,25 +17,12 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>distribution</artifactId>
-    <name>distribution</name>
+    <artifactId>airavata-client-sample</artifactId>
+    <name>Samples - Airavata Client Samples</name>
     <packaging>pom</packaging>
     <url>http://airavata.apache.org/</url>
-    <profiles>
-        <profile>
-            <id>default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <modules>
-                <module>server</module>
-                <module>client</module>
-		<module>release</module>
-            </modules>
-        </profile>
-    </profiles>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    </properties>
+
+    <modules>
+        <module>experiment</module>
+    </modules>
 </project>

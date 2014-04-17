@@ -73,10 +73,6 @@ Airavata Source Distribution Directory Structure
 		│   ├── credential-store
 		│   ├── server
 		│   ├── test-suite
-		│   ├── thrift
-		│   │   ├── interpreter-service
-		│   │   ├── interpreter-service-client
-		│   │   ├── interpreter-service-handler
 		│   ├── workflow-interpreter
 		│   ├── workflow-model
 		│   │   ├── workflow-model-component-node
