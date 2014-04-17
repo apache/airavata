@@ -21,6 +21,7 @@
 package org.apache.airavata.job;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
@@ -34,10 +35,13 @@ import org.apache.airavata.job.monitor.UserMonitorData;
 import org.apache.airavata.job.monitor.event.MonitorPublisher;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.impl.push.amqp.AMQPMonitor;
+import org.apache.airavata.job.monitor.state.JobStatus;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.validation.constraints.AssertTrue;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,6 +62,7 @@ public class AMQPMonitorTest {
     private BlockingQueue<MonitorID> finishQueue;
     private BlockingQueue<MonitorID> pushQueue;
     private Thread pushThread;
+    private String proxyFilePath;
     @Before
     public void setUp() throws Exception {
 //        System.setProperty("myproxy.username", "ogce");
@@ -65,10 +70,12 @@ public class AMQPMonitorTest {
 //        System.setProperty("basedir", "/Users/lahirugunathilake/work/airavata/sandbox/gsissh");
 //        System.setProperty("gsi.working.directory", "/home/ogce");
 //        System.setProperty("trusted.cert.location", "/Users/lahirugunathilake/Downloads/certificates");
+//        System.setProperty("proxy.file.path", "/Users/lahirugunathilake/Downloads/x509up_u503876");
         myProxyUserName = System.getProperty("myproxy.username");
         myProxyPassword = System.getProperty("myproxy.password");
         workingDirectory = System.getProperty("gsi.working.directory");
         certificateLocation = System.getProperty("trusted.cert.location");
+        proxyFilePath = System.getProperty("proxy.file.path");
         System.setProperty("connection.name", "xsede");
         if (myProxyUserName == null || myProxyPassword == null || workingDirectory == null) {
             System.out.println(">>>>>> Please run tests with my proxy user name and password. " +
@@ -80,9 +87,10 @@ public class AMQPMonitorTest {
         pushQueue = new LinkedBlockingQueue<MonitorID>();
         finishQueue = new LinkedBlockingQueue<MonitorID>();
 
+
         AMQPMonitor amqpMonitor = new
                 AMQPMonitor(monitorPublisher,
-                pushQueue, finishQueue,"/Users/lahirugunathilake/Downloads/x509up_u503876","xsede",
+                pushQueue, finishQueue,proxyFilePath,"xsede",
                 Arrays.asList("info1.dyn.teragrid.org,info2.dyn.teragrid.org".split(",")));
         try {
             pushThread = (new Thread(amqpMonitor));
@@ -147,12 +155,25 @@ public class AMQPMonitorTest {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         try {
-            pushThread.join(5000);
-            Iterator<MonitorID> iterator = pushQueue.iterator();
-            MonitorID next = iterator.next();
-            org.junit.Assert.assertNotNull(next.getStatus());
+            pushThread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
+        class InnerClassAMQP{
+            @Subscribe
+            private void getStatus(JobStatus status){
+                Assert.assertNotNull(status);
+                pushThread.interrupt();
+            }
+        }
+        monitorPublisher.registerListener(new InnerClassAMQP());
+//        try {
+//            pushThread.join(5000);
+//            Iterator<MonitorID> iterator = pushQueue.iterator();
+//            MonitorID next = iterator.next();
+//            org.junit.Assert.assertNotNull(next.getStatus());
+//        } catch (Exception e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        }
     }
 }
