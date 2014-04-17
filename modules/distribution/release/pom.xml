@@ -53,6 +53,7 @@
 									<classifier>bin</classifier>
 								</artifactItem>
 								<!--Airavata Client Distributions-->
+								<!--Java SDK-->
 								<artifactItem>
 									<groupId>org.apache.airavata</groupId>
 									<artifactId>apache-airavata-client-java-sdk</artifactId>
@@ -63,6 +64,36 @@
 								<artifactItem>
 									<groupId>org.apache.airavata</groupId>
 									<artifactId>apache-airavata-client-java-sdk</artifactId>
+						            		<version>${project.version}</version>
+									<type>tar.gz</type>
+									<classifier>bin</classifier>
+								</artifactItem>
+								<!--PHP SDK-->
+								<artifactItem>
+									<groupId>org.apache.airavata</groupId>
+									<artifactId>apache-airavata-client-php-sdk</artifactId>
+						           		<version>${project.version}</version>
+									<type>zip</type>
+									<classifier>bin</classifier>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.apache.airavata</groupId>
+									<artifactId>apache-airavata-client-php-sdk</artifactId>
+						            		<version>${project.version}</version>
+									<type>tar.gz</type>
+									<classifier>bin</classifier>
+								</artifactItem>
+								<!--CPP SDK-->
+								<artifactItem>
+									<groupId>org.apache.airavata</groupId>
+									<artifactId>apache-airavata-client-cpp-sdk</artifactId>
+						           		<version>${project.version}</version>
+									<type>zip</type>
+									<classifier>bin</classifier>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.apache.airavata</groupId>
+									<artifactId>apache-airavata-client-cpp-sdk</artifactId>
 						            		<version>${project.version}</version>
 									<type>tar.gz</type>
 									<classifier>bin</classifier>
