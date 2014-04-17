@@ -49,6 +49,8 @@ public class AMQPMonitorTest {
     private String pbsFilePath;
     private String workingDirectory;
     private HostDescription hostDescription;
+    private String proxyFilePath;
+
 
     @Before
     public void setUp() throws Exception {
@@ -61,6 +63,7 @@ public class AMQPMonitorTest {
         myProxyPassword = System.getProperty("myproxy.password");
         workingDirectory = System.getProperty("gsi.working.directory");
         certificateLocation = System.getProperty("trusted.cert.location");
+        proxyFilePath = System.getProperty("proxy.file.path");
         System.setProperty("connection.name", "xsede");
         if (myProxyUserName == null || myProxyPassword == null || workingDirectory == null) {
             System.out.println(">>>>>> Please run tests with my proxy user name and password. " +
@@ -71,7 +74,7 @@ public class AMQPMonitorTest {
         monitorManager = new MonitorManager();
         AMQPMonitor amqpMonitor = new
                 AMQPMonitor(monitorManager.getMonitorPublisher(),
-                monitorManager.getPushQueue(), monitorManager.getFinishQueue(),"/Users/lahirugunathilake/Downloads/x509up_u503876","xsede",
+                monitorManager.getPushQueue(), monitorManager.getFinishQueue(),proxyFilePath,"xsede",
                 Arrays.asList("info1.dyn.teragrid.org,info2.dyn.teragrid.org".split(",")));
         try {
             monitorManager.addPushMonitor(amqpMonitor);

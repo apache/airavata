@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.job.monitor;
 
+import com.google.common.eventbus.Subscribe;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
@@ -31,8 +32,10 @@ import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.impl.pull.qstat.QstatMonitor;
+import org.apache.airavata.job.monitor.state.JobStatus;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
+import org.junit.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -71,6 +74,8 @@ public class QstatMonitorTestWithMyProxyAuth {
         monitorManager = new MonitorManager(RegistryFactory.getLoggingRegistry());
         QstatMonitor qstatMonitor = new
                 QstatMonitor(monitorManager.getPullQueue(), monitorManager.getMonitorPublisher());
+
+        monitorManager.getMonitorPublisher().registerListener(this);
         try {
             monitorManager.addPullMonitor(qstatMonitor);
             monitorManager.launchMonitor();
@@ -145,6 +150,16 @@ public class QstatMonitorTestWithMyProxyAuth {
             org.junit.Assert.assertNotNull(monitorID.getStatus());
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Subscribe
+    public void testCaseShutDown(JobStatus status) {
+        Assert.assertNotNull(status.getState());
+        try {
+            monitorManager.stopMonitor();
+        } catch (AiravataMonitorException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
 }
