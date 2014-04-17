@@ -116,13 +116,13 @@ public class OrchestratorClientSample {
                     try {
                         expId = (String) registry.add(ParentDataType.EXPERIMENT, simpleExperiment);
                     } catch (Exception e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        e.printStackTrace();
                     }
 
                     try {
                         orchestratorClient.launchExperiment(expId);
                     } catch (TException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        e.printStackTrace();
                     }
                 }
             };
@@ -130,7 +130,7 @@ public class OrchestratorClientSample {
             try {
                 thread.join();
             } catch (InterruptedException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e.printStackTrace();
             }
         }
     }

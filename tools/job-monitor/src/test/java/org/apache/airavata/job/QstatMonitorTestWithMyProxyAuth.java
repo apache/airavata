@@ -21,6 +21,7 @@
 package org.apache.airavata.job;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
@@ -34,7 +35,9 @@ import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.UserMonitorData;
 import org.apache.airavata.job.monitor.event.MonitorPublisher;
 import org.apache.airavata.job.monitor.impl.pull.qstat.QstatMonitor;
+import org.apache.airavata.job.monitor.state.JobStatus;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
+import org.junit.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -73,6 +76,16 @@ public class QstatMonitorTestWithMyProxyAuth {
         }
 
         monitorPublisher =  new MonitorPublisher(new EventBus());
+        class InnerClassQstat {
+
+            @Subscribe
+            private void getStatus(JobStatus status) {
+                Assert.assertNotNull(status);
+                System.out.println(status.getState().toString());
+                monitorThread.interrupt();
+            }
+        }
+        monitorPublisher.registerListener(this);
         pullQueue = new LinkedBlockingQueue<UserMonitorData>();
         QstatMonitor qstatMonitor = new
                 QstatMonitor(pullQueue, monitorPublisher);
@@ -140,13 +153,16 @@ public class QstatMonitorTestWithMyProxyAuth {
             }
         }
         try {
-            monitorThread.join(5000);
-            Iterator<UserMonitorData> iterator = pullQueue.iterator();
-            UserMonitorData next = iterator.next();
-            MonitorID monitorID = next.getHostMonitorData().get(0).getMonitorIDs().get(0);
-            org.junit.Assert.assertNotNull(monitorID.getStatus());
+
+            monitorThread.join();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Subscribe
+    public void testCaseShutDown(JobStatus status) {
+        Assert.assertNotNull(status.getState());
+        monitorThread.stop();
     }
 }
