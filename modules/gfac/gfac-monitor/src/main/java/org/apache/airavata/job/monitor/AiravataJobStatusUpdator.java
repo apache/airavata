@@ -20,33 +20,26 @@
 */
 package org.apache.airavata.job.monitor;
 
-import com.google.common.eventbus.Subscribe;
+import java.util.Calendar;
+import java.util.concurrent.BlockingQueue;
 
 import org.apache.airavata.job.monitor.state.JobStatus;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
-import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.CompositeIdentifier;
 import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Calendar;
-import java.util.concurrent.BlockingQueue;
+import com.google.common.eventbus.Subscribe;
 
-public class AiravataJobStatusUpdator{
+public class AiravataJobStatusUpdator implements AbstractActivityMonitorClient{
     private final static Logger logger = LoggerFactory.getLogger(AiravataJobStatusUpdator.class);
 
     private Registry airavataRegistry;
 
     private BlockingQueue<MonitorID> jobsToMonitor;
-
-
-    public AiravataJobStatusUpdator(Registry airavataRegistry, BlockingQueue<MonitorID> jobsToMonitor) {
-        this.airavataRegistry = airavataRegistry;
-        this.jobsToMonitor = jobsToMonitor;
-    }
 
     public Registry getAiravataRegistry() {
         return airavataRegistry;
@@ -128,4 +121,17 @@ public class AiravataJobStatusUpdator{
         details.setJobID(jobID);
         airavataRegistry.update(org.apache.airavata.registry.cpi.DataType.JOB_DETAIL, details, ids);
     }
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void setup(Object... configurations) {
+		for (Object configuration : configurations) {
+			
+			if (configuration instanceof Registry){
+				this.airavataRegistry=(Registry)configuration;
+			} else if (configuration instanceof BlockingQueue<?>){
+				this.jobsToMonitor=(BlockingQueue<MonitorID>) configuration;
+			}
+		}
+	}
 }
