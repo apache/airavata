@@ -217,6 +217,32 @@ public class MonitorManager {
         }
     }
 
+    /**
+     * This method should be invoked before adding any elements to monitorQueue
+     * In this method we assume that we give higher preference to Push
+     * Monitorig mechanism if there's any configured, otherwise Pull
+     * monitoring will be launched.
+     * Ex: If there's a reasource which doesn't support Push, we have
+     * to live with Pull MOnitoring.
+     *
+     * @throws AiravataMonitorException
+     */
+    public void stopMonitor() throws AiravataMonitorException {
+        //no push monitor is configured so we launch pull monitor
+        int index = 0;
+        if(localJobMonitor != null){
+            (new Thread(localJobMonitor)).stop();
+        }
+
+        for (PullMonitor monitor : pullMonitors) {
+            (new Thread(monitor)).stop();
+        }
+
+        //todo fix this
+        for (PushMonitor monitor : pushMonitors) {
+            (new Thread(monitor)).stop();
+        }
+    }
     /* getter setters for the private variables */
 
     public List<PullMonitor> getPullMonitors() {
