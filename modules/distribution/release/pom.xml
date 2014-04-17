@@ -55,14 +55,14 @@
 								<!--Airavata Client Distributions-->
 								<artifactItem>
 									<groupId>org.apache.airavata</groupId>
-									<artifactId>apache-airavata-client-java</artifactId>
+									<artifactId>apache-airavata-client-java-sdk</artifactId>
 						           		<version>${project.version}</version>
 									<type>zip</type>
 									<classifier>bin</classifier>
 								</artifactItem>
 								<artifactItem>
 									<groupId>org.apache.airavata</groupId>
-									<artifactId>apache-airavata-client-java</artifactId>
+									<artifactId>apache-airavata-client-java-sdk</artifactId>
 						            		<version>${project.version}</version>
 									<type>tar.gz</type>
 									<classifier>bin</classifier>
