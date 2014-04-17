@@ -20,8 +20,14 @@
 */
 package org.apache.airavata.job.monitor;
 
-import com.google.common.eventbus.EventBus;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.job.monitor.core.Monitor;
 import org.apache.airavata.job.monitor.core.PullMonitor;
 import org.apache.airavata.job.monitor.core.PushMonitor;
@@ -39,10 +45,7 @@ import org.apache.airavata.schemas.gfac.SSHHostType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import com.google.common.eventbus.EventBus;
 
 /*
 this is the manager class for monitoring system of airavata,
@@ -68,20 +71,16 @@ public class MonitorManager {
     private MonitorPublisher monitorPublisher;
 
     private Monitor localJobMonitor;
+    
+    private List<AbstractActivityMonitorClient> activityMonitors;
 
+    private Registry registry;
 
     /**
      * This will initialize the major monitoring system.
      */
     public MonitorManager() {
-        pullMonitors = new ArrayList<PullMonitor>();
-        pushMonitors = new ArrayList<PushMonitor>();
-        pullQueue = new LinkedBlockingQueue<UserMonitorData>();
-        pushQueue = new LinkedBlockingQueue<MonitorID>();
-        finishQueue = new LinkedBlockingQueue<MonitorID>();
-        localJobQueue = new LinkedBlockingQueue<MonitorID>();
-        monitorPublisher = new MonitorPublisher(new EventBus());
-        registerListener(new AiravataJobStatusUpdator(new RegistryImpl(), getFinishQueue()));
+    	this(new RegistryImpl());
     }
 
     public MonitorManager(Registry registry) {
@@ -92,7 +91,40 @@ public class MonitorManager {
         finishQueue = new LinkedBlockingQueue<MonitorID>();
         localJobQueue = new LinkedBlockingQueue<MonitorID>();
         monitorPublisher = new MonitorPublisher(new EventBus());
-        registerListener(new AiravataJobStatusUpdator(registry, getFinishQueue()));
+        this.registry = registry;
+        loadActivityMonitors();
+    }
+    
+    private void loadActivityMonitors(){
+		try {
+			activityMonitors=new ArrayList<AbstractActivityMonitorClient>();
+			String activityMonitorsString = ServerSettings.getSetting("activity.monitors");
+			if (activityMonitorsString!=null){
+				String[] activityMonitorClasses = activityMonitorsString.split(",");
+				for (String activityMonitorClassName : activityMonitorClasses) {
+					Class<?> classInstance;
+					try {
+						classInstance = MonitorManager.class
+						        .getClassLoader().loadClass(activityMonitorClassName);
+						AbstractActivityMonitorClient monitor=(AbstractActivityMonitorClient)classInstance.newInstance();
+						monitor.setup(registry,getFinishQueue());
+						activityMonitors.add(monitor);
+						registerListener(monitor);
+					} catch (ClassNotFoundException e) {
+						logger.error("Error while locating activity monitor implementation \""+activityMonitorClassName+"\"!!!",e);
+					} catch (InstantiationException e) {
+						logger.error("Error while initiating activity monitor instance \""+activityMonitorClassName+"\"!!!",e);
+					} catch (IllegalAccessException e) {
+						logger.error("Error while initiating activity monitor instance \""+activityMonitorClassName+"\"!!!",e);
+					} catch (ClassCastException e){
+						logger.error("Invalid activity monitor \""+activityMonitorClassName+"\"!!!",e);
+					}
+				}
+			}
+		} catch (ApplicationSettingsException e1) {
+			logger.warn("Error in reading activity monitors!!!", e1);
+		}
+		
     }
     /**
      * This can be use to add an empty AMQPMonitor object to the monitor system
