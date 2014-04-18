@@ -46,12 +46,12 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
     }
 
     @Subscribe
-    public void updateRegistry(ExperimentStatus taskStatus) {
-        ExperimentState state = taskStatus.getState();
+    public void updateRegistry(ExperimentStatus experimentStatus) {
+        ExperimentState state = experimentStatus.getState();
         if (state != null) {
             try {
-                String taskID = taskStatus.getMonitorID().getTaskID();
-                updateExperimentStatus(taskID, state);
+                String experimentID = experimentStatus.getMonitorID().getExperimentID();
+                updateExperimentStatus(experimentID, state);
             } catch (Exception e) {
                 logger.error("Error persisting data" + e.getLocalizedMessage(), e);
             }
@@ -67,6 +67,7 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
         org.apache.airavata.model.workspace.experiment.ExperimentStatus status = new org.apache.airavata.model.workspace.experiment.ExperimentStatus();
         status.setExperimentState(state);
         status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
+        details.setExperimentStatus(status);
         airavataRegistry.update(org.apache.airavata.registry.cpi.DataType.EXPERIMENT, details, experimentId);
     }
 

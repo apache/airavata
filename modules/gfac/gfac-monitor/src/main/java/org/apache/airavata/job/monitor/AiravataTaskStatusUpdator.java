@@ -95,6 +95,7 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener{
         org.apache.airavata.model.workspace.experiment.TaskStatus status = new org.apache.airavata.model.workspace.experiment.TaskStatus();
         status.setExecutionState(state);
         status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
+        details.setTaskStatus(status);
         airavataRegistry.update(org.apache.airavata.registry.cpi.DataType.TASK_DETAIL, details, taskId);
     }
 

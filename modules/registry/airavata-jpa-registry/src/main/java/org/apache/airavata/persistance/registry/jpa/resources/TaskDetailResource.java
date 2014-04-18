@@ -538,4 +538,7 @@ public class TaskDetailResource extends AbstractResource {
         return (DataTransferDetailResource)get(ResourceType.DATA_TRANSFER_DETAIL, dataTransferId);
     }
 
+    public  boolean isTaskStatusExist (String taskId){
+        return isExists(ResourceType.STATUS, taskId);
+    }
 }
