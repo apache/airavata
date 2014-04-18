@@ -136,6 +136,7 @@ public class SingleAppIntegrationTestBase {
                 Map<String, JobStatus> jobStatuses = null;
                 while (true) {
                     try {
+                    	System.out.println("*********Experiment status*** : "+client.getExperimentStatus(expId));
                         jobStatuses = client.getJobStatuses(expId);
                         Set<String> strings = jobStatuses.keySet();
                         for (String key : strings) {

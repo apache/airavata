@@ -20,11 +20,14 @@
 */
 package org.apache.airavata.job.monitor.event;
 
-import com.google.common.eventbus.EventBus;
 import org.apache.airavata.job.monitor.MonitorID;
+import org.apache.airavata.job.monitor.state.ExperimentStatus;
 import org.apache.airavata.job.monitor.state.JobStatus;
+import org.apache.airavata.job.monitor.state.TaskStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.eventbus.EventBus;
 
 public class MonitorPublisher {
     private final static Logger logger = LoggerFactory.getLogger(MonitorPublisher.class);
@@ -38,10 +41,18 @@ public class MonitorPublisher {
         eventBus.register(listener);
     }
 
-    public void publish(JobStatus jobState) {
-        eventBus.post(jobState);
+    public void publish(JobStatus jobStatus) {
+        eventBus.post(jobStatus);
     }
 
+    public void publish(TaskStatus taskStatus) {
+        eventBus.post(taskStatus);
+    }
+    
+    public void publish(ExperimentStatus experimentStatus) {
+        eventBus.post(experimentStatus);
+    }
+    
     public void publish(MonitorID monitorID){
         eventBus.post(monitorID);
     }
