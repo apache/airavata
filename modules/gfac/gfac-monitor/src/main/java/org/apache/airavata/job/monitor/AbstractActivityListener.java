@@ -22,6 +22,6 @@
 package org.apache.airavata.job.monitor;
 
 
-public interface AbstractActivityMonitorClient {
+public interface AbstractActivityListener {
 	public void setup(Object...configurations);
 }
