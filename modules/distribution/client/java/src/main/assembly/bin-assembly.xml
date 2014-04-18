@@ -59,7 +59,7 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>../../../samples/java-client</directory>
+            <directory>../../../../samples/java-client</directory>
             <outputDirectory>samples</outputDirectory>
             <excludes>
                 <exclude>**/*.iml</exclude>
