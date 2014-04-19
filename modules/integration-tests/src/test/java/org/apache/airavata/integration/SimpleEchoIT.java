@@ -52,7 +52,7 @@ public class SimpleEchoIT extends SingleAppIntegrationTestBase {
     @Test
     public void testSimpleLocalhostEchoService() throws Exception {
         log.info("Running job in localhost");
-        log.info("========================\n");
+        log.info("========================");
         log.info("Adding applications...");
         DocumentCreator documentCreator = new DocumentCreator(airavataAPI);
         documentCreator.createLocalHostDocs();
@@ -92,7 +92,7 @@ public class SimpleEchoIT extends SingleAppIntegrationTestBase {
 
         log.info("Experiment launched successfully\n");
         log.info("Monitoring job in localhost");
-        log.info("===========================\n");
+        log.info("===========================");
         monitorJob(expId);
     }
 

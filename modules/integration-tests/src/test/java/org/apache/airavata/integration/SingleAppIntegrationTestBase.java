@@ -124,12 +124,9 @@ public class SingleAppIntegrationTestBase {
                     	ExperimentStatus experimentStatus = client.getExperimentStatus(expId);
 						if (previousUpdateTime!=experimentStatus.getTimeOfStateChange()) {
 							previousUpdateTime=experimentStatus.getTimeOfStateChange();
-							log.info("Experiment ID:"
-									+ expId
-									+ "  Status : "
-									+ experimentStatus.getExperimentState()
-											.toString()
-									+ "["+new Date(previousUpdateTime).toString()+"]");
+							log.info(expId
+									+ " : " + experimentStatus.getExperimentState().toString()
+									+ " ["+new Date(previousUpdateTime).toString()+"]");
 							
 						}
 						if (experimentStatus.getExperimentState()==ExperimentState.COMPLETED){
