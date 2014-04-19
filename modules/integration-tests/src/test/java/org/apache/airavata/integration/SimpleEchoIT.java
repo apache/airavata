@@ -51,7 +51,9 @@ public class SimpleEchoIT extends SingleAppIntegrationTestBase {
 
     @Test
     public void testSimpleLocalhostEchoService() throws Exception {
-        log.info("Running job in localhost...");
+        log.info("Running job in localhost");
+        log.info("========================\n");
+        log.info("Adding applications...");
         DocumentCreator documentCreator = new DocumentCreator(airavataAPI);
         documentCreator.createLocalHostDocs();
 
@@ -81,16 +83,16 @@ public class SimpleEchoIT extends SingleAppIntegrationTestBase {
         userConfigurationData.setComputationalResourceScheduling(scheduling);
         simpleExperiment.setUserConfigurationData(userConfigurationData);
 
+        log.info("Creating experiment...");
 
         final String expId = createExperiment(simpleExperiment);
-        System.out.println("Experiment Id returned : " + expId);
-
         log.info("Experiment Id returned : " + expId);
 
         launchExperiment(expId);
 
-        System.out.println("Launched successfully");
-
+        log.info("Experiment launched successfully\n");
+        log.info("Monitoring job in localhost");
+        log.info("===========================\n");
         monitorJob(expId);
     }
 
