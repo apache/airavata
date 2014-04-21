@@ -36,10 +36,11 @@ import org.apache.thrift.TEnum;
   OUTPUT_DATA_STAGING(5),
   POST_PROCESSING(6),
   EXECUTING(7),
-  CANCELED(8),
-  COMPLETED(9),
-  FAILED(10),
-  UNKNOWN(11);
+  CANCELING(8),
+  CANCELED(9),
+  COMPLETED(10),
+  FAILED(11),
+  UNKNOWN(12);
 
   private final int value;
 
@@ -77,12 +78,14 @@ import org.apache.thrift.TEnum;
       case 7:
         return EXECUTING;
       case 8:
-        return CANCELED;
+        return CANCELING;
       case 9:
-        return COMPLETED;
+        return CANCELED;
       case 10:
-        return FAILED;
+        return COMPLETED;
       case 11:
+        return FAILED;
+      case 12:
         return UNKNOWN;
       default:
         return null;
