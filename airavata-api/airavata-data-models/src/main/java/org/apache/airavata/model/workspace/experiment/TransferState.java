@@ -35,11 +35,12 @@ import org.apache.thrift.TEnum;
   COMPLETE(4),
   STDOUT_DOWNLOAD(5),
   STDERROR_DOWNLOAD(6),
-  CANCELED(7),
-  FAILED(8),
-  HELD(9),
-  SUSPENDED(10),
-  UNKNOWN(11);
+  CANCELING(7),
+  CANCELED(8),
+  FAILED(9),
+  HELD(10),
+  SUSPENDED(11),
+  UNKNOWN(12);
 
   private final int value;
 
@@ -75,14 +76,16 @@ import org.apache.thrift.TEnum;
       case 6:
         return STDERROR_DOWNLOAD;
       case 7:
-        return CANCELED;
+        return CANCELING;
       case 8:
-        return FAILED;
+        return CANCELED;
       case 9:
-        return HELD;
+        return FAILED;
       case 10:
-        return SUSPENDED;
+        return HELD;
       case 11:
+        return SUSPENDED;
+      case 12:
         return UNKNOWN;
       default:
         return null;

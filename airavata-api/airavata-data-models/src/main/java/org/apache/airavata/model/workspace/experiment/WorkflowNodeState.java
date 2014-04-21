@@ -30,10 +30,11 @@ import org.apache.thrift.TEnum;
 @SuppressWarnings("all") public enum WorkflowNodeState implements org.apache.thrift.TEnum {
   INVOKED(0),
   EXECUTING(1),
-  CANCELED(2),
-  COMPLETED(3),
-  FAILED(4),
-  UNKNOWN(5);
+  CANCELING(2),
+  CANCELED(3),
+  COMPLETED(4),
+  FAILED(5),
+  UNKNOWN(6);
 
   private final int value;
 
@@ -59,12 +60,14 @@ import org.apache.thrift.TEnum;
       case 1:
         return EXECUTING;
       case 2:
-        return CANCELED;
+        return CANCELING;
       case 3:
-        return COMPLETED;
+        return CANCELED;
       case 4:
-        return FAILED;
+        return COMPLETED;
       case 5:
+        return FAILED;
+      case 6:
         return UNKNOWN;
       default:
         return null;

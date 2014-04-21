@@ -33,10 +33,11 @@ import org.apache.thrift.TEnum;
   SCHEDULED(2),
   LAUNCHED(3),
   EXECUTING(4),
-  CANCELED(5),
-  COMPLETED(6),
-  FAILED(7),
-  UNKNOWN(8);
+  CANCELING(5),
+  CANCELED(6),
+  COMPLETED(7),
+  FAILED(8),
+  UNKNOWN(9);
 
   private final int value;
 
@@ -68,12 +69,14 @@ import org.apache.thrift.TEnum;
       case 4:
         return EXECUTING;
       case 5:
-        return CANCELED;
+        return CANCELING;
       case 6:
-        return COMPLETED;
+        return CANCELED;
       case 7:
-        return FAILED;
+        return COMPLETED;
       case 8:
+        return FAILED;
+      case 9:
         return UNKNOWN;
       default:
         return null;
