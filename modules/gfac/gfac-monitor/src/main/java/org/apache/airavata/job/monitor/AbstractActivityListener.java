@@ -17,32 +17,11 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
-package org.apache.airavata.job.monitor.event;
+ */
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package org.apache.airavata.job.monitor;
 
-import com.google.common.eventbus.EventBus;
 
-public class MonitorPublisher{
-    private final static Logger logger = LoggerFactory.getLogger(MonitorPublisher.class);
-    private EventBus eventBus;
-    
-    public MonitorPublisher(EventBus eventBus) {
-        this.eventBus = eventBus;
-    }
-
-    public void registerListener(Object listener) {
-        eventBus.register(listener);
-    }
-    
-    public void unregisterListener(Object listener) {
-        eventBus.unregister(listener);
-    }
-
-    public void publish(Object o) {
-        eventBus.post(o);
-    }
-
+public interface AbstractActivityListener {
+	public void setup(Object...configurations);
 }

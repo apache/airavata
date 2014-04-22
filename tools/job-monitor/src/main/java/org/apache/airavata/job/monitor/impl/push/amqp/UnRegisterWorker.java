@@ -24,7 +24,7 @@ import com.google.common.eventbus.Subscribe;
 import com.rabbitmq.client.Channel;
 import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
-import org.apache.airavata.job.monitor.state.JobStatus;
+import org.apache.airavata.job.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.job.monitor.util.CommonUtils;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.slf4j.Logger;
@@ -42,7 +42,7 @@ public class UnRegisterWorker{
     }
 
     @Subscribe
-    private boolean unRegisterListener(JobStatus jobStatus) throws AiravataMonitorException {
+    private boolean unRegisterListener(JobStatusChangeRequest jobStatus) throws AiravataMonitorException {
         MonitorID monitorID = jobStatus.getMonitorID();
         String channelID = CommonUtils.getChannelID(monitorID);
         if (JobState.FAILED.equals(jobStatus.getState()) || JobState.COMPLETE.equals(jobStatus.getState())){

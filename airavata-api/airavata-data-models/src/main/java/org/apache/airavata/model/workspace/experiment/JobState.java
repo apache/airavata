@@ -34,11 +34,12 @@ import org.apache.thrift.TEnum;
   QUEUED(3),
   ACTIVE(4),
   COMPLETE(5),
-  CANCELED(6),
-  FAILED(7),
-  HELD(8),
-  SUSPENDED(9),
-  UNKNOWN(10);
+  CANCELING(6),
+  CANCELED(7),
+  FAILED(8),
+  HELD(9),
+  SUSPENDED(10),
+  UNKNOWN(11);
 
   private final int value;
 
@@ -72,14 +73,16 @@ import org.apache.thrift.TEnum;
       case 5:
         return COMPLETE;
       case 6:
-        return CANCELED;
+        return CANCELING;
       case 7:
-        return FAILED;
+        return CANCELED;
       case 8:
-        return HELD;
+        return FAILED;
       case 9:
-        return SUSPENDED;
+        return HELD;
       case 10:
+        return SUSPENDED;
+      case 11:
         return UNKNOWN;
       default:
         return null;

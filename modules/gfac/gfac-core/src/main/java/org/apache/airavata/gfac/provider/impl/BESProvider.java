@@ -92,7 +92,7 @@ import eu.unicore.util.httpclient.DefaultClientConfiguration;
 
 
 
-public class BESProvider extends AbstractProvider implements GFacProvider{
+public class BESProvider extends AbstractProvider{
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private DefaultClientConfiguration secProperties;

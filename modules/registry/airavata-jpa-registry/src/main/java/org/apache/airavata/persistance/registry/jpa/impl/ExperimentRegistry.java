@@ -477,7 +477,12 @@ public class ExperimentRegistry {
             ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
-            StatusResource statusResource = workflowNode.geTaskStatus(taskId);
+            StatusResource statusResource;
+            if (taskDetail.isTaskStatusExist(taskId)){
+                statusResource = workflowNode.geTaskStatus(taskId);
+            } else {
+                statusResource = (StatusResource)taskDetail.create(ResourceType.STATUS);
+            }
             statusResource.setExperimentResource(taskDetail.getWorkflowNodeDetailResource().getExperimentResource());
             statusResource.setWorkflowNodeDetail(taskDetail.getWorkflowNodeDetailResource());
             statusResource.setTaskDetailResource(taskDetail);
@@ -860,8 +865,7 @@ public class ExperimentRegistry {
             ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
-            taskDetail.setWorkflowNodeDetailResource(workflowNode);
-            taskDetail.setTaskId(getTaskID(workflowNode.getNodeName()));
+//            taskDetail.setWorkflowNodeDetailResource(workflowNode);
             taskDetail.setApplicationId(taskDetails.getApplicationId());
             taskDetail.setApplicationVersion(taskDetails.getApplicationVersion());
             taskDetail.setCreationTime(AiravataUtils.getTime(taskDetails.getCreationTime()));

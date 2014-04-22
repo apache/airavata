@@ -35,7 +35,7 @@ import org.apache.airavata.job.monitor.UserMonitorData;
 import org.apache.airavata.job.monitor.event.MonitorPublisher;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.impl.push.amqp.AMQPMonitor;
-import org.apache.airavata.job.monitor.state.JobStatus;
+import org.apache.airavata.job.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.junit.Assert;
 import org.junit.Before;
@@ -161,7 +161,7 @@ public class AMQPMonitorTest {
         }
         class InnerClassAMQP{
             @Subscribe
-            private void getStatus(JobStatus status){
+            private void getStatus(JobStatusChangeRequest status){
                 Assert.assertNotNull(status);
                 pushThread.interrupt();
             }

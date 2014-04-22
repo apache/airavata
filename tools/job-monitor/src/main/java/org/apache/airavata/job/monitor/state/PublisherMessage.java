@@ -19,9 +19,8 @@
  *
  */
 
-package org.apache.airavata.job.monitor;
+package org.apache.airavata.job.monitor.state;
 
-
-public interface AbstractActivityMonitorClient {
-	public void setup(Object...configurations);
+public interface PublisherMessage {
+//	public String getType();
 }

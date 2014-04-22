@@ -21,8 +21,17 @@
 
 package org.apache.airavata.integration;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.List;
+
 import junit.framework.Assert;
+
+import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.api.error.AiravataClientConnectException;
 import org.apache.airavata.api.error.AiravataClientException;
 import org.apache.airavata.api.error.AiravataSystemException;
 import org.apache.airavata.api.error.ExperimentNotFoundException;
@@ -38,10 +47,13 @@ import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.api.Airavata;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
-import org.apache.airavata.registry.api.workflow.*;
+import org.apache.airavata.registry.api.workflow.ExperimentData;
+import org.apache.airavata.registry.api.workflow.InputData;
+import org.apache.airavata.registry.api.workflow.NodeExecutionData;
+import org.apache.airavata.registry.api.workflow.OutputData;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeType;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.wf.Workflow;
@@ -49,13 +61,6 @@ import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
 
 /**
  * Since most of the workflow integration tests have common functionality to register, start and monitor workflows, this
@@ -89,7 +94,7 @@ public abstract class WorkflowIntegrationTestBase {
         log.info(message);
     }
 
-    public Airavata.Client getClient() {
+    public Airavata.Client getClient() throws AiravataClientConnectException {
         if (client == null){
             client = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
         }
@@ -218,11 +223,11 @@ public abstract class WorkflowIntegrationTestBase {
 //
 //    }
 
-    protected String createExperiment (Experiment experiment) throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException {
+    protected String createExperiment (Experiment experiment) throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException, AiravataClientConnectException {
         return getClient().createExperiment(experiment);
     }
 
-    protected void launchExperiment (String expId) throws ExperimentNotFoundException, AiravataSystemException, InvalidRequestException, AiravataClientException, TException {
+    protected void launchExperiment (String expId) throws ExperimentNotFoundException, AiravataSystemException, InvalidRequestException, AiravataClientException, TException, AiravataClientConnectException {
         getClient().launchExperiment(expId, "testToken");
     }
 

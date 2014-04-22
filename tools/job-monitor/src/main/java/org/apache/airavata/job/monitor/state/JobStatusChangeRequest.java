@@ -32,18 +32,16 @@ import java.util.Properties;
  * Each monitoring implementation has to return this object with a state and
  * the monitoring ID
  */
-public class JobStatus {
+public class JobStatusChangeRequest  extends AbstractStateChangeRequest{
     private JobState state;
-
-    private MonitorID monitorID;
 
 
     // this constructor can be used in Qstat monitor to handle errors
-    public JobStatus() {
+    public JobStatusChangeRequest() {
     }
 
-    public JobStatus(MonitorID monitorID, JobState state) {
-        this.monitorID = monitorID;
+    public JobStatusChangeRequest(MonitorID monitorID, JobState state) {
+        setMonitorID(monitorID);
         this.state = state;
     }
 
@@ -54,14 +52,5 @@ public class JobStatus {
     public void setState(JobState state) {
        this.state = state;
     }
-
-    public MonitorID getMonitorID() {
-        return monitorID;
-    }
-
-    public void setMonitorID(MonitorID monitorID) {
-        this.monitorID = monitorID;
-    }
-
 
 }

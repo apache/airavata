@@ -218,6 +218,12 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     }
 
     public boolean terminateExperiment(String experimentId) throws TException {
-        return false;
+    	try {
+			orchestrator.cancelExperiment(experimentId);
+		} catch (OrchestratorException e) {
+			log.error("Error canceling experiment "+experimentId,e);
+			return false;
+		}
+        return true;
     }
 }
