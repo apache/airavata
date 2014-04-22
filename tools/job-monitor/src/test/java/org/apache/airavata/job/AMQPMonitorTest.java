@@ -65,12 +65,12 @@ public class AMQPMonitorTest {
     private String proxyFilePath;
     @Before
     public void setUp() throws Exception {
-//        System.setProperty("myproxy.username", "ogce");
-//        System.setProperty("myproxy.password", "");
-//        System.setProperty("basedir", "/Users/lahirugunathilake/work/airavata/sandbox/gsissh");
-//        System.setProperty("gsi.working.directory", "/home/ogce");
-//        System.setProperty("trusted.cert.location", "/Users/lahirugunathilake/Downloads/certificates");
-//        System.setProperty("proxy.file.path", "/Users/lahirugunathilake/Downloads/x509up_u503876");
+        System.setProperty("myproxy.username", "ogce");
+        System.setProperty("myproxy.password", "OpenGwy14");
+        System.setProperty("basedir", "/Users/lahirugunathilake/work/airavata/sandbox/gsissh");
+        System.setProperty("gsi.working.directory", "/home1/01437/ogce");
+        System.setProperty("trusted.cert.location", "/Users/lahirugunathilake/Downloads/certificates");
+        System.setProperty("proxy.file.path", "/Users/lahirugunathilake/Downloads/x509up_u503876");
         myProxyUserName = System.getProperty("myproxy.username");
         myProxyPassword = System.getProperty("myproxy.password");
         workingDirectory = System.getProperty("gsi.working.directory");
@@ -100,7 +100,7 @@ public class AMQPMonitorTest {
         }
 
         hostDescription = new HostDescription(GsisshHostType.type);
-        hostDescription.getType().setHostAddress("stampede.tacc.xsede.org");
+        hostDescription.getType().setHostAddress("login1.stampede.tacc.utexas.edu");
         hostDescription.getType().setHostName("stampede-host");
         ((GsisshHostType) hostDescription.getType()).setJobManager("slurm");
         ((GsisshHostType) hostDescription.getType()).setInstalledPath("/usr/bin/");
@@ -117,11 +117,11 @@ public class AMQPMonitorTest {
                 7512, 17280000, certificateLocation);
 
         // Server info
-        ServerInfo serverInfo = new ServerInfo("ogce", "trestles.sdsc.edu");
+        ServerInfo serverInfo = new ServerInfo("ogce", "login1.stampede.tacc.utexas.edu",2222);
 
 
         Cluster pbsCluster = new
-                PBSCluster(serverInfo, authenticationInfo, org.apache.airavata.gsi.ssh.util.CommonUtils.getPBSJobManager("/opt/torque/bin/"));
+                PBSCluster(serverInfo, authenticationInfo, org.apache.airavata.gsi.ssh.util.CommonUtils.getPBSJobManager("/usr/bin/"));
 
 
         // Execute command
@@ -140,7 +140,7 @@ public class AMQPMonitorTest {
         jobDescriptor.setProcessesPerNode(1);
         jobDescriptor.setQueueName("normal");
         jobDescriptor.setMaxWallTime("60");
-        jobDescriptor.setAcountString("sds128");
+        jobDescriptor.setAcountString("TG-STA110014S");
         List<String> inputs = new ArrayList<String>();
         jobDescriptor.setOwner("ogce");
         inputs.add("Hello World");
@@ -152,7 +152,7 @@ public class AMQPMonitorTest {
         try {
             pushQueue.add(new MonitorID(hostDescription, jobID,null,null, "ogce"));
         } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
         try {
             pushThread.join();
