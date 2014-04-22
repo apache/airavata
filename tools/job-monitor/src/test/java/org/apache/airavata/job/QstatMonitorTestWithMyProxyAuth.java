@@ -60,11 +60,11 @@ public class QstatMonitorTestWithMyProxyAuth {
 
     @org.testng.annotations.BeforeClass
     public void setUp() throws Exception {
-//        System.setProperty("myproxy.username", "ogce");
-//        System.setProperty("myproxy.password", "");
-//        System.setProperty("basedir", "/Users/lahirugunathilake/work/airavata/sandbox/gsissh");
-//        System.setProperty("gsi.working.directory", "/home/ogce");
-//        System.setProperty("trusted.cert.location", "/Users/lahirugunathilake/Downloads/certificates");
+        System.setProperty("myproxy.username", "ogce");
+        System.setProperty("myproxy.password", "OpenGwy14");
+        System.setProperty("basedir", "/Users/lahirugunathilake/work/airavata/sandbox/gsissh");
+        System.setProperty("gsi.working.directory", "/home/ogce");
+        System.setProperty("trusted.cert.location", "/Users/lahirugunathilake/Downloads/certificates");
         myProxyUserName = System.getProperty("myproxy.username");
         myProxyPassword = System.getProperty("myproxy.password");
         workingDirectory = System.getProperty("gsi.working.directory");
