@@ -21,18 +21,14 @@
 package org.apache.airavata.orchestrator.core.impl;
 
 
-import java.util.*;
-
-import org.apache.airavata.common.utils.AiravataJobState;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.cpi.GFac;
+import org.apache.airavata.gfac.cpi.GFacImpl;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
-import org.apache.airavata.registry.cpi.Registry;
-import org.apache.airavata.gfac.cpi.GFacImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +48,9 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
     public void initialize(OrchestratorContext orchestratorContext) throws OrchestratorException {
         this.orchestratorContext = orchestratorContext;
         gfac = new GFacImpl(orchestratorContext.getNewRegistry(), null, orchestratorContext.getRegistry());
+        if (orchestratorContext.getMonitorManager()!=null) {
+			orchestratorContext.getMonitorManager().registerListener(gfac);
+		}
     }
 
     public GFACInstance selectGFACInstance() throws OrchestratorException {

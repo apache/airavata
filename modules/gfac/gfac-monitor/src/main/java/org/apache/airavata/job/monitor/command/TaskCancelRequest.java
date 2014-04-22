@@ -17,32 +17,36 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
-package org.apache.airavata.job.monitor.event;
+ */
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package org.apache.airavata.job.monitor.command;
 
-import com.google.common.eventbus.EventBus;
-
-public class MonitorPublisher{
-    private final static Logger logger = LoggerFactory.getLogger(MonitorPublisher.class);
-    private EventBus eventBus;
-    
-    public MonitorPublisher(EventBus eventBus) {
-        this.eventBus = eventBus;
-    }
-
-    public void registerListener(Object listener) {
-        eventBus.register(listener);
-    }
-    
-    public void unregisterListener(Object listener) {
-        eventBus.unregister(listener);
-    }
-
-    public void publish(Object o) {
-        eventBus.post(o);
-    }
-
+public class TaskCancelRequest {
+	private String experimentId;
+	private String nodeId;
+	private String taskId;
+	
+	public TaskCancelRequest(String experimentId, String nodeId, String taskId) {
+		this.experimentId = experimentId;
+		this.setNodeId(nodeId);
+		this.taskId = taskId;
+	}
+	public String getExperimentId() {
+		return experimentId;
+	}
+	public void setExperimentId(String experimentId) {
+		this.experimentId = experimentId;
+	}
+	public String getTaskId() {
+		return taskId;
+	}
+	public void setTaskId(String taskId) {
+		this.taskId = taskId;
+	}
+	public String getNodeId() {
+		return nodeId;
+	}
+	public void setNodeId(String nodeId) {
+		this.nodeId = nodeId;
+	}
 }

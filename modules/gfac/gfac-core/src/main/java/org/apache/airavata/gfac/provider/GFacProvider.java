@@ -21,13 +21,16 @@
 
 package org.apache.airavata.gfac.provider;
 
-import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.schemas.gfac.HadoopHostType;
-
 import java.util.Map;
 
-public interface GFacProvider {
+import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.job.monitor.AbstractActivityListener;
+import org.apache.airavata.job.monitor.command.TaskCancelRequest;
+
+import com.google.common.eventbus.Subscribe;
+
+public interface GFacProvider extends AbstractActivityListener{
 
     void initProperties(Map<String,String> properties) throws GFacProviderException,GFacException;
     /**
@@ -60,5 +63,6 @@ public interface GFacProvider {
      */
     public void cancelJob(String jobId, JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException;
 
-
+    @Subscribe
+    public void taskCancelRequested(TaskCancelRequest request);
 }

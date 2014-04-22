@@ -20,19 +20,16 @@
 */
 package org.apache.airavata.job.monitor;
 
-import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
-import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
-import org.apache.airavata.job.monitor.state.JobStatus;
-import org.apache.airavata.model.workspace.experiment.JobState;
-import org.omg.PortableInterceptor.ACTIVE;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Map;
-import java.util.Properties;
+
+import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
+import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
+import org.apache.airavata.model.workspace.experiment.JobState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
 This is the object which contains the data to identify a particular
@@ -43,14 +40,11 @@ public class MonitorID {
 
     private String userName;
 
-    private String jobID;
-
     private Timestamp jobStartedTime;
 
     private Timestamp lastMonitored;
 
     private HostDescription host;
-
 
     private AuthenticationInfo authenticationInfo = null;
 
@@ -58,13 +52,17 @@ public class MonitorID {
 
     private String experimentID;
 
+//    private String workflowNodeID;
+
     private String taskID;
+
+    private String jobID;
 
     private int failedCount = 0;
 
     private JobState state;
 
-    public MonitorID(HostDescription host, String jobID,String taskID,String experimentID, String userName) {
+    public MonitorID(HostDescription host, String jobID,String taskID, String experimentID, String userName) {
         this.host = host;
         this.jobStartedTime = new Timestamp((new Date()).getTime());
         this.userName = userName;
@@ -208,4 +206,12 @@ public class MonitorID {
                 this.state = status;
             }
     }
+
+//	public String getWorkflowNodeID() {
+//		return workflowNodeID;
+//	}
+//
+//	public void setWorkflowNodeID(String workflowNodeID) {
+//		this.workflowNodeID = workflowNodeID;
+//	}
 }

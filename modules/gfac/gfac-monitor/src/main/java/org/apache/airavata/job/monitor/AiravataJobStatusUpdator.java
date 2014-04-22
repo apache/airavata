@@ -23,9 +23,12 @@ package org.apache.airavata.job.monitor;
 import java.util.Calendar;
 import java.util.concurrent.BlockingQueue;
 
-import org.apache.airavata.job.monitor.state.JobStatus;
+import org.apache.airavata.job.monitor.event.MonitorPublisher;
+import org.apache.airavata.job.monitor.state.JobStatusChangeRequest;
+import org.apache.airavata.job.monitor.state.TaskStatusChangeRequest;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.workspace.experiment.TaskState;
 import org.apache.airavata.registry.cpi.CompositeIdentifier;
 import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.Registry;
@@ -34,11 +37,13 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.Subscribe;
 
-public class AiravataJobStatusUpdator implements AbstractActivityMonitorClient{
+public class AiravataJobStatusUpdator implements AbstractActivityListener{
     private final static Logger logger = LoggerFactory.getLogger(AiravataJobStatusUpdator.class);
 
     private Registry airavataRegistry;
 
+    private MonitorPublisher monitorPublisher;
+    
     private BlockingQueue<MonitorID> jobsToMonitor;
 
     public Registry getAiravataRegistry() {
@@ -58,7 +63,7 @@ public class AiravataJobStatusUpdator implements AbstractActivityMonitorClient{
     }
 
     @Subscribe
-    public void updateRegistry(JobStatus jobStatus) {
+    public void updateRegistry(JobStatusChangeRequest jobStatus) {
         /* Here we need to parse the jobStatus message and update
                 the registry accordingly, for now we are just printing to standard Out
                  */
@@ -105,9 +110,43 @@ public class AiravataJobStatusUpdator implements AbstractActivityMonitorClient{
                     logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is SUSPENDED");
                     jobsToMonitor.remove(jobStatus.getMonitorID());
                     break;
+                case CANCELING:
+                    logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is CENCELING");
+			default:
+				break;
             }
         }
     }
+    
+    @Subscribe
+    public void setupTaskStatus(JobStatusChangeRequest jobStatus){
+    	TaskState state=TaskState.UNKNOWN;
+    	switch(jobStatus.getState()){
+    	case ACTIVE:
+    		state=TaskState.EXECUTING; break;
+    	case CANCELED:
+    		state=TaskState.CANCELED; break;
+    	case COMPLETE:
+    		state=TaskState.COMPLETED; break;
+    	case FAILED:
+    		state=TaskState.FAILED; break;
+    	case HELD: case SUSPENDED: case QUEUED:
+    		state=TaskState.WAITING; break;
+    	case SETUP:
+    		state=TaskState.PRE_PROCESSING; break;
+    	case SUBMITTED:
+    		state=TaskState.STARTED; break;
+    	case UN_SUBMITTED:
+    		state=TaskState.CANCELED; break;
+    	case CANCELING:
+    		state=TaskState.CANCELING; break;
+		default:
+			break;
+    	}
+    	logger.debug("Publishing Task Status "+state.toString());
+    	monitorPublisher.publish(new TaskStatusChangeRequest(jobStatus.getMonitorID(),state));
+    }
+    
     public  void updateJobStatus(String taskId, String jobID, JobState state) throws Exception {
         CompositeIdentifier ids = new CompositeIdentifier(taskId, jobID);
         JobDetails details = (JobDetails)airavataRegistry.get(DataType.JOB_DETAIL, ids);
@@ -126,12 +165,13 @@ public class AiravataJobStatusUpdator implements AbstractActivityMonitorClient{
 	@Override
 	public void setup(Object... configurations) {
 		for (Object configuration : configurations) {
-			
 			if (configuration instanceof Registry){
 				this.airavataRegistry=(Registry)configuration;
 			} else if (configuration instanceof BlockingQueue<?>){
 				this.jobsToMonitor=(BlockingQueue<MonitorID>) configuration;
-			}
+			} else if (configuration instanceof MonitorPublisher){
+				this.monitorPublisher=(MonitorPublisher) configuration;
+			} 
 		}
 	}
 }

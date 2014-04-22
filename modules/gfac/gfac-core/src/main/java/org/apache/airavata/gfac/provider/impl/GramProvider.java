@@ -37,7 +37,6 @@ import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.notification.events.JobIDEvent;
 import org.apache.airavata.gfac.notification.events.StartExecutionEvent;
-import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.GramJobSubmissionListener;
@@ -57,7 +56,7 @@ import org.ietf.jgss.GSSException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GramProvider extends AbstractProvider implements GFacProvider{
+public class GramProvider extends AbstractProvider{
     private static final Logger log = LoggerFactory.getLogger(GramJobSubmissionListener.class);
 
     private GramJob job;

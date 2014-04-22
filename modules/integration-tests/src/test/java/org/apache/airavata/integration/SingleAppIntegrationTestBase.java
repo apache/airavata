@@ -21,8 +21,7 @@
 package org.apache.airavata.integration;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.Set;
+import java.util.Date;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
@@ -33,12 +32,10 @@ import org.apache.airavata.api.error.InvalidRequestException;
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.ClientSettings;
 import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.JobState;
-import org.apache.airavata.model.workspace.experiment.JobStatus;
+import org.apache.airavata.model.workspace.experiment.ExperimentState;
+import org.apache.airavata.model.workspace.experiment.ExperimentStatus;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,31 +87,19 @@ public class SingleAppIntegrationTestBase {
     * */
     protected void initClient() throws Exception {
         int tries = 0;
-
-        while (true) {
-
-            if (tries == TRIES) {
-                log("Server not responding. Cannot continue with integration tests ...");
-                throw new Exception("Server not responding !");
-            }
-
-            log("Checking if the server has started, try - " + tries);
-
+        while (client==null) {
+        	log.info("Waiting till server initializes ........[try "+ (++tries) + " of "+TRIES+"]");
             try {
-                this.client = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
-            } catch (Exception e) {
-
+                client = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
+            } catch (Exception e) { 
+            	if (tries == TRIES) {
+					log("Server not responding. Cannot continue with integration tests ...");
+					throw e;
+				} else {
+					Thread.sleep(TIME_OUT);
+				}
             }
-            if (this.client == null) {
-                log.info("Waiting till server initializes ........");
-                Thread.sleep(TIME_OUT);
-            } else {
-                break;
-            }
-
-            ++tries;
         }
-
     }
 
     protected String createExperiment(Experiment experiment) throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException {
@@ -133,25 +118,21 @@ public class SingleAppIntegrationTestBase {
     protected void monitorJob(final String expId) {
         Thread monitor = (new Thread() {
             public void run() {
-                Map<String, JobStatus> jobStatuses = null;
+            	long previousUpdateTime=-1;
                 while (true) {
                     try {
-                        jobStatuses = client.getJobStatuses(expId);
-                        Set<String> strings = jobStatuses.keySet();
-                        for (String key : strings) {
-                            JobStatus jobStatus = jobStatuses.get(key);
-                            if (jobStatus == null) {
-                                return;
-                            } else {
-                                if (JobState.COMPLETE.equals(jobStatus.getJobState())) {
-                                    log.info("Job completed Job ID: " + key);
-                                    return;
-                                } else {
-                                    log.info("Job ID:" + key + "  Job Status : " + jobStatuses.get(key).getJobState().toString());
-                                }
-                            }
-                        }
-                        Thread.sleep(5000);
+                    	ExperimentStatus experimentStatus = client.getExperimentStatus(expId);
+						if (previousUpdateTime!=experimentStatus.getTimeOfStateChange()) {
+							previousUpdateTime=experimentStatus.getTimeOfStateChange();
+							log.info(expId
+									+ " : " + experimentStatus.getExperimentState().toString()
+									+ " ["+new Date(previousUpdateTime).toString()+"]");
+							
+						}
+						if (experimentStatus.getExperimentState()==ExperimentState.COMPLETED){
+							break;
+						}
+                        Thread.sleep(2000);
                     } catch (Exception e) {
                         log.error("Thread interrupted", e.getMessage());
                     }

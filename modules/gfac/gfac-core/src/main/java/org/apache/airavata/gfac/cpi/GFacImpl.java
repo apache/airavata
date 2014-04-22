@@ -20,16 +20,24 @@
 */
 package org.apache.airavata.gfac.cpi;
 
+import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.credential.store.store.CredentialReader;
-import org.apache.airavata.credential.store.store.CredentialReaderFactory;
-import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
-import org.apache.airavata.gfac.*;
+import org.apache.airavata.gfac.Constants;
+import org.apache.airavata.gfac.GFacConfiguration;
+import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.RequestData;
+import org.apache.airavata.gfac.Scheduler;
 import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
@@ -56,29 +64,36 @@ import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthentica
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
+import org.apache.airavata.job.monitor.AbstractActivityListener;
+import org.apache.airavata.job.monitor.MonitorManager;
+import org.apache.airavata.job.monitor.command.ExperimentCancelRequest;
+import org.apache.airavata.job.monitor.command.TaskCancelRequest;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.persistance.registry.jpa.resources.AbstractResource.TaskDetailConstants;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.Registry;
-import org.apache.airavata.schemas.gfac.*;
-import org.apache.airavata.schemas.wec.ContextHeaderDocument;
+import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants;
+import org.apache.airavata.schemas.gfac.Ec2HostType;
+import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.GsisshHostType;
+import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.SSHHostType;
+import org.apache.airavata.schemas.gfac.UnicoreHostType;
 import org.apache.airavata.schemas.wec.SecurityContextDocument;
-import org.apache.airavata.workflow.model.exceptions.WorkflowException;
-import org.apache.xmlbeans.XmlObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.net.URL;
-import java.util.*;
+import com.google.common.eventbus.Subscribe;
 
 /**
  * This is the GFac CPI class for external usage, this simply have a single method to submit a job to
  * the resource, required data for the job has to be stored in registry prior to invoke this object.
  */
-public class GFacImpl implements GFac {
+public class GFacImpl implements GFac, AbstractActivityListener {
     private static final Logger log = LoggerFactory.getLogger(GFacImpl.class);
     public static final String ERROR_SENT = "ErrorSent";
     public static final String PBS_JOB_MANAGER = "pbs";
@@ -90,6 +105,8 @@ public class GFacImpl implements GFac {
     private AiravataAPI airavataAPI;
 
     private AiravataRegistry2 airavataRegistry2;
+    
+    private MonitorManager monitorManager;
 
     /**
      * Constructor for GFac
@@ -467,5 +484,30 @@ public class GFacImpl implements GFac {
            jobExecutionContext.addSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT, sshSecurityContext);
         }
     }
+
+	@Override
+	public void setup(Object... configurations) {
+		for (Object configuration : configurations) {
+			if (configuration instanceof MonitorManager){
+				monitorManager=(MonitorManager) configuration;
+			} 	
+		}
+			
+	}
+	
+	@Subscribe
+	public void experimentCancelRequested(ExperimentCancelRequest request){
+		try {
+			List<String> nodeIds = registry.getIds(DataType.WORKFLOW_NODE_DETAIL, WorkflowNodeConstants.EXPERIMENT_ID, request.getExperimentId());
+			for (String nodeId : nodeIds) {
+				List<String> taskIds = registry.getIds(DataType.TASK_DETAIL, TaskDetailConstants.NODE_INSTANCE_ID, nodeId);
+				for (String taskId : taskIds) {
+					monitorManager.getMonitorPublisher().publish(new TaskCancelRequest(request.getExperimentId(),nodeId, taskId));
+				}
+			}
+		} catch (RegistryException e) {
+			log.error("Error while attempting to publish task cancel requests!!!",e);
+		}
+	}
 
 }

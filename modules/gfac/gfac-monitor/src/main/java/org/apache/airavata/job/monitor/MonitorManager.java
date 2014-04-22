@@ -55,6 +55,8 @@ remove them from the queue, this will be done by AiravataJobUpdator.
  */
 public class MonitorManager {
     private final static Logger logger = LoggerFactory.getLogger(MonitorManager.class);
+    
+	private final static String ACTIVITY_LISTENERS = "activity.listeners";
 
     private List<PullMonitor> pullMonitors;    //todo though we have a List we only support one at a time
 
@@ -72,8 +74,6 @@ public class MonitorManager {
 
     private Monitor localJobMonitor;
     
-    private List<AbstractActivityMonitorClient> activityMonitors;
-
     private Registry registry;
 
     /**
@@ -97,27 +97,24 @@ public class MonitorManager {
     
     private void loadActivityMonitors(){
 		try {
-			activityMonitors=new ArrayList<AbstractActivityMonitorClient>();
-			String activityMonitorsString = ServerSettings.getSetting("activity.monitors");
-			if (activityMonitorsString!=null){
-				String[] activityMonitorClasses = activityMonitorsString.split(",");
-				for (String activityMonitorClassName : activityMonitorClasses) {
-					Class<?> classInstance;
+			String activityListenersString = ServerSettings.getSetting(ACTIVITY_LISTENERS);
+			if (activityListenersString!=null){
+				String[] activityListenerClasses = activityListenersString.split(",");
+				for (String activityListenerClassName : activityListenerClasses) {
 					try {
-						classInstance = MonitorManager.class
-						        .getClassLoader().loadClass(activityMonitorClassName);
-						AbstractActivityMonitorClient monitor=(AbstractActivityMonitorClient)classInstance.newInstance();
-						monitor.setup(registry,getFinishQueue());
-						activityMonitors.add(monitor);
+						activityListenerClassName=activityListenerClassName.trim();
+						Class<?>  classInstance = MonitorManager.class
+						        .getClassLoader().loadClass(activityListenerClassName);
+						AbstractActivityListener monitor=(AbstractActivityListener)classInstance.newInstance();
 						registerListener(monitor);
 					} catch (ClassNotFoundException e) {
-						logger.error("Error while locating activity monitor implementation \""+activityMonitorClassName+"\"!!!",e);
+						logger.error("Error while locating activity monitor implementation \""+activityListenerClassName+"\"!!!",e);
 					} catch (InstantiationException e) {
-						logger.error("Error while initiating activity monitor instance \""+activityMonitorClassName+"\"!!!",e);
+						logger.error("Error while initiating activity monitor instance \""+activityListenerClassName+"\"!!!",e);
 					} catch (IllegalAccessException e) {
-						logger.error("Error while initiating activity monitor instance \""+activityMonitorClassName+"\"!!!",e);
+						logger.error("Error while initiating activity monitor instance \""+activityListenerClassName+"\"!!!",e);
 					} catch (ClassCastException e){
-						logger.error("Invalid activity monitor \""+activityMonitorClassName+"\"!!!",e);
+						logger.error("Invalid activity monitor \""+activityListenerClassName+"\"!!!",e);
 					}
 				}
 			}
@@ -173,6 +170,23 @@ public class MonitorManager {
      */
     public void registerListener(Object listener) {
         monitorPublisher.registerListener(listener);
+        if (listener instanceof AbstractActivityListener){
+        	((AbstractActivityListener)listener).setup(registry, getFinishQueue(), getMonitorPublisher(), this);
+        }
+    }
+    
+    public void registerListener(AbstractActivityListener listener) {
+    	registerListener((Object)listener);
+    }
+
+    /**
+     * To remove listeners of changing statuses
+     *
+     * @param listener Any class can be written and if you want the JobStatus object to be taken from the bus, just
+     *                 have to put @subscribe as an annotation to your method to recieve the JobStatus object from the bus.
+     */
+    public void unregisterListener(Object listener) {
+        monitorPublisher.unregisterListener(listener);
     }
 
     /**
@@ -234,7 +248,6 @@ public class MonitorManager {
      */
     public void launchMonitor() throws AiravataMonitorException {
         //no push monitor is configured so we launch pull monitor
-        int index = 0;
         if(localJobMonitor != null){
             (new Thread(localJobMonitor)).start();
         }
@@ -261,18 +274,17 @@ public class MonitorManager {
      */
     public void stopMonitor() throws AiravataMonitorException {
         //no push monitor is configured so we launch pull monitor
-        int index = 0;
         if(localJobMonitor != null){
-            (new Thread(localJobMonitor)).stop();
+            (new Thread(localJobMonitor)).interrupt();
         }
 
         for (PullMonitor monitor : pullMonitors) {
-            (new Thread(monitor)).stop();
+            (new Thread(monitor)).interrupt();
         }
 
         //todo fix this
         for (PushMonitor monitor : pushMonitors) {
-            (new Thread(monitor)).stop();
+            (new Thread(monitor)).interrupt();
         }
     }
     /* getter setters for the private variables */
