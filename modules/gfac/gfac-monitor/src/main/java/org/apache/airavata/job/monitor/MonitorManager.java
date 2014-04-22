@@ -74,8 +74,6 @@ public class MonitorManager {
 
     private Monitor localJobMonitor;
     
-    private List<AbstractActivityListener> activityListeners;
-
     private Registry registry;
 
     /**
@@ -99,7 +97,6 @@ public class MonitorManager {
     
     private void loadActivityMonitors(){
 		try {
-			activityListeners=new ArrayList<AbstractActivityListener>();
 			String activityListenersString = ServerSettings.getSetting(ACTIVITY_LISTENERS);
 			if (activityListenersString!=null){
 				String[] activityListenerClasses = activityListenersString.split(",");
@@ -109,8 +106,6 @@ public class MonitorManager {
 						Class<?>  classInstance = MonitorManager.class
 						        .getClassLoader().loadClass(activityListenerClassName);
 						AbstractActivityListener monitor=(AbstractActivityListener)classInstance.newInstance();
-						monitor.setup(registry, getFinishQueue(), getMonitorPublisher());
-						activityListeners.add(monitor);
 						registerListener(monitor);
 					} catch (ClassNotFoundException e) {
 						logger.error("Error while locating activity monitor implementation \""+activityListenerClassName+"\"!!!",e);
@@ -175,6 +170,23 @@ public class MonitorManager {
      */
     public void registerListener(Object listener) {
         monitorPublisher.registerListener(listener);
+        if (listener instanceof AbstractActivityListener){
+        	((AbstractActivityListener)listener).setup(registry, getFinishQueue(), getMonitorPublisher(), this);
+        }
+    }
+    
+    public void registerListener(AbstractActivityListener listener) {
+    	registerListener((Object)listener);
+    }
+
+    /**
+     * To remove listeners of changing statuses
+     *
+     * @param listener Any class can be written and if you want the JobStatus object to be taken from the bus, just
+     *                 have to put @subscribe as an annotation to your method to recieve the JobStatus object from the bus.
+     */
+    public void unregisterListener(Object listener) {
+        monitorPublisher.unregisterListener(listener);
     }
 
     /**

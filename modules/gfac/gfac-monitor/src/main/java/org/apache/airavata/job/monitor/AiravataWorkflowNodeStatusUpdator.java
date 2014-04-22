@@ -32,10 +32,12 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.Subscribe;
 
-public class AiravataExperimentStatusUpdator implements AbstractActivityListener{
-    private final static Logger logger = LoggerFactory.getLogger(AiravataExperimentStatusUpdator.class);
+public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListener{
+    private final static Logger logger = LoggerFactory.getLogger(AiravataWorkflowNodeStatusUpdator.class);
 
     private Registry airavataRegistry;
+    
+//    private MonitorPublisher monitorPublisher;
 
     public Registry getAiravataRegistry() {
         return airavataRegistry;
@@ -47,18 +49,18 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 
     @Subscribe
     public void updateRegistry(ExperimentStatusChangeRequest experimentStatus) {
-        ExperimentState state = experimentStatus.getState();
-        if (state != null) {
-            try {
-                String experimentID = experimentStatus.getMonitorID().getExperimentID();
-                updateExperimentStatus(experimentID, state);
-            } catch (Exception e) {
-                logger.error("Error persisting data" + e.getLocalizedMessage(), e);
-            }
-        }
+//        ExperimentState state = experimentStatus.getState();
+//        if (state != null) {
+//            try {
+//                String experimentID = experimentStatus.getMonitorID().getExperimentID();
+//                updateWorkflowNodeStatus(experimentID, state);
+//            } catch (Exception e) {
+//                logger.error("Error persisting data" + e.getLocalizedMessage(), e);
+//            }
+//        }
     }
     
-    public  void updateExperimentStatus(String experimentId, ExperimentState state) throws Exception {
+    public  void updateWorkflowNodeStatus(String experimentId, ExperimentState state) throws Exception {
     	Experiment details = (Experiment)airavataRegistry.get(DataType.EXPERIMENT, experimentId);
         if(details == null) {
             details = new Experiment();
@@ -76,6 +78,8 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 		for (Object configuration : configurations) {
 			if (configuration instanceof Registry){
 				this.airavataRegistry=(Registry)configuration;
+//			} else if (configuration instanceof MonitorPublisher){
+//				this.monitorPublisher=(MonitorPublisher) configuration;
 			} 
 		}
 	}

@@ -21,7 +21,7 @@
 package org.apache.airavata.job.monitor.state;
 
 import org.apache.airavata.job.monitor.MonitorID;
-import org.apache.airavata.model.workspace.experiment.TaskState;
+import org.apache.airavata.model.workspace.experiment.ExperimentState;
 
 /**
  * This is the primary job state object used in
@@ -30,35 +30,25 @@ import org.apache.airavata.model.workspace.experiment.TaskState;
  * Each monitoring implementation has to return this object with a state and
  * the monitoring ID
  */
-public class TaskStatus {
-    private TaskState state;
-
-    private MonitorID monitorID;
+public class ExperimentStatusChangeRequest extends AbstractStateChangeRequest{
+    private ExperimentState state;
 
 
     // this constructor can be used in Qstat monitor to handle errors
-    public TaskStatus() {
+    public ExperimentStatusChangeRequest() {
     }
 
-    public TaskStatus(MonitorID monitorID, TaskState state) {
-        this.monitorID = monitorID;
+    public ExperimentStatusChangeRequest(MonitorID monitorID, ExperimentState state) {
+        setMonitorID(monitorID);
         this.state = state;
     }
 
-    public TaskState getState() {
+    public ExperimentState getState() {
         return state;
     }
 
-    public void setState(TaskState state) {
+    public void setState(ExperimentState state) {
        this.state = state;
-    }
-
-    public MonitorID getMonitorID() {
-        return monitorID;
-    }
-
-    public void setMonitorID(MonitorID monitorID) {
-        this.monitorID = monitorID;
     }
 
 

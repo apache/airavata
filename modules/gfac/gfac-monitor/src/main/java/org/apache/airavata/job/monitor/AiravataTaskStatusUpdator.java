@@ -23,8 +23,8 @@ package org.apache.airavata.job.monitor;
 import java.util.Calendar;
 
 import org.apache.airavata.job.monitor.event.MonitorPublisher;
-import org.apache.airavata.job.monitor.state.ExperimentStatus;
-import org.apache.airavata.job.monitor.state.TaskStatus;
+import org.apache.airavata.job.monitor.state.ExperimentStatusChangeRequest;
+import org.apache.airavata.job.monitor.state.TaskStatusChangeRequest;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.TaskState;
@@ -51,7 +51,7 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener{
     }
 
     @Subscribe
-    public void updateRegistry(TaskStatus taskStatus) {
+    public void updateRegistry(TaskStatusChangeRequest taskStatus) {
         TaskState state = taskStatus.getState();
         if (state != null) {
             try {
@@ -64,7 +64,7 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener{
     }
     
     @Subscribe
-    public void setupExperimentStatus(TaskStatus taskStatus){
+    public void setupExperimentStatus(TaskStatusChangeRequest taskStatus){
     	ExperimentState state=ExperimentState.UNKNOWN;
     	switch(taskStatus.getState()){
     	case CANCELED:
@@ -79,11 +79,13 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener{
     		state=ExperimentState.EXECUTING; break;
     	case STARTED:
     		state=ExperimentState.LAUNCHED; break;
+    	case CANCELING:
+    		state=ExperimentState.CANCELING; break;
 		default:
 			break;
     	}
     	logger.debug("Publishing Experiment Status "+state.toString());
-    	monitorPublisher.publish(new ExperimentStatus(taskStatus.getMonitorID(),state));
+    	monitorPublisher.publish(new ExperimentStatusChangeRequest(taskStatus.getMonitorID(),state));
     }
     
     public  void updateTaskStatus(String taskId, TaskState state) throws Exception {

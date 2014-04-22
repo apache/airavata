@@ -34,7 +34,7 @@ import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.core.PushMonitor;
 import org.apache.airavata.job.monitor.event.MonitorPublisher;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
-import org.apache.airavata.job.monitor.state.JobStatus;
+import org.apache.airavata.job.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.job.monitor.util.AMQPConnectionUtil;
 import org.apache.airavata.job.monitor.util.CommonUtils;
 import org.apache.airavata.model.workspace.experiment.JobState;
@@ -201,7 +201,7 @@ public class AMQPMonitor extends PushMonitor {
             }
         }
         next.setStatus(monitorID.getStatus());
-        publisher.publish(new JobStatus(next,next.getStatus()));
+        publisher.publish(new JobStatusChangeRequest(next,next.getStatus()));
         return true;
     }
     @Override

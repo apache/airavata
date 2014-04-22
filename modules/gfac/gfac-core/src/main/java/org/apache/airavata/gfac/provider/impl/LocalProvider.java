@@ -20,21 +20,16 @@
 */
 package org.apache.airavata.gfac.provider.impl;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.bind.JAXB;
 
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.notification.events.StartExecutionEvent;
-import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.provider.utils.ProviderUtils;
 import org.apache.airavata.gfac.utils.GFacUtils;
@@ -44,8 +39,6 @@ import org.apache.airavata.gfac.utils.OutputUtils;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
-import org.apache.airavata.registry.api.workflow.ApplicationJob;
-import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.NameValuePairType;
 import org.apache.xmlbeans.XmlException;
@@ -54,7 +47,7 @@ import org.slf4j.LoggerFactory;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class LocalProvider extends AbstractProvider implements GFacProvider{
+public class LocalProvider extends AbstractProvider{
     private static final Logger log = LoggerFactory.getLogger(LocalProvider.class);
     private ProcessBuilder builder;
     private List<String> cmdList;

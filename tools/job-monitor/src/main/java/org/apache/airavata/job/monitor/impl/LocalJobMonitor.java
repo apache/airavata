@@ -23,7 +23,7 @@ package org.apache.airavata.job.monitor.impl;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.core.AiravataAbstractMonitor;
-import org.apache.airavata.job.monitor.state.JobStatus;
+import org.apache.airavata.job.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.model.workspace.experiment.JobState;
 
 import java.util.concurrent.BlockingQueue;
@@ -41,7 +41,7 @@ public class LocalJobMonitor extends AiravataAbstractMonitor {
         do {
             try {
                 MonitorID take = jobQueue.take();
-                getPublisher().publish(new JobStatus(take, JobState.COMPLETE));
+                getPublisher().publish(new JobStatusChangeRequest(take, JobState.COMPLETE));
             } catch (Exception e) {
                 e.printStackTrace();
             }

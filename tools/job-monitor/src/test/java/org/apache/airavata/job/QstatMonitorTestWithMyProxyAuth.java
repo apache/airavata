@@ -35,7 +35,7 @@ import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.UserMonitorData;
 import org.apache.airavata.job.monitor.event.MonitorPublisher;
 import org.apache.airavata.job.monitor.impl.pull.qstat.QstatMonitor;
-import org.apache.airavata.job.monitor.state.JobStatus;
+import org.apache.airavata.job.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.junit.Assert;
 import org.testng.annotations.Test;
@@ -79,7 +79,7 @@ public class QstatMonitorTestWithMyProxyAuth {
         class InnerClassQstat {
 
             @Subscribe
-            private void getStatus(JobStatus status) {
+            private void getStatus(JobStatusChangeRequest status) {
                 Assert.assertNotNull(status);
                 System.out.println(status.getState().toString());
                 monitorThread.interrupt();
@@ -161,7 +161,7 @@ public class QstatMonitorTestWithMyProxyAuth {
     }
 
     @Subscribe
-    public void testCaseShutDown(JobStatus status) {
+    public void testCaseShutDown(JobStatusChangeRequest status) {
         Assert.assertNotNull(status.getState());
         monitorThread.stop();
     }

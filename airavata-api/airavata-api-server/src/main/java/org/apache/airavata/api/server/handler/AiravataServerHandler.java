@@ -27,6 +27,7 @@ import org.apache.airavata.api.error.*;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
+import org.apache.airavata.orchestrator.cpi.OrchestratorService.Client;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.registry.cpi.*;
@@ -43,12 +44,12 @@ import java.util.Map;
 public class AiravataServerHandler implements Airavata.Iface {
 
     private Registry registry;
+	private OrchestratorService.Client orchestratorClient;
     private static final Logger logger = LoggerFactory.getLogger(AiravataServerHandler.class);
 	 //FIXME: these go in a configuration file or a "constants" class. 
     public static final String ORCHESTRATOR_SERVER_HOST = "localhost";
 	 //FIXME: these go in a configuration file or a "constants" class. 
     public static final int ORCHESTRATOR_SERVER_PORT = 8940;
-    private OrchestratorService.Client orchestratorClient;
     /**
      * Query Airavata to fetch the API version
      */
@@ -409,9 +410,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public void launchExperiment(String airavataExperimentId, String airavataCredStoreToken) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
-        if(orchestratorClient == null){
-            orchestratorClient = OrchestratorClientFactory.createOrchestratorClient(ORCHESTRATOR_SERVER_HOST, ORCHESTRATOR_SERVER_PORT);
-        }
+        final OrchestratorService.Client orchestratorClient = getOrchestratorClient();
         final String expID = airavataExperimentId;
         (new Thread(){
             public void run(){
@@ -423,6 +422,13 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
         }).start();
     }
+
+	private OrchestratorService.Client getOrchestratorClient() {
+		if(orchestratorClient == null){
+            orchestratorClient = OrchestratorClientFactory.createOrchestratorClient(ORCHESTRATOR_SERVER_HOST, ORCHESTRATOR_SERVER_PORT);
+        }
+		return orchestratorClient;
+	}
 
     /**
      * Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.
@@ -483,7 +489,8 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public void terminateExperiment(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
-
+    	Client client = getOrchestratorClient();
+    	client.terminateExperiment(airavataExperimentId);
     }
 
 }
