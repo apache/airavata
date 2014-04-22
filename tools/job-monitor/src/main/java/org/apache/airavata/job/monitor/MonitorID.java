@@ -40,14 +40,11 @@ public class MonitorID {
 
     private String userName;
 
-    private String jobID;
-
     private Timestamp jobStartedTime;
 
     private Timestamp lastMonitored;
 
     private HostDescription host;
-
 
     private AuthenticationInfo authenticationInfo = null;
 
@@ -55,13 +52,17 @@ public class MonitorID {
 
     private String experimentID;
 
+//    private String workflowNodeID;
+
     private String taskID;
+
+    private String jobID;
 
     private int failedCount = 0;
 
     private JobState state;
 
-    public MonitorID(HostDescription host, String jobID,String taskID,String experimentID, String userName) {
+    public MonitorID(HostDescription host, String jobID,String taskID, String experimentID, String userName) {
         this.host = host;
         this.jobStartedTime = new Timestamp((new Date()).getTime());
         this.userName = userName;
@@ -205,4 +206,12 @@ public class MonitorID {
                 this.state = status;
             }
     }
+
+//	public String getWorkflowNodeID() {
+//		return workflowNodeID;
+//	}
+//
+//	public void setWorkflowNodeID(String workflowNodeID) {
+//		this.workflowNodeID = workflowNodeID;
+//	}
 }

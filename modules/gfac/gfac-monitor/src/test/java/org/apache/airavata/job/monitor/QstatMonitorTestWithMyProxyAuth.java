@@ -32,7 +32,7 @@ import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.job.monitor.impl.pull.qstat.QstatMonitor;
-import org.apache.airavata.job.monitor.state.JobStatus;
+import org.apache.airavata.job.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.junit.Assert;
@@ -154,7 +154,7 @@ public class QstatMonitorTestWithMyProxyAuth {
     }
 
     @Subscribe
-    public void testCaseShutDown(JobStatus status) {
+    public void testCaseShutDown(JobStatusChangeRequest status) {
         Assert.assertNotNull(status.getState());
         try {
             monitorManager.stopMonitor();

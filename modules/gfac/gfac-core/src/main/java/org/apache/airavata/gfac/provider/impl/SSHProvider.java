@@ -39,7 +39,6 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
-import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
@@ -61,7 +60,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 /**
  * Execute application using remote SSH
  */
-public class SSHProvider extends AbstractProvider implements GFacProvider{
+public class SSHProvider extends AbstractProvider{
     private static final Logger log = LoggerFactory.getLogger(SSHProvider.class);
     private Cluster cluster;
     private String jobID = null;

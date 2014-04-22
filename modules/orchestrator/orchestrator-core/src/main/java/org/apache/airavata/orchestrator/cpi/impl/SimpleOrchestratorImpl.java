@@ -24,10 +24,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-import com.google.common.eventbus.Subscribe;
-import org.apache.airavata.gfac.cpi.GFacImpl;
+import org.apache.airavata.job.monitor.AbstractActivityListener;
 import org.apache.airavata.job.monitor.MonitorID;
-import org.apache.airavata.job.monitor.state.JobStatus;
+import org.apache.airavata.job.monitor.MonitorManager;
+import org.apache.airavata.job.monitor.command.ExperimentCancelRequest;
+import org.apache.airavata.job.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.JobState;
@@ -42,11 +43,12 @@ import org.apache.airavata.registry.cpi.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SimpleOrchestratorImpl extends AbstractOrchestrator {
+import com.google.common.eventbus.Subscribe;
+
+public class SimpleOrchestratorImpl extends AbstractOrchestrator implements AbstractActivityListener{
     private final static Logger logger = LoggerFactory.getLogger(SimpleOrchestratorImpl.class);
     private ExecutorService executor;
-
-
+    
     // this is going to be null unless the thread count is 0
     private JobSubmitter jobSubmitter = null;
 
@@ -124,8 +126,14 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         return tasks;
     }
 
+	@Override
+	public void cancelExperiment(String experimentID)
+			throws OrchestratorException {
+		orchestratorContext.getMonitorManager().getMonitorPublisher().publish(new ExperimentCancelRequest(experimentID));
+	}
+
     @Subscribe
-    public void handlePostExperimentTask(JobStatus status) throws OrchestratorException {
+    public void handlePostExperimentTask(JobStatusChangeRequest status) throws OrchestratorException {
         if(status.getState() == JobState.COMPLETE){
             MonitorID monitorID = status.getMonitorID();
             jobSubmitter.runAfterJobTask(monitorID.getExperimentID(), monitorID.getTaskID());
@@ -154,4 +162,19 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     public void setJobSubmitter(JobSubmitter jobSubmitter) {
         this.jobSubmitter = jobSubmitter;
     }
+
+	@Override
+	public void setup(Object... configurations) {
+		for (Object config : configurations) {
+			if (config instanceof MonitorManager){
+				orchestratorContext.setMonitorManager((MonitorManager)config);
+				try {
+					getJobSubmitter().initialize(orchestratorContext);
+				} catch (OrchestratorException e) {
+					logger.error("Error reinitializing the job submitter!!!",e);
+				}
+			}
+		}
+	}
+
 }
