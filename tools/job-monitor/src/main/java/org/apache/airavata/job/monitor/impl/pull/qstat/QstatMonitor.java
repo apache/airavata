@@ -190,33 +190,37 @@ public class QstatMonitor extends PullMonitor {
                     logger.error("Monitoring the jobs failed, for user: " + take.getUserName()
                             + " in Host: " + currentHostDescription.getType().getHostAddress());
                 } else {
-                    if (currentMonitorID.getFailedCount() < 2) {
-                        try {
-                            currentMonitorID.setFailedCount(currentMonitorID.getFailedCount() + 1);
-                            this.queue.put(take);
-                        } catch (InterruptedException e1) {
-                            e1.printStackTrace();
+                    if (currentMonitorID != null) {
+                        if (currentMonitorID.getFailedCount() < 2) {
+                            try {
+                                currentMonitorID.setFailedCount(currentMonitorID.getFailedCount() + 1);
+                                this.queue.put(take);
+                            } catch (InterruptedException e1) {
+                                e1.printStackTrace();
+                            }
+                        } else {
+                            logger.error(e.getMessage());
+                            logger.error("Tried to monitor the job 3 times, so dropping of the the Job with ID: " + currentMonitorID.getJobID());
                         }
-                    } else {
-                        logger.error(e.getMessage());
-                        logger.error("Tried to monitor the job 3 times, so dropping of the the Job with ID: " + currentMonitorID.getJobID());
                     }
                 }
             }
             throw new AiravataMonitorException("Error retrieving the job status", e);
         } catch (Exception e) {
-            if (currentMonitorID.getFailedCount() < 3) {
-                try {
-                    currentMonitorID.setFailedCount(currentMonitorID.getFailedCount() + 1);
-                    this.queue.put(take);
-                    // if we get a wrong status we wait for a while and request again
-                    Thread.sleep(10000);
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
+            if (currentMonitorID != null) {
+                if (currentMonitorID.getFailedCount() < 3) {
+                    try {
+                        currentMonitorID.setFailedCount(currentMonitorID.getFailedCount() + 1);
+                        this.queue.put(take);
+                        // if we get a wrong status we wait for a while and request again
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
+                } else {
+                    logger.error(e.getMessage());
+                    logger.error("Tryied to monitor the job 3 times, so dropping of the the Job with ID: " + currentMonitorID.getJobID());
                 }
-            } else {
-                logger.error(e.getMessage());
-                logger.error("Tryied to monitor the job 3 times, so dropping of the the Job with ID: " + currentMonitorID.getJobID());
             }
             throw new AiravataMonitorException("Error retrieving the job status", e);
         }
