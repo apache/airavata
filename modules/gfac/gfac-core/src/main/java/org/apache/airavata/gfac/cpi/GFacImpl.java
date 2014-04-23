@@ -51,7 +51,6 @@ import org.apache.airavata.gfac.notification.listeners.WorkflowTrackingListener;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.scheduler.HostScheduler;
 import org.apache.airavata.gfac.utils.GFacUtils;
-import org.apache.airavata.gfac.context.security.SSHSecurityContext;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.ServerInfo;
@@ -64,10 +63,10 @@ import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthentica
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
-import org.apache.airavata.job.monitor.AbstractActivityListener;
-import org.apache.airavata.job.monitor.MonitorManager;
-import org.apache.airavata.job.monitor.command.ExperimentCancelRequest;
-import org.apache.airavata.job.monitor.command.TaskCancelRequest;
+import org.apache.airavata.gfac.monitor.AbstractActivityListener;
+import org.apache.airavata.gfac.monitor.MonitorManager;
+import org.apache.airavata.gfac.monitor.command.ExperimentCancelRequest;
+import org.apache.airavata.gfac.monitor.command.TaskCancelRequest;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
@@ -451,41 +450,9 @@ public class GFacImpl implements GFac, AbstractActivityListener {
 //               if (this.configuration.getAmazonSecurityContext() != null) {
 //                   jobExecutionContext.addSecurityContext(AmazonSecurityContext.AMAZON_SECURITY_CONTEXT,
 //                           this.configuration.getAmazonSecurityContext());
-        } else if (registeredHost.getType() instanceof SSHHostType) {
-            String sshUserName = configurationProperties.getProperty(Constants.SSH_USER_NAME);
-            String sshPrivateKey = configurationProperties.getProperty(Constants.SSH_PRIVATE_KEY);
-            String sshPrivateKeyPass = configurationProperties.getProperty(Constants.SSH_PRIVATE_KEY_PASS);
-            String sshPassword = configurationProperties.getProperty(Constants.SSH_PASSWORD);
-            String sshPublicKey = configurationProperties.getProperty(Constants.SSH_PUBLIC_KEY);
-            SSHSecurityContext sshSecurityContext = new SSHSecurityContext();
-                AuthenticationInfo authenticationInfo = null;
-                // we give higher preference to the password over keypair ssh authentication
-                if (sshPassword != null) {
-                    authenticationInfo = new DefaultPasswordAuthenticationInfo(sshPassword);
-                } else {
-                    authenticationInfo = new DefaultPublicKeyFileAuthentication(sshPublicKey, sshPrivateKey, sshPrivateKeyPass);
-                }
-                ServerInfo serverInfo = new ServerInfo(sshUserName, registeredHost.getType().getHostAddress());
-
-                Cluster pbsCluster = null;
-                try {
-                    String installedParentPath = "/";
-                    if(((SSHHostType) registeredHost.getType()).getHpcResource()){
-                    	installedParentPath = ((HpcApplicationDeploymentType)
-                                jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath();
-                    }
-                    pbsCluster = new PBSCluster(serverInfo, authenticationInfo,
-                            CommonUtils.getPBSJobManager(installedParentPath));
-                } catch (SSHApiException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-                sshSecurityContext.setPbsCluster(pbsCluster);
-                sshSecurityContext.setUsername(sshUserName);
-           jobExecutionContext.addSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT, sshSecurityContext);
         }
     }
 
-	@Override
 	public void setup(Object... configurations) {
 		for (Object configuration : configurations) {
 			if (configuration instanceof MonitorManager){

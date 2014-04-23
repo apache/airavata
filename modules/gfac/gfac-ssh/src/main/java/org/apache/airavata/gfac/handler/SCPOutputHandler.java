@@ -31,12 +31,14 @@ import java.util.Set;
 import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.transport.TransportException;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
 import org.apache.airavata.gfac.provider.GFacProviderException;
+import org.apache.airavata.gfac.util.GFACSSHUtils;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.OutputUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
@@ -54,7 +56,14 @@ public class SCPOutputHandler extends AbstractHandler{
     private static final Logger log = LoggerFactory.getLogger(SCPOutputHandler.class);
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException, GFacException {
-
+         if(jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null){
+            try {
+                GFACSSHUtils.addSecurityContext(jobExecutionContext);
+            } catch (ApplicationSettingsException e) {
+                log.error(e.getMessage());
+                throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
+            }
+        }
     	super.invoke(jobExecutionContext);
         DataTransferDetails detail = new DataTransferDetails();
         TransferStatus status = new TransferStatus();

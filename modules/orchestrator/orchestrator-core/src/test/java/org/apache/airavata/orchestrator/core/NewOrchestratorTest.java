@@ -51,7 +51,6 @@ public class NewOrchestratorTest extends BaseOrchestratorTest {
     private static final Logger log = LoggerFactory.getLogger(NewOrchestratorTest.class);
 
     private Orchestrator orchestrator;
-    private String experimentID;
     private List<TaskDetails> tasks;
 
     @BeforeTest
@@ -59,7 +58,6 @@ public class NewOrchestratorTest extends BaseOrchestratorTest {
         AiravataUtils.setExecutionAsServer();
         super.setUp();
         orchestrator = new SimpleOrchestratorImpl();
-        createJobRequestWithDocuments(getAiravataAPI());
         // System.setProperty("myproxy.user", "ogce");
 //         System.setProperty("myproxy.pass", "");
 //         System.setProperty("trusted.cert.location", "/Users/lahirugunathilake/Downloads/certificates");
@@ -68,8 +66,11 @@ public class NewOrchestratorTest extends BaseOrchestratorTest {
 //        System.setProperty("trusted.cert.location",System.getProperty("gsi.working.directory"));
     }
 
-    private void createJobRequestWithDocuments(AiravataAPI airavataAPI) throws Exception{
-        // creating host description
+
+
+    @Test
+    public void localHostTest() throws Exception {
+          // creating host description
         List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
         DataObjectType input = new DataObjectType();
         input.setKey("echo_input");
@@ -88,6 +89,7 @@ public class NewOrchestratorTest extends BaseOrchestratorTest {
                 ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho0", "SimpleEcho0", exInputs);
         simpleExperiment.setExperimentOutputs(exOut);
 
+        WorkflowNodeDetails test = ExperimentModelUtil.createWorkflowNode("test", null);
         ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("localhost", 1, 1, 1, "normal", 0, 0, 1, "sds128");
         scheduling.setResourceHostId("localhost");
         UserConfigurationData userConfigurationData = new UserConfigurationData();
@@ -97,14 +99,10 @@ public class NewOrchestratorTest extends BaseOrchestratorTest {
         simpleExperiment.setUserConfigurationData(userConfigurationData);
 
         Registry defaultRegistry = RegistryFactory.getDefaultRegistry();
-        experimentID = (String)defaultRegistry.add(ParentDataType.EXPERIMENT, simpleExperiment);
-        tasks = orchestrator.createTasks(experimentID);
-    }
-
-    @Test
-    public void localHostTest() throws Exception {
+        String experimentId = (String)defaultRegistry.add(ParentDataType.EXPERIMENT, simpleExperiment);
+        tasks = orchestrator.createTasks(experimentId);
           for(TaskDetails details:tasks) {
-              orchestrator.launchExperiment(experimentID, details.getTaskID());
+              orchestrator.launchExperiment(simpleExperiment,test, details);
           }
     }
 

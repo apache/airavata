@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
@@ -36,6 +37,7 @@ import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
+import org.apache.airavata.gfac.util.GFACSSHUtils;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
@@ -58,7 +60,14 @@ public class SCPInputHandler extends AbstractHandler {
 
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException, GFacException {
-
+         if(jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null){
+            try {
+                GFACSSHUtils.addSecurityContext(jobExecutionContext);
+            } catch (ApplicationSettingsException e) {
+                log.error(e.getMessage());
+                throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
+            }
+        }
         log.info("Invoking SCPInputHandler");
         super.invoke(jobExecutionContext);
        

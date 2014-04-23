@@ -25,8 +25,8 @@ import java.util.Map;
 
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.job.monitor.AbstractActivityListener;
-import org.apache.airavata.job.monitor.command.TaskCancelRequest;
+import org.apache.airavata.gfac.monitor.AbstractActivityListener;
+import org.apache.airavata.gfac.monitor.command.TaskCancelRequest;
 
 import com.google.common.eventbus.Subscribe;
 

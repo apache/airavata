@@ -20,8 +20,11 @@
 */
 package org.apache.airavata.gfac.handler;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.gfac.context.security.SSHSecurityContext;
+import org.apache.airavata.gfac.util.GFACSSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.ServerInfo;
@@ -81,6 +84,14 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
 
     @Override
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException, GFacException {
+         if(jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null){
+            try {
+                GFACSSHUtils.addSecurityContext(jobExecutionContext);
+            } catch (ApplicationSettingsException e) {
+                log.error(e.getMessage());
+                throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
+            }
+        }
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext()
                 .getApplicationDeploymentDescription().getType();
         String standardError = app.getStandardError();
@@ -99,12 +110,12 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
         try {
             Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
             outputPath = outputPath + File.separator + jobExecutionContext.getExperimentID() + "-" + jobExecutionContext.getTaskData().getTaskID()
-            + File.separator;
+                    + File.separator;
             pbsCluster.makeDirectory(outputPath);
             pbsCluster.scpTo(outputPath, standardError);
-            pbsCluster.scpTo(outputPath,standardOutput);
-            for(String files:jobExecutionContext.getOutputFiles()){
-                pbsCluster.scpTo(outputPath,files);
+            pbsCluster.scpTo(outputPath, standardOutput);
+            for (String files : jobExecutionContext.getOutputFiles()) {
+                pbsCluster.scpTo(outputPath, files);
             }
         } catch (SSHApiException e) {
             log.error("Error transfering files to remote host : " + hostName + " with the user: " + userName);

@@ -23,7 +23,7 @@ package org.apache.airavata.orchestrator.core.context;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.airavata.job.monitor.MonitorManager;
+import org.apache.airavata.gfac.monitor.MonitorManager;
 import org.apache.airavata.orchestrator.core.OrchestratorConfiguration;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
 import org.apache.airavata.registry.api.AiravataRegistry2;

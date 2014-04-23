@@ -21,14 +21,28 @@
 package org.apache.airavata.orchestrator.cpi.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-import org.apache.airavata.job.monitor.AbstractActivityListener;
-import org.apache.airavata.job.monitor.MonitorID;
-import org.apache.airavata.job.monitor.MonitorManager;
-import org.apache.airavata.job.monitor.command.ExperimentCancelRequest;
-import org.apache.airavata.job.monitor.state.JobStatusChangeRequest;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
+import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
+import org.apache.airavata.gfac.monitor.AbstractActivityListener;
+import org.apache.airavata.gfac.monitor.MonitorID;
+import org.apache.airavata.gfac.monitor.MonitorManager;
+import org.apache.airavata.gfac.monitor.command.ExperimentCancelRequest;
+import org.apache.airavata.gfac.monitor.core.Monitor;
+import org.apache.airavata.gfac.monitor.core.PullMonitor;
+import org.apache.airavata.gfac.monitor.core.PushMonitor;
+import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
+import org.apache.airavata.gfac.monitor.impl.LocalJobMonitor;
+import org.apache.airavata.gfac.monitor.impl.pull.qstat.QstatMonitor;
+import org.apache.airavata.gfac.monitor.impl.push.amqp.AMQPMonitor;
+import org.apache.airavata.gfac.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.JobState;
@@ -36,10 +50,13 @@ import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
+import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
+import org.apache.airavata.persistance.registry.jpa.model.WorkflowNodeDetail;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +71,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator implements Abst
 
     private JobMetadataValidator jobMetadataValidator = null;
 
+    private MonitorManager monitorManager = null;
+
+    private AuthenticationInfo authenticationInfo = null;
 
     public SimpleOrchestratorImpl() throws OrchestratorException {
         try {
@@ -62,7 +82,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator implements Abst
                 Class<? extends JobSubmitter> aClass = Class.forName(submitterClass.trim()).asSubclass(JobSubmitter.class);
                 jobSubmitter = aClass.newInstance();
                 jobSubmitter.initialize(this.orchestratorContext);
-
+                monitorManager = new MonitorManager();
                 String validatorClzz = this.orchestratorContext.getOrchestratorConfiguration().getValidatorClass();
                 if (this.orchestratorConfiguration.isEnableValidation()) {
                     if (validatorClzz == null) {
@@ -82,19 +102,50 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator implements Abst
         }
     }
 
-    public String launchExperiment(String experimentID, String taskID) throws OrchestratorException {
+    public String launchExperiment(Experiment experiment, WorkflowNodeDetails workflowNode, TaskDetails task) throws OrchestratorException {
         // we give higher priority to userExperimentID
         //todo support multiple validators
         String jobID = null;
-        if (this.orchestratorConfiguration.isEnableValidation()) {
-            if (jobMetadataValidator.validate(experimentID)) {
-                logger.info("validation Successful for the experiment: " + experimentID);
+        String experimentId = experiment.getExperimentID();
+        String taskId = task.getTaskID();
+        String workflowNodeId = workflowNode.getNodeInstanceId();
+        String userName = experiment.getUserName();
+        // creating monitorID to register with monitoring queue
+        // this is a special case because amqp has to be in place before submitting the job
+        HostDescription hostDescription = OrchestratorUtils.getHostDescription(this, task);
+
+        // creating monitorID to register with monitoring queue
+        // this is a special case because amqp has to be in place before submitting the job
+        try {
+            if ((hostDescription instanceof GsisshHostType) &&
+                    Constants.PUSH.equals(((GsisshHostType) hostDescription).getMonitorMode())) {
+                MonitorID monitorID = new MonitorID(hostDescription, null, taskId, workflowNodeId, experimentId, userName);
+                monitorManager.addAJobToMonitor(monitorID);
+                jobSubmitter.submit(experimentId, taskId);
+                if ("none".equals(jobID)) {
+                    logger.error("Job submission Failed, so we remove the job from monitoring");
+
+                } else {
+                    logger.info("Job Launched to the resource by GFAC and jobID returned : " + jobID);
+                }
             } else {
-                throw new OrchestratorException("Validation Failed, so Job will not be submitted to GFAC");
+                // Launching job for each task
+                // if the monitoring is pull mode then we add the monitorID for each task after submitting
+                // the job with the jobID, otherwise we don't need the jobID
+                jobSubmitter.submit(experimentId, taskId);
+                logger.info("Job Launched to the resource by GFAC and jobID returned : " + jobID);
+                MonitorID monitorID = new MonitorID(hostDescription, jobID, taskId, workflowNodeId, experimentId, userName, authenticationInfo);
+                if ("none".equals(jobID)) {
+                    logger.error("Job submission Failed, so we remove the job from monitoring");
+
+                } else {
+                    monitorManager.addAJobToMonitor(monitorID);
+                }
             }
+        } catch (Exception e) {
+            throw new OrchestratorException("Error launching the job", e);
         }
 
-        jobID = jobSubmitter.submit(experimentID, taskID);
         return jobID;
     }
 
@@ -163,7 +214,15 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator implements Abst
         this.jobSubmitter = jobSubmitter;
     }
 
-	@Override
+    public AuthenticationInfo getAuthenticationInfo() {
+        return authenticationInfo;
+    }
+
+    public void setAuthenticationInfo(AuthenticationInfo authenticationInfo) {
+        this.authenticationInfo = authenticationInfo;
+    }
+
+    @Override
 	public void setup(Object... configurations) {
 		for (Object config : configurations) {
 			if (config instanceof MonitorManager){
@@ -177,4 +236,61 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator implements Abst
 		}
 	}
 
+    public void initialize() throws OrchestratorException {
+        // Filling monitorManager properties
+            // we can keep a single user to do all the monitoring authentication for required machine..
+        try{
+            String myProxyUser = ServerSettings.getSetting("myproxy.username");
+            String myProxyPass = ServerSettings.getSetting("myproxy.password");
+            String certPath = ServerSettings.getSetting("trusted.cert.location");
+            String myProxyServer = ServerSettings.getSetting("myproxy.server");
+            setAuthenticationInfo(new MyProxyAuthenticationInfo(myProxyUser, myProxyPass, myProxyServer,
+                    7512, 17280000, certPath));
+
+            // loading Monitor configuration
+            String monitors = ServerSettings.getSetting("monitors");
+            if(monitors == null) {
+                logger.error("No Monitor is configured, so job monitoring will not monitor any job");
+                return;
+            }
+            List<String> monitorList = Arrays.asList(monitors.split(","));
+            List<String> list = Arrays.asList(ServerSettings.getSetting("amqp.hosts").split(","));
+            String proxyPath = ServerSettings.getSetting("proxy.file.path");
+            String connectionName = ServerSettings.getSetting("connection.name");
+
+            for (String monitorClass : monitorList) {
+                Class<? extends Monitor> aClass = Class.forName(monitorClass).asSubclass(Monitor.class);
+                Monitor monitor = aClass.newInstance();
+                if (monitor instanceof PullMonitor) {
+                    if (monitor instanceof QstatMonitor) {
+                        monitorManager.addQstatMonitor((QstatMonitor) monitor);
+                    }
+                } else if (monitor instanceof PushMonitor) {
+                    if (monitor instanceof AMQPMonitor) {
+                        ((AMQPMonitor) monitor).initialize(proxyPath, connectionName, list);
+                        monitorManager.addAMQPMonitor((AMQPMonitor) monitor);
+                    }
+                } else if(monitor instanceof LocalJobMonitor){
+                    monitorManager.addLocalMonitor((LocalJobMonitor)monitor);
+                } else {
+                    logger.error("Wrong class is given to primary Monitor");
+                }
+            }
+
+            monitorManager.registerListener(this);
+            // Now Monitor Manager is properly configured, now we have to start the monitoring system.
+            // This will initialize all the required threads and required queues
+            monitorManager.launchMonitor();
+        }  catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (AiravataMonitorException e) {
+            e.printStackTrace();
+        } catch (ApplicationSettingsException e) {
+			e.printStackTrace();
+		}
+    }
 }

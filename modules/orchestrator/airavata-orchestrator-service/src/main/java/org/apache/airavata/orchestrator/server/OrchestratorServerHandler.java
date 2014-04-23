@@ -24,25 +24,13 @@ package org.apache.airavata.orchestrator.server;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
-import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
-import org.apache.airavata.job.monitor.MonitorID;
-import org.apache.airavata.job.monitor.MonitorManager;
-import org.apache.airavata.job.monitor.core.Monitor;
-import org.apache.airavata.job.monitor.core.PullMonitor;
-import org.apache.airavata.job.monitor.core.PushMonitor;
-import org.apache.airavata.job.monitor.exception.AiravataMonitorException;
-import org.apache.airavata.job.monitor.impl.LocalJobMonitor;
-import org.apache.airavata.job.monitor.impl.pull.qstat.QstatMonitor;
-import org.apache.airavata.job.monitor.impl.push.amqp.AMQPMonitor;
+import org.apache.airavata.gfac.monitor.MonitorID;
+import org.apache.airavata.gfac.monitor.MonitorManager;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
-import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.cpi.orchestrator_cpi_serviceConstants;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
@@ -51,7 +39,6 @@ import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.TaskDetailConstants;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants;
-import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,66 +66,12 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     public OrchestratorServerHandler() {
         try {
             // first constructing the monitorManager and orchestrator, then fill the required properties
-            monitorManager = new MonitorManager();
             orchestrator = new SimpleOrchestratorImpl();
             registry = RegistryFactory.getDefaultRegistry();
-
-            // Filling monitorManager properties
-            // we can keep a single user to do all the monitoring authentication for required machine..
-            String myProxyUser = ServerSettings.getSetting("myproxy.username");
-            String myProxyPass = ServerSettings.getSetting("myproxy.password");
-            String certPath = ServerSettings.getSetting("trusted.cert.location");
-            String myProxyServer = ServerSettings.getSetting("myproxy.server");
-            authenticationInfo = new MyProxyAuthenticationInfo(myProxyUser, myProxyPass, myProxyServer,
-                    7512, 17280000, certPath);
-
-            // loading Monitor configuration
-            String monitors = ServerSettings.getSetting("monitors");
-            if(monitors == null) {
-                log.error("No Monitor is configured, so job monitoring will not monitor any job");
-                return;
-            }
-            List<String> monitorList = Arrays.asList(monitors.split(","));
-            List<String> list = Arrays.asList(ServerSettings.getSetting("amqp.hosts").split(","));
-            String proxyPath = ServerSettings.getSetting("proxy.file.path");
-            String connectionName = ServerSettings.getSetting("connection.name");
-
-            for (String monitorClass : monitorList) {
-                Class<? extends Monitor> aClass = Class.forName(monitorClass).asSubclass(Monitor.class);
-                Monitor monitor = aClass.newInstance();
-                if (monitor instanceof PullMonitor) {
-                    if (monitor instanceof QstatMonitor) {
-                        monitorManager.addQstatMonitor((QstatMonitor) monitor);
-                    }
-                } else if (monitor instanceof PushMonitor) {
-                    if (monitor instanceof AMQPMonitor) {
-                        ((AMQPMonitor) monitor).initialize(proxyPath, connectionName, list);
-                        monitorManager.addAMQPMonitor((AMQPMonitor) monitor);
-                    }
-                } else if(monitor instanceof LocalJobMonitor){
-                    monitorManager.addLocalMonitor((LocalJobMonitor)monitor);
-                } else {
-                    log.error("Wrong class is given to primary Monitor");
-                }
-            }
-
-            monitorManager.registerListener(orchestrator);
-            // Now Monitor Manager is properly configured, now we have to start the monitoring system.
-            // This will initialize all the required threads and required queues
-            monitorManager.launchMonitor();
-        } catch (OrchestratorException e) {
+            orchestrator.initialize();
+        }catch (OrchestratorException e) {
             e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (AiravataMonitorException e) {
-            e.printStackTrace();
-        } catch (ApplicationSettingsException e) {
-			e.printStackTrace();
-		}
+        }
     }
 
     /**
@@ -163,49 +96,20 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             }
             List<String> ids = registry.getIds(DataType.WORKFLOW_NODE_DETAIL,WorkflowNodeConstants.EXPERIMENT_ID,experimentId);
             for (String workflowNodeId : ids) {
-				List<Object> taskDetailList = registry.get(DataType.TASK_DETAIL,TaskDetailConstants.NODE_ID,workflowNodeId);
-				for (Object o : taskDetailList) {
-					TaskDetails taskID=(TaskDetails)o;
-					//iterate through all the generated tasks and performs the job submisssion+monitoring
-	                String jobID = null;
-	                Experiment experiment = (Experiment) registry.get(DataType.EXPERIMENT, experimentId);
-	                if (experiment == null) {
-	                    log.error("Error retrieving the Experiment by the given experimentID: " + experimentId);
-	                    return false;
-	                }
-	                String userName = experiment.getUserName();
+                WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails)registry.get(DataType.WORKFLOW_NODE_DETAIL, workflowNodeId);
+                List<Object> taskDetailList = registry.get(DataType.TASK_DETAIL, TaskDetailConstants.NODE_ID, workflowNodeId);
+                for (Object o : taskDetailList) {
+                    TaskDetails taskID = (TaskDetails) o;
+                    //iterate through all the generated tasks and performs the job submisssion+monitoring
+                    Experiment experiment = (Experiment) registry.get(DataType.EXPERIMENT, experimentId);
+                    if (experiment == null) {
+                        log.error("Error retrieving the Experiment by the given experimentID: " + experimentId);
+                        return false;
+                    }
+                    orchestrator.launchExperiment(experiment, workflowNodeDetail, taskID);
+                }
+            }
 
-	                HostDescription hostDescription = OrchestratorUtils.getHostDescription(orchestrator, taskID);
-
-	                // creating monitorID to register with monitoring queue
-	                // this is a special case because amqp has to be in place before submitting the job
-	                if ((hostDescription instanceof GsisshHostType) &&
-	                        Constants.PUSH.equals(((GsisshHostType) hostDescription).getMonitorMode())) {
-	                    monitorID = new MonitorID(hostDescription, null, taskID.getTaskID(), workflowNodeId, experimentId, userName);
-	                    monitorManager.addAJobToMonitor(monitorID);
-	                    jobID = orchestrator.launchExperiment(experimentId, taskID.getTaskID());
-	                    if("none".equals(jobID)) {
-	                        log.error("Job submission Failed, so we remove the job from monitoring");
-
-	                    }else{
-	                        log.info("Job Launched to the resource by GFAC and jobID returned : " + jobID);
-	                    }
-	                } else {
-	                    // Launching job for each task
-	                    // if the monitoring is pull mode then we add the monitorID for each task after submitting
-	                    // the job with the jobID, otherwise we don't need the jobID
-	                    jobID = orchestrator.launchExperiment(experimentId, taskID.getTaskID());
-	                    log.info("Job Launched to the resource by GFAC and jobID returned : " + jobID);
-	                    monitorID = new MonitorID(hostDescription, jobID, taskID.getTaskID(), workflowNodeId, experimentId, userName, authenticationInfo);
-	                    if("none".equals(jobID)) {
-	                        log.error("Job submission Failed, so we remove the job from monitoring");
-
-	                    }else{
-	                            monitorManager.addAJobToMonitor(monitorID);
-	                    }
-	                }
-				}
-			}
         } catch (Exception e) {
             throw new TException(e);
         }

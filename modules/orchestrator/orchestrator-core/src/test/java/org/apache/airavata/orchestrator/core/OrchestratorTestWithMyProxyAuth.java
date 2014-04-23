@@ -49,65 +49,63 @@ import java.util.List;
 public class OrchestratorTestWithMyProxyAuth extends BaseOrchestratorTest {
     private static final Logger log = LoggerFactory.getLogger(NewOrchestratorTest.class);
 
-     private Orchestrator orchestrator;
+    private Orchestrator orchestrator;
 
-     private String experimentID;
+    private String experimentID;
 
-     private List<TaskDetails> tasks;
+    private List<TaskDetails> tasks;
 
-     @BeforeTest
-     public void setUp() throws Exception {
-         AiravataUtils.setExecutionAsServer();
-         super.setUp();
-         orchestrator = new SimpleOrchestratorImpl();
-         createJobRequestWithDocuments();
+    @BeforeTest
+    public void setUp() throws Exception {
+        AiravataUtils.setExecutionAsServer();
+        super.setUp();
+        orchestrator = new SimpleOrchestratorImpl();
 //         System.setProperty("myproxy.user", "ogce");
 //         System.setProperty("myproxy.pass", "");
 //         System.setProperty("trusted.cert.location", "/Users/lahirugunathilake/Downloads/certificates");
-         // this is the same propertySystem.getProperty("myproxy.user");
+        // this is the same propertySystem.getProperty("myproxy.user");
 //         System.setProperty("myproxy.pass",System.getProperty("myproxy.password"));
 //        System.setProperty("trusted.cert.location",System.getProperty("gsi.working.directory"));
-     }
+    }
 
-     private void createJobRequestWithDocuments() throws Exception{
-         List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-         DataObjectType input = new DataObjectType();
-         input.setKey("echo_input");
-         input.setType(DataType.STRING.toString());
-         input.setValue("echo_output=Hello World");
-         exInputs.add(input);
+    @Test
+    public void noDescriptorTest() throws Exception {
+        List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
+        DataObjectType input = new DataObjectType();
+        input.setKey("echo_input");
+        input.setType(DataType.STRING.toString());
+        input.setValue("echo_output=Hello World");
+        exInputs.add(input);
 
-         List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-         DataObjectType output = new DataObjectType();
-         output.setKey("echo_output");
-         output.setType(DataType.STRING.toString());
-         output.setValue("");
-         exOut.add(output);
+        List<DataObjectType> exOut = new ArrayList<DataObjectType>();
+        DataObjectType output = new DataObjectType();
+        output.setKey("echo_output");
+        output.setType(DataType.STRING.toString());
+        output.setValue("");
+        exOut.add(output);
 
-         Experiment simpleExperiment =
-                 ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
-         simpleExperiment.setExperimentOutputs(exOut);
+        Experiment simpleExperiment =
+                ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
+        simpleExperiment.setExperimentOutputs(exOut);
 
-         ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0, 1, "sds128");
-         scheduling.setResourceHostId("gsissh-trestles");
-         UserConfigurationData userConfigurationData = new UserConfigurationData();
-         userConfigurationData.setAiravataAutoSchedule(false);
-         userConfigurationData.setOverrideManualScheduledParams(false);
-         userConfigurationData.setComputationalResourceScheduling(scheduling);
-         simpleExperiment.setUserConfigurationData(userConfigurationData);
+        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0, 1, "sds128");
+        scheduling.setResourceHostId("gsissh-trestles");
+        UserConfigurationData userConfigurationData = new UserConfigurationData();
+        userConfigurationData.setAiravataAutoSchedule(false);
+        userConfigurationData.setOverrideManualScheduledParams(false);
+        userConfigurationData.setComputationalResourceScheduling(scheduling);
+        simpleExperiment.setUserConfigurationData(userConfigurationData);
 
-         Registry registry = RegistryFactory.getDefaultRegistry();
-         experimentID = (String) registry.add(ParentDataType.EXPERIMENT, simpleExperiment);
-         tasks = orchestrator.createTasks(experimentID);
+        WorkflowNodeDetails test = ExperimentModelUtil.createWorkflowNode("test", null);
+        Registry registry = RegistryFactory.getDefaultRegistry();
+        experimentID = (String) registry.add(ParentDataType.EXPERIMENT, simpleExperiment);
+        tasks = orchestrator.createTasks(experimentID);
 
-     }
-
-     @Test
-     public void noDescriptorTest() throws Exception {
-         for(TaskDetails taskDetail:tasks) {
-             orchestrator.launchExperiment(experimentID, taskDetail.getTaskID());
-         }
-     }
+        for (TaskDetails taskDetail: tasks)
+        {
+            orchestrator.launchExperiment(simpleExperiment,test, taskDetail);
+        }
+    }
 
 
 }
