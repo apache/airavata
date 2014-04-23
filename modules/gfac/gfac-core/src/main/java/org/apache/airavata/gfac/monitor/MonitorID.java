@@ -21,6 +21,7 @@
 package org.apache.airavata.gfac.monitor;
 
 import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
 import org.apache.airavata.model.workspace.experiment.JobState;
@@ -61,6 +62,8 @@ public class MonitorID {
     private int failedCount = 0;
 
     private JobState state;
+
+    private JobExecutionContext jobExecutionContext;
 
     public MonitorID(HostDescription host, String jobID,String taskID, String workflowNodeID, String experimentID, String userName) {
         this.host = host;
@@ -215,7 +218,15 @@ public class MonitorID {
 		this.workflowNodeID = workflowNodeID;
 	}
 
-//	public String getWorkflowNodeID() {
+    public JobExecutionContext getJobExecutionContext() {
+        return jobExecutionContext;
+    }
+
+    public void setJobExecutionContext(JobExecutionContext jobExecutionContext) {
+        this.jobExecutionContext = jobExecutionContext;
+    }
+
+    //	public String getWorkflowNodeID() {
 //		return workflowNodeID;
 //	}
 //

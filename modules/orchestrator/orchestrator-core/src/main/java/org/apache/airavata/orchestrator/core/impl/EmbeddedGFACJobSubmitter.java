@@ -58,7 +58,7 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
     }
 
 
-    public String submit(String experimentID, String taskID) throws OrchestratorException {
+    public JobExecutionContext submit(String experimentID, String taskID) throws OrchestratorException {
         JobExecutionContext jobExecutionContext;
         try {
              jobExecutionContext = gfac.submitJob(experimentID, taskID);
@@ -67,7 +67,7 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
             logger.error(error);
             throw new OrchestratorException(error);
         }
-        return jobExecutionContext.getJobDetails().getJobID();
+        return jobExecutionContext;
     }
 
     public GFac getGfac() {
@@ -86,9 +86,9 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
         this.orchestratorContext = orchestratorContext;
     }
 
-    public void runAfterJobTask(String experimentID, String taskID) throws OrchestratorException {
+    public void runAfterJobTask(JobExecutionContext jobExecutionContext) throws OrchestratorException {
         try {
-            gfac.invokeOutFlowHandlers(experimentID,taskID);
+            gfac.invokeOutFlowHandlers(jobExecutionContext);
         } catch (GFacException e) {
             throw new OrchestratorException(e);
         }

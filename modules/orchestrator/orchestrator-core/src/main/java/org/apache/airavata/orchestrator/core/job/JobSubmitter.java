@@ -22,6 +22,7 @@ package org.apache.airavata.orchestrator.core.job;
 
 import java.util.List;
 
+import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
@@ -50,15 +51,14 @@ public interface JobSubmitter {
      * just get the request data and do the submission
      * @param experimentID experimentID cannot be null
      * @param taskID taskID cannot be null
-     * @return jobID return the jobID from GFac
+     * @return JobExecutionContext return the jobExecutionContext from GFac
      */
-    String submit(String experimentID, String taskID) throws OrchestratorException;
+    JobExecutionContext submit(String experimentID, String taskID) throws OrchestratorException;
 
     /**
      * This can be use to handle any after Jobsubmission task
-     * @param experimentID
-     * @param taskID
+     * @param jobExecutionContext
      * @throws OrchestratorException
      */
-    void runAfterJobTask(String experimentID,String taskID) throws OrchestratorException;
+    void runAfterJobTask(JobExecutionContext jobExecutionContext) throws OrchestratorException;
 }
