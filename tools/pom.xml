@@ -30,7 +30,6 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
-                <module>phoebus-integration</module>
 		<module>registry-tool</module>
 		<module>gsissh</module>
         </modules>

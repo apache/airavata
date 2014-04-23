@@ -309,30 +309,20 @@ public class GFacImpl implements GFac, AbstractActivityListener {
         }
     }
 
-    public void invokeOutFlowHandlers(String experimentID,String taskID) throws GFacException {
-        JobExecutionContext jobExecutionContext = null;
-        try {
-            jobExecutionContext = createJEC(experimentID, taskID);
-            Scheduler.schedule(jobExecutionContext);
-            ApplicationDescription applicationDeploymentDescription = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
-            TaskDetails taskData = (TaskDetails) registry.get(DataType.TASK_DETAIL, taskID);
-            JobDetails jobDetails = taskData.getJobDetailsList().get(0);
-            String jobDescription = jobDetails.getJobDescription();
-            if(jobDescription != null) {
-                JobDescriptor jobDescriptor = JobDescriptor.fromXML(jobDescription);
-                applicationDeploymentDescription.getType().setScratchWorkingDirectory(
-                        jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getWorkingDirectory());
-                applicationDeploymentDescription.getType().setInputDataDirectory(jobDescriptor.getInputDirectory());
-                applicationDeploymentDescription.getType().setOutputDataDirectory(jobDescriptor.getOutputDirectory());
-                applicationDeploymentDescription.getType().setStandardError(jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getStandardErrorFile());
-                applicationDeploymentDescription.getType().setStandardOutput(jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getStandardOutFile());
-            }
+    public void invokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
+        GFacConfiguration gFacConfiguration = jobExecutionContext.getGFacConfiguration();
+        List<GFacHandlerConfig> handlers = null;
+        if(gFacConfiguration != null){
+         handlers = jobExecutionContext.getGFacConfiguration().getOutHandlers();
+        }else {
+            try {
+                jobExecutionContext = createJEC(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID());
             } catch (Exception e) {
-            throw new GFacException(e);
+                log.error("Error constructing job execution context during outhandler invocation");
+                throw new GFacException(e);
+            }
+            schedule(jobExecutionContext);
         }
-
-        List<GFacHandlerConfig> handlers = jobExecutionContext.getGFacConfiguration().getOutHandlers();
-
         for (GFacHandlerConfig handlerClassName : handlers) {
             Class<? extends GFacHandler> handlerClass;
             GFacHandler handler;

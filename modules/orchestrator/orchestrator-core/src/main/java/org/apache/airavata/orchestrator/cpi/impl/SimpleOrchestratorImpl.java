@@ -29,6 +29,7 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
 import org.apache.airavata.gfac.monitor.AbstractActivityListener;
@@ -121,7 +122,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator implements Abst
                     Constants.PUSH.equals(((GsisshHostType) hostDescription).getMonitorMode())) {
                 MonitorID monitorID = new MonitorID(hostDescription, null, taskId, workflowNodeId, experimentId, userName);
                 monitorManager.addAJobToMonitor(monitorID);
-                jobSubmitter.submit(experimentId, taskId);
+                JobExecutionContext jobExecutionContext = jobSubmitter.submit(experimentId, taskId);
                 if ("none".equals(jobID)) {
                     logger.error("Job submission Failed, so we remove the job from monitoring");
 
@@ -132,9 +133,10 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator implements Abst
                 // Launching job for each task
                 // if the monitoring is pull mode then we add the monitorID for each task after submitting
                 // the job with the jobID, otherwise we don't need the jobID
-                jobSubmitter.submit(experimentId, taskId);
+                JobExecutionContext jobExecutionContext = jobSubmitter.submit(experimentId, taskId);
                 logger.info("Job Launched to the resource by GFAC and jobID returned : " + jobID);
                 MonitorID monitorID = new MonitorID(hostDescription, jobID, taskId, workflowNodeId, experimentId, userName, authenticationInfo);
+                monitorID.setJobExecutionContext(jobExecutionContext);
                 if ("none".equals(jobID)) {
                     logger.error("Job submission Failed, so we remove the job from monitoring");
 
@@ -187,7 +189,16 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator implements Abst
     public void handlePostExperimentTask(JobStatusChangeRequest status) throws OrchestratorException {
         if(status.getState() == JobState.COMPLETE){
             MonitorID monitorID = status.getMonitorID();
-            jobSubmitter.runAfterJobTask(monitorID.getExperimentID(), monitorID.getTaskID());
+            if(monitorID.getJobExecutionContext() == null){
+                // this code is to handle amqp scenario where monitorID doesn't have
+                // job execution context, in this case it will be created by the outputhandler
+                String experimentID = monitorID.getExperimentID();
+                String taskID = monitorID.getTaskID();
+                JobExecutionContext jobExecutionContext = new JobExecutionContext(null, null);
+                jobExecutionContext.setExperimentID(experimentID);
+                jobExecutionContext.setTaskData(new TaskDetails(taskID));
+            }
+            jobSubmitter.runAfterJobTask(monitorID.getJobExecutionContext());
         }
     }
     public ExecutorService getExecutor() {
