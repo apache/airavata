@@ -20,7 +20,7 @@
 */
 package org.apache.airavata.job.monitor.state;
 
-import org.apache.airavata.job.monitor.MonitorID;
+import org.apache.airavata.job.monitor.ExperimentIdentity;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
 
 /**
@@ -32,15 +32,15 @@ import org.apache.airavata.model.workspace.experiment.ExperimentState;
  */
 public class ExperimentStatusChangeRequest extends AbstractStateChangeRequest{
     private ExperimentState state;
-
+    private ExperimentIdentity identity;
 
     // this constructor can be used in Qstat monitor to handle errors
     public ExperimentStatusChangeRequest() {
     }
 
-    public ExperimentStatusChangeRequest(MonitorID monitorID, ExperimentState state) {
-        setMonitorID(monitorID);
+    public ExperimentStatusChangeRequest(ExperimentIdentity experimentIdentity, ExperimentState state) {
         this.state = state;
+        setIdentity(experimentIdentity);
     }
 
     public ExperimentState getState() {
@@ -50,6 +50,14 @@ public class ExperimentStatusChangeRequest extends AbstractStateChangeRequest{
     public void setState(ExperimentState state) {
        this.state = state;
     }
+
+	public ExperimentIdentity getIdentity() {
+		return identity;
+	}
+
+	public void setIdentity(ExperimentIdentity identity) {
+		this.identity = identity;
+	}
 
 
 }

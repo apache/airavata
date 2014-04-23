@@ -49,6 +49,7 @@ public class ServerMain {
 	private static int serverPID=-1;
 	private static final String serverStartedFileNamePrefix = "server-start";
 	private static boolean systemShutDown=false;
+	private static boolean shutdownHookCalledBefore=false;
     static{
 		servers = new ArrayList<IServer>();
     }
@@ -89,6 +90,19 @@ public class ServerMain {
 		});
 	}
 
+//	private static void addSecondaryShutdownHook(){
+//		Runtime.getRuntime().addShutdownHook(new Thread(){
+//			@Override
+//			public void run() {
+//				System.out.print("Graceful shutdown attempt is still active. Do you want to exit instead? (y/n)");
+//				String command=System.console().readLine().trim().toLowerCase();
+//				if (command.equals("yes") || command.equals("y")){
+//					System.exit(1);
+//				}
+//			}
+//		});
+//	}
+	
 	public static void main(String args[]) throws ParseException, IOException {
 		AiravataUtils.setExecutionAsServer();
 		CommandLineParameters commandLineParameters = StringUtil.getCommandLineParser(args);

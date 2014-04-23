@@ -49,6 +49,8 @@ import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.TaskDetailConstants;
+import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -101,29 +103,25 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             String proxyPath = ServerSettings.getSetting("proxy.file.path");
             String connectionName = ServerSettings.getSetting("connection.name");
 
-            if (monitors == null) {
-                log.error("Error loading primaryMonitor and there has to be a primary monitor");
-            } else {
-                for (String monitorClass : monitorList) {
-                    Class<? extends Monitor> aClass = Class.forName(monitorClass).asSubclass(Monitor.class);
-                    Monitor monitor = aClass.newInstance();
-                    if (monitor instanceof PullMonitor) {
-                        if (monitor instanceof QstatMonitor) {
-                            monitorManager.addQstatMonitor((QstatMonitor) monitor);
-                        }
-                    } else if (monitor instanceof PushMonitor) {
-                        if (monitor instanceof AMQPMonitor) {
-                            ((AMQPMonitor) monitor).initialize(proxyPath, connectionName, list);
-                            monitorManager.addAMQPMonitor((AMQPMonitor) monitor);
-                        }
-                    } else if(monitor instanceof LocalJobMonitor){
-                        monitorManager.addLocalMonitor((LocalJobMonitor)monitor);
-                    } else {
-                        log.error("Wrong class is given to primary Monitor");
+            for (String monitorClass : monitorList) {
+                Class<? extends Monitor> aClass = Class.forName(monitorClass).asSubclass(Monitor.class);
+                Monitor monitor = aClass.newInstance();
+                if (monitor instanceof PullMonitor) {
+                    if (monitor instanceof QstatMonitor) {
+                        monitorManager.addQstatMonitor((QstatMonitor) monitor);
                     }
+                } else if (monitor instanceof PushMonitor) {
+                    if (monitor instanceof AMQPMonitor) {
+                        ((AMQPMonitor) monitor).initialize(proxyPath, connectionName, list);
+                        monitorManager.addAMQPMonitor((AMQPMonitor) monitor);
+                    }
+                } else if(monitor instanceof LocalJobMonitor){
+                    monitorManager.addLocalMonitor((LocalJobMonitor)monitor);
+                } else {
+                    log.error("Wrong class is given to primary Monitor");
                 }
-
             }
+
             monitorManager.registerListener(orchestrator);
             // Now Monitor Manager is properly configured, now we have to start the monitoring system.
             // This will initialize all the required threads and required queues
@@ -163,46 +161,51 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             if (tasks.size() > 1) {
                 log.info("There are multiple tasks for this experiment, So Orchestrator will launch multiple Jobs");
             }
-            for (TaskDetails taskID : tasks) {
-                //iterate through all the generated tasks and performs the job submisssion+monitoring
-                String jobID = null;
-                Experiment experiment = (Experiment) registry.get(DataType.EXPERIMENT, experimentId);
-                if (experiment == null) {
-                    log.error("Error retrieving the Experiment by the given experimentID: " + experimentId);
-                    return false;
-                }
-                String userName = experiment.getUserName();
+            List<String> ids = registry.getIds(DataType.WORKFLOW_NODE_DETAIL,WorkflowNodeConstants.EXPERIMENT_ID,experimentId);
+            for (String workflowNodeId : ids) {
+				List<Object> taskDetailList = registry.get(DataType.TASK_DETAIL,TaskDetailConstants.NODE_ID,workflowNodeId);
+				for (Object o : taskDetailList) {
+					TaskDetails taskID=(TaskDetails)o;
+					//iterate through all the generated tasks and performs the job submisssion+monitoring
+	                String jobID = null;
+	                Experiment experiment = (Experiment) registry.get(DataType.EXPERIMENT, experimentId);
+	                if (experiment == null) {
+	                    log.error("Error retrieving the Experiment by the given experimentID: " + experimentId);
+	                    return false;
+	                }
+	                String userName = experiment.getUserName();
 
-                HostDescription hostDescription = OrchestratorUtils.getHostDescription(orchestrator, taskID);
+	                HostDescription hostDescription = OrchestratorUtils.getHostDescription(orchestrator, taskID);
 
-                // creating monitorID to register with monitoring queue
-                // this is a special case because amqp has to be in place before submitting the job
-                if ((hostDescription instanceof GsisshHostType) &&
-                        Constants.PUSH.equals(((GsisshHostType) hostDescription).getMonitorMode())) {
-                    monitorID = new MonitorID(hostDescription, null, taskID.getTaskID(), experimentId, userName);
-                    monitorManager.addAJobToMonitor(monitorID);
-                    jobID = orchestrator.launchExperiment(experimentId, taskID.getTaskID());
-                    if("none".equals(jobID)) {
-                        log.error("Job submission Failed, so we remove the job from monitoring");
+	                // creating monitorID to register with monitoring queue
+	                // this is a special case because amqp has to be in place before submitting the job
+	                if ((hostDescription instanceof GsisshHostType) &&
+	                        Constants.PUSH.equals(((GsisshHostType) hostDescription).getMonitorMode())) {
+	                    monitorID = new MonitorID(hostDescription, null, taskID.getTaskID(), workflowNodeId, experimentId, userName);
+	                    monitorManager.addAJobToMonitor(monitorID);
+	                    jobID = orchestrator.launchExperiment(experimentId, taskID.getTaskID());
+	                    if("none".equals(jobID)) {
+	                        log.error("Job submission Failed, so we remove the job from monitoring");
 
-                    }else{
-                        log.info("Job Launched to the resource by GFAC and jobID returned : " + jobID);
-                    }
-                } else {
-                    // Launching job for each task
-                    // if the monitoring is pull mode then we add the monitorID for each task after submitting
-                    // the job with the jobID, otherwise we don't need the jobID
-                    jobID = orchestrator.launchExperiment(experimentId, taskID.getTaskID());
-                    log.info("Job Launched to the resource by GFAC and jobID returned : " + jobID);
-                    monitorID = new MonitorID(hostDescription, jobID, taskID.getTaskID(), experimentId, userName, authenticationInfo);
-                    if("none".equals(jobID)) {
-                        log.error("Job submission Failed, so we remove the job from monitoring");
+	                    }else{
+	                        log.info("Job Launched to the resource by GFAC and jobID returned : " + jobID);
+	                    }
+	                } else {
+	                    // Launching job for each task
+	                    // if the monitoring is pull mode then we add the monitorID for each task after submitting
+	                    // the job with the jobID, otherwise we don't need the jobID
+	                    jobID = orchestrator.launchExperiment(experimentId, taskID.getTaskID());
+	                    log.info("Job Launched to the resource by GFAC and jobID returned : " + jobID);
+	                    monitorID = new MonitorID(hostDescription, jobID, taskID.getTaskID(), workflowNodeId, experimentId, userName, authenticationInfo);
+	                    if("none".equals(jobID)) {
+	                        log.error("Job submission Failed, so we remove the job from monitoring");
 
-                    }else{
-                            monitorManager.addAJobToMonitor(monitorID);
-                    }
-                }
-            }
+	                    }else{
+	                            monitorManager.addAJobToMonitor(monitorID);
+	                    }
+	                }
+				}
+			}
         } catch (Exception e) {
             throw new TException(e);
         }

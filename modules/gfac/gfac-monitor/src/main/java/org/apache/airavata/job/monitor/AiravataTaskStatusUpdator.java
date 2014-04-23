@@ -23,11 +23,11 @@ package org.apache.airavata.job.monitor;
 import java.util.Calendar;
 
 import org.apache.airavata.job.monitor.event.MonitorPublisher;
-import org.apache.airavata.job.monitor.state.ExperimentStatusChangeRequest;
 import org.apache.airavata.job.monitor.state.TaskStatusChangeRequest;
-import org.apache.airavata.model.workspace.experiment.ExperimentState;
+import org.apache.airavata.job.monitor.state.WorkflowNodeStatusChangeRequest;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.TaskState;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeState;
 import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.Registry;
 import org.slf4j.Logger;
@@ -55,7 +55,7 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener{
         TaskState state = taskStatus.getState();
         if (state != null) {
             try {
-                String taskID = taskStatus.getMonitorID().getTaskID();
+                String taskID = taskStatus.getIdentity().getTaskId();
                 updateTaskStatus(taskID, state);
             } catch (Exception e) {
                 logger.error("Error persisting data" + e.getLocalizedMessage(), e);
@@ -64,28 +64,28 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener{
     }
     
     @Subscribe
-    public void setupExperimentStatus(TaskStatusChangeRequest taskStatus){
-    	ExperimentState state=ExperimentState.UNKNOWN;
+    public void setupWorkflowNodeStatus(TaskStatusChangeRequest taskStatus){
+    	WorkflowNodeState state=WorkflowNodeState.UNKNOWN;
     	switch(taskStatus.getState()){
     	case CANCELED:
-    		state=ExperimentState.CANCELED; break;
+    		state=WorkflowNodeState.CANCELED; break;
     	case COMPLETED:
-    		state=ExperimentState.COMPLETED; break;
+    		state=WorkflowNodeState.COMPLETED; break;
     	case CONFIGURING_WORKSPACE:
-    		state=ExperimentState.LAUNCHED; break;
+    		state=WorkflowNodeState.INVOKED; break;
     	case FAILED:
-    		state=ExperimentState.FAILED; break;
+    		state=WorkflowNodeState.FAILED; break;
     	case EXECUTING: case WAITING: case PRE_PROCESSING: case POST_PROCESSING: case OUTPUT_DATA_STAGING: case INPUT_DATA_STAGING:
-    		state=ExperimentState.EXECUTING; break;
+    		state=WorkflowNodeState.EXECUTING; break;
     	case STARTED:
-    		state=ExperimentState.LAUNCHED; break;
+    		state=WorkflowNodeState.INVOKED; break;
     	case CANCELING:
-    		state=ExperimentState.CANCELING; break;
+    		state=WorkflowNodeState.CANCELING; break;
 		default:
 			break;
     	}
     	logger.debug("Publishing Experiment Status "+state.toString());
-    	monitorPublisher.publish(new ExperimentStatusChangeRequest(taskStatus.getMonitorID(),state));
+    	monitorPublisher.publish(new WorkflowNodeStatusChangeRequest(taskStatus.getIdentity(),state));
     }
     
     public  void updateTaskStatus(String taskId, TaskState state) throws Exception {

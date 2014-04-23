@@ -19,9 +19,20 @@
  *
  */
 
-package org.apache.airavata.job.monitor.state;
+package org.apache.airavata.job.monitor;
 
+public class TaskIdentity extends WorkflowNodeIdentity {
+	private String taskId;
 
-public abstract class AbstractStateChangeRequest implements PublisherMessage{
+	public TaskIdentity(String experimentId, String workflowNodeId, String taskId) {
+		super(experimentId,workflowNodeId);
+		setTaskId(taskId);
+	}
+	public String getTaskId() {
+		return taskId;
+	}
 
+	public void setTaskId(String taskId) {
+		this.taskId = taskId;
+	}
 }

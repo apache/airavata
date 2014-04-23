@@ -19,9 +19,19 @@
  *
  */
 
-package org.apache.airavata.job.monitor.state;
+package org.apache.airavata.job.monitor;
 
+public class WorkflowNodeIdentity extends ExperimentIdentity {
+	private String workflowNodeID;
+	public WorkflowNodeIdentity(String experimentId, String workflowNodeId) {
+		super(experimentId);
+		setWorkflowNodeID(workflowNodeId);
+	}
+	public String getWorkflowNodeID() {
+		return workflowNodeID;
+	}
 
-public abstract class AbstractStateChangeRequest implements PublisherMessage{
-
+	public void setWorkflowNodeID(String workflowNodeID) {
+		this.workflowNodeID = workflowNodeID;
+	}
 }

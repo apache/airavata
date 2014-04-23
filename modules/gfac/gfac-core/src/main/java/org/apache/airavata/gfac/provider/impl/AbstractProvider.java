@@ -27,6 +27,7 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
+import org.apache.airavata.job.monitor.JobIdentity;
 import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.command.TaskCancelRequest;
 import org.apache.airavata.job.monitor.event.MonitorPublisher;
@@ -68,7 +69,7 @@ public abstract class AbstractProvider implements GFacProvider{
 				JobState jobState = jd.getJobStatus().getJobState();
 				if (jobState!=JobState.CANCELED || jobState!=JobState.CANCELING || jobState!=JobState.COMPLETE || jobState!=JobState.FAILED){
 					MonitorID monitorId = new MonitorID(null, jd.getJobID(), request.getTaskId(), request.getExperimentId(), null, null);
-					monitorPublisher.publish(new JobStatusChangeRequest(monitorId, JobState.CANCELING));
+					monitorPublisher.publish(new JobStatusChangeRequest(monitorId, new JobIdentity(monitorId.getExperimentID(), monitorId.getWorkflowNodeID(), monitorId.getTaskID(), monitorId.getJobID()), JobState.CANCELING));
 					log.debug("Canceling job "+jd.getJobID());
 					cancelJob(jd.getJobID(), jobExecutionContext);
 				}

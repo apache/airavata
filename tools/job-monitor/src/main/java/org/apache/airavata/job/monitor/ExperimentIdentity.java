@@ -19,9 +19,18 @@
  *
  */
 
-package org.apache.airavata.job.monitor.state;
+package org.apache.airavata.job.monitor;
 
+public class ExperimentIdentity {
+	private String experimentID;
+	public ExperimentIdentity(String experimentId) {
+		setExperimentID(experimentId);
+	}
+	public String getExperimentID() {
+		return experimentID;
+	}
 
-public abstract class AbstractStateChangeRequest implements PublisherMessage{
-
+	public void setExperimentID(String experimentID) {
+		this.experimentID = experimentID;
+	}
 }

@@ -21,6 +21,7 @@
 package org.apache.airavata.job.monitor.impl;
 
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.job.monitor.JobIdentity;
 import org.apache.airavata.job.monitor.MonitorID;
 import org.apache.airavata.job.monitor.core.AiravataAbstractMonitor;
 import org.apache.airavata.job.monitor.state.JobStatusChangeRequest;
@@ -41,7 +42,7 @@ public class LocalJobMonitor extends AiravataAbstractMonitor {
         do {
             try {
                 MonitorID take = jobQueue.take();
-                getPublisher().publish(new JobStatusChangeRequest(take, JobState.COMPLETE));
+                getPublisher().publish(new JobStatusChangeRequest(take, new JobIdentity(take.getExperimentID(), take.getWorkflowNodeID(), take.getTaskID(), take.getJobID()), JobState.COMPLETE));
             } catch (Exception e) {
                 e.printStackTrace();
             }
