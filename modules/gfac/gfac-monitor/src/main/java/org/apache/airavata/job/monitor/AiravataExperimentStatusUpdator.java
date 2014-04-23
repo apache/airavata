@@ -52,6 +52,7 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
             try {
                 String experimentID = experimentStatus.getIdentity().getExperimentID();
                 updateExperimentStatus(experimentID, state);
+                logger.debug("Experiment " + experimentStatus.getIdentity().getExperimentID() + " status updated to "+state.toString());
             } catch (Exception e) {
                 logger.error("Error persisting data" + e.getLocalizedMessage(), e);
             }

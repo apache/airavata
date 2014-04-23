@@ -76,7 +76,7 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener{
             } catch (Exception e) {
                 logger.error("Error persisting data" + e.getLocalizedMessage(), e);
             }
-            logger.info("Job ID:" + jobStatus.getIdentity().getJobId() + " is "+state.toString());
+            logger.debug("Job " + jobStatus.getIdentity().getJobId() + " status updated to "+state.toString());
             switch (state) {
                 case COMPLETE: case UNKNOWN: case CANCELED:case FAILED:case SUSPENDED:
                     jobsToMonitor.remove(jobStatus.getMonitorID());
@@ -112,7 +112,6 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener{
 		default:
 			break;
     	}
-    	logger.debug("Publishing Task Status "+state.toString());
     	monitorPublisher.publish(new TaskStatusChangeRequest(jobStatus.getIdentity(),state));
     }
     

@@ -63,12 +63,7 @@ public class MonitorID {
     private JobState state;
 
     public MonitorID(HostDescription host, String jobID,String taskID, String workflowNodeID, String experimentID, String userName) {
-        this.host = host;
-        this.jobStartedTime = new Timestamp((new Date()).getTime());
-        this.userName = userName;
-        this.jobID = jobID;
-        this.taskID = taskID;
-        this.experimentID = experimentID;
+        this(host, jobID, taskID, workflowNodeID, experimentID, userName, null);
     }
 
     public MonitorID(HostDescription host, String jobID,String taskID, String workflowNodeID, String experimentID, String userName,AuthenticationInfo authenticationInfo) {
@@ -84,6 +79,7 @@ public class MonitorID {
         }
         this.jobID = jobID;
         this.taskID = taskID;
+        this.workflowNodeID=workflowNodeID;
         this.experimentID = experimentID;
     }
     public HostDescription getHost() {

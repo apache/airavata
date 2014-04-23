@@ -58,6 +58,7 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
             try {
                 String workflowNodeID = workflowNodeStatus.getIdentity().getWorkflowNodeID();
                 updateWorkflowNodeStatus(workflowNodeID, state);
+                logger.debug("Workflow node " + workflowNodeStatus.getIdentity().getWorkflowNodeID() + " status updated to "+state.toString());
             } catch (Exception e) {
                 logger.error("Error persisting data" + e.getLocalizedMessage(), e);
             }
@@ -83,7 +84,6 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
 		default:
 			break;
     	}
-    	logger.debug("Publishing Experiment Status "+state.toString());
     	monitorPublisher.publish(new ExperimentStatusChangeRequest(nodeStatus.getIdentity(),state));
     }
     
