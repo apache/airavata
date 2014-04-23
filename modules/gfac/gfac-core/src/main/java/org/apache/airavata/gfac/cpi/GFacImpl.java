@@ -51,6 +51,7 @@ import org.apache.airavata.gfac.notification.listeners.WorkflowTrackingListener;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.scheduler.HostScheduler;
 import org.apache.airavata.gfac.utils.GFacUtils;
+import org.apache.airavata.gfac.context.security.SSHSecurityContext;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.ServerInfo;
@@ -456,7 +457,7 @@ public class GFacImpl implements GFac, AbstractActivityListener {
             String sshPrivateKeyPass = configurationProperties.getProperty(Constants.SSH_PRIVATE_KEY_PASS);
             String sshPassword = configurationProperties.getProperty(Constants.SSH_PASSWORD);
             String sshPublicKey = configurationProperties.getProperty(Constants.SSH_PUBLIC_KEY);
-//            SSHSecurityContext sshSecurityContext = new SSHSecurityContext();
+            SSHSecurityContext sshSecurityContext = new SSHSecurityContext();
                 AuthenticationInfo authenticationInfo = null;
                 // we give higher preference to the password over keypair ssh authentication
                 if (sshPassword != null) {
@@ -478,9 +479,9 @@ public class GFacImpl implements GFac, AbstractActivityListener {
                 } catch (SSHApiException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
-//                sshSecurityContext.setPbsCluster(pbsCluster);
-//                sshSecurityContext.setUsername(sshUserName);
-//           jobExecutionContext.addSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT, sshSecurityContext);
+                sshSecurityContext.setPbsCluster(pbsCluster);
+                sshSecurityContext.setUsername(sshUserName);
+           jobExecutionContext.addSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT, sshSecurityContext);
         }
     }
 
