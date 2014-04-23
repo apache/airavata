@@ -703,7 +703,7 @@ public class ExperimentRegistry {
             WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode(nodeId);
             workflowNode.setNodeName(nodeDetails.getNodeName());
             workflowNode.setCreationTime(AiravataUtils.getTime(nodeDetails.getCreationTime()));
-            workflowNode.setNodeInstanceId(getNodeInstanceID(nodeDetails.getNodeName()));
+            workflowNode.setNodeInstanceId(nodeId);
             workflowNode.save();
             String expID = workflowNode.getExperimentResource().getExpID();
             List<DataObjectType> nodeInputs = nodeDetails.getNodeInputs();

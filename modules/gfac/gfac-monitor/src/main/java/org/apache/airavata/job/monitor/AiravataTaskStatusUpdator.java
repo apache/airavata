@@ -57,6 +57,7 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener{
             try {
                 String taskID = taskStatus.getIdentity().getTaskId();
                 updateTaskStatus(taskID, state);
+                logger.debug("Task " + taskStatus.getIdentity().getTaskId() + " status updated to "+state.toString());
             } catch (Exception e) {
                 logger.error("Error persisting data" + e.getLocalizedMessage(), e);
             }
@@ -84,7 +85,6 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener{
 		default:
 			break;
     	}
-    	logger.debug("Publishing Experiment Status "+state.toString());
     	monitorPublisher.publish(new WorkflowNodeStatusChangeRequest(taskStatus.getIdentity(),state));
     }
     
