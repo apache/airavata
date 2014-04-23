@@ -1597,9 +1597,11 @@ public class ExperimentRegistry {
         List<Experiment> experiments = new ArrayList<Experiment>();
         try {
             if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
-                List<ExperimentResource> resources = workerResource.getExperiments();
-                for (ExperimentResource resource : resources) {
-                    Experiment experiment = ThriftDataModelConversion.getExperiment(resource);
+                WorkerResource resource = (WorkerResource)gatewayResource.create(ResourceType.GATEWAY_WORKER);
+                resource.setUser((String)value);
+                List<ExperimentResource> resources = resource.getExperiments();
+                for (ExperimentResource experimentResource : resources) {
+                    Experiment experiment = ThriftDataModelConversion.getExperiment(experimentResource);
                     experiments.add(experiment);
                 }
                 return experiments;
