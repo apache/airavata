@@ -150,7 +150,7 @@ public class AMQPMonitorTest {
         String jobID = pbsCluster.submitBatchJob(jobDescriptor);
         System.out.println(jobID);
         try {
-            pushQueue.add(new MonitorID(hostDescription, jobID,null,null, "ogce"));
+            pushQueue.add(new MonitorID(hostDescription, jobID,null,null,null, "ogce"));
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }

@@ -76,7 +76,7 @@ public class BasicConsumer implements Consumer {
         logger.debug("************************************************************");
         try {
             String jobID = envelope.getRoutingKey().split("\\.")[0];
-            MonitorID monitorID = new MonitorID(null, jobID, null, null, null);
+            MonitorID monitorID = new MonitorID(null, jobID, null, null, null, null);
             monitorID.setStatus(parser.parseMessage(message));
             publisher.publish(monitorID);
         } catch (AiravataMonitorException e) {

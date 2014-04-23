@@ -22,9 +22,13 @@ package org.apache.airavata.job.monitor;
 
 import java.util.Calendar;
 
+import org.apache.airavata.job.monitor.event.MonitorPublisher;
 import org.apache.airavata.job.monitor.state.ExperimentStatusChangeRequest;
-import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.job.monitor.state.WorkflowNodeStatusChangeRequest;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeState;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeStatus;
 import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.Registry;
 import org.slf4j.Logger;
@@ -37,7 +41,7 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
 
     private Registry airavataRegistry;
     
-//    private MonitorPublisher monitorPublisher;
+    private MonitorPublisher monitorPublisher;
 
     public Registry getAiravataRegistry() {
         return airavataRegistry;
@@ -48,29 +52,52 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
     }
 
     @Subscribe
-    public void updateRegistry(ExperimentStatusChangeRequest experimentStatus) {
-//        ExperimentState state = experimentStatus.getState();
-//        if (state != null) {
-//            try {
-//                String experimentID = experimentStatus.getMonitorID().getExperimentID();
-//                updateWorkflowNodeStatus(experimentID, state);
-//            } catch (Exception e) {
-//                logger.error("Error persisting data" + e.getLocalizedMessage(), e);
-//            }
-//        }
+    public void updateRegistry(WorkflowNodeStatusChangeRequest workflowNodeStatus) {
+        WorkflowNodeState state = workflowNodeStatus.getState();
+        if (state != null) {
+            try {
+                String workflowNodeID = workflowNodeStatus.getIdentity().getWorkflowNodeID();
+                updateWorkflowNodeStatus(workflowNodeID, state);
+            } catch (Exception e) {
+                logger.error("Error persisting data" + e.getLocalizedMessage(), e);
+            }
+        }
     }
     
-    public  void updateWorkflowNodeStatus(String experimentId, ExperimentState state) throws Exception {
-    	Experiment details = (Experiment)airavataRegistry.get(DataType.EXPERIMENT, experimentId);
+    @Subscribe
+    public void setupExperimentStatus(WorkflowNodeStatusChangeRequest nodeStatus){
+    	ExperimentState state=ExperimentState.UNKNOWN;
+    	switch(nodeStatus.getState()){
+    	case CANCELED:
+    		state=ExperimentState.CANCELED; break;
+    	case COMPLETED:
+    		state=ExperimentState.COMPLETED; break;
+    	case INVOKED:
+    		state=ExperimentState.LAUNCHED; break;
+    	case FAILED:
+    		state=ExperimentState.FAILED; break;
+    	case EXECUTING:
+    		state=ExperimentState.EXECUTING; break;
+    	case CANCELING:
+    		state=ExperimentState.CANCELING; break;
+		default:
+			break;
+    	}
+    	logger.debug("Publishing Experiment Status "+state.toString());
+    	monitorPublisher.publish(new ExperimentStatusChangeRequest(nodeStatus.getIdentity(),state));
+    }
+    
+    public  void updateWorkflowNodeStatus(String workflowNodeId, WorkflowNodeState state) throws Exception {
+    	WorkflowNodeDetails details = (WorkflowNodeDetails)airavataRegistry.get(DataType.WORKFLOW_NODE_DETAIL, workflowNodeId);
         if(details == null) {
-            details = new Experiment();
-            details.setExperimentID(experimentId);
+            details = new WorkflowNodeDetails();
+            details.setNodeInstanceId(workflowNodeId);
         }
-        org.apache.airavata.model.workspace.experiment.ExperimentStatus status = new org.apache.airavata.model.workspace.experiment.ExperimentStatus();
-        status.setExperimentState(state);
+        WorkflowNodeStatus status = new WorkflowNodeStatus();
+        status.setWorkflowNodeState(state);
         status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
-        details.setExperimentStatus(status);
-        airavataRegistry.update(org.apache.airavata.registry.cpi.DataType.EXPERIMENT, details, experimentId);
+        details.setWorkflowNodeStatus(status);
+        airavataRegistry.update(org.apache.airavata.registry.cpi.DataType.WORKFLOW_NODE_DETAIL, details, workflowNodeId);
     }
 
 	@Override
@@ -78,8 +105,8 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
 		for (Object configuration : configurations) {
 			if (configuration instanceof Registry){
 				this.airavataRegistry=(Registry)configuration;
-//			} else if (configuration instanceof MonitorPublisher){
-//				this.monitorPublisher=(MonitorPublisher) configuration;
+			} else if (configuration instanceof MonitorPublisher){
+				this.monitorPublisher=(MonitorPublisher) configuration;
 			} 
 		}
 	}

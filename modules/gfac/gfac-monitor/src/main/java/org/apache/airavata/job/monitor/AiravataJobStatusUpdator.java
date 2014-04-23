@@ -70,48 +70,17 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener{
         JobState state = jobStatus.getState();
         if (state != null) {
             try {
-                String taskID = jobStatus.getMonitorID().getTaskID();
-                String jobID = jobStatus.getMonitorID().getJobID();
+                String taskID = jobStatus.getIdentity().getTaskId();
+                String jobID = jobStatus.getIdentity().getJobId();
                 updateJobStatus(taskID, jobID, state);
             } catch (Exception e) {
                 logger.error("Error persisting data" + e.getLocalizedMessage(), e);
             }
+            logger.info("Job ID:" + jobStatus.getIdentity().getJobId() + " is "+state.toString());
             switch (state) {
-                case COMPLETE:
-                    logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is DONE");
+                case COMPLETE: case UNKNOWN: case CANCELED:case FAILED:case SUSPENDED:
                     jobsToMonitor.remove(jobStatus.getMonitorID());
                     break;
-                case UNKNOWN:
-                    logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is UNKNOWN");
-                    jobsToMonitor.remove(jobStatus.getMonitorID());
-                    //todo implement this logic
-                    break;
-                case QUEUED:
-                    logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is QUEUED");
-                    break;
-                case SUBMITTED:
-                    logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is SUBMITTED");
-                    break;
-                case ACTIVE:
-                    logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is ACTIVE");
-                    break;
-                case CANCELED:
-                    logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is CANCELED");
-                    jobsToMonitor.remove(jobStatus.getMonitorID());
-                    break;
-                case FAILED:
-                    logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is FAILED");
-                    jobsToMonitor.remove(jobStatus.getMonitorID());
-                    break;
-                case HELD:
-                    logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is HELD");
-                    break;
-                case SUSPENDED:
-                    logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is SUSPENDED");
-                    jobsToMonitor.remove(jobStatus.getMonitorID());
-                    break;
-                case CANCELING:
-                    logger.info("Job ID:" + jobStatus.getMonitorID().getJobID() + " is CENCELING");
 			default:
 				break;
             }
@@ -144,7 +113,7 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener{
 			break;
     	}
     	logger.debug("Publishing Task Status "+state.toString());
-    	monitorPublisher.publish(new TaskStatusChangeRequest(jobStatus.getMonitorID(),state));
+    	monitorPublisher.publish(new TaskStatusChangeRequest(jobStatus.getIdentity(),state));
     }
     
     public  void updateJobStatus(String taskId, String jobID, JobState state) throws Exception {

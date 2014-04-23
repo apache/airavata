@@ -20,9 +20,8 @@
 */
 package org.apache.airavata.job.monitor.state;
 
-import org.apache.airavata.job.monitor.JobIdentity;
-import org.apache.airavata.job.monitor.MonitorID;
-import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.job.monitor.WorkflowNodeIdentity;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeState;
 
 /**
  * This is the primary job state object used in
@@ -31,44 +30,34 @@ import org.apache.airavata.model.workspace.experiment.JobState;
  * Each monitoring implementation has to return this object with a state and
  * the monitoring ID
  */
-public class JobStatusChangeRequest  extends AbstractStateChangeRequest{
-    private JobState state;
-    private JobIdentity identity;
+public class WorkflowNodeStatusChangeRequest extends AbstractStateChangeRequest{
+    private WorkflowNodeState state;
+    private WorkflowNodeIdentity identity;
 
-    private MonitorID monitorID;
-    
     // this constructor can be used in Qstat monitor to handle errors
-    public JobStatusChangeRequest() {
+    public WorkflowNodeStatusChangeRequest() {
     }
 
-    public JobStatusChangeRequest(MonitorID monitorID, JobIdentity jobId, JobState state) {
-    	setIdentity(jobId);
-    	setMonitorID(monitorID);
-    	this.state = state;
+    public WorkflowNodeStatusChangeRequest(WorkflowNodeIdentity identity, WorkflowNodeState state) {
+        this.state = state;
+        setIdentity(identity);
     }
 
-    public JobState getState() {
+    public WorkflowNodeState getState() {
         return state;
     }
 
-    public void setState(JobState state) {
+    public void setState(WorkflowNodeState state) {
        this.state = state;
     }
 
-	public JobIdentity getIdentity() {
+	public WorkflowNodeIdentity getIdentity() {
 		return identity;
 	}
 
-	public void setIdentity(JobIdentity identity) {
+	public void setIdentity(WorkflowNodeIdentity identity) {
 		this.identity = identity;
 	}
 
-	public MonitorID getMonitorID() {
-		return monitorID;
-	}
-
-	public void setMonitorID(MonitorID monitorID) {
-		this.monitorID = monitorID;
-	}
 
 }
