@@ -24,10 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
+import org.apache.airavata.gfac.util.GFACSSHUtils;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
@@ -45,6 +47,14 @@ public class SCPDirectorySetupHandler extends AbstractHandler{
     private static final Logger log = LoggerFactory.getLogger(SCPDirectorySetupHandler.class);
 
 	public void invoke(JobExecutionContext jobExecutionContext) throws GFacException {
+         if(jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null){
+            try {
+                GFACSSHUtils.addSecurityContext(jobExecutionContext);
+            } catch (ApplicationSettingsException e) {
+                log.error(e.getMessage());
+                throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
+            }
+        }
 		log.info("Setup SSH job directorties");
 	    super.invoke(jobExecutionContext);
 		makeDirectory(jobExecutionContext);

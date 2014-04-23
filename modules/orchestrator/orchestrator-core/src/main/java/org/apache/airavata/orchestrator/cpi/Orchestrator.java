@@ -20,7 +20,9 @@
 */
 package org.apache.airavata.orchestrator.cpi;
 
+import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 
 import java.util.List;
@@ -36,11 +38,12 @@ public interface Orchestrator {
      * experimentID as the handler to the experiment, during the launchExperiment
      * We just have to give the experimentID
      *
-     * @param experimentID
+     * @param experiment
      * @return jobID
      * @throws OrchestratorException
      */
-    String launchExperiment(String experimentID, String taskID) throws OrchestratorException;
+    String launchExperiment(Experiment experiment, WorkflowNodeDetails workflowNodeDetail,
+                            TaskDetails taskID) throws OrchestratorException;
 
 
     /**
@@ -64,4 +67,6 @@ public interface Orchestrator {
     //todo have to add another method to handle failed or jobs to be recovered by orchestrator
     //todo if you don't add these this is not an orchestrator, its just an intemediate component which invoke gfac
 
+
+    void initialize() throws OrchestratorException;
 }

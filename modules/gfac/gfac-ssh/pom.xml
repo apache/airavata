@@ -19,7 +19,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>airavata-gfac-ssh</artifactId>
-    <name>Airavata GFac SSH providers and handler implementation</name>
+    <name>Airavata GFac SSH implementation</name>
     <description>This is the extension of </description>
     <url>http://airavata.apache.org/</url>
 

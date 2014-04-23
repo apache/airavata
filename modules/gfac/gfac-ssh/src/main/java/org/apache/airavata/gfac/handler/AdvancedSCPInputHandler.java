@@ -20,12 +20,15 @@
 */
 package org.apache.airavata.gfac.handler;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
+import org.apache.airavata.gfac.context.security.SSHSecurityContext;
+import org.apache.airavata.gfac.util.GFACSSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.ServerInfo;
@@ -81,6 +84,14 @@ public class AdvancedSCPInputHandler extends AbstractHandler{
     }
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException, GFacException {
+        if(jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null){
+            try {
+                GFACSSHUtils.addSecurityContext(jobExecutionContext);
+            } catch (ApplicationSettingsException e) {
+                log.error(e.getMessage());
+                throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
+            }
+        }
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext()
                 .getApplicationDeploymentDescription().getType();
 
@@ -100,7 +111,7 @@ public class AdvancedSCPInputHandler extends AbstractHandler{
             // not really dealing with monitoring or job submission, so we pa
             pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
             String parentPath = inputPath + File.separator + jobExecutionContext.getExperimentID() + File.separator + jobExecutionContext.getTaskData().getTaskID();
-           (new File(parentPath)).mkdirs();
+            (new File(parentPath)).mkdirs();
             MessageContext input = jobExecutionContext.getInMessageContext();
             Set<String> parameters = input.getParameters().keySet();
             for (String paramName : parameters) {

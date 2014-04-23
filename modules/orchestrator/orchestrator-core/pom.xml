@@ -70,11 +70,6 @@ the License. -->
             <artifactId>airavata-model-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>gfac-monitor</artifactId>
-            <version>${project.version}</version>
-        </dependency>
          <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
