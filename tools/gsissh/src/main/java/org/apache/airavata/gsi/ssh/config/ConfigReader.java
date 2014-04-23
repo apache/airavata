@@ -21,6 +21,11 @@
 
 package org.apache.airavata.gsi.ssh.config;
 
+import com.sun.security.auth.login.ConfigFile;
+import sun.security.jgss.LoginConfigImpl;
+
+import javax.security.auth.login.Configuration;
+import javax.security.auth.login.LoginContext;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,6 +67,7 @@ public class ConfigReader {
     public String getConfiguration(String key) {
         return this.properties.getProperty(key);
     }
+
 
     /**
      * Gets all the SSH related properties used by JSch.
