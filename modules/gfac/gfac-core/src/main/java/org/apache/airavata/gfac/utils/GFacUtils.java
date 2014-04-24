@@ -52,7 +52,6 @@ import org.apache.airavata.registry.cpi.CompositeIdentifier;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.schemas.gfac.*;
 import org.apache.axiom.om.OMElement;
-import org.globus.gram.GramJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,28 +126,9 @@ public class GFacUtils {
         return serviceName + "_" + date + "_" + UUID.randomUUID();
     }
 
-    public static URI createGsiftpURI(GridFTPContactInfo host, String localPath) throws URISyntaxException {
-        StringBuffer buf = new StringBuffer();
 
-        if (!host.hostName.startsWith("gsiftp://"))
-            buf.append("gsiftp://");
-        buf.append(host).append(":").append(host.port);
-        if (!host.hostName.endsWith("/"))
-            buf.append("/");
-        buf.append(localPath);
-        return new URI(buf.toString());
-    }
 
-    public static URI createGsiftpURI(String host, String localPath) throws URISyntaxException {
-        StringBuffer buf = new StringBuffer();
-        if (!host.startsWith("gsiftp://"))
-            buf.append("gsiftp://");
-        buf.append(host);
-        if (!host.endsWith("/"))
-            buf.append("/");
-        buf.append(localPath);
-        return new URI(buf.toString());
-    }
+
 
     public static String createGsiftpURIAsString(String host, String localPath) throws URISyntaxException {
         StringBuffer buf = new StringBuffer();
@@ -649,28 +629,7 @@ public class GFacUtils {
 			throw new GFacException("Error persisting job status" + e.getLocalizedMessage(),e);
 		}
     }
-    public static JobState getApplicationJobStatus(int gramStatus) {
-        switch (gramStatus) {
-            case GramJob.STATUS_UNSUBMITTED:
-                return JobState.HELD;
-            case GramJob.STATUS_ACTIVE:
-                return JobState.ACTIVE;
-            case GramJob.STATUS_DONE:
-                return JobState.COMPLETE;
-            case GramJob.STATUS_FAILED:
-                return JobState.FAILED;
-            case GramJob.STATUS_PENDING:
-                return JobState.QUEUED;
-            case GramJob.STATUS_STAGE_IN:
-                return JobState.QUEUED;
-            case GramJob.STATUS_STAGE_OUT:
-                return JobState.COMPLETE;
-            case GramJob.STATUS_SUSPENDED:
-                return JobState.SUSPENDED;
-            default:
-                return JobState.UNKNOWN;
-        }
-    }
+
 
     public static Map<String, Object> getMessageContext(List<DataObjectType> experimentData,
                                                         Parameter[] parameters) throws GFacException {

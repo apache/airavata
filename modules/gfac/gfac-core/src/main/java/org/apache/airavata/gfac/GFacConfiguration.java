@@ -40,7 +40,6 @@ import org.apache.airavata.common.exception.UnspecifiedApplicationSettingsExcept
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.handler.GFacHandlerConfig;
 import org.apache.airavata.gfac.provider.GFacProviderConfig;
-import org.apache.airavata.gfac.utils.GridConfigurationHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.*;
@@ -61,35 +60,6 @@ public class GFacConfiguration {
     // the provider
     private List<GFacHandlerConfig> outHandlers = new ArrayList<GFacHandlerConfig>();
 
-    private static List<GridConfigurationHandler> gridConfigurationHandlers;
-
-    private static String GRID_HANDLERS = "airavata.grid.handlers";
-
-    static {
-        gridConfigurationHandlers = new ArrayList<GridConfigurationHandler>();
-        try {
-            String handlerString = ServerSettings.getSetting(GRID_HANDLERS);
-            String[] handlers = handlerString.split(",");
-            for (String handlerClass : handlers) {
-                try {
-                    @SuppressWarnings("unchecked")
-                    Class<GridConfigurationHandler> classInstance = (Class<GridConfigurationHandler>) GFacConfiguration.class
-                            .getClassLoader().loadClass(handlerClass);
-                    gridConfigurationHandlers.add(classInstance.newInstance());
-                } catch (Exception e) {
-                    log.error("Error while loading Grid Configuration Handler class " + handlerClass, e);
-                }
-            }
-        } catch (UnspecifiedApplicationSettingsException e) {
-            //no handlers defined
-        } catch (ApplicationSettingsException e1) {
-            log.error("Error in reading Configuration handler data!!!", e1);
-        }
-    }
-
-    public static GridConfigurationHandler[] getGridConfigurationHandlers() {
-        return gridConfigurationHandlers.toArray(new GridConfigurationHandler[]{});
-    }
 
     public GFacConfiguration(AiravataAPI airavataAPI) {
         this.airavataAPI = airavataAPI;

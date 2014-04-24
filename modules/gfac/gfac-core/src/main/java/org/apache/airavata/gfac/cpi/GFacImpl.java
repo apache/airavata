@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -36,12 +35,10 @@ import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.RequestData;
 import org.apache.airavata.gfac.Scheduler;
 import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
-import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.handler.GFacHandler;
 import org.apache.airavata.gfac.handler.GFacHandlerConfig;
 import org.apache.airavata.gfac.handler.GFacHandlerException;
@@ -51,24 +48,11 @@ import org.apache.airavata.gfac.notification.listeners.WorkflowTrackingListener;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.scheduler.HostScheduler;
 import org.apache.airavata.gfac.utils.GFacUtils;
-import org.apache.airavata.gsi.ssh.api.Cluster;
-import org.apache.airavata.gsi.ssh.api.SSHApiException;
-import org.apache.airavata.gsi.ssh.api.ServerInfo;
-import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
-import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
-import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
-import org.apache.airavata.gsi.ssh.api.job.JobManagerConfiguration;
-import org.apache.airavata.gsi.ssh.impl.PBSCluster;
-import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
-import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
-import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
-import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.gfac.monitor.AbstractActivityListener;
 import org.apache.airavata.gfac.monitor.MonitorManager;
 import org.apache.airavata.gfac.monitor.command.ExperimentCancelRequest;
 import org.apache.airavata.gfac.monitor.command.TaskCancelRequest;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
-import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.persistance.registry.jpa.resources.AbstractResource.TaskDetailConstants;
 import org.apache.airavata.registry.api.AiravataRegistry2;
@@ -76,13 +60,6 @@ import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants;
-import org.apache.airavata.schemas.gfac.Ec2HostType;
-import org.apache.airavata.schemas.gfac.GlobusHostType;
-import org.apache.airavata.schemas.gfac.GsisshHostType;
-import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
-import org.apache.airavata.schemas.gfac.SSHHostType;
-import org.apache.airavata.schemas.gfac.UnicoreHostType;
-import org.apache.airavata.schemas.wec.SecurityContextDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -202,11 +179,6 @@ public class GFacImpl implements GFac, AbstractActivityListener {
         jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
         jobExecutionContext.setExperimentID(experimentID);
 
-        // only in test cases we set the security context outside the gfacimpl, otherwise we setit here
-        // but in future we might set multiple security contexts
-        if(jobExecutionContext.getAllSecurityContexts().size()==0){
-            addSecurityContext(hostDescription, configurationProperties, jobExecutionContext);
-        }
         return jobExecutionContext;
     }
 
@@ -350,99 +322,7 @@ public class GFacImpl implements GFac, AbstractActivityListener {
         }
     }
 
-    private void addSecurityContext(HostDescription registeredHost, Properties configurationProperties,
-                                    JobExecutionContext jobExecutionContext) throws GFacException, ApplicationSettingsException {
-        RequestData requestData;
-        if (registeredHost.getType() instanceof GlobusHostType || registeredHost.getType() instanceof UnicoreHostType
-                || registeredHost.getType() instanceof GsisshHostType) {
 
-            //todo implement a way to get credential management service from configurationData
-            SecurityContextDocument.SecurityContext.CredentialManagementService credentialManagementService = null;
-            GSISecurityContext context = null;
-
-            /*
-            if (credentialManagementService != null) {
-                String gatewayId = credentialManagementService.getGatewayId();
-                String tokenId
-                        = credentialManagementService.getTokenId();
-                String portalUser = credentialManagementService.getPortalUser();
-
-                requestData = new RequestData(tokenId, portalUser, gatewayId);
-            } else {
-                requestData = new RequestData("default");
-            }
-
-            try {
-                context = new GSISecurityContext(CredentialReaderFactory.createCredentialStoreReader(), requestData);
-            } catch (Exception e) {
-                   throw new WorkflowException("An error occurred while creating GSI security context", e);
-            }
-
-            if (registeredHost.getType() instanceof GsisshHostType) {
-                GSIAuthenticationInfo authenticationInfo
-                        = new MyProxyAuthenticationInfo(requestData.getMyProxyUserName(), requestData.getMyProxyPassword(), requestData.getMyProxyServerUrl(),
-                        requestData.getMyProxyPort(), requestData.getMyProxyLifeTime(), System.getProperty(Constants.TRUSTED_CERTIFICATE_SYSTEM_PROPERTY));
-                ServerInfo serverInfo = new ServerInfo(requestData.getMyProxyUserName(), registeredHost.getType().getHostAddress());
-
-                Cluster pbsCluster = null;
-                try {
-                    pbsCluster = new PBSCluster(serverInfo, authenticationInfo,
-                            (((HpcApplicationDeploymentType) jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath()));
-                } catch (SSHApiException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-
-                context.setPbsCluster(pbsCluster);
-            }        */
-
-            requestData = new RequestData("default");
-            try {
-                //todo fix this
-                context = new GSISecurityContext(null, requestData);
-            } catch (Exception e) {
-                throw new GFacException("An error occurred while creating GSI security context", e);
-            }
-            if (registeredHost.getType() instanceof GsisshHostType) {
-                GSIAuthenticationInfo authenticationInfo
-                        = new MyProxyAuthenticationInfo(requestData.getMyProxyUserName(), requestData.getMyProxyPassword(), requestData.getMyProxyServerUrl(),
-                        requestData.getMyProxyPort(), requestData.getMyProxyLifeTime(), System.getProperty(Constants.TRUSTED_CERTIFICATE_SYSTEM_PROPERTY));
-                GsisshHostType gsisshHostType = (GsisshHostType)registeredHost.getType();
-                ServerInfo serverInfo = new ServerInfo(requestData.getMyProxyUserName(), registeredHost.getType().getHostAddress(),
-                        gsisshHostType.getPort());
-
-                Cluster pbsCluster = null;
-                try {
-                    JobManagerConfiguration jConfig = null;
-                    String installedParentPath = ((HpcApplicationDeploymentType)
-                            jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath();
-                    String jobManager = ((GsisshHostType) registeredHost.getType()).getJobManager();
-                    if (jobManager == null) {
-                        log.error("No Job Manager is configured, so we are picking pbs as the default job manager");
-                        jConfig = CommonUtils.getPBSJobManager(installedParentPath);
-                    } else {
-                        if (PBS_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
-                            jConfig = CommonUtils.getPBSJobManager(installedParentPath);
-                        } else if (SLURM_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
-                            jConfig = CommonUtils.getSLURMJobManager(installedParentPath);
-                        } else if(SUN_GRID_ENGINE_JOB_MANAGER.equalsIgnoreCase(jobManager)){
-                            jConfig = CommonUtils.getSGEJobManager(installedParentPath);
-                        }
-                    }
-                    pbsCluster = new PBSCluster(serverInfo, authenticationInfo, jConfig);
-                } catch (SSHApiException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-
-                context.setPbsCluster(pbsCluster);
-            }
-            jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT, context);
-        } else if (registeredHost.getType() instanceof Ec2HostType) {
-            //todo fixthis amazon securitycontext
-//               if (this.configuration.getAmazonSecurityContext() != null) {
-//                   jobExecutionContext.addSecurityContext(AmazonSecurityContext.AMAZON_SECURITY_CONTEXT,
-//                           this.configuration.getAmazonSecurityContext());
-        }
-    }
 
 	public void setup(Object... configurations) {
 		for (Object configuration : configurations) {
