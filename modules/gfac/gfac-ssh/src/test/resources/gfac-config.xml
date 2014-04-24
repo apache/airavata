@@ -24,10 +24,10 @@
      <Provider class="org.apache.airavata.gfac.provider.impl.SSHProvider" host="org.apache.airavata.schemas.gfac.impl.SSHHostTypeImpl">
          <InHandlers>
             <Handler class="org.apache.airavata.gfac.handler.SSHDirectorySetupHandler"/>
-            <Handler class="org.apache.airavata.gfac.handler.GSISSHInputHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.SSHInputHandler"/>
         </InHandlers>
         <OutHandlers>
-            <Handler class="org.apache.airavata.gfac.handler.GSISSHOutputHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.SSHOutputHandler"/>
         </OutHandlers>
     </Provider>
 </GFac>
