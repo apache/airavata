@@ -18,12 +18,43 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>airavata-gfac-gsissh</artifactId>
-    <name>Airavata GFac GSI-SSH implementation</name>
-    <description>This is the extension of </description>
+    <artifactId>airavata-gfac-bes</artifactId>
+    <name>Airavata GFac BES implementation</name>
+    <description>This is the extension of GFAC to use GRAM </description>
     <url>http://airavata.apache.org/</url>
 
     <dependencies>
+        <dependency>
+            <groupId>org.jglobus</groupId>
+            <artifactId>gss</artifactId>
+            <version>${jglobus.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jglobus</groupId>
+            <artifactId>gram</artifactId>
+            <version>${jglobus.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcprov-jdk16</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk16</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jglobus</groupId>
+            <artifactId>myproxy</artifactId>
+            <version>${jglobus.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jglobus</groupId>
+            <artifactId>gridftp</artifactId>
+            <version>${jglobus.version}</version>
+        </dependency>
+
         <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -103,6 +134,21 @@
             <artifactId>xmlbeans</artifactId>
             <version>${xmlbeans.version}</version>
         </dependency>
-
+          <!-- Unicore dependencies -->
+        <dependency>
+            <groupId>eu.unicore</groupId>
+            <artifactId>ogsabes-client</artifactId>
+            <version>1.7.0-rc</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.santuario</groupId>
+                    <artifactId>xmlsec</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcprov-jdk16</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
 </project>

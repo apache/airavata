@@ -33,7 +33,9 @@
                 <module>gfac-core</module>
                 <module>gfac-ec2</module>
                 <module>gfac-ssh</module>
+		<module>gfac-gram</module>
                 <module>gfac-gsissh</module>
+		<module>gfac-bes</module>
             </modules>
         </profile>
     </profiles>
