@@ -122,7 +122,6 @@
 		<include>org.apache.airavata:airavata-workflow-tracking:jar</include>
 		<include>org.apache.airavata:gsissh:jar</include>
 		<include>org.apache.airavata:airavata-model-utils:jar</include>
-		<include>org.apache.airavata:airavata-job-monitor:jar</include>
 		<include>org.apache.airavata:airavata-orchestrator-service:jar</include>
                 <include>org.apache.openjpa:openjpa-all:jar</include>
                 <include>xerces:xercesImpl:jar:2.9.1</include>
