@@ -18,7 +18,7 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac.utils;
+package org.apache.airavata.gfac.util;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.commons.gfac.type.HostDescription;

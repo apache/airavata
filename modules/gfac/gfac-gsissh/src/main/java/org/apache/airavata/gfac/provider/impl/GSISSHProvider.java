@@ -20,8 +20,6 @@
 */
 package org.apache.airavata.gfac.provider.impl;
 
-import java.util.Map;
-
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
@@ -39,6 +37,8 @@ import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 public class GSISSHProvider extends AbstractProvider{
     private static final Logger log = LoggerFactory.getLogger(GSISSHProvider.class);
