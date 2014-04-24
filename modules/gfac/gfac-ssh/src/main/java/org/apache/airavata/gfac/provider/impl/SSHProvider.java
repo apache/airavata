@@ -39,8 +39,10 @@ import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
+import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
 import org.apache.airavata.gfac.handler.GFacHandlerException;
+import org.apache.airavata.gfac.notification.events.StartExecutionEvent;
 import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.util.GFACSSHUtils;
 import org.apache.airavata.gfac.utils.GFacUtils;
@@ -50,11 +52,11 @@ import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.impl.RawCommandInfo;
 import org.apache.airavata.gsi.ssh.impl.StandardOutReader;
+import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
+import org.apache.airavata.model.workspace.experiment.ErrorCategory;
+import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.NameValuePairType;
-import org.apache.airavata.schemas.gfac.SSHHostType;
-import org.apache.airavata.schemas.gfac.URIArrayType;
+import org.apache.airavata.schemas.gfac.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +71,7 @@ public class SSHProvider extends AbstractProvider{
     private String jobID = null;
     private String taskID = null;
     // we keep gsisshprovider to support qsub submission incase of hpc scenario with ssh
-    private GSISSHProvider gsiSshProvider = null;
+    private boolean hpcType = false;
 
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
     	super.initialize(jobExecutionContext);
@@ -103,13 +105,13 @@ public class SSHProvider extends AbstractProvider{
                 throw new GFacProviderException(e.getLocalizedMessage(), e);
             }
         }else{
-           gsiSshProvider = new GSISSHProvider();
+           hpcType = true;
         }
     }
 
 
     public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
-        if (gsiSshProvider == null) {
+        if (!hpcType) {
             ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
             try {
                 /*
@@ -142,7 +144,55 @@ public class SSHProvider extends AbstractProvider{
             }
         } else {
             try {
-                gsiSshProvider.execute(jobExecutionContext);
+                jobExecutionContext.getNotifier().publish(new StartExecutionEvent());
+                HostDescriptionType host = jobExecutionContext.getApplicationContext().
+                        getHostDescription().getType();
+                HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) jobExecutionContext.getApplicationContext().
+                        getApplicationDeploymentDescription().getType();
+                JobDetails jobDetails = new JobDetails();
+                String taskID = jobExecutionContext.getTaskData().getTaskID();
+                try {
+                    Cluster cluster = null;
+                    if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) != null) {
+                        cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
+                    }
+                    if (cluster == null) {
+                        throw new GFacProviderException("Security context is not set properly");
+                    } else {
+                        log.info("Successfully retrieved the Security Context");
+                    }
+                    // This installed path is a mandetory field, because this could change based on the computing resource
+                    JobDescriptor jobDescriptor = GFacUtils.createJobDescriptor(jobExecutionContext, app, cluster);
+
+                    log.info(jobDescriptor.toXML());
+
+                    jobDetails.setJobDescription(jobDescriptor.toXML());
+
+                    String jobID = cluster.submitBatchJob(jobDescriptor);
+                    jobExecutionContext.setJobDetails(jobDetails);
+                    if (jobID == null) {
+                        jobDetails.setJobID("none");
+                        GFacUtils.saveJobStatus(jobDetails, JobState.FAILED, taskID);
+                    } else {
+                        jobDetails.setJobID(jobID);
+                        GFacUtils.saveJobStatus(jobDetails, JobState.SUBMITTED, taskID);
+                    }
+
+                } catch (SSHApiException e) {
+                    String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
+                    log.error(error);
+                    jobDetails.setJobID("none");
+                    GFacUtils.saveJobStatus(jobDetails, JobState.FAILED, taskID);
+                    GFacUtils.saveErrorDetails(error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
+                    throw new GFacProviderException(error, e);
+                } catch (Exception e) {
+                    String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
+                    log.error(error);
+                    jobDetails.setJobID("none");
+                    GFacUtils.saveJobStatus(jobDetails, JobState.FAILED, taskID);
+                    GFacUtils.saveErrorDetails(error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
+                    throw new GFacProviderException(error, e);
+                }
             } catch (GFacException e) {
                 throw new GFacProviderException(e.getMessage(), e);
             }
@@ -150,13 +200,7 @@ public class SSHProvider extends AbstractProvider{
     }
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
-        if (gsiSshProvider != null){
-            try {
-                gsiSshProvider.dispose(jobExecutionContext);
-            } catch (GFacException e) {
-                throw new GFacProviderException(e.getMessage(),e);
-            }
-        }
+
     }
 
 
@@ -242,13 +286,7 @@ public class SSHProvider extends AbstractProvider{
     }
 
     public void initProperties(Map<String, String> properties) throws GFacProviderException, GFacException {
-         if (gsiSshProvider != null){
-            try {
-               initProperties(properties);
-            } catch (GFacException e) {
-                throw new GFacProviderException(e.getMessage(),e);
-            }
-        }
+
     }
     /**
      * This method will read standard output and if there's any it will be parsed
