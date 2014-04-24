@@ -64,16 +64,16 @@
 
      <Provider class="org.apache.airavata.gfac.provider.impl.SSHProvider" host="org.apache.airavata.schemas.gfac.impl.SSHHostTypeImpl">
          <InHandlers>
-            <Handler class="org.apache.airavata.gfac.handler.SCPDirectorySetupHandler"/>
-            <Handler class="org.apache.airavata.gfac.handler.SCPInputHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.SSHDirectorySetupHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.SSHInputHandler"/>
         </InHandlers>
         <OutHandlers>
-            <Handler class="org.apache.airavata.gfac.handler.SCPOutputHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.SSHOutputHandler"/>
         </OutHandlers>
     </Provider>
     <Provider class="org.apache.airavata.gfac.provider.impl.GSISSHProvider" host="org.apache.airavata.schemas.gfac.impl.GsisshHostTypeImpl">
              <InHandlers>
-                <Handler class="org.apache.airavata.gfac.handler.SCPDirectorySetupHandler"/>
+                <Handler class="org.apache.airavata.gfac.handler.GSISSHDirectorySetupHandler"/>
                  <!--Handler class="org.apache.airavata.gfac.handler.AdvancedSCPInputHandler">
                             <property name="privateKeyPath" value="/Users/lahirugunathilake/.ssh/id_dsa"/>
                             <property name="publicKeyPath" value="/Users/lahirugunathilake/.ssh/id_dsa.pub"/>
@@ -83,10 +83,10 @@
                         <property name="passPhrase" value="/home/airavata/outputData"/>
                         <property name="password" value="/home/airavata/outputData"/> <either we have to set password or keys, password has higher preference>
                 </Handler-->
-                <Handler class="org.apache.airavata.gfac.handler.SCPInputHandler"/>
+                <Handler class="org.apache.airavata.gfac.handler.GSISSHInputHandler"/>
             </InHandlers>
             <OutHandlers>
-                <Handler class="org.apache.airavata.gfac.handler.SCPOutputHandler"/>
+                <Handler class="org.apache.airavata.gfac.handler.SOutputHandler"/>
                 <!--Handler class="org.apache.airavata.gfac.handler.AdvancedSCPOutputHandler">
                             <property name="privateKeyPath" value="/Users/lahirugunathilake/.ssh/id_dsa"/>
                             <property name="publicKeyPath" value="/Users/lahirugunathilake/.ssh/id_dsa.pub"/>

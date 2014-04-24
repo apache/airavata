@@ -20,79 +20,77 @@
 */
 package org.apache.airavata.gfac.handler;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.transport.TransportException;
-
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.Scheduler;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
-import org.apache.airavata.gfac.context.security.SSHSecurityContext;
 import org.apache.airavata.gfac.provider.GFacProviderException;
-import org.apache.airavata.gfac.util.GFACSSHUtils;
+import org.apache.airavata.gfac.utils.GFACGSISSHUtils;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.OutputUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
-import org.apache.airavata.gsi.ssh.util.SSHUtils;
 import org.apache.airavata.model.workspace.experiment.*;
-import org.apache.airavata.persistance.registry.jpa.model.DataTransferDetail;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SCPOutputHandler extends AbstractHandler{
-    private static final Logger log = LoggerFactory.getLogger(SCPOutputHandler.class);
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+public class GSISSHOutputHandler extends AbstractHandler{
+    private static final Logger log = LoggerFactory.getLogger(GSISSHOutputHandler.class);
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException, GFacException {
-        if(jobExecutionContext.getTaskData().getJobDetailsListSize() == 0) { // this is because we don't have the right jobexecution context
+        if(jobExecutionContext.getApplicationContext().getHostDescription().getType() instanceof GsisshHostType) { // this is because we don't have the right jobexecution context
             // so attempting to get it from the registry
-            log.warn("During the out handler chain jobExecution context came null, so trying to handler");
-            ApplicationDescription applicationDeploymentDescription = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
-            TaskDetails taskData = null;
-            try {
-                taskData = (TaskDetails) registry.get(DataType.TASK_DETAIL, jobExecutionContext.getTaskData().getTaskID());
-            } catch (RegistryException e) {
-                log.error("Error retrieving job details from Registry");
-                throw new GFacHandlerException("Error retrieving job details from Registry", e);
-            }
-            JobDetails jobDetails = taskData.getJobDetailsList().get(0);
-            String jobDescription = jobDetails.getJobDescription();
-            if (jobDescription != null) {
-                JobDescriptor jobDescriptor = null;
+            if (Constants.PUSH.equals(((GsisshHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType()).getMonitorMode())) {
+                log.warn("During the out handler chain jobExecution context came null, so trying to handler");
+                ApplicationDescription applicationDeploymentDescription = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
+                TaskDetails taskData = null;
                 try {
-                    jobDescriptor = JobDescriptor.fromXML(jobDescription);
-                } catch (XmlException e1) {
-                    e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    taskData = (TaskDetails) jobExecutionContext.getRegistry().get(DataType.TASK_DETAIL, jobExecutionContext.getTaskData().getTaskID());
+                } catch (RegistryException e) {
+                    log.error("Error retrieving job details from Registry");
+                    throw new GFacHandlerException("Error retrieving job details from Registry", e);
                 }
-                applicationDeploymentDescription.getType().setScratchWorkingDirectory(
-                        jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getWorkingDirectory());
-                applicationDeploymentDescription.getType().setInputDataDirectory(jobDescriptor.getInputDirectory());
-                applicationDeploymentDescription.getType().setOutputDataDirectory(jobDescriptor.getOutputDirectory());
-                applicationDeploymentDescription.getType().setStandardError(jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getStandardErrorFile());
-                applicationDeploymentDescription.getType().setStandardOutput(jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getStandardOutFile());
+                JobDetails jobDetails = taskData.getJobDetailsList().get(0);
+                String jobDescription = jobDetails.getJobDescription();
+                if (jobDescription != null) {
+                    JobDescriptor jobDescriptor = null;
+                    try {
+                        jobDescriptor = JobDescriptor.fromXML(jobDescription);
+                    } catch (XmlException e1) {
+                        e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
+                    applicationDeploymentDescription.getType().setScratchWorkingDirectory(
+                            jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getWorkingDirectory());
+                    applicationDeploymentDescription.getType().setInputDataDirectory(jobDescriptor.getInputDirectory());
+                    applicationDeploymentDescription.getType().setOutputDataDirectory(jobDescriptor.getOutputDirectory());
+                    applicationDeploymentDescription.getType().setStandardError(jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getStandardErrorFile());
+                    applicationDeploymentDescription.getType().setStandardOutput(jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getStandardOutFile());
+                }
             }
         }
 
-        if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null) {
+        if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) == null) {
             try {
-                GFACSSHUtils.addSecurityContext(jobExecutionContext);
+                GFACGSISSHUtils.addSecurityContext(jobExecutionContext);
             } catch (ApplicationSettingsException e) {
                 log.error(e.getMessage());
                 throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
@@ -109,7 +107,7 @@ public class SCPOutputHandler extends AbstractHandler{
             if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) != null) {
                 cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
             } else {
-                cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
+                cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
             }
             if (cluster == null) {
                 throw new GFacProviderException("Security context is not set properly");

@@ -205,8 +205,6 @@
                 <include>org.apache.airavata:airavata-workflow-tracking:jar</include>
                 <include>org.apache.airavata:gsissh:jar</include>
                 <include>org.apache.airavata:airavata-model-utils:jar</include>
-                <include>org.apache.airavata:job-monitor-tool:jar</include>
-                <include>org.apache.airavata:gfac-monitor:jar</include>
                 <include>org.apache.airavata:airavata-api-server:jar</include>
                 <include>org.apache.airavata:airavata-api-stubs:jar</include>
                 <include>org.apache.openjpa:openjpa-all:jar</include>

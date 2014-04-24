@@ -41,6 +41,12 @@ public class JobStatusChangeRequest  extends AbstractStateChangeRequest {
     public JobStatusChangeRequest() {
     }
 
+    public JobStatusChangeRequest(MonitorID monitorID) {
+        setIdentity(new JobIdentity(monitorID.getExperimentID(),monitorID.getWorkflowNodeID(),
+                monitorID.getTaskID(),monitorID.getJobID()));
+    	setMonitorID(monitorID);
+    	this.state = monitorID.getStatus();
+    }
     public JobStatusChangeRequest(MonitorID monitorID, JobIdentity jobId, JobState state) {
     	setIdentity(jobId);
     	setMonitorID(monitorID);

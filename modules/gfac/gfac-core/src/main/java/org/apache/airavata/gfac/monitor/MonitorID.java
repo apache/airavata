@@ -72,6 +72,7 @@ public class MonitorID {
         this.jobID = jobID;
         this.taskID = taskID;
         this.experimentID = experimentID;
+        this.workflowNodeID = workflowNodeID;
     }
 
     public MonitorID(HostDescription host, String jobID,String taskID, String workflowNodeID, String experimentID, String userName,AuthenticationInfo authenticationInfo) {
@@ -85,6 +86,7 @@ public class MonitorID {
                 this.userName = ((MyProxyAuthenticationInfo)this.authenticationInfo).getUserName();
             }
         }
+        this.workflowNodeID = workflowNodeID;
         this.jobID = jobID;
         this.taskID = taskID;
         this.experimentID = experimentID;
