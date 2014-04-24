@@ -182,6 +182,7 @@ public class GFacImpl implements GFac, AbstractActivityListener {
         GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, configurationProperties);
 
         jobExecutionContext = new JobExecutionContext(gFacConfiguration, serviceName);
+        jobExecutionContext.setRegistry(registry);
         jobExecutionContext.setTaskData(taskData);
 
         ApplicationContext applicationContext = new ApplicationContext();

@@ -71,20 +71,20 @@
 
      <Provider class="org.apache.airavata.gfac.provider.impl.SSHProvider" host="org.apache.airavata.schemas.gfac.impl.SSHHostTypeImpl">
          <InHandlers>
-            <Handler class="org.apache.airavata.gfac.handler.SCPDirectorySetupHandler"/>
-            <Handler class="org.apache.airavata.gfac.handler.SCPInputHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.SSHDirectorySetupHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.GSISSHInputHandler"/>
         </InHandlers>
         <OutHandlers>
-            <Handler class="org.apache.airavata.gfac.handler.SCPOutputHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.GSISSHOutputHandler"/>
         </OutHandlers>
     </Provider>
      <Provider class="org.apache.airavata.gfac.provider.impl.GSISSHProvider" host="org.apache.airavata.schemas.gfac.impl.GsisshHostTypeImpl">
          <InHandlers>
-            <Handler class="org.apache.airavata.gfac.handler.SCPDirectorySetupHandler"/>
-            <Handler class="org.apache.airavata.gfac.handler.SCPInputHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.GSISSHDirectorySetupHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.GSISSHInputHandler"/>
         </InHandlers>
         <OutHandlers>
-            <Handler class="org.apache.airavata.gfac.handler.SCPOutputHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.GSISSHOutputHandler"/>
         </OutHandlers>
     </Provider>
 </GFac>

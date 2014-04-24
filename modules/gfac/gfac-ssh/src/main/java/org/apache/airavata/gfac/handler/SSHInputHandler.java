@@ -44,7 +44,6 @@ import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
-import org.apache.airavata.model.workspace.experiment.ErrorDetails;
 import org.apache.airavata.model.workspace.experiment.TransferState;
 import org.apache.airavata.model.workspace.experiment.TransferStatus;
 import org.apache.airavata.registry.cpi.ChildDataType;
@@ -54,9 +53,9 @@ import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SCPInputHandler extends AbstractHandler {
+public class SSHInputHandler extends AbstractHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(SCPInputHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(SSHInputHandler.class);
 
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException, GFacException {

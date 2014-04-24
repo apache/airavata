@@ -122,7 +122,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator implements Abst
                     Constants.PUSH.equals(((GsisshHostType) hostDescription).getMonitorMode())) {
                 MonitorID monitorID = new MonitorID(hostDescription, null, taskId, workflowNodeId, experimentId, userName);
                 monitorManager.addAJobToMonitor(monitorID);
-                JobExecutionContext jobExecutionContext = jobSubmitter.submit(experimentId, taskId);
+                jobSubmitter.submit(experimentId, taskId);  // even this get returns we cannot use this because subscription has to be done early
                 if ("none".equals(jobID)) {
                     logger.error("Job submission Failed, so we remove the job from monitoring");
 
@@ -134,6 +134,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator implements Abst
                 // if the monitoring is pull mode then we add the monitorID for each task after submitting
                 // the job with the jobID, otherwise we don't need the jobID
                 JobExecutionContext jobExecutionContext = jobSubmitter.submit(experimentId, taskId);
+                jobExecutionContext.setTaskData(task);
+                jobID = jobExecutionContext.getJobDetails().getJobID();
+
                 logger.info("Job Launched to the resource by GFAC and jobID returned : " + jobID);
                 MonitorID monitorID = new MonitorID(hostDescription, jobID, taskId, workflowNodeId, experimentId, userName, authenticationInfo);
                 monitorID.setJobExecutionContext(jobExecutionContext);

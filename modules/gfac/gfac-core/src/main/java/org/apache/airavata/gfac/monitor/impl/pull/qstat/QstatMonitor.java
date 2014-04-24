@@ -23,6 +23,7 @@ package org.apache.airavata.gfac.monitor.impl.pull.qstat;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.monitor.HostMonitorData;
+import org.apache.airavata.gfac.monitor.JobIdentity;
 import org.apache.airavata.gfac.monitor.MonitorID;
 import org.apache.airavata.gfac.monitor.UserMonitorData;
 import org.apache.airavata.gfac.monitor.core.PullMonitor;
@@ -133,8 +134,7 @@ public class QstatMonitor extends PullMonitor {
                     for (MonitorID iMonitorID : monitorID) {
                         currentMonitorID = iMonitorID;
                         iMonitorID.setStatus(jobStatuses.get(iMonitorID.getJobID()));
-                        jobStatus.setMonitorID(iMonitorID);
-                        jobStatus.setState(iMonitorID.getStatus());
+                        jobStatus = new JobStatusChangeRequest(iMonitorID);
                         // we have this JobStatus class to handle amqp monitoring
 
                         publisher.publish(jobStatus);
