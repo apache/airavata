@@ -58,7 +58,7 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
     //this will keep a list of experiment that was executed. each element will contain {experiemntId, user, project}
     private List<String[]> experimentDataList;
     
-    private String[] users={"user1","user2","user3","user4"};
+    private String[] users={"admin"};
     private String[] projects={"project1","project2","project3"};
     
     private static final int NUM_OF_EXPERIMENTS=10;
@@ -75,7 +75,7 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
 		log.info("=================");
 		for(int i=1; i<=NUM_OF_EXPERIMENTS;i++){
 			//we are using the last user or project to test data empty scenarios 
-			String user=users[(new Random()).nextInt(users.length-1)];
+			String user=users[(new Random()).nextInt(users.length)];
 			String project=projects[(new Random()).nextInt(projects.length-1)];
 			String experimentId = runExperiment(user, project);
 			experimentDataList.add(new String[]{experimentId,user,project});
@@ -87,7 +87,9 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
     	List<String> results=new ArrayList<String>();
     	for (String[] record : experimentDataList) {
 			if (record[searchIndex].equals(searchString)){
-				results.add(record[returnIndexData]);
+				if (!results.contains(record[returnIndexData])) {
+					results.add(record[returnIndexData]);
+				}
 			}
 		}
     	return results;
@@ -95,7 +97,8 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
 
 	@Test
     public void listingExperimentsByUser() throws Exception {
-		log.info("Testing user experiments...");
+		log.info("Testing user experiments");
+		log.info("========================");
         for (String user : users) {
 			List<Experiment> listUserExperiments = listUserExperiments(user);
 			List<String> data = getData(1, user, 0);
@@ -109,7 +112,8 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
     
 	@Test
     public void listingExperimentsByProject() throws Exception {
-		log.info("Testing project experiments...");
+		log.info("Testing project experiments");
+		log.info("===========================");
         for (String project : projects) {
 			List<Experiment> listProjectExperiments = listProjectExperiments(project);
 			List<String> data = getData(2, project, 0);
@@ -123,10 +127,12 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
 	
 	@Test
     public void listingUserProjects() throws Exception {
-		log.info("Testing user projects...");
+		log.info("Testing user projects");
+		log.info("=====================");
         for (String user : users) {
 			List<Project> listUserProjects = listUserProjects(user);
 			List<String> data = getData(1, user, 2);
+			data.add("default");
         	log.info("\t"+user+" : "+data.size()+" projects");
 			Assert.assertEquals(listUserProjects.size(), data.size());
 			for (Project project : listUserProjects) {
