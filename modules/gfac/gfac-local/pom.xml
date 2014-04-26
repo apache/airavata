@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>airavata-gfac-local</artifactId>
     <name>Airavata GFac Local implementation</name>
-    <description>The core GFAC functionality independent from any webservice implementation.</description>
+    <description>This is the extension of GFAC Local.</description>
     <url>http://airavata.apache.org/</url>
 
     <dependencies>
