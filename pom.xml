@@ -321,6 +321,17 @@
                 <role>committer</role>
             </roles>
         </developer>
+ 	<developer>
+            <id>sachith</id>
+            <name>Sachith Danushka Withana</name>
+            <email>sachith@apache.org</email>
+            <timezone>+5.5</timezone>
+            <organization>University of Moratuwa</organization>
+            <organizationUrl>http://www.mrt.ac.lk/web/</organizationUrl>
+            <roles>
+                <role>committer</role>
+            </roles>
+        </developer>
     </developers>
 
     <dependencyManagement>
