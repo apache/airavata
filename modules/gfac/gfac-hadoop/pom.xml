@@ -18,9 +18,9 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>airavata-gfac-ssh</artifactId>
-    <name>Airavata GFac SSH implementation</name>
-    <description>This is the extension of </description>
+    <artifactId>airavata-gfac-hadoop</artifactId>
+    <name>Airavata GFac Hadoop implementation</name>
+    <description>This is the extension of GFAC to use Hadoop.</description>
     <url>http://airavata.apache.org/</url>
 
     <dependencies>
@@ -36,24 +36,6 @@
             <artifactId>airavata-gfac-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- Credential Store -->
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-credential-store</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-server-configuration</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-client-configuration</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-
         <!-- Test -->
         <dependency>
             <groupId>junit</groupId>
@@ -76,39 +58,60 @@
             <artifactId>slf4j-log4j12</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <!-- gsi-ssh api dependencies -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>gsissh</artifactId>
-            <version>${project.version}</version>
+            <artifactId>airavata-server-configuration</artifactId>
+	    <scope>test</scope>
         </dependency>
-        <dependency>
+	    <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-data-models</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.jcraft</groupId>
-            <artifactId>jsch</artifactId>
-            <version>0.1.50</version>
-        </dependency>
-        <dependency>
-            <groupId>org.ogce</groupId>
-            <artifactId>bcgss</artifactId>
-            <version>146</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.xmlbeans</groupId>
-            <artifactId>xmlbeans</artifactId>
-            <version>${xmlbeans.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.schmizz</groupId>
-            <artifactId>sshj</artifactId>
-            <version>0.6.1</version>
+            <artifactId>airavata-client-configuration</artifactId>
+            <scope>test</scope>
         </dependency>
 
+
+
+        <!-- Hadoop provider related dependencies -->
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-core</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-client</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.whirr</groupId>
+            <artifactId>whirr-core</artifactId>
+            <version>0.7.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.whirr</groupId>
+            <artifactId>whirr-hadoop</artifactId>
+            <version>0.7.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.8.5</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-configuration</groupId>
+            <artifactId>commons-configuration</artifactId>
+            <version>1.7</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.jopt-simple</groupId>
+            <artifactId>jopt-simple</artifactId>
+            <version>3.2</version>
+        </dependency>
     </dependencies>
 
 </project>
