@@ -406,7 +406,11 @@ public class ExperimentRegistry {
             }
             status.setExperimentResource(experiment);
             status.setStatusUpdateTime(AiravataUtils.getTime(experimentStatus.getTimeOfStateChange()));
-            status.setState(experimentStatus.getExperimentState().toString());
+            if (experimentStatus.getExperimentState() == null){
+                status.setState(ExperimentState.UNKNOWN.toString());
+            } else {
+                status.setState(experimentStatus.getExperimentState().toString());
+            }
             status.setStatusType(StatusType.EXPERIMENT.toString());
             status.save();
         } catch (Exception e) {
@@ -425,7 +429,11 @@ public class ExperimentRegistry {
             statusResource.setWorkflowNodeDetail(workflowNode);
             statusResource.setStatusType(StatusType.WORKFLOW_NODE.toString());
             statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
-            statusResource.setState(status.getWorkflowNodeState().toString());
+            if (status.getWorkflowNodeState() == null){
+                statusResource.setState(WorkflowNodeState.UNKNOWN.toString());
+            } else {
+                statusResource.setState(status.getWorkflowNodeState().toString());
+            }
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
         } catch (Exception e) {
@@ -463,7 +471,11 @@ public class ExperimentRegistry {
             statusResource.setTaskDetailResource(taskDetail);
             statusResource.setStatusType(StatusType.TASK.toString());
             statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
-            statusResource.setState(status.getExecutionState().toString());
+            if (status.getExecutionState() == null){
+                statusResource.setState(TaskState.UNKNOWN.toString());
+            } else {
+                statusResource.setState(status.getExecutionState().toString());
+            }
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
         } catch (Exception e) {
@@ -513,7 +525,11 @@ public class ExperimentRegistry {
             statusResource.setTaskDetailResource(taskDetail);
             statusResource.setStatusType(StatusType.JOB.toString());
             statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
-            statusResource.setState(status.getJobState().toString());
+            if (status.getJobState() == null){
+                statusResource.setState(JobState.UNKNOWN.toString());
+            } else {
+                statusResource.setState(status.getJobState().toString());
+            }
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
         } catch (Exception e) {
@@ -562,7 +578,11 @@ public class ExperimentRegistry {
             statusResource.setTaskDetailResource(taskDetail);
             statusResource.setStatusType(StatusType.APPLICATION.toString());
             statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
-            statusResource.setState(status.getApplicationState());
+            if (status.getApplicationState() == null){
+                statusResource.setState("UNKNOWN");
+            } else {
+                statusResource.setState(status.getApplicationState());
+            }
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
         } catch (Exception e) {
@@ -610,7 +630,11 @@ public class ExperimentRegistry {
             statusResource.setDataTransferDetail(dataTransferDetail);
             statusResource.setStatusType(StatusType.DATA_TRANSFER.toString());
             statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
-            statusResource.setState(status.getTransferState().toString());
+            if (status.getTransferState() ==  null){
+                statusResource.setState(TransferState.UNKNOWN.toString());
+            } else {
+                statusResource.setState(status.getTransferState().toString());
+            }
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
         } catch (Exception e) {
