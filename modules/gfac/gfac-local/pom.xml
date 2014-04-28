@@ -18,12 +18,13 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>airavata-gfac-ssh</artifactId>
-    <name>Airavata GFac SSH implementation</name>
-    <description>This is the extension of </description>
+    <artifactId>airavata-gfac-local</artifactId>
+    <name>Airavata GFac Local implementation</name>
+    <description>This is the extension of GFAC Local.</description>
     <url>http://airavata.apache.org/</url>
 
     <dependencies>
+
         <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -36,23 +37,6 @@
             <artifactId>airavata-gfac-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- Credential Store -->
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-credential-store</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-server-configuration</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-client-configuration</artifactId>
-            <scope>test</scope>
-        </dependency>
-
 
         <!-- Test -->
         <dependency>
@@ -75,38 +59,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <scope>test</scope>
-        </dependency>
-
-        <!-- gsi-ssh api dependencies -->
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>gsissh</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-data-models</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.jcraft</groupId>
-            <artifactId>jsch</artifactId>
-            <version>0.1.50</version>
-        </dependency>
-        <dependency>
-            <groupId>org.ogce</groupId>
-            <artifactId>bcgss</artifactId>
-            <version>146</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.xmlbeans</groupId>
-            <artifactId>xmlbeans</artifactId>
-            <version>${xmlbeans.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.schmizz</groupId>
-            <artifactId>sshj</artifactId>
-            <version>0.6.1</version>
         </dependency>
 
     </dependencies>
