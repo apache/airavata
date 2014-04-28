@@ -24,6 +24,7 @@ package org.apache.airavata.client.samples;
 import org.apache.airavata.api.error.ExperimentNotFoundException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ClientSettings;
+import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.schemas.gfac.DataType;
 import org.apache.airavata.api.Airavata;
@@ -66,12 +67,19 @@ public class CreateLaunchExperiment {
             final String expId = createExperimentForTrestles(airavata);
 //            final String expId = createExperimentForStampede(airavata);
             System.out.println("Experiment ID : " + expId);
+            String clonedExpId = cloneExperiment(airavata, expId);
+            System.out.println("Cloned Experiment ID : " + clonedExpId);
             launchExperiment(airavata, expId);
             System.out.println("Launched successfully");
             List<Experiment> experiments = getExperimentsForUser(airavata, "admin");
+            List<Project> projects = getAllUserProject(airavata, "admin");
             for (Experiment exp : experiments){
                 System.out.println(" exp id : " + exp.getExperimentID());
                 System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
+            }
+
+            for (Project pr : projects){
+                System.out.println(" project name : " + pr.getName());
             }
 
 //            try {
@@ -192,6 +200,16 @@ public class CreateLaunchExperiment {
         } catch (AiravataClientException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataClientException(e);
+        }catch (TException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new TException(e);
+        }
+    }
+
+    public static String cloneExperiment(Airavata.Client client, String expId) throws TException  {
+        try{
+            Experiment experiment = client.getExperiment(expId);
+            return client.cloneExperiment("cloneExperiment1", experiment);
         }catch (TException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new TException(e);
@@ -395,6 +413,21 @@ public class CreateLaunchExperiment {
     public static List<Experiment> getExperimentsForUser (Airavata.Client client, String user){
         try {
             return client.getAllUserExperiments(user);
+        } catch (AiravataSystemException e) {
+            e.printStackTrace();
+        } catch (InvalidRequestException e) {
+            e.printStackTrace();
+        } catch (AiravataClientException e) {
+            e.printStackTrace();
+        }catch (TException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static List<Project> getAllUserProject (Airavata.Client client, String user){
+        try {
+            return client.getAllUserProjects(user);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {

@@ -459,8 +459,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String cloneExperiment(String airavataExperimentIdToBeCloned, Experiment updatedExperiment) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
-            UserConfigurationData previousConfiguration = (UserConfigurationData)registry.get(DataType.EXPERIMENT_CONFIGURATION_DATA, airavataExperimentIdToBeCloned);
+            UserConfigurationData previousConfiguration = (UserConfigurationData)registry.get(DataType.EXPERIMENT_CONFIGURATION_DATA, updatedExperiment.getExperimentID());
             updatedExperiment.setUserConfigurationData(previousConfiguration);
+            updatedExperiment.setName(airavataExperimentIdToBeCloned);
             return (String)registry.add(ParentDataType.EXPERIMENT, updatedExperiment);
         } catch (Exception e) {
             logger.error("Error while cloning the experiment with existing configuration...", e);
