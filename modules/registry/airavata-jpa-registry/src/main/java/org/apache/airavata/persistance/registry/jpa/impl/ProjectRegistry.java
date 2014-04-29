@@ -21,20 +21,22 @@
 
 package org.apache.airavata.persistance.registry.jpa.impl;
 
-import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.persistance.registry.jpa.Resource;
-import org.apache.airavata.persistance.registry.jpa.ResourceType;
-import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
-import org.apache.airavata.persistance.registry.jpa.resources.*;
-import org.apache.airavata.persistance.registry.jpa.utils.ThriftDataModelConversion;
-import org.apache.airavata.registry.cpi.utils.Constants;
-import org.apache.axis2.i18n.ProjectResourceBundle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
+import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ProjectUserResource;
+import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
+import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
+import org.apache.airavata.persistance.registry.jpa.utils.ThriftDataModelConversion;
+import org.apache.airavata.registry.cpi.utils.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProjectRegistry {
     private GatewayResource gatewayResource;
@@ -45,7 +47,7 @@ public class ProjectRegistry {
         if (!ResourceUtils.isGatewayExist(gatewayResource.getGatewayName())){
             this.gatewayResource = gatewayResource;
         }else {
-            gatewayResource = (GatewayResource)ResourceUtils.getGateway(gatewayResource.getGatewayName());
+            this.gatewayResource = (GatewayResource)ResourceUtils.getGateway(gatewayResource.getGatewayName());
         }
         if (!ResourceUtils.isUserExist(user.getUserName())){
             workerResource = new WorkerResource(user.getUserName(), gatewayResource);
@@ -66,10 +68,8 @@ public class ProjectRegistry {
             projectResource.setName(project.getName());
             projectResource.setDescription(project.getDescription());
             projectResource.setCreationTime(AiravataUtils.getTime(project.getCreationTime()));
-            projectResource.setGateway(gatewayResource);
-            UserResource user = (UserResource)ResourceUtils.getUser(project.getOwner());
-            ResourceUtils.addGatewayWorker(gatewayResource, user);
-            WorkerResource worker = new WorkerResource(project.getOwner(), gatewayResource);
+            projectResource.setGateway(workerResource.getGateway());
+            WorkerResource worker = new WorkerResource(project.getOwner(), workerResource.getGateway());
             projectResource.setWorker(worker);
             projectResource.save();
             ProjectUserResource resource = (ProjectUserResource)projectResource.create(ResourceType.PROJECT_USER);
