@@ -20,7 +20,6 @@ require_once $GLOBALS['THRIFT_ROOT'] . 'StringFunc/Core.php';
 
 $GLOBALS['AIRAVATA_ROOT'] = '../lib/Airavata/';
 require_once $GLOBALS['AIRAVATA_ROOT'] . 'API/Airavata.php';
-require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/Workspace/Types.php';
 require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/Workspace/Experiment/Types.php';
 require_once $GLOBALS['AIRAVATA_ROOT'] . 'API/Error/Types.php';
 
@@ -28,8 +27,10 @@ require_once '../lib/AiravataClientFactory.php';
 
 use Airavata\API\Error\AiravataClientException;
 use Airavata\API\Error\AiravataSystemException;
+use Airavata\API\Error\ExperimentNotFoundException;
 use Airavata\API\Error\InvalidRequestException;
 use Airavata\Client\AiravataClientFactory;
+use Airavata\Model\Workspace\Experiment\ExperimentState;
 use Thrift\Protocol\TBinaryProtocol;
 use Thrift\Transport\TBufferedTransport;
 use Thrift\Transport\TSocket;
@@ -60,37 +61,55 @@ $airavataclient = new AiravataClient($protocol);
 
 
 
-try
-{
+$expId = 'US3ExperimentTrestles_e4156e0b-3981-4323-9187-1fcbca1b6664';
 
+$experimentStatusString = get_experiment_status($expId);
+echo "experiment status = " . $experimentStatusString . "       \n<br>";
 
-
-    $userExperiments = $airavataclient->getAllUserProjects("admin");
-    echo "# of user projects = " . sizeof($userExperiments) . "<br>";
-
-
-
-
-
-}
-catch (InvalidRequestException $ire)
-{
-    print 'InvalidRequestException: ' . $ire->getMessage()."\n";
-}
-catch (AiravataClientException $ace)
-{
-    print 'Airavata System Exception: ' . $ace->getMessage()."\n";
-}
-catch (AiravataSystemException $ase)
-{
-    print 'Airavata System Exception: ' . $ase->getMessage()."\n";
-}
 
 
 
 
 
 $transport->close();
+
+
+/**
+ * Get a string containing the given experiment's status
+ * @param $expId
+ * @return mixed
+ */
+function get_experiment_status($expId)
+{
+    global $airavataclient;
+
+    try
+    {
+        $experimentStatus = $airavataclient->getExperimentStatus($expId);
+    }
+    catch (InvalidRequestException $ire)
+    {
+        echo 'InvalidRequestException!<br><br>' . $ire->getMessage();
+    }
+    catch (ExperimentNotFoundException $enf)
+    {
+        echo 'ExperimentNotFoundException!<br><br>' . $enf->getMessage();
+    }
+    catch (AiravataClientException $ace)
+    {
+        echo 'AiravataClientException!<br><br>' . $ace->getMessage();
+    }
+    catch (AiravataSystemException $ase)
+    {
+        echo 'AiravataSystemException!<br><br>' . $ase->getMessage();
+    }
+    catch (\Exception $e)
+    {
+        echo 'Exception!<br><br>' . $e->getMessage();
+    }
+
+    return ExperimentState::$__names[$experimentStatus->experimentState];
+}
 
 ?>
 
