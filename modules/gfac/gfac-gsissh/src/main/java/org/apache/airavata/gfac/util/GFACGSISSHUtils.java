@@ -93,6 +93,6 @@ public class GFACGSISSHUtils {
 
             context.setPbsCluster(pbsCluster);
         }
-
+        jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT,context);
     }
 }

@@ -86,7 +86,7 @@
                 <Handler class="org.apache.airavata.gfac.handler.GSISSHInputHandler"/>
             </InHandlers>
             <OutHandlers>
-                <Handler class="org.apache.airavata.gfac.handler.SOutputHandler"/>
+                <Handler class="org.apache.airavata.gfac.handler.GSISSHOutputHandler"/>
                 <!--Handler class="org.apache.airavata.gfac.handler.AdvancedSCPOutputHandler">
                             <property name="privateKeyPath" value="/Users/lahirugunathilake/.ssh/id_dsa"/>
                             <property name="publicKeyPath" value="/Users/lahirugunathilake/.ssh/id_dsa.pub"/>
