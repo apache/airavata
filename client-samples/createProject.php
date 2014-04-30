@@ -64,21 +64,25 @@ $airavataclient = new AiravataClient($protocol);
 
 try
 {
-
+    /* should hard-code values
    $proj_name = $_GET["name"];
    $user = $_GET["user"];
+    */
 
-   $project = new Project();
-   $project->owner = $user;
-   $project->name = $proj_name;
- 
-   $projId = $airavataclient->createProject($project, $user); 
+    $project = new Project();
+    $project->owner = 'admin';
+    $project->name = 'New Project';
 
-   if ($projId) {
-       echo "Project $projId created!";
-   } else {
-       echo "Failed to create project.";
-   }
+    $projId = $airavataclient->createProject($project, 'admin');
+
+    if ($projId)
+    {
+        print "Project $projId created!";
+    }
+    else
+    {
+        echo 'Failed to create project.';
+    }
 
 }
 catch (InvalidRequestException $ire)
