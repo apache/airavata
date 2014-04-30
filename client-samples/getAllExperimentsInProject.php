@@ -65,8 +65,8 @@ try
 
 
     $projectExperiments = $airavataclient->getAllExperimentsInProject('project1');
-    echo '# of project experiments = ' . sizeof($projectExperiments) . '         <br>';
-
+    echo '# of project experiments = ' . sizeof($projectExperiments) . '         <br><br>';
+    var_dump($projectExperiments);
 
 
 
