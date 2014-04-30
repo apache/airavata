@@ -62,11 +62,18 @@ $airavataclient = new AiravataClient($protocol);
 
 
 
-$expId = 'US3ExperimentTrestles_e4156e0b-3981-4323-9187-1fcbca1b6664';
+$expId = 'US3ExperimentTrestles_d0753b6d-bf27-4d58-9508-f0339ea62e5b';
 
-end_experiment($expId);
+update_experiment($expId);
 
-echo '<br><br>if there are no exceptions, assume the experiment terminated successfully';
+
+
+
+
+
+
+
+
 
 
 
@@ -75,16 +82,17 @@ $transport->close();
 
 
 /**
- * End the experiment with the given ID
+ * Get the experiment with the given ID
  * @param $expId
+ * @return null
  */
-function end_experiment($expId)
+function get_experiment($expId)
 {
     global $airavataclient;
 
     try
     {
-        $airavataclient->terminateExperiment($expId);
+        return $airavataclient->getExperiment($expId);
     }
     catch (InvalidRequestException $ire)
     {
@@ -100,7 +108,7 @@ function end_experiment($expId)
     }
     catch (AiravataSystemException $ase)
     {
-        echo 'AiravataSystemException!<br><br>' . $ase->getMessage();
+        echo 'AiravataSystemException during get!<br><br>' . $ase->getMessage();
     }
     catch (TTransportException $tte)
     {
@@ -109,6 +117,49 @@ function end_experiment($expId)
     catch (\Exception $e)
     {
         echo 'Exception!<br><br>' . $e->getMessage();
+    }
+
+}
+
+/**
+ * Update the experiment with the given ID
+ * @param $expId
+ * @return null
+ */
+function update_experiment($expId)
+{
+    global $airavataclient;
+
+    try
+    {
+        //create new experiment to receive the clone
+        $experiment = $airavataclient->getExperiment($expId);
+        $experiment->name .= time();
+
+        $airavataclient->updateExperiment($expId, $experiment);
+
+        $updatedExperiment = $airavataclient->getExperiment($expId);
+        var_dump($updatedExperiment);
+    }
+    catch (InvalidRequestException $ire)
+    {
+        echo 'InvalidRequestException!<br><br>' . $ire->getMessage();
+    }
+    catch (ExperimentNotFoundException $enf)
+    {
+        echo 'ExperimentNotFoundException!<br><br>' . $enf->getMessage();
+    }
+    catch (AiravataClientException $ace)
+    {
+        echo 'AiravataClientException!<br><br>' . $ace->getMessage();
+    }
+    catch (AiravataSystemException $ase)
+    {
+        echo 'AiravataSystemException during clone!<br><br>' . $ase->getMessage();
+    }
+    catch (TTransportException $tte)
+    {
+        echo 'TTransportException!<br><br>' . $tte->getMessage();
     }
 }
 

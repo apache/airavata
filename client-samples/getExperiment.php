@@ -64,9 +64,11 @@ $airavataclient = new AiravataClient($protocol);
 
 $expId = 'US3ExperimentTrestles_e4156e0b-3981-4323-9187-1fcbca1b6664';
 
-end_experiment($expId);
+$experiment = get_experiment($expId);
 
-echo '<br><br>if there are no exceptions, assume the experiment terminated successfully';
+var_dump($experiment);
+
+
 
 
 
@@ -75,16 +77,17 @@ $transport->close();
 
 
 /**
- * End the experiment with the given ID
+ * Get the experiment with the given ID
  * @param $expId
+ * @return null
  */
-function end_experiment($expId)
+function get_experiment($expId)
 {
     global $airavataclient;
 
     try
     {
-        $airavataclient->terminateExperiment($expId);
+        return $airavataclient->getExperiment($expId);
     }
     catch (InvalidRequestException $ire)
     {
@@ -110,6 +113,7 @@ function end_experiment($expId)
     {
         echo 'Exception!<br><br>' . $e->getMessage();
     }
+
 }
 
 ?>
