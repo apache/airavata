@@ -132,11 +132,11 @@ public class HPCPullMonitor extends PullMonitor {
                         logger.debug("We already have this connection so not going to create one");
                         connection = connections.get(hostName);
                     } else {
-                        connection = new ResourceConnection(take.getUserName(), iHostMonitorData, gsisshHostType.getInstalledPath());
+                        connection = new ResourceConnection(iHostMonitorData);
                         connections.put(hostName, connection);
                     }
                     List<MonitorID> monitorID = iHostMonitorData.getMonitorIDs();
-                    Map<String, JobState> jobStatuses = connection.getJobStatuses(take.getUserName(), monitorID);
+                    Map<String, JobState> jobStatuses = connection.getJobStatuses(monitorID);
                     for (MonitorID iMonitorID : monitorID) {
                         currentMonitorID = iMonitorID;
                         iMonitorID.setStatus(jobStatuses.get(iMonitorID.getJobID()));
@@ -150,6 +150,7 @@ public class HPCPullMonitor extends PullMonitor {
                         // After successful monitoring perform following actions to cleanup the queue, if necessary
                         if (jobStatus.getState().equals(JobState.COMPLETE)) {
                             completedJobs.add(iMonitorID);
+                            CommonUtils.invokeOutFlowHandlers(iMonitorID.getJobExecutionContext());
                         } else if (iMonitorID.getFailedCount() > 2 && iMonitorID.getStatus().equals(JobState.UNKNOWN)) {
                             logger.error("Tried to monitor the job with ID " + iMonitorID.getJobID() + " But failed 3 times, so skip this Job from Monitor");
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));

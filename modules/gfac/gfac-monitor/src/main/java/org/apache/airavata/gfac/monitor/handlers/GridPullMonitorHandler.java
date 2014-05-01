@@ -25,6 +25,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.handler.GFacHandlerException;
 import org.apache.airavata.gfac.handler.ThreadedHandler;
+import org.apache.airavata.gfac.monitor.AbstractActivityListener;
 import org.apache.airavata.gfac.monitor.MonitorID;
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.gfac.monitor.impl.pull.qstat.HPCPullMonitor;
@@ -59,8 +60,22 @@ public class GridPullMonitorHandler extends ThreadedHandler {
             setAuthenticationInfo(new MyProxyAuthenticationInfo(myProxyUser, myProxyPass, myProxyServer,
                     7512, 17280000, certPath));
             hpcPullMonitor = new HPCPullMonitor();
+            String listeners = properties.get("listeners");
+            String[] split = listeners.split(",");
+            for(String listenerClass:split) {
+                Class<? extends AbstractActivityListener> aClass = Class.forName(listenerClass).asSubclass(AbstractActivityListener.class);
+                AbstractActivityListener abstractActivityListener = aClass.newInstance();
+                abstractActivityListener.setup(hpcPullMonitor.getQueue(),hpcPullMonitor.getPublisher());
+                hpcPullMonitor.getPublisher().registerListener(abstractActivityListener);
+            }
         } catch (ApplicationSettingsException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (ClassNotFoundException e) {
+            logger.error("Error loading the listener classes configured in gfac-config.xml");
+        } catch (InstantiationException e) {
+            logger.error("Error loading the listener classes configured in gfac-config.xml");
+        } catch (IllegalAccessException e) {
+            logger.error("Error loading the listener classes configured in gfac-config.xml");
         }
     }
 
