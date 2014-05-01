@@ -20,13 +20,11 @@
 */
 package org.apache.airavata.gfac.provider.impl;
 
-import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.cpi.GFacImpl;
 import org.apache.airavata.gfac.handler.ThreadedHandler;
-import org.apache.airavata.gfac.monitor.handlers.GridPullMonitorHandler;
 import org.apache.airavata.gfac.notification.events.StartExecutionEvent;
 import org.apache.airavata.gfac.provider.AbstractProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
@@ -99,10 +97,10 @@ public class GSISSHProvider extends AbstractProvider {
             // Now job has submitted to the resource, its up to the Provider to parse the information to daemon handler
             // to perform monitoring, daemon handlers can be accessed from anywhere
             List<ThreadedHandler> daemonHandlers = GFacImpl.getDaemonHandlers();
-            GridPullMonitorHandler pullMonitorHandler = null;
+            ThreadedHandler pullMonitorHandler = null;
             for(ThreadedHandler threadedHandler:daemonHandlers){
-                if(threadedHandler instanceof GridPullMonitorHandler){
-                    pullMonitorHandler = (GridPullMonitorHandler)threadedHandler;
+                if("org.apache.airavata.gfac.monitor.handlers.GridPullMonitorHandler".equals(threadedHandler.getClass().getName())){
+                    pullMonitorHandler = threadedHandler;
                 }
             }
             // we know this hos is type GsiSSHHostType

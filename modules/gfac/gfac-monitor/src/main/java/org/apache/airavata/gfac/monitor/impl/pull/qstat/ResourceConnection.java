@@ -20,6 +20,9 @@
 */
 package org.apache.airavata.gfac.monitor.impl.pull.qstat;
 
+import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.SecurityContext;
+import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.monitor.HostMonitorData;
 import org.apache.airavata.gfac.monitor.MonitorID;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
@@ -44,49 +47,15 @@ public class ResourceConnection {
 
     private PBSCluster cluster;
 
-    public ResourceConnection(MonitorID monitorID, String installedPath) throws SSHApiException {
-        AuthenticationInfo authenticationInfo = monitorID.getAuthenticationInfo();
-        String hostAddress = monitorID.getHost().getType().getHostAddress();
-        String userName = monitorID.getUserName();
-        String jobManager = ((GsisshHostType)monitorID.getHost().getType()).getJobManager();
-        JobManagerConfiguration jConfig = null;
-        if (jobManager == null) {
-            log.error("No Job Manager is configured, so we are picking pbs as the default job manager");
-            jConfig = CommonUtils.getPBSJobManager(installedPath);
-        } else {
-            if (org.apache.airavata.gfac.monitor.util.CommonUtils.isPBSHost(monitorID.getHost())) {
-                jConfig = CommonUtils.getPBSJobManager(installedPath);
-            } else if(org.apache.airavata.gfac.monitor.util.CommonUtils.isSlurm(monitorID.getHost())) {
-                jConfig = CommonUtils.getSLURMJobManager(installedPath);
-            } else if(org.apache.airavata.gfac.monitor.util.CommonUtils.isSGE(monitorID.getHost())) {
-                jConfig = CommonUtils.getSGEJobManager(installedPath);
-            }
-            //todo support br2 etc
-        }
-        ServerInfo serverInfo = new ServerInfo(userName, hostAddress, ((GsisshHostType)monitorID.getHost().getType()).getPort());
-        cluster = new PBSCluster(serverInfo, authenticationInfo, jConfig);
-    }
 
-    public ResourceConnection(String userName, HostMonitorData hostMonitorData, String installedPath) throws SSHApiException {
-        AuthenticationInfo authenticationInfo = hostMonitorData.getMonitorIDs().get(0).getAuthenticationInfo();
-        String hostAddress = hostMonitorData.getHost().getType().getHostAddress();
-        String jobManager = ((GsisshHostType)hostMonitorData.getHost().getType()).getJobManager();
-        JobManagerConfiguration jConfig = null;
-        if (jobManager == null) {
-            log.error("No Job Manager is configured, so we are picking pbs as the default job manager");
-            jConfig = CommonUtils.getPBSJobManager(installedPath);
-        } else {
-            if (org.apache.airavata.gfac.monitor.util.CommonUtils.isPBSHost(hostMonitorData.getHost())) {
-                jConfig = CommonUtils.getPBSJobManager(installedPath);
-            } else if(org.apache.airavata.gfac.monitor.util.CommonUtils.isSlurm(hostMonitorData.getHost())) {
-                jConfig = CommonUtils.getSLURMJobManager(installedPath);
-            }else if(org.apache.airavata.gfac.monitor.util.CommonUtils.isSGE(hostMonitorData.getHost())) {
-                jConfig = CommonUtils.getSGEJobManager(installedPath);
-            }
-            //todo support br2 etc
+    public ResourceConnection(HostMonitorData hostMonitorData) throws SSHApiException {
+        MonitorID monitorID = hostMonitorData.getMonitorIDs().get(0);
+        try {
+            GSISecurityContext securityContext = (GSISecurityContext)monitorID.getJobExecutionContext().getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT);
+            cluster = (PBSCluster)securityContext.getPbsCluster();
+        } catch (GFacException e) {
+            log.error("Error reading data from job ExecutionContext");
         }
-        ServerInfo serverInfo = new ServerInfo(userName, hostAddress, ((GsisshHostType)hostMonitorData.getHost().getType()).getPort());
-        cluster = new PBSCluster(serverInfo, authenticationInfo, jConfig);
     }
     public JobState getJobStatus(MonitorID monitorID) throws SSHApiException {
         String jobID = monitorID.getJobID();
@@ -95,7 +64,7 @@ public class ResourceConnection {
         return getStatusFromString(cluster.getJobStatus(jobID).toString());
     }
 
-    public Map<String,JobState> getJobStatuses(String userName,List<MonitorID> monitorIDs) throws SSHApiException {
+    public Map<String,JobState> getJobStatuses(List<MonitorID> monitorIDs) throws SSHApiException {
         Map<String,JobStatus> treeMap = new TreeMap<String,JobStatus>();
         Map<String,JobState> treeMap1 = new TreeMap<String,JobState>();
         // creating a sorted map with all the jobIds and with the predefined
@@ -103,6 +72,7 @@ public class ResourceConnection {
         for (MonitorID monitorID : monitorIDs) {
             treeMap.put(monitorID.getJobID(), JobStatus.U);
         }
+        String userName = cluster.getServerInfo().getUserName();
         //todo so currently we execute the qstat for each job but we can use user based monitoring
         //todo or we should concatenate all the commands and execute them in one go and parse the response
         cluster.getJobStatuses(userName,treeMap);

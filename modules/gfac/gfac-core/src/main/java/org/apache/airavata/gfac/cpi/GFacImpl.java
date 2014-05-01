@@ -136,7 +136,7 @@ public class GFacImpl implements GFac {
             }
         }
         for(ThreadedHandler tHandler:daemonHandlers){
-            tHandler.run();
+            (new Thread(tHandler)).start();
         }
     }
 
