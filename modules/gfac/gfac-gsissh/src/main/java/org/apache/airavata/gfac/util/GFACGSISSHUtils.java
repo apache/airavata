@@ -21,23 +21,32 @@
 package org.apache.airavata.gfac.util;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.StringUtil;
+import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.RequestData;
 import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.ServerInfo;
 import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
+import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.api.job.JobManagerConfiguration;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
+import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.schemas.gfac.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 
 public class GFACGSISSHUtils {
@@ -94,5 +103,90 @@ public class GFACGSISSHUtils {
             context.setPbsCluster(pbsCluster);
         }
         jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT,context);
+    }
+    public static JobDescriptor createJobDescriptor(JobExecutionContext jobExecutionContext,
+                                                    ApplicationDeploymentDescriptionType app, Cluster cluster) {
+        JobDescriptor jobDescriptor = new JobDescriptor();
+        // this is common for any application descriptor
+        jobDescriptor.setInputDirectory(app.getInputDataDirectory());
+        jobDescriptor.setOutputDirectory(app.getOutputDataDirectory());
+        jobDescriptor.setExecutablePath(app.getExecutableLocation());
+        jobDescriptor.setStandardOutFile(app.getStandardOutput());
+        jobDescriptor.setStandardErrorFile(app.getStandardError());
+        Random random = new Random();
+        int i = random.nextInt();
+        jobDescriptor.setJobName(app.getApplicationName().getStringValue() + String.valueOf(i));
+        jobDescriptor.setWorkingDirectory(app.getStaticWorkingDirectory());
+
+
+        List<String> inputValues = new ArrayList<String>();
+        MessageContext input = jobExecutionContext.getInMessageContext();
+        Map<String, Object> inputs = input.getParameters();
+        Set<String> keys = inputs.keySet();
+        for (String paramName : keys) {
+            ActualParameter actualParameter = (ActualParameter) inputs.get(paramName);
+            if ("URIArray".equals(actualParameter.getType().getType().toString()) || "StringArray".equals(actualParameter.getType().getType().toString())
+                    || "FileArray".equals(actualParameter.getType().getType().toString())) {
+                String[] values = null;
+                if (actualParameter.getType() instanceof URIArrayType) {
+                    values = ((URIArrayType) actualParameter.getType()).getValueArray();
+                } else if (actualParameter.getType() instanceof StringArrayType) {
+                    values = ((StringArrayType) actualParameter.getType()).getValueArray();
+                } else if (actualParameter.getType() instanceof FileArrayType) {
+                    values = ((FileArrayType) actualParameter.getType()).getValueArray();
+                }
+                String value = StringUtil.createDelimiteredString(values, " ");
+                inputValues.add(value);
+            } else {
+                String paramValue = MappingFactory.toString(actualParameter);
+                inputValues.add(paramValue);
+            }
+        }
+        jobDescriptor.setInputValues(inputValues);
+
+        // this part will fill out the hpcApplicationDescriptor
+        if (app instanceof HpcApplicationDeploymentType) {
+            HpcApplicationDeploymentType applicationDeploymentType
+                    = (HpcApplicationDeploymentType) app;
+            jobDescriptor.setShellName("/bin/bash");
+            jobDescriptor.setAllEnvExport(true);
+            jobDescriptor.setMailOptions("n");
+            jobDescriptor.setNodes(applicationDeploymentType.getNodeCount());
+            jobDescriptor.setProcessesPerNode(applicationDeploymentType.getProcessorsPerNode());
+            jobDescriptor.setMaxWallTime(String.valueOf(applicationDeploymentType.getMaxWallTime()));
+            jobDescriptor.setJobSubmitter(applicationDeploymentType.getJobSubmitterCommand());
+            if (applicationDeploymentType.getProjectAccount() != null) {
+                if (applicationDeploymentType.getProjectAccount().getProjectAccountNumber() != null) {
+                    jobDescriptor.setAcountString(applicationDeploymentType.getProjectAccount().getProjectAccountNumber());
+                }
+            }
+            if (applicationDeploymentType.getQueue() != null) {
+                if (applicationDeploymentType.getQueue().getQueueName() != null) {
+                    jobDescriptor.setQueueName(applicationDeploymentType.getQueue().getQueueName());
+                }
+            }
+            jobDescriptor.setOwner(((PBSCluster) cluster).getServerInfo().getUserName());
+            TaskDetails taskData = jobExecutionContext.getTaskData();
+            if (taskData != null && taskData.isSetTaskScheduling()) {
+                ComputationalResourceScheduling computionnalResource = taskData.getTaskScheduling();
+                if (computionnalResource.getNodeCount() > 0) {
+                    jobDescriptor.setNodes(computionnalResource.getNodeCount());
+                }
+                if (computionnalResource.getComputationalProjectAccount() != null) {
+                    jobDescriptor.setAcountString(computionnalResource.getComputationalProjectAccount());
+                }
+                if (computionnalResource.getQueueName() != null) {
+                    jobDescriptor.setQueueName(computionnalResource.getQueueName());
+                }
+                if (computionnalResource.getTotalCPUCount() > 0) {
+                    jobDescriptor.setProcessesPerNode(computionnalResource.getTotalCPUCount());
+                }
+                if (computionnalResource.getWallTimeLimit() > 0) {
+                    jobDescriptor.setMaxWallTime(String.valueOf(computionnalResource.getWallTimeLimit()));
+                }
+            }
+
+        }
+        return jobDescriptor;
     }
 }

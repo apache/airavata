@@ -38,7 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -72,7 +71,7 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
 
     private String outputPath;
 
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException, GFacException {
+    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
         password = properties.get("password");
         passPhrase = properties.get("passPhrase");
         privateKeyPath = properties.get("privateKeyPath");
@@ -83,31 +82,32 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
     }
 
     @Override
-    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException, GFacException {
-         if(jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null){
-            try {
-                GFACSSHUtils.addSecurityContext(jobExecutionContext);
-            } catch (ApplicationSettingsException e) {
-                log.error(e.getMessage());
-                throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
-            }
-        }
-        ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext()
-                .getApplicationDeploymentDescription().getType();
-        String standardError = app.getStandardError();
-        String standardOutput = app.getStandardOutput();
-        String outputDataDirectory = app.getOutputDataDirectory();
-
-        AuthenticationInfo authenticationInfo = null;
-        if (password != null) {
-            authenticationInfo = new DefaultPasswordAuthenticationInfo(this.password);
-        } else {
-            authenticationInfo = new DefaultPublicKeyFileAuthentication(this.publicKeyPath, this.privateKeyPath,
-                    this.passPhrase);
-        }
-        // Server info
-        ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
+    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         try {
+            if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null) {
+                try {
+                    GFACSSHUtils.addSecurityContext(jobExecutionContext);
+                } catch (ApplicationSettingsException e) {
+                    log.error(e.getMessage());
+                    throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
+                }
+            }
+            ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext()
+                    .getApplicationDeploymentDescription().getType();
+            String standardError = app.getStandardError();
+            String standardOutput = app.getStandardOutput();
+            String outputDataDirectory = app.getOutputDataDirectory();
+
+            AuthenticationInfo authenticationInfo = null;
+            if (password != null) {
+                authenticationInfo = new DefaultPasswordAuthenticationInfo(this.password);
+            } else {
+                authenticationInfo = new DefaultPublicKeyFileAuthentication(this.publicKeyPath, this.privateKeyPath,
+                        this.passPhrase);
+            }
+            // Server info
+            ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
+
             Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
             outputPath = outputPath + File.separator + jobExecutionContext.getExperimentID() + "-" + jobExecutionContext.getTaskData().getTaskID()
                     + File.separator;
@@ -120,7 +120,9 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
         } catch (SSHApiException e) {
             log.error("Error transfering files to remote host : " + hostName + " with the user: " + userName);
             log.error(e.getMessage());
-            throw new GFacException(e);
+            throw new GFacHandlerException(e);
+        } catch (GFacException e) {
+            throw new GFacHandlerException(e);
         }
     }
 }

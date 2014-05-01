@@ -38,6 +38,7 @@ import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.exception.UnspecifiedApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.handler.GFacHandlerConfig;
 import org.apache.airavata.gfac.provider.GFacProviderConfig;
 import org.slf4j.Logger;
@@ -60,6 +61,7 @@ public class GFacConfiguration {
     // the provider
     private List<GFacHandlerConfig> outHandlers = new ArrayList<GFacHandlerConfig>();
 
+    public ExecutionMode executionMode = ExecutionMode.SYNCHRONOUS; // default execution mode is SYNCHRONOUS
 
     public GFacConfiguration(AiravataAPI airavataAPI) {
         this.airavataAPI = airavataAPI;
@@ -232,13 +234,13 @@ public class GFacConfiguration {
         return gFacProviderConfigs;
     }
 
-     public static String getProviderClassName(Document doc, String expression, String attribute) throws XPathExpressionException {
+     public static String getAttributeValue(Document doc, String expression, String attribute) throws XPathExpressionException {
         XPathFactory xPathFactory = XPathFactory.newInstance();
         XPath xPath = xPathFactory.newXPath();
         XPathExpression expr = xPath.compile(expression);
 
         NodeList nl = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
-        String className = "";
+        String className = null;
         for (int i = 0; i < nl.getLength(); i++) {
             className = ((Element) nl.item(i)).getAttribute(attribute);
             break;
@@ -262,8 +264,21 @@ public class GFacConfiguration {
         arlList.addAll(newList);
         return arlList;
     }
-
+    public static List<GFacHandlerConfig> getDaemonHandlers(File configFile)throws ParserConfigurationException, IOException, SAXException, XPathExpressionException{
+       DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+        handlerDoc = docBuilder.parse(configFile);
+        return getHandlerConfig(handlerDoc, Constants.XPATH_EXPR_DAEMON_HANDLERS, Constants.GFAC_CONFIG_CLASS_ATTRIBUTE);
+    }
     public static Document getHandlerDoc() {
         return handlerDoc;
+    }
+
+    public ExecutionMode getExecutionMode() {
+        return executionMode;
+    }
+
+    public void setExecutionMode(ExecutionMode executionMode) {
+        this.executionMode = executionMode;
     }
 }

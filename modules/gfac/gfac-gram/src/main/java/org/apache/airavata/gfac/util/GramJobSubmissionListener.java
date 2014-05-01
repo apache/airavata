@@ -70,7 +70,7 @@ public class GramJobSubmissionListener implements GramJobListener{
 
     private void setStatus(int status, int error) {
 		try {
-			GFacUtils.updateJobStatus(context.getJobDetails(), GramProviderUtils.getApplicationJobStatus(status));
+			GFacUtils.updateJobStatus(context, context.getJobDetails(), GramProviderUtils.getApplicationJobStatus(status));
 		} catch (GFacException e) {
 			log.error("Error persisting status" + e.getLocalizedMessage(), e);
 		}

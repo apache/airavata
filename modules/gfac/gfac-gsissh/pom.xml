@@ -30,10 +30,15 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
 
-        <!-- GFAC schemas -->
+        <!-- GFAC dependencies -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-gfac-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+        <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-gfac-hpc-monitor</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!-- Credential Store -->

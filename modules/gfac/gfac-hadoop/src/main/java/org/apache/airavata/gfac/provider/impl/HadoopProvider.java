@@ -31,6 +31,7 @@ import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
+import org.apache.airavata.gfac.provider.AbstractProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.provider.utils.HadoopUtils;
 import org.apache.airavata.schemas.gfac.HadoopApplicationDeploymentDescriptionType;
@@ -55,7 +56,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  * Executes hadoop job using the cluster configuration provided by handlers in
  * in-flow.
  */
-public class HadoopProvider extends AbstractProvider{
+public class HadoopProvider extends AbstractProvider {
     private static final Logger logger = LoggerFactory.getLogger(HadoopProvider.class);
 
     private boolean isWhirrBasedDeployment = false;

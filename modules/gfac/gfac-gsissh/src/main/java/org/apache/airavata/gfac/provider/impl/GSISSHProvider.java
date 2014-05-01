@@ -20,11 +20,17 @@
 */
 package org.apache.airavata.gfac.provider.impl;
 
+import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
+import org.apache.airavata.gfac.cpi.GFacImpl;
+import org.apache.airavata.gfac.handler.ThreadedHandler;
+import org.apache.airavata.gfac.monitor.handlers.GridPullMonitorHandler;
 import org.apache.airavata.gfac.notification.events.StartExecutionEvent;
+import org.apache.airavata.gfac.provider.AbstractProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
+import org.apache.airavata.gfac.util.GFACGSISSHUtils;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
@@ -33,14 +39,16 @@ import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
 
-public class GSISSHProvider extends AbstractProvider{
+public class GSISSHProvider extends AbstractProvider {
     private static final Logger log = LoggerFactory.getLogger(GSISSHProvider.class);
 
     public void initProperties(Map<String, String> properties) throws GFacProviderException, GFacException {
@@ -71,7 +79,7 @@ public class GSISSHProvider extends AbstractProvider{
                 log.info("Successfully retrieved the Security Context");
             }
             // This installed path is a mandetory field, because this could change based on the computing resource
-            JobDescriptor jobDescriptor = GFacUtils.createJobDescriptor(jobExecutionContext, app, cluster);
+            JobDescriptor jobDescriptor = GFACGSISSHUtils.createJobDescriptor(jobExecutionContext, app, cluster);
 
             log.info(jobDescriptor.toXML());
             
@@ -81,25 +89,43 @@ public class GSISSHProvider extends AbstractProvider{
             jobExecutionContext.setJobDetails(jobDetails);
             if(jobID == null){
                 jobDetails.setJobID("none");
-                GFacUtils.saveJobStatus(jobDetails, JobState.FAILED, taskID);
+                GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
             }else{
                 jobDetails.setJobID(jobID);
-                GFacUtils.saveJobStatus(jobDetails, JobState.SUBMITTED, taskID);
+                GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED);
             }
 
+
+            // Now job has submitted to the resource, its up to the Provider to parse the information to daemon handler
+            // to perform monitoring, daemon handlers can be accessed from anywhere
+            List<ThreadedHandler> daemonHandlers = GFacImpl.getDaemonHandlers();
+            GridPullMonitorHandler pullMonitorHandler = null;
+            for(ThreadedHandler threadedHandler:daemonHandlers){
+                if(threadedHandler instanceof GridPullMonitorHandler){
+                    pullMonitorHandler = (GridPullMonitorHandler)threadedHandler;
+                }
+            }
+            // we know this hos is type GsiSSHHostType
+            String monitorMode = ((GsisshHostType) host).getMonitorMode();
+            if("".equals(monitorMode) || monitorMode == null || org.apache.airavata.common.utils.Constants.PULL.equals(monitorMode)){
+                log.info("Job is launched successfully now parsing it to monitoring in pull mode, JobID Returned:  " + jobID);
+                pullMonitorHandler.invoke(jobExecutionContext);
+            }else{
+                log.error("Currently we only support Pull monitoring");
+            }
         } catch (SSHApiException e) {
             String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
             log.error(error);
             jobDetails.setJobID("none");
-        	GFacUtils.saveJobStatus(jobDetails,JobState.FAILED,taskID);
-         	GFacUtils.saveErrorDetails(error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
+        	GFacUtils.saveJobStatus(jobExecutionContext, jobDetails,JobState.FAILED);
+         	GFacUtils.saveErrorDetails(jobExecutionContext, error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
             throw new GFacProviderException(error, e);
         } catch (Exception e) {
         	String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
          	log.error(error);
             jobDetails.setJobID("none");
-        	GFacUtils.saveJobStatus(jobDetails,JobState.FAILED,taskID);
-         	GFacUtils.saveErrorDetails(error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
+        	GFacUtils.saveJobStatus(jobExecutionContext, jobDetails,JobState.FAILED);
+         	GFacUtils.saveErrorDetails(jobExecutionContext, error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
             throw new GFacProviderException(error, e);
         }
     }

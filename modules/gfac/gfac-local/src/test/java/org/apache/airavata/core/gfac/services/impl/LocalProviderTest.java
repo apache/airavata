@@ -26,15 +26,18 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
-import org.apache.airavata.gfac.cpi.GFacImpl;
+import org.apache.airavata.gfac.handler.LocalDirectorySetupHandler;
+import org.apache.airavata.gfac.provider.GFacProviderException;
+import org.apache.airavata.gfac.provider.impl.LocalProvider;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.persistance.registry.jpa.impl.LoggingRegistryImpl;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.StringParameterType;
 import org.apache.commons.lang.SystemUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.net.URL;
@@ -43,7 +46,7 @@ import java.util.List;
 
 public class LocalProviderTest {
     private JobExecutionContext jobExecutionContext;
-    @Before
+    @BeforeTest
     public void setUp() throws Exception {
 
         URL resource = this.getClass().getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
@@ -133,18 +136,37 @@ public class LocalProviderTest {
 
         MessageContext outMessage = new MessageContext();
         ActualParameter echo_out = new ActualParameter();
-//		((StringParameterType)echo_input.getType()).setValue("echo_output=hello");
         outMessage.addParameter("echo_output", echo_out);
 
         jobExecutionContext.setOutMessageContext(outMessage);
 
+        jobExecutionContext.setExperimentID("test123");
+        jobExecutionContext.setTaskData(new TaskDetails(jobExecutionContext.getExperimentID()));
+        jobExecutionContext.setRegistry(new LoggingRegistryImpl());
+
+
     }
 
     @Test
-    public void testLocalProvider() throws GFacException {
-        GFacImpl gFacAPI = new GFacImpl();
-        gFacAPI.submitJob(jobExecutionContext);
-        MessageContext outMessageContext = jobExecutionContext.getOutMessageContext();
-        Assert.assertEquals(MappingFactory.toString((ActualParameter)outMessageContext.getParameter("echo_output")), "hello");
+    public void testLocalDirectorySetupHandler() throws GFacException {
+        LocalDirectorySetupHandler localDirectorySetupHandler = new LocalDirectorySetupHandler();
+        localDirectorySetupHandler.invoke(jobExecutionContext);
+
+        ApplicationDescription applicationDeploymentDescription = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
+        ApplicationDeploymentDescriptionType app = applicationDeploymentDescription.getType();
+        junit.framework.Assert.assertTrue(new File(app.getStaticWorkingDirectory()).exists());
+        junit.framework.Assert.assertTrue(new File(app.getScratchWorkingDirectory()).exists());
+        junit.framework.Assert.assertTrue(new File(app.getInputDataDirectory()).exists());
+        junit.framework.Assert.assertTrue(new File(app.getOutputDataDirectory()).exists());
+    }
+
+    @Test
+    public void testLocalProvider() throws GFacException,GFacProviderException{
+        LocalDirectorySetupHandler localDirectorySetupHandler = new LocalDirectorySetupHandler();
+        localDirectorySetupHandler.invoke(jobExecutionContext);
+        LocalProvider localProvider = new LocalProvider();
+        localProvider.initialize(jobExecutionContext);
+        localProvider.execute(jobExecutionContext);
+        localProvider.dispose(jobExecutionContext);
     }
 }

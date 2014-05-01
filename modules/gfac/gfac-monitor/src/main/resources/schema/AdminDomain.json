@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://schemas.ogf.org/glue/2013/05/spec_2.0_r1/AdminDomain.json",
+  "type": "object",
+  "allOf": [{"$ref": "http://schemas.ogf.org/glue/2013/05/spec_2.0_r1/Domain.json"}],
+  "properties": {
+    "Distributed": {
+      "type": "boolean",
+      "description": "true if the services managed by the AdminDomain are geographically distributed"
+    },
+    "Owner": {
+      "type": "array",
+      "description": "Identification of persons or legal entities that own the resources in this AdminDomain",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ServiceID": {
+      "type": "array",
+      "description": "IDs of Services in this AdminDomain",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ChildDomainID": {
+      "type": "array",
+      "description": "IDs of AdminDomains aggregated by this AdminDomain",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ParentDomainID": {
+      "type": "string",
+      "description": "The ID of the AdminDomain that this AdminDomain participates in"
+    },
+    "ComputingServiceID": {
+      "type": "array",
+      "description": "IDs of ComputingServices in this AdminDomain",
+      "items": {
+        "type": "string"
+      }
+    },
+    "StorageServiceID": {
+      "type": "array",
+      "description": "IDs of StorageServices in this AdminDomain",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

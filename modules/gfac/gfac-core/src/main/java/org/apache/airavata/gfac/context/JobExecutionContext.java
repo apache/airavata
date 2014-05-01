@@ -26,13 +26,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.airavata.gfac.ExecutionMode;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.SecurityContext;
 import org.apache.airavata.gfac.notification.GFacNotifier;
 import org.apache.airavata.gfac.provider.GFacProvider;
+import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.registry.cpi.Registry;
 
 public class JobExecutionContext extends AbstractContext{
@@ -46,10 +49,14 @@ public class JobExecutionContext extends AbstractContext{
     private MessageContext outMessageContext;
 
     private GFacNotifier notifier;
-    
+
+    private Experiment experiment;
+
     private TaskDetails taskData;
 
     private JobDetails jobDetails;
+
+    private WorkflowNodeDetails workflowNodeDetails;
 
 //    private ContextHeaderDocument.ContextHeader contextHeader;
 
@@ -83,6 +90,7 @@ public class JobExecutionContext extends AbstractContext{
     private List<String> outputFileList;
 
     private Registry registry;
+
     /**
      *  Security context is used to handle authentication for input handlers and providers.
      *  There can be multiple security requirement for a single job so this allows you to add multiple security types
@@ -96,6 +104,7 @@ public class JobExecutionContext extends AbstractContext{
         setServiceName(serviceName);
         outputFileList = new ArrayList<String>();
     }
+
 
     public String getExperimentID() {
         return experimentID;
@@ -142,10 +151,6 @@ public class JobExecutionContext extends AbstractContext{
     }
 
     public void setProvider(GFacProvider provider) {
-        this.gfacConfiguration.setInHandlers(provider.getClass().getName(),
-                this.getServiceName());
-        this.gfacConfiguration.setOutHandlers(provider.getClass().getName(),
-        		 this.getServiceName());
         this.provider = provider;
     }
 
@@ -252,5 +257,21 @@ public class JobExecutionContext extends AbstractContext{
 
     public void setRegistry(Registry registry) {
         this.registry = registry;
+    }
+
+    public Experiment getExperiment() {
+        return experiment;
+    }
+
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
+    }
+
+    public WorkflowNodeDetails getWorkflowNodeDetails() {
+        return workflowNodeDetails;
+    }
+
+    public void setWorkflowNodeDetails(WorkflowNodeDetails workflowNodeDetails) {
+        this.workflowNodeDetails = workflowNodeDetails;
     }
 }

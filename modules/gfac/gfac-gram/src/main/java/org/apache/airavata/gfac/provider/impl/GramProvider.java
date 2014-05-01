@@ -37,6 +37,7 @@ import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.notification.events.JobIDEvent;
 import org.apache.airavata.gfac.notification.events.StartExecutionEvent;
+import org.apache.airavata.gfac.provider.AbstractProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.util.GramProviderUtils;
 import org.apache.airavata.gfac.utils.GFacUtils;
@@ -56,7 +57,7 @@ import org.ietf.jgss.GSSException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GramProvider extends AbstractProvider{
+public class GramProvider extends AbstractProvider {
     private static final Logger log = LoggerFactory.getLogger(GramJobSubmissionListener.class);
 
     private GramJob job;
@@ -197,7 +198,7 @@ public class GramProvider extends AbstractProvider{
             	details.setJobID(jobID);
             	details.setJobDescription(job.getRSL());
                 jobExecutionContext.setJobDetails(details);
-                GFacUtils.saveJobStatus(details, JobState.UN_SUBMITTED, taskID);
+                GFacUtils.saveJobStatus(jobExecutionContext, details, JobState.UN_SUBMITTED);
                 
                 applicationSaved=true;
                 String jobStatusMessage = "Un-submitted JobID= " + jobID;
@@ -218,34 +219,34 @@ public class GramProvider extends AbstractProvider{
                     log.error("Error while submitting commit request - Credentials provided are invalid. Job Id - "
                             + job.getIDAsString(), e);
                     log.info("Attempting to renew credentials and re-submit commit signal...");
-                	GFacUtils.saveErrorDetails(gssException.getLocalizedMessage(), CorrectiveAction.RETRY_SUBMISSION, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
+                	GFacUtils.saveErrorDetails(jobExecutionContext, gssException.getLocalizedMessage(), CorrectiveAction.RETRY_SUBMISSION, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                     renewCredentials(jobExecutionContext);
 
                     try {
                         job.signal(GramJob.SIGNAL_COMMIT_REQUEST);
                     } catch (GramException e1) {
-                     	GFacUtils.saveErrorDetails(gssException.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
+                     	GFacUtils.saveErrorDetails(jobExecutionContext, gssException.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                     	throw new GFacException("Error while sending commit request. Job Id - "
                                 + job.getIDAsString(), e1);
                     } catch (GSSException e1) {
-                     	GFacUtils.saveErrorDetails(gssException.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
+                     	GFacUtils.saveErrorDetails(jobExecutionContext, gssException.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                         throw new GFacException("Error while sending commit request. Job Id - "
                                 + job.getIDAsString() + ". Credentials provided invalid", e1);
                     }
                 }
-                GFacUtils.updateJobStatus(details, JobState.SUBMITTED);
+                GFacUtils.updateJobStatus(jobExecutionContext, details, JobState.SUBMITTED);
                 jobStatusMessage = "Submitted JobID= " + job.getIDAsString();
                 log.info(jobStatusMessage);
                 jobExecutionContext.getNotifier().publish(new JobIDEvent(jobStatusMessage));
 
             } catch (GSSException e) {
                 // Renew credentials and re-submit
-             	GFacUtils.saveErrorDetails(e.getLocalizedMessage(), CorrectiveAction.RETRY_SUBMISSION, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
+             	GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.RETRY_SUBMISSION, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                 
                 reSubmitJob(gateKeeper, jobExecutionContext, globusHostType, e);
 
             } catch (GramException e) {
-             	GFacUtils.saveErrorDetails(e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
+             	GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                 
             	throw new GFacException("An error occurred while submitting a job, job id = " + job.getIDAsString(), e);
             }
@@ -263,10 +264,10 @@ public class GramProvider extends AbstractProvider{
                 renewCredentialsAttempt = false;
 
             } catch (GramException e) {
-            	GFacUtils.saveErrorDetails(e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
+            	GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                 throw new GFacException("An error occurred while submitting a job, job id = " + job.getIDAsString(), e);
             } catch (GSSException e) {
-            	GFacUtils.saveErrorDetails(e.getLocalizedMessage(), CorrectiveAction.RETRY_SUBMISSION, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
+            	GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.RETRY_SUBMISSION, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                 // Renew credentials and re-submit
                 reSubmitJob(gateKeeper, jobExecutionContext, globusHostType, e);
             }

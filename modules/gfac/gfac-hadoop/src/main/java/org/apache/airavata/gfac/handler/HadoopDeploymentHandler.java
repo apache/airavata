@@ -23,7 +23,6 @@ package org.apache.airavata.gfac.handler;
 
 import com.google.common.io.Files;
 import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.schemas.gfac.HadoopHostType;
@@ -70,6 +69,7 @@ public class HadoopDeploymentHandler implements GFacHandler {
      * Once invoked this method will deploy Hadoop in a local cluster or cloud based on the
      * configuration provided. If there is a already deployed hadoop cluster this will skip
      * deployment.
+     *
      *
      * @param jobExecutionContext job execution context containing all the required configurations
      *                            and runtime information.
@@ -268,7 +268,7 @@ public class HadoopDeploymentHandler implements GFacHandler {
         return ((HadoopHostType)hostDescription.getType()).getHadoopConfigurationDirectory();
     }
 
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException, GFacException {
+    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
 
     }
 }

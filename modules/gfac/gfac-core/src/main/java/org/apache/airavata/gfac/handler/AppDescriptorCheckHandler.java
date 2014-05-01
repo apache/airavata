@@ -22,7 +22,6 @@ package org.apache.airavata.gfac.handler;
 
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.gfac.Constants;
-import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.slf4j.Logger;
@@ -82,7 +81,7 @@ public class AppDescriptorCheckHandler implements GFacHandler {
         jobExecutionContext.getApplicationContext().setApplicationDeploymentDescription(app);
     }
 
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException, GFacException {
+    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
 
     }
 }

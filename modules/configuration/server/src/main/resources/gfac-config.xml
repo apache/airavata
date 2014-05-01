@@ -11,6 +11,9 @@
     ~ under the License. -->
 
 <GFac>
+    <DaemonHandlers>
+        <Handler class="org.apache.airavata.gfac.monitor.handlers.GridPullMonitorHandler"/>
+    </DaemonHandlers>
     <GlobalHandlers>
         <InHandlers>
             <Handler class="org.apache.airavata.gfac.handler.AppDescriptorCheckHandler">
@@ -54,7 +57,7 @@
 
     <Application name="UltraScan">
         <InHandlers>
-            <Handler class="org.apache.airavata.gfac.handler.GramDirectorySetupHandler"/>
+            <Handler class="org.apache.airavata.gfac.handler.GfacDirectorySetupHandler"/>
             <Handler class="org.apache.airavata.gfac.handler.GridFTPInputHandler"/>
         </InHandlers>
         <OutHandlers>

@@ -21,6 +21,7 @@
 package org.apache.airavata.gfac.cpi;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,39 +43,35 @@ import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.handler.GFacHandler;
 import org.apache.airavata.gfac.handler.GFacHandlerConfig;
 import org.apache.airavata.gfac.handler.GFacHandlerException;
+import org.apache.airavata.gfac.handler.ThreadedHandler;
 import org.apache.airavata.gfac.notification.events.ExecutionFailEvent;
 import org.apache.airavata.gfac.notification.listeners.LoggingListener;
 import org.apache.airavata.gfac.notification.listeners.WorkflowTrackingListener;
 import org.apache.airavata.gfac.provider.GFacProvider;
 import org.apache.airavata.gfac.scheduler.HostScheduler;
 import org.apache.airavata.gfac.utils.GFacUtils;
-import org.apache.airavata.gfac.monitor.AbstractActivityListener;
-import org.apache.airavata.gfac.monitor.MonitorManager;
-import org.apache.airavata.gfac.monitor.command.ExperimentCancelRequest;
-import org.apache.airavata.gfac.monitor.command.TaskCancelRequest;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
+import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
-import org.apache.airavata.persistance.registry.jpa.resources.AbstractResource.TaskDetailConstants;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.Registry;
-import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.eventbus.Subscribe;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
 
 /**
  * This is the GFac CPI class for external usage, this simply have a single method to submit a job to
  * the resource, required data for the job has to be stored in registry prior to invoke this object.
  */
-public class GFacImpl implements GFac, AbstractActivityListener {
+public class GFacImpl implements GFac {
     private static final Logger log = LoggerFactory.getLogger(GFacImpl.class);
     public static final String ERROR_SENT = "ErrorSent";
-    public static final String PBS_JOB_MANAGER = "pbs";
-    public static final String SLURM_JOB_MANAGER = "slurm";
-    public static final String SUN_GRID_ENGINE_JOB_MANAGER = "sge";
 
     private Registry registry;
 
@@ -82,8 +79,9 @@ public class GFacImpl implements GFac, AbstractActivityListener {
 
     private AiravataRegistry2 airavataRegistry2;
     
-    private MonitorManager monitorManager;
+    private static List<ThreadedHandler> daemonHandlers;
 
+    private File gfacConfigFile;
     /**
      * Constructor for GFac
      *
@@ -95,13 +93,59 @@ public class GFacImpl implements GFac, AbstractActivityListener {
         this.registry = registry;
         this.airavataAPI = airavataAPI;
         this.airavataRegistry2 = airavataRegistry2;
+        daemonHandlers = new ArrayList<ThreadedHandler>();
+        startDaemonHandlers();
+    }
+
+    private void startDaemonHandlers()  {
+        List<GFacHandlerConfig> daemonHandlerConfig = null;
+        URL resource = GFacImpl.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
+        gfacConfigFile = new File(resource.getPath());
+        try {
+            daemonHandlerConfig = GFacConfiguration.getDaemonHandlers(gfacConfigFile);
+        } catch (ParserConfigurationException e) {
+            log.error("Error parsing gfac-config.xml, double check the xml configuration",e);
+        } catch (IOException e) {
+            log.error("Error parsing gfac-config.xml, double check the xml configuration", e);
+        } catch (SAXException e) {
+            log.error("Error parsing gfac-config.xml, double check the xml configuration", e);
+        } catch (XPathExpressionException e) {
+            log.error("Error parsing gfac-config.xml, double check the xml configuration", e);
+        }
+
+        for(GFacHandlerConfig handlerConfig:daemonHandlerConfig){
+            String className = handlerConfig.getClassName();
+            try {
+                Class<?> aClass = Class.forName(className).asSubclass(ThreadedHandler.class);
+                ThreadedHandler threadedHandler = (ThreadedHandler) aClass.newInstance();
+                threadedHandler.initProperties(handlerConfig.getProperties());
+                daemonHandlers.add(threadedHandler);
+            }catch (ClassNotFoundException e){
+                log.error("Error initializing the handler: " + className);
+                log.error(className + " class has to implement " + ThreadedHandler.class);
+            } catch (InstantiationException e) {
+                log.error("Error initializing the handler: " + className);
+                log.error(className + " class has to implement " + ThreadedHandler.class);
+            } catch (IllegalAccessException e) {
+                log.error("Error initializing the handler: " + className);
+                log.error(className + " class has to implement " + ThreadedHandler.class);
+            } catch (GFacHandlerException e) {
+                log.error("Error initializing the handler " + className);
+            } catch (GFacException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
+        for(ThreadedHandler tHandler:daemonHandlers){
+            tHandler.run();
+        }
     }
 
     /**
      * This can be used to submit jobs for testing purposes just by filling parameters by hand (JobExecutionContext)
      */
     public GFacImpl() {
-
+        daemonHandlers = new ArrayList<ThreadedHandler>();
+        startDaemonHandlers();
     }
 
     /**
@@ -127,6 +171,7 @@ public class GFacImpl implements GFac, AbstractActivityListener {
     private JobExecutionContext createJEC(String experimentID, String taskID) throws Exception {
         JobExecutionContext jobExecutionContext;
         TaskDetails taskData = (TaskDetails) registry.get(DataType.TASK_DETAIL, taskID);
+
         // this is wear our new model and old model is mapping (so serviceName in ExperimentData and service name in ServiceDescriptor
         // has to be same.
 
@@ -146,21 +191,31 @@ public class GFacImpl implements GFac, AbstractActivityListener {
         HostDescription hostDescription = hostScheduler.schedule(registeredHosts);
 
         ServiceDescription serviceDescription = airavataRegistry2.getServiceDescriptor(serviceName);
-        String hostName; 
+        String hostName;
         if(taskData.getTaskScheduling().getResourceHostId() != null){
-        	hostName = taskData.getTaskScheduling().getResourceHostId();
+            hostName = taskData.getTaskScheduling().getResourceHostId();
         }else{
-        	hostName = hostDescription.getType().getHostName();
+            hostName = hostDescription.getType().getHostName();
         }
-      
-		ApplicationDescription applicationDescription = airavataRegistry2.getApplicationDescriptors(serviceName, hostName);
+
+        ApplicationDescription applicationDescription = airavataRegistry2.getApplicationDescriptors(serviceName, hostName);
         URL resource = GFacImpl.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         Properties configurationProperties = ServerSettings.getProperties();
         GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, configurationProperties);
 
+
+        // start constructing jobexecutioncontext
         jobExecutionContext = new JobExecutionContext(gFacConfiguration, serviceName);
-        jobExecutionContext.setRegistry(registry);
+        Experiment experiment = (Experiment) registry.get(DataType.EXPERIMENT, experimentID);
+        jobExecutionContext.setExperiment(experiment);
+        jobExecutionContext.setExperimentID(experimentID);
+
         jobExecutionContext.setTaskData(taskData);
+
+
+
+
+        jobExecutionContext.setRegistry(registry);
 
         ApplicationContext applicationContext = new ApplicationContext();
         applicationContext.setApplicationDeploymentDescription(applicationDescription);
@@ -177,7 +232,6 @@ public class GFacImpl implements GFac, AbstractActivityListener {
                 serviceDescription.getType().getOutputParametersArray())));
 
         jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
-        jobExecutionContext.setExperimentID(experimentID);
 
         return jobExecutionContext;
     }
@@ -217,6 +271,9 @@ public class GFacImpl implements GFac, AbstractActivityListener {
                 initProvider(provider, jobExecutionContext);
                 executeProvider(provider, jobExecutionContext);
                 disposeProvider(provider, jobExecutionContext);
+            }
+            if(GFacUtils.isSynchronousMode(jobExecutionContext)){
+                invokeOutFlowHandlers(jobExecutionContext);
             }
         } catch (Exception e) {
             jobExecutionContext.setProperty(ERROR_SENT, "true");
@@ -323,29 +380,25 @@ public class GFacImpl implements GFac, AbstractActivityListener {
     }
 
 
+    public AiravataAPI getAiravataAPI() {
+        return airavataAPI;
+    }
 
-	public void setup(Object... configurations) {
-		for (Object configuration : configurations) {
-			if (configuration instanceof MonitorManager){
-				monitorManager=(MonitorManager) configuration;
-			} 	
-		}
-			
-	}
-	
-	@Subscribe
-	public void experimentCancelRequested(ExperimentCancelRequest request){
-		try {
-			List<String> nodeIds = registry.getIds(DataType.WORKFLOW_NODE_DETAIL, WorkflowNodeConstants.EXPERIMENT_ID, request.getExperimentId());
-			for (String nodeId : nodeIds) {
-				List<String> taskIds = registry.getIds(DataType.TASK_DETAIL, TaskDetailConstants.NODE_INSTANCE_ID, nodeId);
-				for (String taskId : taskIds) {
-					monitorManager.getMonitorPublisher().publish(new TaskCancelRequest(request.getExperimentId(),nodeId, taskId));
-				}
-			}
-		} catch (RegistryException e) {
-			log.error("Error while attempting to publish task cancel requests!!!",e);
-		}
-	}
+    public AiravataRegistry2 getAiravataRegistry2() {
+        return airavataRegistry2;
+    }
+
+    public static List<ThreadedHandler> getDaemonHandlers() {
+        return daemonHandlers;
+    }
+
+    public static String getErrorSent() {
+        return ERROR_SENT;
+    }
+
+    public File getGfacConfigFile() {
+        return gfacConfigFile;
+    }
+
 
 }

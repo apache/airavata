@@ -75,7 +75,7 @@ public class GridFTPOutputHandler extends AbstractHandler {
     private Registry registry;
 
 
-    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException,GFacException {
+    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
        log.info("Invoking GridFTPOutputHandler ...");
        super.invoke(jobExecutionContext);
         
@@ -224,7 +224,7 @@ public class GridFTPOutputHandler extends AbstractHandler {
         	    status.setTransferState(TransferState.FAILED);
 				detail.setTransferStatus(status);
 				registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
-				GFacUtils.saveErrorDetails(e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE,  jobExecutionContext.getTaskData().getTaskID());
+				GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);
 	 		} catch (Exception e1) {
  			    throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
  		   }
@@ -341,7 +341,7 @@ public class GridFTPOutputHandler extends AbstractHandler {
         return outputFileStagingPath + File.separator + fileName;
     }
 
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException, GFacException {
+    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
 
     }
 }
