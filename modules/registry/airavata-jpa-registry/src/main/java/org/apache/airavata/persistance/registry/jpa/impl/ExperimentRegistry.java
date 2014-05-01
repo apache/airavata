@@ -650,8 +650,12 @@ public class ExperimentRegistry {
             TaskDetailResource taskDetail = (TaskDetailResource) workflowNode.create(ResourceType.TASK_DETAIL);
             DataTransferDetailResource dataTransferDetail = taskDetail.getDataTransferDetail(transferId);
             StatusResource statusResource = dataTransferDetail.getDataTransferStatus();
-            statusResource.setExperimentResource(dataTransferDetail.getTaskDetailResource().getWorkflowNodeDetailResource().getExperimentResource());
-            statusResource.setWorkflowNodeDetail(dataTransferDetail.getTaskDetailResource().getWorkflowNodeDetailResource());
+        
+            WorkflowNodeDetailResource workflowNodeDetailResource = dataTransferDetail.getTaskDetailResource().getWorkflowNodeDetailResource();
+            if(workflowNodeDetailResource != null){
+            	statusResource.setExperimentResource(workflowNodeDetailResource.getExperimentResource());
+            	statusResource.setWorkflowNodeDetail(workflowNodeDetailResource);
+            }
             statusResource.setTaskDetailResource(dataTransferDetail.getTaskDetailResource());
             statusResource.setDataTransferDetail(dataTransferDetail);
             statusResource.setStatusType(StatusType.DATA_TRANSFER.toString());
