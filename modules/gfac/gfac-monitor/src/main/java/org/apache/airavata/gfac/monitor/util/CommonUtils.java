@@ -176,8 +176,7 @@ public class CommonUtils {
     }
 
     public static void invokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
-        GFacConfiguration gFacConfiguration = jobExecutionContext.getGFacConfiguration();
-        List<GFacHandlerConfig> handlers = null;
+        List<GFacHandlerConfig> handlers = jobExecutionContext.getGFacConfiguration().getOutHandlers();
 
         for (GFacHandlerConfig handlerClassName : handlers) {
             Class<? extends GFacHandler> handlerClass;
