@@ -56,7 +56,7 @@ import java.util.Set;
 public class GSISSHOutputHandler extends AbstractHandler{
     private static final Logger log = LoggerFactory.getLogger(GSISSHOutputHandler.class);
 
-    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException, GFacException {
+    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         if(jobExecutionContext.getApplicationContext().getHostDescription().getType() instanceof GsisshHostType) { // this is because we don't have the right jobexecution context
             // so attempting to get it from the registry
             if (Constants.PUSH.equals(((GsisshHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType()).getMonitorMode())) {
@@ -87,14 +87,17 @@ public class GSISSHOutputHandler extends AbstractHandler{
                 }
             }
         }
+        try {
+            if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) == null) {
 
-        if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) == null) {
-            try {
                 GFACGSISSHUtils.addSecurityContext(jobExecutionContext);
-            } catch (ApplicationSettingsException e) {
-                log.error(e.getMessage());
-                throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
             }
+        } catch (ApplicationSettingsException e) {
+            log.error(e.getMessage());
+            throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
+        } catch (GFacException e) {
+            log.error(e.getMessage());
+            throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
         }
         super.invoke(jobExecutionContext);
         DataTransferDetails detail = new DataTransferDetails();
@@ -201,7 +204,7 @@ public class GSISSHOutputHandler extends AbstractHandler{
                 status.setTransferState(TransferState.FAILED);
                 detail.setTransferStatus(status);
                 registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
-                GFacUtils.saveErrorDetails(e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE, jobExecutionContext.getTaskData().getTaskID());
+                GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);
             } catch (Exception e1) {
                 throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
             }
@@ -210,7 +213,7 @@ public class GSISSHOutputHandler extends AbstractHandler{
 
     }
 
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException, GFacException {
+    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
 
     }
 }

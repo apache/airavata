@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
 public class GridFTPInputHandler extends AbstractHandler {
     private static final Logger log = LoggerFactory.getLogger(AppDescriptorCheckHandler.class);
  
-    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException,GFacException {
+    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         log.info("Invoking GridFTPInputHandler ...");
         super.invoke(jobExecutionContext);
         DataTransferDetails detail = new DataTransferDetails();
@@ -101,7 +101,7 @@ public class GridFTPInputHandler extends AbstractHandler {
          	    status.setTransferState(TransferState.FAILED);
  				detail.setTransferStatus(status);
  				registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
- 				GFacUtils.saveErrorDetails(e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE,  jobExecutionContext.getTaskData().getTaskID());
+ 				GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);
  			} catch (Exception e1) {
   			    throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
   		   }
@@ -196,7 +196,7 @@ public class GridFTPInputHandler extends AbstractHandler {
         return destURI.getPath();
     }
 
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException, GFacException {
+    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
 
     }
 

@@ -48,6 +48,7 @@ import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.notification.events.StatusChangeEvent;
 import org.apache.airavata.gfac.notification.events.UnicoreJobIDEvent;
+import org.apache.airavata.gfac.provider.AbstractProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.utils.DataTransferrer;
 import org.apache.airavata.gfac.utils.JSDLGenerator;
@@ -91,7 +92,7 @@ import eu.unicore.util.httpclient.DefaultClientConfiguration;
 
 
 
-public class BESProvider extends AbstractProvider{
+public class BESProvider extends AbstractProvider {
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private DefaultClientConfiguration secProperties;
@@ -199,7 +200,7 @@ public class BESProvider extends AbstractProvider{
                     String jobStatusMessage = "Status of job " + jobId + "is " + jobStatus;
                     jobExecutionContext.getNotifier().publish(new StatusChangeEvent(jobStatusMessage));
                     details.setJobID(jobId);
-                    GFacUtils.updateJobStatus(details, jobStatus);
+                    GFacUtils.updateJobStatus(jobExecutionContext, details, jobStatus);
                 } catch (UnknownActivityIdentifierFault e) {
                     throw new GFacProviderException(e.getMessage(), e.getCause());
                 }catch (GFacException e) {
@@ -239,7 +240,7 @@ public class BESProvider extends AbstractProvider{
                 jobExecutionContext.getNotifier().publish(new StatusChangeEvent(jobStatusMessage));
                 details.setJobID(jobId);
                 try {
-					GFacUtils.saveJobStatus(details, jobStatus, jobExecutionContext.getTaskData().getTaskID());
+					GFacUtils.saveJobStatus(jobExecutionContext,details, jobStatus);
 				} catch (GFacException e) {
 					 throw new GFacProviderException(e.getLocalizedMessage(),e);
 				}

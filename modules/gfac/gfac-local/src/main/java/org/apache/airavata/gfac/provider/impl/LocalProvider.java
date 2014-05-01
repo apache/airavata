@@ -30,13 +30,13 @@ import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.notification.events.StartExecutionEvent;
+import org.apache.airavata.gfac.provider.AbstractProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.provider.utils.ProviderUtils;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.InputStreamToFileWriter;
 import org.apache.airavata.gfac.utils.InputUtils;
 import org.apache.airavata.gfac.utils.OutputUtils;
-import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class LocalProvider extends AbstractProvider{
+public class LocalProvider extends AbstractProvider {
     private static final Logger log = LoggerFactory.getLogger(LocalProvider.class);
     private ProcessBuilder builder;
     private List<String> cmdList;
@@ -123,13 +123,12 @@ public class LocalProvider extends AbstractProvider{
                  getApplicationContext().getApplicationDeploymentDescription().getType();
         JobDetails jobDetails = new JobDetails();
         try {
-        	jobId= jobExecutionContext.getTaskData().getTaskID();
+        	jobId = jobExecutionContext.getTaskData().getTaskID();
             jobDetails.setJobID(jobId);
             jobDetails.setJobDescription(app.toString());
             jobExecutionContext.setJobDetails(jobDetails);
-            JobDescriptor jobDescriptor = GFacUtils.createJobDescriptor(jobExecutionContext, app, null);
-            jobDetails.setJobDescription(jobDescriptor.toXML());
-            GFacUtils.saveJobStatus(jobDetails, JobState.SETUP, jobExecutionContext.getTaskData().getTaskID());
+            jobDetails.setJobDescription(app.toString());
+            GFacUtils.saveJobStatus(jobExecutionContext,jobDetails, JobState.SETUP);
         	// running cmd
             Process process = builder.start();
 

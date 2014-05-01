@@ -24,6 +24,7 @@ package org.apache.airavata.gfac;
 public class Constants {
 	public static final String XPATH_EXPR_GLOBAL_INFLOW_HANDLERS = "/GFac/GlobalHandlers/InHandlers/Handler";
 	public static final String XPATH_EXPR_GLOBAL_OUTFLOW_HANDLERS = "/GFac/GlobalHandlers/OutHandlers/Handler";
+    public static final String XPATH_EXPR_DAEMON_HANDLERS = "/GFac/DaemonHandlers/Handler";
 
 	public static final String XPATH_EXPR_APPLICATION_HANDLERS_START = "/GFac/Application[@name='";
 	public static final String XPATH_EXPR_APPLICATION_INFLOW_HANDLERS_END = "']/InHandlers/Handler";
@@ -37,6 +38,7 @@ public class Constants {
 	public static final String XPATH_EXPR_PROVIDER_OUTFLOW_HANDLERS_END = "']/OutHandlers/Handler";
 
 	public static final String GFAC_CONFIG_CLASS_ATTRIBUTE = "class";
+    public static final String GFAC_CONFIG_EXECUTION_MODE_ATTRIBUTE = "executionMode";
 	public static final String GFAC_CONFIG_APPLICATION_NAME_ATTRIBUTE = "class";
 	public static final String NEWLINE = System.getProperty("line.separator");
 	public static final String INPUT_DATA_DIR_VAR_NAME = "input";

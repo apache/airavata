@@ -21,7 +21,6 @@
 
 package org.apache.airavata.gfac.handler;
 
-import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.provider.utils.HadoopUtils;
@@ -96,7 +95,7 @@ public class HDFSDataMovementHandler implements GFacHandler {
 
     private void handleOutPath(JobExecutionContext jobExecutionContext){}
 
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException, GFacException {
+    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
 
     }
 }

@@ -25,12 +25,8 @@ import java.util.Map;
 
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.monitor.AbstractActivityListener;
-import org.apache.airavata.gfac.monitor.command.TaskCancelRequest;
 
-import com.google.common.eventbus.Subscribe;
-
-public interface GFacProvider extends AbstractActivityListener{
+public interface GFacProvider{
 
     void initProperties(Map<String,String> properties) throws GFacProviderException,GFacException;
     /**
@@ -63,6 +59,5 @@ public interface GFacProvider extends AbstractActivityListener{
      */
     public void cancelJob(String jobId, JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException;
 
-    @Subscribe
-    public void taskCancelRequested(TaskCancelRequest request);
+
 }

@@ -73,7 +73,7 @@ public class AdvancedSCPInputHandler extends AbstractHandler{
 
     private String inputPath;
 
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException, GFacException {
+    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
         password = properties.get("password");
         passPhrase = properties.get("passPhrase");
         privateKeyPath = properties.get("privateKeyPath");
@@ -83,8 +83,10 @@ public class AdvancedSCPInputHandler extends AbstractHandler{
         inputPath = properties.get("inputPath");
     }
 
-    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException, GFacException {
-        if(jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null){
+    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+        MessageContext inputNew = new MessageContext();
+        try{
+            if(jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null){
             try {
                 GFACSSHUtils.addSecurityContext(jobExecutionContext);
             } catch (ApplicationSettingsException e) {
@@ -92,21 +94,19 @@ public class AdvancedSCPInputHandler extends AbstractHandler{
                 throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
             }
         }
-        ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext()
+            ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext()
                 .getApplicationDeploymentDescription().getType();
 
-        AuthenticationInfo authenticationInfo = null;
-        if (password != null) {
+            AuthenticationInfo authenticationInfo = null;
+            if (password != null) {
             authenticationInfo = new DefaultPasswordAuthenticationInfo(this.password);
         } else {
             authenticationInfo = new DefaultPublicKeyFileAuthentication(this.publicKeyPath, this.privateKeyPath,
                     this.passPhrase);
         }
-        // Server info
-        ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
-        Cluster pbsCluster = null;
-        MessageContext inputNew = new MessageContext();
-        try {
+            // Server info
+            ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
+            Cluster pbsCluster = null;
             // here doesn't matter what the job manager is because we are only doing some file handling
             // not really dealing with monitoring or job submission, so we pa
             pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));

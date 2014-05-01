@@ -23,7 +23,6 @@ package org.apache.airavata.orchestrator.core.context;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.airavata.gfac.monitor.MonitorManager;
 import org.apache.airavata.orchestrator.core.OrchestratorConfiguration;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
 import org.apache.airavata.registry.api.AiravataRegistry2;
@@ -41,8 +40,6 @@ public class OrchestratorContext {
 
     private Registry newRegistry;
     
-    private MonitorManager monitorManager;
-
     public OrchestratorContext(List<GFACInstance> gfacInstanceList) {
         this.gfacInstanceList = new ArrayList<GFACInstance>();
     }
@@ -81,12 +78,4 @@ public class OrchestratorContext {
     public void setNewRegistry(Registry newRegistry) {
         this.newRegistry = newRegistry;
     }
-
-	public MonitorManager getMonitorManager() {
-		return monitorManager;
-	}
-
-	public void setMonitorManager(MonitorManager monitorManager) {
-		this.monitorManager = monitorManager;
-	}
 }

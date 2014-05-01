@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 public class  GramDirectorySetupHandler extends  AbstractHandler {
     private static final Logger log = LoggerFactory.getLogger(GramDirectorySetupHandler.class);
    
-    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException,GFacException {
+    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         log.info("Invoking GramDirectorySetupHandler ...");
         super.invoke(jobExecutionContext);
         String[] gridFTPEndpointArray = null;
@@ -119,17 +119,19 @@ public class  GramDirectorySetupHandler extends  AbstractHandler {
                 }
             }
             if (success == false) {
-            	GFacUtils.saveErrorDetails(pe.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE,  jobExecutionContext.getTaskData().getTaskID());
+            	GFacUtils.saveErrorDetails(jobExecutionContext, pe.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);
         		throw pe;
             }
         } catch (SecurityException e) {
             throw new GFacHandlerException(e.getMessage(), e);
         } catch (ApplicationSettingsException e1) {
         	throw new GFacHandlerException(e1.getMessage(), e1);
-		}
+		} catch (GFacException e) {
+            throw new GFacHandlerException(e);
+        }
     }
 
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException, GFacException {
+    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
 
     }
 }

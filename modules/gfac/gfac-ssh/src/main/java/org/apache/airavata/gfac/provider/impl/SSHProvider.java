@@ -42,6 +42,7 @@ import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.context.security.SSHSecurityContext;
 import org.apache.airavata.gfac.handler.GFacHandlerException;
 import org.apache.airavata.gfac.notification.events.StartExecutionEvent;
+import org.apache.airavata.gfac.provider.AbstractProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.gfac.util.GFACSSHUtils;
 import org.apache.airavata.gfac.utils.GFacUtils;
@@ -64,7 +65,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 /**
  * Execute application using remote SSH
  */
-public class SSHProvider extends AbstractProvider{
+public class SSHProvider extends AbstractProvider {
     private static final Logger log = LoggerFactory.getLogger(SSHProvider.class);
     private Cluster cluster;
     private String jobID = null;
@@ -92,10 +93,10 @@ public class SSHProvider extends AbstractProvider{
             details.setJobID(taskID);
             details.setJobDescription(remoteFile);
             jobExecutionContext.setJobDetails(details);
-            JobDescriptor jobDescriptor = GFacUtils.createJobDescriptor(jobExecutionContext, app, null);
+            JobDescriptor jobDescriptor = GFACSSHUtils.createJobDescriptor(jobExecutionContext, app, null);
             details.setJobDescription(jobDescriptor.toXML());
          
-            GFacUtils.saveJobStatus(details, JobState.SETUP, taskID);
+            GFacUtils.saveJobStatus(jobExecutionContext, details, JobState.SETUP);
             log.info(remoteFile);
             try {
             	File runscript = createShellScript(jobExecutionContext);
@@ -161,7 +162,7 @@ public class SSHProvider extends AbstractProvider{
                         log.info("Successfully retrieved the Security Context");
                     }
                     // This installed path is a mandetory field, because this could change based on the computing resource
-                    JobDescriptor jobDescriptor = GFacUtils.createJobDescriptor(jobExecutionContext, app, cluster);
+                    JobDescriptor jobDescriptor = GFACSSHUtils.createJobDescriptor(jobExecutionContext, app, cluster);
 
                     log.info(jobDescriptor.toXML());
 
@@ -171,25 +172,25 @@ public class SSHProvider extends AbstractProvider{
                     jobExecutionContext.setJobDetails(jobDetails);
                     if (jobID == null) {
                         jobDetails.setJobID("none");
-                        GFacUtils.saveJobStatus(jobDetails, JobState.FAILED, taskID);
+                        GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
                     } else {
                         jobDetails.setJobID(jobID);
-                        GFacUtils.saveJobStatus(jobDetails, JobState.SUBMITTED, taskID);
+                        GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED);
                     }
 
                 } catch (SSHApiException e) {
                     String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
                     log.error(error);
                     jobDetails.setJobID("none");
-                    GFacUtils.saveJobStatus(jobDetails, JobState.FAILED, taskID);
-                    GFacUtils.saveErrorDetails(error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
+                    GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
+                    GFacUtils.saveErrorDetails(jobExecutionContext, error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                     throw new GFacProviderException(error, e);
                 } catch (Exception e) {
                     String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
                     log.error(error);
                     jobDetails.setJobID("none");
-                    GFacUtils.saveJobStatus(jobDetails, JobState.FAILED, taskID);
-                    GFacUtils.saveErrorDetails(error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR, taskID);
+                    GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
+                    GFacUtils.saveErrorDetails(jobExecutionContext, error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                     throw new GFacProviderException(error, e);
                 }
             } catch (GFacException e) {

@@ -36,8 +36,8 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.ec2.util.AmazonEC2Util;
 import org.apache.airavata.gfac.ec2.util.EC2ProviderUtil;
+import org.apache.airavata.gfac.provider.AbstractProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
-import org.apache.airavata.gfac.provider.impl.AbstractProvider;
 import org.apache.airavata.gfac.provider.utils.ProviderUtils;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.model.workspace.experiment.JobState;
@@ -131,7 +131,7 @@ public class EC2Provider extends AbstractProvider {
                 new BasicAWSCredentials(amazonSecurityContext.getAccessKey(), amazonSecurityContext.getSecretKey());
         AmazonEC2Client ec2client = new AmazonEC2Client(credential);
         taskID = jobExecutionContext.getTaskData().getTaskID();
-		GFacUtils.saveJobStatus(details, JobState.SETUP, taskID);
+		GFacUtils.saveJobStatus(jobExecutionContext, details, JobState.SETUP);
         initEc2Environment(jobExecutionContext, ec2client);
         checkConnection(instance, ec2client);
     }
@@ -184,7 +184,7 @@ public class EC2Provider extends AbstractProvider {
             // Authenticate
             int result = sshClient.authenticate(publicKeyAuth);
             if(result== AuthenticationProtocolState.FAILED) {
-            	GFacUtils.saveJobStatus(details, JobState.FAILED, taskID);
+            	GFacUtils.saveJobStatus(jobExecutionContext, details, JobState.FAILED);
                 throw new GFacProviderException("The authentication failed");
             } else if(result==AuthenticationProtocolState.PARTIAL) {
                 throw new GFacProviderException("The authentication succeeded but another"
@@ -192,12 +192,12 @@ public class EC2Provider extends AbstractProvider {
             } else if(result==AuthenticationProtocolState.COMPLETE) {
                 log.info("ssh client authentication is complete...");
             }
-            GFacUtils.saveJobStatus(details, JobState.SUBMITTED, taskID);
+            GFacUtils.saveJobStatus(jobExecutionContext, details, JobState.SUBMITTED);
             SessionChannelClient session = sshClient.openSessionChannel();
             log.info("ssh session successfully opened...");
             session.requestPseudoTerminal("vt100", 80, 25, 0, 0, "");
             session.startShell();
-            GFacUtils.saveJobStatus(details, JobState.ACTIVE, taskID);
+            GFacUtils.saveJobStatus(jobExecutionContext, details, JobState.ACTIVE);
               
             session.getOutputStream().write(shellCmd.getBytes());
 
@@ -228,7 +228,7 @@ public class EC2Provider extends AbstractProvider {
                 ((StringParameterType) outParam.getType()).setValue(executionResult);
                 jobExecutionContext.getOutMessageContext().addParameter(paramName, outParam);
             }
-            GFacUtils.saveJobStatus(details, JobState.COMPLETE, taskID);
+            GFacUtils.saveJobStatus(jobExecutionContext, details, JobState.COMPLETE);
         } catch (InvalidSshKeyException e) {
             throw new GFacProviderException("Invalid SSH key", e);
         } catch (IOException e) {

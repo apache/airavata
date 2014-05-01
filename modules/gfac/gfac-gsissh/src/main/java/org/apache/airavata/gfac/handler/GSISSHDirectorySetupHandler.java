@@ -39,21 +39,24 @@ import java.util.Map;
 public class GSISSHDirectorySetupHandler extends AbstractHandler{
       private static final Logger log = LoggerFactory.getLogger(GSISSHDirectorySetupHandler.class);
 
-	public void invoke(JobExecutionContext jobExecutionContext) throws GFacException {
-         if(jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) == null){
-            try {
+	public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+        try {
+            if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) == null) {
                 GFACGSISSHUtils.addSecurityContext(jobExecutionContext);
-            } catch (ApplicationSettingsException e) {
-                log.error(e.getMessage());
-                throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
             }
+        } catch (ApplicationSettingsException e) {
+            log.error(e.getMessage());
+            throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
+        } catch (GFacException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-		log.info("Setup SSH job directorties");
-	    super.invoke(jobExecutionContext);
-		makeDirectory(jobExecutionContext);
 
+        log.info("Setup SSH job directorties");
+        super.invoke(jobExecutionContext);
+        makeDirectory(jobExecutionContext);
 	}
-	private void makeDirectory(JobExecutionContext jobExecutionContext) throws GFacException {
+	private void makeDirectory(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+                try {
         Cluster cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
         if (cluster == null) {
             throw new GFacHandlerException("Security context is not set properly");
@@ -61,7 +64,7 @@ public class GSISSHDirectorySetupHandler extends AbstractHandler{
             log.info("Successfully retrieved the Security Context");
         }
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
-        try {
+
             String workingDirectory = app.getScratchWorkingDirectory();
             cluster.makeDirectory(workingDirectory);
             cluster.makeDirectory(app.getScratchWorkingDirectory());
@@ -84,7 +87,7 @@ public class GSISSHDirectorySetupHandler extends AbstractHandler{
             detail.setTransferStatus(status);
             try {
                 registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
-                GFacUtils.saveErrorDetails(e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE, jobExecutionContext.getTaskData().getTaskID());
+                GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);
             } catch (Exception e1) {
                 throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
             }
@@ -92,7 +95,7 @@ public class GSISSHDirectorySetupHandler extends AbstractHandler{
         }
 	}
 
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException, GFacException {
+    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
 
     }
 }

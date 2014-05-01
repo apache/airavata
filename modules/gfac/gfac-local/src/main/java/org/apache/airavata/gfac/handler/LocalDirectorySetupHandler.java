@@ -21,7 +21,6 @@
 package org.apache.airavata.gfac.handler;
 
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
-import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
@@ -56,7 +55,7 @@ public class LocalDirectorySetupHandler implements GFacHandler{
            }
     }
 
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException, GFacException {
+    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
 
     }
 }

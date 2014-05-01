@@ -48,9 +48,6 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
     public void initialize(OrchestratorContext orchestratorContext) throws OrchestratorException {
         this.orchestratorContext = orchestratorContext;
         gfac = new GFacImpl(orchestratorContext.getNewRegistry(), null, orchestratorContext.getRegistry());
-        if (orchestratorContext.getMonitorManager()!=null) {
-			orchestratorContext.getMonitorManager().registerListener(gfac);
-		}
     }
 
     public GFACInstance selectGFACInstance() throws OrchestratorException {

@@ -57,23 +57,24 @@ public class SSHInputHandler extends AbstractHandler {
     private static final Logger log = LoggerFactory.getLogger(SSHInputHandler.class);
 
 
-    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException, GFacException {
-         if(jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null){
-            try {
-                GFACSSHUtils.addSecurityContext(jobExecutionContext);
-            } catch (ApplicationSettingsException e) {
-                log.error(e.getMessage());
-                throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
-            }
-        }
-        log.info("Invoking SCPInputHandler");
-        super.invoke(jobExecutionContext);
-       
+    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         DataTransferDetails detail = new DataTransferDetails();
         TransferStatus status = new TransferStatus();
-    
         MessageContext inputNew = new MessageContext();
         try {
+
+            if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null) {
+                try {
+                    GFACSSHUtils.addSecurityContext(jobExecutionContext);
+                } catch (ApplicationSettingsException e) {
+                    log.error(e.getMessage());
+                    throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
+                }
+            }
+            log.info("Invoking SCPInputHandler");
+            super.invoke(jobExecutionContext);
+
+
             MessageContext input = jobExecutionContext.getInMessageContext();
             Set<String> parameters = input.getParameters().keySet();
             for (String paramName : parameters) {
@@ -90,8 +91,8 @@ public class SSHInputHandler extends AbstractHandler {
                         status.setTransferState(TransferState.UPLOAD);
                         detail.setTransferStatus(status);
                         detail.setTransferDescription("Input Data Staged: " + stageInputFiles);
-                        registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
-                   	newFiles.add(stageInputFiles);
+                        registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+                        newFiles.add(stageInputFiles);
                     }
                     ((URIArrayType) actualParameter.getType()).setValueArray(newFiles.toArray(new String[newFiles.size()]));
                 }
@@ -102,11 +103,11 @@ public class SSHInputHandler extends AbstractHandler {
             status.setTransferState(TransferState.FAILED);
             detail.setTransferStatus(status);
             try {
-    			GFacUtils.saveErrorDetails(e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE,  jobExecutionContext.getTaskData().getTaskID());
-    			registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
-			} catch (Exception e1) {
-			    throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
-		   }
+                GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);
+                registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+            } catch (Exception e1) {
+                throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
+            }
             throw new GFacHandlerException("Error while input File Staging", e, e.getLocalizedMessage());
         }
         jobExecutionContext.setInMessageContext(inputNew);
@@ -134,7 +135,7 @@ public class SSHInputHandler extends AbstractHandler {
         }
     }
 
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException, GFacException {
+    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
 
     }
 }

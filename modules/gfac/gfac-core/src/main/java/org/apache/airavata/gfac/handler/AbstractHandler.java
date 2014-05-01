@@ -20,7 +20,6 @@
 */
 package org.apache.airavata.gfac.handler;
 
-import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
@@ -28,7 +27,7 @@ import org.apache.airavata.registry.cpi.Registry;
 public abstract class AbstractHandler implements GFacHandler {
 	protected Registry registry = null;
 
-	public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException, GFacException {
+	public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
 		registry = jobExecutionContext.getRegistry();
         if(registry == null){
             registry = RegistryFactory.getDefaultRegistry();

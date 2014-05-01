@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://schemas.ogf.org/glue/2013/05/spec_2.0_r1/Resource.json",
+  "type": "object",
+  "allOf": [{"$ref": "http://schemas.ogf.org/glue/2013/05/spec_2.0_r1/Entity.json"}],
+  "properties": {
+    "ManagerID": {
+      "type": "string",
+      "description": "The ID of the Manager for this Resource"
+    },
+    "ShareID": {
+      "type": "array",
+      "description": "The ID(s) of the Shares this Resource is part of",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ActivityID": {
+      "type": "array",
+      "description": "The ID(s) of Activities consuming from this Share",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": ["ManagerID"]
+}

@@ -43,4 +43,8 @@ public class GFacHandlerException extends GFacException {
         super(message, e);
         log.error(message,e);
     }
+    public GFacHandlerException(Exception e) {
+        super(e);
+        log.error(e.getMessage(),e);
+    }
 }

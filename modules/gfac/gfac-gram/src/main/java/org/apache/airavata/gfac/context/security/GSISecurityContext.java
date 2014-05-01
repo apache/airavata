@@ -29,7 +29,6 @@ import org.apache.airavata.gfac.AbstractSecurityContext;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.RequestData;
-import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.globus.gsi.X509Credential;
 import org.globus.gsi.gssapi.GlobusGSSCredentialImpl;
 import org.globus.gsi.provider.GlobusProvider;
@@ -60,8 +59,6 @@ public class GSISecurityContext extends AbstractSecurityContext {
     public static int CREDENTIAL_RENEWING_THRESH_HOLD = 10 * 90;
 
     private GSSCredential gssCredentials = null;
-
-    private Cluster pbsCluster = null;
 
     // Set trusted cert path and add provider
     static {
@@ -108,9 +105,6 @@ public class GSISecurityContext extends AbstractSecurityContext {
     }
 
 
-    public GSISecurityContext(Cluster pbsCluster) {
-        this.setPbsCluster(pbsCluster);
-    }
 
     /**
      * Gets GSSCredentials. The process is as follows;
@@ -278,11 +272,4 @@ public class GSISecurityContext extends AbstractSecurityContext {
         }
     }
 
-    public Cluster getPbsCluster() {
-        return pbsCluster;
-    }
-
-    public void setPbsCluster(Cluster pbsCluster) {
-        this.pbsCluster = pbsCluster;
-    }
 }

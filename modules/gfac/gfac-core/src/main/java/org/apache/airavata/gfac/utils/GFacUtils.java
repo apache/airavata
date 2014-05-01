@@ -26,7 +26,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.*;
@@ -35,14 +34,11 @@ import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.Constants;
+import org.apache.airavata.gfac.ExecutionMode;
+import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.context.MessageContext;
-import org.apache.airavata.gsi.ssh.api.Cluster;
-import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
-import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.api.workflow.ApplicationJob;
@@ -90,6 +86,18 @@ public class GFacUtils {
         }
     }
 
+    /**
+     * this can be used to do framework opertaions specific to different modes
+     * @param jobExecutionContext
+     * @return
+     */
+    public static boolean isSynchronousMode(JobExecutionContext jobExecutionContext){
+        GFacConfiguration gFacConfiguration = jobExecutionContext.getGFacConfiguration();
+        if(ExecutionMode.ASYNCHRONOUS.equals(gFacConfiguration.getExecutionMode())){
+            return false;
+        }
+        return true;
+    }
     public static String readFileToString(String file) throws FileNotFoundException, IOException {
         BufferedReader instream = null;
         try {
@@ -154,27 +162,27 @@ public class GFacUtils {
             actualParameter = new ActualParameter(DoubleParameterType.type);
             if (!"".equals(element.getValue())) {
                 ((DoubleParameterType) actualParameter.getType()).setValue(new Double(element.getValue()));
-            } 
+            }
         } else if ("Integer".equals(parameter.getParameterType().getName())) {
             actualParameter = new ActualParameter(IntegerParameterType.type);
             if (!"".equals(element.getValue())) {
                 ((IntegerParameterType) actualParameter.getType()).setValue(new Integer(element.getValue()));
-            } 
+            }
         } else if ("Float".equals(parameter.getParameterType().getName())) {
             actualParameter = new ActualParameter(FloatParameterType.type);
             if (!"".equals(element.getValue())) {
                 ((FloatParameterType) actualParameter.getType()).setValue(new Float(element.getValue()));
-            } 
+            }
         } else if ("Boolean".equals(parameter.getParameterType().getName())) {
             actualParameter = new ActualParameter(BooleanParameterType.type);
             if (!"".equals(element.getValue())) {
                 ((BooleanParameterType) actualParameter.getType()).setValue(new Boolean(element.getValue()));
-            } 
+            }
         } else if ("File".equals(parameter.getParameterType().getName())) {
             actualParameter = new ActualParameter(FileParameterType.type);
             if (!"".equals(element.getValue())) {
                 ((FileParameterType) actualParameter.getType()).setValue(element.getValue());
-            } 
+            }
         } else if ("URI".equals(parameter.getParameterType().getName())) {
             actualParameter = new ActualParameter(URIParameterType.type);
             if (!"".equals(element.getValue())) {
@@ -592,20 +600,21 @@ public class GFacUtils {
             log.error("Error in persisting application job data for application job " + job.getJobId() + "!!!", e);
         }
     }
-    public static void saveJobStatus(JobDetails details, JobState state, String taskID) throws GFacException {
+    public static void saveJobStatus(JobExecutionContext jobExecutionContext, JobDetails details, JobState state) throws GFacException {
 		try {
-			Registry registry = RegistryFactory.getDefaultRegistry();
+			Registry registry = jobExecutionContext.getRegistry();
 			JobStatus status = new JobStatus();
 			status.setJobState(state);
         	details.setJobStatus(status);
-			registry.add(ChildDataType.JOB_DETAIL,details, new CompositeIdentifier(taskID, details.getJobID()));
+			registry.add(ChildDataType.JOB_DETAIL,details, new CompositeIdentifier(jobExecutionContext.getTaskData().getTaskID(), details.getJobID()));
 		} catch (Exception e) {
 			throw new GFacException("Error persisting job status" + e.getLocalizedMessage(),e);
 		}
 	}
-    public static void updateJobStatus(JobDetails details, JobState state) throws GFacException {
+
+    public static void updateJobStatus(JobExecutionContext jobExecutionContext,JobDetails details, JobState state) throws GFacException {
 		try {
-			Registry registry = RegistryFactory.getDefaultRegistry();
+            Registry registry = jobExecutionContext.getRegistry();
 			JobStatus status = new JobStatus();
 			status.setJobState(state);
 			status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
@@ -615,7 +624,7 @@ public class GFacUtils {
 			throw new GFacException("Error persisting job status" + e.getLocalizedMessage(),e);
 		}
 	}
-    public static void saveErrorDetails(String errorMessage, CorrectiveAction action, ErrorCategory errorCatogory, String id) throws GFacException {
+    public static void saveErrorDetails(JobExecutionContext jobExecutionContext, String errorMessage, CorrectiveAction action, ErrorCategory errorCatogory) throws GFacException {
     	try {
     	Registry registry = RegistryFactory.getDefaultRegistry();
 		ErrorDetails details = new ErrorDetails();
@@ -624,7 +633,7 @@ public class GFacUtils {
     	details.setActionableGroup(ActionableGroup.GATEWAYS_ADMINS);
     	details.setCreationTime(Calendar.getInstance().getTimeInMillis());
     	details.setErrorCategory(errorCatogory);
-    	registry.add(ChildDataType.ERROR_DETAIL, details, id);
+    	registry.add(ChildDataType.ERROR_DETAIL, details, jobExecutionContext.getTaskData().getTaskID());
     	} catch (Exception e) {
 			throw new GFacException("Error persisting job status" + e.getLocalizedMessage(),e);
 		}
@@ -649,89 +658,5 @@ public class GFacUtils {
         return stringObjectHashMap;
     }
 
-    public static JobDescriptor createJobDescriptor(JobExecutionContext jobExecutionContext,
-                                                    ApplicationDeploymentDescriptionType app, Cluster cluster) {
-        JobDescriptor jobDescriptor = new JobDescriptor();
-        // this is common for any application descriptor
-        jobDescriptor.setInputDirectory(app.getInputDataDirectory());
-        jobDescriptor.setOutputDirectory(app.getOutputDataDirectory());
-        jobDescriptor.setExecutablePath(app.getExecutableLocation());
-        jobDescriptor.setStandardOutFile(app.getStandardOutput());
-        jobDescriptor.setStandardErrorFile(app.getStandardError());
-        Random random = new Random();
-        int i = random.nextInt();
-        jobDescriptor.setJobName(app.getApplicationName().getStringValue() + String.valueOf(i));
-        jobDescriptor.setWorkingDirectory(app.getStaticWorkingDirectory());
 
-
-        List<String> inputValues = new ArrayList<String>();
-        MessageContext input = jobExecutionContext.getInMessageContext();
-        Map<String, Object> inputs = input.getParameters();
-        Set<String> keys = inputs.keySet();
-        for (String paramName : keys) {
-            ActualParameter actualParameter = (ActualParameter) inputs.get(paramName);
-            if ("URIArray".equals(actualParameter.getType().getType().toString()) || "StringArray".equals(actualParameter.getType().getType().toString())
-                    || "FileArray".equals(actualParameter.getType().getType().toString())) {
-                String[] values = null;
-                if (actualParameter.getType() instanceof URIArrayType) {
-                    values = ((URIArrayType) actualParameter.getType()).getValueArray();
-                } else if (actualParameter.getType() instanceof StringArrayType) {
-                    values = ((StringArrayType) actualParameter.getType()).getValueArray();
-                } else if (actualParameter.getType() instanceof FileArrayType) {
-                    values = ((FileArrayType) actualParameter.getType()).getValueArray();
-                }
-                String value = StringUtil.createDelimiteredString(values, " ");
-                inputValues.add(value);
-            } else {
-                String paramValue = MappingFactory.toString(actualParameter);
-                inputValues.add(paramValue);
-            }
-        }
-        jobDescriptor.setInputValues(inputValues);
-
-        // this part will fill out the hpcApplicationDescriptor
-        if (app instanceof HpcApplicationDeploymentType) {
-            HpcApplicationDeploymentType applicationDeploymentType
-                    = (HpcApplicationDeploymentType) app;
-            jobDescriptor.setShellName("/bin/bash");
-            jobDescriptor.setAllEnvExport(true);
-            jobDescriptor.setMailOptions("n");
-            jobDescriptor.setNodes(applicationDeploymentType.getNodeCount());
-            jobDescriptor.setProcessesPerNode(applicationDeploymentType.getProcessorsPerNode());
-            jobDescriptor.setMaxWallTime(String.valueOf(applicationDeploymentType.getMaxWallTime()));
-            jobDescriptor.setJobSubmitter(applicationDeploymentType.getJobSubmitterCommand());
-            if (applicationDeploymentType.getProjectAccount() != null) {
-                if (applicationDeploymentType.getProjectAccount().getProjectAccountNumber() != null) {
-                    jobDescriptor.setAcountString(applicationDeploymentType.getProjectAccount().getProjectAccountNumber());
-                }
-            }
-            if (applicationDeploymentType.getQueue() != null) {
-                if (applicationDeploymentType.getQueue().getQueueName() != null) {
-                    jobDescriptor.setQueueName(applicationDeploymentType.getQueue().getQueueName());
-                }
-            }
-            jobDescriptor.setOwner(((PBSCluster) cluster).getServerInfo().getUserName());
-            TaskDetails taskData = jobExecutionContext.getTaskData();
-            if (taskData != null && taskData.isSetTaskScheduling()) {
-                ComputationalResourceScheduling computionnalResource = taskData.getTaskScheduling();
-                if (computionnalResource.getNodeCount() > 0) {
-                    jobDescriptor.setNodes(computionnalResource.getNodeCount());
-                }
-                if (computionnalResource.getComputationalProjectAccount() != null) {
-                    jobDescriptor.setAcountString(computionnalResource.getComputationalProjectAccount());
-                }
-                if (computionnalResource.getQueueName() != null) {
-                    jobDescriptor.setQueueName(computionnalResource.getQueueName());
-                }
-                if (computionnalResource.getTotalCPUCount() > 0) {
-                    jobDescriptor.setProcessesPerNode(computionnalResource.getTotalCPUCount());
-                }
-                if (computionnalResource.getWallTimeLimit() > 0) {
-                    jobDescriptor.setMaxWallTime(String.valueOf(computionnalResource.getWallTimeLimit()));
-                }
-            }
-
-        }
-        return jobDescriptor;
-    }
 }

@@ -24,9 +24,6 @@ package org.apache.airavata.orchestrator.server;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
-import org.apache.airavata.gfac.monitor.MonitorID;
-import org.apache.airavata.gfac.monitor.MonitorManager;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
@@ -46,13 +43,9 @@ import org.slf4j.LoggerFactory;
 public class OrchestratorServerHandler implements OrchestratorService.Iface {
     private static Logger log = LoggerFactory.getLogger(OrchestratorServerHandler.class);
 
-    private MonitorManager monitorManager = null;
-
     private SimpleOrchestratorImpl orchestrator = null;
 
     private Registry registry;
-
-    GSIAuthenticationInfo authenticationInfo = null;
 
     /**
      * Query orchestrator server to fetch the CPI version
@@ -90,7 +83,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         //TODO: Write the Orchestrator implementaion
         try {
             List<TaskDetails> tasks = orchestrator.createTasks(experimentId);
-            MonitorID monitorID = null;
             if (tasks.size() > 1) {
                 log.info("There are multiple tasks for this experiment, So Orchestrator will launch multiple Jobs");
             }
@@ -115,15 +107,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         }
         return true;
     }
-
-    public MonitorManager getMonitorManager() {
-        return monitorManager;
-    }
-
-    public void setMonitorManager(MonitorManager monitorManager) {
-        this.monitorManager = monitorManager;
-    }
-
     public boolean terminateExperiment(String experimentId) throws TException {
     	try {
 			orchestrator.cancelExperiment(experimentId);
