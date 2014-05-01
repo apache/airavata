@@ -35,6 +35,8 @@ import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,7 +52,11 @@ public class GridPullMonitorHandler extends ThreadedHandler {
 
     private AuthenticationInfo authenticationInfo;
 
+    private List<AbstractActivityListener> activityListeners;
+
+    boolean registrySet = false;
     public void initProperties(Map<String, String> properties) throws GFacHandlerException {
+        activityListeners = new ArrayList<AbstractActivityListener>();
         String myProxyUser = null;
         try {
             myProxyUser = ServerSettings.getSetting("myproxy.username");
@@ -62,10 +68,11 @@ public class GridPullMonitorHandler extends ThreadedHandler {
             hpcPullMonitor = new HPCPullMonitor();
             String listeners = properties.get("listeners");
             String[] split = listeners.split(",");
-            for(String listenerClass:split) {
+            for (String listenerClass : split) {
                 Class<? extends AbstractActivityListener> aClass = Class.forName(listenerClass).asSubclass(AbstractActivityListener.class);
                 AbstractActivityListener abstractActivityListener = aClass.newInstance();
-                abstractActivityListener.setup(hpcPullMonitor.getQueue(),hpcPullMonitor.getPublisher());
+                activityListeners.add(abstractActivityListener);
+                abstractActivityListener.setup(hpcPullMonitor.getQueue(), hpcPullMonitor.getPublisher());
                 hpcPullMonitor.getPublisher().registerListener(abstractActivityListener);
             }
         } catch (ApplicationSettingsException e) {
@@ -84,6 +91,11 @@ public class GridPullMonitorHandler extends ThreadedHandler {
     }
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException{
+        if(!registrySet){
+            for(AbstractActivityListener listener:activityListeners){
+                listener.setup(jobExecutionContext.getRegistry());
+            }
+        }
         super.invoke(jobExecutionContext);
         MonitorID monitorID = new MonitorID(authenticationInfo, jobExecutionContext);
         try {

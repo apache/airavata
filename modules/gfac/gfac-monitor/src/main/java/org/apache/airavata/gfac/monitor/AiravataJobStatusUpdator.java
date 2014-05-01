@@ -45,6 +45,7 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
 
     private BlockingQueue<MonitorID> jobsToMonitor;
 
+
     public Registry getAiravataRegistry() {
         return airavataRegistry;
     }

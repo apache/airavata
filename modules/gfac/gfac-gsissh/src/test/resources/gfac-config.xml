@@ -21,7 +21,7 @@
     </GlobalHandlers>
 
 
-     <Provider class="org.apache.airavata.gfac.provider.impl.GSISSHProvider" host="org.apache.airavata.schemas.gfac.impl.GsisshHostTypeImpl">
+     <Provider class="org.apache.airavata.gfac.provider.impl.GSISSHProvider" host="org.apache.airavata.schemas.gfac.impl.GsisshHostTypeImpl" executionMode="async">
          <InHandlers>
             <Handler class="org.apache.airavata.gfac.handler.GSISSHDirectorySetupHandler"/>
             <Handler class="org.apache.airavata.gfac.handler.GSISSHInputHandler"/>
