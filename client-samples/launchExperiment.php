@@ -28,6 +28,7 @@ require_once '../lib/AiravataClientFactory.php';
 
 use Airavata\API\Error\AiravataClientException;
 use Airavata\API\Error\AiravataSystemException;
+use Airavata\API\Error\ExperimentNotFoundException;
 use Airavata\API\Error\InvalidRequestException;
 use Airavata\Client\AiravataClientFactory;
 use Thrift\Protocol\TBinaryProtocol;
