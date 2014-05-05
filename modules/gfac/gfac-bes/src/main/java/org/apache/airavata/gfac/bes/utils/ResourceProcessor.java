@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.gfac.utils;
+package org.apache.airavata.gfac.bes.utils;
 
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.provider.GFacProviderException;

@@ -18,7 +18,7 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac.provider.impl;
+package org.apache.airavata.gfac.bes.impl;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -44,15 +44,15 @@ import javax.security.auth.x500.X500Principal;
 
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.bes.security.GSISecurityContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.context.security.GSISecurityContext;
 import org.apache.airavata.gfac.notification.events.StatusChangeEvent;
 import org.apache.airavata.gfac.notification.events.UnicoreJobIDEvent;
 import org.apache.airavata.gfac.provider.AbstractProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
-import org.apache.airavata.gfac.utils.DataTransferrer;
-import org.apache.airavata.gfac.utils.JSDLGenerator;
-import org.apache.airavata.gfac.utils.StorageCreator;
+import org.apache.airavata.gfac.bes.utils.DataTransferrer;
+import org.apache.airavata.gfac.bes.utils.JSDLGenerator;
+import org.apache.airavata.gfac.bes.utils.StorageCreator;
 import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.registry.api.workflow.ApplicationJob;

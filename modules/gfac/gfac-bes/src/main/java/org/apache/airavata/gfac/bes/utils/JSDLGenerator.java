@@ -18,12 +18,10 @@
  * under the License.
  *
  */
-package org.apache.airavata.gfac.utils;
+package org.apache.airavata.gfac.bes.utils;
 
 
 import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.utils.ResourceProcessor;
-import org.apache.airavata.gfac.utils.UASDataStagingProcessor;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionDocument;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;

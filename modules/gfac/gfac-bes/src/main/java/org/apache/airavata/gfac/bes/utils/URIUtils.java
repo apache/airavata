@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.gfac.utils;
+package org.apache.airavata.gfac.bes.utils;
 
 import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.URIException;

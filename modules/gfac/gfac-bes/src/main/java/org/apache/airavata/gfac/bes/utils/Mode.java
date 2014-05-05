@@ -17,45 +17,29 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 
-package org.apache.airavata.gfac.utils;
+package org.apache.airavata.gfac.bes.utils;
 
-public enum ProcessorRequirement{
-	sparc("sparc"), //$NON-NLS-1$
-	powerpc("powerpc"), //$NON-NLS-1$
-	x86("x86"), //$NON-NLS-1$
-	x86_32("x86_32"), //$NON-NLS-1$
-	x86_64("x86_64"), //$NON-NLS-1$
-	parisc("parisc"), //$NON-NLS-1$
-	mips("mips"), //$NON-NLS-1$
-	ia64("ia64"), //$NON-NLS-1$
-	arm("arm"), //$NON-NLS-1$
-	other("other"); //$NON-NLS-1$
+/**
+ * file creation modes 
+ */
+public enum Mode {
 
-	ProcessorRequirement(String value) {
-		this.value = value; 
-	}
-
-	private final String value;
-
-	public String getValue() { 
-		return value; 
-	}
-
-	public static ProcessorRequirement fromString(String value)
-	{
-		for (ProcessorRequirement type : values()) {
-			if (type.value.equals(value)) {
-				return type;
-			}
-		}
-		return other;
-	}
+	/**
+	 * overwrite any existing file
+	 */
+	overwrite,
 	
-	public String toString()
-	{
-		return value;
-	}
-
+	/**
+	 * append to an existing file
+	 */
+	append,
+	
+	/**
+	 * do NOT overwrite and fail if the file exists
+	 */
+	nooverwrite
+	
+	
 }
