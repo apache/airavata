@@ -19,9 +19,9 @@
         </InHandlers>
         <OutHandlers></OutHandlers>
     </GlobalHandlers>
-    <Provider class="org.apache.airavata.gfac.provider.impl.LocalProvider" host="org.apache.airavata.schemas.gfac.impl.HostDescriptionTypeImpl">
+    <Provider class="org.apache.airavata.gfac.local.impl.LocalProvider" host="org.apache.airavata.schemas.gfac.impl.HostDescriptionTypeImpl">
         <InHandlers>
-            <Handler class="org.apache.airavata.gfac.handler.LocalDirectorySetupHandler"/>
+            <Handler class="org.apache.airavata.gfac.local.handler.LocalDirectorySetupHandler"/>
         </InHandlers>
     </Provider>
 </GFac>

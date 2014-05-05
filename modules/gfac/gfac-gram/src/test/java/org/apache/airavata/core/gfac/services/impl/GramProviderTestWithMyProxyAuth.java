@@ -37,7 +37,7 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
-import org.apache.airavata.gfac.context.security.GSISecurityContext;
+import org.apache.airavata.gfac.gram.security.GSISecurityContext;
 import org.apache.airavata.gfac.cpi.GFacImpl;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
@@ -80,8 +80,8 @@ public class GramProviderTestWithMyProxyAuth extends GFacBaseTestWithMyProxyAuth
 //        gFacConfiguration.setMyProxyPassphrase("*****");
 //        gFacConfiguration.setTrustedCertLocation("./certificates");
 //        //have to set InFlwo Handlers and outFlowHandlers
-//        gFacConfiguration.setInHandlers(Arrays.asList(new String[] {"org.apache.airavata.gfac.handler.GramDirectorySetupHandler","org.apache.airavata.gfac.handler.GridFTPInputHandler"}));
-//        gFacConfiguration.setOutHandlers(Arrays.asList(new String[] {"org.apache.airavata.gfac.handler.GridFTPOutputHandler"}));
+//        gFacConfiguration.setInHandlers(Arrays.asList(new String[] {"GramDirectorySetupHandler","GridFTPInputHandler"}));
+//        gFacConfiguration.setOutHandlers(Arrays.asList(new String[] {"GridFTPOutputHandler"}));
 
         /*
            * Host
