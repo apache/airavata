@@ -20,8 +20,8 @@
 */
 package org.apache.airavata.job;
 
-import org.apache.airavata.gfac.handler.AbstractHandler;
-import org.apache.airavata.gfac.handler.GFacHandlerException;
+import org.apache.airavata.gfac.core.handler.AbstractHandler;
+import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 
 import java.util.Map;
 

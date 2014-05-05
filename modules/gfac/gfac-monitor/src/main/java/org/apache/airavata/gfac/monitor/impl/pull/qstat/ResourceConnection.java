@@ -21,9 +21,9 @@
 package org.apache.airavata.gfac.monitor.impl.pull.qstat;
 
 import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.monitor.HostMonitorData;
-import org.apache.airavata.gfac.monitor.MonitorID;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.impl.JobStatus;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;

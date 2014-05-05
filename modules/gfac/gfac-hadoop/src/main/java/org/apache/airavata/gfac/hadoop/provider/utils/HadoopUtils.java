@@ -21,8 +21,8 @@
 
 package org.apache.airavata.gfac.hadoop.provider.utils;
 
-import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.context.MessageContext;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.context.MessageContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.conf.Configuration;
 

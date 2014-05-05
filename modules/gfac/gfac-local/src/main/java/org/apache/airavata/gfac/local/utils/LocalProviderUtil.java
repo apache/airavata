@@ -20,8 +20,8 @@
 */
 package org.apache.airavata.gfac.local.utils;
 
-import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.provider.GFacProviderException;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

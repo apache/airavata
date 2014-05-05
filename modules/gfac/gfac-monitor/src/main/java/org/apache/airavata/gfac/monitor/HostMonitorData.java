@@ -21,6 +21,7 @@
 package org.apache.airavata.gfac.monitor;
 
 import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
 
 import java.util.ArrayList;

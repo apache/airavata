@@ -21,10 +21,10 @@
 package org.apache.airavata.gfac.monitor.impl;
 
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.gfac.monitor.JobIdentity;
-import org.apache.airavata.gfac.monitor.MonitorID;
+import org.apache.airavata.gfac.core.monitor.MonitorID;
+import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
+import org.apache.airavata.gfac.core.monitor.JobIdentity;
 import org.apache.airavata.gfac.monitor.core.AiravataAbstractMonitor;
-import org.apache.airavata.gfac.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.model.workspace.experiment.JobState;
 
 import java.util.concurrent.BlockingQueue;

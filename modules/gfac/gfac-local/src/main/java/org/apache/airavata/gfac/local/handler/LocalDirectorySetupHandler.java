@@ -21,9 +21,9 @@
 package org.apache.airavata.gfac.local.handler;
 
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
-import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.handler.GFacHandler;
-import org.apache.airavata.gfac.handler.GFacHandlerException;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.handler.GFacHandler;
+import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.slf4j.Logger;

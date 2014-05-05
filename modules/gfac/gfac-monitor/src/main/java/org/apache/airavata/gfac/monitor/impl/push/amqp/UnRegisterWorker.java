@@ -22,9 +22,9 @@ package org.apache.airavata.gfac.monitor.impl.push.amqp;
 
 import com.google.common.eventbus.Subscribe;
 import com.rabbitmq.client.Channel;
-import org.apache.airavata.gfac.monitor.MonitorID;
+import org.apache.airavata.gfac.core.monitor.MonitorID;
+import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
-import org.apache.airavata.gfac.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.gfac.monitor.util.CommonUtils;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.slf4j.Logger;

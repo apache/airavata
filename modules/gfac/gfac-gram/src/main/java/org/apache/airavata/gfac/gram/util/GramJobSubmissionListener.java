@@ -21,10 +21,10 @@
 package org.apache.airavata.gfac.gram.util;
 
 import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.notification.events.StatusChangeEvent;
+import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.gram.security.GSISecurityContext;
-import org.apache.airavata.gfac.notification.events.StatusChangeEvent;
-import org.apache.airavata.gfac.utils.GFacUtils;
 import org.globus.gram.GramJob;
 import org.globus.gram.GramJobListener;
 import org.ietf.jgss.GSSCredential;

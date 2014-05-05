@@ -21,11 +21,11 @@
 
 package org.apache.airavata.gfac.hadoop.handler;
 
-import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.context.MessageContext;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.context.MessageContext;
+import org.apache.airavata.gfac.core.handler.GFacHandler;
+import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.hadoop.provider.utils.HadoopUtils;
-import org.apache.airavata.gfac.handler.GFacHandler;
-import org.apache.airavata.gfac.handler.GFacHandlerException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.HadoopApplicationDeploymentDescriptionType;
 import org.apache.commons.io.FileUtils;

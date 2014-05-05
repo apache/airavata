@@ -13,12 +13,12 @@
 <GFac>
     <DaemonHandlers>
         <Handler class="org.apache.airavata.gfac.monitor.handlers.GridPullMonitorHandler">
-                <property name="listeners" value="org.apache.airavata.gfac.monitor.AiravataJobStatusUpdator"/>
+                <property name="listeners" value="org.apache.airavata.gfac.core.monitor.AiravataJobStatusUpdator"/>
         </Handler>
     </DaemonHandlers>
     <GlobalHandlers>
         <InHandlers>
-            <Handler class="org.apache.airavata.gfac.handler.AppDescriptorCheckHandler">
+            <Handler class="org.apache.airavata.gfac.core.handler.AppDescriptorCheckHandler">
                     <property name="name" value="value"/>
             </Handler>
         </InHandlers>

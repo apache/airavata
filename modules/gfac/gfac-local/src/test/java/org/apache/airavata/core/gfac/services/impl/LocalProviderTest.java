@@ -23,12 +23,12 @@ package org.apache.airavata.core.gfac.services.impl;
 import org.apache.airavata.commons.gfac.type.*;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.context.ApplicationContext;
-import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.context.MessageContext;
+import org.apache.airavata.gfac.core.context.ApplicationContext;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.context.MessageContext;
+import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.apache.airavata.gfac.local.handler.LocalDirectorySetupHandler;
 import org.apache.airavata.gfac.local.provider.impl.LocalProvider;
-import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.persistance.registry.jpa.impl.LoggingRegistryImpl;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
@@ -161,7 +161,7 @@ public class LocalProviderTest {
     }
 
     @Test
-    public void testLocalProvider() throws GFacException,GFacProviderException{
+    public void testLocalProvider() throws GFacException,GFacProviderException {
         LocalDirectorySetupHandler localDirectorySetupHandler = new LocalDirectorySetupHandler();
         localDirectorySetupHandler.invoke(jobExecutionContext);
         LocalProvider localProvider = new LocalProvider();

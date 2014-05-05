@@ -22,11 +22,12 @@ package org.apache.airavata.gfac.monitor.handlers;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.handler.GFacHandlerException;
-import org.apache.airavata.gfac.handler.ThreadedHandler;
-import org.apache.airavata.gfac.monitor.AbstractActivityListener;
-import org.apache.airavata.gfac.monitor.MonitorID;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.handler.GFacHandlerException;
+import org.apache.airavata.gfac.core.handler.ThreadedHandler;
+import org.apache.airavata.gfac.core.monitor.AbstractActivityListener;
+import org.apache.airavata.gfac.core.monitor.MonitorID;
+import org.apache.airavata.gfac.monitor.HPCMonitorID;
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.gfac.monitor.impl.pull.qstat.HPCPullMonitor;
 import org.apache.airavata.gfac.monitor.util.CommonUtils;
@@ -90,14 +91,14 @@ public class GridPullMonitorHandler extends ThreadedHandler {
         hpcPullMonitor.run();
     }
 
-    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException{
+    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         if(!registrySet){
             for(AbstractActivityListener listener:activityListeners){
                 listener.setup(jobExecutionContext.getRegistry());
             }
         }
         super.invoke(jobExecutionContext);
-        MonitorID monitorID = new MonitorID(authenticationInfo, jobExecutionContext);
+        MonitorID monitorID = new HPCMonitorID(authenticationInfo, jobExecutionContext);
         try {
             CommonUtils.addMonitortoQueue(hpcPullMonitor.getQueue(), monitorID);
         } catch (AiravataMonitorException e) {

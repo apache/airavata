@@ -35,12 +35,8 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.exception.UnspecifiedApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.handler.GFacHandlerConfig;
-import org.apache.airavata.gfac.provider.GFacProviderConfig;
+import org.apache.airavata.gfac.core.handler.GFacHandlerConfig;
+import org.apache.airavata.gfac.core.provider.GFacProviderConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.*;
