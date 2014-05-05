@@ -21,13 +21,16 @@
     </GlobalHandlers>
 
 
-     <Provider class="org.apache.airavata.gfac.provider.impl.SSHProvider" host="org.apache.airavata.schemas.gfac.impl.SSHHostTypeImpl">
-         <InHandlers>
-            <Handler class="org.apache.airavata.gfac.handler.SSHDirectorySetupHandler"/>
-            <Handler class="org.apache.airavata.gfac.handler.SSHInputHandler"/>
+     <Provider class="org.apache.airavata.gfac.gram.provider.impl.GramProvider" host="org.apache.airavata.schemas.gfac.impl.GlobusHostTypeImpl">
+        <property name="name" value="value"/>
+        <InHandlers>
+            <Handler class="org.apache.airavata.gfac..gram.handler.GramDirectorySetupHandler">
+                    <property name="name" value="value"/>
+            </Handler>
+            <Handler class="org.apache.airavata.gfac..gram.handler.GridFTPInputHandler"/>
         </InHandlers>
         <OutHandlers>
-            <Handler class="org.apache.airavata.gfac.handler.SSHOutputHandler"/>
+            <Handler class="org.apache.airavata.gfac..gram.handler.GridFTPOutputHandler"/>
         </OutHandlers>
     </Provider>
 </GFac>
