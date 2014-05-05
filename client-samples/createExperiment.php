@@ -65,14 +65,21 @@ $airavataclient = new AiravataClient($protocol);
 
 try
 { 
+   /* should hard-code instead
    $exp_name = $_GET["name"];
    $user = $_GET["user"];
    $proj = $_GET["proj"];
+    */
+
+    $exp_name = 'experiment' . time();
+    $user = 'admin';
+    $proj = 'Project 1';
 
    $experiment = new Experiment();
    $experiment->projectID = $proj;
    $experiment->userName = $user;
    $experiment->name = $exp_name;
+
  
    $expId = $airavataclient->createExperiment($experiment);
 
