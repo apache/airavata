@@ -29,6 +29,9 @@ import java.util.Map;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.monitor.JobIdentity;
+import org.apache.airavata.gfac.core.monitor.MonitorID;
+import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.gfac.core.notification.events.StartExecutionEvent;
 import org.apache.airavata.gfac.core.provider.AbstractProvider;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
@@ -163,6 +166,13 @@ public class LocalProvider extends AbstractProvider {
                     .append(" tempDirectory = ").append(app.getScratchWorkingDirectory()).append(" With the status ")
                     .append(String.valueOf(returnValue));
             log.info(buf.toString());
+            MonitorID monitorID = new MonitorID(jobExecutionContext.getApplicationContext().getHostDescription(),jobId,
+                    jobExecutionContext.getTaskData().getTaskID(),
+                    jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),jobExecutionContext.getExperimentID(),
+                    jobExecutionContext.getExperiment().getUserName());
+            JobStatusChangeRequest jobStatusChangeRequest = new JobStatusChangeRequest(monitorID);
+            jobStatusChangeRequest.setState(JobState.COMPLETE);
+            this.getMonitorPublisher().publish(jobStatusChangeRequest);
         } catch (IOException io) {
             throw new GFacProviderException(io.getMessage(), io);
         } catch (InterruptedException e) {

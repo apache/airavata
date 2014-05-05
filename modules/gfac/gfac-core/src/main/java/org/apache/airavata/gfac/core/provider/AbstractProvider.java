@@ -21,8 +21,11 @@
 
 package org.apache.airavata.gfac.core.provider;
 
+import com.google.common.eventbus.EventBus;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.cpi.GFacImpl;
+import org.apache.airavata.gfac.core.notification.MonitorPublisher;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobStatus;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
@@ -38,11 +41,25 @@ public abstract class AbstractProvider implements GFacProvider{
 	protected JobStatus status;   //todo we need to remove this and add methods to fill Job details, this is not a property of a provider
 	protected JobExecutionContext jobExecutionContext;
 
-	public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
+    protected MonitorPublisher monitorPublisher;
+
+    protected AbstractProvider() {
+        this.monitorPublisher = GFacImpl.getMonitorPublisher();
+    }
+
+    public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
         log.debug("Initializing " + this.getClass().getName());
 		registry = RegistryFactory.getDefaultRegistry();
 		details = new JobDetails();
 		status = new JobStatus();
 		this.jobExecutionContext=jobExecutionContext;
 	}
+
+    public MonitorPublisher getMonitorPublisher() {
+        return monitorPublisher;
+    }
+
+    public void setMonitorPublisher(MonitorPublisher monitorPublisher) {
+        this.monitorPublisher = monitorPublisher;
+    }
 }

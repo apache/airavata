@@ -20,16 +20,20 @@
 */
 package org.apache.airavata.core.gfac.services.impl;
 
+import com.google.common.eventbus.EventBus;
 import org.apache.airavata.commons.gfac.type.*;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.ApplicationContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
+import org.apache.airavata.gfac.core.notification.MonitorPublisher;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.apache.airavata.gfac.local.handler.LocalDirectorySetupHandler;
 import org.apache.airavata.gfac.local.provider.impl.LocalProvider;
+import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.persistance.registry.jpa.impl.LoggingRegistryImpl;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.InputParameterType;
@@ -141,8 +145,10 @@ public class LocalProviderTest {
         jobExecutionContext.setOutMessageContext(outMessage);
 
         jobExecutionContext.setExperimentID("test123");
+        jobExecutionContext.setExperiment(new Experiment("test123","project1","admin","testExp"));
         jobExecutionContext.setTaskData(new TaskDetails(jobExecutionContext.getExperimentID()));
         jobExecutionContext.setRegistry(new LoggingRegistryImpl());
+        jobExecutionContext.setWorkflowNodeDetails(new WorkflowNodeDetails(jobExecutionContext.getExperimentID(),"none"));
 
 
     }
@@ -165,6 +171,7 @@ public class LocalProviderTest {
         LocalDirectorySetupHandler localDirectorySetupHandler = new LocalDirectorySetupHandler();
         localDirectorySetupHandler.invoke(jobExecutionContext);
         LocalProvider localProvider = new LocalProvider();
+        localProvider.setMonitorPublisher(new MonitorPublisher(new EventBus()));
         localProvider.initialize(jobExecutionContext);
         localProvider.execute(jobExecutionContext);
         localProvider.dispose(jobExecutionContext);

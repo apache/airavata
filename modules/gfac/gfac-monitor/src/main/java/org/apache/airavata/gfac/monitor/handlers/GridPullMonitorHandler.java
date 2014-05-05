@@ -23,6 +23,7 @@ package org.apache.airavata.gfac.monitor.handlers;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.cpi.GFacImpl;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.handler.ThreadedHandler;
 import org.apache.airavata.gfac.core.monitor.AbstractActivityListener;
@@ -53,11 +54,7 @@ public class GridPullMonitorHandler extends ThreadedHandler {
 
     private AuthenticationInfo authenticationInfo;
 
-    private List<AbstractActivityListener> activityListeners;
-
-    boolean registrySet = false;
     public void initProperties(Map<String, String> properties) throws GFacHandlerException {
-        activityListeners = new ArrayList<AbstractActivityListener>();
         String myProxyUser = null;
         try {
             myProxyUser = ServerSettings.getSetting("myproxy.username");
@@ -66,24 +63,9 @@ public class GridPullMonitorHandler extends ThreadedHandler {
             String myProxyServer = ServerSettings.getSetting("myproxy.server");
             setAuthenticationInfo(new MyProxyAuthenticationInfo(myProxyUser, myProxyPass, myProxyServer,
                     7512, 17280000, certPath));
-            hpcPullMonitor = new HPCPullMonitor();
-            String listeners = properties.get("listeners");
-            String[] split = listeners.split(",");
-            for (String listenerClass : split) {
-                Class<? extends AbstractActivityListener> aClass = Class.forName(listenerClass).asSubclass(AbstractActivityListener.class);
-                AbstractActivityListener abstractActivityListener = aClass.newInstance();
-                activityListeners.add(abstractActivityListener);
-                abstractActivityListener.setup(hpcPullMonitor.getQueue(), hpcPullMonitor.getPublisher());
-                hpcPullMonitor.getPublisher().registerListener(abstractActivityListener);
-            }
+            hpcPullMonitor = new HPCPullMonitor(GFacImpl.getMonitorPublisher());
         } catch (ApplicationSettingsException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (ClassNotFoundException e) {
-            logger.error("Error loading the listener classes configured in gfac-config.xml");
-        } catch (InstantiationException e) {
-            logger.error("Error loading the listener classes configured in gfac-config.xml");
-        } catch (IllegalAccessException e) {
-            logger.error("Error loading the listener classes configured in gfac-config.xml");
         }
     }
 
@@ -92,13 +74,8 @@ public class GridPullMonitorHandler extends ThreadedHandler {
     }
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
-        if(!registrySet){
-            for(AbstractActivityListener listener:activityListeners){
-                listener.setup(jobExecutionContext.getRegistry());
-            }
-        }
         super.invoke(jobExecutionContext);
-        MonitorID monitorID = new HPCMonitorID(authenticationInfo, jobExecutionContext);
+        MonitorID monitorID = new HPCMonitorID(getAuthenticationInfo(), jobExecutionContext);
         try {
             CommonUtils.addMonitortoQueue(hpcPullMonitor.getQueue(), monitorID);
         } catch (AiravataMonitorException e) {

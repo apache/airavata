@@ -63,6 +63,13 @@ public class HPCPullMonitor extends PullMonitor {
         this.queue = new LinkedBlockingDeque<UserMonitorData>();
         publisher = new MonitorPublisher(new EventBus());
     }
+
+     public HPCPullMonitor(MonitorPublisher monitorPublisher){
+        connections = new HashMap<String, ResourceConnection>();
+        this.queue = new LinkedBlockingDeque<UserMonitorData>();
+        publisher = monitorPublisher;
+    }
+
     public HPCPullMonitor(BlockingQueue<UserMonitorData> queue, MonitorPublisher publisher) {
         this.queue = queue;
         this.publisher = publisher;

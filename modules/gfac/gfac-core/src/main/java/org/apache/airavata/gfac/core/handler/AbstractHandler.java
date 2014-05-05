@@ -21,17 +21,40 @@
 package org.apache.airavata.gfac.core.handler;
 
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.cpi.GFacImpl;
+import org.apache.airavata.gfac.core.notification.MonitorPublisher;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
 
 public abstract class AbstractHandler implements GFacHandler {
 	protected Registry registry = null;
 
-	public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+    protected MonitorPublisher publisher = null;
+
+    protected AbstractHandler() {
+        publisher = GFacImpl.getMonitorPublisher();   // This will not be null because this will be initialize in GFacIml
+    }
+
+    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
 		registry = jobExecutionContext.getRegistry();
         if(registry == null){
             registry = RegistryFactory.getDefaultRegistry();
         }
 	}
 
+    public MonitorPublisher getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(MonitorPublisher publisher) {
+        this.publisher = publisher;
+    }
+
+    public Registry getRegistry() {
+        return registry;
+    }
+
+    public void setRegistry(Registry registry) {
+        this.registry = registry;
+    }
 }

@@ -43,8 +43,6 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
 
     private MonitorPublisher monitorPublisher;
 
-    private BlockingQueue<MonitorID> jobsToMonitor;
-
 
     public Registry getAiravataRegistry() {
         return airavataRegistry;
@@ -54,13 +52,6 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
         this.airavataRegistry = airavataRegistry;
     }
 
-    public BlockingQueue<MonitorID> getJobsToMonitor() {
-        return jobsToMonitor;
-    }
-
-    public void setJobsToMonitor(BlockingQueue<MonitorID> jobsToMonitor) {
-        this.jobsToMonitor = jobsToMonitor;
-    }
 
     @Subscribe
     public void updateRegistry(JobStatusChangeRequest jobStatus) {
@@ -77,13 +68,6 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
                 logger.error("Error persisting data" + e.getLocalizedMessage(), e);
             }
             logger.info("Job ID:" + jobStatus.getIdentity().getJobId() + " is "+state.toString());
-            switch (state) {
-                case COMPLETE: case UNKNOWN: case CANCELED:case FAILED:case SUSPENDED:
-                    jobsToMonitor.remove(jobStatus.getMonitorID());
-                    break;
-			default:
-				break;
-            }
         }
     }
 
@@ -135,8 +119,6 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
 		for (Object configuration : configurations) {
 			if (configuration instanceof Registry){
 				this.airavataRegistry=(Registry)configuration;
-			} else if (configuration instanceof BlockingQueue<?>){
-				this.jobsToMonitor=(BlockingQueue<MonitorID>) configuration;
 			} else if (configuration instanceof MonitorPublisher){
 				this.monitorPublisher=(MonitorPublisher) configuration;
 			} 
