@@ -23,10 +23,10 @@ package org.apache.airavata.gfac.hadoop.handler;
 
 import com.google.common.io.Files;
 import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.context.MessageContext;
-import org.apache.airavata.gfac.handler.GFacHandler;
-import org.apache.airavata.gfac.handler.GFacHandlerException;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.context.MessageContext;
+import org.apache.airavata.gfac.core.handler.GFacHandler;
+import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.schemas.gfac.HadoopHostType;
 import org.apache.commons.configuration.CompositeConfiguration;
 import org.apache.commons.configuration.Configuration;
@@ -75,7 +75,7 @@ public class HadoopDeploymentHandler implements GFacHandler {
      *
      * @param jobExecutionContext job execution context containing all the required configurations
      *                            and runtime information.
-     * @throws org.apache.airavata.gfac.handler.GFacHandlerException
+     * @throws org.apache.airavata.gfac.core.handler.GFacHandlerException
      */
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         if(jobExecutionContext.isInPath()){

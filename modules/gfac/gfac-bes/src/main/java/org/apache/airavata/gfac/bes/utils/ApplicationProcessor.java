@@ -21,7 +21,7 @@
 
 package org.apache.airavata.gfac.bes.utils;
 
-import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.schemas.gfac.ExtendedKeyValueType;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.JobTypeType;

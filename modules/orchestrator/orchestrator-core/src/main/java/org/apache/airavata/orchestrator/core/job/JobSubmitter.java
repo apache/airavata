@@ -20,9 +20,7 @@
 */
 package org.apache.airavata.orchestrator.core.job;
 
-import java.util.List;
-
-import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;

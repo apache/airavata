@@ -22,12 +22,12 @@ package org.apache.airavata.gfac.gsissh.handler;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.handler.AbstractHandler;
+import org.apache.airavata.gfac.core.handler.GFacHandlerException;
+import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.gsissh.util.GFACGSISSHUtils;
-import org.apache.airavata.gfac.handler.AbstractHandler;
-import org.apache.airavata.gfac.handler.GFacHandlerException;
-import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.model.workspace.experiment.*;

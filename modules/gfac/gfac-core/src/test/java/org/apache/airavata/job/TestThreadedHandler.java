@@ -21,8 +21,8 @@
 package org.apache.airavata.job;
 
 import junit.framework.Assert;
-import org.apache.airavata.gfac.handler.GFacHandlerException;
-import org.apache.airavata.gfac.handler.ThreadedHandler;
+import org.apache.airavata.gfac.core.handler.GFacHandlerException;
+import org.apache.airavata.gfac.core.handler.ThreadedHandler;
 
 import java.util.Map;
 

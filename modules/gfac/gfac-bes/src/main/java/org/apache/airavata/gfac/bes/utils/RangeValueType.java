@@ -21,7 +21,7 @@
 
 package org.apache.airavata.gfac.bes.utils;
 
-import org.apache.airavata.gfac.provider.utils.ResourceRequirement;
+import org.apache.airavata.gfac.core.provider.utils.ResourceRequirement;
 
 public class RangeValueType implements ResourceRequirement {
 	

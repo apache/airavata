@@ -21,13 +21,12 @@
 package org.apache.airavata.gfac.monitor.util;
 
 import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.handler.GFacHandler;
-import org.apache.airavata.gfac.handler.GFacHandlerConfig;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.handler.GFacHandler;
+import org.apache.airavata.gfac.core.handler.GFacHandlerConfig;
+import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.monitor.HostMonitorData;
-import org.apache.airavata.gfac.monitor.MonitorID;
 import org.apache.airavata.gfac.monitor.UserMonitorData;
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.schemas.gfac.GsisshHostType;

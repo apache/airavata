@@ -25,8 +25,8 @@ import java.io.File;
 import java.util.Map;
 
 import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.context.MessageContext;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.context.MessageContext;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.StringArrayType;
 import org.apache.airavata.schemas.gfac.StringParameterType;

@@ -23,8 +23,8 @@ package org.apache.airavata.gfac.gram.persistence;
 
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.persistence.JobData;
-import org.apache.airavata.gfac.persistence.JobPersistenceManager;
+import org.apache.airavata.gfac.core.persistence.JobData;
+import org.apache.airavata.gfac.core.persistence.JobPersistenceManager;
 import org.apache.log4j.Logger;
 import org.globus.gram.internal.GRAMConstants;
 

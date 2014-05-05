@@ -21,8 +21,8 @@
 package org.apache.airavata.gfac.gram.util;
 
 import org.apache.airavata.gfac.ToolsException;
-import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.provider.GFacProviderException;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.globus.gram.GramAttributes;
 import org.globus.gram.GramJob;

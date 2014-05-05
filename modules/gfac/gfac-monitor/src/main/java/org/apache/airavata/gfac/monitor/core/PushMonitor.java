@@ -20,7 +20,7 @@
 */
 package org.apache.airavata.gfac.monitor.core;
 
-import org.apache.airavata.gfac.monitor.MonitorID;
+import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
 
 /**

@@ -29,11 +29,11 @@ import java.util.Map;
 
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.context.MessageContext;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.context.MessageContext;
+import org.apache.airavata.gfac.core.provider.AbstractProvider;
+import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.apache.airavata.gfac.hadoop.provider.utils.HadoopUtils;
-import org.apache.airavata.gfac.provider.AbstractProvider;
-import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.schemas.gfac.HadoopApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.StringParameterType;
