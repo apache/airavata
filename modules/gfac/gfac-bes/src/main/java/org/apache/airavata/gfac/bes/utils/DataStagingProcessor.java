@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.gfac.utils;
+package org.apache.airavata.gfac.bes.utils;
 
 import java.io.File;
 import java.net.URI;
@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.StringArrayType;
 import org.apache.airavata.schemas.gfac.StringParameterType;
@@ -96,7 +97,7 @@ public class DataStagingProcessor {
 		String stdoutFileName = (stdout == null || stdout.equals("")) ? "stdout"
 				: stdout;
 		String stdoutURI = GFacUtils.createGsiftpURIAsString(
-				remoteOutputDir.toString(), stdoutFileName);
+                remoteOutputDir.toString(), stdoutFileName);
 		JSDLUtils.addDataStagingTargetElement(value, null, stdoutFileName,
 				stdoutURI);
 

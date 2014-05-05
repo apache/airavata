@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.gfac.utils;
+package org.apache.airavata.gfac.bes.utils;
 
 import java.io.File;
 import java.io.FilenameFilter;

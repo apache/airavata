@@ -19,27 +19,15 @@
  *
  */
 
-package org.apache.airavata.gfac.utils;
+package org.apache.airavata.gfac.bes.utils;
 
-/**
- * file creation modes 
- */
-public enum Mode {
+import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
 
-	/**
-	 * overwrite any existing file
-	 */
-	overwrite,
-	
-	/**
-	 * append to an existing file
-	 */
-	append,
-	
-	/**
-	 * do NOT overwrite and fail if the file exists
-	 */
-	nooverwrite
-	
+public class SPMDProcessor {
+
+	public static void generateSPMDElements(JobDefinitionType value, JobExecutionContext context) {
+		
+	}
 	
 }

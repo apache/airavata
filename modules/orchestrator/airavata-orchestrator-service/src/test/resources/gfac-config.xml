@@ -36,7 +36,7 @@
             <Handler class="org.apache.airavata.gfac.handler.GridFTPOutputHandler"/>
         </OutHandlers>
     </Provider>
-      <Provider class="org.apache.airavata.gfac.provider.impl.BESProvider" host="org.apache.airavata.schemas.gfac.impl.UnicoreHostTypeImpl">
+      <Provider class="BESProvider" host="org.apache.airavata.schemas.gfac.impl.UnicoreHostTypeImpl">
         <InHandlers>
         	<Handler class="org.apache.airavata.gfac.handler.GramDirectorySetupHandler"/>
             <Handler class="org.apache.airavata.gfac.handler.GridFTPInputHandler"/>
