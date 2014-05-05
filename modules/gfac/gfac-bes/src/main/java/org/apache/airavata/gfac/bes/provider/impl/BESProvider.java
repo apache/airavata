@@ -18,7 +18,7 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac.bes.impl;
+package org.apache.airavata.gfac.bes.provider.impl;
 
 import java.io.FileInputStream;
 import java.io.IOException;
