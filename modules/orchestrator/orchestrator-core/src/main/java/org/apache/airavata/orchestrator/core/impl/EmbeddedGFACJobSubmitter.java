@@ -82,12 +82,4 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
     public void setOrchestratorContext(OrchestratorContext orchestratorContext) {
         this.orchestratorContext = orchestratorContext;
     }
-
-    public void runAfterJobTask(JobExecutionContext jobExecutionContext) throws OrchestratorException {
-        try {
-            gfac.invokeOutFlowHandlers(jobExecutionContext);
-        } catch (GFacException e) {
-            throw new OrchestratorException(e);
-        }
-    }
 }

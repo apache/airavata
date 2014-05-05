@@ -80,7 +80,7 @@ public class HPCMonitorID extends MonitorID {
         jobID = jobExecutionContext.getJobDetails().getJobID();
         taskID = jobExecutionContext.getTaskData().getTaskID();
         experimentID = jobExecutionContext.getExperiment().getExperimentID();
-        workflowNodeID =  jobExecutionContext.getExperiment().getWorkflowNodeDetailsList().get(0).getNodeInstanceId();// at this point we only have one node todo: fix this
+        workflowNodeID =  jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId();// at this point we only have one node todo: fix this
 
     }
 

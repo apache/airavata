@@ -64,8 +64,9 @@ public class CreateLaunchExperiment {
 //            addDescriptors();
 //            final String expId = createExperimentForSSHHost(airavata);
 //            final String expId = createExperimentForSSHHost(airavata);
-            final String expId = createExperimentForTrestles(airavata);
+//            final String expId = createExperimentForTrestles(airavata);
 //            final String expId = createExperimentForStampede(airavata);
+            final String expId = createExperimentForLocalHost(airavata);
             System.out.println("Experiment ID : " + expId);
             String clonedExpId = cloneExperiment(airavata, expId);
             System.out.println("Cloned Experiment ID : " + clonedExpId);

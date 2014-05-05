@@ -52,11 +52,4 @@ public interface JobSubmitter {
      * @return JobExecutionContext return the jobExecutionContext from GFac
      */
     JobExecutionContext submit(String experimentID, String taskID) throws OrchestratorException;
-
-    /**
-     * This can be use to handle any after Jobsubmission task
-     * @param jobExecutionContext
-     * @throws OrchestratorException
-     */
-    void runAfterJobTask(JobExecutionContext jobExecutionContext) throws OrchestratorException;
 }

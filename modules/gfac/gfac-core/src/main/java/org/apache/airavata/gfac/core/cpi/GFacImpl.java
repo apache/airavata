@@ -28,7 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.google.common.eventbus.EventBus;
 import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -40,6 +42,8 @@ import org.apache.airavata.gfac.Scheduler;
 import org.apache.airavata.gfac.core.context.ApplicationContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
+import org.apache.airavata.gfac.core.monitor.AbstractActivityListener;
+import org.apache.airavata.gfac.core.notification.MonitorPublisher;
 import org.apache.airavata.gfac.core.notification.events.ExecutionFailEvent;
 import org.apache.airavata.gfac.core.notification.listeners.LoggingListener;
 import org.apache.airavata.gfac.core.notification.listeners.WorkflowTrackingListener;
@@ -81,6 +85,11 @@ public class GFacImpl implements GFac {
     private static List<ThreadedHandler> daemonHandlers;
 
     private File gfacConfigFile;
+
+    private List<AbstractActivityListener> activityListeners;
+
+    private static MonitorPublisher monitorPublisher;
+
     /**
      * Constructor for GFac
      *
@@ -93,9 +102,32 @@ public class GFacImpl implements GFac {
         this.airavataAPI = airavataAPI;
         this.airavataRegistry2 = airavataRegistry2;
         daemonHandlers = new ArrayList<ThreadedHandler>();
+        activityListeners = new ArrayList<AbstractActivityListener>();
+        monitorPublisher = new MonitorPublisher(new EventBus());     // This is a EventBus common for gfac
+        startStatusUpdators();
         startDaemonHandlers();
     }
 
+    private void startStatusUpdators() {
+        try {
+            String[] listenerClassList = ServerSettings.getActivityListeners();
+            for (String listenerClass : listenerClassList) {
+                Class<? extends AbstractActivityListener> aClass = Class.forName(listenerClass).asSubclass(AbstractActivityListener.class);
+                AbstractActivityListener abstractActivityListener = aClass.newInstance();
+                activityListeners.add(abstractActivityListener);
+                abstractActivityListener.setup(getMonitorPublisher(),registry);
+                getMonitorPublisher().registerListener(abstractActivityListener);
+            }
+        }catch (ClassNotFoundException e) {
+            log.error("Error loading the listener classes configured in airavata-server.properties",e);
+        } catch (InstantiationException e) {
+            log.error("Error loading the listener classes configured in airavata-server.properties",e);
+        } catch (IllegalAccessException e) {
+            log.error("Error loading the listener classes configured in airavata-server.properties",e);
+        } catch (ApplicationSettingsException e){
+            log.error("Error loading the listener classes configured in airavata-server.properties",e);
+        }
+    }
     private void startDaemonHandlers()  {
         List<GFacHandlerConfig> daemonHandlerConfig = null;
         URL resource = GFacImpl.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
@@ -205,15 +237,15 @@ public class GFacImpl implements GFac {
 
         // start constructing jobexecutioncontext
         jobExecutionContext = new JobExecutionContext(gFacConfiguration, serviceName);
+
+        // setting experiment/task/workflownode related information
         Experiment experiment = (Experiment) registry.get(DataType.EXPERIMENT, experimentID);
         jobExecutionContext.setExperiment(experiment);
         jobExecutionContext.setExperimentID(experimentID);
-
+        jobExecutionContext.setWorkflowNodeDetails(experiment.getWorkflowNodeDetailsList().get(0));
         jobExecutionContext.setTaskData(taskData);
 
-
-
-
+        // setting the registry
         jobExecutionContext.setRegistry(registry);
 
         ApplicationContext applicationContext = new ApplicationContext();
@@ -399,5 +431,11 @@ public class GFacImpl implements GFac {
         return gfacConfigFile;
     }
 
+    public static MonitorPublisher getMonitorPublisher() {
+        return monitorPublisher;
+    }
 
+    public Registry getRegistry() {
+        return registry;
+    }
 }

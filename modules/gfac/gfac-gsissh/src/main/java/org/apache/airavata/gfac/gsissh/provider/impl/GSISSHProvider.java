@@ -103,7 +103,7 @@ public class GSISSHProvider extends AbstractProvider {
                     pullMonitorHandler = threadedHandler;
                 }
             }
-            // we know this hos is type GsiSSHHostType
+            // we know this host is type GsiSSHHostType
             String monitorMode = ((GsisshHostType) host).getMonitorMode();
             if("".equals(monitorMode) || monitorMode == null || org.apache.airavata.common.utils.Constants.PULL.equals(monitorMode)){
                 log.info("Job is launched successfully now parsing it to monitoring in pull mode, JobID Returned:  " + jobID);
