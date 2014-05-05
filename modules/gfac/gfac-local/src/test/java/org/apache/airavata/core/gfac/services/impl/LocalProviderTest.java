@@ -27,7 +27,7 @@ import org.apache.airavata.gfac.context.ApplicationContext;
 import org.apache.airavata.gfac.context.JobExecutionContext;
 import org.apache.airavata.gfac.context.MessageContext;
 import org.apache.airavata.gfac.local.handler.LocalDirectorySetupHandler;
-import org.apache.airavata.gfac.local.impl.LocalProvider;
+import org.apache.airavata.gfac.local.provider.impl.LocalProvider;
 import org.apache.airavata.gfac.provider.GFacProviderException;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.persistance.registry.jpa.impl.LoggingRegistryImpl;

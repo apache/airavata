@@ -18,7 +18,7 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac.local.impl;
+package org.apache.airavata.gfac.local.provider.impl;
 
 import java.io.File;
 import java.io.IOException;

@@ -18,7 +18,7 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac.gram.impl;
+package org.apache.airavata.gfac.gram.provider.impl;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

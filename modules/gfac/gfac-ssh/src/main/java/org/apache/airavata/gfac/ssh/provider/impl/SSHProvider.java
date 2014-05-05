@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.gfac.ssh.impl;
+package org.apache.airavata.gfac.ssh.provider.impl;
 
 import java.io.File;
 import java.io.FileOutputStream;
