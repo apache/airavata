@@ -29,16 +29,12 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ClientSettings;
 import org.apache.airavata.model.util.ExperimentModelUtil;
-import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
-import org.apache.airavata.model.workspace.experiment.DataObjectType;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
+import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.ParentDataType;
 import org.apache.airavata.registry.cpi.Registry;
-import org.apache.airavata.schemas.gfac.DataType;
 import org.apache.thrift.TException;
 
 import java.util.ArrayList;
@@ -92,7 +88,7 @@ public class OrchestratorClientSample {
                     List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
                     DataObjectType input = new DataObjectType();
                     input.setKey("echo_input");
-                    input.setType(DataType.STRING.toString());
+                    input.setType(DataType.STRING);
                     input.setValue("echo_output=Hello World");
                     exInputs.add(input);
 
@@ -100,7 +96,7 @@ public class OrchestratorClientSample {
                     List<DataObjectType> exOut = new ArrayList<DataObjectType>();
                     DataObjectType output = new DataObjectType();
                     output.setKey("echo_output");
-                    output.setType(DataType.STRING.toString());
+                    output.setType(DataType.STRING);
                     output.setValue("");
                     exOut.add(output);
 

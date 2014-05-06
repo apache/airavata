@@ -20,30 +20,20 @@
 */
 package org.apache.airavata.orchestrator.core;
 
-import junit.framework.Assert;
-
-import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.orchestrator.cpi.Orchestrator;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
-import org.apache.airavata.persistance.registry.jpa.impl.RegistryImpl;
-import org.apache.airavata.persistance.registry.jpa.model.TaskDetail;
-import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.registry.cpi.ParentDataType;
 import org.apache.airavata.registry.cpi.Registry;
-import org.apache.airavata.schemas.gfac.DataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class OrchestratorTestWithMyProxyAuth extends BaseOrchestratorTest {
@@ -71,14 +61,14 @@ public class OrchestratorTestWithMyProxyAuth extends BaseOrchestratorTest {
         List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
         DataObjectType input = new DataObjectType();
         input.setKey("echo_input");
-        input.setType(DataType.STRING.toString());
+        input.setType(DataType.STRING);
         input.setValue("echo_output=Hello World");
         exInputs.add(input);
 
         List<DataObjectType> exOut = new ArrayList<DataObjectType>();
         DataObjectType output = new DataObjectType();
         output.setKey("echo_output");
-        output.setType(DataType.STRING.toString());
+        output.setType(DataType.STRING);
         output.setValue("");
         exOut.add(output);
 

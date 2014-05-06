@@ -38,11 +38,7 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
-import org.apache.airavata.model.workspace.experiment.DataObjectType;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
-import org.apache.airavata.schemas.gfac.DataType;
+import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.thrift.TException;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -198,7 +194,7 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
 		List<DataObjectType> exOut = new ArrayList<DataObjectType>();
 		DataObjectType output = new DataObjectType();
 		output.setKey("echo_output");
-		output.setType(DataType.STRING.toString());
+		output.setType(DataType.STRING);
 		output.setValue("");
 		exOut.add(output);
 

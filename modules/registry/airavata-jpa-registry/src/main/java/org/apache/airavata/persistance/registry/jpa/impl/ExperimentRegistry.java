@@ -261,7 +261,7 @@ public class ExperimentRegistry {
                 resource.setExperimentResource(experimentResource);
                 resource.setExperimentKey(input.getKey());
                 resource.setValue(input.getValue());
-                resource.setInputType(input.getType());
+                resource.setInputType(input.getType().toString());
                 resource.setMetadata(input.getMetaData());
                 resource.save();
             }
@@ -278,7 +278,7 @@ public class ExperimentRegistry {
                 for (ExperimentInputResource exinput : experimentInputs) {
                     if (exinput.getExperimentKey().equals(input.getKey())) {
                         exinput.setValue(input.getValue());
-                        exinput.setInputType(input.getType());
+                        exinput.setInputType(input.getType().toString());
                         exinput.setMetadata(input.getMetaData());
                         exinput.save();
                     }
@@ -299,7 +299,7 @@ public class ExperimentRegistry {
                 resource.setExperimentResource(experiment);
                 resource.setExperimentKey(output.getKey());
                 resource.setValue(output.getValue());
-                resource.setOutputType(output.getType());
+                resource.setOutputType(output.getType().toString());
                 resource.setMetadata(output.getMetaData());
                 resource.save();
             }
@@ -320,7 +320,7 @@ public class ExperimentRegistry {
                         resource.setExperimentResource(experiment);
                         resource.setExperimentKey(output.getKey());
                         resource.setValue(output.getValue());
-                        resource.setOutputType(output.getType());
+                        resource.setOutputType(output.getType().toString());
                         resource.setMetadata(output.getMetaData());
                         resource.save();
                     }
@@ -341,7 +341,7 @@ public class ExperimentRegistry {
                 resource.setNodeDetailResource(workflowNode);
                 resource.setOutputKey(output.getKey());
                 resource.setValue(output.getValue());
-                resource.setOutputType(output.getType());
+                resource.setOutputType(output.getType().toString());
                 resource.setMetadata(output.getMetaData());
                 resource.save();
             }
@@ -362,7 +362,7 @@ public class ExperimentRegistry {
                     resource.setNodeDetailResource(workflowNode);
                     resource.setOutputKey(output.getKey());
                     resource.setValue(output.getValue());
-                    resource.setOutputType(output.getType());
+                    resource.setOutputType(output.getType().toString());
                     resource.setMetadata(output.getMetaData());
                     resource.save();
                 }
@@ -383,7 +383,7 @@ public class ExperimentRegistry {
                 resource.setTaskDetailResource(taskDetail);
                 resource.setOutputKey(output.getKey());
                 resource.setValue(output.getValue());
-                resource.setOutputType(output.getType());
+                resource.setOutputType(output.getType().toString());
                 resource.setMetadata(output.getMetaData());
                 resource.save();
             }
@@ -779,7 +779,7 @@ public class ExperimentRegistry {
                 resource.setNodeDetailResource(nodeDetailResource);
                 resource.setInputKey(input.getKey());
                 resource.setValue(input.getValue());
-                resource.setInputType(input.getType());
+                resource.setInputType(input.getType().toString());
                 resource.setMetadata(input.getMetaData());
                 resource.save();
             }
@@ -798,7 +798,7 @@ public class ExperimentRegistry {
                     resource.setNodeDetailResource(nodeDetailResource);
                     resource.setInputKey(input.getKey());
                     resource.setValue(input.getValue());
-                    resource.setInputType(input.getType());
+                    resource.setInputType(input.getType().toString());
                     resource.setMetadata(input.getMetaData());
                     resource.save();
                 }
@@ -951,7 +951,7 @@ public class ExperimentRegistry {
                 resource.setTaskDetailResource(taskDetailResource);
                 resource.setInputKey(input.getKey());
                 resource.setValue(input.getValue());
-                resource.setInputType(input.getType());
+                resource.setInputType(input.getType().toString());
                 resource.setMetadata(input.getMetaData());
                 resource.save();
             }
@@ -969,7 +969,7 @@ public class ExperimentRegistry {
                 resource.setTaskDetailResource(taskDetailResource);
                 resource.setOutputKey(input.getKey());
                 resource.setValue(input.getValue());
-                resource.setOutputType(input.getType());
+                resource.setOutputType(input.getType().toString());
                 resource.setMetadata(input.getMetaData());
                 resource.save();
             }
@@ -991,7 +991,7 @@ public class ExperimentRegistry {
                     resource.setTaskDetailResource(taskDetail);
                     resource.setOutputKey(output.getKey());
                     resource.setValue(output.getValue());
-                    resource.setOutputType(output.getType());
+                    resource.setOutputType(output.getType().toString());
                     resource.setMetadata(output.getMetaData());
                     resource.save();
                 }
@@ -1010,7 +1010,7 @@ public class ExperimentRegistry {
                     resource.setTaskDetailResource(taskDetailResource);
                     resource.setInputKey(input.getKey());
                     resource.setValue(input.getValue());
-                    resource.setInputType(input.getType());
+                    resource.setInputType(input.getType().toString());
                     resource.setMetadata(input.getMetaData());
                     resource.save();
                 }

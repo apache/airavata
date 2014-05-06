@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
 
   private static final org.apache.thrift.protocol.TField KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("key", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField VALUE_FIELD_DESC = new org.apache.thrift.protocol.TField("value", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("type", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("type", org.apache.thrift.protocol.TType.I32, (short)3);
   private static final org.apache.thrift.protocol.TField META_DATA_FIELD_DESC = new org.apache.thrift.protocol.TField("metaData", org.apache.thrift.protocol.TType.STRING, (short)4);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -68,13 +68,17 @@ import org.slf4j.LoggerFactory;
 
   private String key; // required
   private String value; // optional
-  private String type; // optional
+  private DataType type; // optional
   private String metaData; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     KEY((short)1, "key"),
     VALUE((short)2, "value"),
+    /**
+     * 
+     * @see DataType
+     */
     TYPE((short)3, "type"),
     META_DATA((short)4, "metaData");
 
@@ -148,7 +152,7 @@ import org.slf4j.LoggerFactory;
     tmpMap.put(_Fields.VALUE, new org.apache.thrift.meta_data.FieldMetaData("value", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.TYPE, new org.apache.thrift.meta_data.FieldMetaData("type", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, DataType.class)));
     tmpMap.put(_Fields.META_DATA, new org.apache.thrift.meta_data.FieldMetaData("metaData", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -241,11 +245,19 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public String getType() {
+  /**
+   * 
+   * @see DataType
+   */
+  public DataType getType() {
     return this.type;
   }
 
-  public void setType(String type) {
+  /**
+   * 
+   * @see DataType
+   */
+  public void setType(DataType type) {
     this.type = type;
   }
 
@@ -309,7 +321,7 @@ import org.slf4j.LoggerFactory;
       if (value == null) {
         unsetType();
       } else {
-        setType((String)value);
+        setType((DataType)value);
       }
       break;
 
@@ -587,8 +599,8 @@ import org.slf4j.LoggerFactory;
             }
             break;
           case 3: // TYPE
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.type = iprot.readString();
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.type = DataType.findByValue(iprot.readI32());
               struct.setTypeIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -630,7 +642,7 @@ import org.slf4j.LoggerFactory;
       if (struct.type != null) {
         if (struct.isSetType()) {
           oprot.writeFieldBegin(TYPE_FIELD_DESC);
-          oprot.writeString(struct.type);
+          oprot.writeI32(struct.type.getValue());
           oprot.writeFieldEnd();
         }
       }
@@ -674,7 +686,7 @@ import org.slf4j.LoggerFactory;
         oprot.writeString(struct.value);
       }
       if (struct.isSetType()) {
-        oprot.writeString(struct.type);
+        oprot.writeI32(struct.type.getValue());
       }
       if (struct.isSetMetaData()) {
         oprot.writeString(struct.metaData);
@@ -692,7 +704,7 @@ import org.slf4j.LoggerFactory;
         struct.setValueIsSet(true);
       }
       if (incoming.get(1)) {
-        struct.type = iprot.readString();
+        struct.type = DataType.findByValue(iprot.readI32());
         struct.setTypeIsSet(true);
       }
       if (incoming.get(2)) {

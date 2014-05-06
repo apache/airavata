@@ -28,11 +28,7 @@ import org.apache.airavata.client.tools.DocumentCreator;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
-import org.apache.airavata.model.workspace.experiment.DataObjectType;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
-import org.apache.airavata.schemas.gfac.DataType;
+import org.apache.airavata.model.workspace.experiment.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeTest;
@@ -62,14 +58,14 @@ public class SimpleEchoIT extends SingleAppIntegrationTestBase {
         List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
         DataObjectType input = new DataObjectType();
         input.setKey("echo_input");
-        input.setType(DataType.STRING.toString());
+        input.setType(DataType.STRING);
         input.setValue("echo_output=Hello World");
         exInputs.add(input);
 
         List<DataObjectType> exOut = new ArrayList<DataObjectType>();
         DataObjectType output = new DataObjectType();
         output.setKey("echo_output");
-        output.setType(DataType.STRING.toString());
+        output.setType(DataType.STRING);
         output.setValue("");
         exOut.add(output);
 
