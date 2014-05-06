@@ -34,8 +34,8 @@ public class Experiment {
     private String gatewayName;
     @Column(name = "EXECUTION_USER")
     private String executionUser;
-    @Column(name = "PROJECT_NAME")
-    private String projectName;
+    @Column(name = "PROJECT_ID")
+    private String projectID;
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
     @Column(name = "EXPERIMENT_NAME")
@@ -59,7 +59,7 @@ public class Experiment {
     private Gateway gateway;
 
     @ManyToOne(cascade=CascadeType.MERGE)
-    @JoinColumn(name = "project_name")
+    @JoinColumn(name = "PROJECT_ID")
     private Project project;
 
 //    @ManyToOne(cascade=CascadeType.MERGE)
@@ -90,12 +90,12 @@ public class Experiment {
         this.executionUser = executionUser;
     }
 
-    public String getProjectName() {
-        return projectName;
+    public String getProjectId() {
+        return projectID;
     }
 
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
+    public void setProjectId(String projectId) {
+        this.projectID = projectId;
     }
 
     public Timestamp getCreationTime() {

@@ -31,6 +31,8 @@ import junit.framework.Assert;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.client.tools.DocumentCreator;
 import org.apache.airavata.model.util.ExperimentModelUtil;
+import org.apache.airavata.model.util.ProjectModelUtil;
+import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
@@ -100,7 +102,10 @@ public class BaseCaseIT extends WorkflowIntegrationTestBase {
         output.setValue("");
         exOut.add(output);
 
-        Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
+        Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
+        String projectId = getClient().createProject(project, "admin");
+
+        Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
         simpleExperiment.setExperimentOutputs(exOut);
 
         ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0, 1, "sds128");
@@ -171,7 +176,10 @@ public class BaseCaseIT extends WorkflowIntegrationTestBase {
         output.setValue("");
         exOut.add(output);
 
-        Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho3", "SimpleEcho3", exInputs);
+        Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
+        String projectId = getClient().createProject(project, "admin");
+
+        Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho3", "SimpleEcho3", exInputs);
         simpleExperiment.setExperimentOutputs(exOut);
 
         ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org", 1, 1, 1, "normal", 0, 0, 1, "TG-STA110014S");

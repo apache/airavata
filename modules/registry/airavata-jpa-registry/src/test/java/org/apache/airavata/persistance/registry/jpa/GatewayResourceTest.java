@@ -56,6 +56,7 @@ public class GatewayResourceTest extends AbstractResourceTest {
             gatewayResource = (GatewayResource) ResourceUtils.getGateway("default");
         }
         projectResource = (ProjectResource) gatewayResource.create(ResourceType.PROJECT);
+        projectResource.setId("testProject");
         projectResource.setName("testProject");
         projectResource.setWorker(workerResource);
         projectResource.save();

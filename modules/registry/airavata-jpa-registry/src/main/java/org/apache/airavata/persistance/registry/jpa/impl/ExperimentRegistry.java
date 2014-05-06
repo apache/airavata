@@ -58,21 +58,18 @@ public class ExperimentRegistry {
                 throw new Exception("User does not exist in the system..");
             }
             experimentID = getExperimentID(experiment.getName());
+            experiment.setExperimentID(experimentID);
             ExperimentResource experimentResource = new ExperimentResource();
             experimentResource.setExpID(experimentID);
             experimentResource.setExpName(experiment.getName());
             experimentResource.setExecutionUser(experiment.getUserName());
             experimentResource.setGateway(gatewayResource);
-            ProjectResource project;
             if (!workerResource.isProjectExists(experiment.getProjectID())) {
-                project = workerResource.createProject(experiment.getProjectID());
-                project.setGateway(gatewayResource);
-                project.save();
-                experimentResource.setProject(project);
-            } else {
-                project = workerResource.getProject(experiment.getProjectID());
-                experimentResource.setProject(project);
+                logger.error("Project does not exist in the system..");
+                throw new Exception("Project does not exist in the system, Please create the project first...");
             }
+            ProjectResource project = workerResource.getProject(experiment.getProjectID());
+            experimentResource.setProject(project);
             experimentResource.setCreationTime(AiravataUtils.getTime(experiment.getCreationTime()));
             experimentResource.setDescription(experiment.getDescription());
             experimentResource.setApplicationId(experiment.getApplicationId());
@@ -121,7 +118,6 @@ public class ExperimentRegistry {
             logger.error("Error while saving experiment to registry", e.getMessage());
             throw new Exception(e);
         }
-        experiment.setExperimentID(experimentID);
         return experimentID;
     }
 
@@ -1444,9 +1440,11 @@ public class ExperimentRegistry {
             existingExperiment.setExecutionUser(experiment.getUserName());
             existingExperiment.setGateway(gatewayResource);
             if (!workerResource.isProjectExists(experiment.getProjectID())) {
-                ProjectResource project = workerResource.createProject(experiment.getProjectID());
-                existingExperiment.setProject(project);
+                logger.error("Project does not exist in the system..");
+                throw new Exception("Project does not exist in the system, Please create the project first...");
             }
+            ProjectResource project = workerResource.getProject(experiment.getProjectID());
+            existingExperiment.setProject(project);
             existingExperiment.setCreationTime(AiravataUtils.getTime(experiment.getCreationTime()));
             existingExperiment.setDescription(experiment.getDescription());
             existingExperiment.setApplicationId(experiment.getApplicationId());
@@ -1634,7 +1632,7 @@ public class ExperimentRegistry {
                     experiments.add(experiment);
                 }
                 return experiments;
-            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_NAME)) {
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_ID)) {
                 ProjectResource project = workerResource.getProject((String) value);
                 List<ExperimentResource> resources = project.getExperiments();
                 for (ExperimentResource resource : resources) {
@@ -1792,8 +1790,8 @@ public class ExperimentRegistry {
                 return resource.getDescription();
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.APPLICATION_ID)) {
                 return resource.getApplicationId();
-            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_NAME)) {
-                return resource.getProject().getName();
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_ID)) {
+                return resource.getProject().getId();
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.APPLICATION_VERSION)) {
                 return resource.getApplicationVersion();
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.WORKFLOW_TEMPLATE_ID)) {
@@ -2135,7 +2133,7 @@ public class ExperimentRegistry {
                 for (ExperimentResource resource : resources) {
                     expIDs.add(resource.getExpID());
                 }
-            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_NAME)) {
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_ID)) {
                 List<ExperimentResource> resources = workerResource.getExperiments();
                 for (ExperimentResource resource : resources) {
                     expIDs.add(resource.getExpID());

@@ -37,7 +37,7 @@ public class ThriftDataModelConversion {
     public static Project getProject (ProjectResource pr){
         Project project = new Project();
         if (pr != null) {
-            project.setProjectID(pr.getName());
+            project.setProjectID(pr.getId());
             project.setName(pr.getName());
             if (pr.getCreationTime()!=null) {
 				project.setCreationTime(pr.getCreationTime().getTime());
@@ -61,7 +61,7 @@ public class ThriftDataModelConversion {
         Experiment experiment = new Experiment();
         if (experimentResource != null){
             if (experimentResource.getProject()!= null){
-                experiment.setProjectID(experimentResource.getProject().getName());
+                experiment.setProjectID(experimentResource.getProject().getId());
             }
             experiment.setExperimentID(experimentResource.getExpID());
             experiment.setCreationTime(experimentResource.getCreationTime().getTime());

@@ -151,6 +151,7 @@ public class Initialize {
             workerResource.save();
 
             ProjectResource resource = (ProjectResource)gatewayResource.create(ResourceType.PROJECT);
+            resource.setId("default");
             resource.setName("default");
             resource.setWorker(workerResource);
             resource.save();

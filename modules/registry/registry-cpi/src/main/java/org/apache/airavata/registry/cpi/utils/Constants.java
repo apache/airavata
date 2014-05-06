@@ -33,7 +33,7 @@ public class Constants {
             public static final String USER_NAME = "userName";
             public static final String GATEWAY = "gateway";
             public static final String EXPERIMENT_DESC = "experimentDescription";
-            public static final String PROJECT_NAME = "project";
+            public static final String PROJECT_ID = "projectId";
             public static final String CREATION_TIME = "creationTime";
             public static final String APPLICATION_ID = "applicationId";
             public static final String APPLICATION_VERSION = "applicationVersion";
