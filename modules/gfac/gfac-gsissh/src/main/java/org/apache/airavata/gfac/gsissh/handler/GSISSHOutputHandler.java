@@ -22,9 +22,7 @@ package org.apache.airavata.gfac.gsissh.handler;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -60,13 +58,9 @@ import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
-import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 public class GSISSHOutputHandler extends AbstractHandler {
     private static final Logger log = LoggerFactory.getLogger(GSISSHOutputHandler.class);
