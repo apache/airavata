@@ -19,6 +19,8 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ClientSettings;
 import org.apache.airavata.model.util.ExperimentModelUtil;
+import org.apache.airavata.model.util.ProjectModelUtil;
+import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.AdvancedOutputDataHandling;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
@@ -146,8 +148,11 @@ public class CreateLaunchExperimentUS3 {
             output.setValue("");
             exOut.add(output);
 
+            Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
+            String projectId = client.createProject(project, "admin");
+
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("project1", "admin", "US3EchoExperimentTrestles", "US3EchoTrestles", "US3EchoTrestles", exInputs);
+                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "US3EchoExperimentTrestles", "US3EchoTrestles", "US3EchoTrestles", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "shared", 0, 0, 1, "uot111");
@@ -198,9 +203,11 @@ public class CreateLaunchExperimentUS3 {
             exOut.add(output);
             exOut.add(output1);
             exOut.add(output2);
-            
 
-            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("project1", "admin", "US3ExperimentTrestles", "US3AppTrestles", "US3AppTrestles", exInputs);
+            Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
+            String projectId = client.createProject(project, "admin");
+
+            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "US3ExperimentTrestles", "US3AppTrestles", "US3AppTrestles", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 2, 32, 0, "shared", 0, 0, 0, "uot111");
@@ -256,9 +263,11 @@ public class CreateLaunchExperimentUS3 {
             exOut.add(output);
             exOut.add(output1);
             exOut.add(output2);
-            
 
-            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("project1", "admin", "US3ExperimentStampede", "US3AppStampede", "US3AppStampede", exInputs);
+            Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
+            String projectId = client.createProject(project, "admin");
+
+            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "US3ExperimentStampede", "US3AppStampede", "US3AppStampede", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org", 2, 32, 0, "normal", 0, 0, 0, "TG-MCB070039N");
@@ -306,8 +315,11 @@ public class CreateLaunchExperimentUS3 {
             output.setValue("");
             exOut.add(output);
 
+            Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
+            String projectId = client.createProject(project, "admin");
+
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("project1", "admin", "US3EchoExperimentStatus", "US3EchoStampede", "US3EchoStampede", exInputs);
+                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "US3EchoExperimentStatus", "US3EchoStampede", "US3EchoStampede", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling =

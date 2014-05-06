@@ -474,7 +474,7 @@ public class ExperimentResource extends AbstractResource {
         em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
         Experiment experiment = new Experiment();
-        Project projectmodel = em.find(Project.class, project.getName());
+        Project projectmodel = em.find(Project.class, project.getId());
         experiment.setProject(projectmodel);
         Gateway gateway = em.find(Gateway.class, getGateway().getGatewayName());
         experiment.setExpId(expID);

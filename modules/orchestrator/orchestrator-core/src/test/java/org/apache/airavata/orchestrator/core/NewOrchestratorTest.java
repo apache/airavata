@@ -86,7 +86,7 @@ public class NewOrchestratorTest extends BaseOrchestratorTest {
         exOut.add(output);
 
         Experiment simpleExperiment =
-                ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho0", "SimpleEcho0", exInputs);
+                ExperimentModelUtil.createSimpleExperiment("default", "admin", "echoExperiment", "SimpleEcho0", "SimpleEcho0", exInputs);
         simpleExperiment.setExperimentOutputs(exOut);
 
         WorkflowNodeDetails test = ExperimentModelUtil.createWorkflowNode("test", null);

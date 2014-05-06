@@ -56,7 +56,7 @@ public abstract class AbstractResourceTest {
         gatewayResource = (GatewayResource)ResourceUtils.getGateway("default");
         workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayName(), "admin");
         userResource = (UserResource)ResourceUtils.getUser(RegistrySettings.getSetting("default.registry.user"));
-        projectResource = (ProjectResource) workerResource.getProject("default"); 
+        projectResource = workerResource.getProject("default");
     }
 
     public Timestamp getCurrentTimestamp() {

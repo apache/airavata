@@ -142,7 +142,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             List<Experiment> experiments = new ArrayList<Experiment>();
             registry = RegistryFactory.getDefaultRegistry();
             if (registry.isExist(RegistryModelType.PROJECT, projectId)){
-	            List<Object> list = registry.get(RegistryModelType.EXPERIMENT, Constants.FieldConstants.ExperimentConstants.PROJECT_NAME, projectId);
+	            List<Object> list = registry.get(RegistryModelType.EXPERIMENT, Constants.FieldConstants.ExperimentConstants.PROJECT_ID, projectId);
 	            if (list != null && !list.isEmpty()){
 	                for (Object o : list){
 	                    experiments.add((Experiment)o);

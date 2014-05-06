@@ -29,26 +29,26 @@ import javax.persistence.*;
 @Table(name = "PROJECT_USER")
 public class ProjectUser {
     @Id
-    @Column(name = "PROJECT_NAME")
-    private String projectName;
+    @Column(name = "PROJECT_ID")
+    private String projectID;
     @Id
     @Column(name = "USER_NAME")
     private String userName;
 
     @ManyToOne(cascade=CascadeType.MERGE)
-    @JoinColumn(name = "PROJECT_NAME")
+    @JoinColumn(name = "PROJECT_ID")
     private Project project;
 
     @ManyToOne(cascade=CascadeType.MERGE)
     @JoinColumn(name = "USER_NAME")
     private Users user;
 
-    public String getProjectName() {
-        return projectName;
+    public String getProjectID() {
+        return projectID;
     }
 
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
+    public void setProjectID(String projectID) {
+        this.projectID = projectID;
     }
 
     public String getUserName() {
