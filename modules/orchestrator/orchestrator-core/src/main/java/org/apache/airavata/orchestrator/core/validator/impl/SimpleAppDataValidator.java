@@ -48,7 +48,7 @@ public class SimpleAppDataValidator extends AbstractJobMetadataValidator {
 
             Experiment experiment = null;
             try {
-                experiment = (Experiment) registry.get(org.apache.airavata.registry.cpi.DataType.EXPERIMENT, experimentID);
+                experiment = (Experiment) registry.get(org.apache.airavata.registry.cpi.RegistryModelType.EXPERIMENT, experimentID);
             } catch (Exception e) {
                 throw new OrchestratorException(e);
             }

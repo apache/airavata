@@ -85,7 +85,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public void updateProject(Project project) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
-            registry.update(DataType.PROJECT, project, project.getProjectID());
+            registry.update(RegistryModelType.PROJECT, project, project.getProjectID());
         } catch (RegistryException e) {
             logger.error("Error while updating the project", e);
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -101,7 +101,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public Project getProject(String projectId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
-            return (Project)registry.get(DataType.PROJECT, projectId);
+            return (Project)registry.get(RegistryModelType.PROJECT, projectId);
         } catch (RegistryException e) {
             logger.error("Error while updating the project", e);
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -118,7 +118,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         List<Project> projects = new ArrayList<Project>();
         try {
             registry = RegistryFactory.getDefaultRegistry();
-            List<Object> list = registry.get(DataType.PROJECT, Constants.FieldConstants.ProjectConstants.OWNER, userName);
+            List<Object> list = registry.get(RegistryModelType.PROJECT, Constants.FieldConstants.ProjectConstants.OWNER, userName);
             if (list != null && !list.isEmpty()){
                 for (Object o : list){
                     projects.add((Project) o);
@@ -141,8 +141,8 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             List<Experiment> experiments = new ArrayList<Experiment>();
             registry = RegistryFactory.getDefaultRegistry();
-            if (registry.isExist(DataType.PROJECT, projectId)){
-	            List<Object> list = registry.get(DataType.EXPERIMENT, Constants.FieldConstants.ExperimentConstants.PROJECT_NAME, projectId);
+            if (registry.isExist(RegistryModelType.PROJECT, projectId)){
+	            List<Object> list = registry.get(RegistryModelType.EXPERIMENT, Constants.FieldConstants.ExperimentConstants.PROJECT_NAME, projectId);
 	            if (list != null && !list.isEmpty()){
 	                for (Object o : list){
 	                    experiments.add((Experiment)o);
@@ -166,7 +166,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             List<Experiment> experiments = new ArrayList<Experiment>();
             registry = RegistryFactory.getDefaultRegistry();
-            List<Object> list = registry.get(DataType.EXPERIMENT, Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
+            List<Object> list = registry.get(RegistryModelType.EXPERIMENT, Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
             if (list != null && !list.isEmpty()){
                 for (Object o : list){
                     experiments.add((Experiment)o);
@@ -238,7 +238,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public Experiment getExperiment(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
-            return (Experiment)registry.get(DataType.EXPERIMENT, airavataExperimentId);
+            return (Experiment)registry.get(RegistryModelType.EXPERIMENT, airavataExperimentId);
         } catch (Exception e) {
             logger.error("Error while retrieving the experiment", e);
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -274,7 +274,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public void updateExperiment(String airavataExperimentId, Experiment experiment) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
-            registry.update(DataType.EXPERIMENT, experiment, airavataExperimentId);
+            registry.update(RegistryModelType.EXPERIMENT, experiment, airavataExperimentId);
         } catch (Exception e) {
             logger.error("Error while updating experiment", e);
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -328,7 +328,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public ExperimentStatus getExperimentStatus(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
-            return (ExperimentStatus)registry.get(DataType.EXPERIMENT_STATUS, airavataExperimentId);
+            return (ExperimentStatus)registry.get(RegistryModelType.EXPERIMENT_STATUS, airavataExperimentId);
         } catch (Exception e) {
             logger.error("Error while retrieving the experiment status", e);
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -339,7 +339,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public List<DataObjectType> getExperimentOutputs(String airavataExperimentId) throws TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
-            return (List<DataObjectType>)registry.get(DataType.EXPERIMENT_OUTPUT, airavataExperimentId);
+            return (List<DataObjectType>)registry.get(RegistryModelType.EXPERIMENT_OUTPUT, airavataExperimentId);
         } catch (Exception e) {
             logger.error("Error while retrieving the experiment outputs", e);
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -350,15 +350,15 @@ public class AiravataServerHandler implements Airavata.Iface {
         Map<String, JobStatus> jobStatus = new HashMap<String, JobStatus>();
         try {
             registry = RegistryFactory.getDefaultRegistry();
-            List<Object> workflowNodes = registry.get(DataType.WORKFLOW_NODE_DETAIL, Constants.FieldConstants.WorkflowNodeConstants.EXPERIMENT_ID, airavataExperimentId);
+            List<Object> workflowNodes = registry.get(RegistryModelType.WORKFLOW_NODE_DETAIL, Constants.FieldConstants.WorkflowNodeConstants.EXPERIMENT_ID, airavataExperimentId);
             if (workflowNodes != null && !workflowNodes.isEmpty()){
                 for (Object wf : workflowNodes){
                     String nodeInstanceId = ((WorkflowNodeDetails) wf).getNodeInstanceId();
-                    List<Object> taskDetails = registry.get(DataType.TASK_DETAIL, Constants.FieldConstants.TaskDetailConstants.NODE_ID, nodeInstanceId);
+                    List<Object> taskDetails = registry.get(RegistryModelType.TASK_DETAIL, Constants.FieldConstants.TaskDetailConstants.NODE_ID, nodeInstanceId);
                     if (taskDetails != null && !taskDetails.isEmpty()){
                         for (Object ts : taskDetails){
                             String taskID = ((TaskDetails) ts).getTaskID();
-                            List<Object> jobDetails = registry.get(DataType.JOB_DETAIL, Constants.FieldConstants.JobDetaisConstants.TASK_ID, taskID);
+                            List<Object> jobDetails = registry.get(RegistryModelType.JOB_DETAIL, Constants.FieldConstants.JobDetaisConstants.TASK_ID, taskID);
                             if (jobDetails != null && !jobDetails.isEmpty()){
                                 for (Object job : jobDetails){
                                     String jobID = ((JobDetails) job).getJobID();
@@ -459,7 +459,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String cloneExperiment(String airavataExperimentIdToBeCloned, Experiment updatedExperiment) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
-            UserConfigurationData previousConfiguration = (UserConfigurationData)registry.get(DataType.EXPERIMENT_CONFIGURATION_DATA, updatedExperiment.getExperimentID());
+            UserConfigurationData previousConfiguration = (UserConfigurationData)registry.get(RegistryModelType.EXPERIMENT_CONFIGURATION_DATA, updatedExperiment.getExperimentID());
             updatedExperiment.setUserConfigurationData(previousConfiguration);
             updatedExperiment.setName(airavataExperimentIdToBeCloned);
             return (String)registry.add(ParentDataType.EXPERIMENT, updatedExperiment);

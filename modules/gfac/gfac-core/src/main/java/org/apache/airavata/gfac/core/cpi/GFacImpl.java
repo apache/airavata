@@ -58,7 +58,7 @@ import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.cpi.DataType;
+import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -201,7 +201,7 @@ public class GFacImpl implements GFac {
 
     private JobExecutionContext createJEC(String experimentID, String taskID) throws Exception {
         JobExecutionContext jobExecutionContext;
-        TaskDetails taskData = (TaskDetails) registry.get(DataType.TASK_DETAIL, taskID);
+        TaskDetails taskData = (TaskDetails) registry.get(RegistryModelType.TASK_DETAIL, taskID);
 
         // this is wear our new model and old model is mapping (so serviceName in ExperimentData and service name in ServiceDescriptor
         // has to be same.
@@ -239,7 +239,7 @@ public class GFacImpl implements GFac {
         jobExecutionContext = new JobExecutionContext(gFacConfiguration, serviceName);
 
         // setting experiment/task/workflownode related information
-        Experiment experiment = (Experiment) registry.get(DataType.EXPERIMENT, experimentID);
+        Experiment experiment = (Experiment) registry.get(RegistryModelType.EXPERIMENT, experimentID);
         jobExecutionContext.setExperiment(experiment);
         jobExecutionContext.setExperimentID(experimentID);
         jobExecutionContext.setWorkflowNodeDetails(experiment.getWorkflowNodeDetailsList().get(0));

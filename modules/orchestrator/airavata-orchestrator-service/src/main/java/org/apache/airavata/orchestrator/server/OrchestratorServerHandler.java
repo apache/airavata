@@ -32,7 +32,7 @@ import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.cpi.orchestrator_cpi_serviceConstants;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.DataType;
+import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.TaskDetailConstants;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants;
@@ -86,14 +86,14 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             if (tasks.size() > 1) {
                 log.info("There are multiple tasks for this experiment, So Orchestrator will launch multiple Jobs");
             }
-            List<String> ids = registry.getIds(DataType.WORKFLOW_NODE_DETAIL,WorkflowNodeConstants.EXPERIMENT_ID,experimentId);
+            List<String> ids = registry.getIds(RegistryModelType.WORKFLOW_NODE_DETAIL,WorkflowNodeConstants.EXPERIMENT_ID,experimentId);
             for (String workflowNodeId : ids) {
-                WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails)registry.get(DataType.WORKFLOW_NODE_DETAIL, workflowNodeId);
-                List<Object> taskDetailList = registry.get(DataType.TASK_DETAIL, TaskDetailConstants.NODE_ID, workflowNodeId);
+                WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails)registry.get(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeId);
+                List<Object> taskDetailList = registry.get(RegistryModelType.TASK_DETAIL, TaskDetailConstants.NODE_ID, workflowNodeId);
                 for (Object o : taskDetailList) {
                     TaskDetails taskID = (TaskDetails) o;
                     //iterate through all the generated tasks and performs the job submisssion+monitoring
-                    Experiment experiment = (Experiment) registry.get(DataType.EXPERIMENT, experimentId);
+                    Experiment experiment = (Experiment) registry.get(RegistryModelType.EXPERIMENT, experimentId);
                     if (experiment == null) {
                         log.error("Error retrieving the Experiment by the given experimentID: " + experimentId);
                         return false;

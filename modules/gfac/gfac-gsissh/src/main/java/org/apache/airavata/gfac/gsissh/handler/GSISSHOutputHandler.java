@@ -54,7 +54,7 @@ import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.TransferState;
 import org.apache.airavata.model.workspace.experiment.TransferStatus;
 import org.apache.airavata.registry.cpi.ChildDataType;
-import org.apache.airavata.registry.cpi.DataType;
+import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
@@ -73,7 +73,7 @@ public class GSISSHOutputHandler extends AbstractHandler {
                 ApplicationDescription applicationDeploymentDescription = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
                 TaskDetails taskData = null;
                 try {
-                    taskData = (TaskDetails) jobExecutionContext.getRegistry().get(DataType.TASK_DETAIL, jobExecutionContext.getTaskData().getTaskID());
+                    taskData = (TaskDetails) jobExecutionContext.getRegistry().get(RegistryModelType.TASK_DETAIL, jobExecutionContext.getTaskData().getTaskID());
                 } catch (RegistryException e) {
                     log.error("Error retrieving job details from Registry");
                     throw new GFacHandlerException("Error retrieving job details from Registry", e);

@@ -37,35 +37,35 @@ public class LoggingRegistryImpl implements Registry {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void update(DataType dataType, Object newObjectToUpdate, Object identifier) throws RegistryException {
+    public void update(RegistryModelType dataType, Object newObjectToUpdate, Object identifier) throws RegistryException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void update(DataType dataType, Object identifier, String fieldName, Object value) throws RegistryException {
+    public void update(RegistryModelType dataType, Object identifier, String fieldName, Object value) throws RegistryException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public Object get(DataType dataType, Object identifier) throws RegistryException {
+    public Object get(RegistryModelType dataType, Object identifier) throws RegistryException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public List<Object> get(DataType dataType, String fieldName, Object value) throws RegistryException {
+    public List<Object> get(RegistryModelType dataType, String fieldName, Object value) throws RegistryException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public Object getValue(DataType dataType, Object identifier, String field) throws RegistryException {
+    public Object getValue(RegistryModelType dataType, Object identifier, String field) throws RegistryException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public List<String> getIds(DataType dataType, String fieldName, Object value) throws RegistryException {
+    public List<String> getIds(RegistryModelType dataType, String fieldName, Object value) throws RegistryException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void remove(DataType dataType, Object identifier) throws RegistryException {
+    public void remove(RegistryModelType dataType, Object identifier) throws RegistryException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public boolean isExist(DataType dataType, Object identifier) throws RegistryException {
+    public boolean isExist(RegistryModelType dataType, Object identifier) throws RegistryException {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

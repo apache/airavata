@@ -619,7 +619,7 @@ public class GFacUtils {
 			status.setJobState(state);
 			status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
         	details.setJobStatus(status);
-			registry.update(org.apache.airavata.registry.cpi.DataType.JOB_DETAIL, details, details.getJobID());
+			registry.update(org.apache.airavata.registry.cpi.RegistryModelType.JOB_DETAIL, details, details.getJobID());
 		} catch (Exception e) {
 			throw new GFacException("Error persisting job status" + e.getLocalizedMessage(),e);
 		}

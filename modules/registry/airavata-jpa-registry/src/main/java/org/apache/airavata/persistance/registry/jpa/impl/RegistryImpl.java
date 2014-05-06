@@ -169,7 +169,7 @@ public class RegistryImpl implements Registry {
      *                          other fields that need to be updated.
      */
     @Override
-    public void update(DataType dataType, Object newObjectToUpdate, Object identifier) throws RegistryException {
+    public void update(RegistryModelType dataType, Object newObjectToUpdate, Object identifier) throws RegistryException {
         try {
             switch (dataType) {
                 case PROJECT:
@@ -257,7 +257,7 @@ public class RegistryImpl implements Registry {
      *                   updated by given value
      */
     @Override
-    public void update(DataType dataType, Object identifier, String fieldName, Object value) throws RegistryException {
+    public void update(RegistryModelType dataType, Object identifier, String fieldName, Object value) throws RegistryException {
         try {
             switch (dataType) {
                 case EXPERIMENT:
@@ -288,7 +288,7 @@ public class RegistryImpl implements Registry {
      * @return object according to the given identifier.
      */
     @Override
-    public Object get(DataType dataType, Object identifier) throws RegistryException {
+    public Object get(RegistryModelType dataType, Object identifier) throws RegistryException {
         try {
             switch (dataType) {
                 case PROJECT:
@@ -352,7 +352,7 @@ public class RegistryImpl implements Registry {
      * @return List of objects according to the given criteria
      */
     @Override
-    public List<Object> get(DataType dataType, String fieldName, Object value) throws RegistryException {
+    public List<Object> get(RegistryModelType dataType, String fieldName, Object value) throws RegistryException {
         try {
             List<Object> result = new ArrayList<Object>();
             switch (dataType) {
@@ -428,7 +428,7 @@ public class RegistryImpl implements Registry {
      * given
      */
     @Override
-    public Object getValue(DataType dataType, Object identifier, String field) throws RegistryException {
+    public Object getValue(RegistryModelType dataType, Object identifier, String field) throws RegistryException {
         try {
             switch (dataType) {
                 case EXPERIMENT:
@@ -459,7 +459,7 @@ public class RegistryImpl implements Registry {
      * @return id list according to the filtering criteria
      */
     @Override
-    public List<String> getIds(DataType dataType, String fieldName, Object value) throws RegistryException {
+    public List<String> getIds(RegistryModelType dataType, String fieldName, Object value) throws RegistryException {
         try {
             switch (dataType) {
                 case PROJECT:
@@ -496,7 +496,7 @@ public class RegistryImpl implements Registry {
      *                   identifier will be generated experimentID
      */
     @Override
-    public void remove(DataType dataType, Object identifier) throws RegistryException {
+    public void remove(RegistryModelType dataType, Object identifier) throws RegistryException {
         try {
             switch (dataType) {
                 case PROJECT:
@@ -553,7 +553,7 @@ public class RegistryImpl implements Registry {
      * @return whether the given data type exists or not
      */
     @Override
-    public boolean isExist(DataType dataType, Object identifier) throws RegistryException {
+    public boolean isExist(RegistryModelType dataType, Object identifier) throws RegistryException {
         try {
             switch (dataType) {
                 case PROJECT:
