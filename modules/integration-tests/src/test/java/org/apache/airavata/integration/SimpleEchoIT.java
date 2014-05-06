@@ -26,6 +26,8 @@ import java.util.List;
 
 import org.apache.airavata.client.tools.DocumentCreator;
 import org.apache.airavata.model.util.ExperimentModelUtil;
+import org.apache.airavata.model.util.ProjectModelUtil;
+import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
@@ -71,8 +73,11 @@ public class SimpleEchoIT extends SingleAppIntegrationTestBase {
         output.setValue("");
         exOut.add(output);
 
+        Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
+        String projectId = getClient().createProject(project, "admin");
+
         Experiment simpleExperiment =
-                ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho0", "SimpleEcho0", exInputs);
+                ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho0", "SimpleEcho0", exInputs);
         simpleExperiment.setExperimentOutputs(exOut);
 
         ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("localhost", 1, 1, 1, "normal", 0, 0, 1, "sds128");

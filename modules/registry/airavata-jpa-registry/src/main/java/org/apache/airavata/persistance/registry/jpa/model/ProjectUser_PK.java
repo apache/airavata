@@ -22,11 +22,11 @@
 package org.apache.airavata.persistance.registry.jpa.model;
 
 public class ProjectUser_PK {
-    private String projectName;
+    private String projectID;
     private String userName;
 
-    public ProjectUser_PK(String projectName, String userName) {
-        this.projectName = projectName;
+    public ProjectUser_PK(String projectID, String userName) {
+        this.projectID = projectID;
         this.userName = userName;
     }
 
@@ -44,12 +44,12 @@ public class ProjectUser_PK {
         return 1;
     }
 
-    public String getProjectName() {
-        return projectName;
+    public String getProjectID() {
+        return projectID;
     }
 
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
+    public void setProjectID(String projectID) {
+        this.projectID = projectID;
     }
 
     public String getUserName() {

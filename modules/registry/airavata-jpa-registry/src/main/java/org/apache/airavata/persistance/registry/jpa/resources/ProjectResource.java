@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 public class ProjectResource extends AbstractResource {
     private final static Logger logger = LoggerFactory.getLogger(ProjectResource.class);
     private String name;
+    private String id;
     private GatewayResource gateway;
     private WorkerResource worker;
     private String description;
@@ -53,12 +54,12 @@ public class ProjectResource extends AbstractResource {
      *
      * @param worker gateway worker
      * @param gateway gateway
-     * @param projectName project name
+     * @param projectId project name
      */
-    public ProjectResource(WorkerResource worker, GatewayResource gateway, String projectName) {
+    public ProjectResource(WorkerResource worker, GatewayResource gateway, String projectId) {
         this.setWorker(worker);
         this.setGateway(gateway);
-        this.name = projectName;
+        this.id = projectId;
     }
 
     /**
@@ -75,7 +76,7 @@ public class ProjectResource extends AbstractResource {
             return experimentResource;
         } else if (type == ResourceType.PROJECT_USER){
             ProjectUserResource pr = new ProjectUserResource();
-            pr.setProjectName(name);
+            pr.setProjectId(id);
             pr.setUserName(worker.getUser());
             return pr;
         }
@@ -101,7 +102,7 @@ public class ProjectResource extends AbstractResource {
         }else if (type == ResourceType.PROJECT_USER){
             QueryGenerator generator = new QueryGenerator(PROJECT_USER);
             generator.setParameter(ProjectUserConstants.USERNAME, name);
-            generator.setParameter(ProjectUserConstants.PROJECT_NAME, this.name);
+            generator.setParameter(ProjectUserConstants.PROJECT_ID, this.id);
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
         }else {
@@ -136,7 +137,7 @@ public class ProjectResource extends AbstractResource {
             em.getTransaction().begin();
             QueryGenerator generator = new QueryGenerator(PROJECT_USER);
             generator.setParameter(ProjectUserConstants.USERNAME, name);
-            generator.setParameter(ProjectUserConstants.PROJECT_NAME, this.name);
+            generator.setParameter(ProjectUserConstants.PROJECT_ID, this.id);
             Query q = generator.selectQuery(em);
             ProjectUser prUser = (ProjectUser) q.getSingleResult();
             ExperimentResource experimentResource = (ExperimentResource)
@@ -161,7 +162,7 @@ public class ProjectResource extends AbstractResource {
             EntityManager em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
         	QueryGenerator generator = new QueryGenerator(EXPERIMENT);
-        	generator.setParameter(ExperimentConstants.PROJECT_NAME, name);
+        	generator.setParameter(ExperimentConstants.PROJECT_ID, id);
         	Query q = generator.selectQuery(em);
             List<?> results = q.getResultList();
             if (results.size() != 0) {
@@ -178,7 +179,7 @@ public class ProjectResource extends AbstractResource {
             EntityManager em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
             QueryGenerator generator = new QueryGenerator(PROJECT_USER);
-            generator.setParameter(ProjectUserConstants.PROJECT_NAME, name);
+            generator.setParameter(ProjectUserConstants.PROJECT_ID, id);
             Query q = generator.selectQuery(em);
             List<?> results = q.getResultList();
             if (results.size() != 0) {
@@ -203,12 +204,13 @@ public class ProjectResource extends AbstractResource {
      */
     public void save() {
         EntityManager em = ResourceUtils.getEntityManager();
-        Project existingprojectResource = em.find(Project.class, name);
+        Project existingprojectResource = em.find(Project.class, id);
         em.close();
 
         em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
         Project project = new Project();
+        project.setProject_id(id);
         project.setProject_name(name);
         Gateway modelGateway = em.find(Gateway.class, gateway.getGatewayName());
         project.setGateway(modelGateway);
@@ -218,6 +220,7 @@ public class ProjectResource extends AbstractResource {
         project.setCreationTime(creationTime);
 
         if(existingprojectResource != null){
+           existingprojectResource.setProject_name(name);
            existingprojectResource.setGateway(modelGateway);
            existingprojectResource.setUsers(user);
            existingprojectResource.setDescription(description);
@@ -229,6 +232,14 @@ public class ProjectResource extends AbstractResource {
 
         em.getTransaction().commit();
         em.close();
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     /**
