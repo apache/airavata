@@ -33,7 +33,6 @@ import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.ParentDataType;
 import org.apache.airavata.registry.cpi.Registry;
-import org.apache.airavata.schemas.gfac.DataType;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,14 +63,14 @@ public class ValidatorTest extends BaseOrchestratorTest {
         List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
         DataObjectType input = new DataObjectType();
         input.setKey("echo_input");
-        input.setType(DataType.STRING.toString());
+        input.setType(DataType.STRING);
         input.setValue("echo_output=Hello World");
         exInputs.add(input);
 
         List<DataObjectType> exOut = new ArrayList<DataObjectType>();
         DataObjectType output = new DataObjectType();
         output.setKey("echo_output");
-        output.setType(DataType.STRING.toString());
+        output.setType(DataType.STRING);
         output.setValue("");
         exOut.add(output);
 
