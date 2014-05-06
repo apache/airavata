@@ -25,7 +25,7 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.model.*;
-import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.ec2.EC2ProviderEvent;
 
 import java.util.ArrayList;

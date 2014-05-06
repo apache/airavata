@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://schemas.ogf.org/glue/2013/05/spec_2.0_r1/DataStore.json",
+  "type": "object",
+  "allOf": [{"$ref": "http://schemas.ogf.org/glue/2013/05/spec_2.0_r1/Resource.json"}],
+  "properties": {
+    "Type": {
+      "type": "string",
+      "description": "The type of storage medium - DataStoreType_t (disk,optical,tape,...)"
+    },
+    "Latency": {
+      "type": "string",
+      "description": "The latency category under normal operating conditions - AccessLatency_t",
+      "enum": ["nearline","offline","online"]
+    },
+    "TotalSize": {
+      "type": "integer",
+      "description": "The total amount of storage (GB)"
+    },
+    "FreeSize": {
+      "type": "integer",
+      "description": "The amount of available storage (GB)"
+    },
+    "UsedSize": {
+      "type": "integer",
+      "description": "The amount of used storage (GB)"
+    }
+  },
+  "required": ["Type","Latency"]
+}

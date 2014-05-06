@@ -22,9 +22,9 @@ package org.apache.airavata.orchestrator.core.impl;
 
 
 import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.cpi.GFac;
-import org.apache.airavata.gfac.cpi.GFacImpl;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.cpi.GFac;
+import org.apache.airavata.gfac.core.cpi.GFacImpl;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
@@ -48,9 +48,6 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
     public void initialize(OrchestratorContext orchestratorContext) throws OrchestratorException {
         this.orchestratorContext = orchestratorContext;
         gfac = new GFacImpl(orchestratorContext.getNewRegistry(), null, orchestratorContext.getRegistry());
-        if (orchestratorContext.getMonitorManager()!=null) {
-			orchestratorContext.getMonitorManager().registerListener(gfac);
-		}
     }
 
     public GFACInstance selectGFACInstance() throws OrchestratorException {
@@ -84,13 +81,5 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
 
     public void setOrchestratorContext(OrchestratorContext orchestratorContext) {
         this.orchestratorContext = orchestratorContext;
-    }
-
-    public void runAfterJobTask(JobExecutionContext jobExecutionContext) throws OrchestratorException {
-        try {
-            gfac.invokeOutFlowHandlers(jobExecutionContext);
-        } catch (GFacException e) {
-            throw new OrchestratorException(e);
-        }
     }
 }

@@ -18,8 +18,8 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>airavata-gfac-ec2</artifactId>
-    <name>Airavata GFac Core</name>
-    <description>The core GFAC functionality independent from any webservice implementation.</description>
+    <name>Airavata GFac EC2 Implementation</name>
+    <description>The core GFAC EC2 implementation using the framework features</description>
     <url>http://airavata.apache.org/</url>
 
     <dependencies>

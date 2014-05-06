@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://schemas.ogf.org/glue/2013/05/spec_2.0_r1/StorageService.json",
+  "type": "object",
+  "allOf": [{"$ref": "http://schemas.ogf.org/glue/2013/05/spec_2.0_r1/Service.json"}],
+  "properties": {
+    "StorageAccessProtocolID": {
+      "type": "array",
+      "description": "The ID(s) of the StorageAccessProtocols supported by this service",
+      "items": {
+        "type": "string"
+      }
+    },
+    "StorageServiceCapacityID": {
+      "type": "array",
+      "description": "The ID(s) of the StorageServiceCapacities for this Service",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

@@ -20,13 +20,12 @@
 */
 package org.apache.airavata.gfac;
 
-import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.provider.GFacProvider;
-import org.apache.airavata.gfac.provider.GFacProviderException;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.provider.GFacProviderException;
 
 // TODO review this class - Not sure some of the attributes are actually
 // needed
-public class JobSubmissionFault extends GFacProviderException{
+public class JobSubmissionFault extends GFacProviderException {
 
     // TODO why we need following ?
     //public static final String JOB_CANCEL = "JOB_CANCEL";
