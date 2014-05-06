@@ -30,7 +30,7 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
 
-        <!-- GFAC schemas -->
+        <!-- GFAC dependencies -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-gfac-core</artifactId>

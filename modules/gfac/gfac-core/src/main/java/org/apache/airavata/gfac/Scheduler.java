@@ -37,10 +37,10 @@ import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.provider.GFacProvider;
-import org.apache.airavata.gfac.provider.GFacProviderConfig;
-import org.apache.airavata.gfac.provider.GFacProviderException;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.provider.GFacProvider;
+import org.apache.airavata.gfac.core.provider.GFacProviderConfig;
+import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -64,6 +64,11 @@ public class Scheduler {
         // Current implementation only support static handler sequence.
         jobExecutionContext.setProvider(getProvider(jobExecutionContext));
         // TODO: Selecting the provider based on application description.
+        jobExecutionContext.getGFacConfiguration().setInHandlers(jobExecutionContext.getProvider().getClass().getName(),
+                jobExecutionContext.getServiceName());
+        jobExecutionContext.getGFacConfiguration().setOutHandlers(jobExecutionContext.getProvider().getClass().getName(),
+        		 jobExecutionContext.getServiceName());
+        jobExecutionContext.getGFacConfiguration().setExecutionMode(getExecutionMode(jobExecutionContext));
     }
 
     /**
@@ -109,7 +114,7 @@ public class Scheduler {
             // We give higher preference to applications specific provider if configured
             if (provider == null) {
                 String hostClass = hostDescription.getType().getClass().getName();
-                providerClassName = GFacConfiguration.getProviderClassName(GFacConfiguration.getHandlerDoc(), Constants.XPATH_EXPR_PROVIDER_ON_HOST + hostClass + "']", Constants.GFAC_CONFIG_CLASS_ATTRIBUTE);
+                providerClassName = GFacConfiguration.getAttributeValue(GFacConfiguration.getHandlerDoc(), Constants.XPATH_EXPR_PROVIDER_ON_HOST + hostClass + "']", Constants.GFAC_CONFIG_CLASS_ATTRIBUTE);
                 Class<? extends GFacProvider> aClass1 = Class.forName(providerClassName).asSubclass(GFacProvider.class);
                 provider = aClass1.newInstance();
                 //loading the provider properties
@@ -137,7 +142,42 @@ public class Scheduler {
         }
         return provider;
     }
+    public static ExecutionMode getExecutionMode(JobExecutionContext jobExecutionContext)throws GFacException{
+       HostDescription hostDescription = jobExecutionContext.getApplicationContext().getHostDescription();
+        String applicationName = jobExecutionContext.getServiceName();
 
+        URL resource = Scheduler.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
+        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = null;
+        Document handlerDoc = null;
+        try {
+            docBuilder = docBuilderFactory.newDocumentBuilder();
+            handlerDoc = docBuilder.parse(new File(resource.getPath()));
+        } catch (ParserConfigurationException e) {
+            throw new GFacException(e);
+        } catch (SAXException e) {
+            throw new GFacException(e);
+        } catch (IOException e) {
+            throw new GFacException(e);
+        }
+        GFacProviderConfig s = null;
+        String executionMode = "sync";
+        try {
+            executionMode = GFacConfiguration.getAttributeValue(handlerDoc,
+                    Constants.XPATH_EXPR_APPLICATION_HANDLERS_START + applicationName + "']", Constants.GFAC_CONFIG_EXECUTION_MODE_ATTRIBUTE);
+            // This should be have a single element only.
+
+            if (executionMode == null || "".equals(executionMode)) {
+                String hostClass = hostDescription.getType().getClass().getName();
+                executionMode = GFacConfiguration.getAttributeValue(GFacConfiguration.getHandlerDoc(), Constants.XPATH_EXPR_PROVIDER_ON_HOST + hostClass + "']", Constants.GFAC_CONFIG_EXECUTION_MODE_ATTRIBUTE);
+            }
+        } catch (XPathExpressionException e) {
+            log.error("Error evaluating XPath expression");  //To change body of catch statement use File | Settings | File Templates.
+            throw new GFacException("Error evaluating XPath expression", e);
+        }
+
+        return ExecutionMode.fromString(executionMode);
+    }
     public static HostDescription pickaHost(AiravataAPI api, String serviceName) throws AiravataAPIInvocationException {
         List<HostDescription> registeredHosts = new ArrayList<HostDescription>();
         Map<String, ApplicationDescription> applicationDescriptors = api.getApplicationManager().getApplicationDescriptors(serviceName);

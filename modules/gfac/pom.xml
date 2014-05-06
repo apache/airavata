@@ -38,6 +38,7 @@
 		<module>gfac-gram</module>
                 <module>gfac-gsissh</module>
 		<module>gfac-bes</module>
+		<module>gfac-monitor</module>
             </modules>
         </profile>
     </profiles>

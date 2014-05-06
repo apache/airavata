@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://schemas.ogf.org/glue/2013/05/spec_2.0_r1/Benchmark.json",
+  "type": "object",
+  "allOf": [{"$ref": "http://schemas.ogf.org/glue/2013/05/spec_2.0_r1/Entity.json"}],
+  "properties": {
+    "Type": {
+      "type": "string",
+      "description": "The type of the benchmark - Benchmark_t (open enumeration)"
+    },
+    "Value": {
+      "type": "number",
+      "description": "The value of the benchmark"
+    },
+    "ComputingManagerID": {
+      "type": "string",
+      "description": "The ID of the ComputingManager this benchmark is for"
+    }
+  },
+  "required": ["Type","Value"]
+}

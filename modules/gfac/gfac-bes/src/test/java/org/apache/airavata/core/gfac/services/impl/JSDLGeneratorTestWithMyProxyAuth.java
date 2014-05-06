@@ -25,38 +25,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
-import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.ApplicationDescription;
-import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.gfac.GFacConfiguration;
-import org.apache.airavata.gfac.context.ApplicationContext;
-import org.apache.airavata.gfac.context.JobExecutionContext;
-import org.apache.airavata.gfac.context.MessageContext;
-import org.apache.airavata.gfac.utils.JSDLGenerator;
-import org.apache.airavata.gfac.utils.JSDLUtils;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
-import org.apache.airavata.schemas.gfac.InputParameterType;
-import org.apache.airavata.schemas.gfac.JobTypeType;
-import org.apache.airavata.schemas.gfac.OutputParameterType;
-import org.apache.airavata.schemas.gfac.ProjectAccountType;
-import org.apache.airavata.schemas.gfac.QueueType;
-import org.apache.airavata.schemas.gfac.StringParameterType;
-import org.apache.airavata.schemas.gfac.URIParameterType;
-import org.apache.airavata.schemas.gfac.UnicoreHostType;
-import org.apache.log4j.PropertyConfigurator;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionDocument;
-import org.junit.Before;
-import org.junit.Test;
-
 //public class JSDLGeneratorTestWithMyProxyAuth {
 //
 //	public static final String[] hostArray = new String[] { "https://zam1161v01.zam.kfa-juelich.de:8002/INTEROP1/services/BESFactory?res=default_bes_factory" };

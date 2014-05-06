@@ -199,6 +199,7 @@
                 <include>org.apache.airavata:airavata-gfac-ssh:jar</include>
                 <include>org.apache.airavata:airavata-gfac-local:jar</include>
                 <include>org.apache.airavata:airavata-gfac-gsissh:jar</include>
+                <include>org.apache.airavata:airavata-gfac-hpc-monitor:jar</include>
                 <include>org.apache.airavata:airavata-gfac-hadoop:jar</include>
                 <include>org.apache.airavata:airavata-gfac-bes:jar</include>
                 <include>org.apache.airavata:airavata-gfac-gram:jar</include>

@@ -29,7 +29,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.credential.store.store.CredentialReaderFactory;
 import org.apache.airavata.gfac.RequestData;
-import org.apache.airavata.gfac.context.security.GSISecurityContext;
+import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.log4j.Logger;
 import org.ietf.jgss.GSSCredential;
 import org.testng.annotations.AfterClass;

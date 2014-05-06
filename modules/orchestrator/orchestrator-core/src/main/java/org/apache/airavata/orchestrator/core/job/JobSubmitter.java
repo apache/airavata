@@ -20,9 +20,7 @@
 */
 package org.apache.airavata.orchestrator.core.job;
 
-import java.util.List;
-
-import org.apache.airavata.gfac.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
@@ -54,11 +52,4 @@ public interface JobSubmitter {
      * @return JobExecutionContext return the jobExecutionContext from GFac
      */
     JobExecutionContext submit(String experimentID, String taskID) throws OrchestratorException;
-
-    /**
-     * This can be use to handle any after Jobsubmission task
-     * @param jobExecutionContext
-     * @throws OrchestratorException
-     */
-    void runAfterJobTask(JobExecutionContext jobExecutionContext) throws OrchestratorException;
 }
