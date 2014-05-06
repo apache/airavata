@@ -178,6 +178,20 @@ enum CorrectiveAction {
     CANNOT_BE_DETERMINED
 }
 
+enum CorrectiveAction {
+    RETRY_SUBMISSION,
+    CONTACT_SUPPORT,
+    CANNOT_BE_DETERMINED
+}
+
+enum DataType{
+	STRING,
+	INTEGER,
+	URI,
+	STDOUT,
+	STDERR
+}
+
 /**
 * A structure  hold experiment input output
 *
@@ -185,7 +199,7 @@ enum CorrectiveAction {
 struct DataObjectType {
     1: required string key,
     2: optional string value,
-    3: optional string type,
+    3: optional DataType type,
     4: optional string metaData
 }
 
