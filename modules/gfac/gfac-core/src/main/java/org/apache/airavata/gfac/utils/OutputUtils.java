@@ -21,6 +21,7 @@
 package org.apache.airavata.gfac.utils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -30,6 +31,8 @@ import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.handler.GFacHandlerException;
+import org.apache.airavata.model.workspace.experiment.DataObjectType;
+import org.apache.airavata.schemas.gfac.DataType;
 import org.apache.airavata.schemas.gfac.StdErrParameterType;
 import org.apache.airavata.schemas.gfac.StdOutParameterType;
 
@@ -70,6 +73,48 @@ public class OutputUtils {
         }
 
         return result;
+    }
+    
+    public static  void fillOutputFromStdout1(Map<String, Object> output, String stdout, String stderr,List<DataObjectType> outputArray) throws Exception {
+
+        if (stdout == null || stdout.equals("")){
+            throw new GFacHandlerException("Standard output is empty.");
+        }
+
+        Set<String> keys = output.keySet();
+        for (String paramName : keys) {
+        	ActualParameter actual = (ActualParameter) output.get(paramName);
+            // if parameter value is not already set, we let it go
+            
+            if (actual == null) {
+                continue;
+            }
+            if ("StdOut".equals(actual.getType().getType().toString())) {
+                DataObjectType out = new DataObjectType();
+                out.setKey(paramName);
+                out.setType(DataType.STD_OUT.toString());
+                out.setValue(stdout);
+                outputArray.add(out);
+            } else if ("StdErr".equals(actual.getType().getType().toString())) {
+                DataObjectType out = new DataObjectType();
+                out.setKey(paramName);
+                out.setType(DataType.STD_ERR.toString());
+                out.setValue(stderr);
+                outputArray.add(out);
+            }else if("URI".equals(actual.getType().getType().toString())){
+            	continue;
+            } 
+            else {
+                String parseStdout = parseStdout(stdout, paramName);
+                if (parseStdout != null) {
+                    DataObjectType out = new DataObjectType();
+                    out.setKey(paramName);
+                    out.setType(DataType.STRING.toString());
+                    out.setValue(parseStdout);
+                    outputArray.add(out);
+                }
+            }
+        }
     }
 
     private static String parseStdout(String stdout, String outParam) throws Exception {
