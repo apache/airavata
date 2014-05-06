@@ -12,9 +12,7 @@
     
 <GFac>
     <DaemonHandlers>
-        <Handler class="org.apache.airavata.gfac.monitor.handlers.GridPullMonitorHandler">
-                <property name="listeners" value="org.apache.airavata.gfac.core.monitor.AiravataJobStatusUpdator"/>
-        </Handler>
+        <Handler class="org.apache.airavata.gfac.monitor.handlers.GridPullMonitorHandler"/>
     </DaemonHandlers>
     <GlobalHandlers>
         <InHandlers>

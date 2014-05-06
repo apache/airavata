@@ -60,11 +60,9 @@ public class OrchestratorTestWithMyProxyAuth extends BaseOrchestratorTest {
         AiravataUtils.setExecutionAsServer();
         super.setUp();
         orchestrator = new SimpleOrchestratorImpl();
-//         System.setProperty("myproxy.user", "ogce");
-//         System.setProperty("myproxy.pass", "");
-//         System.setProperty("trusted.cert.location", "/Users/lahirugunathilake/Downloads/certificates");
-        // this is the same propertySystem.getProperty("myproxy.user");
-//         System.setProperty("myproxy.pass",System.getProperty("myproxy.password"));
+//         System.setProperty("myproxy.username", "ogce");
+//         System.setProperty("myproxy.password", "");
+         System.setProperty("trusted.cert.location", "/Users/lahirugunathilake/Downloads/certificates");
 //        System.setProperty("trusted.cert.location",System.getProperty("gsi.working.directory"));
     }
 
@@ -106,6 +104,4 @@ public class OrchestratorTestWithMyProxyAuth extends BaseOrchestratorTest {
             orchestrator.launchExperiment(simpleExperiment,test, taskDetail);
         }
     }
-
-
 }

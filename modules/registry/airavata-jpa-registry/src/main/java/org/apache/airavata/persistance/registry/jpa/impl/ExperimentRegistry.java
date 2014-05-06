@@ -121,6 +121,7 @@ public class ExperimentRegistry {
             logger.error("Error while saving experiment to registry", e.getMessage());
             throw new Exception(e);
         }
+        experiment.setExperimentID(experimentID);
         return experimentID;
     }
 
