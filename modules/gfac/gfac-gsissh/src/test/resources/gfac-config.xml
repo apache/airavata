@@ -21,13 +21,13 @@
     </GlobalHandlers>
 
 
-     <Provider class="org.apache.airavata.gfac.provider.impl.GSISSHProvider" host="org.apache.airavata.schemas.gfac.impl.GsisshHostTypeImpl" executionMode="async">
+     <Provider class="org.apache.airavata.gfac.gsissh.provider.impl.GSISSHProvider" host="org.apache.airavata.schemas.gfac.impl.GsisshHostTypeImpl" executionMode="async">
          <InHandlers>
-            <Handler class="org.apache.airavata.gfac.handler.GSISSHDirectorySetupHandler"/>
-            <Handler class="org.apache.airavata.gfac.handler.GSISSHInputHandler"/>
+            <Handler class="org.apache.airavata.gfac.gsissh.handler.GSISSHDirectorySetupHandler"/>
+            <Handler class="org.apache.airavata.gfac.gsissh.handler.GSISSHInputHandler"/>
         </InHandlers>
         <OutHandlers>
-            <Handler class="org.apache.airavata.gfac.handler.GSISSHOutputHandler"/>
+            <Handler class="org.apache.airavata.gfac.gsissh.handler.GSISSHOutputHandler"/>
         </OutHandlers>
     </Provider>
 </GFac>

@@ -132,13 +132,13 @@ public class Scheduler {
             throw new GFacException("Error During scheduling", e);
         }catch (ClassNotFoundException e) {
             log.error("Application Provider class: " + s + "couldn't find");
-            throw new GFacException("Error initializing application specific Handler", e);
+            throw new GFacException("Error initializing application specific Handler: " +providerClassName , e);
         } catch (InstantiationException e) {
-            log.error("Error initializing application specific Handler");
-            throw new GFacException("Error initializing application specific Handler", e);
+            log.error("Error initializing application specific Handler: " + providerClassName);
+            throw new GFacException("Error initializing Handler", e);
         } catch (IllegalAccessException e) {
-            log.error("Error initializing application specific Handler");
-            throw new GFacException("Error initializing application specific Handler", e);
+            log.error("Error initializing application specific Handler: " + providerClassName);
+            throw new GFacException("Error initializing Handler", e);
         }
         return provider;
     }

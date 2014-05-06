@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.gfac.gsissh.provider.impl;
 
+import org.apache.airavata.gfac.ExecutionMode;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.cpi.GFacImpl;
@@ -101,16 +102,21 @@ public class GSISSHProvider extends AbstractProvider {
             for(ThreadedHandler threadedHandler:daemonHandlers){
                 if("org.apache.airavata.gfac.monitor.handlers.GridPullMonitorHandler".equals(threadedHandler.getClass().getName())){
                     pullMonitorHandler = threadedHandler;
+                    String monitorMode = ((GsisshHostType) host).getMonitorMode();
+                    if("".equals(monitorMode) || monitorMode == null || org.apache.airavata.common.utils.Constants.PULL.equals(monitorMode)){
+                        log.info("Job is launched successfully now parsing it to monitoring in pull mode, JobID Returned:  " + jobID);
+                        pullMonitorHandler.invoke(jobExecutionContext);
+                    }else{
+                        log.error("Currently we only support Pull monitoring");
+                    }
                 }
+                // have to handle the GridPushMonitorHandler logic
+            }
+            if(pullMonitorHandler == null && ExecutionMode.ASYNCHRONOUS.equals(jobExecutionContext.getGFacConfiguration().getExecutionMode())){
+                log.error("No Daemon handler is configured in gfac-config.xml, either pull or push, so monitoring will not invoked" +
+                        ", execution is configured as asynchronous, so Outhandler will not be invoked");
             }
             // we know this host is type GsiSSHHostType
-            String monitorMode = ((GsisshHostType) host).getMonitorMode();
-            if("".equals(monitorMode) || monitorMode == null || org.apache.airavata.common.utils.Constants.PULL.equals(monitorMode)){
-                log.info("Job is launched successfully now parsing it to monitoring in pull mode, JobID Returned:  " + jobID);
-                pullMonitorHandler.invoke(jobExecutionContext);
-            }else{
-                log.error("Currently we only support Pull monitoring");
-            }
         } catch (SSHApiException e) {
             String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
             log.error(error);
