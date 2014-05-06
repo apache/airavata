@@ -29,7 +29,7 @@ import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.cpi.Registry;
 
 /**
- * This is the context object used in orchestrator whic h
+ * This is the context object used in orchestrator which
  */
 public class OrchestratorContext {
     private List<GFACInstance> gfacInstanceList;

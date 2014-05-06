@@ -20,13 +20,12 @@
 */
 package org.apache.airavata.orchestrator.core.validator;
 
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 
 public interface JobMetadataValidator {
 
-    boolean runBasicValidation(String experimentID)throws OrchestratorException;
-
-    boolean runAppSpecificValidation(String experimentID)throws OrchestratorException;
-
-    boolean validate(String experimentID) throws OrchestratorException;
+    boolean validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) throws OrchestratorException;
 }

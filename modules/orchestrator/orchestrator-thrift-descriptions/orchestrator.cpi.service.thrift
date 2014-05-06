@@ -43,5 +43,7 @@ service OrchestratorService {
     **/
   bool launchExperiment (1: required string experimentId),
 
-  bool terminateExperiment (1: required string experimentId)
+  bool terminateExperiment (1: required string experimentId),
+
+  bool validateExperiment(1: required string experimentId)
 }

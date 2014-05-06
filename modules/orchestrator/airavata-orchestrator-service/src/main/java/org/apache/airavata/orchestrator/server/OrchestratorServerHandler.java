@@ -107,6 +107,43 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         }
         return true;
     }
+
+
+    /**
+     * This method will validate the experiment before launching, if is failed we do not run the launch in airavata
+     * thrift service (only if validation is enabled
+     * @param experimentId
+     * @return
+     * @throws TException
+     */
+    public boolean validateExperiment(String experimentId) throws TException {
+        //TODO: Write the Orchestrator implementaion
+        try {
+            List<TaskDetails> tasks = orchestrator.createTasks(experimentId);
+            if (tasks.size() > 1) {
+                log.info("There are multiple tasks for this experiment, So Orchestrator will launch multiple Jobs");
+            }
+            List<String> ids = registry.getIds(RegistryModelType.WORKFLOW_NODE_DETAIL,WorkflowNodeConstants.EXPERIMENT_ID,experimentId);
+            for (String workflowNodeId : ids) {
+                WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails)registry.get(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeId);
+                List<Object> taskDetailList = registry.get(RegistryModelType.TASK_DETAIL, TaskDetailConstants.NODE_ID, workflowNodeId);
+                for (Object o : taskDetailList) {
+                    TaskDetails taskID = (TaskDetails) o;
+                    //iterate through all the generated tasks and performs the job submisssion+monitoring
+                    Experiment experiment = (Experiment) registry.get(RegistryModelType.EXPERIMENT, experimentId);
+                    if (experiment == null) {
+                        log.error("Error retrieving the Experiment by the given experimentID: " + experimentId);
+                        return false;
+                    }
+                    return orchestrator.validateExperiment(experiment, workflowNodeDetail, taskID);
+                }
+            }
+
+        } catch (Exception e) {
+            throw new TException(e);
+        }
+        return false;
+    }
     public boolean terminateExperiment(String experimentId) throws TException {
     	try {
 			orchestrator.cancelExperiment(experimentId);

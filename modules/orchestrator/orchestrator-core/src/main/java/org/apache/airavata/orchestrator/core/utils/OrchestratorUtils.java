@@ -21,6 +21,7 @@
 package org.apache.airavata.orchestrator.core.utils;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -53,7 +54,7 @@ public class OrchestratorUtils {
         orchestratorConfiguration.setEmbeddedMode(Boolean.valueOf(ServerSettings.getSetting(OrchestratorConstants.EMBEDDED_MODE)));
         orchestratorConfiguration.setEnableValidation(Boolean.valueOf(ServerSettings.getSetting(OrchestratorConstants.ENABLE_VALIDATION)));
         if (orchestratorConfiguration.isEnableValidation()) {
-            orchestratorConfiguration.setValidatorClass((String) ServerSettings.getSetting(OrchestratorConstants.JOB_VALIDATOR));
+            orchestratorConfiguration.setValidatorClasses(Arrays.asList(ServerSettings.getSetting(OrchestratorConstants.JOB_VALIDATOR).split(",")));
         }
         return orchestratorConfiguration;
     }

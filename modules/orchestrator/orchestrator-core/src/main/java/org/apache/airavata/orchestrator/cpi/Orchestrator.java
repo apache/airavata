@@ -34,6 +34,17 @@ import java.util.List;
 public interface Orchestrator {
 
     /**
+     * This method can be used to run all custom validators plugged in to the orchestrator and make
+     * sure the experiment is ready to launch and if its not this will return false
+     * @param experiment
+     * @param workflowNodeDetail
+     * @param taskID
+     * @return boolean if the experiments are valids after executing all the validators return true otherwise it iwll return false
+     * @throws OrchestratorException
+     */
+     boolean validateExperiment(Experiment experiment, WorkflowNodeDetails workflowNodeDetail,
+                            TaskDetails taskID) throws OrchestratorException;
+    /**
      * After creating the experiment Data user have the
      * experimentID as the handler to the experiment, during the launchExperiment
      * We just have to give the experimentID

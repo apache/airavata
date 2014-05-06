@@ -23,6 +23,7 @@ package org.apache.airavata.orchestrator.core;
 import org.apache.airavata.client.api.AiravataAPI;
 
 import java.net.URL;
+import java.util.List;
 
 /**
  * This keeps configuration of orchestrator, mostly this keep static
@@ -46,17 +47,17 @@ public class OrchestratorConfiguration {
 
     private boolean embeddedMode;
 
-    private String validatorClass;
+    private List<String> validatorClasses;
 
     private boolean enableValidation;
 
 
-    public String getValidatorClass() {
-        return validatorClass;
+    public List<String> getValidatorClasses() {
+        return validatorClasses;
     }
 
-    public void setValidatorClass(String validatorClass) {
-        this.validatorClass = validatorClass;
+    public void setValidatorClasses(List<String> validatorClasses) {
+        this.validatorClasses = validatorClasses;
     }
 
     public boolean isEmbeddedMode() {
