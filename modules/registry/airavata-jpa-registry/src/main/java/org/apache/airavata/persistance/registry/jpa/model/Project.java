@@ -27,6 +27,9 @@ import java.sql.Timestamp;
 @Table(name ="PROJECT")
 public class Project {
     @Id
+    @Column(name = "PROJECT_ID")
+    private String project_id;
+
     @Column(name = "PROJECT_NAME")
     private String project_name;
 
@@ -82,6 +85,14 @@ public class Project {
 
     public void setCreationTime(Timestamp creationTime) {
         this.creationTime = creationTime;
+    }
+
+    public void setProject_id(String project_id) {
+        this.project_id = project_id;
+    }
+
+    public String getProject_id() {
+        return project_id;
     }
 }
 

@@ -426,6 +426,7 @@ public class Utils {
     private static Resource createProject(Project o) {
         ProjectResource projectResource = new ProjectResource();
         if (o != null){
+            projectResource.setId(o.getProject_id());
             projectResource.setName(o.getProject_name());
             GatewayResource gatewayResource = (GatewayResource)createGateway(o.getGateway());
             projectResource.setGateway(gatewayResource);
@@ -446,7 +447,7 @@ public class Utils {
         ProjectUserResource projectUserResource = new ProjectUserResource();
         if (o != null){
             projectUserResource.setUserName(o.getUser().getUser_name());
-            projectUserResource.setProjectName(o.getProjectName());
+            projectUserResource.setProjectId(o.getProjectID());
         }
         return projectUserResource;
     }
@@ -497,8 +498,7 @@ public class Utils {
         if (o != null){
             GatewayResource gatewayResource = new GatewayResource(o.getGateway().getGateway_name());
             gatewayResource.setOwner(o.getGateway().getOwner());
-            WorkerResource workerResource = new WorkerResource(o.getUser_name(), gatewayResource);
-            return workerResource;
+            return new WorkerResource(o.getUser_name(), gatewayResource);
         }
         return null;
     }

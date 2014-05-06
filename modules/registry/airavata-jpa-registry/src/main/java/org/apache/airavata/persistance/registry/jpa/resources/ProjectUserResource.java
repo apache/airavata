@@ -32,17 +32,17 @@ import javax.persistence.EntityManager;
 import java.util.List;
 
 public class ProjectUserResource extends AbstractResource {
-    private String projectName;
+    private String projectId;
     private String userName;
 
     private static final Logger logger = LoggerFactory.getLogger(ProjectUserResource.class);
 
-    public String getProjectName() {
-        return projectName;
+    public String getProjectId() {
+        return projectId;
     }
 
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
     }
 
     public String getUserName() {
@@ -80,21 +80,21 @@ public class ProjectUserResource extends AbstractResource {
     @Override
     public void save() {
         EntityManager em = ResourceUtils.getEntityManager();
-        ProjectUser existingPrUser = em.find(ProjectUser.class, new ProjectUser_PK(projectName, userName));
+        ProjectUser existingPrUser = em.find(ProjectUser.class, new ProjectUser_PK(projectId, userName));
         em.close();
 
         em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
         ProjectUser prUser = new ProjectUser();
-        prUser.setProjectName(projectName);
+        prUser.setProjectID(projectId);
         prUser.setUserName(userName);
         Users user = em.find(Users.class, userName);
         prUser.setUser(user);
-        Project project = em.find(Project.class, projectName);
+        Project project = em.find(Project.class, projectId);
         prUser.setProject(project);
 
         if(existingPrUser != null){
-            existingPrUser.setProjectName(projectName);
+            existingPrUser.setProjectID(projectId);
             existingPrUser.setUserName(userName);
             existingPrUser.setUser(user);
             existingPrUser.setProject(project);

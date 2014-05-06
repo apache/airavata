@@ -23,6 +23,7 @@ package org.apache.airavata.persistance.registry.jpa.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.workspace.Project;
@@ -65,6 +66,9 @@ public class ProjectRegistry {
                 throw new Exception("User does not exist in the system..");
             }
             ProjectResource projectResource = new ProjectResource();
+            projectId = getProjectId(project.getName());
+            projectResource.setId(projectId);
+            project.setProjectID(projectId);
             projectResource.setName(project.getName());
             projectResource.setDescription(project.getDescription());
             projectResource.setCreationTime(AiravataUtils.getTime(project.getCreationTime()));
@@ -73,10 +77,9 @@ public class ProjectRegistry {
             projectResource.setWorker(worker);
             projectResource.save();
             ProjectUserResource resource = (ProjectUserResource)projectResource.create(ResourceType.PROJECT_USER);
-            resource.setProjectName(project.getName());
+            resource.setProjectId(project.getProjectID());
             resource.setUserName(project.getOwner());
             resource.save();
-            projectId = projectResource.getName();
             List<String> sharedGroups = project.getSharedGroups();
             if (sharedGroups != null && !sharedGroups.isEmpty()){
                 for (String group : sharedGroups){
@@ -100,9 +103,14 @@ public class ProjectRegistry {
         return projectId;
     }
 
-    public void updateProject (Project project, String projectName) throws Exception{
+    private String getProjectId (String projectName){
+        String pro = projectName.replaceAll("\\s", "");
+        return pro + "_" + UUID.randomUUID();
+    }
+
+    public void updateProject (Project project, String projectId) throws Exception{
         try {
-            ProjectResource existingProject = workerResource.getProject(projectName);
+            ProjectResource existingProject = workerResource.getProject(projectId);
             existingProject.setDescription(project.getDescription());
             existingProject.setCreationTime(AiravataUtils.getTime(project.getCreationTime()));
             existingProject.setGateway(gatewayResource);
@@ -112,7 +120,7 @@ public class ProjectRegistry {
             existingProject.setWorker(worker);
             existingProject.save();
             ProjectUserResource resource = (ProjectUserResource)existingProject.create(ResourceType.PROJECT_USER);
-            resource.setProjectName(project.getName());
+            resource.setProjectId(projectId);
             resource.setUserName(project.getOwner());
             resource.save();
             List<String> sharedGroups = project.getSharedGroups();
@@ -137,9 +145,9 @@ public class ProjectRegistry {
         }
     }
 
-    public Project getProject (String projectName) throws Exception{
+    public Project getProject (String projectId) throws Exception{
         try {
-            ProjectResource project = workerResource.getProject(projectName);
+            ProjectResource project = workerResource.getProject(projectId);
             if (project != null){
                 return ThriftDataModelConversion.getProject(project);
             }
@@ -190,18 +198,18 @@ public class ProjectRegistry {
         return projectIds;
     }
 
-    public void removeProject (String projectName) throws Exception {
+    public void removeProject (String projectId) throws Exception {
         try {
-            workerResource.removeProject(projectName);
+            workerResource.removeProject(projectId);
         } catch (Exception e) {
             logger.error("Error while removing the project..", e.getMessage());
             throw new Exception(e);
         }
     }
 
-    public boolean isProjectExist(String projectName) throws Exception {
+    public boolean isProjectExist(String projectId) throws Exception {
         try {
-            return workerResource.isProjectExists(projectName);
+            return workerResource.isProjectExists(projectId);
         } catch (Exception e) {
             logger.error("Error while retrieving project...", e.getMessage());
             throw new Exception(e);

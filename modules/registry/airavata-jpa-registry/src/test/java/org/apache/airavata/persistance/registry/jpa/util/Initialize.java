@@ -41,6 +41,7 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.sql.*;
 import java.util.StringTokenizer;
+import java.util.UUID;
 
 public class Initialize {
     private static final Logger logger = LoggerFactory.getLogger(Initialize.class);
@@ -160,6 +161,7 @@ public class Initialize {
             
             ProjectResource projectResource = (ProjectResource)workerResource.create(ResourceType.PROJECT);
             projectResource.setGateway(gatewayResource);
+            projectResource.setId("default");
             projectResource.setName("default");
             projectResource.setWorker(workerResource);
             projectResource.save();

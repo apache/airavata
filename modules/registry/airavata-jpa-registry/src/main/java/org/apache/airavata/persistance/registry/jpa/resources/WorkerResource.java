@@ -23,6 +23,7 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -103,7 +104,7 @@ public class WorkerResource extends AbstractResource {
 		switch (type) {
 			case PROJECT:
                 generator = new QueryGenerator(PROJECT);
-                generator.setParameter(ProjectConstants.PROJECT_NAME, name);
+                generator.setParameter(ProjectConstants.PROJECT_ID, name);
                 q = generator.deleteQuery(em);
 	            q.executeUpdate();
 				break;
@@ -144,7 +145,7 @@ public class WorkerResource extends AbstractResource {
 		switch (type) {
 			case PROJECT:
                 generator = new QueryGenerator(PROJECT);
-                generator.setParameter(ProjectConstants.PROJECT_NAME, name);
+                generator.setParameter(ProjectConstants.PROJECT_ID, name);
                 q = generator.selectQuery(em);
 	            Project project = (Project) q.getSingleResult();
                 result= Utils.getResource(ResourceType.PROJECT, project);
@@ -330,39 +331,44 @@ public class WorkerResource extends AbstractResource {
 
     /**
      *
-     * @param name  project name
+     * @param id  project id
      * @return whether the project is available under the user
      */
-    public boolean isProjectExists(String name){
-		return isExists(ResourceType.PROJECT, name);
+    public boolean isProjectExists(String id){
+		return isExists(ResourceType.PROJECT, id);
 	}
 
     /**
      *
-     * @param name project name
+     * @param projectId project id
      * @return project resource for the user
      */
-	public ProjectResource createProject(String name){
+	public ProjectResource createProject(String projectId){
 		ProjectResource project=(ProjectResource)create(ResourceType.PROJECT);
-		project.setName(name);
+        project.setId(projectId);
 		return project;
 	}
 
+    public String getProjectID(String projectName) {
+        String pro = projectName.replaceAll("\\s", "");
+        return pro + "_" + UUID.randomUUID();
+    }
+
     /**
      *
-     * @param name project name
+     * @param id project id
      * @return project resource
      */
-	public ProjectResource getProject(String name){
-		return (ProjectResource)get(ResourceType.PROJECT, name);
+	public ProjectResource getProject(String id){
+		return (ProjectResource)get(ResourceType.PROJECT, id);
 	}
 
     /**
      *
-     * @param name project name
+     * @param id project id
      */
-	public void removeProject(String name){
-		remove(ResourceType.PROJECT, name);
+	public void removeProject(String id){
+		remove(ResourceType.PROJECT, id);
 	}
 
     /**

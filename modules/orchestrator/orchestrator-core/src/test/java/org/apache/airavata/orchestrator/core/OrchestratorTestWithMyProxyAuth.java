@@ -83,7 +83,7 @@ public class OrchestratorTestWithMyProxyAuth extends BaseOrchestratorTest {
         exOut.add(output);
 
         Experiment simpleExperiment =
-                ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
+                ExperimentModelUtil.createSimpleExperiment("default", "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
         simpleExperiment.setExperimentOutputs(exOut);
 
         ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0, 1, "sds128");

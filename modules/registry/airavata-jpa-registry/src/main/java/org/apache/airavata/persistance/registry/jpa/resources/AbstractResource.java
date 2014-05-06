@@ -93,12 +93,13 @@ public abstract class AbstractResource implements Resource {
 		public static final String GATEWAY_NAME = "gateway_name";
 		public static final String USERNAME = "user_name";
 		public static final String PROJECT_NAME = "project_name";
+		public static final String PROJECT_ID = "project_id";
 	}
 
     // Project table
     public final class ProjectUserConstants {
         public static final String USERNAME = "userName";
-        public static final String PROJECT_NAME = "projectName";
+        public static final String PROJECT_ID = "projectID";
     }
 
 	// Published_Workflow table
@@ -150,7 +151,7 @@ public abstract class AbstractResource implements Resource {
 
 	// Experiment table
 	public final class ExperimentConstants {
-		public static final String PROJECT_NAME = "projectName";
+		public static final String PROJECT_ID = "projectID";
 		public static final String EXECUTION_USER = "executionUser";
 		public static final String GATEWAY_NAME = "gatewayName";
 		public static final String EXPERIMENT_ID = "expId";

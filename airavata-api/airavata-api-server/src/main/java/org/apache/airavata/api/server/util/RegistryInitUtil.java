@@ -92,6 +92,7 @@ public class RegistryInitUtil {
                 workerResource.setUser(user.getUserName());
                 workerResource.save();
                 ProjectResource projectResource = workerResource.createProject(DEFAULT_PROJECT_NAME);
+                projectResource.setName(DEFAULT_PROJECT_NAME);
                 projectResource.setGateway(gateway);
                 projectResource.save();
             } catch (ApplicationSettingsException e) {

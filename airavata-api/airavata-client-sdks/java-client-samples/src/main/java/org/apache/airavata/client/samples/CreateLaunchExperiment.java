@@ -24,6 +24,7 @@ package org.apache.airavata.client.samples;
 import org.apache.airavata.api.error.ExperimentNotFoundException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ClientSettings;
+import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.schemas.gfac.DataType;
@@ -234,8 +235,11 @@ public class CreateLaunchExperiment {
             output.setValue("");
             exOut.add(output);
 
+            Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
+            String projectId = client.createProject(project, "admin");
+
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho0", "SimpleEcho0", exInputs);
+                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho0", "SimpleEcho0", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("localhost", 1, 1, 1, "normal", 0, 0, 1, "sds128");
@@ -277,8 +281,11 @@ public class CreateLaunchExperiment {
             output.setValue("");
             exOut.add(output);
 
+            Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
+            String projectId = client.createProject(project, "admin");
+
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("project1", "admin", "sshEchoExperiment", "SSHEcho1", "SSHEcho1", exInputs);
+                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "sshEchoExperiment", "SSHEcho1", "SSHEcho1", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("gw111.iu.xsede.org", 1, 1, 1, "normal", 0, 0, 1, "sds128");
@@ -319,8 +326,11 @@ public class CreateLaunchExperiment {
             output.setValue("");
             exOut.add(output);
 
+            Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
+            String projectId = client.createProject(project, "admin");
+
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho3", "SimpleEcho3", exInputs);
+                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho3", "SimpleEcho3", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling =
@@ -362,8 +372,11 @@ public class CreateLaunchExperiment {
             output.setValue("");
             exOut.add(output);
 
+            Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
+            String projectId = client.createProject(project, "admin");
+
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho4", "SimpleEcho4", exInputs);
+                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho4", "SimpleEcho4", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling =
