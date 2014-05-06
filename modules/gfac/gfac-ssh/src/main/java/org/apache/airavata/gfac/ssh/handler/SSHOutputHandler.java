@@ -177,7 +177,7 @@ public class SSHOutputHandler extends AbstractHandler {
                         DataObjectType dataObjectType = new DataObjectType();
                         dataObjectType.setValue(valueList);
                         dataObjectType.setKey(paramName);
-                        dataObjectType.setType(org.apache.airavata.schemas.gfac.DataType.URI.toString());
+                        dataObjectType.setType(DataType.URI);
                         outputArray.add(dataObjectType);
                     }
                 } else {

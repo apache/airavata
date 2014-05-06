@@ -21,14 +21,7 @@ import org.apache.airavata.common.utils.ClientSettings;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.workspace.experiment.AdvancedOutputDataHandling;
-import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
-import org.apache.airavata.model.workspace.experiment.DataObjectType;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.JobState;
-import org.apache.airavata.model.workspace.experiment.JobStatus;
-import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
-import org.apache.airavata.schemas.gfac.DataType;
+import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,14 +130,14 @@ public class CreateLaunchExperimentUS3 {
             List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
             DataObjectType input = new DataObjectType();
             input.setKey("echo_input");
-            input.setType(DataType.STRING.toString());
+            input.setType(DataType.STRING);
             input.setValue("echo_output=Hello World");
             exInputs.add(input);
 
             List<DataObjectType> exOut = new ArrayList<DataObjectType>();
             DataObjectType output = new DataObjectType();
             output.setKey("echo_output");
-            output.setType(DataType.STRING.toString());
+            output.setType(DataType.STRING);
             output.setValue("");
             exOut.add(output);
 
@@ -183,22 +176,22 @@ public class CreateLaunchExperimentUS3 {
             List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
             DataObjectType input = new DataObjectType();
             input.setKey("input");
-            input.setType(DataType.URI.toString());
+            input.setType(DataType.URI);
             input.setValue("file:///home/airavata/input/hpcinput.tar");
             exInputs.add(input);
 
             List<DataObjectType> exOut = new ArrayList<DataObjectType>();
             DataObjectType output = new DataObjectType();
             output.setKey("output");
-            output.setType(DataType.URI.toString());
+            output.setType(DataType.URI);
             output.setValue("");
             DataObjectType output1 = new DataObjectType();
             output1.setKey("stdout");
-            output1.setType(DataType.STD_OUT.toString());
+            output1.setType(DataType.STDOUT);
             output1.setValue("");
             DataObjectType output2 = new DataObjectType();
             output2.setKey("stderr");
-            output2.setType(DataType.STD_ERR.toString());
+            output2.setType(DataType.STDERR);
             output2.setValue("");
             exOut.add(output);
             exOut.add(output1);
@@ -243,22 +236,22 @@ public class CreateLaunchExperimentUS3 {
             List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
             DataObjectType input = new DataObjectType();
             input.setKey("input");
-            input.setType(DataType.URI.toString());
+            input.setType(DataType.URI);
             input.setValue("file:///home/airavata/input/hpcinput.tar");
             exInputs.add(input);
 
             List<DataObjectType> exOut = new ArrayList<DataObjectType>();
             DataObjectType output = new DataObjectType();
             output.setKey("output");
-            output.setType(DataType.URI.toString());
+            output.setType(DataType.URI);
             output.setValue("");
             DataObjectType output1 = new DataObjectType();
             output1.setKey("stdout");
-            output1.setType(DataType.STD_OUT.toString());
+            output1.setType(DataType.STDOUT);
             output1.setValue("");
             DataObjectType output2 = new DataObjectType();
             output2.setKey("stderr");
-            output2.setType(DataType.STD_ERR.toString());
+            output2.setType(DataType.STDERR);
             output2.setValue("");
             exOut.add(output);
             exOut.add(output1);
@@ -304,14 +297,14 @@ public class CreateLaunchExperimentUS3 {
             List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
             DataObjectType input = new DataObjectType();
             input.setKey("echo_input");
-            input.setType(DataType.STRING.toString());
+            input.setType(DataType.STRING);
             input.setValue("echo_output=Hello World");
             exInputs.add(input);
 
             List<DataObjectType> exOut = new ArrayList<DataObjectType>();
             DataObjectType output = new DataObjectType();
             output.setKey("echo_output");
-            output.setType(DataType.STRING.toString());
+            output.setType(DataType.STRING);
             output.setValue("");
             exOut.add(output);
 

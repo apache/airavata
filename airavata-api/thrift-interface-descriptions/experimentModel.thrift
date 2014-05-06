@@ -178,12 +178,6 @@ enum CorrectiveAction {
     CANNOT_BE_DETERMINED
 }
 
-enum CorrectiveAction {
-    RETRY_SUBMISSION,
-    CONTACT_SUPPORT,
-    CANNOT_BE_DETERMINED
-}
-
 enum DataType{
 	STRING,
 	INTEGER,

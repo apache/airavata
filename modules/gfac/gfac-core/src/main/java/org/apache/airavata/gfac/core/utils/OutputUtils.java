@@ -31,8 +31,8 @@ import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
-import org.apache.airavata.schemas.gfac.DataType;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
+import org.apache.airavata.model.workspace.experiment.DataType;
 import org.apache.airavata.schemas.gfac.StdErrParameterType;
 import org.apache.airavata.schemas.gfac.StdOutParameterType;
 
@@ -92,13 +92,13 @@ public class OutputUtils {
             if ("StdOut".equals(actual.getType().getType().toString())) {
                 DataObjectType out = new DataObjectType();
                 out.setKey(paramName);
-                out.setType(DataType.STD_OUT.toString());
+                out.setType(DataType.STDOUT);
                 out.setValue(stdout);
                 outputArray.add(out);
             } else if ("StdErr".equals(actual.getType().getType().toString())) {
                 DataObjectType out = new DataObjectType();
                 out.setKey(paramName);
-                out.setType(DataType.STD_ERR.toString());
+                out.setType(DataType.STDERR);
                 out.setValue(stderr);
                 outputArray.add(out);
             }else if("URI".equals(actual.getType().getType().toString())){
@@ -109,7 +109,7 @@ public class OutputUtils {
                 if (parseStdout != null) {
                     DataObjectType out = new DataObjectType();
                     out.setKey(paramName);
-                    out.setType(DataType.STRING.toString());
+                    out.setType(DataType.STRING);
                     out.setValue(parseStdout);
                     outputArray.add(out);
                 }
