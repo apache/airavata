@@ -62,6 +62,7 @@ public class CreateLaunchExperiment {
             final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavata.GetAPIVersion());
 //            addDescriptors();
+
 //            final String expId = createExperimentForSSHHost(airavata);
 //            final String expId = createExperimentForSSHHost(airavata);
 //            final String expId = createExperimentForTrestles(airavata);
@@ -83,11 +84,6 @@ public class CreateLaunchExperiment {
                 System.out.println(" project name : " + pr.getName());
             }
 
-//            try {
-//                Thread.sleep(20000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//            }
             Thread monitor = (new Thread(){
                  public void run() {
                      Map<String, JobStatus> jobStatuses = null;
@@ -108,6 +104,7 @@ public class CreateLaunchExperiment {
                                      }
                                  }
                              }
+                             System.out.println(airavata.getExperimentStatus(expId));
                              Thread.sleep(5000);
                          } catch (Exception e) {
                              e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -115,14 +112,26 @@ public class CreateLaunchExperiment {
                      }
                  }
             });
-//            monitor.start();
+            monitor.start();
             try {
                 monitor.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				e.printStackTrace(); // To change body of catch statement use
+										// File | Settings | File Templates.
+			}
 
-//            Experiment experiment = airavata.getExperiment(expId);
+            System.out.println(airavata.getExperimentStatus(expId));
+            List<DataObjectType> output = airavata.getExperimentOutputs(expId);
+            for (DataObjectType dataObjectType : output) {
+                System.out.println(dataObjectType.getKey() + " : " + dataObjectType.getType() + " : " + dataObjectType.getValue());
+                
+				
+			}
 //            System.out.println("retrieved exp id : " + experiment.getExperimentID());
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
@@ -181,7 +190,7 @@ public class CreateLaunchExperiment {
             exOut.add(output);
 
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
+                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0, 1, "sds128");
@@ -280,7 +289,7 @@ public class CreateLaunchExperiment {
             output.setValue("");
             exOut.add(output);
 
-            Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
+            Project project = ProjectModelUtil.createProject("default", "admin", "test project");
             String projectId = client.createProject(project, "admin");
 
             Experiment simpleExperiment =
@@ -325,7 +334,7 @@ public class CreateLaunchExperiment {
             output.setValue("");
             exOut.add(output);
 
-            Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
+            Project project = ProjectModelUtil.createProject("default", "admin", "test project");
             String projectId = client.createProject(project, "admin");
 
             Experiment simpleExperiment =
@@ -371,7 +380,7 @@ public class CreateLaunchExperiment {
             output.setValue("");
             exOut.add(output);
 
-            Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
+            Project project = ProjectModelUtil.createProject("default", "admin", "test project");
             String projectId = client.createProject(project, "admin");
 
             Experiment simpleExperiment =
