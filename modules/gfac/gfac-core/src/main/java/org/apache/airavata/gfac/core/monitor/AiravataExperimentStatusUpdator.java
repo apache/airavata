@@ -24,7 +24,7 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.airavata.gfac.core.monitor.state.ExperimentStatusChangeRequest;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
-import org.apache.airavata.registry.cpi.DataType;
+import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +58,7 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
     }
 
     public  void updateExperimentStatus(String experimentId, ExperimentState state) throws Exception {
-    	Experiment details = (Experiment)airavataRegistry.get(DataType.EXPERIMENT, experimentId);
+    	Experiment details = (Experiment)airavataRegistry.get(RegistryModelType.EXPERIMENT, experimentId);
         if(details == null) {
             details = new Experiment();
             details.setExperimentID(experimentId);
@@ -67,7 +67,7 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
         status.setExperimentState(state);
         status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
         details.setExperimentStatus(status);
-        airavataRegistry.update(DataType.EXPERIMENT, details, experimentId);
+        airavataRegistry.update(RegistryModelType.EXPERIMENT, details, experimentId);
     }
 
 	public void setup(Object... configurations) {

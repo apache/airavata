@@ -27,7 +27,7 @@ import org.apache.airavata.gfac.core.notification.MonitorPublisher;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.TaskState;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeState;
-import org.apache.airavata.registry.cpi.DataType;
+import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,7 +88,7 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
     }
     
     public  void updateTaskStatus(String taskId, TaskState state) throws Exception {
-    	TaskDetails details = (TaskDetails)airavataRegistry.get(DataType.TASK_DETAIL, taskId);
+    	TaskDetails details = (TaskDetails)airavataRegistry.get(RegistryModelType.TASK_DETAIL, taskId);
         if(details == null) {
             details = new TaskDetails();
             details.setTaskID(taskId);
@@ -97,7 +97,7 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
         status.setExecutionState(state);
         status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
         details.setTaskStatus(status);
-        airavataRegistry.update(DataType.TASK_DETAIL, details, taskId);
+        airavataRegistry.update(RegistryModelType.TASK_DETAIL, details, taskId);
     }
 
 	public void setup(Object... configurations) {

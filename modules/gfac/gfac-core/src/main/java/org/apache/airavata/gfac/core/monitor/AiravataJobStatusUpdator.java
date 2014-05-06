@@ -28,7 +28,7 @@ import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.model.workspace.experiment.TaskState;
 import org.apache.airavata.registry.cpi.CompositeIdentifier;
-import org.apache.airavata.registry.cpi.DataType;
+import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,7 +102,7 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
 
     public  void updateJobStatus(String taskId, String jobID, JobState state) throws Exception {
         CompositeIdentifier ids = new CompositeIdentifier(taskId, jobID);
-        JobDetails details = (JobDetails)airavataRegistry.get(DataType.JOB_DETAIL, ids);
+        JobDetails details = (JobDetails)airavataRegistry.get(RegistryModelType.JOB_DETAIL, ids);
         if(details == null) {
             details = new JobDetails();
         }
@@ -111,7 +111,7 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
         status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
         details.setJobStatus(status);
         details.setJobID(jobID);
-        airavataRegistry.update(DataType.JOB_DETAIL, details, ids);
+        airavataRegistry.update(RegistryModelType.JOB_DETAIL, details, ids);
     }
 
 	@SuppressWarnings("unchecked")

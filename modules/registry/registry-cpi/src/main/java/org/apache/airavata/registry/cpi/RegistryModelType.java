@@ -1,6 +1,6 @@
 package org.apache.airavata.registry.cpi;
 
-public enum DataType {
+public enum RegistryModelType {
     APPLiCATION_CATALOG,
     GROUP,
     USER,

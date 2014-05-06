@@ -29,7 +29,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.apache.airavata.persistance.registry.jpa.utils.ThriftDataModelConversion;
 import org.apache.airavata.registry.cpi.CompositeIdentifier;
-import org.apache.airavata.registry.cpi.DataType;
+import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.airavata.registry.cpi.utils.StatusType;
 import org.slf4j.Logger;
@@ -1877,7 +1877,7 @@ public class ExperimentRegistry {
         }
     }
 
-    public ComputationalResourceScheduling getComputationalScheduling(DataType type, String id) throws Exception {
+    public ComputationalResourceScheduling getComputationalScheduling(RegistryModelType type, String id) throws Exception {
         try {
             ComputationSchedulingResource computationScheduling = null;
             switch (type) {
@@ -1902,7 +1902,7 @@ public class ExperimentRegistry {
         return null;
     }
 
-    public AdvancedInputDataHandling getInputDataHandling(DataType type, String id) throws Exception {
+    public AdvancedInputDataHandling getInputDataHandling(RegistryModelType type, String id) throws Exception {
         try {
             AdvanceInputDataHandlingResource dataHandlingResource = null;
             switch (type) {
@@ -1927,7 +1927,7 @@ public class ExperimentRegistry {
         return null;
     }
 
-    public AdvancedOutputDataHandling getOutputDataHandling(DataType type, String id) throws Exception {
+    public AdvancedOutputDataHandling getOutputDataHandling(RegistryModelType type, String id) throws Exception {
         try {
             AdvancedOutputDataHandlingResource dataHandlingResource = null;
             switch (type) {
@@ -1952,7 +1952,7 @@ public class ExperimentRegistry {
         return null;
     }
 
-    public QualityOfServiceParams getQosParams(DataType type, String id) throws Exception {
+    public QualityOfServiceParams getQosParams(RegistryModelType type, String id) throws Exception {
         try {
             QosParamResource qosParamResource = null;
             switch (type) {
@@ -2248,7 +2248,7 @@ public class ExperimentRegistry {
         }
     }
 
-    public void removeComputationalScheduling(DataType dataType, String id) throws Exception {
+    public void removeComputationalScheduling(RegistryModelType dataType, String id) throws Exception {
         try {
             switch (dataType) {
                 case EXPERIMENT:
@@ -2270,7 +2270,7 @@ public class ExperimentRegistry {
         }
     }
 
-    public void removeInputDataHandling(DataType dataType, String id) throws Exception {
+    public void removeInputDataHandling(RegistryModelType dataType, String id) throws Exception {
         try {
             switch (dataType) {
                 case EXPERIMENT:
@@ -2292,7 +2292,7 @@ public class ExperimentRegistry {
         }
     }
 
-    public void removeOutputDataHandling(DataType dataType, String id) throws Exception {
+    public void removeOutputDataHandling(RegistryModelType dataType, String id) throws Exception {
         try {
             switch (dataType) {
                 case EXPERIMENT:
@@ -2314,7 +2314,7 @@ public class ExperimentRegistry {
         }
     }
 
-    public void removeQOSParams(DataType dataType, String id) throws Exception {
+    public void removeQOSParams(RegistryModelType dataType, String id) throws Exception {
         try {
             switch (dataType) {
                 case EXPERIMENT:
@@ -2395,7 +2395,7 @@ public class ExperimentRegistry {
         }
     }
 
-    public boolean isComputationalSchedulingExist(DataType dataType, String id) throws Exception {
+    public boolean isComputationalSchedulingExist(RegistryModelType dataType, String id) throws Exception {
         try {
             switch (dataType) {
                 case EXPERIMENT:
@@ -2417,7 +2417,7 @@ public class ExperimentRegistry {
         return false;
     }
 
-    public boolean isInputDataHandlingExist(DataType dataType, String id) throws Exception {
+    public boolean isInputDataHandlingExist(RegistryModelType dataType, String id) throws Exception {
         try {
             switch (dataType) {
                 case EXPERIMENT:
@@ -2438,7 +2438,7 @@ public class ExperimentRegistry {
         return false;
     }
 
-    public boolean isOutputDataHandlingExist(DataType dataType, String id) throws Exception {
+    public boolean isOutputDataHandlingExist(RegistryModelType dataType, String id) throws Exception {
         try {
             switch (dataType) {
                 case EXPERIMENT:
@@ -2459,7 +2459,7 @@ public class ExperimentRegistry {
         return false;
     }
 
-    public boolean isQOSParamsExist(DataType dataType, String id) throws Exception {
+    public boolean isQOSParamsExist(RegistryModelType dataType, String id) throws Exception {
         try {
             switch (dataType) {
                 case EXPERIMENT:
@@ -2482,10 +2482,10 @@ public class ExperimentRegistry {
 
     public void updateScheduling(ComputationalResourceScheduling scheduling, String id, String type) throws Exception {
         try {
-            if (type.equals(DataType.EXPERIMENT.toString())) {
+            if (type.equals(RegistryModelType.EXPERIMENT.toString())) {
                 ExperimentResource experiment = gatewayResource.getExperiment(id);
                 updateSchedulingData(scheduling, experiment);
-            } else if (type.equals(DataType.TASK_DETAIL.toString())) {
+            } else if (type.equals(RegistryModelType.TASK_DETAIL.toString())) {
                 ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
                 WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
                 TaskDetailResource taskDetail = workflowNode.getTaskDetail(id);
@@ -2499,10 +2499,10 @@ public class ExperimentRegistry {
 
     public void updateInputDataHandling(AdvancedInputDataHandling dataHandling, String id, String type) throws Exception {
         try {
-            if (type.equals(DataType.EXPERIMENT.toString())) {
+            if (type.equals(RegistryModelType.EXPERIMENT.toString())) {
                 ExperimentResource experiment = gatewayResource.getExperiment(id);
                 updateInputDataHandling(dataHandling, experiment);
-            } else if (type.equals(DataType.TASK_DETAIL.toString())) {
+            } else if (type.equals(RegistryModelType.TASK_DETAIL.toString())) {
                 ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
                 WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
                 TaskDetailResource taskDetail = workflowNode.getTaskDetail(id);
@@ -2516,10 +2516,10 @@ public class ExperimentRegistry {
 
     public void updateOutputDataHandling(AdvancedOutputDataHandling dataHandling, String id, String type) throws Exception {
         try {
-            if (type.equals(DataType.EXPERIMENT.toString())) {
+            if (type.equals(RegistryModelType.EXPERIMENT.toString())) {
                 ExperimentResource experiment = gatewayResource.getExperiment(id);
                 updateOutputDataHandling(dataHandling, experiment);
-            } else if (type.equals(DataType.TASK_DETAIL.toString())) {
+            } else if (type.equals(RegistryModelType.TASK_DETAIL.toString())) {
                 ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
                 WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
                 TaskDetailResource taskDetail = workflowNode.getTaskDetail(id);
@@ -2533,10 +2533,10 @@ public class ExperimentRegistry {
 
     public void updateQOSParams(QualityOfServiceParams params, String id, String type) throws Exception {
         try {
-            if (type.equals(DataType.EXPERIMENT.toString())) {
+            if (type.equals(RegistryModelType.EXPERIMENT.toString())) {
                 ExperimentResource experiment = gatewayResource.getExperiment(id);
                 updateQosParams(params, experiment);
-            } else if (type.equals(DataType.TASK_DETAIL.toString())) {
+            } else if (type.equals(RegistryModelType.TASK_DETAIL.toString())) {
                 ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
                 WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
                 TaskDetailResource taskDetail = workflowNode.getTaskDetail(id);

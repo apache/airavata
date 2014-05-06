@@ -34,7 +34,7 @@ import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
 import org.apache.airavata.registry.cpi.ChildDataType;
-import org.apache.airavata.registry.cpi.DataType;
+import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,7 +108,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         List<TaskDetails> tasks = new ArrayList<TaskDetails>();
         try {
             Registry newRegistry = orchestratorContext.getNewRegistry();
-            experiment = (Experiment) newRegistry.get(DataType.EXPERIMENT, experimentId);
+            experiment = (Experiment) newRegistry.get(RegistryModelType.EXPERIMENT, experimentId);
 
 
             WorkflowNodeDetails iDontNeedaNode = ExperimentModelUtil.createWorkflowNode("IDontNeedaNode", null);

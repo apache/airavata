@@ -28,7 +28,7 @@ import org.apache.airavata.model.workspace.experiment.ExperimentState;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeState;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeStatus;
-import org.apache.airavata.registry.cpi.DataType;
+import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,7 +87,7 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
     }
 
     public  void updateWorkflowNodeStatus(String workflowNodeId, WorkflowNodeState state) throws Exception {
-    	WorkflowNodeDetails details = (WorkflowNodeDetails)airavataRegistry.get(DataType.WORKFLOW_NODE_DETAIL, workflowNodeId);
+    	WorkflowNodeDetails details = (WorkflowNodeDetails)airavataRegistry.get(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeId);
         if(details == null) {
             details = new WorkflowNodeDetails();
             details.setNodeInstanceId(workflowNodeId);
@@ -96,7 +96,7 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
         status.setWorkflowNodeState(state);
         status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
         details.setWorkflowNodeStatus(status);
-        airavataRegistry.update(DataType.WORKFLOW_NODE_DETAIL, details, workflowNodeId);
+        airavataRegistry.update(RegistryModelType.WORKFLOW_NODE_DETAIL, details, workflowNodeId);
     }
 
 	public void setup(Object... configurations) {
