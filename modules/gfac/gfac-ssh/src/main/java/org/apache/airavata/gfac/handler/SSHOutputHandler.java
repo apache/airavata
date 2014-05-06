@@ -22,6 +22,7 @@ package org.apache.airavata.gfac.handler;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -150,7 +151,7 @@ public class SSHOutputHandler extends AbstractHandler{
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
 
 
-            Map<String, ActualParameter> stringMap = new HashMap<String, ActualParameter>();
+            List<DataObjectType> outputArray = new ArrayList<DataObjectType>();
             Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
             Set<String> keys = output.keySet();
             for (String paramName : keys) {
@@ -159,31 +160,36 @@ public class SSHOutputHandler extends AbstractHandler{
 
                     List<String> outputList = cluster.listDirectory(app.getOutputDataDirectory());
                     if (outputList.size() == 0 || outputList.get(0).isEmpty()) {
-                        stringMap = OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
+                        OutputUtils.fillOutputFromStdout1(output, stdOutStr, stdErrStr,outputArray);
+                        break;
                     } else {
                         String valueList = outputList.get(0);
                         cluster.scpFrom(app.getOutputDataDirectory() + File.separator + valueList, outputDataDir);
                         jobExecutionContext.addOutputFile(outputDataDir + File.separator + valueList);
-                        ((URIParameterType) actualParameter.getType()).setValue(valueList);
-                        stringMap = new HashMap<String, ActualParameter>();
-                        stringMap.put(paramName, actualParameter);
+                        DataObjectType dataObjectType = new DataObjectType();
+                        dataObjectType.setValue(valueList);
+                        dataObjectType.setKey(paramName);
+                        dataObjectType.setType(org.apache.airavata.schemas.gfac.DataType.URI.toString());
+                        outputArray.add(dataObjectType);
                     }
                 } else {
-                    stringMap = OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
+                    OutputUtils.fillOutputFromStdout1(output, stdOutStr, stdErrStr,outputArray);
                 }
             }
-            if (stringMap == null || stringMap.isEmpty()) {
+            if (outputArray == null || outputArray.isEmpty()) {
                 throw new GFacHandlerException(
                         "Empty Output returned from the Application, Double check the application"
                                 + "and ApplicationDescriptor output Parameter Names");
             }
-            status.setTransferState(TransferState.DOWNLOAD);
-            detail.setTransferStatus(status);
-            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
-
             app.setStandardError(localStdErrFile.getAbsolutePath());
             app.setStandardOutput(localStdOutFile.getAbsolutePath());
             app.setOutputDataDirectory(outputDataDir);
+            status.setTransferState(TransferState.DOWNLOAD);
+            detail.setTransferStatus(status);
+            detail.setTransferDescription(outputDataDir);
+            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+            registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
+            
         } catch (XmlException e) {
             throw new GFacHandlerException("Cannot read output:" + e.getMessage(), e);
         } catch (ConnectionException e) {

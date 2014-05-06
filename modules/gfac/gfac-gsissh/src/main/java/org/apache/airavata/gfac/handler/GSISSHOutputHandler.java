@@ -20,8 +20,18 @@
 */
 package org.apache.airavata.gfac.handler;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.transport.TransportException;
+
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
@@ -35,7 +45,14 @@ import org.apache.airavata.gfac.utils.GFacUtils;
 import org.apache.airavata.gfac.utils.OutputUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
-import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
+import org.apache.airavata.model.workspace.experiment.DataObjectType;
+import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
+import org.apache.airavata.model.workspace.experiment.ErrorCategory;
+import org.apache.airavata.model.workspace.experiment.JobDetails;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.workspace.experiment.TransferState;
+import org.apache.airavata.model.workspace.experiment.TransferStatus;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.registry.cpi.DataType;
 import org.apache.airavata.registry.cpi.RegistryException;
@@ -46,12 +63,8 @@ import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 public class GSISSHOutputHandler extends AbstractHandler{
     private static final Logger log = LoggerFactory.getLogger(GSISSHOutputHandler.class);
@@ -154,7 +167,7 @@ public class GSISSHOutputHandler extends AbstractHandler{
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
 
 
-            Map<String, ActualParameter> stringMap = new HashMap<String, ActualParameter>();
+            List<DataObjectType> outputArray = new ArrayList<DataObjectType>();
             Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
             Set<String> keys = output.keySet();
             for (String paramName : keys) {
@@ -163,31 +176,36 @@ public class GSISSHOutputHandler extends AbstractHandler{
 
                     List<String> outputList = cluster.listDirectory(app.getOutputDataDirectory());
                     if (outputList.size() == 0 || outputList.get(0).isEmpty()) {
-                        stringMap = OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
+                        OutputUtils.fillOutputFromStdout1(output, stdOutStr, stdErrStr, outputArray);
+                        break;
                     } else {
                         String valueList = outputList.get(0);
                         cluster.scpFrom(app.getOutputDataDirectory() + File.separator + valueList, outputDataDir);
                         jobExecutionContext.addOutputFile(outputDataDir + File.separator + valueList);
-                        ((URIParameterType) actualParameter.getType()).setValue(valueList);
-                        stringMap = new HashMap<String, ActualParameter>();
-                        stringMap.put(paramName, actualParameter);
+                        DataObjectType dataObjectType = new DataObjectType();
+                        dataObjectType.setValue(valueList);
+                        dataObjectType.setKey(paramName);
+                        dataObjectType.setType(org.apache.airavata.schemas.gfac.DataType.URI.toString());
+                        outputArray.add(dataObjectType);
                     }
                 } else {
-                    stringMap = OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
+                    OutputUtils.fillOutputFromStdout1(output, stdOutStr,stdErrStr, outputArray);
+                    break;
                 }
             }
-            if (stringMap == null || stringMap.isEmpty()) {
+            if (outputArray == null || outputArray.isEmpty()) {
                 throw new GFacHandlerException(
                         "Empty Output returned from the Application, Double check the application"
                                 + "and ApplicationDescriptor output Parameter Names");
             }
-            status.setTransferState(TransferState.DOWNLOAD);
-            detail.setTransferStatus(status);
-            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
-
             app.setStandardError(localStdErrFile.getAbsolutePath());
             app.setStandardOutput(localStdOutFile.getAbsolutePath());
             app.setOutputDataDirectory(outputDataDir);
+            status.setTransferState(TransferState.DOWNLOAD);
+            detail.setTransferStatus(status);
+            detail.setTransferDescription(outputDataDir);
+            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+            registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
         } catch (XmlException e) {
             throw new GFacHandlerException("Cannot read output:" + e.getMessage(), e);
         } catch (ConnectionException e) {
