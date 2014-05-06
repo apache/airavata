@@ -49,9 +49,6 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
     // this is going to be null unless the thread count is 0
     private JobSubmitter jobSubmitter = null;
 
-    private JobMetadataValidator jobMetadataValidator = null;
-
-
 
     public SimpleOrchestratorImpl() throws OrchestratorException {
         try {
@@ -60,14 +57,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 Class<? extends JobSubmitter> aClass = Class.forName(submitterClass.trim()).asSubclass(JobSubmitter.class);
                 jobSubmitter = aClass.newInstance();
                 jobSubmitter.initialize(this.orchestratorContext);
-                String validatorClzz = this.orchestratorContext.getOrchestratorConfiguration().getValidatorClass();
-                if (this.orchestratorConfiguration.isEnableValidation()) {
-                    if (validatorClzz == null) {
-                        logger.error("Job validation class is not properly set, so Validation will be turned off !");
-                    }
-                    Class<? extends JobMetadataValidator> vClass = Class.forName(validatorClzz.trim()).asSubclass(JobMetadataValidator.class);
-                    jobMetadataValidator = vClass.newInstance();
-                }
+
             } catch (Exception e) {
                 String error = "Error creating JobSubmitter in non threaded mode ";
                 logger.error(error);
@@ -123,7 +113,35 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         return tasks;
     }
 
-	public void cancelExperiment(String experimentID)
+    public boolean validateExperiment(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) throws OrchestratorException {
+        if (this.orchestratorConfiguration.isEnableValidation()) {
+            List<String> validatorClzzez = this.orchestratorContext.getOrchestratorConfiguration().getValidatorClasses();
+            for (String validator : validatorClzzez) {
+                try {
+                    Class<? extends JobMetadataValidator> vClass = Class.forName(validator.trim()).asSubclass(JobMetadataValidator.class);
+                    JobMetadataValidator jobMetadataValidator = vClass.newInstance();
+                    if(jobMetadataValidator.validate(experiment, workflowNodeDetail, taskID)){
+                        logger.info("Validation of " + validator + " is SUCCESSFUL");
+                    }else {
+                        logger.error("Validation of " + validator + " is FAILED");
+                        return false;
+                    }
+                } catch (ClassNotFoundException e) {
+                    logger.error("Error loading the validation class: ", validator, e);
+                    return false;
+                } catch (InstantiationException e) {
+                   logger.error("Error loading the validation class: ", validator, e);
+                    return false;
+                } catch (IllegalAccessException e) {
+                   logger.error("Error loading the validation class: ", validator, e);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public void cancelExperiment(String experimentID)
 			throws OrchestratorException {
         throw new OrchestratorException(new OperationNotSupportedException());
     }
@@ -135,14 +153,6 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
 
     public void setExecutor(ExecutorService executor) {
         this.executor = executor;
-    }
-
-    public JobMetadataValidator getJobMetadataValidator() {
-        return jobMetadataValidator;
-    }
-
-    public void setJobMetadataValidator(JobMetadataValidator jobMetadataValidator) {
-        this.jobMetadataValidator = jobMetadataValidator;
     }
 
     public JobSubmitter getJobSubmitter() {

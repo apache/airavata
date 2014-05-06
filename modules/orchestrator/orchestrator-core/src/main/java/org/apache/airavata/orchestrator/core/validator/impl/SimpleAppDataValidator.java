@@ -21,13 +21,16 @@
 package org.apache.airavata.orchestrator.core.validator.impl;
 
 import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
+import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SimpleAppDataValidator extends AbstractJobMetadataValidator {
+public class SimpleAppDataValidator implements JobMetadataValidator {
     private final static Logger logger = LoggerFactory.getLogger(SimpleAppDataValidator.class);
 
     private Registry registry;
@@ -36,38 +39,11 @@ public class SimpleAppDataValidator extends AbstractJobMetadataValidator {
         this.registry = RegistryFactory.getDefaultRegistry();
     }
 
-    public boolean runAppSpecificValidation(String experimentID) throws OrchestratorException{
-        // implement simple application specific validator to be used for
-        // all the applications.
-        return true;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public boolean validate(String experimentID) throws OrchestratorException {
+    public boolean validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) throws OrchestratorException {
         boolean result = false;
-        if (super.runBasicValidation(experimentID)) {
-
-            Experiment experiment = null;
-            try {
-                experiment = (Experiment) registry.get(org.apache.airavata.registry.cpi.RegistryModelType.EXPERIMENT, experimentID);
-            } catch (Exception e) {
-                throw new OrchestratorException(e);
-            }
-            if (experiment.getUserConfigurationData().isAiravataAutoSchedule()) {
-                logger.error("We dont' support auto scheduling at this point, We will simply use user data as it is");
-            }
-
-            /* todo like this do more validation and if they are suppose to fail return false otherwise give some
-               log messages in server side logs
-             */
-            if (runAppSpecificValidation(experimentID)) {
-                return true;
-            }
-            String error = "Application data validation steps failed";
-            logger.error(error);
-            return false;
+        if (experiment.getUserConfigurationData().isAiravataAutoSchedule()) {
+            logger.error("We dont' support auto scheduling at this point, We will simply use user data as it is");
         }
-        String error = "Basic validation steps failed";
-        logger.error(error);
-        return false;
+        return true;
     }
 }
