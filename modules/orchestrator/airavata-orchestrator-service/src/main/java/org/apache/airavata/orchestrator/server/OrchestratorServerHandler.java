@@ -144,6 +144,13 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         }
         return false;
     }
+
+    /**
+     * This can be used to cancel a running experiment and store the status to terminated in registry
+     * @param experimentId
+     * @return
+     * @throws TException
+     */
     public boolean terminateExperiment(String experimentId) throws TException {
     	try {
 			orchestrator.cancelExperiment(experimentId);
