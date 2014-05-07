@@ -62,7 +62,7 @@ $airavataclient = new AiravataClient($protocol);
 
 
 
-$expId = 'US3ExperimentTrestles_d0753b6d-bf27-4d58-9508-f0339ea62e5b';
+$expId = 'TestExperiment_90011f6b-3f1d-4a6b-b5e5-fbfece64d654';
 
 $outputs = get_experiment_outputs($expId);
 

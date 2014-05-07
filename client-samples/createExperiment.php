@@ -97,7 +97,9 @@ try
     $userConfigurationData = new UserConfigurationData();
     $userConfigurationData->airavataAutoSchedule = 0;
     $userConfigurationData->overrideManualScheduledParams = 0;
-    $userConfigurationData->ComputationalResourceScheduling = $cmRS;
+    $userConfigurationData->computationalResourceScheduling = $cmRS;
+    //var_dump($cmRS);
+    //var_dump($userConfigurationData);
 
     /*Application ID for Trestles or Stamepede */
     $appId_trestles = "SimpleEcho2";

@@ -63,7 +63,7 @@ $airavataclient = new AiravataClient($protocol);
 
 try
 {
-   $expId ='US3ExperimentTrestles_a12e61b6-9b71-454d-8ce6-83a1a9c4dd37';
+   $expId ='TestExperiment_90011f6b-3f1d-4a6b-b5e5-fbfece64d654';
    $airavataclient->launchExperiment($expId, 'airavataToken');
    echo "Experiment $expId is launched.";
 }
