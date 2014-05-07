@@ -37,6 +37,9 @@ use Airavata\API\AiravataClient;
 
 use Airavata\Model\Workspace\Project;
 use Airavata\Model\Workspace\Experiment\Experiment;
+use Airavata\Model\Workspace\Experiment\DataObjectType;
+use Airavata\Model\Workspace\Experiment\UserConfigurationData;
+use Airavata\Model\Workspace\Experiment\ComputationalResourceScheduling;
 
 /* buffered transport
 $socket = new TSocket('gw111.iu.xsede.org', 8930);
@@ -61,34 +64,81 @@ $transport->open();
 $airavataclient = new AiravataClient($protocol);
 
 
-
-
 try
 { 
-   /* should hard-code instead
-   $exp_name = $_GET["name"];
-   $user = $_GET["user"];
-   $proj = $_GET["proj"];
-    */
+   /* ComputationalResourceScheduling data for Trestles*/
+    $cmRST = new ComputationalResourceScheduling();
+    $cmRST->resourceHostId = "trestles.sdsc.edu";
+    $cmRST->ComputationalProjectAccount = "sds128";
+    $cmRST->totalCPUCount = 1;
+    $cmRST->nodeCount = 1;
+    $cmRST->numberOfThreads = 0;
+    $cmRST->queueName = "normal";
+    $cmRST->wallTimeLimit = 15;
+    $cmRST->jobStartTime = 0;
+    $cmRST->totalPhysicalMemory = 0;
 
-    $exp_name = 'experiment' . time();
-    $user = 'admin';
-    $proj = 'Project 1';
+   /* ComputationalResourceScheduling data for Stampede
+    $cmRSS = new ComputationalResourceScheduling();
+    $cmRSS->resourceHostId = "stampede.tacc.xsede.org";
+    $cmRSS->ComputationalProjectAccount = "TG-STA110014S";
+    $cmRSS->totalCPUCount = 1;
+    $cmRSS->nodeCount = 1;
+    $cmRSS->numberOfThreads = 0;
+    $cmRSS->queueName = "normal";
+    $cmRSS->wallTimeLimit = 15;
+    $cmRSS->jobStartTime = 0;
+    $cmRSS->totalPhysicalMemory = 0;
+   */
 
-   $experiment = new Experiment();
-   $experiment->projectID = $proj;
-   $experiment->userName = $user;
-   $experiment->name = $exp_name;
+    /* UserConfigurationData using either Trestles or Stampede*/
+    //$cmRS = $cmRSS;
+    $cmRS = $cmRST;
+    $userConfigurationData = new UserConfigurationData();
+    $userConfigurationData->airavataAutoSchedule = 0;
+    $userConfigurationData->overrideManualScheduledParams = 0;
+    $userConfigurationData->ComputationalResourceScheduling = $cmRS;
 
+    /*Application ID for Trestles or Stamepede */
+    $appId_trestles = "SimpleEcho2";
+    $appId_stampede = "SimpleEcho3";
+    //$appId = $appId_stampede;
+    $appId = $appId_trestles;
+
+   /* Experiment input and output data. */
+    $input = new DataObjectType();
+    $input->key = "echo_input";
+    $input->value = "echo_output=Hello World";	
+    $input->type = "String";
+    $exInputs = array($input);
+
+    $output = new DataObjectType();
+    $output->key = "echo_output";
+    $output->value = "";	
+    $output->type = "String";
+    $exOutputs = array($output);
+
+   /* Create Experiment: needs to update using unique project ID. */
+    $proj = "Test Project";
+    $user = "admin";
+    $exp_name = "Test Experiment";
+
+    $experiment = new Experiment();
+    $experiment->projectID = $proj;
+    $experiment->userName = $user;
+    $experiment->name = $exp_name;
+    $experiment->applicationId = $appId;
+    $experiment->userConfigurationData = $userConfigurationData;
+    $experiment->experimentInputs = $exInputs;
+    $experiment->experimentOutputs = $exOutputs;
  
-   $expId = $airavataclient->createExperiment($experiment);
+    $expId = $airavataclient->createExperiment($experiment);
 
-   if ($expId) {
-       echo "Experiment $expId created!";
-   } else {
-       echo "Failed to create experiment.";
-   }
-
+    if ($expId) {
+        echo "Experiment $expId created!";
+    } else {
+        echo "Failed to create experiment.";
+    }
 }
 catch (InvalidRequestException $ire)
 {
