@@ -187,7 +187,7 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
 		List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
 		DataObjectType input = new DataObjectType();
 		input.setKey("echo_input");
-		// input.setType(DataType.STRING.toString());
+		input.setType(DataType.STRING);
 		input.setValue("echo_output=Hello World");
 		exInputs.add(input);
 
