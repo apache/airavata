@@ -59,16 +59,14 @@ $transport->open();
 $airavataclient = new AiravataClient($protocol);
 
 
+if (count($argv) < 2) {
+    exit("Please provide an experimentID. \n");
+}
 
-
-$expId = 'TestExperiment_90011f6b-3f1d-4a6b-b5e5-fbfece64d654';
+$expId = $argv[1];   
 
 $experimentStatusString = get_experiment_status($expId);
 echo "experiment status = " . $experimentStatusString . "       \n<br>";
-
-
-
-
 
 
 $transport->close();

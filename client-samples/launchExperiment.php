@@ -53,7 +53,7 @@ $airavataClientFactory = new AiravataClientFactory(array('airavataServerHost' =>
 $airavataclient = $airavataClientFactory->getAiravataClient();
 */
 
-/* this is the same as the factory */
+/* this is the same as the factory */ 
 $transport = new TSocket('gw111.iu.xsede.org', 8930);
 $transport->setRecvTimeout(5000);
 
@@ -63,7 +63,11 @@ $airavataclient = new AiravataClient($protocol);
 
 try
 {
-   $expId ='TestExperiment_90011f6b-3f1d-4a6b-b5e5-fbfece64d654';
+   if (count($argv) < 2) {
+	exit("Please provide an experimentID. \n");
+   }
+
+   $expId = $argv[1];	
    $airavataclient->launchExperiment($expId, 'airavataToken');
    echo "Experiment $expId is launched.";
 }
