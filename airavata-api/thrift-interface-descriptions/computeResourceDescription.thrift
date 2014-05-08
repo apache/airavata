@@ -20,6 +20,8 @@
 
 namespace java org.apache.airavata.model.appcatalog.computeresource
 
+const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
+
 /**
  * Enumeration of local resource job managers supported by Airavata
  *
@@ -104,10 +106,7 @@ enum SecurityProtocol {
 struct SSHJobSubmission {
     1: required SecurityProtocol securityProtocol,
     2: required ResourceJobManager resourceJobManager,
-    3: optional i32 sshPort = 22,
-
-    //6: optional list<string> preJobCommands,
-    //7: optional list<string> postJobCommands,
+    3: optional i32 sshPort = 22
 }
 
 struct SCPDataMovement {
@@ -115,26 +114,8 @@ struct SCPDataMovement {
     2: optional i32 sshPort = 22,
 }
 
-
-struct ec2HostType
-{
-	1 : required list<string> imageID,
-	2 : required list<string> instanceID,
-}
-
-struct globusHostType
-{
-	1 : required list<string> gridFTPEndPoint,
-	2 : required list<string> globusGateKeeperEndPoint,
-}
-
-struct UnicoreHostType
-{
-	1 : required list<string> unicoreBESEndPoint,
-}
-
 /**
- * Computational Resource Description
+ * Job Submission Protocols
  *
  * resourceId:
  *
@@ -154,13 +135,44 @@ struct UnicoreHostType
  *  Option to specify a prefered data movement mechanism of the available options.
  *
 */
+struct JobSubmissionProtocols {
+    1: required bool isEmpty = 0,
+    2: optional JobSubmissionProtocol preferedJobSubmissionProtocol,
+    3: optional SSHJobSubmission sshJobSubmissionInfo,
+    4: optional string globusGRAMHost,
+    5: optional i32 globusGRAMPort = 2119,
+    6: optional string unicoreBESEndPoint
+}
 
-struct computeResourceDescription {
-    1: required string resourceId,
-    2: required string hostName,
-    3: optional string ipAddress,
-    4: optional string resourceDescription,
-    5: optional JobSubmissionProtocol preferedJobSubmissionProtocol,
-    6: optional DataMovementProtocol preferedDataMovementProtocol,
-    7: optional SSHJobSubmission SSHJobSubmission,
+/**
+ * Computational Resource Description
+ *
+ * resourceId:
+ *
+ * hostName:
+ *   Fully Qualified Host Name.
+ *
+ * ipAddress:
+ *   IP Addresse of the Hostname.
+ *
+ * resourceDescription:
+ *  A user friendly description of the hostname.
+ *
+ * JobSubmissionProtocols:
+ *  A computational resources may have one or more ways of submitting Jobs. This structure
+ *  will hold all available mechanisms to interact with the resource.
+ *
+ * DataMovementProtocol:
+ *  Option to specify a prefered data movement mechanism of the available options.
+ *
+*/
+
+struct ComputeResourceDescription {
+    1: required bool isEmpty = 0,
+    2: required string resourceId = DEFAULT_ID,
+    3: required string hostName,
+    4: optional string ipAddress,
+    5: optional string resourceDescription,
+    6: required JobSubmissionProtocols jobSubmissionProtocols,
+    7: required DataMovementProtocol dataMovementProtocols
 }
