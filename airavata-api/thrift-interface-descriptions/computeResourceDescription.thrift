@@ -31,6 +31,9 @@ const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
  * PBS:
  *  Job manager supporting the Portal Batch System (PBS) protocol. Some examples include TORQUE, PBSPro, Grid Engine.
  *
+ * UGE:
+ *  Univa Grid Engine, a variation of PBS implementation.
+ *
  * SLURM:
  *  The Simple Linux Utility for Resource Management is a open source workload manager.
  *
@@ -38,6 +41,7 @@ const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 enum ResourceJobManager {
     FORK,
     PBS,
+    UGE,
     SLURM
 }
 
@@ -171,8 +175,9 @@ struct ComputeResourceDescription {
     1: required bool isEmpty = 0,
     2: required string resourceId = DEFAULT_ID,
     3: required string hostName,
-    4: optional string ipAddress,
+    4: optional set<string> hostAliases,
+    4: optional set<string> ipAddresses,
     5: optional string resourceDescription,
-    6: required JobSubmissionProtocols jobSubmissionProtocols,
-    7: required DataMovementProtocol dataMovementProtocols
+    6: required map<JobSubmissionProtocol, JobSubmissionProtocols> jobSubmissionProtocols,
+    7: required map<DataMovementProtocol, DataMovementProtocol> dataMovementProtocols
 }
