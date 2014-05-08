@@ -40,7 +40,7 @@ use Airavata\Model\Workspace\Experiment\Experiment;
 use Airavata\Model\Workspace\Experiment\DataObjectType;
 use Airavata\Model\Workspace\Experiment\UserConfigurationData;
 use Airavata\Model\Workspace\Experiment\ComputationalResourceScheduling;
-
+use Airavata\Model\Workspace\Experiment\DataType;
 /* buffered transport
 $socket = new TSocket('gw111.iu.xsede.org', 8930);
 $transport = new TBufferedTransport($socket, 1024, 1024);
@@ -111,17 +111,17 @@ try
     $input = new DataObjectType();
     $input->key = "echo_input";
     $input->value = "echo_output=Hello World";	
-    $input->type = "String";
+    $input->type = DataType::STRING;
     $exInputs = array($input);
 
     $output = new DataObjectType();
     $output->key = "echo_output";
     $output->value = "";	
-    $output->type = "String";
+    $output->type = DataType::STRING;
     $exOutputs = array($output);
 
    /* Create Experiment: needs to update using unique project ID. */
-    $proj = "Test Project";
+    $proj = "default";
     $user = "admin";
     $exp_name = "Test Experiment";
 
