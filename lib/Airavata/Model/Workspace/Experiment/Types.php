@@ -23,37 +23,41 @@ final class ExperimentState {
   const SCHEDULED = 2;
   const LAUNCHED = 3;
   const EXECUTING = 4;
-  const CANCELED = 5;
-  const COMPLETED = 6;
-  const FAILED = 7;
-  const UNKNOWN = 8;
+  const CANCELING = 5;
+  const CANCELED = 6;
+  const COMPLETED = 7;
+  const FAILED = 8;
+  const UNKNOWN = 9;
   static public $__names = array(
     0 => 'CREATED',
     1 => 'VALIDATED',
     2 => 'SCHEDULED',
     3 => 'LAUNCHED',
     4 => 'EXECUTING',
-    5 => 'CANCELED',
-    6 => 'COMPLETED',
-    7 => 'FAILED',
-    8 => 'UNKNOWN',
+    5 => 'CANCELING',
+    6 => 'CANCELED',
+    7 => 'COMPLETED',
+    8 => 'FAILED',
+    9 => 'UNKNOWN',
   );
 }
 
 final class WorkflowNodeState {
   const INVOKED = 0;
   const EXECUTING = 1;
-  const CANCELED = 2;
-  const COMPLETED = 3;
-  const FAILED = 4;
-  const UNKNOWN = 5;
+  const CANCELING = 2;
+  const CANCELED = 3;
+  const COMPLETED = 4;
+  const FAILED = 5;
+  const UNKNOWN = 6;
   static public $__names = array(
     0 => 'INVOKED',
     1 => 'EXECUTING',
-    2 => 'CANCELED',
-    3 => 'COMPLETED',
-    4 => 'FAILED',
-    5 => 'UNKNOWN',
+    2 => 'CANCELING',
+    3 => 'CANCELED',
+    4 => 'COMPLETED',
+    5 => 'FAILED',
+    6 => 'UNKNOWN',
   );
 }
 
@@ -66,10 +70,11 @@ final class TaskState {
   const OUTPUT_DATA_STAGING = 5;
   const POST_PROCESSING = 6;
   const EXECUTING = 7;
-  const CANCELED = 8;
-  const COMPLETED = 9;
-  const FAILED = 10;
-  const UNKNOWN = 11;
+  const CANCELING = 8;
+  const CANCELED = 9;
+  const COMPLETED = 10;
+  const FAILED = 11;
+  const UNKNOWN = 12;
   static public $__names = array(
     0 => 'WAITING',
     1 => 'STARTED',
@@ -79,10 +84,11 @@ final class TaskState {
     5 => 'OUTPUT_DATA_STAGING',
     6 => 'POST_PROCESSING',
     7 => 'EXECUTING',
-    8 => 'CANCELED',
-    9 => 'COMPLETED',
-    10 => 'FAILED',
-    11 => 'UNKNOWN',
+    8 => 'CANCELING',
+    9 => 'CANCELED',
+    10 => 'COMPLETED',
+    11 => 'FAILED',
+    12 => 'UNKNOWN',
   );
 }
 
@@ -93,11 +99,12 @@ final class JobState {
   const QUEUED = 3;
   const ACTIVE = 4;
   const COMPLETE = 5;
-  const CANCELED = 6;
-  const FAILED = 7;
-  const HELD = 8;
-  const SUSPENDED = 9;
-  const UNKNOWN = 10;
+  const CANCELING = 6;
+  const CANCELED = 7;
+  const FAILED = 8;
+  const HELD = 9;
+  const SUSPENDED = 10;
+  const UNKNOWN = 11;
   static public $__names = array(
     0 => 'SUBMITTED',
     1 => 'UN_SUBMITTED',
@@ -105,11 +112,12 @@ final class JobState {
     3 => 'QUEUED',
     4 => 'ACTIVE',
     5 => 'COMPLETE',
-    6 => 'CANCELED',
-    7 => 'FAILED',
-    8 => 'HELD',
-    9 => 'SUSPENDED',
-    10 => 'UNKNOWN',
+    6 => 'CANCELING',
+    7 => 'CANCELED',
+    8 => 'FAILED',
+    9 => 'HELD',
+    10 => 'SUSPENDED',
+    11 => 'UNKNOWN',
   );
 }
 
@@ -121,11 +129,12 @@ final class TransferState {
   const COMPLETE = 4;
   const STDOUT_DOWNLOAD = 5;
   const STDERROR_DOWNLOAD = 6;
-  const CANCELED = 7;
-  const FAILED = 8;
-  const HELD = 9;
-  const SUSPENDED = 10;
-  const UNKNOWN = 11;
+  const CANCELING = 7;
+  const CANCELED = 8;
+  const FAILED = 9;
+  const HELD = 10;
+  const SUSPENDED = 11;
+  const UNKNOWN = 12;
   static public $__names = array(
     0 => 'DIRECTORY_SETUP',
     1 => 'UPLOAD',
@@ -134,11 +143,12 @@ final class TransferState {
     4 => 'COMPLETE',
     5 => 'STDOUT_DOWNLOAD',
     6 => 'STDERROR_DOWNLOAD',
-    7 => 'CANCELED',
-    8 => 'FAILED',
-    9 => 'HELD',
-    10 => 'SUSPENDED',
-    11 => 'UNKNOWN',
+    7 => 'CANCELING',
+    8 => 'CANCELED',
+    9 => 'FAILED',
+    10 => 'HELD',
+    11 => 'SUSPENDED',
+    12 => 'UNKNOWN',
   );
 }
 
@@ -186,6 +196,21 @@ final class CorrectiveAction {
     0 => 'RETRY_SUBMISSION',
     1 => 'CONTACT_SUPPORT',
     2 => 'CANNOT_BE_DETERMINED',
+  );
+}
+
+final class DataType {
+  const STRING = 0;
+  const INTEGER = 1;
+  const URI = 2;
+  const STDOUT = 3;
+  const STDERR = 4;
+  static public $__names = array(
+    0 => 'STRING',
+    1 => 'INTEGER',
+    2 => 'URI',
+    3 => 'STDOUT',
+    4 => 'STDERR',
   );
 }
 
@@ -762,7 +787,7 @@ class DataObjectType {
           ),
         3 => array(
           'var' => 'type',
-          'type' => TType::STRING,
+          'type' => TType::I32,
           ),
         4 => array(
           'var' => 'metaData',
@@ -820,8 +845,8 @@ class DataObjectType {
           }
           break;
         case 3:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->type);
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->type);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -857,8 +882,8 @@ class DataObjectType {
       $xfer += $output->writeFieldEnd();
     }
     if ($this->type !== null) {
-      $xfer += $output->writeFieldBegin('type', TType::STRING, 3);
-      $xfer += $output->writeString($this->type);
+      $xfer += $output->writeFieldBegin('type', TType::I32, 3);
+      $xfer += $output->writeI32($this->type);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->metaData !== null) {
