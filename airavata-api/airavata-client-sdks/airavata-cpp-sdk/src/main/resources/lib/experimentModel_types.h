@@ -24,10 +24,11 @@ struct ExperimentState {
     SCHEDULED = 2,
     LAUNCHED = 3,
     EXECUTING = 4,
-    CANCELED = 5,
-    COMPLETED = 6,
-    FAILED = 7,
-    UNKNOWN = 8
+    CANCELING = 5,
+    CANCELED = 6,
+    COMPLETED = 7,
+    FAILED = 8,
+    UNKNOWN = 9
   };
 };
 
@@ -37,10 +38,11 @@ struct WorkflowNodeState {
   enum type {
     INVOKED = 0,
     EXECUTING = 1,
-    CANCELED = 2,
-    COMPLETED = 3,
-    FAILED = 4,
-    UNKNOWN = 5
+    CANCELING = 2,
+    CANCELED = 3,
+    COMPLETED = 4,
+    FAILED = 5,
+    UNKNOWN = 6
   };
 };
 
@@ -56,10 +58,11 @@ struct TaskState {
     OUTPUT_DATA_STAGING = 5,
     POST_PROCESSING = 6,
     EXECUTING = 7,
-    CANCELED = 8,
-    COMPLETED = 9,
-    FAILED = 10,
-    UNKNOWN = 11
+    CANCELING = 8,
+    CANCELED = 9,
+    COMPLETED = 10,
+    FAILED = 11,
+    UNKNOWN = 12
   };
 };
 
@@ -73,11 +76,12 @@ struct JobState {
     QUEUED = 3,
     ACTIVE = 4,
     COMPLETE = 5,
-    CANCELED = 6,
-    FAILED = 7,
-    HELD = 8,
-    SUSPENDED = 9,
-    UNKNOWN = 10
+    CANCELING = 6,
+    CANCELED = 7,
+    FAILED = 8,
+    HELD = 9,
+    SUSPENDED = 10,
+    UNKNOWN = 11
   };
 };
 
@@ -92,11 +96,12 @@ struct TransferState {
     COMPLETE = 4,
     STDOUT_DOWNLOAD = 5,
     STDERROR_DOWNLOAD = 6,
-    CANCELED = 7,
-    FAILED = 8,
-    HELD = 9,
-    SUSPENDED = 10,
-    UNKNOWN = 11
+    CANCELING = 7,
+    CANCELED = 8,
+    FAILED = 9,
+    HELD = 10,
+    SUSPENDED = 11,
+    UNKNOWN = 12
   };
 };
 
@@ -138,6 +143,18 @@ struct CorrectiveAction {
 };
 
 extern const std::map<int, const char*> _CorrectiveAction_VALUES_TO_NAMES;
+
+struct DataType {
+  enum type {
+    STRING = 0,
+    INTEGER = 1,
+    URI = 2,
+    STDOUT = 3,
+    STDERR = 4
+  };
+};
+
+extern const std::map<int, const char*> _DataType_VALUES_TO_NAMES;
 
 typedef struct _ExperimentStatus__isset {
   _ExperimentStatus__isset() : timeOfStateChange(false) {}
@@ -467,17 +484,17 @@ typedef struct _DataObjectType__isset {
 class DataObjectType {
  public:
 
-  static const char* ascii_fingerprint; // = "6BA700CA2E5FC52A8DA5ADCF811DC8DA";
-  static const uint8_t binary_fingerprint[16]; // = {0x6B,0xA7,0x00,0xCA,0x2E,0x5F,0xC5,0x2A,0x8D,0xA5,0xAD,0xCF,0x81,0x1D,0xC8,0xDA};
+  static const char* ascii_fingerprint; // = "544FBB8031AE070AEEB7AC0E4A90E43C";
+  static const uint8_t binary_fingerprint[16]; // = {0x54,0x4F,0xBB,0x80,0x31,0xAE,0x07,0x0A,0xEE,0xB7,0xAC,0x0E,0x4A,0x90,0xE4,0x3C};
 
-  DataObjectType() : key(), value(), type(), metaData() {
+  DataObjectType() : key(), value(), type((DataType::type)0), metaData() {
   }
 
   virtual ~DataObjectType() throw() {}
 
   std::string key;
   std::string value;
-  std::string type;
+  DataType::type type;
   std::string metaData;
 
   _DataObjectType__isset __isset;
@@ -491,7 +508,7 @@ class DataObjectType {
     __isset.value = true;
   }
 
-  void __set_type(const std::string& val) {
+  void __set_type(const DataType::type val) {
     type = val;
     __isset.type = true;
   }
@@ -1309,8 +1326,8 @@ typedef struct _TaskDetails__isset {
 class TaskDetails {
  public:
 
-  static const char* ascii_fingerprint; // = "705A0D2F86DF8E37DD3741EEF4EB51A0";
-  static const uint8_t binary_fingerprint[16]; // = {0x70,0x5A,0x0D,0x2F,0x86,0xDF,0x8E,0x37,0xDD,0x37,0x41,0xEE,0xF4,0xEB,0x51,0xA0};
+  static const char* ascii_fingerprint; // = "5C32F41DCA106A1E9170C3F02C8F0431";
+  static const uint8_t binary_fingerprint[16]; // = {0x5C,0x32,0xF4,0x1D,0xCA,0x10,0x6A,0x1E,0x91,0x70,0xC3,0xF0,0x2C,0x8F,0x04,0x31};
 
   TaskDetails() : taskID("DO_NOT_SET_AT_CLIENTS"), creationTime(0), applicationId(), applicationVersion() {
   }
@@ -1477,8 +1494,8 @@ typedef struct _WorkflowNodeDetails__isset {
 class WorkflowNodeDetails {
  public:
 
-  static const char* ascii_fingerprint; // = "D244C94A6A1DF1DFBA2E34E7756C28EF";
-  static const uint8_t binary_fingerprint[16]; // = {0xD2,0x44,0xC9,0x4A,0x6A,0x1D,0xF1,0xDF,0xBA,0x2E,0x34,0xE7,0x75,0x6C,0x28,0xEF};
+  static const char* ascii_fingerprint; // = "5CF3D3D65F04E5D784A8123C81AAD941";
+  static const uint8_t binary_fingerprint[16]; // = {0x5C,0xF3,0xD3,0xD6,0x5F,0x04,0xE5,0xD7,0x84,0xA8,0x12,0x3C,0x81,0xAA,0xD9,0x41};
 
   WorkflowNodeDetails() : nodeInstanceId("DO_NOT_SET_AT_CLIENTS"), creationTime(0), nodeName("SINGLE_APP_NODE") {
   }
@@ -1600,8 +1617,8 @@ typedef struct _Experiment__isset {
 class Experiment {
  public:
 
-  static const char* ascii_fingerprint; // = "AAEAE252F6A2D0BD15514CB57DB7745F";
-  static const uint8_t binary_fingerprint[16]; // = {0xAA,0xEA,0xE2,0x52,0xF6,0xA2,0xD0,0xBD,0x15,0x51,0x4C,0xB5,0x7D,0xB7,0x74,0x5F};
+  static const char* ascii_fingerprint; // = "9991CE776AFA4D20B5AA55C2BB0136D4";
+  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0xCE,0x77,0x6A,0xFA,0x4D,0x20,0xB5,0xAA,0x55,0xC2,0xBB,0x01,0x36,0xD4};
 
   Experiment() : experimentID("DO_NOT_SET_AT_CLIENTS"), projectID("DEFAULT"), creationTime(0), userName(), name(), description(), applicationId(), applicationVersion(), workflowTemplateId(), workflowTemplateVersion(), workflowExecutionInstanceId() {
   }
