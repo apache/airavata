@@ -107,15 +107,16 @@ enum SecurityProtocol {
     OAUTH
 }
 
-struct SSHJobSubmission {
-    1: required SecurityProtocol securityProtocol,
-    2: required ResourceJobManager resourceJobManager,
-    3: optional i32 sshPort = 22
-}
+
 
 struct SCPDataMovement {
     1: required SecurityProtocol securityProtocol,
     2: optional i32 sshPort = 22,
+}
+
+struct SSHJobSubmission {
+    2: required ResourceJobManager resourceJobManager,
+    3: optional i32 sshPort = 22
 }
 
 struct GlobusJobSubmission {
@@ -124,41 +125,16 @@ struct GlobusJobSubmission {
     3: optional string globusGateKeeperEndPoint
 }
 
-struct EC2JobSubmission {
-    1: required SecurityProtocol securityProtocol,
-    2: required ResourceJobManager resourceJobManager,
-    3: optional string imageID,
-    4: optional string instanceID
-}
-
-struct UnicoreJobSubmission {
-    1: required SecurityProtocol securityProtocol,
-    2: required ResourceJobManager resourceJobManager,
-    3: optional string unicoreBESEndPoint
-}
-
 struct GSISSHJobSubmission {
-    1: required SecurityProtocol securityProtocol,
     2: required ResourceJobManager resourceJobManager,
     3: optional i32 sshPort = 22,
-    4: optional list<string> exports,
-    5: optional string preJobCommands,
-    6: optional string postJobCommands,
+    4: optional set<string> exports,
+    5: optional list<string> preJobCommands,
+    6: optional list<string> postJobCommands,
     7: optional string installedPath,
     8: optional string monitorMode
 }
-struct WhirConfiguration {
-	1: optional string configurationFile,
-	2: optional string byonClusterConfigurationFile,
-	3: optional map<string,string> properties,
-}
-struct HadoopJobSubmission {
-	1: required string jobProtocolDataId = DEFAULT_ID,
-    2: required SecurityProtocol securityProtocol,
-    3: required ResourceJobManager resourceJobManager,
-    4: optional string hadoopConfigurationDirectory,
-    5: optional WhirConfiguration whirrConfiguration,
-}
+
 /**
  * Job Submission Protocols
  *
@@ -218,8 +194,8 @@ struct ComputeResourceDescription {
     4: optional set<string> hostAliases,
     4: optional set<string> ipAddresses,
     5: optional string resourceDescription,
-    6: optional string scratchLocation
-    7: optional list<string> jobSubmissionProtocolPreferenceOrder,
+    6: optional string scratchLocation,
+    7: optional string preferredJobSubmissionProtocol,
     8: required map<string, JobSubmissionProtocol> jobSubmissionProtocols,
     9: required map<string, DataMovementProtocol> dataMovementProtocols
 }
