@@ -118,6 +118,47 @@ struct SCPDataMovement {
     2: optional i32 sshPort = 22,
 }
 
+struct GlobusJobSubmission {
+    1: required SecurityProtocol securityProtocol,
+    2: required ResourceJobManager resourceJobManager,
+    3: optional string globusGateKeeperEndPoint
+}
+
+struct EC2JobSubmission {
+    1: required SecurityProtocol securityProtocol,
+    2: required ResourceJobManager resourceJobManager,
+    3: optional string imageID,
+    4: optional string instanceID
+}
+
+struct UnicoreJobSubmission {
+    1: required SecurityProtocol securityProtocol,
+    2: required ResourceJobManager resourceJobManager,
+    3: optional string unicoreBESEndPoint
+}
+
+struct GSISSHJobSubmission {
+    1: required SecurityProtocol securityProtocol,
+    2: required ResourceJobManager resourceJobManager,
+    3: optional i32 sshPort = 22,
+    4: optional list<string> exports,
+    5: optional string preJobCommands,
+    6: optional string postJobCommands,
+    7: optional string installedPath,
+    8: optional string monitorMode
+}
+struct WhirConfiguration {
+	1: optional string configurationFile,
+	2: optional string byonClusterConfigurationFile,
+	3: optional map<string,string> properties,
+}
+struct HadoopJobSubmission {
+	1: required string jobProtocolDataId = DEFAULT_ID,
+    2: required SecurityProtocol securityProtocol,
+    3: required ResourceJobManager resourceJobManager,
+    4: optional string hadoopConfigurationDirectory,
+    5: optional WhirConfiguration whirrConfiguration,
+}
 /**
  * Job Submission Protocols
  *
@@ -170,7 +211,20 @@ struct JobSubmissionProtocols {
  *  Option to specify a prefered data movement mechanism of the available options.
  *
 */
+struct ComputeResourceDescription {
+    1: required bool isEmpty = 0,
+    2: required string resourceId = DEFAULT_ID,
+    3: required string hostName,
+    4: optional set<string> hostAliases,
+    4: optional set<string> ipAddresses,
+    5: optional string resourceDescription,
+    6: optional string scratchLocation
+    7: optional list<string> jobSubmissionProtocolPreferenceOrder,
+    8: required map<string, JobSubmissionProtocol> jobSubmissionProtocols,
+    9: required map<string, DataMovementProtocol> dataMovementProtocols
+}
 
+/*
 struct ComputeResourceDescription {
     1: required bool isEmpty = 0,
     2: required string resourceId = DEFAULT_ID,
@@ -180,4 +234,42 @@ struct ComputeResourceDescription {
     5: optional string resourceDescription,
     6: required map<JobSubmissionProtocol, JobSubmissionProtocols> jobSubmissionProtocols,
     7: required map<DataMovementProtocol, DataMovementProtocol> dataMovementProtocols
+}*/
+
+enum ParameterType {
+	STRING,
+	INT,
+	URL,
+	
+}
+
+struct Validation{
+}
+
+struct InputParameter {
+	1:required string name,
+	2:required ParameterType type,
+	3:required bool optional=0,
+	4:optional string defaultValue,
+	5:optional list<Validation> validations,
+}
+
+struct OutputParameter {
+	1:required string name,
+	2:required ParameterType type,
+}
+
+struct ApplicationDeployment {
+    1: required string deploymentId = DEFAULT_ID,
+	2: required string hostId,
+	3: required string executablePath,
+	4: optional map<string,string> environment,
+}
+
+struct Application {
+    1: required bool isEmpty = 0,
+    2: required string applicationId = DEFAULT_ID,
+    4: optional list<InputParameter> input,
+    5: optional list<OutputParameter> input,
+	6: required list<ApplicationDeployment> deployment 
 }
