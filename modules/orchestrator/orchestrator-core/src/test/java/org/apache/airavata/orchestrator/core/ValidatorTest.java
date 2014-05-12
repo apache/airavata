@@ -20,12 +20,7 @@
 */
 package org.apache.airavata.orchestrator.core;
 
-import org.apache.airavata.client.AiravataAPIFactory;
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.orchestrator.cpi.Orchestrator;
@@ -52,6 +47,8 @@ public class ValidatorTest extends BaseOrchestratorTest {
     public void setUp() throws Exception {
         AiravataUtils.setExecutionAsServer();
         super.setUp();
+        System.setProperty("job.validator","org.apache.airavata.orchestrator.core.util.TestValidator,org.apache.airavata.orchestrator.core.util.SecondValidator");
+        System.setProperty("enable.validation", "true");
         orchestrator = new SimpleOrchestratorImpl();
     }
 
