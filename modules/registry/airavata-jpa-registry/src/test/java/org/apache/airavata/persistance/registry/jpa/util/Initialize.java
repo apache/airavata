@@ -22,7 +22,6 @@
 package org.apache.airavata.persistance.registry.jpa.util;
 
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
-import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
@@ -41,7 +40,6 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.sql.*;
 import java.util.StringTokenizer;
-import java.util.UUID;
 
 public class Initialize {
     private static final Logger logger = LoggerFactory.getLogger(Initialize.class);
