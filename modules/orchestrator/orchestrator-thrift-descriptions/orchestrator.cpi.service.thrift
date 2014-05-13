@@ -43,7 +43,23 @@ service OrchestratorService {
     **/
   bool launchExperiment (1: required string experimentId),
 
-  bool terminateExperiment (1: required string experimentId),
-
+    /**
+     *
+     * Validate funcations which can verify if the experiment is ready to be launced.
+     *
+     * @param experimentID
+     * @return sucess/failure
+     *
+    **/
   bool validateExperiment(1: required string experimentId)
+
+    /**
+     *
+     * Terminate the running experiment.
+     *
+     * @param experimentID
+     * @return sucess/failure
+     *
+    **/
+  bool terminateExperiment (1: required string experimentId)
 }
