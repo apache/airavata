@@ -203,6 +203,7 @@ const std::map<int, const char*> _CorrectiveAction_VALUES_TO_NAMES(::apache::thr
 int _kDataTypeValues[] = {
   DataType::STRING,
   DataType::INTEGER,
+  DataType::FLOAT,
   DataType::URI,
   DataType::STDOUT,
   DataType::STDERR
@@ -210,11 +211,12 @@ int _kDataTypeValues[] = {
 const char* _kDataTypeNames[] = {
   "STRING",
   "INTEGER",
+  "FLOAT",
   "URI",
   "STDOUT",
   "STDERR"
 };
-const std::map<int, const char*> _DataType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(5, _kDataTypeValues, _kDataTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _DataType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(6, _kDataTypeValues, _kDataTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 const char* ExperimentStatus::ascii_fingerprint = "1662AAADFABAB647546029B578B3B69B";
 const uint8_t ExperimentStatus::binary_fingerprint[16] = {0x16,0x62,0xAA,0xAD,0xFA,0xBA,0xB6,0x47,0x54,0x60,0x29,0xB5,0x78,0xB3,0xB6,0x9B};

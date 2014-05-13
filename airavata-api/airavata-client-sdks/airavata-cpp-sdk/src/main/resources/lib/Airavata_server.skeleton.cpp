@@ -82,6 +82,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("updateResourceScheduleing\n");
   }
 
+  bool validateExperiment(const std::string& airavataExperimentId) {
+    // Your implementation goes here
+    printf("validateExperiment\n");
+  }
+
   void launchExperiment(const std::string& airavataExperimentId, const std::string& airavataCredStoreToken) {
     // Your implementation goes here
     printf("launchExperiment\n");

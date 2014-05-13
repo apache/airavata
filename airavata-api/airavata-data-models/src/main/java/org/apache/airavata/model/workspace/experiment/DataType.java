@@ -30,9 +30,10 @@ import org.apache.thrift.TEnum;
 @SuppressWarnings("all") public enum DataType implements org.apache.thrift.TEnum {
   STRING(0),
   INTEGER(1),
-  URI(2),
-  STDOUT(3),
-  STDERR(4);
+  FLOAT(2),
+  URI(3),
+  STDOUT(4),
+  STDERR(5);
 
   private final int value;
 
@@ -58,10 +59,12 @@ import org.apache.thrift.TEnum;
       case 1:
         return INTEGER;
       case 2:
-        return URI;
+        return FLOAT;
       case 3:
-        return STDOUT;
+        return URI;
       case 4:
+        return STDOUT;
+      case 5:
         return STDERR;
       default:
         return null;

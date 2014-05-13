@@ -2614,6 +2614,251 @@ uint32_t Airavata_updateResourceScheduleing_presult::read(::apache::thrift::prot
   return xfer;
 }
 
+uint32_t Airavata_validateExperiment_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_airavataExperimentId = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->airavataExperimentId);
+          isset_airavataExperimentId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_airavataExperimentId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t Airavata_validateExperiment_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_validateExperiment_args");
+
+  xfer += oprot->writeFieldBegin("airavataExperimentId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->airavataExperimentId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_validateExperiment_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_validateExperiment_pargs");
+
+  xfer += oprot->writeFieldBegin("airavataExperimentId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->airavataExperimentId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_validateExperiment_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->enf.read(iprot);
+          this->__isset.enf = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_validateExperiment_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("Airavata_validateExperiment_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_BOOL, 0);
+    xfer += oprot->writeBool(this->success);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
+    xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->ire.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.enf) {
+    xfer += oprot->writeFieldBegin("enf", ::apache::thrift::protocol::T_STRUCT, 2);
+    xfer += this->enf.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ace) {
+    xfer += oprot->writeFieldBegin("ace", ::apache::thrift::protocol::T_STRUCT, 3);
+    xfer += this->ace.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ase) {
+    xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 4);
+    xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_validateExperiment_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->enf.read(iprot);
+          this->__isset.enf = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
 uint32_t Airavata_launchExperiment_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
@@ -4750,6 +4995,76 @@ void AiravataClient::recv_updateResourceScheduleing()
   return;
 }
 
+bool AiravataClient::validateExperiment(const std::string& airavataExperimentId)
+{
+  send_validateExperiment(airavataExperimentId);
+  return recv_validateExperiment();
+}
+
+void AiravataClient::send_validateExperiment(const std::string& airavataExperimentId)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("validateExperiment", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  Airavata_validateExperiment_pargs args;
+  args.airavataExperimentId = &airavataExperimentId;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+bool AiravataClient::recv_validateExperiment()
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("validateExperiment") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  bool _return;
+  Airavata_validateExperiment_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    return _return;
+  }
+  if (result.__isset.ire) {
+    throw result.ire;
+  }
+  if (result.__isset.enf) {
+    throw result.enf;
+  }
+  if (result.__isset.ace) {
+    throw result.ace;
+  }
+  if (result.__isset.ase) {
+    throw result.ase;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "validateExperiment failed: unknown result");
+}
+
 void AiravataClient::launchExperiment(const std::string& airavataExperimentId, const std::string& airavataCredStoreToken)
 {
   send_launchExperiment(airavataExperimentId, airavataCredStoreToken);
@@ -5885,6 +6200,72 @@ void AiravataProcessor::process_updateResourceScheduleing(int32_t seqid, ::apach
 
   if (this->eventHandler_.get() != NULL) {
     this->eventHandler_->postWrite(ctx, "Airavata.updateResourceScheduleing", bytes);
+  }
+}
+
+void AiravataProcessor::process_validateExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("Airavata.validateExperiment", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.validateExperiment");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "Airavata.validateExperiment");
+  }
+
+  Airavata_validateExperiment_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "Airavata.validateExperiment", bytes);
+  }
+
+  Airavata_validateExperiment_result result;
+  try {
+    result.success = iface_->validateExperiment(args.airavataExperimentId);
+    result.__isset.success = true;
+  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+    result.ire = ire;
+    result.__isset.ire = true;
+  } catch ( ::airavata::api::error::ExperimentNotFoundException &enf) {
+    result.enf = enf;
+    result.__isset.enf = true;
+  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+    result.ace = ace;
+    result.__isset.ace = true;
+  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+    result.ase = ase;
+    result.__isset.ase = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "Airavata.validateExperiment");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("validateExperiment", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "Airavata.validateExperiment");
+  }
+
+  oprot->writeMessageBegin("validateExperiment", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "Airavata.validateExperiment", bytes);
   }
 }
 
