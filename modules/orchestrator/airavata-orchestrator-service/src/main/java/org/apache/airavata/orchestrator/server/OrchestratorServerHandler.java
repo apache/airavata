@@ -82,10 +82,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     public boolean launchExperiment(String experimentId) throws TException {
         //TODO: Write the Orchestrator implementaion
         try {
-            List<TaskDetails> tasks = orchestrator.createTasks(experimentId);
-            if (tasks.size() > 1) {
-                log.info("There are multiple tasks for this experiment, So Orchestrator will launch multiple Jobs");
-            }
             List<String> ids = registry.getIds(RegistryModelType.WORKFLOW_NODE_DETAIL,WorkflowNodeConstants.EXPERIMENT_ID,experimentId);
             for (String workflowNodeId : ids) {
                 WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails)registry.get(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeId);
