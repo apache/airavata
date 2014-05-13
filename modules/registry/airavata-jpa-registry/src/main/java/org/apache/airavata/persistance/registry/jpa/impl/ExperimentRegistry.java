@@ -90,17 +90,20 @@ public class ExperimentRegistry {
 
             List<DataObjectType> experimentOutputs = experiment.getExperimentOutputs();
             if (experimentOutputs != null && !experimentOutputs.isEmpty()){
+                for (DataObjectType output : experimentOutputs){
+                    output.setValue("");
+                }
                 addExpOutputs(experimentOutputs, experimentID);
             }
 
-            ExperimentStatus experimentStatus = experiment.getExperimentStatus();
-            if (experimentStatus != null){
-                updateExperimentStatus(experimentStatus, experimentID);
-            }else {
-                experimentStatus = new ExperimentStatus();
-                experimentStatus.setExperimentState(ExperimentState.CREATED);
-                updateExperimentStatus(experimentStatus, experimentID);
-            }
+//            ExperimentStatus experimentStatus = experiment.getExperimentStatus();
+//            if (experimentStatus != null){
+//                updateExperimentStatus(experimentStatus, experimentID);
+//            }else {
+            ExperimentStatus experimentStatus = new ExperimentStatus();
+            experimentStatus.setExperimentState(ExperimentState.CREATED);
+            updateExperimentStatus(experimentStatus, experimentID);
+//            }
 
             List<WorkflowNodeDetails> workflowNodeDetailsList = experiment.getWorkflowNodeDetailsList();
             if (workflowNodeDetailsList != null && !workflowNodeDetailsList.isEmpty()){
@@ -444,6 +447,9 @@ public class ExperimentRegistry {
             ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode(nodeId);
             StatusResource statusResource = workflowNode.getWorkflowNodeStatus();
+            if (statusResource == null){
+                statusResource = (StatusResource)workflowNode.create(ResourceType.STATUS);
+            }
             statusResource.setExperimentResource(workflowNode.getExperimentResource());
             statusResource.setWorkflowNodeDetail(workflowNode);
             statusResource.setStatusType(StatusType.WORKFLOW_NODE.toString());
@@ -686,23 +692,22 @@ public class ExperimentRegistry {
             }
             WorkflowNodeStatus workflowNodeStatus = nodeDetails.getWorkflowNodeStatus();
             CompositeIdentifier ids = new CompositeIdentifier(expId, nodeId);
-            if (workflowNodeStatus != null ){
-                if (workflowNodeStatus.getWorkflowNodeState() != null){
-                    WorkflowNodeStatus status = getWorkflowNodeStatus(nodeId);
-                    if (status != null){
-                        updateWorkflowNodeStatus(workflowNodeStatus, nodeId);
-                    }else {
-                        addWorkflowNodeStatus(workflowNodeStatus,ids);
-                    }
-                }else {
-                    workflowNodeStatus.setWorkflowNodeState(WorkflowNodeState.UNKNOWN);
-                    addWorkflowNodeStatus(workflowNodeStatus, ids);
-                }
-            }else {
-                WorkflowNodeStatus status = new WorkflowNodeStatus();
-                status.setWorkflowNodeState(WorkflowNodeState.UNKNOWN);
-                addWorkflowNodeStatus(status, ids);
+            if (workflowNodeStatus == null ){
+                workflowNodeStatus = new WorkflowNodeStatus();
             }
+//                if (workflowNodeStatus.getWorkflowNodeState() != null){
+//                    WorkflowNodeStatus status = getWorkflowNodeStatus(nodeId);
+//                    if (status != null){
+//                        updateWorkflowNodeStatus(workflowNodeStatus, nodeId);
+//                    }else {
+//                        addWorkflowNodeStatus(workflowNodeStatus,ids);
+//                    }
+//                }else {
+//                    workflowNodeStatus.setWorkflowNodeState(WorkflowNodeState.UNKNOWN);
+//                    addWorkflowNodeStatus(workflowNodeStatus, ids);
+//                }
+            workflowNodeStatus.setWorkflowNodeState(WorkflowNodeState.UNKNOWN);
+            addWorkflowNodeStatus(workflowNodeStatus, ids);
             List<TaskDetails> taskDetails = nodeDetails.getTaskDetailsList();
             if (taskDetails != null && !taskDetails.isEmpty()){
                 for (TaskDetails task : taskDetails){
