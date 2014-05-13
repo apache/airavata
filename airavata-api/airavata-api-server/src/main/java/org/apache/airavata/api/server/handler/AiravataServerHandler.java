@@ -304,6 +304,27 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     /**
+     * *
+     * * Validate experiment configuration. A true in general indicates, the experiment is ready to be launched.
+     * *
+     * * @param experimentID
+     * * @return sucess/failure
+     * *
+     * *
+     *
+     * @param airavataExperimentId
+     */
+    @Override
+    public boolean validateExperiment(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+
+        if (getOrchestratorClient().validateExperiment(airavataExperimentId)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Fetch the previously configured experiment configuration information.
      *
      * @param airavataExperimentId The identifier for the requested experiment. This is returned during the create experiment step.
@@ -417,7 +438,11 @@ public class AiravataServerHandler implements Airavata.Iface {
         (new Thread(){
             public void run(){
                 try {
-                    orchestratorClient.launchExperiment(expID);
+                    if (orchestratorClient.validateExperiment(expID)) {
+                        orchestratorClient.launchExperiment(expID);
+                    } else {
+                        throw new InvalidRequestException("Experiment Validation Failed, please check the configuration");
+                    }
                 } catch (TException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }

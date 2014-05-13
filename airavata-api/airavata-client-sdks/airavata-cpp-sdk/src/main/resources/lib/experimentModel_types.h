@@ -148,9 +148,10 @@ struct DataType {
   enum type {
     STRING = 0,
     INTEGER = 1,
-    URI = 2,
-    STDOUT = 3,
-    STDERR = 4
+    FLOAT = 2,
+    URI = 3,
+    STDOUT = 4,
+    STDERR = 5
   };
 };
 

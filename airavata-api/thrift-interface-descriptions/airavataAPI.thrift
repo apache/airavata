@@ -247,6 +247,20 @@ service Airavata {
   void updateResourceScheduleing(1: required string airavataExperimentId,
                                  2: required experimentModel.ComputationalResourceScheduling resourceScheduling)
 
+    /**
+     *
+     * Validate experiment configuration. A true in general indicates, the experiment is ready to be launched.
+     *
+     * @param experimentID
+     * @return sucess/failure
+     *
+    **/
+  bool validateExperiment(1: required string airavataExperimentId)
+      throws (1: airavataErrors.InvalidRequestException ire,
+              2: airavataErrors.ExperimentNotFoundException enf,
+              3: airavataErrors.AiravataClientException ace,
+              4: airavataErrors.AiravataSystemException ase)
+
   /**
    * Launch a previously created and configured experiment. Airavata Server will then start processing the request and appropriate
    *   notifications and intermediate and output data will be subsequently available for this experiment.
