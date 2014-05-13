@@ -61,7 +61,7 @@ public class CreateLaunchExperiment {
             AiravataUtils.setExecutionAsClient();
             final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavata.GetAPIVersion());
-//            addDescriptors();
+            addDescriptors();
 
 //            final String expId = createExperimentForSSHHost(airavata);
 //            final String expId = createExperimentForSSHHost(airavata);
@@ -69,8 +69,7 @@ public class CreateLaunchExperiment {
 //            final String expId = createExperimentForStampede(airavata);
             final String expId = createExperimentForLocalHost(airavata);
             System.out.println("Experiment ID : " + expId);
-            String clonedExpId = cloneExperiment(airavata, expId);
-            System.out.println("Cloned Experiment ID : " + clonedExpId);
+
             launchExperiment(airavata, expId);
             System.out.println("Launched successfully");
             List<Experiment> experiments = getExperimentsForUser(airavata, "admin");
@@ -110,6 +109,7 @@ public class CreateLaunchExperiment {
                              e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                          }
                      }
+
                  }
             });
             monitor.start();
@@ -132,6 +132,8 @@ public class CreateLaunchExperiment {
                 
 				
 			}
+            String clonedExpId = cloneExperiment(airavata, expId);
+            System.out.println("Cloned Experiment ID : " + clonedExpId);
 //            System.out.println("retrieved exp id : " + experiment.getExperimentID());
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
@@ -250,7 +252,7 @@ public class CreateLaunchExperiment {
                     ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho0", "SimpleEcho0", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("localhost", 1, 1, 1, "normal", 0, 0, 1, "sds128");
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("localhost", 1, 1, 1, "normal", 0, 0, 1, "");
             scheduling.setResourceHostId("localhost");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);
