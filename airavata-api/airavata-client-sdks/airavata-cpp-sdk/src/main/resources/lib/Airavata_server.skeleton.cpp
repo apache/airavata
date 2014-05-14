@@ -27,7 +27,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("GetAPIVersion\n");
   }
 
-  void createProject(std::string& _return, const  ::Project& project, const std::string& userName) {
+  void createProject(std::string& _return, const  ::Project& project) {
     // Your implementation goes here
     printf("createProject\n");
   }

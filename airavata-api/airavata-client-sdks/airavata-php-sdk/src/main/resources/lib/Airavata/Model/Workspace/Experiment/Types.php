@@ -202,17 +202,15 @@ final class CorrectiveAction {
 final class DataType {
   const STRING = 0;
   const INTEGER = 1;
-  const FLOAT = 2;
-  const URI = 3;
-  const STDOUT = 4;
-  const STDERR = 5;
+  const URI = 2;
+  const STDOUT = 3;
+  const STDERR = 4;
   static public $__names = array(
     0 => 'STRING',
     1 => 'INTEGER',
-    2 => 'FLOAT',
-    3 => 'URI',
-    4 => 'STDOUT',
-    5 => 'STDERR',
+    2 => 'URI',
+    3 => 'STDOUT',
+    4 => 'STDERR',
   );
 }
 

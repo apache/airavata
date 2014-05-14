@@ -18,7 +18,7 @@ use Thrift\Exception\TApplicationException;
 
 interface AiravataIf {
   public function GetAPIVersion();
-  public function createProject(\Airavata\Model\Workspace\Project $project, $userName);
+  public function createProject(\Airavata\Model\Workspace\Project $project);
   public function updateProject(\Airavata\Model\Workspace\Project $project);
   public function getProject($projectId);
   public function getAllUserProjects($userName);
@@ -99,17 +99,16 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("GetAPIVersion failed: unknown result");
   }
 
-  public function createProject(\Airavata\Model\Workspace\Project $project, $userName)
+  public function createProject(\Airavata\Model\Workspace\Project $project)
   {
-    $this->send_createProject($project, $userName);
+    $this->send_createProject($project);
     return $this->recv_createProject();
   }
 
-  public function send_createProject(\Airavata\Model\Workspace\Project $project, $userName)
+  public function send_createProject(\Airavata\Model\Workspace\Project $project)
   {
     $args = new \Airavata\API\Airavata_createProject_args();
     $args->project = $project;
-    $args->userName = $userName;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -1282,7 +1281,6 @@ class Airavata_createProject_args {
   static $_TSPEC;
 
   public $project = null;
-  public $userName = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -1292,18 +1290,11 @@ class Airavata_createProject_args {
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\Workspace\Project',
           ),
-        2 => array(
-          'var' => 'userName',
-          'type' => TType::STRING,
-          ),
         );
     }
     if (is_array($vals)) {
       if (isset($vals['project'])) {
         $this->project = $vals['project'];
-      }
-      if (isset($vals['userName'])) {
-        $this->userName = $vals['userName'];
       }
     }
   }
@@ -1335,13 +1326,6 @@ class Airavata_createProject_args {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 2:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->userName);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -1361,11 +1345,6 @@ class Airavata_createProject_args {
       }
       $xfer += $output->writeFieldBegin('project', TType::STRUCT, 1);
       $xfer += $this->project->write($output);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->userName !== null) {
-      $xfer += $output->writeFieldBegin('userName', TType::STRING, 2);
-      $xfer += $output->writeString($this->userName);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
