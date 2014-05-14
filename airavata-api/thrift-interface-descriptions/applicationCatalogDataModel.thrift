@@ -192,12 +192,12 @@ struct ComputeResourceDescription {
     2: required string resourceId = DEFAULT_ID,
     3: required string hostName,
     4: optional set<string> hostAliases,
-    4: optional set<string> ipAddresses,
-    5: optional string resourceDescription,
-    6: optional string scratchLocation,
-    7: optional string preferredJobSubmissionProtocol,
-    8: required map<string, JobSubmissionProtocol> jobSubmissionProtocols,
-    9: required map<string, DataMovementProtocol> dataMovementProtocols
+    5: optional set<string> ipAddresses,
+    6: optional string resourceDescription,
+    7: optional string scratchLocation,
+    8: optional string preferredJobSubmissionProtocol,
+    9: required map<string, JobSubmissionProtocol> jobSubmissionProtocols,
+    10: required map<string, DataMovementProtocol> dataMovementProtocols
 }
 
 /**

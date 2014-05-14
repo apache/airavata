@@ -472,34 +472,56 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     /**
      * Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.
-     * The client has to subsequently update this configuration if needed and launch the cloned experiment.
+     *   The client has to subsequently update this configuration if needed and launch the cloned experiment.
      *
-     * @param airavataExperimentIdToBeCloned This is the experiment identifier that is to be cloned.
+     * @param existingExperimentID
+     *    This is the experiment identifier that already exists in the system. Will use this experimentID to retrieve
+     *    user configuration which is used with the clone experiment.
+     *
      * @param updatedExperiment
-     * @return The server-side generated airavata experiment globally unique identifier for the newly cloned experiment.
-     * @throws org.apache.airavata.api.error.InvalidRequestException     For any incorrect forming of the request itself.
-     * @throws org.apache.airavata.api.error.ExperimentNotFoundException If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
-     * @throws org.apache.airavata.api.error.AiravataClientException     The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-     *                                                                   <p/>
-     *                                                                   UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
-     *                                                                   step, then Airavata Registry will not have a provenance area setup. The client has to follow
-     *                                                                   gateway registration steps and retry this request.
-     *                                                                   <p/>
-     *                                                                   AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
-     *                                                                   For now this is a place holder.
-     *                                                                   <p/>
-     *                                                                   INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
-     *                                                                   is implemented, the authorization will be more substantial.
-     * @throws org.apache.airavata.api.error.AiravataSystemException     This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
-     *                                                                   rather an Airavata Administrator will be notified to take corrective action.
+     *    Once an experiment is cloned, to disambiguate, the users are suggested to provide new metadata. This will again require
+     *      the basic experiment metadata like the name and description, intended user, the gateway identifier and if the experiment
+     *      should be shared public by default.
+     *
+     * @return
+     *   The server-side generated airavata experiment globally unique identifier for the newly cloned experiment.
+     *
+     * @throws org.apache.airavata.api.error.InvalidRequestException
+     *    For any incorrect forming of the request itself.
+     *
+     * @throws org.apache.airavata.api.error.ExperimentNotFoundException
+     *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+     *
+     * @throws org.apache.airavata.api.error.AiravataClientException
+     *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+     *
+     *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+     *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
+     *         gateway registration steps and retry this request.
+     *
+     *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+     *         For now this is a place holder.
+     *
+     *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+     *         is implemented, the authorization will be more substantial.
+     *
+     * @throws org.apache.airavata.api.error.AiravataSystemException
+     *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+     *       rather an Airavata Administrator will be notified to take corrective action.
+     *
+     *
+     * @param existingExperimentID
+     * @param updatedExperiment
      */
     @Override
-    public String cloneExperiment(String airavataExperimentIdToBeCloned, Experiment updatedExperiment) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+    public String cloneExperiment(String existingExperimentID, Experiment updatedExperiment) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
-            UserConfigurationData previousConfiguration = (UserConfigurationData)registry.get(RegistryModelType.EXPERIMENT_CONFIGURATION_DATA, updatedExperiment.getExperimentID());
+            if (!registry.isExist(RegistryModelType.EXPERIMENT, existingExperimentID)){
+                throw new ExperimentNotFoundException("Requested experiment id " + existingExperimentID + " does not exist in the system..");
+            }
+            UserConfigurationData previousConfiguration = (UserConfigurationData)registry.get(RegistryModelType.EXPERIMENT_CONFIGURATION_DATA, existingExperimentID);
             updatedExperiment.setUserConfigurationData(previousConfiguration);
-            updatedExperiment.setName(airavataExperimentIdToBeCloned);
             return (String)registry.add(ParentDataType.EXPERIMENT, updatedExperiment);
         } catch (Exception e) {
             logger.error("Error while cloning the experiment with existing configuration...", e);

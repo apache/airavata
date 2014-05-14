@@ -34,7 +34,7 @@ interface AiravataIf {
   public function getExperimentStatus($airavataExperimentId);
   public function getExperimentOutputs($airavataExperimentId);
   public function getJobStatuses($airavataExperimentId);
-  public function cloneExperiment($airavataExperimentIdToBeCloned, \Airavata\Model\Workspace\Experiment\Experiment $updatedExperiment);
+  public function cloneExperiment($existingExperimentID, \Airavata\Model\Workspace\Experiment\Experiment $updatedExperiment);
   public function terminateExperiment($airavataExperimentId);
 }
 
@@ -1027,16 +1027,16 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("getJobStatuses failed: unknown result");
   }
 
-  public function cloneExperiment($airavataExperimentIdToBeCloned, \Airavata\Model\Workspace\Experiment\Experiment $updatedExperiment)
+  public function cloneExperiment($existingExperimentID, \Airavata\Model\Workspace\Experiment\Experiment $updatedExperiment)
   {
-    $this->send_cloneExperiment($airavataExperimentIdToBeCloned, $updatedExperiment);
+    $this->send_cloneExperiment($existingExperimentID, $updatedExperiment);
     return $this->recv_cloneExperiment();
   }
 
-  public function send_cloneExperiment($airavataExperimentIdToBeCloned, \Airavata\Model\Workspace\Experiment\Experiment $updatedExperiment)
+  public function send_cloneExperiment($existingExperimentID, \Airavata\Model\Workspace\Experiment\Experiment $updatedExperiment)
   {
     $args = new \Airavata\API\Airavata_cloneExperiment_args();
-    $args->airavataExperimentIdToBeCloned = $airavataExperimentIdToBeCloned;
+    $args->existingExperimentID = $existingExperimentID;
     $args->updatedExperiment = $updatedExperiment;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
@@ -4655,14 +4655,14 @@ class Airavata_getJobStatuses_result {
 class Airavata_cloneExperiment_args {
   static $_TSPEC;
 
-  public $airavataExperimentIdToBeCloned = null;
+  public $existingExperimentID = null;
   public $updatedExperiment = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
-          'var' => 'airavataExperimentIdToBeCloned',
+          'var' => 'existingExperimentID',
           'type' => TType::STRING,
           ),
         2 => array(
@@ -4673,8 +4673,8 @@ class Airavata_cloneExperiment_args {
         );
     }
     if (is_array($vals)) {
-      if (isset($vals['airavataExperimentIdToBeCloned'])) {
-        $this->airavataExperimentIdToBeCloned = $vals['airavataExperimentIdToBeCloned'];
+      if (isset($vals['existingExperimentID'])) {
+        $this->existingExperimentID = $vals['existingExperimentID'];
       }
       if (isset($vals['updatedExperiment'])) {
         $this->updatedExperiment = $vals['updatedExperiment'];
@@ -4703,7 +4703,7 @@ class Airavata_cloneExperiment_args {
       {
         case 1:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->airavataExperimentIdToBeCloned);
+            $xfer += $input->readString($this->existingExperimentID);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -4729,9 +4729,9 @@ class Airavata_cloneExperiment_args {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_cloneExperiment_args');
-    if ($this->airavataExperimentIdToBeCloned !== null) {
-      $xfer += $output->writeFieldBegin('airavataExperimentIdToBeCloned', TType::STRING, 1);
-      $xfer += $output->writeString($this->airavataExperimentIdToBeCloned);
+    if ($this->existingExperimentID !== null) {
+      $xfer += $output->writeFieldBegin('existingExperimentID', TType::STRING, 1);
+      $xfer += $output->writeString($this->existingExperimentID);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->updatedExperiment !== null) {

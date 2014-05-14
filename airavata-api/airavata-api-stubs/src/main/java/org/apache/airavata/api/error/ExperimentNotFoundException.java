@@ -58,8 +58,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("all") public class ExperimentNotFoundException extends TException implements org.apache.thrift.TBase<ExperimentNotFoundException, ExperimentNotFoundException._Fields>, java.io.Serializable, Cloneable, Comparable<ExperimentNotFoundException> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ExperimentNotFoundException");
 
-  private static final org.apache.thrift.protocol.TField IDENTIFIER_FIELD_DESC = new org.apache.thrift.protocol.TField("identifier", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("key", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField MESSAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("message", org.apache.thrift.protocol.TType.STRING, (short)1);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -67,13 +66,11 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new ExperimentNotFoundExceptionTupleSchemeFactory());
   }
 
-  public String identifier; // optional
-  public String key; // optional
+  public String message; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    IDENTIFIER((short)1, "identifier"),
-    KEY((short)2, "key");
+    MESSAGE((short)1, "message");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -88,10 +85,8 @@ import org.slf4j.LoggerFactory;
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // IDENTIFIER
-          return IDENTIFIER;
-        case 2: // KEY
-          return KEY;
+        case 1: // MESSAGE
+          return MESSAGE;
         default:
           return null;
       }
@@ -132,13 +127,10 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
-  private _Fields optionals[] = {_Fields.IDENTIFIER,_Fields.KEY};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.IDENTIFIER, new org.apache.thrift.meta_data.FieldMetaData("identifier", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.KEY, new org.apache.thrift.meta_data.FieldMetaData("key", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.MESSAGE, new org.apache.thrift.meta_data.FieldMetaData("message", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ExperimentNotFoundException.class, metaDataMap);
@@ -147,15 +139,19 @@ import org.slf4j.LoggerFactory;
   public ExperimentNotFoundException() {
   }
 
+  public ExperimentNotFoundException(
+    String message)
+  {
+    this();
+    this.message = message;
+  }
+
   /**
    * Performs a deep copy on <i>other</i>.
    */
   public ExperimentNotFoundException(ExperimentNotFoundException other) {
-    if (other.isSetIdentifier()) {
-      this.identifier = other.identifier;
-    }
-    if (other.isSetKey()) {
-      this.key = other.key;
+    if (other.isSetMessage()) {
+      this.message = other.message;
     }
   }
 
@@ -165,73 +161,40 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public void clear() {
-    this.identifier = null;
-    this.key = null;
+    this.message = null;
   }
 
-  public String getIdentifier() {
-    return this.identifier;
+  public String getMessage() {
+    return this.message;
   }
 
-  public ExperimentNotFoundException setIdentifier(String identifier) {
-    this.identifier = identifier;
+  public ExperimentNotFoundException setMessage(String message) {
+    this.message = message;
     return this;
   }
 
-  public void unsetIdentifier() {
-    this.identifier = null;
+  public void unsetMessage() {
+    this.message = null;
   }
 
-  /** Returns true if field identifier is set (has been assigned a value) and false otherwise */
-  public boolean isSetIdentifier() {
-    return this.identifier != null;
+  /** Returns true if field message is set (has been assigned a value) and false otherwise */
+  public boolean isSetMessage() {
+    return this.message != null;
   }
 
-  public void setIdentifierIsSet(boolean value) {
+  public void setMessageIsSet(boolean value) {
     if (!value) {
-      this.identifier = null;
-    }
-  }
-
-  public String getKey() {
-    return this.key;
-  }
-
-  public ExperimentNotFoundException setKey(String key) {
-    this.key = key;
-    return this;
-  }
-
-  public void unsetKey() {
-    this.key = null;
-  }
-
-  /** Returns true if field key is set (has been assigned a value) and false otherwise */
-  public boolean isSetKey() {
-    return this.key != null;
-  }
-
-  public void setKeyIsSet(boolean value) {
-    if (!value) {
-      this.key = null;
+      this.message = null;
     }
   }
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case IDENTIFIER:
+    case MESSAGE:
       if (value == null) {
-        unsetIdentifier();
+        unsetMessage();
       } else {
-        setIdentifier((String)value);
-      }
-      break;
-
-    case KEY:
-      if (value == null) {
-        unsetKey();
-      } else {
-        setKey((String)value);
+        setMessage((String)value);
       }
       break;
 
@@ -240,11 +203,8 @@ import org.slf4j.LoggerFactory;
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case IDENTIFIER:
-      return getIdentifier();
-
-    case KEY:
-      return getKey();
+    case MESSAGE:
+      return getMessage();
 
     }
     throw new IllegalStateException();
@@ -257,10 +217,8 @@ import org.slf4j.LoggerFactory;
     }
 
     switch (field) {
-    case IDENTIFIER:
-      return isSetIdentifier();
-    case KEY:
-      return isSetKey();
+    case MESSAGE:
+      return isSetMessage();
     }
     throw new IllegalStateException();
   }
@@ -278,21 +236,12 @@ import org.slf4j.LoggerFactory;
     if (that == null)
       return false;
 
-    boolean this_present_identifier = true && this.isSetIdentifier();
-    boolean that_present_identifier = true && that.isSetIdentifier();
-    if (this_present_identifier || that_present_identifier) {
-      if (!(this_present_identifier && that_present_identifier))
+    boolean this_present_message = true && this.isSetMessage();
+    boolean that_present_message = true && that.isSetMessage();
+    if (this_present_message || that_present_message) {
+      if (!(this_present_message && that_present_message))
         return false;
-      if (!this.identifier.equals(that.identifier))
-        return false;
-    }
-
-    boolean this_present_key = true && this.isSetKey();
-    boolean that_present_key = true && that.isSetKey();
-    if (this_present_key || that_present_key) {
-      if (!(this_present_key && that_present_key))
-        return false;
-      if (!this.key.equals(that.key))
+      if (!this.message.equals(that.message))
         return false;
     }
 
@@ -312,22 +261,12 @@ import org.slf4j.LoggerFactory;
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetIdentifier()).compareTo(other.isSetIdentifier());
+    lastComparison = Boolean.valueOf(isSetMessage()).compareTo(other.isSetMessage());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetIdentifier()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.identifier, other.identifier);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetKey()).compareTo(other.isSetKey());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetKey()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.key, other.key);
+    if (isSetMessage()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.message, other.message);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -352,31 +291,22 @@ import org.slf4j.LoggerFactory;
     StringBuilder sb = new StringBuilder("ExperimentNotFoundException(");
     boolean first = true;
 
-    if (isSetIdentifier()) {
-      sb.append("identifier:");
-      if (this.identifier == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.identifier);
-      }
-      first = false;
+    sb.append("message:");
+    if (this.message == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.message);
     }
-    if (isSetKey()) {
-      if (!first) sb.append(", ");
-      sb.append("key:");
-      if (this.key == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.key);
-      }
-      first = false;
-    }
+    first = false;
     sb.append(")");
     return sb.toString();
   }
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
+    if (message == null) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'message' was not present! Struct: " + toString());
+    }
     // check for sub-struct validity
   }
 
@@ -414,18 +344,10 @@ import org.slf4j.LoggerFactory;
           break;
         }
         switch (schemeField.id) {
-          case 1: // IDENTIFIER
+          case 1: // MESSAGE
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.identifier = iprot.readString();
-              struct.setIdentifierIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 2: // KEY
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.key = iprot.readString();
-              struct.setKeyIsSet(true);
+              struct.message = iprot.readString();
+              struct.setMessageIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -445,19 +367,10 @@ import org.slf4j.LoggerFactory;
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.identifier != null) {
-        if (struct.isSetIdentifier()) {
-          oprot.writeFieldBegin(IDENTIFIER_FIELD_DESC);
-          oprot.writeString(struct.identifier);
-          oprot.writeFieldEnd();
-        }
-      }
-      if (struct.key != null) {
-        if (struct.isSetKey()) {
-          oprot.writeFieldBegin(KEY_FIELD_DESC);
-          oprot.writeString(struct.key);
-          oprot.writeFieldEnd();
-        }
+      if (struct.message != null) {
+        oprot.writeFieldBegin(MESSAGE_FIELD_DESC);
+        oprot.writeString(struct.message);
+        oprot.writeFieldEnd();
       }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
@@ -476,34 +389,14 @@ import org.slf4j.LoggerFactory;
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, ExperimentNotFoundException struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      BitSet optionals = new BitSet();
-      if (struct.isSetIdentifier()) {
-        optionals.set(0);
-      }
-      if (struct.isSetKey()) {
-        optionals.set(1);
-      }
-      oprot.writeBitSet(optionals, 2);
-      if (struct.isSetIdentifier()) {
-        oprot.writeString(struct.identifier);
-      }
-      if (struct.isSetKey()) {
-        oprot.writeString(struct.key);
-      }
+      oprot.writeString(struct.message);
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ExperimentNotFoundException struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(2);
-      if (incoming.get(0)) {
-        struct.identifier = iprot.readString();
-        struct.setIdentifierIsSet(true);
-      }
-      if (incoming.get(1)) {
-        struct.key = iprot.readString();
-        struct.setKeyIsSet(true);
-      }
+      struct.message = iprot.readString();
+      struct.setMessageIsSet(true);
     }
   }
 
