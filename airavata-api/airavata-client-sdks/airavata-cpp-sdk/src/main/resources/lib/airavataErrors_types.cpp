@@ -32,8 +32,8 @@ const char* _kAiravataErrorTypeNames[] = {
 };
 const std::map<int, const char*> _AiravataErrorType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(8, _kAiravataErrorTypeValues, _kAiravataErrorTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
-const char* ExperimentNotFoundException::ascii_fingerprint = "D0297FC5011701BD87898CC36146A565";
-const uint8_t ExperimentNotFoundException::binary_fingerprint[16] = {0xD0,0x29,0x7F,0xC5,0x01,0x17,0x01,0xBD,0x87,0x89,0x8C,0xC3,0x61,0x46,0xA5,0x65};
+const char* ExperimentNotFoundException::ascii_fingerprint = "EFB929595D312AC8F305D5A794CFEDA1";
+const uint8_t ExperimentNotFoundException::binary_fingerprint[16] = {0xEF,0xB9,0x29,0x59,0x5D,0x31,0x2A,0xC8,0xF3,0x05,0xD5,0xA7,0x94,0xCF,0xED,0xA1};
 
 uint32_t ExperimentNotFoundException::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -46,6 +46,7 @@ uint32_t ExperimentNotFoundException::read(::apache::thrift::protocol::TProtocol
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_message = false;
 
   while (true)
   {
@@ -57,16 +58,8 @@ uint32_t ExperimentNotFoundException::read(::apache::thrift::protocol::TProtocol
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->identifier);
-          this->__isset.identifier = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 2:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->key);
-          this->__isset.key = true;
+          xfer += iprot->readString(this->message);
+          isset_message = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -80,6 +73,8 @@ uint32_t ExperimentNotFoundException::read(::apache::thrift::protocol::TProtocol
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_message)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
 
@@ -87,16 +82,10 @@ uint32_t ExperimentNotFoundException::write(::apache::thrift::protocol::TProtoco
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("ExperimentNotFoundException");
 
-  if (this->__isset.identifier) {
-    xfer += oprot->writeFieldBegin("identifier", ::apache::thrift::protocol::T_STRING, 1);
-    xfer += oprot->writeString(this->identifier);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.key) {
-    xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_STRING, 2);
-    xfer += oprot->writeString(this->key);
-    xfer += oprot->writeFieldEnd();
-  }
+  xfer += oprot->writeFieldBegin("message", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->message);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -104,9 +93,7 @@ uint32_t ExperimentNotFoundException::write(::apache::thrift::protocol::TProtoco
 
 void swap(ExperimentNotFoundException &a, ExperimentNotFoundException &b) {
   using ::std::swap;
-  swap(a.identifier, b.identifier);
-  swap(a.key, b.key);
-  swap(a.__isset, b.__isset);
+  swap(a.message, b.message);
 }
 
 const char* InvalidRequestException::ascii_fingerprint = "EFB929595D312AC8F305D5A794CFEDA1";

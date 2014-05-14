@@ -192,12 +192,12 @@ struct ComputeResourceDescription {
     2: required string resourceId = DEFAULT_ID,
     3: required string hostName,
     4: optional set<string> hostAliases,
-    4: optional set<string> ipAddresses,
-    5: optional string resourceDescription,
-    6: optional string scratchLocation,
-    7: optional string preferredJobSubmissionProtocol,
-    8: required map<string, JobSubmissionProtocol> jobSubmissionProtocols,
-    9: required map<string, DataMovementProtocol> dataMovementProtocols
+    5: optional set<string> ipAddresses,
+    6: optional string resourceDescription,
+    7: optional string scratchLocation,
+    8: optional string preferredJobSubmissionProtocol,
+    9: required map<string, JobSubmissionProtocol> jobSubmissionProtocols,
+    10: required map<string, DataMovementProtocol> dataMovementProtocols
 }
 
 /*
@@ -225,9 +225,9 @@ struct Validation{
 struct InputParameter {
 	1:required string name,
 	2:required ParameterType type,
-	3:required bool optional=0,
+	3:required bool isOptional=0,
 	4:optional string defaultValue,
-	5:optional list<Validation> validations,
+	5:optional list<Validation> validations
 }
 
 struct OutputParameter {
@@ -246,6 +246,6 @@ struct Application {
     1: required bool isEmpty = 0,
     2: required string applicationId = DEFAULT_ID,
     4: optional list<InputParameter> input,
-    5: optional list<OutputParameter> input,
+    5: optional list<OutputParameter> output,
 	6: required list<ApplicationDeployment> deployment 
 }

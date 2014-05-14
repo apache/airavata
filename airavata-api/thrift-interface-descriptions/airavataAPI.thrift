@@ -378,10 +378,11 @@ service Airavata {
    * Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.
    *   The client has to subsequently update this configuration if needed and launch the cloned experiment. 
    *
-   * @param airavataExperimentIdToBeCloned
-   *    This is the experiment identifier that is to be cloned.
+   * @param existingExperimentID
+   *    This is the experiment identifier that already exists in the system. Will use this experimentID to retrieve
+   *    user configuration which is used with the clone experiment.
    *
-   * @param basicExperimentMetadata
+   * @param updatedExperiment
    *    Once an experiment is cloned, to disambiguate, the users are suggested to provide new metadata. This will again require
    *      the basic experiment metadata like the name and description, intended user, the gateway identifier and if the experiment
    *      should be shared public by default.
@@ -413,8 +414,8 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  string cloneExperiment(1: string airavataExperimentIdToBeCloned,
-                                      2: experimentModel.Experiment updatedExperiment)
+  string cloneExperiment(1: string existingExperimentID,
+                         2: experimentModel.Experiment updatedExperiment)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.ExperimentNotFoundException enf,
             3: airavataErrors.AiravataClientException ace,

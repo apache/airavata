@@ -32,47 +32,27 @@ struct AiravataErrorType {
 
 extern const std::map<int, const char*> _AiravataErrorType_VALUES_TO_NAMES;
 
-typedef struct _ExperimentNotFoundException__isset {
-  _ExperimentNotFoundException__isset() : identifier(false), key(false) {}
-  bool identifier;
-  bool key;
-} _ExperimentNotFoundException__isset;
 
 class ExperimentNotFoundException : public ::apache::thrift::TException {
  public:
 
-  static const char* ascii_fingerprint; // = "D0297FC5011701BD87898CC36146A565";
-  static const uint8_t binary_fingerprint[16]; // = {0xD0,0x29,0x7F,0xC5,0x01,0x17,0x01,0xBD,0x87,0x89,0x8C,0xC3,0x61,0x46,0xA5,0x65};
+  static const char* ascii_fingerprint; // = "EFB929595D312AC8F305D5A794CFEDA1";
+  static const uint8_t binary_fingerprint[16]; // = {0xEF,0xB9,0x29,0x59,0x5D,0x31,0x2A,0xC8,0xF3,0x05,0xD5,0xA7,0x94,0xCF,0xED,0xA1};
 
-  ExperimentNotFoundException() : identifier(), key() {
+  ExperimentNotFoundException() : message() {
   }
 
   virtual ~ExperimentNotFoundException() throw() {}
 
-  std::string identifier;
-  std::string key;
+  std::string message;
 
-  _ExperimentNotFoundException__isset __isset;
-
-  void __set_identifier(const std::string& val) {
-    identifier = val;
-    __isset.identifier = true;
-  }
-
-  void __set_key(const std::string& val) {
-    key = val;
-    __isset.key = true;
+  void __set_message(const std::string& val) {
+    message = val;
   }
 
   bool operator == (const ExperimentNotFoundException & rhs) const
   {
-    if (__isset.identifier != rhs.__isset.identifier)
-      return false;
-    else if (__isset.identifier && !(identifier == rhs.identifier))
-      return false;
-    if (__isset.key != rhs.__isset.key)
-      return false;
-    else if (__isset.key && !(key == rhs.key))
+    if (!(message == rhs.message))
       return false;
     return true;
   }

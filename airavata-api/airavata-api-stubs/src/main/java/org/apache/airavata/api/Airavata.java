@@ -300,10 +300,11 @@ import org.slf4j.LoggerFactory;
      * Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.
      *   The client has to subsequently update this configuration if needed and launch the cloned experiment.
      * 
-     * @param airavataExperimentIdToBeCloned
-     *    This is the experiment identifier that is to be cloned.
+     * @param existingExperimentID
+     *    This is the experiment identifier that already exists in the system. Will use this experimentID to retrieve
+     *    user configuration which is used with the clone experiment.
      * 
-     * @param basicExperimentMetadata
+     * @param updatedExperiment
      *    Once an experiment is cloned, to disambiguate, the users are suggested to provide new metadata. This will again require
      *      the basic experiment metadata like the name and description, intended user, the gateway identifier and if the experiment
      *      should be shared public by default.
@@ -335,10 +336,10 @@ import org.slf4j.LoggerFactory;
      *       rather an Airavata Administrator will be notified to take corrective action.
      * 
      * 
-     * @param airavataExperimentIdToBeCloned
+     * @param existingExperimentID
      * @param updatedExperiment
      */
-    public String cloneExperiment(String airavataExperimentIdToBeCloned, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
+    public String cloneExperiment(String existingExperimentID, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Terminate a running experiment.
@@ -415,7 +416,7 @@ import org.slf4j.LoggerFactory;
 
     public void getJobStatuses(String airavataExperimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void cloneExperiment(String airavataExperimentIdToBeCloned, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void cloneExperiment(String existingExperimentID, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void terminateExperiment(String airavataExperimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -943,16 +944,16 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getJobStatuses failed: unknown result");
     }
 
-    public String cloneExperiment(String airavataExperimentIdToBeCloned, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public String cloneExperiment(String existingExperimentID, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
     {
-      send_cloneExperiment(airavataExperimentIdToBeCloned, updatedExperiment);
+      send_cloneExperiment(existingExperimentID, updatedExperiment);
       return recv_cloneExperiment();
     }
 
-    public void send_cloneExperiment(String airavataExperimentIdToBeCloned, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment) throws org.apache.thrift.TException
+    public void send_cloneExperiment(String existingExperimentID, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment) throws org.apache.thrift.TException
     {
       cloneExperiment_args args = new cloneExperiment_args();
-      args.setAiravataExperimentIdToBeCloned(airavataExperimentIdToBeCloned);
+      args.setExistingExperimentID(existingExperimentID);
       args.setUpdatedExperiment(updatedExperiment);
       sendBase("cloneExperiment", args);
     }
@@ -1582,26 +1583,26 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public void cloneExperiment(String airavataExperimentIdToBeCloned, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void cloneExperiment(String existingExperimentID, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      cloneExperiment_call method_call = new cloneExperiment_call(airavataExperimentIdToBeCloned, updatedExperiment, resultHandler, this, ___protocolFactory, ___transport);
+      cloneExperiment_call method_call = new cloneExperiment_call(existingExperimentID, updatedExperiment, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class cloneExperiment_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private String airavataExperimentIdToBeCloned;
+      private String existingExperimentID;
       private org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment;
-      public cloneExperiment_call(String airavataExperimentIdToBeCloned, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public cloneExperiment_call(String existingExperimentID, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
-        this.airavataExperimentIdToBeCloned = airavataExperimentIdToBeCloned;
+        this.existingExperimentID = existingExperimentID;
         this.updatedExperiment = updatedExperiment;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("cloneExperiment", org.apache.thrift.protocol.TMessageType.CALL, 0));
         cloneExperiment_args args = new cloneExperiment_args();
-        args.setAiravataExperimentIdToBeCloned(airavataExperimentIdToBeCloned);
+        args.setExistingExperimentID(existingExperimentID);
         args.setUpdatedExperiment(updatedExperiment);
         args.write(prot);
         prot.writeMessageEnd();
@@ -2147,7 +2148,7 @@ import org.slf4j.LoggerFactory;
       public cloneExperiment_result getResult(I iface, cloneExperiment_args args) throws org.apache.thrift.TException {
         cloneExperiment_result result = new cloneExperiment_result();
         try {
-          result.success = iface.cloneExperiment(args.airavataExperimentIdToBeCloned, args.updatedExperiment);
+          result.success = iface.cloneExperiment(args.existingExperimentID, args.updatedExperiment);
         } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.api.error.ExperimentNotFoundException enf) {
@@ -3374,7 +3375,7 @@ import org.slf4j.LoggerFactory;
       }
 
       public void start(I iface, cloneExperiment_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
-        iface.cloneExperiment(args.airavataExperimentIdToBeCloned, args.updatedExperiment,resultHandler);
+        iface.cloneExperiment(args.existingExperimentID, args.updatedExperiment,resultHandler);
       }
     }
 
@@ -19646,7 +19647,7 @@ import org.slf4j.LoggerFactory;
   public static class cloneExperiment_args implements org.apache.thrift.TBase<cloneExperiment_args, cloneExperiment_args._Fields>, java.io.Serializable, Cloneable, Comparable<cloneExperiment_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("cloneExperiment_args");
 
-    private static final org.apache.thrift.protocol.TField AIRAVATA_EXPERIMENT_ID_TO_BE_CLONED_FIELD_DESC = new org.apache.thrift.protocol.TField("airavataExperimentIdToBeCloned", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField EXISTING_EXPERIMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("existingExperimentID", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField UPDATED_EXPERIMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("updatedExperiment", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -19655,12 +19656,12 @@ import org.slf4j.LoggerFactory;
       schemes.put(TupleScheme.class, new cloneExperiment_argsTupleSchemeFactory());
     }
 
-    public String airavataExperimentIdToBeCloned; // required
+    public String existingExperimentID; // required
     public org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      AIRAVATA_EXPERIMENT_ID_TO_BE_CLONED((short)1, "airavataExperimentIdToBeCloned"),
+      EXISTING_EXPERIMENT_ID((short)1, "existingExperimentID"),
       UPDATED_EXPERIMENT((short)2, "updatedExperiment");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
@@ -19676,8 +19677,8 @@ import org.slf4j.LoggerFactory;
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // AIRAVATA_EXPERIMENT_ID_TO_BE_CLONED
-            return AIRAVATA_EXPERIMENT_ID_TO_BE_CLONED;
+          case 1: // EXISTING_EXPERIMENT_ID
+            return EXISTING_EXPERIMENT_ID;
           case 2: // UPDATED_EXPERIMENT
             return UPDATED_EXPERIMENT;
           default:
@@ -19723,7 +19724,7 @@ import org.slf4j.LoggerFactory;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.AIRAVATA_EXPERIMENT_ID_TO_BE_CLONED, new org.apache.thrift.meta_data.FieldMetaData("airavataExperimentIdToBeCloned", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+      tmpMap.put(_Fields.EXISTING_EXPERIMENT_ID, new org.apache.thrift.meta_data.FieldMetaData("existingExperimentID", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.UPDATED_EXPERIMENT, new org.apache.thrift.meta_data.FieldMetaData("updatedExperiment", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.workspace.experiment.Experiment.class)));
@@ -19735,11 +19736,11 @@ import org.slf4j.LoggerFactory;
     }
 
     public cloneExperiment_args(
-      String airavataExperimentIdToBeCloned,
+      String existingExperimentID,
       org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment)
     {
       this();
-      this.airavataExperimentIdToBeCloned = airavataExperimentIdToBeCloned;
+      this.existingExperimentID = existingExperimentID;
       this.updatedExperiment = updatedExperiment;
     }
 
@@ -19747,8 +19748,8 @@ import org.slf4j.LoggerFactory;
      * Performs a deep copy on <i>other</i>.
      */
     public cloneExperiment_args(cloneExperiment_args other) {
-      if (other.isSetAiravataExperimentIdToBeCloned()) {
-        this.airavataExperimentIdToBeCloned = other.airavataExperimentIdToBeCloned;
+      if (other.isSetExistingExperimentID()) {
+        this.existingExperimentID = other.existingExperimentID;
       }
       if (other.isSetUpdatedExperiment()) {
         this.updatedExperiment = new org.apache.airavata.model.workspace.experiment.Experiment(other.updatedExperiment);
@@ -19761,31 +19762,31 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public void clear() {
-      this.airavataExperimentIdToBeCloned = null;
+      this.existingExperimentID = null;
       this.updatedExperiment = null;
     }
 
-    public String getAiravataExperimentIdToBeCloned() {
-      return this.airavataExperimentIdToBeCloned;
+    public String getExistingExperimentID() {
+      return this.existingExperimentID;
     }
 
-    public cloneExperiment_args setAiravataExperimentIdToBeCloned(String airavataExperimentIdToBeCloned) {
-      this.airavataExperimentIdToBeCloned = airavataExperimentIdToBeCloned;
+    public cloneExperiment_args setExistingExperimentID(String existingExperimentID) {
+      this.existingExperimentID = existingExperimentID;
       return this;
     }
 
-    public void unsetAiravataExperimentIdToBeCloned() {
-      this.airavataExperimentIdToBeCloned = null;
+    public void unsetExistingExperimentID() {
+      this.existingExperimentID = null;
     }
 
-    /** Returns true if field airavataExperimentIdToBeCloned is set (has been assigned a value) and false otherwise */
-    public boolean isSetAiravataExperimentIdToBeCloned() {
-      return this.airavataExperimentIdToBeCloned != null;
+    /** Returns true if field existingExperimentID is set (has been assigned a value) and false otherwise */
+    public boolean isSetExistingExperimentID() {
+      return this.existingExperimentID != null;
     }
 
-    public void setAiravataExperimentIdToBeClonedIsSet(boolean value) {
+    public void setExistingExperimentIDIsSet(boolean value) {
       if (!value) {
-        this.airavataExperimentIdToBeCloned = null;
+        this.existingExperimentID = null;
       }
     }
 
@@ -19815,11 +19816,11 @@ import org.slf4j.LoggerFactory;
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
-      case AIRAVATA_EXPERIMENT_ID_TO_BE_CLONED:
+      case EXISTING_EXPERIMENT_ID:
         if (value == null) {
-          unsetAiravataExperimentIdToBeCloned();
+          unsetExistingExperimentID();
         } else {
-          setAiravataExperimentIdToBeCloned((String)value);
+          setExistingExperimentID((String)value);
         }
         break;
 
@@ -19836,8 +19837,8 @@ import org.slf4j.LoggerFactory;
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
-      case AIRAVATA_EXPERIMENT_ID_TO_BE_CLONED:
-        return getAiravataExperimentIdToBeCloned();
+      case EXISTING_EXPERIMENT_ID:
+        return getExistingExperimentID();
 
       case UPDATED_EXPERIMENT:
         return getUpdatedExperiment();
@@ -19853,8 +19854,8 @@ import org.slf4j.LoggerFactory;
       }
 
       switch (field) {
-      case AIRAVATA_EXPERIMENT_ID_TO_BE_CLONED:
-        return isSetAiravataExperimentIdToBeCloned();
+      case EXISTING_EXPERIMENT_ID:
+        return isSetExistingExperimentID();
       case UPDATED_EXPERIMENT:
         return isSetUpdatedExperiment();
       }
@@ -19874,12 +19875,12 @@ import org.slf4j.LoggerFactory;
       if (that == null)
         return false;
 
-      boolean this_present_airavataExperimentIdToBeCloned = true && this.isSetAiravataExperimentIdToBeCloned();
-      boolean that_present_airavataExperimentIdToBeCloned = true && that.isSetAiravataExperimentIdToBeCloned();
-      if (this_present_airavataExperimentIdToBeCloned || that_present_airavataExperimentIdToBeCloned) {
-        if (!(this_present_airavataExperimentIdToBeCloned && that_present_airavataExperimentIdToBeCloned))
+      boolean this_present_existingExperimentID = true && this.isSetExistingExperimentID();
+      boolean that_present_existingExperimentID = true && that.isSetExistingExperimentID();
+      if (this_present_existingExperimentID || that_present_existingExperimentID) {
+        if (!(this_present_existingExperimentID && that_present_existingExperimentID))
           return false;
-        if (!this.airavataExperimentIdToBeCloned.equals(that.airavataExperimentIdToBeCloned))
+        if (!this.existingExperimentID.equals(that.existingExperimentID))
           return false;
       }
 
@@ -19908,12 +19909,12 @@ import org.slf4j.LoggerFactory;
 
       int lastComparison = 0;
 
-      lastComparison = Boolean.valueOf(isSetAiravataExperimentIdToBeCloned()).compareTo(other.isSetAiravataExperimentIdToBeCloned());
+      lastComparison = Boolean.valueOf(isSetExistingExperimentID()).compareTo(other.isSetExistingExperimentID());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetAiravataExperimentIdToBeCloned()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.airavataExperimentIdToBeCloned, other.airavataExperimentIdToBeCloned);
+      if (isSetExistingExperimentID()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.existingExperimentID, other.existingExperimentID);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -19948,11 +19949,11 @@ import org.slf4j.LoggerFactory;
       StringBuilder sb = new StringBuilder("cloneExperiment_args(");
       boolean first = true;
 
-      sb.append("airavataExperimentIdToBeCloned:");
-      if (this.airavataExperimentIdToBeCloned == null) {
+      sb.append("existingExperimentID:");
+      if (this.existingExperimentID == null) {
         sb.append("null");
       } else {
-        sb.append(this.airavataExperimentIdToBeCloned);
+        sb.append(this.existingExperimentID);
       }
       first = false;
       if (!first) sb.append(", ");
@@ -20009,10 +20010,10 @@ import org.slf4j.LoggerFactory;
             break;
           }
           switch (schemeField.id) {
-            case 1: // AIRAVATA_EXPERIMENT_ID_TO_BE_CLONED
+            case 1: // EXISTING_EXPERIMENT_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.airavataExperimentIdToBeCloned = iprot.readString();
-                struct.setAiravataExperimentIdToBeClonedIsSet(true);
+                struct.existingExperimentID = iprot.readString();
+                struct.setExistingExperimentIDIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -20041,9 +20042,9 @@ import org.slf4j.LoggerFactory;
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
-        if (struct.airavataExperimentIdToBeCloned != null) {
-          oprot.writeFieldBegin(AIRAVATA_EXPERIMENT_ID_TO_BE_CLONED_FIELD_DESC);
-          oprot.writeString(struct.airavataExperimentIdToBeCloned);
+        if (struct.existingExperimentID != null) {
+          oprot.writeFieldBegin(EXISTING_EXPERIMENT_ID_FIELD_DESC);
+          oprot.writeString(struct.existingExperimentID);
           oprot.writeFieldEnd();
         }
         if (struct.updatedExperiment != null) {
@@ -20069,15 +20070,15 @@ import org.slf4j.LoggerFactory;
       public void write(org.apache.thrift.protocol.TProtocol prot, cloneExperiment_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetAiravataExperimentIdToBeCloned()) {
+        if (struct.isSetExistingExperimentID()) {
           optionals.set(0);
         }
         if (struct.isSetUpdatedExperiment()) {
           optionals.set(1);
         }
         oprot.writeBitSet(optionals, 2);
-        if (struct.isSetAiravataExperimentIdToBeCloned()) {
-          oprot.writeString(struct.airavataExperimentIdToBeCloned);
+        if (struct.isSetExistingExperimentID()) {
+          oprot.writeString(struct.existingExperimentID);
         }
         if (struct.isSetUpdatedExperiment()) {
           struct.updatedExperiment.write(oprot);
@@ -20089,8 +20090,8 @@ import org.slf4j.LoggerFactory;
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
-          struct.airavataExperimentIdToBeCloned = iprot.readString();
-          struct.setAiravataExperimentIdToBeClonedIsSet(true);
+          struct.existingExperimentID = iprot.readString();
+          struct.setExistingExperimentIDIsSet(true);
         }
         if (incoming.get(1)) {
           struct.updatedExperiment = new org.apache.airavata.model.workspace.experiment.Experiment();

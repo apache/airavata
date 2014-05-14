@@ -3752,8 +3752,8 @@ uint32_t Airavata_cloneExperiment_args::read(::apache::thrift::protocol::TProtoc
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->airavataExperimentIdToBeCloned);
-          this->__isset.airavataExperimentIdToBeCloned = true;
+          xfer += iprot->readString(this->existingExperimentID);
+          this->__isset.existingExperimentID = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -3782,8 +3782,8 @@ uint32_t Airavata_cloneExperiment_args::write(::apache::thrift::protocol::TProto
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_cloneExperiment_args");
 
-  xfer += oprot->writeFieldBegin("airavataExperimentIdToBeCloned", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString(this->airavataExperimentIdToBeCloned);
+  xfer += oprot->writeFieldBegin("existingExperimentID", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->existingExperimentID);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("updatedExperiment", ::apache::thrift::protocol::T_STRUCT, 2);
@@ -3799,8 +3799,8 @@ uint32_t Airavata_cloneExperiment_pargs::write(::apache::thrift::protocol::TProt
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_cloneExperiment_pargs");
 
-  xfer += oprot->writeFieldBegin("airavataExperimentIdToBeCloned", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString((*(this->airavataExperimentIdToBeCloned)));
+  xfer += oprot->writeFieldBegin("existingExperimentID", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->existingExperimentID)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("updatedExperiment", ::apache::thrift::protocol::T_STRUCT, 2);
@@ -5297,19 +5297,19 @@ void AiravataClient::recv_getJobStatuses(std::map<std::string,  ::JobStatus> & _
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getJobStatuses failed: unknown result");
 }
 
-void AiravataClient::cloneExperiment(std::string& _return, const std::string& airavataExperimentIdToBeCloned, const  ::Experiment& updatedExperiment)
+void AiravataClient::cloneExperiment(std::string& _return, const std::string& existingExperimentID, const  ::Experiment& updatedExperiment)
 {
-  send_cloneExperiment(airavataExperimentIdToBeCloned, updatedExperiment);
+  send_cloneExperiment(existingExperimentID, updatedExperiment);
   recv_cloneExperiment(_return);
 }
 
-void AiravataClient::send_cloneExperiment(const std::string& airavataExperimentIdToBeCloned, const  ::Experiment& updatedExperiment)
+void AiravataClient::send_cloneExperiment(const std::string& existingExperimentID, const  ::Experiment& updatedExperiment)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("cloneExperiment", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_cloneExperiment_pargs args;
-  args.airavataExperimentIdToBeCloned = &airavataExperimentIdToBeCloned;
+  args.existingExperimentID = &existingExperimentID;
   args.updatedExperiment = &updatedExperiment;
   args.write(oprot_);
 
@@ -6511,7 +6511,7 @@ void AiravataProcessor::process_cloneExperiment(int32_t seqid, ::apache::thrift:
 
   Airavata_cloneExperiment_result result;
   try {
-    iface_->cloneExperiment(result.success, args.airavataExperimentIdToBeCloned, args.updatedExperiment);
+    iface_->cloneExperiment(result.success, args.existingExperimentID, args.updatedExperiment);
     result.__isset.success = true;
   } catch ( ::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;

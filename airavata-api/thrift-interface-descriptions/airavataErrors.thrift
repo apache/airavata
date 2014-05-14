@@ -70,8 +70,11 @@ enum AiravataErrorType {
  * key:  The value passed from the client in the identifier, which was not found.
  */
 exception ExperimentNotFoundException {
-  1:  optional  string identifier,
-  2:  optional  string key
+  1: required string message
+  /**
+  * 1:  optional  string identifier,
+  * 2:  optional  string key
+  **/
 }
 
 /** 
