@@ -85,7 +85,7 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
     private void addProjects() throws TException {
         for (int i = 0; i < projects.length; i++){
             Project project = ProjectModelUtil.createProject(projects[i], "admin", "test project");
-            String projectId = getClient().createProject(project, "admin");
+            String projectId = getClient().createProject(project);
             projectIds.add(projectId);
         }
     }

@@ -16,7 +16,7 @@ class AiravataIf {
  public:
   virtual ~AiravataIf() {}
   virtual void GetAPIVersion(std::string& _return) = 0;
-  virtual void createProject(std::string& _return, const  ::Project& project, const std::string& userName) = 0;
+  virtual void createProject(std::string& _return, const  ::Project& project) = 0;
   virtual void updateProject(const  ::Project& project) = 0;
   virtual void getProject( ::Project& _return, const std::string& projectId) = 0;
   virtual void getAllUserProjects(std::vector< ::Project> & _return, const std::string& userName) = 0;
@@ -66,7 +66,7 @@ class AiravataNull : virtual public AiravataIf {
   void GetAPIVersion(std::string& /* _return */) {
     return;
   }
-  void createProject(std::string& /* _return */, const  ::Project& /* project */, const std::string& /* userName */) {
+  void createProject(std::string& /* _return */, const  ::Project& /* project */) {
     return;
   }
   void updateProject(const  ::Project& /* project */) {
@@ -221,27 +221,20 @@ class Airavata_GetAPIVersion_presult {
 class Airavata_createProject_args {
  public:
 
-  Airavata_createProject_args() : userName() {
+  Airavata_createProject_args() {
   }
 
   virtual ~Airavata_createProject_args() throw() {}
 
    ::Project project;
-  std::string userName;
 
   void __set_project(const  ::Project& val) {
     project = val;
   }
 
-  void __set_userName(const std::string& val) {
-    userName = val;
-  }
-
   bool operator == (const Airavata_createProject_args & rhs) const
   {
     if (!(project == rhs.project))
-      return false;
-    if (!(userName == rhs.userName))
       return false;
     return true;
   }
@@ -264,7 +257,6 @@ class Airavata_createProject_pargs {
   virtual ~Airavata_createProject_pargs() throw() {}
 
   const  ::Project* project;
-  const std::string* userName;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -2547,8 +2539,8 @@ class AiravataClient : virtual public AiravataIf {
   void GetAPIVersion(std::string& _return);
   void send_GetAPIVersion();
   void recv_GetAPIVersion(std::string& _return);
-  void createProject(std::string& _return, const  ::Project& project, const std::string& userName);
-  void send_createProject(const  ::Project& project, const std::string& userName);
+  void createProject(std::string& _return, const  ::Project& project);
+  void send_createProject(const  ::Project& project);
   void recv_createProject(std::string& _return);
   void updateProject(const  ::Project& project);
   void send_updateProject(const  ::Project& project);
@@ -2695,13 +2687,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void createProject(std::string& _return, const  ::Project& project, const std::string& userName) {
+  void createProject(std::string& _return, const  ::Project& project) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->createProject(_return, project, userName);
+      ifaces_[i]->createProject(_return, project);
     }
-    ifaces_[i]->createProject(_return, project, userName);
+    ifaces_[i]->createProject(_return, project);
     return;
   }
 

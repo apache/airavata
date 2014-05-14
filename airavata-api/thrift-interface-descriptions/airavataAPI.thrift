@@ -64,8 +64,7 @@ service Airavata {
    * Create a Project
    *
   */
-  string createProject (1: required workspaceModel.Project project,
-                        2: required string userName)
+  string createProject (1: required workspaceModel.Project project)
       throws (1: airavataErrors.InvalidRequestException ire,
               2: airavataErrors.AiravataClientException ace,
               3: airavataErrors.AiravataSystemException ase)

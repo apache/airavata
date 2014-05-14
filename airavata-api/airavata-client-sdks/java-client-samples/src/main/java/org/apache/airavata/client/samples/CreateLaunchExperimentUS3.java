@@ -142,7 +142,7 @@ public class CreateLaunchExperimentUS3 {
             exOut.add(output);
 
             Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
-            String projectId = client.createProject(project, "admin");
+            String projectId = client.createProject(project);
 
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "US3EchoExperimentTrestles", "US3EchoTrestles", "US3EchoTrestles", exInputs);
@@ -198,7 +198,7 @@ public class CreateLaunchExperimentUS3 {
             exOut.add(output2);
 
             Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
-            String projectId = client.createProject(project, "admin");
+            String projectId = client.createProject(project);
 
             Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "US3ExperimentTrestles", "US3AppTrestles", "US3AppTrestles", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
@@ -258,7 +258,7 @@ public class CreateLaunchExperimentUS3 {
             exOut.add(output2);
 
             Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
-            String projectId = client.createProject(project, "admin");
+            String projectId = client.createProject(project);
 
             Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "US3ExperimentStampede", "US3AppStampede", "US3AppStampede", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
@@ -309,7 +309,7 @@ public class CreateLaunchExperimentUS3 {
             exOut.add(output);
 
             Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
-            String projectId = client.createProject(project, "admin");
+            String projectId = client.createProject(project);
 
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "US3EchoExperimentStatus", "US3EchoStampede", "US3EchoStampede", exInputs);
