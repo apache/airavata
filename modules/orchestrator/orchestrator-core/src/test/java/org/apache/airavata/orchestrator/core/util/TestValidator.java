@@ -25,20 +25,21 @@ import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
+import org.apache.airavata.orchestrator.core.validator.ValidatorResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TestValidator implements JobMetadataValidator {
     private final static Logger logger = LoggerFactory.getLogger(TestValidator.class);
 
-    public boolean validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) throws OrchestratorException {
+    public ValidatorResult validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) throws OrchestratorException {
         if (experiment.getProjectID() == null) {
             logger.error("Project ID is not set");
-            return false;
+            return new ValidatorResult(false,"Project ID is not set");
         } else if (experiment.getExperimentID() == null) {
             logger.error("This experiment is wrong, no experimentID set");
-            return false;
+            return new ValidatorResult(false,"This experiment is wrong, no experimentID set");
         }
-        return true;
+        return new ValidatorResult(true);
     }
 }

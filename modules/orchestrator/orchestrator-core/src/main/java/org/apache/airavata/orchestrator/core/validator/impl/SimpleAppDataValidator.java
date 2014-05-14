@@ -25,6 +25,7 @@ import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
+import org.apache.airavata.orchestrator.core.validator.ValidatorResult;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
 import org.slf4j.Logger;
@@ -39,11 +40,11 @@ public class SimpleAppDataValidator implements JobMetadataValidator {
         this.registry = RegistryFactory.getDefaultRegistry();
     }
 
-    public boolean validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) throws OrchestratorException {
+    public ValidatorResult validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) throws OrchestratorException {
         boolean result = false;
         if (experiment.getUserConfigurationData().isAiravataAutoSchedule()) {
             logger.error("We dont' support auto scheduling at this point, We will simply use user data as it is");
         }
-        return true;
+        return new ValidatorResult(true);
     }
 }

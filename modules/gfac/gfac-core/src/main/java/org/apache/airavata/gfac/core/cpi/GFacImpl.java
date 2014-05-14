@@ -115,7 +115,8 @@ public class GFacImpl implements GFac {
                 Class<? extends AbstractActivityListener> aClass = Class.forName(listenerClass).asSubclass(AbstractActivityListener.class);
                 AbstractActivityListener abstractActivityListener = aClass.newInstance();
                 activityListeners.add(abstractActivityListener);
-                abstractActivityListener.setup(getMonitorPublisher(),registry);
+                abstractActivityListener.setup(getMonitorPublisher(), registry);
+                log.info("Registering listener: " + listenerClass);
                 getMonitorPublisher().registerListener(abstractActivityListener);
             }
         }catch (ClassNotFoundException e) {

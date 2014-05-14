@@ -25,12 +25,13 @@ import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
+import org.apache.airavata.orchestrator.core.validator.ValidatorResult;
 
 public class SecondValidator implements JobMetadataValidator {
-    public boolean validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) throws OrchestratorException {
+    public ValidatorResult validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) throws OrchestratorException {
         if(taskID.getTaskID() == null){
-            return false;
+            return new ValidatorResult(false,"No taskID is set, so Validation failed");
         }
-        return true;
+        return new ValidatorResult(true);
     }
 }
