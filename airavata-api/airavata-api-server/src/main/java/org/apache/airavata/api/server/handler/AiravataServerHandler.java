@@ -62,18 +62,31 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Create a Project
      *
      * @param project
-     * @param userName
      */
     @Override
-    public String createProject(Project project, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public String createProject(Project project) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
-            project.setOwner(userName);
+            if (!validateProject(project)){
+                logger.error("Project name and owner cannot be empty...");
+                throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            }
             return (String)registry.add(ParentDataType.PROJECT, project);
         } catch (RegistryException e) {
             logger.error("Error while creating the project", e);
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
+    }
+
+    private boolean validateProject(Project project){
+        boolean valid = true;
+        if (project.getName() == null || project.getName().equals("")){
+            valid = false;
+        }
+        if (project.getOwner() == null || project.getOwner().equals("")){
+            valid = false;
+        }
+        return valid;
     }
 
     /**

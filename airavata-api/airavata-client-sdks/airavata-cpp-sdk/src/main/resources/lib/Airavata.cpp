@@ -161,7 +161,6 @@ uint32_t Airavata_createProject_args::read(::apache::thrift::protocol::TProtocol
   using ::apache::thrift::protocol::TProtocolException;
 
   bool isset_project = false;
-  bool isset_userName = false;
 
   while (true)
   {
@@ -179,14 +178,6 @@ uint32_t Airavata_createProject_args::read(::apache::thrift::protocol::TProtocol
           xfer += iprot->skip(ftype);
         }
         break;
-      case 2:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->userName);
-          isset_userName = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -198,8 +189,6 @@ uint32_t Airavata_createProject_args::read(::apache::thrift::protocol::TProtocol
 
   if (!isset_project)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_userName)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
 
@@ -209,10 +198,6 @@ uint32_t Airavata_createProject_args::write(::apache::thrift::protocol::TProtoco
 
   xfer += oprot->writeFieldBegin("project", ::apache::thrift::protocol::T_STRUCT, 1);
   xfer += this->project.write(oprot);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString(this->userName);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -226,10 +211,6 @@ uint32_t Airavata_createProject_pargs::write(::apache::thrift::protocol::TProtoc
 
   xfer += oprot->writeFieldBegin("project", ::apache::thrift::protocol::T_STRUCT, 1);
   xfer += (*(this->project)).write(oprot);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString((*(this->userName)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -4286,20 +4267,19 @@ void AiravataClient::recv_GetAPIVersion(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "GetAPIVersion failed: unknown result");
 }
 
-void AiravataClient::createProject(std::string& _return, const  ::Project& project, const std::string& userName)
+void AiravataClient::createProject(std::string& _return, const  ::Project& project)
 {
-  send_createProject(project, userName);
+  send_createProject(project);
   recv_createProject(_return);
 }
 
-void AiravataClient::send_createProject(const  ::Project& project, const std::string& userName)
+void AiravataClient::send_createProject(const  ::Project& project)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("createProject", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_createProject_pargs args;
   args.project = &project;
-  args.userName = &userName;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -5549,7 +5529,7 @@ void AiravataProcessor::process_createProject(int32_t seqid, ::apache::thrift::p
 
   Airavata_createProject_result result;
   try {
-    iface_->createProject(result.success, args.project, args.userName);
+    iface_->createProject(result.success, args.project);
     result.__isset.success = true;
   } catch ( ::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
