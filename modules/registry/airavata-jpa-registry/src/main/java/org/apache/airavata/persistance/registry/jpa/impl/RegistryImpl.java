@@ -51,7 +51,7 @@ public class RegistryImpl implements Registry {
             experimentRegistry = new ExperimentRegistry(gatewayResource, user);
             projectRegistry = new ProjectRegistry(gatewayResource, user);
         } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read airavata server properties..", e.getMessage());
+            logger.error("Unable to read airavata server properties..", e);
         }
     }
 
@@ -87,7 +87,7 @@ public class RegistryImpl implements Registry {
                     throw new UnsupportedOperationException();
             }
         } catch (Exception e) {
-            logger.error("Error while adding the resource..", new RegistryException(e.getMessage()));
+            logger.error("Error while adding the resource..", new RegistryException(e));
             throw new RegistryException("Error while adding the resource..", e);
         }
     }
@@ -151,7 +151,7 @@ public class RegistryImpl implements Registry {
                     throw new UnsupportedOperationException();
             }
         } catch (Exception e) {
-            logger.error("Error while adding the resource..", new RegistryException(e.getMessage()));
+            logger.error("Error while adding the resource..", new RegistryException(e));
             throw new RegistryException("Error while adding the resource..", e);
         }
 
@@ -237,7 +237,7 @@ public class RegistryImpl implements Registry {
                     throw new UnsupportedOperationException();
             }
         } catch (Exception e) {
-            logger.error("Error while updating the resource..", new RegistryException(e.getMessage()));
+            logger.error("Error while updating the resource..", new RegistryException(e));
             throw new RegistryException("Error while updating the resource..", e);
         }
 
@@ -271,7 +271,7 @@ public class RegistryImpl implements Registry {
                     throw new UnsupportedOperationException();
             }
         } catch (Exception e) {
-            logger.error("Error while updating the resource..", new RegistryException(e.getMessage()));
+            logger.error("Error while updating the resource..", new RegistryException(e));
             throw new RegistryException("Error while updating the resource..", e);
         }
 
@@ -336,7 +336,7 @@ public class RegistryImpl implements Registry {
                     throw new UnsupportedOperationException();
             }
         } catch (Exception e) {
-            logger.error("Error while retrieving the resource..", new RegistryException(e.getMessage()));
+            logger.error("Error while retrieving the resource..", new RegistryException(e));
             throw new RegistryException("Error while retrieving the resource..", e);
         }
     }
@@ -409,7 +409,7 @@ public class RegistryImpl implements Registry {
                     throw new UnsupportedOperationException();
             }
         } catch (Exception e) {
-            logger.error("Error while retrieving the resource..", new RegistryException(e.getMessage()));
+            logger.error("Error while retrieving the resource..", new RegistryException(e));
             throw new RegistryException("Error while retrieving the resource..", e);
         }
 
@@ -440,7 +440,7 @@ public class RegistryImpl implements Registry {
                     throw new UnsupportedOperationException();
             }
         } catch (Exception e) {
-            logger.error("Error while retrieving the resource..", new RegistryException(e.getMessage()));
+            logger.error("Error while retrieving the resource..", new RegistryException(e));
             throw new RegistryException("Error while retrieving the resource..", e);
         }
 
@@ -481,7 +481,7 @@ public class RegistryImpl implements Registry {
                     throw new UnsupportedOperationException();
             }
         } catch (Exception e) {
-            logger.error("Error while retrieving the ids..", new RegistryException(e.getMessage()));
+            logger.error("Error while retrieving the ids..", new RegistryException(e));
             throw new RegistryException("Error while retrieving the ids..", e);
         }
 
@@ -537,7 +537,7 @@ public class RegistryImpl implements Registry {
                     throw new UnsupportedOperationException();
             }
         } catch (Exception e) {
-            logger.error("Error while removing the resource..", new RegistryException(e.getMessage()));
+            logger.error("Error while removing the resource..", new RegistryException(e));
             throw new RegistryException("Error while removing the resource..", e);
         }
 
@@ -583,7 +583,7 @@ public class RegistryImpl implements Registry {
                     throw new UnsupportedOperationException();
             }
         } catch (Exception e) {
-            logger.error("Error while checking existence of the resource..", new RegistryException(e.getMessage()));
+            logger.error("Error while checking existence of the resource..", new RegistryException(e));
             throw new RegistryException("Error while checking existence of the resource..", e);
         }
     }

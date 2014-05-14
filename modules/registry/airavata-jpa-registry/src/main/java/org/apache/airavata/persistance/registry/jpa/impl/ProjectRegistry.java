@@ -62,8 +62,7 @@ public class ProjectRegistry {
         String projectId;
         try {
             if (!ResourceUtils.isUserExist(project.getOwner())){
-                logger.error("User does not exist in the system..");
-                throw new Exception("User does not exist in the system..");
+                ResourceUtils.addUser(project.getOwner(), null);
             }
             ProjectResource projectResource = new ProjectResource();
             projectId = getProjectId(project.getName());
@@ -97,7 +96,7 @@ public class ProjectRegistry {
                 }
             }
         }catch (Exception e){
-            logger.error("Error while saving project to registry", e.getMessage());
+            logger.error("Error while saving project to registry", e);
             throw new Exception(e);
         }
         return projectId;
@@ -140,7 +139,7 @@ public class ProjectRegistry {
                 }
             }
         }catch (Exception e){
-            logger.error("Error while saving project to registry", e.getMessage());
+            logger.error("Error while saving project to registry", e);
             throw new Exception(e);
         }
     }
@@ -152,7 +151,7 @@ public class ProjectRegistry {
                 return ThriftDataModelConversion.getProject(project);
             }
         }catch (Exception e){
-            logger.error("Error while retrieving project from registry", e.getMessage());
+            logger.error("Error while retrieving project from registry", e);
             throw new Exception(e);
         }
         return null;
@@ -172,7 +171,7 @@ public class ProjectRegistry {
                 return projects;
             }
         }catch (Exception e){
-            logger.error("Error while retrieving project from registry", e.getMessage());
+            logger.error("Error while retrieving project from registry", e);
             throw new Exception(e);
         }
         return projects;
@@ -192,7 +191,7 @@ public class ProjectRegistry {
                 return projectIds;
             }
         }catch (Exception e){
-            logger.error("Error while retrieving projects from registry", e.getMessage());
+            logger.error("Error while retrieving projects from registry", e);
             throw new Exception(e);
         }
         return projectIds;
@@ -202,7 +201,7 @@ public class ProjectRegistry {
         try {
             workerResource.removeProject(projectId);
         } catch (Exception e) {
-            logger.error("Error while removing the project..", e.getMessage());
+            logger.error("Error while removing the project..", e);
             throw new Exception(e);
         }
     }
@@ -211,7 +210,7 @@ public class ProjectRegistry {
         try {
             return workerResource.isProjectExists(projectId);
         } catch (Exception e) {
-            logger.error("Error while retrieving project...", e.getMessage());
+            logger.error("Error while retrieving project...", e);
             throw new Exception(e);
         }
     }

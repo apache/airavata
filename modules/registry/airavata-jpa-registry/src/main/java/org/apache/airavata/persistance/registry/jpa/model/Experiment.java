@@ -62,9 +62,9 @@ public class Experiment {
     @JoinColumn(name = "PROJECT_ID")
     private Project project;
 
-//    @ManyToOne(cascade=CascadeType.MERGE)
-//    @JoinColumn(name = "EXECUTION_USER", referencedColumnName = "USER_NAME")
-//    private Users user;
+    @ManyToOne(cascade=CascadeType.MERGE)
+    @JoinColumn(name = "EXECUTION_USER", referencedColumnName = "USER_NAME")
+    private Users user;
 
     public String getExpId() {
         return expId;
@@ -176,5 +176,13 @@ public class Experiment {
 
     public void setProject(Project project) {
         this.project = project;
+    }
+
+    public Users getUser() {
+        return user;
+    }
+
+    public void setUser(Users user) {
+        this.user = user;
     }
 }
