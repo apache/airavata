@@ -300,9 +300,8 @@ import org.slf4j.LoggerFactory;
      * Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.
      *   The client has to subsequently update this configuration if needed and launch the cloned experiment.
      * 
-     * @param existingExperimentID
-     *    This is the experiment identifier that already exists in the system. Will use this experimentID to retrieve
-     *    user configuration which is used with the clone experiment.
+     * @param newExperiementName
+     *    experiment name that should be used in the cloned experiment
      * 
      * @param updatedExperiment
      *    Once an experiment is cloned, to disambiguate, the users are suggested to provide new metadata. This will again require
@@ -337,9 +336,9 @@ import org.slf4j.LoggerFactory;
      * 
      * 
      * @param existingExperimentID
-     * @param updatedExperiment
+     * @param newExperiementName
      */
-    public String cloneExperiment(String existingExperimentID, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
+    public String cloneExperiment(String existingExperimentID, String newExperiementName) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Terminate a running experiment.
@@ -416,7 +415,7 @@ import org.slf4j.LoggerFactory;
 
     public void getJobStatuses(String airavataExperimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void cloneExperiment(String existingExperimentID, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void cloneExperiment(String existingExperimentID, String newExperiementName, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void terminateExperiment(String airavataExperimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -944,17 +943,17 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getJobStatuses failed: unknown result");
     }
 
-    public String cloneExperiment(String existingExperimentID, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public String cloneExperiment(String existingExperimentID, String newExperiementName) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
     {
-      send_cloneExperiment(existingExperimentID, updatedExperiment);
+      send_cloneExperiment(existingExperimentID, newExperiementName);
       return recv_cloneExperiment();
     }
 
-    public void send_cloneExperiment(String existingExperimentID, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment) throws org.apache.thrift.TException
+    public void send_cloneExperiment(String existingExperimentID, String newExperiementName) throws org.apache.thrift.TException
     {
       cloneExperiment_args args = new cloneExperiment_args();
       args.setExistingExperimentID(existingExperimentID);
-      args.setUpdatedExperiment(updatedExperiment);
+      args.setNewExperiementName(newExperiementName);
       sendBase("cloneExperiment", args);
     }
 
@@ -1583,27 +1582,27 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public void cloneExperiment(String existingExperimentID, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void cloneExperiment(String existingExperimentID, String newExperiementName, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      cloneExperiment_call method_call = new cloneExperiment_call(existingExperimentID, updatedExperiment, resultHandler, this, ___protocolFactory, ___transport);
+      cloneExperiment_call method_call = new cloneExperiment_call(existingExperimentID, newExperiementName, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class cloneExperiment_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String existingExperimentID;
-      private org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment;
-      public cloneExperiment_call(String existingExperimentID, org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private String newExperiementName;
+      public cloneExperiment_call(String existingExperimentID, String newExperiementName, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.existingExperimentID = existingExperimentID;
-        this.updatedExperiment = updatedExperiment;
+        this.newExperiementName = newExperiementName;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("cloneExperiment", org.apache.thrift.protocol.TMessageType.CALL, 0));
         cloneExperiment_args args = new cloneExperiment_args();
         args.setExistingExperimentID(existingExperimentID);
-        args.setUpdatedExperiment(updatedExperiment);
+        args.setNewExperiementName(newExperiementName);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -2148,7 +2147,7 @@ import org.slf4j.LoggerFactory;
       public cloneExperiment_result getResult(I iface, cloneExperiment_args args) throws org.apache.thrift.TException {
         cloneExperiment_result result = new cloneExperiment_result();
         try {
-          result.success = iface.cloneExperiment(args.existingExperimentID, args.updatedExperiment);
+          result.success = iface.cloneExperiment(args.existingExperimentID, args.newExperiementName);
         } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.api.error.ExperimentNotFoundException enf) {
@@ -3375,7 +3374,7 @@ import org.slf4j.LoggerFactory;
       }
 
       public void start(I iface, cloneExperiment_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
-        iface.cloneExperiment(args.existingExperimentID, args.updatedExperiment,resultHandler);
+        iface.cloneExperiment(args.existingExperimentID, args.newExperiementName,resultHandler);
       }
     }
 
@@ -19648,7 +19647,7 @@ import org.slf4j.LoggerFactory;
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("cloneExperiment_args");
 
     private static final org.apache.thrift.protocol.TField EXISTING_EXPERIMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("existingExperimentID", org.apache.thrift.protocol.TType.STRING, (short)1);
-    private static final org.apache.thrift.protocol.TField UPDATED_EXPERIMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("updatedExperiment", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField NEW_EXPERIEMENT_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("newExperiementName", org.apache.thrift.protocol.TType.STRING, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -19657,12 +19656,12 @@ import org.slf4j.LoggerFactory;
     }
 
     public String existingExperimentID; // required
-    public org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment; // required
+    public String newExperiementName; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       EXISTING_EXPERIMENT_ID((short)1, "existingExperimentID"),
-      UPDATED_EXPERIMENT((short)2, "updatedExperiment");
+      NEW_EXPERIEMENT_NAME((short)2, "newExperiementName");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -19679,8 +19678,8 @@ import org.slf4j.LoggerFactory;
         switch(fieldId) {
           case 1: // EXISTING_EXPERIMENT_ID
             return EXISTING_EXPERIMENT_ID;
-          case 2: // UPDATED_EXPERIMENT
-            return UPDATED_EXPERIMENT;
+          case 2: // NEW_EXPERIEMENT_NAME
+            return NEW_EXPERIEMENT_NAME;
           default:
             return null;
         }
@@ -19726,8 +19725,8 @@ import org.slf4j.LoggerFactory;
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.EXISTING_EXPERIMENT_ID, new org.apache.thrift.meta_data.FieldMetaData("existingExperimentID", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-      tmpMap.put(_Fields.UPDATED_EXPERIMENT, new org.apache.thrift.meta_data.FieldMetaData("updatedExperiment", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.workspace.experiment.Experiment.class)));
+      tmpMap.put(_Fields.NEW_EXPERIEMENT_NAME, new org.apache.thrift.meta_data.FieldMetaData("newExperiementName", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(cloneExperiment_args.class, metaDataMap);
     }
@@ -19737,11 +19736,11 @@ import org.slf4j.LoggerFactory;
 
     public cloneExperiment_args(
       String existingExperimentID,
-      org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment)
+      String newExperiementName)
     {
       this();
       this.existingExperimentID = existingExperimentID;
-      this.updatedExperiment = updatedExperiment;
+      this.newExperiementName = newExperiementName;
     }
 
     /**
@@ -19751,8 +19750,8 @@ import org.slf4j.LoggerFactory;
       if (other.isSetExistingExperimentID()) {
         this.existingExperimentID = other.existingExperimentID;
       }
-      if (other.isSetUpdatedExperiment()) {
-        this.updatedExperiment = new org.apache.airavata.model.workspace.experiment.Experiment(other.updatedExperiment);
+      if (other.isSetNewExperiementName()) {
+        this.newExperiementName = other.newExperiementName;
       }
     }
 
@@ -19763,7 +19762,7 @@ import org.slf4j.LoggerFactory;
     @Override
     public void clear() {
       this.existingExperimentID = null;
-      this.updatedExperiment = null;
+      this.newExperiementName = null;
     }
 
     public String getExistingExperimentID() {
@@ -19790,27 +19789,27 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.model.workspace.experiment.Experiment getUpdatedExperiment() {
-      return this.updatedExperiment;
+    public String getNewExperiementName() {
+      return this.newExperiementName;
     }
 
-    public cloneExperiment_args setUpdatedExperiment(org.apache.airavata.model.workspace.experiment.Experiment updatedExperiment) {
-      this.updatedExperiment = updatedExperiment;
+    public cloneExperiment_args setNewExperiementName(String newExperiementName) {
+      this.newExperiementName = newExperiementName;
       return this;
     }
 
-    public void unsetUpdatedExperiment() {
-      this.updatedExperiment = null;
+    public void unsetNewExperiementName() {
+      this.newExperiementName = null;
     }
 
-    /** Returns true if field updatedExperiment is set (has been assigned a value) and false otherwise */
-    public boolean isSetUpdatedExperiment() {
-      return this.updatedExperiment != null;
+    /** Returns true if field newExperiementName is set (has been assigned a value) and false otherwise */
+    public boolean isSetNewExperiementName() {
+      return this.newExperiementName != null;
     }
 
-    public void setUpdatedExperimentIsSet(boolean value) {
+    public void setNewExperiementNameIsSet(boolean value) {
       if (!value) {
-        this.updatedExperiment = null;
+        this.newExperiementName = null;
       }
     }
 
@@ -19824,11 +19823,11 @@ import org.slf4j.LoggerFactory;
         }
         break;
 
-      case UPDATED_EXPERIMENT:
+      case NEW_EXPERIEMENT_NAME:
         if (value == null) {
-          unsetUpdatedExperiment();
+          unsetNewExperiementName();
         } else {
-          setUpdatedExperiment((org.apache.airavata.model.workspace.experiment.Experiment)value);
+          setNewExperiementName((String)value);
         }
         break;
 
@@ -19840,8 +19839,8 @@ import org.slf4j.LoggerFactory;
       case EXISTING_EXPERIMENT_ID:
         return getExistingExperimentID();
 
-      case UPDATED_EXPERIMENT:
-        return getUpdatedExperiment();
+      case NEW_EXPERIEMENT_NAME:
+        return getNewExperiementName();
 
       }
       throw new IllegalStateException();
@@ -19856,8 +19855,8 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case EXISTING_EXPERIMENT_ID:
         return isSetExistingExperimentID();
-      case UPDATED_EXPERIMENT:
-        return isSetUpdatedExperiment();
+      case NEW_EXPERIEMENT_NAME:
+        return isSetNewExperiementName();
       }
       throw new IllegalStateException();
     }
@@ -19884,12 +19883,12 @@ import org.slf4j.LoggerFactory;
           return false;
       }
 
-      boolean this_present_updatedExperiment = true && this.isSetUpdatedExperiment();
-      boolean that_present_updatedExperiment = true && that.isSetUpdatedExperiment();
-      if (this_present_updatedExperiment || that_present_updatedExperiment) {
-        if (!(this_present_updatedExperiment && that_present_updatedExperiment))
+      boolean this_present_newExperiementName = true && this.isSetNewExperiementName();
+      boolean that_present_newExperiementName = true && that.isSetNewExperiementName();
+      if (this_present_newExperiementName || that_present_newExperiementName) {
+        if (!(this_present_newExperiementName && that_present_newExperiementName))
           return false;
-        if (!this.updatedExperiment.equals(that.updatedExperiment))
+        if (!this.newExperiementName.equals(that.newExperiementName))
           return false;
       }
 
@@ -19919,12 +19918,12 @@ import org.slf4j.LoggerFactory;
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetUpdatedExperiment()).compareTo(other.isSetUpdatedExperiment());
+      lastComparison = Boolean.valueOf(isSetNewExperiementName()).compareTo(other.isSetNewExperiementName());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetUpdatedExperiment()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.updatedExperiment, other.updatedExperiment);
+      if (isSetNewExperiementName()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.newExperiementName, other.newExperiementName);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -19957,11 +19956,11 @@ import org.slf4j.LoggerFactory;
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("updatedExperiment:");
-      if (this.updatedExperiment == null) {
+      sb.append("newExperiementName:");
+      if (this.newExperiementName == null) {
         sb.append("null");
       } else {
-        sb.append(this.updatedExperiment);
+        sb.append(this.newExperiementName);
       }
       first = false;
       sb.append(")");
@@ -19971,9 +19970,6 @@ import org.slf4j.LoggerFactory;
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
       // check for sub-struct validity
-      if (updatedExperiment != null) {
-        updatedExperiment.validate();
-      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -20018,11 +20014,10 @@ import org.slf4j.LoggerFactory;
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 2: // UPDATED_EXPERIMENT
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.updatedExperiment = new org.apache.airavata.model.workspace.experiment.Experiment();
-                struct.updatedExperiment.read(iprot);
-                struct.setUpdatedExperimentIsSet(true);
+            case 2: // NEW_EXPERIEMENT_NAME
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.newExperiementName = iprot.readString();
+                struct.setNewExperiementNameIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -20047,9 +20042,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeString(struct.existingExperimentID);
           oprot.writeFieldEnd();
         }
-        if (struct.updatedExperiment != null) {
-          oprot.writeFieldBegin(UPDATED_EXPERIMENT_FIELD_DESC);
-          struct.updatedExperiment.write(oprot);
+        if (struct.newExperiementName != null) {
+          oprot.writeFieldBegin(NEW_EXPERIEMENT_NAME_FIELD_DESC);
+          oprot.writeString(struct.newExperiementName);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -20073,15 +20068,15 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetExistingExperimentID()) {
           optionals.set(0);
         }
-        if (struct.isSetUpdatedExperiment()) {
+        if (struct.isSetNewExperiementName()) {
           optionals.set(1);
         }
         oprot.writeBitSet(optionals, 2);
         if (struct.isSetExistingExperimentID()) {
           oprot.writeString(struct.existingExperimentID);
         }
-        if (struct.isSetUpdatedExperiment()) {
-          struct.updatedExperiment.write(oprot);
+        if (struct.isSetNewExperiementName()) {
+          oprot.writeString(struct.newExperiementName);
         }
       }
 
@@ -20094,9 +20089,8 @@ import org.slf4j.LoggerFactory;
           struct.setExistingExperimentIDIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.updatedExperiment = new org.apache.airavata.model.workspace.experiment.Experiment();
-          struct.updatedExperiment.read(iprot);
-          struct.setUpdatedExperimentIsSet(true);
+          struct.newExperiementName = iprot.readString();
+          struct.setNewExperiementNameIsSet(true);
         }
       }
     }

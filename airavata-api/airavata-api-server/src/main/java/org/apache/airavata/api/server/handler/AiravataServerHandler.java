@@ -251,6 +251,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public Experiment getExperiment(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
+            if (!registry.isExist(RegistryModelType.EXPERIMENT, airavataExperimentId)){
+                throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
             return (Experiment)registry.get(RegistryModelType.EXPERIMENT, airavataExperimentId);
         } catch (Exception e) {
             logger.error("Error while retrieving the experiment", e);
@@ -287,6 +290,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public void updateExperiment(String airavataExperimentId, Experiment experiment) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
+            if (!registry.isExist(RegistryModelType.EXPERIMENT, airavataExperimentId)){
+                throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
             registry.update(RegistryModelType.EXPERIMENT, experiment, airavataExperimentId);
         } catch (Exception e) {
             logger.error("Error while updating experiment", e);
@@ -298,6 +304,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public void updateExperimentConfiguration(String airavataExperimentId, UserConfigurationData userConfiguration) throws TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
+            if (!registry.isExist(RegistryModelType.EXPERIMENT, airavataExperimentId)){
+                throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
             registry.add(ChildDataType.EXPERIMENT_CONFIGURATION_DATA, userConfiguration, airavataExperimentId);
         } catch (Exception e) {
             logger.error("Error while updating user configuration", e);
@@ -309,6 +318,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public void updateResourceScheduleing(String airavataExperimentId, ComputationalResourceScheduling resourceScheduling) throws TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
+            if (!registry.isExist(RegistryModelType.EXPERIMENT, airavataExperimentId)){
+                throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
             registry.add(ChildDataType.COMPUTATIONAL_RESOURCE_SCHEDULING, resourceScheduling, airavataExperimentId);
         } catch (Exception e) {
             logger.error("Error while updating scheduling info", e);
@@ -362,6 +374,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public ExperimentStatus getExperimentStatus(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
+            if (!registry.isExist(RegistryModelType.EXPERIMENT, airavataExperimentId)){
+                throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
             return (ExperimentStatus)registry.get(RegistryModelType.EXPERIMENT_STATUS, airavataExperimentId);
         } catch (Exception e) {
             logger.error("Error while retrieving the experiment status", e);
@@ -373,6 +388,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public List<DataObjectType> getExperimentOutputs(String airavataExperimentId) throws TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
+            if (!registry.isExist(RegistryModelType.EXPERIMENT, airavataExperimentId)){
+                throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
             return (List<DataObjectType>)registry.get(RegistryModelType.EXPERIMENT_OUTPUT, airavataExperimentId);
         } catch (Exception e) {
             logger.error("Error while retrieving the experiment outputs", e);
@@ -384,6 +402,9 @@ public class AiravataServerHandler implements Airavata.Iface {
         Map<String, JobStatus> jobStatus = new HashMap<String, JobStatus>();
         try {
             registry = RegistryFactory.getDefaultRegistry();
+            if (!registry.isExist(RegistryModelType.EXPERIMENT, airavataExperimentId)){
+                throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
             List<Object> workflowNodes = registry.get(RegistryModelType.WORKFLOW_NODE_DETAIL, Constants.FieldConstants.WorkflowNodeConstants.EXPERIMENT_ID, airavataExperimentId);
             if (workflowNodes != null && !workflowNodes.isEmpty()){
                 for (Object wf : workflowNodes){
@@ -478,10 +499,8 @@ public class AiravataServerHandler implements Airavata.Iface {
      *    This is the experiment identifier that already exists in the system. Will use this experimentID to retrieve
      *    user configuration which is used with the clone experiment.
      *
-     * @param updatedExperiment
-     *    Once an experiment is cloned, to disambiguate, the users are suggested to provide new metadata. This will again require
-     *      the basic experiment metadata like the name and description, intended user, the gateway identifier and if the experiment
-     *      should be shared public by default.
+     * @param newExperiementName
+     *   experiment name that should be used in the cloned experiment
      *
      * @return
      *   The server-side generated airavata experiment globally unique identifier for the newly cloned experiment.
@@ -511,18 +530,20 @@ public class AiravataServerHandler implements Airavata.Iface {
      *
      *
      * @param existingExperimentID
-     * @param updatedExperiment
+     * @param newExperiementName
      */
     @Override
-    public String cloneExperiment(String existingExperimentID, Experiment updatedExperiment) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+    public String cloneExperiment(String existingExperimentID, String newExperiementName) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
             if (!registry.isExist(RegistryModelType.EXPERIMENT, existingExperimentID)){
                 throw new ExperimentNotFoundException("Requested experiment id " + existingExperimentID + " does not exist in the system..");
             }
-            UserConfigurationData previousConfiguration = (UserConfigurationData)registry.get(RegistryModelType.EXPERIMENT_CONFIGURATION_DATA, existingExperimentID);
-            updatedExperiment.setUserConfigurationData(previousConfiguration);
-            return (String)registry.add(ParentDataType.EXPERIMENT, updatedExperiment);
+            Experiment existingExperiment = (Experiment)registry.get(RegistryModelType.EXPERIMENT, existingExperimentID);
+            if (newExperiementName != null && !newExperiementName.equals("")){
+                existingExperiment.setName(newExperiementName);
+            }
+            return (String)registry.add(ParentDataType.EXPERIMENT, existingExperiment);
         } catch (Exception e) {
             logger.error("Error while cloning the experiment with existing configuration...", e);
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);

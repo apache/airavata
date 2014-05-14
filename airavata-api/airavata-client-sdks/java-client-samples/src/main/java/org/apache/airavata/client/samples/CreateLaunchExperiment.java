@@ -220,8 +220,7 @@ public class CreateLaunchExperiment {
 
     public static String cloneExperiment(Airavata.Client client, String expId) throws TException  {
         try{
-            Experiment experiment = client.getExperiment(expId);
-            return client.cloneExperiment("cloneExperiment1", experiment);
+            return client.cloneExperiment(expId, "cloneExperiment1");
         }catch (TException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new TException(e);
