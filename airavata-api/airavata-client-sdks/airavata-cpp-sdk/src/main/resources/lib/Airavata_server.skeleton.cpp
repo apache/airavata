@@ -107,7 +107,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getJobStatuses\n");
   }
 
-  void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const  ::Experiment& updatedExperiment) {
+  void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const std::string& newExperiementName) {
     // Your implementation goes here
     printf("cloneExperiment\n");
   }

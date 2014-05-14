@@ -32,7 +32,7 @@ class AiravataIf {
   virtual void getExperimentStatus( ::ExperimentStatus& _return, const std::string& airavataExperimentId) = 0;
   virtual void getExperimentOutputs(std::vector< ::DataObjectType> & _return, const std::string& airavataExperimentId) = 0;
   virtual void getJobStatuses(std::map<std::string,  ::JobStatus> & _return, const std::string& airavataExperimentId) = 0;
-  virtual void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const  ::Experiment& updatedExperiment) = 0;
+  virtual void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const std::string& newExperiementName) = 0;
   virtual void terminateExperiment(const std::string& airavataExperimentId) = 0;
 };
 
@@ -115,7 +115,7 @@ class AiravataNull : virtual public AiravataIf {
   void getJobStatuses(std::map<std::string,  ::JobStatus> & /* _return */, const std::string& /* airavataExperimentId */) {
     return;
   }
-  void cloneExperiment(std::string& /* _return */, const std::string& /* existingExperimentID */, const  ::Experiment& /* updatedExperiment */) {
+  void cloneExperiment(std::string& /* _return */, const std::string& /* existingExperimentID */, const std::string& /* newExperiementName */) {
     return;
   }
   void terminateExperiment(const std::string& /* airavataExperimentId */) {
@@ -2222,21 +2222,21 @@ class Airavata_getJobStatuses_presult {
 };
 
 typedef struct _Airavata_cloneExperiment_args__isset {
-  _Airavata_cloneExperiment_args__isset() : existingExperimentID(false), updatedExperiment(false) {}
+  _Airavata_cloneExperiment_args__isset() : existingExperimentID(false), newExperiementName(false) {}
   bool existingExperimentID;
-  bool updatedExperiment;
+  bool newExperiementName;
 } _Airavata_cloneExperiment_args__isset;
 
 class Airavata_cloneExperiment_args {
  public:
 
-  Airavata_cloneExperiment_args() : existingExperimentID() {
+  Airavata_cloneExperiment_args() : existingExperimentID(), newExperiementName() {
   }
 
   virtual ~Airavata_cloneExperiment_args() throw() {}
 
   std::string existingExperimentID;
-   ::Experiment updatedExperiment;
+  std::string newExperiementName;
 
   _Airavata_cloneExperiment_args__isset __isset;
 
@@ -2244,15 +2244,15 @@ class Airavata_cloneExperiment_args {
     existingExperimentID = val;
   }
 
-  void __set_updatedExperiment(const  ::Experiment& val) {
-    updatedExperiment = val;
+  void __set_newExperiementName(const std::string& val) {
+    newExperiementName = val;
   }
 
   bool operator == (const Airavata_cloneExperiment_args & rhs) const
   {
     if (!(existingExperimentID == rhs.existingExperimentID))
       return false;
-    if (!(updatedExperiment == rhs.updatedExperiment))
+    if (!(newExperiementName == rhs.newExperiementName))
       return false;
     return true;
   }
@@ -2275,7 +2275,7 @@ class Airavata_cloneExperiment_pargs {
   virtual ~Airavata_cloneExperiment_pargs() throw() {}
 
   const std::string* existingExperimentID;
-  const  ::Experiment* updatedExperiment;
+  const std::string* newExperiementName;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -2587,8 +2587,8 @@ class AiravataClient : virtual public AiravataIf {
   void getJobStatuses(std::map<std::string,  ::JobStatus> & _return, const std::string& airavataExperimentId);
   void send_getJobStatuses(const std::string& airavataExperimentId);
   void recv_getJobStatuses(std::map<std::string,  ::JobStatus> & _return);
-  void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const  ::Experiment& updatedExperiment);
-  void send_cloneExperiment(const std::string& existingExperimentID, const  ::Experiment& updatedExperiment);
+  void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const std::string& newExperiementName);
+  void send_cloneExperiment(const std::string& existingExperimentID, const std::string& newExperiementName);
   void recv_cloneExperiment(std::string& _return);
   void terminateExperiment(const std::string& airavataExperimentId);
   void send_terminateExperiment(const std::string& airavataExperimentId);
@@ -2841,13 +2841,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const  ::Experiment& updatedExperiment) {
+  void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const std::string& newExperiementName) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->cloneExperiment(_return, existingExperimentID, updatedExperiment);
+      ifaces_[i]->cloneExperiment(_return, existingExperimentID, newExperiementName);
     }
-    ifaces_[i]->cloneExperiment(_return, existingExperimentID, updatedExperiment);
+    ifaces_[i]->cloneExperiment(_return, existingExperimentID, newExperiementName);
     return;
   }
 

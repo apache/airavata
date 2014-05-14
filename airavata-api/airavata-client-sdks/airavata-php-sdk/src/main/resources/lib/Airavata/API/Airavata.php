@@ -34,7 +34,7 @@ interface AiravataIf {
   public function getExperimentStatus($airavataExperimentId);
   public function getExperimentOutputs($airavataExperimentId);
   public function getJobStatuses($airavataExperimentId);
-  public function cloneExperiment($existingExperimentID, \Airavata\Model\Workspace\Experiment\Experiment $updatedExperiment);
+  public function cloneExperiment($existingExperimentID, $newExperiementName);
   public function terminateExperiment($airavataExperimentId);
 }
 
@@ -1027,17 +1027,17 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("getJobStatuses failed: unknown result");
   }
 
-  public function cloneExperiment($existingExperimentID, \Airavata\Model\Workspace\Experiment\Experiment $updatedExperiment)
+  public function cloneExperiment($existingExperimentID, $newExperiementName)
   {
-    $this->send_cloneExperiment($existingExperimentID, $updatedExperiment);
+    $this->send_cloneExperiment($existingExperimentID, $newExperiementName);
     return $this->recv_cloneExperiment();
   }
 
-  public function send_cloneExperiment($existingExperimentID, \Airavata\Model\Workspace\Experiment\Experiment $updatedExperiment)
+  public function send_cloneExperiment($existingExperimentID, $newExperiementName)
   {
     $args = new \Airavata\API\Airavata_cloneExperiment_args();
     $args->existingExperimentID = $existingExperimentID;
-    $args->updatedExperiment = $updatedExperiment;
+    $args->newExperiementName = $newExperiementName;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -4656,7 +4656,7 @@ class Airavata_cloneExperiment_args {
   static $_TSPEC;
 
   public $existingExperimentID = null;
-  public $updatedExperiment = null;
+  public $newExperiementName = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -4666,9 +4666,8 @@ class Airavata_cloneExperiment_args {
           'type' => TType::STRING,
           ),
         2 => array(
-          'var' => 'updatedExperiment',
-          'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\Workspace\Experiment\Experiment',
+          'var' => 'newExperiementName',
+          'type' => TType::STRING,
           ),
         );
     }
@@ -4676,8 +4675,8 @@ class Airavata_cloneExperiment_args {
       if (isset($vals['existingExperimentID'])) {
         $this->existingExperimentID = $vals['existingExperimentID'];
       }
-      if (isset($vals['updatedExperiment'])) {
-        $this->updatedExperiment = $vals['updatedExperiment'];
+      if (isset($vals['newExperiementName'])) {
+        $this->newExperiementName = $vals['newExperiementName'];
       }
     }
   }
@@ -4709,9 +4708,8 @@ class Airavata_cloneExperiment_args {
           }
           break;
         case 2:
-          if ($ftype == TType::STRUCT) {
-            $this->updatedExperiment = new \Airavata\Model\Workspace\Experiment\Experiment();
-            $xfer += $this->updatedExperiment->read($input);
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->newExperiementName);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -4734,12 +4732,9 @@ class Airavata_cloneExperiment_args {
       $xfer += $output->writeString($this->existingExperimentID);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->updatedExperiment !== null) {
-      if (!is_object($this->updatedExperiment)) {
-        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
-      }
-      $xfer += $output->writeFieldBegin('updatedExperiment', TType::STRUCT, 2);
-      $xfer += $this->updatedExperiment->write($output);
+    if ($this->newExperiementName !== null) {
+      $xfer += $output->writeFieldBegin('newExperiementName', TType::STRING, 2);
+      $xfer += $output->writeString($this->newExperiementName);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
