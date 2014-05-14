@@ -121,7 +121,9 @@ rm -rf ${JAVA_BEAN_GEN_DIR}
 # Generate the Airavata Data Model using thrify Java Beans generator. This will take generate the classes in bean style
 #   with members being private and setters returning voids.
 #   The airavataDataModel.thrift includes rest of data models.
-thrift ${THRIFT_ARGS} --gen java:beans ${THRIFT_IDL_DIR}/airavataDataModel.thrift || fail unable to generate java bean thrift classes
+thrift ${THRIFT_ARGS} --gen java:beans ${THRIFT_IDL_DIR}/airavataDataModel.thrift || fail unable to generate java bean thrift classes on base data model
+
+thrift ${THRIFT_ARGS} --gen java:beans ${THRIFT_IDL_DIR}/applicationCatalogDataModel.thrift || fail unable to generate java bean thrift classes on app catalog data model
 
 # For the generated java beans add the ASF V2 License header
 add_license_header ${JAVA_BEAN_GEN_DIR}
@@ -142,7 +144,9 @@ rm -rf ${JAVA_GEN_DIR}
 
 # Using thrify Java generator, generate the java classes based on Airavata API. This
 #   The airavataAPI.thrift includes rest of data models.
-thrift ${THRIFT_ARGS} --gen java ${THRIFT_IDL_DIR}/airavataAPI.thrift || fail unable to generate java thrift classes
+thrift ${THRIFT_ARGS} --gen java ${THRIFT_IDL_DIR}/airavataAPI.thrift || fail unable to generate java thrift classes on AiravataAPI
+
+thrift ${THRIFT_ARGS} --gen java ${THRIFT_IDL_DIR}/applicationCatalogAPI.thrift || fail unable to generate java thrift classes on App Catalog API
 
 # For the generated java classes add the ASF V2 License header
 add_license_header $JAVA_GEN_DIR
