@@ -479,6 +479,8 @@ public class ExperimentResource extends AbstractResource {
         Gateway gateway = em.find(Gateway.class, getGateway().getGatewayName());
         experiment.setExpId(expID);
         experiment.setExecutionUser(executionUser);
+        Users userModel = em.find(Users.class, executionUser);
+        experiment.setUser(userModel);
         experiment.setGateway(gateway);
         experiment.setCreationTime(creationTime);
         experiment.setExpName(expName);
@@ -492,6 +494,7 @@ public class ExperimentResource extends AbstractResource {
             existingExp.setGateway(gateway);
             existingExp.setProject(projectmodel);
             existingExp.setExecutionUser(executionUser);
+            experiment.setUser(userModel);
             existingExp.setCreationTime(creationTime);
             existingExp.setExpName(expName);
             existingExp.setExpDesc(description);

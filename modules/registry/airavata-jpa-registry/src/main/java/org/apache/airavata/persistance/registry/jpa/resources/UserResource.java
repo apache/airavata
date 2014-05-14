@@ -115,24 +115,27 @@ public class UserResource extends AbstractResource {
         em.getTransaction().begin();
         Users user = new Users();
         user.setUser_name(userName);
-        try {
-            user.setPassword(SecurityUtil.digestString(password,
-                    RegistrySettings.getSetting("default.registry.password.hash.method")));
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error hashing default admin password. Invalid hash algorithm.", e);
-        } catch (RegistrySettingsException e) {
-            throw new RuntimeException("Error reading hash algorithm from configurations", e);
-        }
-        if(existingUser != null){
+        if (password != null && !password.equals("")){
             try {
-                existingUser.setPassword(SecurityUtil.digestString(password,
+                user.setPassword(SecurityUtil.digestString(password,
                         RegistrySettings.getSetting("default.registry.password.hash.method")));
             } catch (NoSuchAlgorithmException e) {
                 throw new RuntimeException("Error hashing default admin password. Invalid hash algorithm.", e);
             } catch (RegistrySettingsException e) {
                 throw new RuntimeException("Error reading hash algorithm from configurations", e);
             }
-
+        }
+        if(existingUser != null){
+            if (password != null && !password.equals("")){
+                try {
+                    existingUser.setPassword(SecurityUtil.digestString(password,
+                            RegistrySettings.getSetting("default.registry.password.hash.method")));
+                } catch (NoSuchAlgorithmException e) {
+                    throw new RuntimeException("Error hashing default admin password. Invalid hash algorithm.", e);
+                } catch (RegistrySettingsException e) {
+                    throw new RuntimeException("Error reading hash algorithm from configurations", e);
+                }
+            }
             user = em.merge(existingUser);
         }else {
             em.persist(user);

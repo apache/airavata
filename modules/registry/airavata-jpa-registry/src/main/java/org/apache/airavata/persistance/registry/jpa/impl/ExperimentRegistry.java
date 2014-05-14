@@ -54,8 +54,7 @@ public class ExperimentRegistry {
         String experimentID;
         try {
             if (!ResourceUtils.isUserExist(experiment.getUserName())) {
-                logger.error("User does not exist in the system..");
-                throw new Exception("User does not exist in the system..");
+                ResourceUtils.addUser(experiment.getUserName(), null);
             }
             experimentID = getExperimentID(experiment.getName());
             experiment.setExperimentID(experimentID);
@@ -118,7 +117,7 @@ public class ExperimentRegistry {
                 }
             }
         } catch (Exception e) {
-            logger.error("Error while saving experiment to registry", e.getMessage());
+            logger.error("Error while saving experiment to registry", e);
             throw new Exception(e);
         }
         return experimentID;
@@ -152,7 +151,7 @@ public class ExperimentRegistry {
                 addQosParams(qosParams, experiment);
             }
         } catch (Exception e) {
-            logger.error("Unable to save user config data", e.getMessage());
+            logger.error("Unable to save user config data", e);
             throw new Exception(e);
         }
         return experimentID;
@@ -175,7 +174,7 @@ public class ExperimentRegistry {
             qosr.setNoOfRetries(qosParams.getNumberofRetries());
             qosr.save();
         } catch (Exception e) {
-            logger.error("Unable to save QOS params", e.getMessage());
+            logger.error("Unable to save QOS params", e);
             throw new Exception(e);
         }
 
@@ -198,7 +197,7 @@ public class ExperimentRegistry {
             adodh.setPersistOutputData(outputDataHandling.isPersistOutputData());
             adodh.save();
         } catch (Exception e) {
-            logger.error("Unable to save output data handling data", e.getMessage());
+            logger.error("Unable to save output data handling data", e);
             throw new Exception(e);
         }
 
@@ -222,7 +221,7 @@ public class ExperimentRegistry {
             adidh.setCleanAfterJob(inputDataHandling.isCleanUpWorkingDirAfterJob());
             adidh.save();
         } catch (Exception e) {
-            logger.error("Unable to save input data handling data", e.getMessage());
+            logger.error("Unable to save input data handling data", e);
             throw new Exception(e);
         }
 
@@ -251,7 +250,7 @@ public class ExperimentRegistry {
             cmsr.setProjectName(resourceScheduling.getComputationalProjectAccount());
             cmsr.save();
         } catch (Exception e) {
-            logger.error("Unable to save computational scheduling data", e.getMessage());
+            logger.error("Unable to save computational scheduling data", e);
             throw new Exception(e);
         }
 
@@ -269,7 +268,7 @@ public class ExperimentRegistry {
                 resource.save();
             }
         } catch (Exception e) {
-            logger.error("Unable to save experiment inputs", e.getMessage());
+            logger.error("Unable to save experiment inputs", e);
             throw new Exception(e);
         }
     }
@@ -288,7 +287,7 @@ public class ExperimentRegistry {
                 }
             }
         } catch (Exception e) {
-            logger.error("Unable to update experiment inputs", e.getMessage());
+            logger.error("Unable to update experiment inputs", e);
             throw new Exception(e);
         }
 
@@ -307,7 +306,7 @@ public class ExperimentRegistry {
                 resource.save();
             }
         } catch (Exception e) {
-            logger.error("Error while adding experiment outputs...", e.getMessage());
+            logger.error("Error while adding experiment outputs...", e);
             throw new Exception(e);
         }
         return expId;
@@ -330,7 +329,7 @@ public class ExperimentRegistry {
                 }
             }
         } catch (Exception e) {
-            logger.error("Error while updating experiment outputs", e.getMessage());
+            logger.error("Error while updating experiment outputs", e);
             throw new Exception(e);
         }
     }
@@ -349,7 +348,7 @@ public class ExperimentRegistry {
                 resource.save();
             }
         } catch (Exception e) {
-            logger.error("Error while adding node outputs...", e.getMessage());
+            logger.error("Error while adding node outputs...", e);
             throw new Exception(e);
         }
         return (String) ids.getSecondLevelIdentifier();
@@ -371,7 +370,7 @@ public class ExperimentRegistry {
                 }
             }
         } catch (Exception e) {
-            logger.error("Error while updating node outputs...", e.getMessage());
+            logger.error("Error while updating node outputs...", e);
             throw new Exception(e);
         }
     }
@@ -391,7 +390,7 @@ public class ExperimentRegistry {
                 resource.save();
             }
         } catch (Exception e) {
-            logger.error("Error while adding application outputs...", e.getMessage());
+            logger.error("Error while adding application outputs...", e);
             throw new Exception(e);
         }
         return (String) ids.getSecondLevelIdentifier();
@@ -414,7 +413,7 @@ public class ExperimentRegistry {
             status.setStatusType(StatusType.EXPERIMENT.toString());
             status.save();
         } catch (Exception e) {
-            logger.error("Error while updating experiment status...", e.getMessage());
+            logger.error("Error while updating experiment status...", e);
             throw new Exception(e);
         }
         return expId;
@@ -437,7 +436,7 @@ public class ExperimentRegistry {
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
         } catch (Exception e) {
-            logger.error("Error while adding workflow node status...", e.getMessage());
+            logger.error("Error while adding workflow node status...", e);
             throw new Exception(e);
         }
     }
@@ -458,7 +457,7 @@ public class ExperimentRegistry {
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
         } catch (Exception e) {
-            logger.error("Error whilw updating workflow node status...", e.getMessage());
+            logger.error("Error whilw updating workflow node status...", e);
             throw new Exception(e);
         }
     }
@@ -482,7 +481,7 @@ public class ExperimentRegistry {
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
         } catch (Exception e) {
-            logger.error("Error while adding task status...", e.getMessage());
+            logger.error("Error while adding task status...", e);
             throw new Exception(e);
         }
     }
@@ -506,7 +505,7 @@ public class ExperimentRegistry {
             statusResource.setState(status.getExecutionState().toString());
             statusResource.save();
         } catch (Exception e) {
-            logger.error("Error while updating task status...", e.getMessage());
+            logger.error("Error while updating task status...", e);
             throw new Exception(e);
         }
     }
@@ -536,7 +535,7 @@ public class ExperimentRegistry {
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
         } catch (Exception e) {
-            logger.error("Error while adding job status...", e.getMessage());
+            logger.error("Error while adding job status...", e);
             throw new Exception(e);
         }
     }
@@ -559,7 +558,7 @@ public class ExperimentRegistry {
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
         } catch (Exception e) {
-            logger.error("Error while updating job status...", e.getMessage());
+            logger.error("Error while updating job status...", e);
             throw new Exception(e);
         }
     }
@@ -589,7 +588,7 @@ public class ExperimentRegistry {
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
         } catch (Exception e) {
-            logger.error("Unable to read airavata-server properties", e.getMessage());
+            logger.error("Unable to read airavata-server properties", e);
             throw new Exception(e);
         }
     }
@@ -609,7 +608,7 @@ public class ExperimentRegistry {
             statusResource.setState(status.getApplicationState());
             statusResource.save();
         } catch (Exception e) {
-            logger.error("Error while updating application status...", e.getMessage());
+            logger.error("Error while updating application status...", e);
             throw new Exception(e);
         }
     }
@@ -641,7 +640,7 @@ public class ExperimentRegistry {
             statusResource.save();
             return String.valueOf(statusResource.getStatusId());
         } catch (Exception e) {
-            logger.error("Error while adding transfer status...", e.getMessage());
+            logger.error("Error while adding transfer status...", e);
             throw new Exception(e);
         }
     }
@@ -666,7 +665,7 @@ public class ExperimentRegistry {
             statusResource.setState(status.getTransferState().toString());
             statusResource.save();
         } catch (Exception e) {
-            logger.error("Error while updating transfer status...", e.getMessage());
+            logger.error("Error while updating transfer status...", e);
             throw new Exception(e);
         }
     }
@@ -722,7 +721,7 @@ public class ExperimentRegistry {
             }
             return nodeId;
         } catch (Exception e) {
-            logger.error("Error while adding workflow node details...", e.getMessage());
+            logger.error("Error while adding workflow node details...", e);
             throw new Exception(e);
         }
     }
@@ -771,7 +770,7 @@ public class ExperimentRegistry {
                 }
             }
         } catch (Exception e) {
-            logger.error("Error while updating workflow node details...", e.getMessage());
+            logger.error("Error while updating workflow node details...", e);
             throw new Exception(e);
         }
     }
@@ -789,7 +788,7 @@ public class ExperimentRegistry {
                 resource.save();
             }
         } catch (Exception e) {
-            logger.error("Error while adding workflow inputs...", e.getMessage());
+            logger.error("Error while adding workflow inputs...", e);
             throw new Exception(e);
         }
 
@@ -809,7 +808,7 @@ public class ExperimentRegistry {
                 }
             }
         } catch (Exception e) {
-            logger.error("Error while updating workflow inputs...", e.getMessage());
+            logger.error("Error while updating workflow inputs...", e);
             throw new Exception(e);
         }
 
@@ -885,7 +884,7 @@ public class ExperimentRegistry {
             }
             return taskDetail.getTaskId();
         } catch (Exception e) {
-            logger.error("Error while adding task details...", e.getMessage());
+            logger.error("Error while adding task details...", e);
             throw new Exception(e);
         }
     }
@@ -944,7 +943,7 @@ public class ExperimentRegistry {
             }
             return taskDetail.getTaskId();
         } catch (Exception e) {
-            logger.error("Error while updating task details...", e.getMessage());
+            logger.error("Error while updating task details...", e);
             throw new Exception(e);
         }
     }
@@ -961,7 +960,7 @@ public class ExperimentRegistry {
                 resource.save();
             }
         } catch (Exception e) {
-            logger.error("Error while adding application inputs...", e.getMessage());
+            logger.error("Error while adding application inputs...", e);
             throw new Exception(e);
         }
 
@@ -979,7 +978,7 @@ public class ExperimentRegistry {
                 resource.save();
             }
         } catch (Exception e) {
-            logger.error("Error while adding application outputs...", e.getMessage());
+            logger.error("Error while adding application outputs...", e);
             throw new Exception(e);
         }
 
@@ -1002,7 +1001,7 @@ public class ExperimentRegistry {
                 }
             }
         } catch (Exception e) {
-            logger.error("Error while updating application outputs...", e.getMessage());
+            logger.error("Error while updating application outputs...", e);
             throw new Exception(e);
         }
     }
@@ -1022,7 +1021,7 @@ public class ExperimentRegistry {
 
             }
         } catch (Exception e) {
-            logger.error("Error while updating application inputs...", e.getMessage());
+            logger.error("Error while updating application inputs...", e);
             throw new Exception(e);
         }
 
@@ -1065,7 +1064,7 @@ public class ExperimentRegistry {
             }
             return jobDetail.getJobId();
         } catch (Exception e) {
-            logger.error("Error while adding job details...", e.getMessage());
+            logger.error("Error while adding job details...", e);
             throw new Exception(e);
         }
     }
@@ -1109,7 +1108,7 @@ public class ExperimentRegistry {
                 }
             }
         } catch (Exception e) {
-            logger.error("Error while updating job details...", e.getMessage());
+            logger.error("Error while updating job details...", e);
             throw new Exception(e);
         }
     }
@@ -1138,7 +1137,7 @@ public class ExperimentRegistry {
             }
             return resource.getTransferId();
         } catch (Exception e) {
-            logger.error("Error while adding transfer details...", e.getMessage());
+            logger.error("Error while adding transfer details...", e);
             throw new Exception(e);
         }
     }
@@ -1166,7 +1165,7 @@ public class ExperimentRegistry {
             }
             return resource.getTransferId();
         } catch (Exception e) {
-            logger.error("Error while updating transfer details...", e.getMessage());
+            logger.error("Error while updating transfer details...", e);
             throw new Exception(e);
         }
     }
@@ -1198,7 +1197,7 @@ public class ExperimentRegistry {
             schedulingResource.save();
             return String.valueOf(schedulingResource.getSchedulingId());
         } catch (Exception e) {
-            logger.error("Error while adding scheduling parameters...", e.getMessage());
+            logger.error("Error while adding scheduling parameters...", e);
             throw new Exception(e);
         }
     }
@@ -1225,7 +1224,7 @@ public class ExperimentRegistry {
             dataHandlingResource.save();
             return String.valueOf(dataHandlingResource.getDataHandlingId());
         } catch (Exception e) {
-            logger.error("Error while adding input data handling...", e.getMessage());
+            logger.error("Error while adding input data handling...", e);
             throw new Exception(e);
         }
     }
@@ -1251,7 +1250,7 @@ public class ExperimentRegistry {
             dataHandlingResource.save();
             return String.valueOf(dataHandlingResource.getOutputDataHandlingId());
         } catch (Exception e) {
-            logger.error("Error while adding output data handling...", e.getMessage());
+            logger.error("Error while adding output data handling...", e);
             throw new Exception(e);
         }
     }
@@ -1272,7 +1271,7 @@ public class ExperimentRegistry {
             qosParamResource.save();
             return String.valueOf(qosParamResource.getQosId());
         } catch (Exception e) {
-            logger.error("Error while adding QOS params...", e.getMessage());
+            logger.error("Error while adding QOS params...", e);
             throw new Exception(e);
         }
     }
@@ -1347,7 +1346,7 @@ public class ExperimentRegistry {
                 return String.valueOf(errorResource.getErrorId());
             }
         } catch (Exception e) {
-            logger.error("Unable to add error details...", e.getMessage());
+            logger.error("Unable to add error details...", e);
             throw new Exception(e);
         }
         return null;
@@ -1402,7 +1401,7 @@ public class ExperimentRegistry {
             }
 
         } catch (Exception e) {
-            logger.error("Error while updating fields in experiment...", e.getMessage());
+            logger.error("Error while updating fields in experiment...", e);
             throw new Exception(e);
         }
     }
@@ -1433,7 +1432,7 @@ public class ExperimentRegistry {
             }
 
         } catch (Exception e) {
-            logger.error("Error while updating fields in experiment config...", e.getMessage());
+            logger.error("Error while updating fields in experiment config...", e);
             throw new Exception(e);
         }
     }
@@ -1489,7 +1488,7 @@ public class ExperimentRegistry {
                 }
             }
         } catch (Exception e) {
-            logger.error("Error while updating experiment...", e.getMessage());
+            logger.error("Error while updating experiment...", e);
             throw new Exception(e);
         }
 
@@ -1522,7 +1521,7 @@ public class ExperimentRegistry {
                 updateQosParams(qosParams, experiment);
             }
         } catch (Exception e) {
-            logger.error("Error while updating user config data...", e.getMessage());
+            logger.error("Error while updating user config data...", e);
             throw new Exception(e);
         }
 
@@ -1540,7 +1539,7 @@ public class ExperimentRegistry {
                 qosr.save();
             }
         } catch (Exception e) {
-            logger.error("Error while updating QOS data...", e.getMessage());
+            logger.error("Error while updating QOS data...", e);
             throw new Exception(e);
         }
 
@@ -1564,7 +1563,7 @@ public class ExperimentRegistry {
             adodh.setPersistOutputData(outputDataHandling.isPersistOutputData());
             adodh.save();
         } catch (Exception e) {
-            logger.error("Error while updating output data handling...", e.getMessage());
+            logger.error("Error while updating output data handling...", e);
             throw new Exception(e);
         }
 
@@ -1589,7 +1588,7 @@ public class ExperimentRegistry {
             adidh.setCleanAfterJob(inputDataHandling.isCleanUpWorkingDirAfterJob());
             adidh.save();
         } catch (Exception e) {
-            logger.error("Error while updating input data handling...", e.getMessage());
+            logger.error("Error while updating input data handling...", e);
             throw new Exception(e);
         }
 
@@ -1619,7 +1618,7 @@ public class ExperimentRegistry {
             cmsr.setProjectName(resourceScheduling.getComputationalProjectAccount());
             cmsr.save();
         } catch (Exception e) {
-            logger.error("Error while updating scheduling data...", e.getMessage());
+            logger.error("Error while updating scheduling data...", e);
             throw new Exception(e);
         }
 
@@ -1656,7 +1655,7 @@ public class ExperimentRegistry {
                 logger.error("Unsupported field name to retrieve experiment list...");
             }
         } catch (Exception e) {
-            logger.error("Error while getting experiment list...", e.getMessage());
+            logger.error("Error while getting experiment list...", e);
             throw new Exception(e);
         }
         return experiments;
@@ -1672,7 +1671,7 @@ public class ExperimentRegistry {
                 logger.error("Unsupported field name to retrieve workflow detail list...");
             }
         } catch (Exception e) {
-            logger.error("Error while getting workfkow details...", e.getMessage());
+            logger.error("Error while getting workfkow details...", e);
             throw new Exception(e);
         }
         return null;
@@ -1688,7 +1687,7 @@ public class ExperimentRegistry {
                 logger.error("Unsupported field name to retrieve workflow status list...");
             }
         } catch (Exception e) {
-            logger.error("Error while getting workflow status...", e.getMessage());
+            logger.error("Error while getting workflow status...", e);
             throw new Exception(e);
         }
         return null;
@@ -1705,7 +1704,7 @@ public class ExperimentRegistry {
                 logger.error("Unsupported field name to retrieve task detail list...");
             }
         } catch (Exception e) {
-            logger.error("Error while getting task details...", e.getMessage());
+            logger.error("Error while getting task details...", e);
             throw new Exception(e);
         }
         return null;
@@ -1723,7 +1722,7 @@ public class ExperimentRegistry {
                 logger.error("Unsupported field name to retrieve job details list...");
             }
         } catch (Exception e) {
-            logger.error("Error while job details...", e.getMessage());
+            logger.error("Error while job details...", e);
             throw new Exception(e);
         }
         return null;
@@ -1741,7 +1740,7 @@ public class ExperimentRegistry {
                 logger.error("Unsupported field name to retrieve job details list...");
             }
         } catch (Exception e) {
-            logger.error("Error while getting data transfer details...", e.getMessage());
+            logger.error("Error while getting data transfer details...", e);
             throw new Exception(e);
         }
         return null;
@@ -1776,7 +1775,7 @@ public class ExperimentRegistry {
                 logger.error("Unsupported field name to retrieve job details list...");
             }
         } catch (Exception e) {
-            logger.error("Unable to get error details...", e.getMessage());
+            logger.error("Unable to get error details...", e);
             throw new Exception(e);
         }
         return null;
@@ -1823,7 +1822,7 @@ public class ExperimentRegistry {
                 logger.error("Unsupported field name for experiment basic data..");
             }
         } catch (Exception e) {
-            logger.error("Error while getting experiment info...", e.getMessage());
+            logger.error("Error while getting experiment info...", e);
             throw new Exception(e);
         }
         return null;
@@ -1853,7 +1852,7 @@ public class ExperimentRegistry {
                 logger.error("Unsupported field name for experiment configuration data..");
             }
         } catch (Exception e) {
-            logger.error("Error while getting config data..", e.getMessage());
+            logger.error("Error while getting config data..", e);
             throw new Exception(e);
         }
         return null;
@@ -1865,7 +1864,7 @@ public class ExperimentRegistry {
             List<ExperimentOutputResource> experimentOutputs = resource.getExperimentOutputs();
             return ThriftDataModelConversion.getExpOutputs(experimentOutputs);
         } catch (Exception e) {
-            logger.error("Error while getting experiment outputs...", e.getMessage());
+            logger.error("Error while getting experiment outputs...", e);
         }
         return null;
     }
@@ -1876,7 +1875,7 @@ public class ExperimentRegistry {
             StatusResource experimentStatus = resource.getExperimentStatus();
             return ThriftDataModelConversion.getExperimentStatus(experimentStatus);
         } catch (Exception e) {
-            logger.error("Error while getting experiment status...", e.getMessage());
+            logger.error("Error while getting experiment status...", e);
             throw new Exception(e);
         }
     }
@@ -1900,7 +1899,7 @@ public class ExperimentRegistry {
                 return ThriftDataModelConversion.getComputationalResourceScheduling(computationScheduling);
             }
         } catch (Exception e) {
-            logger.error("Error while getting scheduling data..", e.getMessage());
+            logger.error("Error while getting scheduling data..", e);
             throw new Exception(e);
         }
         return null;
@@ -1925,7 +1924,7 @@ public class ExperimentRegistry {
                 return ThriftDataModelConversion.getAdvanceInputDataHandling(dataHandlingResource);
             }
         } catch (Exception e) {
-            logger.error("Error while getting input data handling..", e.getMessage());
+            logger.error("Error while getting input data handling..", e);
             throw new Exception(e);
         }
         return null;
@@ -1950,7 +1949,7 @@ public class ExperimentRegistry {
                 return ThriftDataModelConversion.getAdvanceOutputDataHandling(dataHandlingResource);
             }
         } catch (Exception e) {
-            logger.error("Error while getting output data handling...", e.getMessage());
+            logger.error("Error while getting output data handling...", e);
             throw new Exception(e);
         }
         return null;
@@ -1969,7 +1968,7 @@ public class ExperimentRegistry {
                 return ThriftDataModelConversion.getQOSParams(qosParamResource);
             }
         } catch (Exception e) {
-            logger.error("Error while getting qos params..", e.getMessage());
+            logger.error("Error while getting qos params..", e);
             throw new Exception(e);
         }
         return null;
@@ -1981,7 +1980,7 @@ public class ExperimentRegistry {
             WorkflowNodeDetailResource workflowNode = resource.getWorkflowNode(nodeId);
             return ThriftDataModelConversion.getWorkflowNodeDetails(workflowNode);
         } catch (Exception e) {
-            logger.error("Error while getting workflow node details...", e.getMessage());
+            logger.error("Error while getting workflow node details...", e);
             throw new Exception(e);
         }
     }
@@ -1993,7 +1992,7 @@ public class ExperimentRegistry {
             StatusResource workflowNodeStatus = workflowNode.getWorkflowNodeStatus();
             return ThriftDataModelConversion.getWorkflowNodeStatus(workflowNodeStatus);
         } catch (Exception e) {
-            logger.error("Error while getting workflow node status..", e.getMessage());
+            logger.error("Error while getting workflow node status..", e);
             throw new Exception(e);
         }
     }
@@ -2005,7 +2004,7 @@ public class ExperimentRegistry {
             List<NodeOutputResource> nodeOutputs = workflowNode.getNodeOutputs();
             return ThriftDataModelConversion.getNodeOutputs(nodeOutputs);
         } catch (Exception e) {
-            logger.error("Error while getting node outputs..", e.getMessage());
+            logger.error("Error while getting node outputs..", e);
             throw new Exception(e);
         }
     }
@@ -2017,7 +2016,7 @@ public class ExperimentRegistry {
             TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
             return ThriftDataModelConversion.getTaskDetail(taskDetail);
         } catch (Exception e) {
-            logger.error("Error while getting task details..", e.getMessage());
+            logger.error("Error while getting task details..", e);
             throw new Exception(e);
         }
     }
@@ -2030,7 +2029,7 @@ public class ExperimentRegistry {
             List<ApplicationOutputResource> applicationOutputs = taskDetail.getApplicationOutputs();
             return ThriftDataModelConversion.getApplicationOutputs(applicationOutputs);
         } catch (Exception e) {
-            logger.error("Error while getting application outputs..", e.getMessage());
+            logger.error("Error while getting application outputs..", e);
             throw new Exception(e);
         }
     }
@@ -2043,7 +2042,7 @@ public class ExperimentRegistry {
             StatusResource taskStatus = taskDetail.getTaskStatus();
             return ThriftDataModelConversion.getTaskStatus(taskStatus);
         } catch (Exception e) {
-            logger.error("Error while getting experiment outputs..", e.getMessage());
+            logger.error("Error while getting experiment outputs..", e);
             throw new Exception(e);
         }
     }
@@ -2058,7 +2057,7 @@ public class ExperimentRegistry {
             JobDetailResource jobDetail = taskDetail.getJobDetail((String) ids.getSecondLevelIdentifier());
             return ThriftDataModelConversion.getJobDetail(jobDetail);
         } catch (Exception e) {
-            logger.error("Error while getting job details..", e.getMessage());
+            logger.error("Error while getting job details..", e);
             throw new Exception(e);
         }
     }
@@ -2073,7 +2072,7 @@ public class ExperimentRegistry {
             StatusResource jobStatus = jobDetail.getJobStatus();
             return ThriftDataModelConversion.getJobStatus(jobStatus);
         } catch (Exception e) {
-            logger.error("Error while getting job status..", e.getMessage());
+            logger.error("Error while getting job status..", e);
             throw new Exception(e);
         }
     }
@@ -2087,7 +2086,7 @@ public class ExperimentRegistry {
             StatusResource applicationStatus = jobDetail.getApplicationStatus();
             return ThriftDataModelConversion.getApplicationStatus(applicationStatus);
         } catch (Exception e) {
-            logger.error("Error while getting application status..", e.getMessage());
+            logger.error("Error while getting application status..", e);
             throw new Exception(e);
         }
     }
@@ -2100,7 +2099,7 @@ public class ExperimentRegistry {
             DataTransferDetailResource dataTransferDetail = taskDetail.getDataTransferDetail(transferId);
             return ThriftDataModelConversion.getDataTransferDetail(dataTransferDetail);
         } catch (Exception e) {
-            logger.error("Error while getting data transfer details..", e.getMessage());
+            logger.error("Error while getting data transfer details..", e);
             throw new Exception(e);
         }
     }
@@ -2114,7 +2113,7 @@ public class ExperimentRegistry {
             StatusResource dataTransferStatus = dataTransferDetail.getDataTransferStatus();
             return ThriftDataModelConversion.getTransferStatus(dataTransferStatus);
         } catch (Exception e) {
-            logger.error("Error while getting data transfer status..", e.getMessage());
+            logger.error("Error while getting data transfer status..", e);
             throw new Exception(e);
         }
     }
@@ -2145,7 +2144,7 @@ public class ExperimentRegistry {
                 }
             }
         } catch (Exception e) {
-            logger.error("Error while retrieving experiment ids..", e.getMessage());
+            logger.error("Error while retrieving experiment ids..", e);
             throw new Exception(e);
         }
         return expIDs;
@@ -2192,7 +2191,7 @@ public class ExperimentRegistry {
         try {
             gatewayResource.remove(ResourceType.EXPERIMENT, experimentId);
         } catch (Exception e) {
-            logger.error("Error while removing experiment..", e.getMessage());
+            logger.error("Error while removing experiment..", e);
             throw new Exception(e);
         }
     }
@@ -2202,7 +2201,7 @@ public class ExperimentRegistry {
             ExperimentResource experiment = gatewayResource.getExperiment(experimentId);
             experiment.remove(ResourceType.CONFIG_DATA, experimentId);
         } catch (Exception e) {
-            logger.error("Error while removing experiment config..", e.getMessage());
+            logger.error("Error while removing experiment config..", e);
             throw new Exception(e);
         }
     }
@@ -2212,7 +2211,7 @@ public class ExperimentRegistry {
             ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
             experiment.remove(ResourceType.WORKFLOW_NODE_DETAIL, nodeId);
         } catch (Exception e) {
-            logger.error("Error while removing workflow node..", e.getMessage());
+            logger.error("Error while removing workflow node..", e);
             throw new Exception(e);
         }
     }
@@ -2223,7 +2222,7 @@ public class ExperimentRegistry {
             WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             nodeDetailResource.remove(ResourceType.TASK_DETAIL, taskId);
         } catch (Exception e) {
-            logger.error("Error while removing task details..", e.getMessage());
+            logger.error("Error while removing task details..", e);
             throw new Exception(e);
         }
     }
@@ -2235,7 +2234,7 @@ public class ExperimentRegistry {
             TaskDetailResource taskDetailResource = nodeDetailResource.getTaskDetail((String) ids.getTopLevelIdentifier());
             taskDetailResource.remove(ResourceType.JOB_DETAIL, (String) ids.getSecondLevelIdentifier());
         } catch (Exception e) {
-            logger.error("Error while removing job details..", e.getMessage());
+            logger.error("Error while removing job details..", e);
             throw new Exception(e);
         }
     }
@@ -2247,7 +2246,7 @@ public class ExperimentRegistry {
             TaskDetailResource taskDetail = (TaskDetailResource) nodeDetailResource.create(ResourceType.TASK_DETAIL);
             taskDetail.remove(ResourceType.DATA_TRANSFER_DETAIL, transferId);
         } catch (Exception e) {
-            logger.error("Error while removing transfer details..", e.getMessage());
+            logger.error("Error while removing transfer details..", e);
             throw new Exception(e);
         }
     }
@@ -2269,7 +2268,7 @@ public class ExperimentRegistry {
                     logger.error("Unsupported data type...");
             }
         } catch (Exception e) {
-            logger.error("Error while removing scheduling data..", e.getMessage());
+            logger.error("Error while removing scheduling data..", e);
             throw new Exception(e);
         }
     }
@@ -2291,7 +2290,7 @@ public class ExperimentRegistry {
                     logger.error("Unsupported data type...");
             }
         } catch (Exception e) {
-            logger.error("Error while removing input data handling..", e.getMessage());
+            logger.error("Error while removing input data handling..", e);
             throw new Exception(e);
         }
     }
@@ -2313,7 +2312,7 @@ public class ExperimentRegistry {
                     logger.error("Unsupported data type...");
             }
         } catch (Exception e) {
-            logger.error("Error while removing output data handling..", e.getMessage());
+            logger.error("Error while removing output data handling..", e);
             throw new Exception(e);
         }
     }
@@ -2329,7 +2328,7 @@ public class ExperimentRegistry {
                     logger.error("Unsupported data type...");
             }
         } catch (Exception e) {
-            logger.error("Error while removing QOS params", e.getMessage());
+            logger.error("Error while removing QOS params", e);
             throw new Exception(e);
         }
     }
@@ -2338,7 +2337,7 @@ public class ExperimentRegistry {
         try {
             return gatewayResource.isExists(ResourceType.EXPERIMENT, expID);
         } catch (Exception e) {
-            logger.error("Error while retrieving experiment...", e.getMessage());
+            logger.error("Error while retrieving experiment...", e);
             throw new Exception(e);
         }
     }
@@ -2349,7 +2348,7 @@ public class ExperimentRegistry {
             experiment.isExists(ResourceType.CONFIG_DATA, expID);
             return true;
         } catch (Exception e) {
-            logger.error("Error while retrieving experiment...", e.getMessage());
+            logger.error("Error while retrieving experiment...", e);
             throw new Exception(e);
         }
     }
@@ -2359,7 +2358,7 @@ public class ExperimentRegistry {
             ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
             return experiment.isExists(ResourceType.WORKFLOW_NODE_DETAIL, nodeId);
         } catch (Exception e) {
-            logger.error("Error while retrieving workflow...", e.getMessage());
+            logger.error("Error while retrieving workflow...", e);
             throw new Exception(e);
         }
     }
@@ -2370,7 +2369,7 @@ public class ExperimentRegistry {
             WorkflowNodeDetailResource wf = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             return wf.isExists(ResourceType.TASK_DETAIL, taskId);
         } catch (Exception e) {
-            logger.error("Error while retrieving task.....", e.getMessage());
+            logger.error("Error while retrieving task.....", e);
             throw new Exception(e);
         }
     }
@@ -2382,7 +2381,7 @@ public class ExperimentRegistry {
             TaskDetailResource taskDetail = wf.getTaskDetail((String) ids.getTopLevelIdentifier());
             return taskDetail.isExists(ResourceType.JOB_DETAIL, (String) ids.getSecondLevelIdentifier());
         } catch (Exception e) {
-            logger.error("Error while retrieving job details.....", e.getMessage());
+            logger.error("Error while retrieving job details.....", e);
             throw new Exception(e);
         }
     }
@@ -2394,7 +2393,7 @@ public class ExperimentRegistry {
             TaskDetailResource taskDetail = (TaskDetailResource) wf.create(ResourceType.TASK_DETAIL);
             return taskDetail.isExists(ResourceType.DATA_TRANSFER_DETAIL, transferId);
         } catch (Exception e) {
-            logger.error("Error while retrieving transfer details.....", e.getMessage());
+            logger.error("Error while retrieving transfer details.....", e);
             throw new Exception(e);
         }
     }
@@ -2415,7 +2414,7 @@ public class ExperimentRegistry {
 
             }
         } catch (Exception e) {
-            logger.error("Error while retrieving scheduling data.....", e.getMessage());
+            logger.error("Error while retrieving scheduling data.....", e);
             throw new Exception(e);
         }
         return false;
@@ -2436,7 +2435,7 @@ public class ExperimentRegistry {
                     logger.error("Unsupported data type...");
             }
         } catch (Exception e) {
-            logger.error("Error while retrieving input data handling.....", e.getMessage());
+            logger.error("Error while retrieving input data handling.....", e);
             throw new Exception(e);
         }
         return false;
@@ -2457,7 +2456,7 @@ public class ExperimentRegistry {
                     logger.error("Unsupported data type...");
             }
         } catch (Exception e) {
-            logger.error("Error while retrieving output data handling..", e.getMessage());
+            logger.error("Error while retrieving output data handling..", e);
             throw new Exception(e);
         }
         return false;
@@ -2478,7 +2477,7 @@ public class ExperimentRegistry {
                     logger.error("Unsupported data type...");
             }
         } catch (Exception e) {
-            logger.error("Error while retrieving qos params..", e.getMessage());
+            logger.error("Error while retrieving qos params..", e);
             throw new Exception(e);
         }
         return false;
@@ -2496,7 +2495,7 @@ public class ExperimentRegistry {
                 updateSchedulingData(scheduling, taskDetail);
             }
         } catch (Exception e) {
-            logger.error("Error while updating scheduling..", e.getMessage());
+            logger.error("Error while updating scheduling..", e);
             throw new Exception(e);
         }
     }
@@ -2513,7 +2512,7 @@ public class ExperimentRegistry {
                 updateInputDataHandling(dataHandling, taskDetail);
             }
         } catch (Exception e) {
-            logger.error("Error while updating input data handling..", e.getMessage());
+            logger.error("Error while updating input data handling..", e);
             throw new Exception(e);
         }
     }
@@ -2530,7 +2529,7 @@ public class ExperimentRegistry {
                 updateOutputDataHandling(dataHandling, taskDetail);
             }
         } catch (Exception e) {
-            logger.error("Error while updating output data handling", e.getMessage());
+            logger.error("Error while updating output data handling", e);
             throw new Exception(e);
         }
     }
@@ -2547,7 +2546,7 @@ public class ExperimentRegistry {
                 updateQosParams(params, taskDetail);
             }
         } catch (Exception e) {
-            logger.error("Error while updating QOS data..", e.getMessage());
+            logger.error("Error while updating QOS data..", e);
             throw new Exception(e);
         }
     }
