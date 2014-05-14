@@ -33,6 +33,7 @@ import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
+import org.apache.airavata.orchestrator.core.validator.ValidatorResult;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.Registry;
@@ -116,27 +117,39 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
     public boolean validateExperiment(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) throws OrchestratorException {
         if (this.orchestratorConfiguration.isEnableValidation()) {
             List<String> validatorClzzez = this.orchestratorContext.getOrchestratorConfiguration().getValidatorClasses();
+            ValidatorResult[] resultArray = new ValidatorResult[validatorClzzez.size()];
+            int index = 0;
             for (String validator : validatorClzzez) {
                 try {
                     Class<? extends JobMetadataValidator> vClass = Class.forName(validator.trim()).asSubclass(JobMetadataValidator.class);
                     JobMetadataValidator jobMetadataValidator = vClass.newInstance();
-                    if(jobMetadataValidator.validate(experiment, workflowNodeDetail, taskID)){
+                    resultArray[index] = jobMetadataValidator.validate(experiment, workflowNodeDetail, taskID);
+                    if(resultArray[index].isSuccessful()){
                         logger.info("Validation of " + validator + " is SUCCESSFUL");
                     }else {
-                        logger.error("Validation of " + validator + " is FAILED");
-                        return false;
+                        logger.error("Validation of " + validator + " is FAILED:[error]" + resultArray[index].getValidationMessage());
+                        //todo we need to store this message to registry
+                        // we do not return immediately after the first failure
                     }
                 } catch (ClassNotFoundException e) {
                     logger.error("Error loading the validation class: ", validator, e);
-                    return false;
+                    resultArray[index] = new ValidatorResult(false, "Error loading the validation class: " + e.getMessage());
                 } catch (InstantiationException e) {
                    logger.error("Error loading the validation class: ", validator, e);
-                    return false;
+                   resultArray[index] = new ValidatorResult(false, "Error loading the validation class: " + e.getMessage());
                 } catch (IllegalAccessException e) {
                    logger.error("Error loading the validation class: ", validator, e);
+                   resultArray[index] = new ValidatorResult(false, "Error loading the validation class: " + e.getMessage());
+                }
+                index++;
+            }
+            // we check whether validation was successful or not
+            for(ValidatorResult result:resultArray){
+                if(!result.isSuccessful()){
                     return false;
                 }
             }
+
         }
         return true;
     }

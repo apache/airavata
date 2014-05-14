@@ -29,6 +29,7 @@ import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
 import org.apache.airavata.model.workspace.experiment.ExperimentStatus;
 import org.apache.thrift.TException;
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +67,7 @@ public class SingleAppIntegrationTestBase extends AbstractIntegrationTest {
                         log.error("Thread interrupted", e.getMessage());
                     }
                     System.out.println(experimentStatus.getExperimentState().toString());
+                    Assert.assertFalse(experimentStatus.getExperimentState().equals(ExperimentState.FAILED));
                 }while(!experimentStatus.getExperimentState().equals(ExperimentState.COMPLETED));
             }
         });

@@ -20,12 +20,35 @@
 */
 package org.apache.airavata.orchestrator.core.validator;
 
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.TaskDetails;
-import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
-import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
+public class ValidatorResult {
+    private boolean isSuccessful;
 
-public interface JobMetadataValidator {
+    private String validationMessage;
 
-    ValidatorResult validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) throws OrchestratorException;
+
+    public ValidatorResult(boolean successful) {
+        isSuccessful = successful;
+    }
+
+    public ValidatorResult(boolean successful, String validationMessage) {
+        isSuccessful = successful;
+        this.validationMessage = validationMessage;
+    }
+
+    public boolean isSuccessful() {
+        return isSuccessful;
+    }
+
+    public void setValidationMessage(String validationMessage) {
+        this.validationMessage = validationMessage;
+    }
+
+    public String getValidationMessage() {
+
+        return validationMessage;
+    }
+
+    public void setSuccessful(boolean successful) {
+        isSuccessful = successful;
+    }
 }

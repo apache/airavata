@@ -34,5 +34,5 @@ public class OrchestratorConstants {
     public static final String START_SUBMITTER = "start.submitter";
     public static final String EMBEDDED_MODE = "embedded.mode";
     public static final String ENABLE_VALIDATION = "enable.validation";
-    public static final String JOB_VALIDATOR = "job.validator";
+    public static final String JOB_VALIDATOR = "job.validators";
 }
