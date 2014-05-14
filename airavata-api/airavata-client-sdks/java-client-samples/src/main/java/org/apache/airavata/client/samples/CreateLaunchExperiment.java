@@ -106,7 +106,7 @@ public class CreateLaunchExperiment {
                              System.out.println(airavata.getExperimentStatus(expId));
                              Thread.sleep(5000);
                          } catch (Exception e) {
-                             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                             e.printStackTrace();
                          }
                      }
 
@@ -246,7 +246,7 @@ public class CreateLaunchExperiment {
             exOut.add(output);
 
             Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
-            String projectId = client.createProject(project, "admin");
+            String projectId = client.createProject(project);
 
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho0", "SimpleEcho0", exInputs);
@@ -292,7 +292,7 @@ public class CreateLaunchExperiment {
             exOut.add(output);
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
-            String projectId = client.createProject(project, "admin");
+            String projectId = client.createProject(project);
 
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "sshEchoExperiment", "SSHEcho1", "SSHEcho1", exInputs);
@@ -337,7 +337,7 @@ public class CreateLaunchExperiment {
             exOut.add(output);
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
-            String projectId = client.createProject(project, "admin");
+            String projectId = client.createProject(project);
 
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho3", "SimpleEcho3", exInputs);
@@ -383,7 +383,7 @@ public class CreateLaunchExperiment {
             exOut.add(output);
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
-            String projectId = client.createProject(project, "admin");
+            String projectId = client.createProject(project);
 
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho4", "SimpleEcho4", exInputs);

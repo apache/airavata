@@ -70,7 +70,7 @@ public class SimpleEchoIT extends SingleAppIntegrationTestBase {
         exOut.add(output);
 
         Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
-        String projectId = getClient().createProject(project, "admin");
+        String projectId = getClient().createProject(project);
 
         Experiment simpleExperiment =
                 ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho0", "SimpleEcho0", exInputs);

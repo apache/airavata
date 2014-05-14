@@ -97,7 +97,7 @@ public class BaseCaseIT extends WorkflowIntegrationTestBase {
         exOut.add(output);
 
         Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
-        String projectId = getClient().createProject(project, "admin");
+        String projectId = getClient().createProject(project);
 
         Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
         simpleExperiment.setExperimentOutputs(exOut);
@@ -171,7 +171,7 @@ public class BaseCaseIT extends WorkflowIntegrationTestBase {
         exOut.add(output);
 
         Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
-        String projectId = getClient().createProject(project, "admin");
+        String projectId = getClient().createProject(project);
 
         Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho3", "SimpleEcho3", exInputs);
         simpleExperiment.setExperimentOutputs(exOut);

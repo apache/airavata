@@ -62,9 +62,8 @@ import org.slf4j.LoggerFactory;
      * 
      * 
      * @param project
-     * @param userName
      */
-    public String createProject(org.apache.airavata.model.workspace.Project project, String userName) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
+    public String createProject(org.apache.airavata.model.workspace.Project project) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Update a Project
@@ -384,7 +383,7 @@ import org.slf4j.LoggerFactory;
 
     public void GetAPIVersion(org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void createProject(org.apache.airavata.model.workspace.Project project, String userName, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void createProject(org.apache.airavata.model.workspace.Project project, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void updateProject(org.apache.airavata.model.workspace.Project project, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -464,17 +463,16 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "GetAPIVersion failed: unknown result");
     }
 
-    public String createProject(org.apache.airavata.model.workspace.Project project, String userName) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public String createProject(org.apache.airavata.model.workspace.Project project) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
     {
-      send_createProject(project, userName);
+      send_createProject(project);
       return recv_createProject();
     }
 
-    public void send_createProject(org.apache.airavata.model.workspace.Project project, String userName) throws org.apache.thrift.TException
+    public void send_createProject(org.apache.airavata.model.workspace.Project project) throws org.apache.thrift.TException
     {
       createProject_args args = new createProject_args();
       args.setProject(project);
-      args.setUserName(userName);
       sendBase("createProject", args);
     }
 
@@ -1060,27 +1058,24 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public void createProject(org.apache.airavata.model.workspace.Project project, String userName, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void createProject(org.apache.airavata.model.workspace.Project project, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      createProject_call method_call = new createProject_call(project, userName, resultHandler, this, ___protocolFactory, ___transport);
+      createProject_call method_call = new createProject_call(project, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class createProject_call extends org.apache.thrift.async.TAsyncMethodCall {
       private org.apache.airavata.model.workspace.Project project;
-      private String userName;
-      public createProject_call(org.apache.airavata.model.workspace.Project project, String userName, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public createProject_call(org.apache.airavata.model.workspace.Project project, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.project = project;
-        this.userName = userName;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("createProject", org.apache.thrift.protocol.TMessageType.CALL, 0));
         createProject_args args = new createProject_args();
         args.setProject(project);
-        args.setUserName(userName);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -1725,7 +1720,7 @@ import org.slf4j.LoggerFactory;
       public createProject_result getResult(I iface, createProject_args args) throws org.apache.thrift.TException {
         createProject_result result = new createProject_result();
         try {
-          result.success = iface.createProject(args.project, args.userName);
+          result.success = iface.createProject(args.project);
         } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.api.error.AiravataClientException ace) {
@@ -2345,7 +2340,7 @@ import org.slf4j.LoggerFactory;
       }
 
       public void start(I iface, createProject_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
-        iface.createProject(args.project, args.userName,resultHandler);
+        iface.createProject(args.project,resultHandler);
       }
     }
 
@@ -4060,7 +4055,6 @@ import org.slf4j.LoggerFactory;
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("createProject_args");
 
     private static final org.apache.thrift.protocol.TField PROJECT_FIELD_DESC = new org.apache.thrift.protocol.TField("project", org.apache.thrift.protocol.TType.STRUCT, (short)1);
-    private static final org.apache.thrift.protocol.TField USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userName", org.apache.thrift.protocol.TType.STRING, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -4069,12 +4063,10 @@ import org.slf4j.LoggerFactory;
     }
 
     public org.apache.airavata.model.workspace.Project project; // required
-    public String userName; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      PROJECT((short)1, "project"),
-      USER_NAME((short)2, "userName");
+      PROJECT((short)1, "project");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -4091,8 +4083,6 @@ import org.slf4j.LoggerFactory;
         switch(fieldId) {
           case 1: // PROJECT
             return PROJECT;
-          case 2: // USER_NAME
-            return USER_NAME;
           default:
             return null;
         }
@@ -4138,8 +4128,6 @@ import org.slf4j.LoggerFactory;
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.PROJECT, new org.apache.thrift.meta_data.FieldMetaData("project", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.workspace.Project.class)));
-      tmpMap.put(_Fields.USER_NAME, new org.apache.thrift.meta_data.FieldMetaData("userName", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(createProject_args.class, metaDataMap);
     }
@@ -4148,12 +4136,10 @@ import org.slf4j.LoggerFactory;
     }
 
     public createProject_args(
-      org.apache.airavata.model.workspace.Project project,
-      String userName)
+      org.apache.airavata.model.workspace.Project project)
     {
       this();
       this.project = project;
-      this.userName = userName;
     }
 
     /**
@@ -4162,9 +4148,6 @@ import org.slf4j.LoggerFactory;
     public createProject_args(createProject_args other) {
       if (other.isSetProject()) {
         this.project = new org.apache.airavata.model.workspace.Project(other.project);
-      }
-      if (other.isSetUserName()) {
-        this.userName = other.userName;
       }
     }
 
@@ -4175,7 +4158,6 @@ import org.slf4j.LoggerFactory;
     @Override
     public void clear() {
       this.project = null;
-      this.userName = null;
     }
 
     public org.apache.airavata.model.workspace.Project getProject() {
@@ -4202,30 +4184,6 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public String getUserName() {
-      return this.userName;
-    }
-
-    public createProject_args setUserName(String userName) {
-      this.userName = userName;
-      return this;
-    }
-
-    public void unsetUserName() {
-      this.userName = null;
-    }
-
-    /** Returns true if field userName is set (has been assigned a value) and false otherwise */
-    public boolean isSetUserName() {
-      return this.userName != null;
-    }
-
-    public void setUserNameIsSet(boolean value) {
-      if (!value) {
-        this.userName = null;
-      }
-    }
-
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case PROJECT:
@@ -4236,14 +4194,6 @@ import org.slf4j.LoggerFactory;
         }
         break;
 
-      case USER_NAME:
-        if (value == null) {
-          unsetUserName();
-        } else {
-          setUserName((String)value);
-        }
-        break;
-
       }
     }
 
@@ -4251,9 +4201,6 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case PROJECT:
         return getProject();
-
-      case USER_NAME:
-        return getUserName();
 
       }
       throw new IllegalStateException();
@@ -4268,8 +4215,6 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case PROJECT:
         return isSetProject();
-      case USER_NAME:
-        return isSetUserName();
       }
       throw new IllegalStateException();
     }
@@ -4296,15 +4241,6 @@ import org.slf4j.LoggerFactory;
           return false;
       }
 
-      boolean this_present_userName = true && this.isSetUserName();
-      boolean that_present_userName = true && that.isSetUserName();
-      if (this_present_userName || that_present_userName) {
-        if (!(this_present_userName && that_present_userName))
-          return false;
-        if (!this.userName.equals(that.userName))
-          return false;
-      }
-
       return true;
     }
 
@@ -4327,16 +4263,6 @@ import org.slf4j.LoggerFactory;
       }
       if (isSetProject()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.project, other.project);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      lastComparison = Boolean.valueOf(isSetUserName()).compareTo(other.isSetUserName());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetUserName()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userName, other.userName);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -4368,14 +4294,6 @@ import org.slf4j.LoggerFactory;
         sb.append(this.project);
       }
       first = false;
-      if (!first) sb.append(", ");
-      sb.append("userName:");
-      if (this.userName == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.userName);
-      }
-      first = false;
       sb.append(")");
       return sb.toString();
     }
@@ -4384,9 +4302,6 @@ import org.slf4j.LoggerFactory;
       // check for required fields
       if (project == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'project' was not present! Struct: " + toString());
-      }
-      if (userName == null) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'userName' was not present! Struct: " + toString());
       }
       // check for sub-struct validity
       if (project != null) {
@@ -4437,14 +4352,6 @@ import org.slf4j.LoggerFactory;
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 2: // USER_NAME
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.userName = iprot.readString();
-                struct.setUserNameIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -4465,11 +4372,6 @@ import org.slf4j.LoggerFactory;
           struct.project.write(oprot);
           oprot.writeFieldEnd();
         }
-        if (struct.userName != null) {
-          oprot.writeFieldBegin(USER_NAME_FIELD_DESC);
-          oprot.writeString(struct.userName);
-          oprot.writeFieldEnd();
-        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -4488,7 +4390,6 @@ import org.slf4j.LoggerFactory;
       public void write(org.apache.thrift.protocol.TProtocol prot, createProject_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         struct.project.write(oprot);
-        oprot.writeString(struct.userName);
       }
 
       @Override
@@ -4497,8 +4398,6 @@ import org.slf4j.LoggerFactory;
         struct.project = new org.apache.airavata.model.workspace.Project();
         struct.project.read(iprot);
         struct.setProjectIsSet(true);
-        struct.userName = iprot.readString();
-        struct.setUserNameIsSet(true);
       }
     }
 
