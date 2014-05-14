@@ -62,12 +62,14 @@ $airavataclient = new AiravataClient($protocol);
 
 
 
-$expId = 'US3ExperimentTrestles_d0753b6d-bf27-4d58-9508-f0339ea62e5b';
-
-update_experiment($expId);
-
-
-
+if ($argc != 2)
+{
+    echo 'php updateExperiment.php <experiment_id>';
+}
+else
+{
+    update_experiment($argv[1]);
+}
 
 
 
@@ -139,6 +141,8 @@ function update_experiment($expId)
         $airavataclient->updateExperiment($expId, $experiment);
 
         $updatedExperiment = $airavataclient->getExperiment($expId);
+
+        echo "Experiment $experiment->name updated:\n\n";
         var_dump($updatedExperiment);
     }
     catch (InvalidRequestException $ire)
@@ -155,7 +159,7 @@ function update_experiment($expId)
     }
     catch (AiravataSystemException $ase)
     {
-        echo 'AiravataSystemException during clone!<br><br>' . $ase->getMessage();
+        echo 'AiravataSystemException during update!<br><br>' . $ase->getMessage();
     }
     catch (TTransportException $tte)
     {

@@ -62,11 +62,30 @@ $airavataclient = new AiravataClient($protocol);
 
 
 
-$expId = 'US3ExperimentTrestles_1335d51a-5f82-44cc-be44-2f97b8ecf48a';
+//$expId = 'experiment2_8f9c0ccc-6392-47b3-bcde-f4e82557bc32';
 
-$clone = clone_experiment($expId);
 
-echo $clone;
+if ($argc != 2)
+{
+    echo 'php cloneExperiment.php <experiment_id>';
+}
+else
+{
+    $cloneId = clone_experiment($argv[1]);
+
+    $clone = get_experiment($cloneId);
+
+    echo "Created clone named $clone->name:\n\n";
+
+    var_dump($clone);
+}
+
+
+
+
+
+
+
 
 
 

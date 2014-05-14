@@ -34,7 +34,6 @@ use Thrift\Protocol\TBinaryProtocol;
 use Thrift\Transport\TBufferedTransport;
 use Thrift\Transport\TSocket;
 use Airavata\API\AiravataClient;
-
 use Airavata\Model\Workspace\Project;
 
 /* buffered transport
@@ -64,26 +63,27 @@ $airavataclient = new AiravataClient($protocol);
 
 try
 {
-    /* should hard-code values
-   $proj_name = $_GET["name"];
-   $user = $_GET["user"];
-    */
-
-    $project = new Project();
-    $project->owner = 'admin';
-    $project->name = 'New Project';
-
-    $projId = $airavataclient->createProject($project, 'admin');
-
-    if ($projId)
+    if ($argc != 3)
     {
-        print "Project $projId created!";
+        echo 'php createProject.php <owner> <project_name>';
     }
     else
     {
-        echo 'Failed to create project.';
-    }
+        $project = new Project();
+        $project->owner = $argv[1];
+        $project->name = $argv[2];
 
+        $projId = $airavataclient->createProject($project, $project->owner);
+
+        if ($projId)
+        {
+            print "Project $projId created!";
+        }
+        else
+        {
+            echo 'Failed to create project.';
+        }
+    }
 }
 catch (InvalidRequestException $ire)
 {

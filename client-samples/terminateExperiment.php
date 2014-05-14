@@ -60,13 +60,22 @@ $transport->open();
 $airavataclient = new AiravataClient($protocol);
 
 
+if ($argc != 2)
+{
+    echo 'php terminateExperiment.php <experiment_id>';
+}
+else
+{
+    terminate_experiment($argv[1]);
+
+    echo '\n\nIf there are no exceptions, assume the experiment terminated successfully';
+}
 
 
-$expId = 'US3ExperimentTrestles_e4156e0b-3981-4323-9187-1fcbca1b6664';
 
-end_experiment($expId);
 
-echo '<br><br>if there are no exceptions, assume the experiment terminated successfully';
+
+
 
 
 
@@ -78,7 +87,7 @@ $transport->close();
  * End the experiment with the given ID
  * @param $expId
  */
-function end_experiment($expId)
+function terminate_experiment($expId)
 {
     global $airavataclient;
 
@@ -88,27 +97,27 @@ function end_experiment($expId)
     }
     catch (InvalidRequestException $ire)
     {
-        echo 'InvalidRequestException!<br><br>' . $ire->getMessage();
+        echo 'InvalidRequestException!\n\n' . $ire->getMessage();
     }
     catch (ExperimentNotFoundException $enf)
     {
-        echo 'ExperimentNotFoundException!<br><br>' . $enf->getMessage();
+        echo 'ExperimentNotFoundException!\n\n' . $enf->getMessage();
     }
     catch (AiravataClientException $ace)
     {
-        echo 'AiravataClientException!<br><br>' . $ace->getMessage();
+        echo 'AiravataClientException!\n\n' . $ace->getMessage();
     }
     catch (AiravataSystemException $ase)
     {
-        echo 'AiravataSystemException!<br><br>' . $ase->getMessage();
+        echo 'AiravataSystemException!\n\n' . $ase->getMessage();
     }
     catch (TTransportException $tte)
     {
-        echo 'TTransportException!<br><br>' . $tte->getMessage();
+        echo 'TTransportException!\n\n' . $tte->getMessage();
     }
     catch (\Exception $e)
     {
-        echo 'Exception!<br><br>' . $e->getMessage();
+        echo 'Exception!\n\n' . $e->getMessage();
     }
 }
 
