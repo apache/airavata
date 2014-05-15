@@ -39,7 +39,7 @@ class AiravataClientFactory
     {
         $transport = new TSocket($this->airavataServerHost, $this->airavataServerPort);
         $protocol = new TBinaryProtocol($transport);
-        $transport->open();
+	$transport->open();
         return new AiravataClient($protocol);
     }
 }

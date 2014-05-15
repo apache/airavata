@@ -41,28 +41,20 @@ final class AiravataErrorType {
 class ExperimentNotFoundException extends TException {
   static $_TSPEC;
 
-  public $identifier = null;
-  public $key = null;
+  public $message = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
-          'var' => 'identifier',
-          'type' => TType::STRING,
-          ),
-        2 => array(
-          'var' => 'key',
+          'var' => 'message',
           'type' => TType::STRING,
           ),
         );
     }
     if (is_array($vals)) {
-      if (isset($vals['identifier'])) {
-        $this->identifier = $vals['identifier'];
-      }
-      if (isset($vals['key'])) {
-        $this->key = $vals['key'];
+      if (isset($vals['message'])) {
+        $this->message = $vals['message'];
       }
     }
   }
@@ -88,14 +80,7 @@ class ExperimentNotFoundException extends TException {
       {
         case 1:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->identifier);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 2:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->key);
+            $xfer += $input->readString($this->message);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -113,14 +98,9 @@ class ExperimentNotFoundException extends TException {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('ExperimentNotFoundException');
-    if ($this->identifier !== null) {
-      $xfer += $output->writeFieldBegin('identifier', TType::STRING, 1);
-      $xfer += $output->writeString($this->identifier);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->key !== null) {
-      $xfer += $output->writeFieldBegin('key', TType::STRING, 2);
-      $xfer += $output->writeString($this->key);
+    if ($this->message !== null) {
+      $xfer += $output->writeFieldBegin('message', TType::STRING, 1);
+      $xfer += $output->writeString($this->message);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
