@@ -28,6 +28,7 @@ include "airavataErrors.thrift"
 include "airavataDataModel.thrift"
 include "experimentModel.thrift"
 include "workspaceModel.thrift"
+include "applicationCatalogAPI.thrift"
 
 namespace java org.apache.airavata.api
 namespace php Airavata.API

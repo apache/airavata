@@ -13,6 +13,7 @@
 #include <thrift/transport/TTransport.h>
 
 #include <thrift/cxxfunctional.h>
+#include "applicationCatalogDataModel_types.h"
 
 
 
