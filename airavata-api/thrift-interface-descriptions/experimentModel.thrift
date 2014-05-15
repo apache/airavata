@@ -18,6 +18,8 @@
  *
  */
 
+include "applicationCatalogDataModel.thrift"
+
 namespace java org.apache.airavata.model.workspace.experiment
 namespace php Airavata.Model.Workspace.Experiment
 
