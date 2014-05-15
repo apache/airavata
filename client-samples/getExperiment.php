@@ -60,9 +60,12 @@ $transport->open();
 $airavataclient = new AiravataClient($protocol);
 
 
+if (count($argv) < 2) {
+    exit("Please provide an experimentID. \n");
+}
 
+$expId = $argv[1];
 
-$expId = 'US3ExperimentTrestles_e4156e0b-3981-4323-9187-1fcbca1b6664';
 
 $experiment = get_experiment($expId);
 
