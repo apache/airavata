@@ -582,6 +582,9 @@ public class ExperimentResource extends AbstractResource {
         for (Resource resource : resources) {
             StatusResource expStatus = (StatusResource) resource;
             if(expStatus.getStatusType().equals(StatusType.EXPERIMENT.toString())){
+                if (expStatus.getState() == null || expStatus.getState().equals("") ){
+                    expStatus.setState("UNKNOWN");
+                }
                 return expStatus;
             }
         }
@@ -594,6 +597,9 @@ public class ExperimentResource extends AbstractResource {
         for (Resource resource : resources) {
             StatusResource workflowNodeStatus = (StatusResource) resource;
             if(workflowNodeStatus.getStatusType().equals(StatusType.WORKFLOW_NODE.toString())){
+                if (workflowNodeStatus.getState() == null || workflowNodeStatus.getState().equals("")){
+                    workflowNodeStatus.setState("UNKNOWN");
+                }
                 statuses.add(workflowNodeStatus);
             }
         }

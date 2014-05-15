@@ -476,6 +476,9 @@ public class TaskDetailResource extends AbstractResource {
         for (Resource resource : resources) {
             StatusResource taskStatus = (StatusResource) resource;
             if(taskStatus.getStatusType().equals(StatusType.TASK.toString())){
+                if (taskStatus.getState() == null || taskStatus.getState().equals("") ){
+                    taskStatus.setState("UNKNOWN");
+                }
                 return taskStatus;
             }
         }
