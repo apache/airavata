@@ -327,6 +327,7 @@ public class ExperimentResource extends AbstractResource {
             case COMPUTATIONAL_RESOURCE_SCHEDULING:
                 generator = new QueryGenerator(COMPUTATIONAL_RESOURCE_SCHEDULING);
                 generator.setParameter(ComputationalResourceSchedulingConstants.EXPERIMENT_ID, name);
+                generator.setParameter(ComputationalResourceSchedulingConstants.TASK_ID, null);
                 q = generator.selectQuery(em);
                 Computational_Resource_Scheduling scheduling = (Computational_Resource_Scheduling)q.getSingleResult();
                 ComputationSchedulingResource schedulingResource = (ComputationSchedulingResource)Utils.getResource(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, scheduling);
@@ -336,6 +337,7 @@ public class ExperimentResource extends AbstractResource {
             case ADVANCE_INPUT_DATA_HANDLING:
                 generator = new QueryGenerator(ADVANCE_INPUT_DATA_HANDLING);
                 generator.setParameter(AdvancedInputDataHandlingConstants.EXPERIMENT_ID, name);
+                generator.setParameter(AdvancedInputDataHandlingConstants.TASK_ID, null);
                 q = generator.selectQuery(em);
                 AdvancedInputDataHandling inputDataHandling = (AdvancedInputDataHandling)q.getSingleResult();
                 AdvanceInputDataHandlingResource dataHandlingResource = (AdvanceInputDataHandlingResource)Utils.getResource(ResourceType.ADVANCE_INPUT_DATA_HANDLING, inputDataHandling);
@@ -345,6 +347,7 @@ public class ExperimentResource extends AbstractResource {
             case ADVANCE_OUTPUT_DATA_HANDLING:
                 generator = new QueryGenerator(ADVANCE_OUTPUT_DATA_HANDLING);
                 generator.setParameter(AdvancedOutputDataHandlingConstants.EXPERIMENT_ID, name);
+                generator.setParameter(AdvancedOutputDataHandlingConstants.TASK_ID, null);
                 q = generator.selectQuery(em);
                 AdvancedOutputDataHandling outputDataHandling = (AdvancedOutputDataHandling)q.getSingleResult();
                 AdvancedOutputDataHandlingResource outputDataHandlingResource = (AdvancedOutputDataHandlingResource)Utils.getResource(ResourceType.ADVANCE_OUTPUT_DATA_HANDLING, outputDataHandling);
@@ -354,6 +357,7 @@ public class ExperimentResource extends AbstractResource {
             case QOS_PARAM:
                 generator = new QueryGenerator(QOS_PARAMS);
                 generator.setParameter(QosParamsConstants.EXPERIMENT_ID, name);
+                generator.setParameter(QosParamsConstants.TASK_ID, null);
                 q = generator.selectQuery(em);
                 QosParam qosParam = (QosParam)q.getSingleResult();
                 QosParamResource qosParamResource = (QosParamResource)Utils.getResource(ResourceType.QOS_PARAM, qosParam);

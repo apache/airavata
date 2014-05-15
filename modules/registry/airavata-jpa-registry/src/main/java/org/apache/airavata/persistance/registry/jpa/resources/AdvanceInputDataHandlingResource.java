@@ -36,7 +36,7 @@ import java.util.List;
 
 public class AdvanceInputDataHandlingResource extends AbstractResource {
     private static final Logger logger = LoggerFactory.getLogger(AdvanceInputDataHandlingResource.class);
-    private int dataHandlingId;
+    private int dataHandlingId = 0;
     private ExperimentResource experimentResource;
     private TaskDetailResource taskDetailResource;
     private String workingDirParent;
@@ -128,7 +128,13 @@ public class AdvanceInputDataHandlingResource extends AbstractResource {
     public void save() {
         EntityManager em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
-        AdvancedInputDataHandling dataHandling = new AdvancedInputDataHandling();
+        AdvancedInputDataHandling dataHandling;
+        if (dataHandlingId != 0 ){
+            dataHandling = em.find(AdvancedInputDataHandling.class, dataHandlingId);
+            dataHandling.setDataHandlingId(dataHandlingId);
+        }else {
+            dataHandling = new AdvancedInputDataHandling();
+        }
         Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
         if (taskDetailResource !=null){
             TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
