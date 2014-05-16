@@ -207,6 +207,9 @@ public class DataTransferDetailResource extends AbstractResource {
         for (Resource resource : resources) {
             StatusResource dataTransferStatus = (StatusResource) resource;
             if(dataTransferStatus.getStatusType().equals(StatusType.DATA_TRANSFER.toString())){
+                if (dataTransferStatus.getState() == null || dataTransferStatus.getState().equals("") ){
+                    dataTransferStatus.setState("UNKNOWN");
+                }
                 return dataTransferStatus;
             }
         }

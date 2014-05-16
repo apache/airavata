@@ -2483,6 +2483,185 @@ void swap(WorkflowNodeDetails &a, WorkflowNodeDetails &b) {
   swap(a.__isset, b.__isset);
 }
 
+const char* ValidatorResult::ascii_fingerprint = "EB04A806CFFC9025AEE48CFFDC378A86";
+const uint8_t ValidatorResult::binary_fingerprint[16] = {0xEB,0x04,0xA8,0x06,0xCF,0xFC,0x90,0x25,0xAE,0xE4,0x8C,0xFF,0xDC,0x37,0x8A,0x86};
+
+uint32_t ValidatorResult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_result = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->result);
+          isset_result = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->errorDetails);
+          this->__isset.errorDetails = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_result)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t ValidatorResult::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("ValidatorResult");
+
+  xfer += oprot->writeFieldBegin("result", ::apache::thrift::protocol::T_BOOL, 1);
+  xfer += oprot->writeBool(this->result);
+  xfer += oprot->writeFieldEnd();
+
+  if (this->__isset.errorDetails) {
+    xfer += oprot->writeFieldBegin("errorDetails", ::apache::thrift::protocol::T_STRING, 2);
+    xfer += oprot->writeString(this->errorDetails);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(ValidatorResult &a, ValidatorResult &b) {
+  using ::std::swap;
+  swap(a.result, b.result);
+  swap(a.errorDetails, b.errorDetails);
+  swap(a.__isset, b.__isset);
+}
+
+const char* ValidationResults::ascii_fingerprint = "E73BC8630EE405DA5FB801ED852143D2";
+const uint8_t ValidationResults::binary_fingerprint[16] = {0xE7,0x3B,0xC8,0x63,0x0E,0xE4,0x05,0xDA,0x5F,0xB8,0x01,0xED,0x85,0x21,0x43,0xD2};
+
+uint32_t ValidationResults::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_validationState = false;
+  bool isset_validationResultList = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->validationState);
+          isset_validationState = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->validationResultList.clear();
+            uint32_t _size75;
+            ::apache::thrift::protocol::TType _etype78;
+            xfer += iprot->readListBegin(_etype78, _size75);
+            this->validationResultList.resize(_size75);
+            uint32_t _i79;
+            for (_i79 = 0; _i79 < _size75; ++_i79)
+            {
+              xfer += this->validationResultList[_i79].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
+          isset_validationResultList = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_validationState)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_validationResultList)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t ValidationResults::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("ValidationResults");
+
+  xfer += oprot->writeFieldBegin("validationState", ::apache::thrift::protocol::T_BOOL, 1);
+  xfer += oprot->writeBool(this->validationState);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("validationResultList", ::apache::thrift::protocol::T_LIST, 2);
+  {
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->validationResultList.size()));
+    std::vector<ValidatorResult> ::const_iterator _iter80;
+    for (_iter80 = this->validationResultList.begin(); _iter80 != this->validationResultList.end(); ++_iter80)
+    {
+      xfer += (*_iter80).write(oprot);
+    }
+    xfer += oprot->writeListEnd();
+  }
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(ValidationResults &a, ValidationResults &b) {
+  using ::std::swap;
+  swap(a.validationState, b.validationState);
+  swap(a.validationResultList, b.validationResultList);
+}
+
 const char* Experiment::ascii_fingerprint = "9991CE776AFA4D20B5AA55C2BB0136D4";
 const uint8_t Experiment::binary_fingerprint[16] = {0x99,0x91,0xCE,0x77,0x6A,0xFA,0x4D,0x20,0xB5,0xAA,0x55,0xC2,0xBB,0x01,0x36,0xD4};
 
@@ -2610,14 +2789,14 @@ uint32_t Experiment::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->experimentInputs.clear();
-            uint32_t _size75;
-            ::apache::thrift::protocol::TType _etype78;
-            xfer += iprot->readListBegin(_etype78, _size75);
-            this->experimentInputs.resize(_size75);
-            uint32_t _i79;
-            for (_i79 = 0; _i79 < _size75; ++_i79)
+            uint32_t _size81;
+            ::apache::thrift::protocol::TType _etype84;
+            xfer += iprot->readListBegin(_etype84, _size81);
+            this->experimentInputs.resize(_size81);
+            uint32_t _i85;
+            for (_i85 = 0; _i85 < _size81; ++_i85)
             {
-              xfer += this->experimentInputs[_i79].read(iprot);
+              xfer += this->experimentInputs[_i85].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2630,14 +2809,14 @@ uint32_t Experiment::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->experimentOutputs.clear();
-            uint32_t _size80;
-            ::apache::thrift::protocol::TType _etype83;
-            xfer += iprot->readListBegin(_etype83, _size80);
-            this->experimentOutputs.resize(_size80);
-            uint32_t _i84;
-            for (_i84 = 0; _i84 < _size80; ++_i84)
+            uint32_t _size86;
+            ::apache::thrift::protocol::TType _etype89;
+            xfer += iprot->readListBegin(_etype89, _size86);
+            this->experimentOutputs.resize(_size86);
+            uint32_t _i90;
+            for (_i90 = 0; _i90 < _size86; ++_i90)
             {
-              xfer += this->experimentOutputs[_i84].read(iprot);
+              xfer += this->experimentOutputs[_i90].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2658,14 +2837,14 @@ uint32_t Experiment::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->stateChangeList.clear();
-            uint32_t _size85;
-            ::apache::thrift::protocol::TType _etype88;
-            xfer += iprot->readListBegin(_etype88, _size85);
-            this->stateChangeList.resize(_size85);
-            uint32_t _i89;
-            for (_i89 = 0; _i89 < _size85; ++_i89)
+            uint32_t _size91;
+            ::apache::thrift::protocol::TType _etype94;
+            xfer += iprot->readListBegin(_etype94, _size91);
+            this->stateChangeList.resize(_size91);
+            uint32_t _i95;
+            for (_i95 = 0; _i95 < _size91; ++_i95)
             {
-              xfer += this->stateChangeList[_i89].read(iprot);
+              xfer += this->stateChangeList[_i95].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2678,14 +2857,14 @@ uint32_t Experiment::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->workflowNodeDetailsList.clear();
-            uint32_t _size90;
-            ::apache::thrift::protocol::TType _etype93;
-            xfer += iprot->readListBegin(_etype93, _size90);
-            this->workflowNodeDetailsList.resize(_size90);
-            uint32_t _i94;
-            for (_i94 = 0; _i94 < _size90; ++_i94)
+            uint32_t _size96;
+            ::apache::thrift::protocol::TType _etype99;
+            xfer += iprot->readListBegin(_etype99, _size96);
+            this->workflowNodeDetailsList.resize(_size96);
+            uint32_t _i100;
+            for (_i100 = 0; _i100 < _size96; ++_i100)
             {
-              xfer += this->workflowNodeDetailsList[_i94].read(iprot);
+              xfer += this->workflowNodeDetailsList[_i100].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2698,14 +2877,14 @@ uint32_t Experiment::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->errors.clear();
-            uint32_t _size95;
-            ::apache::thrift::protocol::TType _etype98;
-            xfer += iprot->readListBegin(_etype98, _size95);
-            this->errors.resize(_size95);
-            uint32_t _i99;
-            for (_i99 = 0; _i99 < _size95; ++_i99)
+            uint32_t _size101;
+            ::apache::thrift::protocol::TType _etype104;
+            xfer += iprot->readListBegin(_etype104, _size101);
+            this->errors.resize(_size101);
+            uint32_t _i105;
+            for (_i105 = 0; _i105 < _size101; ++_i105)
             {
-              xfer += this->errors[_i99].read(iprot);
+              xfer += this->errors[_i105].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2798,10 +2977,10 @@ uint32_t Experiment::write(::apache::thrift::protocol::TProtocol* oprot) const {
     xfer += oprot->writeFieldBegin("experimentInputs", ::apache::thrift::protocol::T_LIST, 13);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->experimentInputs.size()));
-      std::vector<DataObjectType> ::const_iterator _iter100;
-      for (_iter100 = this->experimentInputs.begin(); _iter100 != this->experimentInputs.end(); ++_iter100)
+      std::vector<DataObjectType> ::const_iterator _iter106;
+      for (_iter106 = this->experimentInputs.begin(); _iter106 != this->experimentInputs.end(); ++_iter106)
       {
-        xfer += (*_iter100).write(oprot);
+        xfer += (*_iter106).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -2811,10 +2990,10 @@ uint32_t Experiment::write(::apache::thrift::protocol::TProtocol* oprot) const {
     xfer += oprot->writeFieldBegin("experimentOutputs", ::apache::thrift::protocol::T_LIST, 14);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->experimentOutputs.size()));
-      std::vector<DataObjectType> ::const_iterator _iter101;
-      for (_iter101 = this->experimentOutputs.begin(); _iter101 != this->experimentOutputs.end(); ++_iter101)
+      std::vector<DataObjectType> ::const_iterator _iter107;
+      for (_iter107 = this->experimentOutputs.begin(); _iter107 != this->experimentOutputs.end(); ++_iter107)
       {
-        xfer += (*_iter101).write(oprot);
+        xfer += (*_iter107).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -2829,10 +3008,10 @@ uint32_t Experiment::write(::apache::thrift::protocol::TProtocol* oprot) const {
     xfer += oprot->writeFieldBegin("stateChangeList", ::apache::thrift::protocol::T_LIST, 16);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->stateChangeList.size()));
-      std::vector<WorkflowNodeStatus> ::const_iterator _iter102;
-      for (_iter102 = this->stateChangeList.begin(); _iter102 != this->stateChangeList.end(); ++_iter102)
+      std::vector<WorkflowNodeStatus> ::const_iterator _iter108;
+      for (_iter108 = this->stateChangeList.begin(); _iter108 != this->stateChangeList.end(); ++_iter108)
       {
-        xfer += (*_iter102).write(oprot);
+        xfer += (*_iter108).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -2842,10 +3021,10 @@ uint32_t Experiment::write(::apache::thrift::protocol::TProtocol* oprot) const {
     xfer += oprot->writeFieldBegin("workflowNodeDetailsList", ::apache::thrift::protocol::T_LIST, 17);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->workflowNodeDetailsList.size()));
-      std::vector<WorkflowNodeDetails> ::const_iterator _iter103;
-      for (_iter103 = this->workflowNodeDetailsList.begin(); _iter103 != this->workflowNodeDetailsList.end(); ++_iter103)
+      std::vector<WorkflowNodeDetails> ::const_iterator _iter109;
+      for (_iter109 = this->workflowNodeDetailsList.begin(); _iter109 != this->workflowNodeDetailsList.end(); ++_iter109)
       {
-        xfer += (*_iter103).write(oprot);
+        xfer += (*_iter109).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -2855,10 +3034,10 @@ uint32_t Experiment::write(::apache::thrift::protocol::TProtocol* oprot) const {
     xfer += oprot->writeFieldBegin("errors", ::apache::thrift::protocol::T_LIST, 18);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->errors.size()));
-      std::vector<ErrorDetails> ::const_iterator _iter104;
-      for (_iter104 = this->errors.begin(); _iter104 != this->errors.end(); ++_iter104)
+      std::vector<ErrorDetails> ::const_iterator _iter110;
+      for (_iter110 = this->errors.begin(); _iter110 != this->errors.end(); ++_iter110)
       {
-        xfer += (*_iter104).write(oprot);
+        xfer += (*_iter110).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }

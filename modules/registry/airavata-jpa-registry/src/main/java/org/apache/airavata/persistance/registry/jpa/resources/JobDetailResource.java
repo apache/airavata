@@ -249,6 +249,9 @@ public class JobDetailResource extends AbstractResource {
         for (Resource resource : resources) {
             StatusResource jobStatus = (StatusResource) resource;
             if(jobStatus.getStatusType().equals(StatusType.JOB.toString())){
+                if (jobStatus.getState() == null || jobStatus.getState().equals("") ){
+                    jobStatus.setState("UNKNOWN");
+                }
                 return jobStatus;
             }
         }
@@ -260,6 +263,9 @@ public class JobDetailResource extends AbstractResource {
         for (Resource resource : resources) {
             StatusResource appStatus = (StatusResource) resource;
             if(appStatus.getStatusType().equals(StatusType.APPLICATION.toString())){
+                if (appStatus.getState() == null || appStatus.getState().equals("") ){
+                    appStatus.setState("UNKNOWN");
+                }
                 return appStatus;
             }
         }

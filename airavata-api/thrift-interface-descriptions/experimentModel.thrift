@@ -18,6 +18,8 @@
  *
  */
 
+include "applicationCatalogDataModel.thrift"
+
 namespace java org.apache.airavata.model.workspace.experiment
 namespace php Airavata.Model.Workspace.Experiment
 
@@ -325,6 +327,23 @@ struct WorkflowNodeDetails {
     8: optional list<ErrorDetails> errors
 }
 
+/**
+* This data structure can be used to store the validation results
+* captured during validation step and during the launchExperiment
+* operation it can be easilly checked to see the errors occured
+* during the experiment launch operation
+**/
+
+struct ValidatorResult {
+    1: required bool result,
+    2: optional string errorDetails
+}
+
+
+struct ValidationResults {
+    1: required bool validationState,
+    2: required list<ValidatorResult> validationResultList
+}
 /**
  * A structure holding the experiment metadata and its child models.
  *

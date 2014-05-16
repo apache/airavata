@@ -74,7 +74,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             return (String)registry.add(ParentDataType.PROJECT, project);
         } catch (RegistryException e) {
             logger.error("Error while creating the project", e);
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while creating the project. More info : " + e.getMessage());
+            throw exception;
         }
     }
 
@@ -101,7 +104,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             registry.update(RegistryModelType.PROJECT, project, project.getProjectID());
         } catch (RegistryException e) {
             logger.error("Error while updating the project", e);
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updating the project. More info : " + e.getMessage());
+            throw exception;
         }
     }
 
@@ -117,7 +123,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             return (Project)registry.get(RegistryModelType.PROJECT, projectId);
         } catch (RegistryException e) {
             logger.error("Error while updating the project", e);
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updating the project. More info : " + e.getMessage());
+            throw exception;
         }
     }
 
@@ -140,7 +149,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             return projects;
         } catch (RegistryException e) {
             logger.error("Error while updating the project", e);
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updating the project. More info : " + e.getMessage());
+            throw exception;
         }
     }
 
@@ -165,7 +177,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             return experiments;
         } catch (Exception e) {
             logger.error("Error while retrieving the experiments", e);
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving the experiments. More info : " + e.getMessage());
+            throw exception;
         }
     }
 
@@ -188,7 +203,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             return experiments;
         } catch (Exception e) {
             logger.error("Error while retrieving the experiments", e);
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving the experiments. More info : " + e.getMessage());
+            throw exception;
         }
     }
 
@@ -221,7 +239,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             return (String)registry.add(ParentDataType.EXPERIMENT, experiment);
         } catch (Exception e) {
             logger.error("Error while creating the experiment", e);
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while creating the experiment. More info : " + e.getMessage());
+            throw exception;
         }
     }
 
@@ -257,7 +278,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             return (Experiment)registry.get(RegistryModelType.EXPERIMENT, airavataExperimentId);
         } catch (Exception e) {
             logger.error("Error while retrieving the experiment", e);
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving the experiment. More info : " + e.getMessage());
+            throw exception;
         }
     }
 
@@ -296,7 +320,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             registry.update(RegistryModelType.EXPERIMENT, experiment, airavataExperimentId);
         } catch (Exception e) {
             logger.error("Error while updating experiment", e);
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updating experiment. More info : " + e.getMessage());
+            throw exception;
         }
     }
 
@@ -310,7 +337,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             registry.add(ChildDataType.EXPERIMENT_CONFIGURATION_DATA, userConfiguration, airavataExperimentId);
         } catch (Exception e) {
             logger.error("Error while updating user configuration", e);
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updating user configuration. More info : " + e.getMessage());
+            throw exception;
         }
     }
 
@@ -324,7 +354,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             registry.add(ChildDataType.COMPUTATIONAL_RESOURCE_SCHEDULING, resourceScheduling, airavataExperimentId);
         } catch (Exception e) {
             logger.error("Error while updating scheduling info", e);
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updating scheduling info. More info : " + e.getMessage());
+            throw exception;
         }
     }
 
@@ -380,7 +413,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             return (ExperimentStatus)registry.get(RegistryModelType.EXPERIMENT_STATUS, airavataExperimentId);
         } catch (Exception e) {
             logger.error("Error while retrieving the experiment status", e);
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving the experiment status. More info : " + e.getMessage());
+            throw exception;
         }
     }
 
@@ -394,7 +430,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             return (List<DataObjectType>)registry.get(RegistryModelType.EXPERIMENT_OUTPUT, airavataExperimentId);
         } catch (Exception e) {
             logger.error("Error while retrieving the experiment outputs", e);
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving the experiment outputs. More info : " + e.getMessage());
+            throw exception;
         }
     }
 
@@ -426,7 +465,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
         } catch (Exception e) {
             logger.error("Error while retrieving the job statuses", e);
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving the job statuses. More info : " + e.getMessage());
+            throw exception;
         }
         return jobStatus;
     }
@@ -434,6 +476,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     /**
      * Launch a previously created and configured experiment. Airavata Server will then start processing the request and appropriate
      * notifications and intermediate and output data will be subsequently available for this experiment.
+     *
      *
      * @param airavataExperimentId   The identifier for the requested experiment. This is returned during the create experiment step.
      * @param airavataCredStoreToken :
@@ -466,7 +509,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *          rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
-    public void launchExperiment(String airavataExperimentId, String airavataCredStoreToken) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+    public ValidationResults launchExperiment(String airavataExperimentId, String airavataCredStoreToken) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
         final OrchestratorService.Client orchestratorClient = getOrchestratorClient();
         final String expID = airavataExperimentId;
         (new Thread(){
@@ -482,6 +525,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 }
             }
         }).start();
+        return null;
     }
 
 	private OrchestratorService.Client getOrchestratorClient() {
@@ -546,7 +590,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             return (String)registry.add(ParentDataType.EXPERIMENT, existingExperiment);
         } catch (Exception e) {
             logger.error("Error while cloning the experiment with existing configuration...", e);
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while cloning the experiment with existing configuration. More info : " + e.getMessage());
+            throw exception;
         }
     }
 

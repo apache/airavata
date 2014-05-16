@@ -28,7 +28,7 @@ class AiravataIf {
   virtual void updateExperimentConfiguration(const std::string& airavataExperimentId, const  ::UserConfigurationData& userConfiguration) = 0;
   virtual void updateResourceScheduleing(const std::string& airavataExperimentId, const  ::ComputationalResourceScheduling& resourceScheduling) = 0;
   virtual bool validateExperiment(const std::string& airavataExperimentId) = 0;
-  virtual void launchExperiment(const std::string& airavataExperimentId, const std::string& airavataCredStoreToken) = 0;
+  virtual void launchExperiment( ::ValidationResults& _return, const std::string& airavataExperimentId, const std::string& airavataCredStoreToken) = 0;
   virtual void getExperimentStatus( ::ExperimentStatus& _return, const std::string& airavataExperimentId) = 0;
   virtual void getExperimentOutputs(std::vector< ::DataObjectType> & _return, const std::string& airavataExperimentId) = 0;
   virtual void getJobStatuses(std::map<std::string,  ::JobStatus> & _return, const std::string& airavataExperimentId) = 0;
@@ -103,7 +103,7 @@ class AiravataNull : virtual public AiravataIf {
     bool _return = false;
     return _return;
   }
-  void launchExperiment(const std::string& /* airavataExperimentId */, const std::string& /* airavataCredStoreToken */) {
+  void launchExperiment( ::ValidationResults& /* _return */, const std::string& /* airavataExperimentId */, const std::string& /* airavataCredStoreToken */) {
     return;
   }
   void getExperimentStatus( ::ExperimentStatus& /* _return */, const std::string& /* airavataExperimentId */) {
@@ -1789,7 +1789,8 @@ class Airavata_launchExperiment_pargs {
 };
 
 typedef struct _Airavata_launchExperiment_result__isset {
-  _Airavata_launchExperiment_result__isset() : ire(false), enf(false), ace(false), ase(false) {}
+  _Airavata_launchExperiment_result__isset() : success(false), ire(false), enf(false), ace(false), ase(false) {}
+  bool success;
   bool ire;
   bool enf;
   bool ace;
@@ -1804,12 +1805,17 @@ class Airavata_launchExperiment_result {
 
   virtual ~Airavata_launchExperiment_result() throw() {}
 
+   ::ValidationResults success;
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::ExperimentNotFoundException enf;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_launchExperiment_result__isset __isset;
+
+  void __set_success(const  ::ValidationResults& val) {
+    success = val;
+  }
 
   void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
     ire = val;
@@ -1829,6 +1835,8 @@ class Airavata_launchExperiment_result {
 
   bool operator == (const Airavata_launchExperiment_result & rhs) const
   {
+    if (!(success == rhs.success))
+      return false;
     if (!(ire == rhs.ire))
       return false;
     if (!(enf == rhs.enf))
@@ -1851,7 +1859,8 @@ class Airavata_launchExperiment_result {
 };
 
 typedef struct _Airavata_launchExperiment_presult__isset {
-  _Airavata_launchExperiment_presult__isset() : ire(false), enf(false), ace(false), ase(false) {}
+  _Airavata_launchExperiment_presult__isset() : success(false), ire(false), enf(false), ace(false), ase(false) {}
+  bool success;
   bool ire;
   bool enf;
   bool ace;
@@ -1864,6 +1873,7 @@ class Airavata_launchExperiment_presult {
 
   virtual ~Airavata_launchExperiment_presult() throw() {}
 
+   ::ValidationResults* success;
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::ExperimentNotFoundException enf;
    ::airavata::api::error::AiravataClientException ace;
@@ -2575,9 +2585,9 @@ class AiravataClient : virtual public AiravataIf {
   bool validateExperiment(const std::string& airavataExperimentId);
   void send_validateExperiment(const std::string& airavataExperimentId);
   bool recv_validateExperiment();
-  void launchExperiment(const std::string& airavataExperimentId, const std::string& airavataCredStoreToken);
+  void launchExperiment( ::ValidationResults& _return, const std::string& airavataExperimentId, const std::string& airavataCredStoreToken);
   void send_launchExperiment(const std::string& airavataExperimentId, const std::string& airavataCredStoreToken);
-  void recv_launchExperiment();
+  void recv_launchExperiment( ::ValidationResults& _return);
   void getExperimentStatus( ::ExperimentStatus& _return, const std::string& airavataExperimentId);
   void send_getExperimentStatus(const std::string& airavataExperimentId);
   void recv_getExperimentStatus( ::ExperimentStatus& _return);
@@ -2802,13 +2812,14 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->validateExperiment(airavataExperimentId);
   }
 
-  void launchExperiment(const std::string& airavataExperimentId, const std::string& airavataCredStoreToken) {
+  void launchExperiment( ::ValidationResults& _return, const std::string& airavataExperimentId, const std::string& airavataCredStoreToken) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->launchExperiment(airavataExperimentId, airavataCredStoreToken);
+      ifaces_[i]->launchExperiment(_return, airavataExperimentId, airavataCredStoreToken);
     }
-    ifaces_[i]->launchExperiment(airavataExperimentId, airavataCredStoreToken);
+    ifaces_[i]->launchExperiment(_return, airavataExperimentId, airavataCredStoreToken);
+    return;
   }
 
   void getExperimentStatus( ::ExperimentStatus& _return, const std::string& airavataExperimentId) {

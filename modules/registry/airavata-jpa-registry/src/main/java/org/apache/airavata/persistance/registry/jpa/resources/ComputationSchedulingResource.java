@@ -36,7 +36,7 @@ import java.util.List;
 
 public class ComputationSchedulingResource extends AbstractResource {
     private static final Logger logger = LoggerFactory.getLogger(ComputationSchedulingResource.class);
-    private int schedulingId;
+    private int schedulingId = 0;
     private ExperimentResource experimentResource;
     private TaskDetailResource taskDetailResource;
     private String resourceHostId;
@@ -173,8 +173,13 @@ public class ComputationSchedulingResource extends AbstractResource {
     public void save() {
         EntityManager em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
-
-        Computational_Resource_Scheduling scheduling = new Computational_Resource_Scheduling();
+        Computational_Resource_Scheduling scheduling;
+        if (schedulingId != 0){
+            scheduling = em.find(Computational_Resource_Scheduling.class, schedulingId);
+            scheduling.setSchedulingId(schedulingId);
+        }else {
+            scheduling = new Computational_Resource_Scheduling();
+        }
         Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
         if (taskDetailResource != null){
             TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());

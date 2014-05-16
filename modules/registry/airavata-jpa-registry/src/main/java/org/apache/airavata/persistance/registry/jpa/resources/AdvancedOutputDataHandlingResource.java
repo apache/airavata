@@ -35,7 +35,7 @@ import java.util.List;
 
 public class AdvancedOutputDataHandlingResource extends AbstractResource {
     private static final Logger logger = LoggerFactory.getLogger(AdvancedOutputDataHandlingResource.class);
-    private int outputDataHandlingId;
+    private int outputDataHandlingId = 0;
     private ExperimentResource experimentResource;
     private TaskDetailResource taskDetailResource;
     private  String outputDataDir;
@@ -118,7 +118,13 @@ public class AdvancedOutputDataHandlingResource extends AbstractResource {
     public void save() {
         EntityManager em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
-        AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
+        AdvancedOutputDataHandling dataHandling;
+        if (outputDataHandlingId != 0 ){
+            dataHandling = em.find(AdvancedOutputDataHandling.class, outputDataHandlingId);
+            dataHandling.setOutputDataHandlingId(outputDataHandlingId);
+        }else {
+            dataHandling = new AdvancedOutputDataHandling();
+        }
         Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
         if (taskDetailResource !=null){
             TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
