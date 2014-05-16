@@ -328,6 +328,23 @@ struct WorkflowNodeDetails {
 }
 
 /**
+* This data structure can be used to store the validation results
+* captured during validation step and during the launchExperiment
+* operation it can be easilly checked to see the errors occured
+* during the experiment launch operation
+**/
+
+struct ValidatorResult {
+    1: required boolean result,
+    2: optional string errorDetails
+}
+
+
+struct ValidationResults {
+    1: required boolean validationState,
+    2: required list<ValidationResults>
+}
+/**
  * A structure holding the experiment metadata and its child models.
  *
  * userName:
