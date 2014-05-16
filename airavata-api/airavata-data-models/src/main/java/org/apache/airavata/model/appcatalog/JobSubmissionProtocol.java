@@ -42,8 +42,9 @@ import org.apache.thrift.TEnum;
  */
 @SuppressWarnings("all") public enum JobSubmissionProtocol implements org.apache.thrift.TEnum {
   SSH(0),
-  GRAM(1),
-  UNICORE(2);
+  GSISSH(1),
+  GRAM(2),
+  UNICORE(3);
 
   private final int value;
 
@@ -67,8 +68,10 @@ import org.apache.thrift.TEnum;
       case 0:
         return SSH;
       case 1:
-        return GRAM;
+        return GSISSH;
       case 2:
+        return GRAM;
+      case 3:
         return UNICORE;
       default:
         return null;

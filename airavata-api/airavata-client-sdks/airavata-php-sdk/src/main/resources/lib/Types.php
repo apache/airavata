@@ -32,12 +32,14 @@ final class ResourceJobManager {
 
 final class JobSubmissionProtocol {
   const SSH = 0;
-  const GRAM = 1;
-  const UNICORE = 2;
+  const GSISSH = 1;
+  const GRAM = 2;
+  const UNICORE = 3;
   static public $__names = array(
     0 => 'SSH',
-    1 => 'GRAM',
-    2 => 'UNICORE',
+    1 => 'GSISSH',
+    2 => 'GRAM',
+    3 => 'UNICORE',
   );
 }
 
@@ -72,6 +74,7 @@ final class SecurityProtocol {
 class SCPDataMovement {
   static $_TSPEC;
 
+  public $scpDataMovementID = "DO_NOT_SET_AT_CLIENTS";
   public $securityProtocol = null;
   public $sshPort = 22;
 
@@ -79,16 +82,23 @@ class SCPDataMovement {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
+          'var' => 'scpDataMovementID',
+          'type' => TType::STRING,
+          ),
+        2 => array(
           'var' => 'securityProtocol',
           'type' => TType::I32,
           ),
-        2 => array(
+        3 => array(
           'var' => 'sshPort',
           'type' => TType::I32,
           ),
         );
     }
     if (is_array($vals)) {
+      if (isset($vals['scpDataMovementID'])) {
+        $this->scpDataMovementID = $vals['scpDataMovementID'];
+      }
       if (isset($vals['securityProtocol'])) {
         $this->securityProtocol = $vals['securityProtocol'];
       }
@@ -118,13 +128,20 @@ class SCPDataMovement {
       switch ($fid)
       {
         case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->scpDataMovementID);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
           if ($ftype == TType::I32) {
             $xfer += $input->readI32($this->securityProtocol);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 2:
+        case 3:
           if ($ftype == TType::I32) {
             $xfer += $input->readI32($this->sshPort);
           } else {
@@ -144,13 +161,18 @@ class SCPDataMovement {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('SCPDataMovement');
+    if ($this->scpDataMovementID !== null) {
+      $xfer += $output->writeFieldBegin('scpDataMovementID', TType::STRING, 1);
+      $xfer += $output->writeString($this->scpDataMovementID);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->securityProtocol !== null) {
-      $xfer += $output->writeFieldBegin('securityProtocol', TType::I32, 1);
+      $xfer += $output->writeFieldBegin('securityProtocol', TType::I32, 2);
       $xfer += $output->writeI32($this->securityProtocol);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->sshPort !== null) {
-      $xfer += $output->writeFieldBegin('sshPort', TType::I32, 2);
+      $xfer += $output->writeFieldBegin('sshPort', TType::I32, 3);
       $xfer += $output->writeI32($this->sshPort);
       $xfer += $output->writeFieldEnd();
     }
@@ -164,12 +186,17 @@ class SCPDataMovement {
 class SSHJobSubmission {
   static $_TSPEC;
 
+  public $sshJobSubmissionID = "DO_NOT_SET_AT_CLIENTS";
   public $resourceJobManager = null;
   public $sshPort = 22;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
+        1 => array(
+          'var' => 'sshJobSubmissionID',
+          'type' => TType::STRING,
+          ),
         2 => array(
           'var' => 'resourceJobManager',
           'type' => TType::I32,
@@ -181,6 +208,9 @@ class SSHJobSubmission {
         );
     }
     if (is_array($vals)) {
+      if (isset($vals['sshJobSubmissionID'])) {
+        $this->sshJobSubmissionID = $vals['sshJobSubmissionID'];
+      }
       if (isset($vals['resourceJobManager'])) {
         $this->resourceJobManager = $vals['resourceJobManager'];
       }
@@ -209,6 +239,13 @@ class SSHJobSubmission {
       }
       switch ($fid)
       {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->sshJobSubmissionID);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         case 2:
           if ($ftype == TType::I32) {
             $xfer += $input->readI32($this->resourceJobManager);
@@ -236,6 +273,11 @@ class SSHJobSubmission {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('SSHJobSubmission');
+    if ($this->sshJobSubmissionID !== null) {
+      $xfer += $output->writeFieldBegin('sshJobSubmissionID', TType::STRING, 1);
+      $xfer += $output->writeString($this->sshJobSubmissionID);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->resourceJobManager !== null) {
       $xfer += $output->writeFieldBegin('resourceJobManager', TType::I32, 2);
       $xfer += $output->writeI32($this->resourceJobManager);
@@ -256,6 +298,7 @@ class SSHJobSubmission {
 class GlobusJobSubmission {
   static $_TSPEC;
 
+  public $globusJobSubmissionID = "DO_NOT_SET_AT_CLIENTS";
   public $securityProtocol = null;
   public $resourceJobManager = null;
   public $globusGateKeeperEndPoint = null;
@@ -264,20 +307,27 @@ class GlobusJobSubmission {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
+          'var' => 'globusJobSubmissionID',
+          'type' => TType::STRING,
+          ),
+        2 => array(
           'var' => 'securityProtocol',
           'type' => TType::I32,
           ),
-        2 => array(
+        3 => array(
           'var' => 'resourceJobManager',
           'type' => TType::I32,
           ),
-        3 => array(
+        4 => array(
           'var' => 'globusGateKeeperEndPoint',
           'type' => TType::STRING,
           ),
         );
     }
     if (is_array($vals)) {
+      if (isset($vals['globusJobSubmissionID'])) {
+        $this->globusJobSubmissionID = $vals['globusJobSubmissionID'];
+      }
       if (isset($vals['securityProtocol'])) {
         $this->securityProtocol = $vals['securityProtocol'];
       }
@@ -310,20 +360,27 @@ class GlobusJobSubmission {
       switch ($fid)
       {
         case 1:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->securityProtocol);
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->globusJobSubmissionID);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 2:
           if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->resourceJobManager);
+            $xfer += $input->readI32($this->securityProtocol);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 3:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->resourceJobManager);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->globusGateKeeperEndPoint);
           } else {
@@ -343,18 +400,23 @@ class GlobusJobSubmission {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('GlobusJobSubmission');
+    if ($this->globusJobSubmissionID !== null) {
+      $xfer += $output->writeFieldBegin('globusJobSubmissionID', TType::STRING, 1);
+      $xfer += $output->writeString($this->globusJobSubmissionID);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->securityProtocol !== null) {
-      $xfer += $output->writeFieldBegin('securityProtocol', TType::I32, 1);
+      $xfer += $output->writeFieldBegin('securityProtocol', TType::I32, 2);
       $xfer += $output->writeI32($this->securityProtocol);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->resourceJobManager !== null) {
-      $xfer += $output->writeFieldBegin('resourceJobManager', TType::I32, 2);
+      $xfer += $output->writeFieldBegin('resourceJobManager', TType::I32, 3);
       $xfer += $output->writeI32($this->resourceJobManager);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->globusGateKeeperEndPoint !== null) {
-      $xfer += $output->writeFieldBegin('globusGateKeeperEndPoint', TType::STRING, 3);
+      $xfer += $output->writeFieldBegin('globusGateKeeperEndPoint', TType::STRING, 4);
       $xfer += $output->writeString($this->globusGateKeeperEndPoint);
       $xfer += $output->writeFieldEnd();
     }
@@ -368,6 +430,7 @@ class GlobusJobSubmission {
 class GSISSHJobSubmission {
   static $_TSPEC;
 
+  public $gssishJobSubmissionID = "DO_NOT_SET_AT_CLIENTS";
   public $resourceJobManager = null;
   public $sshPort = 22;
   public $exports = null;
@@ -379,6 +442,10 @@ class GSISSHJobSubmission {
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
+        1 => array(
+          'var' => 'gssishJobSubmissionID',
+          'type' => TType::STRING,
+          ),
         2 => array(
           'var' => 'resourceJobManager',
           'type' => TType::I32,
@@ -422,6 +489,9 @@ class GSISSHJobSubmission {
         );
     }
     if (is_array($vals)) {
+      if (isset($vals['gssishJobSubmissionID'])) {
+        $this->gssishJobSubmissionID = $vals['gssishJobSubmissionID'];
+      }
       if (isset($vals['resourceJobManager'])) {
         $this->resourceJobManager = $vals['resourceJobManager'];
       }
@@ -465,6 +535,13 @@ class GSISSHJobSubmission {
       }
       switch ($fid)
       {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gssishJobSubmissionID);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         case 2:
           if ($ftype == TType::I32) {
             $xfer += $input->readI32($this->resourceJobManager);
@@ -561,6 +638,11 @@ class GSISSHJobSubmission {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('GSISSHJobSubmission');
+    if ($this->gssishJobSubmissionID !== null) {
+      $xfer += $output->writeFieldBegin('gssishJobSubmissionID', TType::STRING, 1);
+      $xfer += $output->writeString($this->gssishJobSubmissionID);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->resourceJobManager !== null) {
       $xfer += $output->writeFieldBegin('resourceJobManager', TType::I32, 2);
       $xfer += $output->writeI32($this->resourceJobManager);
@@ -634,183 +716,6 @@ class GSISSHJobSubmission {
     if ($this->monitorMode !== null) {
       $xfer += $output->writeFieldBegin('monitorMode', TType::STRING, 8);
       $xfer += $output->writeString($this->monitorMode);
-      $xfer += $output->writeFieldEnd();
-    }
-    $xfer += $output->writeFieldStop();
-    $xfer += $output->writeStructEnd();
-    return $xfer;
-  }
-
-}
-
-class JobSubmissionProtocols {
-  static $_TSPEC;
-
-  public $isEmpty = false;
-  public $preferedJobSubmissionProtocol = null;
-  public $sshJobSubmissionInfo = null;
-  public $globusGRAMHost = null;
-  public $globusGRAMPort = 2119;
-  public $unicoreBESEndPoint = null;
-
-  public function __construct($vals=null) {
-    if (!isset(self::$_TSPEC)) {
-      self::$_TSPEC = array(
-        1 => array(
-          'var' => 'isEmpty',
-          'type' => TType::BOOL,
-          ),
-        2 => array(
-          'var' => 'preferedJobSubmissionProtocol',
-          'type' => TType::I32,
-          ),
-        3 => array(
-          'var' => 'sshJobSubmissionInfo',
-          'type' => TType::STRUCT,
-          'class' => '\SSHJobSubmission',
-          ),
-        4 => array(
-          'var' => 'globusGRAMHost',
-          'type' => TType::STRING,
-          ),
-        5 => array(
-          'var' => 'globusGRAMPort',
-          'type' => TType::I32,
-          ),
-        6 => array(
-          'var' => 'unicoreBESEndPoint',
-          'type' => TType::STRING,
-          ),
-        );
-    }
-    if (is_array($vals)) {
-      if (isset($vals['isEmpty'])) {
-        $this->isEmpty = $vals['isEmpty'];
-      }
-      if (isset($vals['preferedJobSubmissionProtocol'])) {
-        $this->preferedJobSubmissionProtocol = $vals['preferedJobSubmissionProtocol'];
-      }
-      if (isset($vals['sshJobSubmissionInfo'])) {
-        $this->sshJobSubmissionInfo = $vals['sshJobSubmissionInfo'];
-      }
-      if (isset($vals['globusGRAMHost'])) {
-        $this->globusGRAMHost = $vals['globusGRAMHost'];
-      }
-      if (isset($vals['globusGRAMPort'])) {
-        $this->globusGRAMPort = $vals['globusGRAMPort'];
-      }
-      if (isset($vals['unicoreBESEndPoint'])) {
-        $this->unicoreBESEndPoint = $vals['unicoreBESEndPoint'];
-      }
-    }
-  }
-
-  public function getName() {
-    return 'JobSubmissionProtocols';
-  }
-
-  public function read($input)
-  {
-    $xfer = 0;
-    $fname = null;
-    $ftype = 0;
-    $fid = 0;
-    $xfer += $input->readStructBegin($fname);
-    while (true)
-    {
-      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
-      if ($ftype == TType::STOP) {
-        break;
-      }
-      switch ($fid)
-      {
-        case 1:
-          if ($ftype == TType::BOOL) {
-            $xfer += $input->readBool($this->isEmpty);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 2:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->preferedJobSubmissionProtocol);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 3:
-          if ($ftype == TType::STRUCT) {
-            $this->sshJobSubmissionInfo = new \SSHJobSubmission();
-            $xfer += $this->sshJobSubmissionInfo->read($input);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 4:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->globusGRAMHost);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 5:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->globusGRAMPort);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 6:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->unicoreBESEndPoint);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        default:
-          $xfer += $input->skip($ftype);
-          break;
-      }
-      $xfer += $input->readFieldEnd();
-    }
-    $xfer += $input->readStructEnd();
-    return $xfer;
-  }
-
-  public function write($output) {
-    $xfer = 0;
-    $xfer += $output->writeStructBegin('JobSubmissionProtocols');
-    if ($this->isEmpty !== null) {
-      $xfer += $output->writeFieldBegin('isEmpty', TType::BOOL, 1);
-      $xfer += $output->writeBool($this->isEmpty);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->preferedJobSubmissionProtocol !== null) {
-      $xfer += $output->writeFieldBegin('preferedJobSubmissionProtocol', TType::I32, 2);
-      $xfer += $output->writeI32($this->preferedJobSubmissionProtocol);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->sshJobSubmissionInfo !== null) {
-      if (!is_object($this->sshJobSubmissionInfo)) {
-        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
-      }
-      $xfer += $output->writeFieldBegin('sshJobSubmissionInfo', TType::STRUCT, 3);
-      $xfer += $this->sshJobSubmissionInfo->write($output);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->globusGRAMHost !== null) {
-      $xfer += $output->writeFieldBegin('globusGRAMHost', TType::STRING, 4);
-      $xfer += $output->writeString($this->globusGRAMHost);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->globusGRAMPort !== null) {
-      $xfer += $output->writeFieldBegin('globusGRAMPort', TType::I32, 5);
-      $xfer += $output->writeI32($this->globusGRAMPort);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->unicoreBESEndPoint !== null) {
-      $xfer += $output->writeFieldBegin('unicoreBESEndPoint', TType::STRING, 6);
-      $xfer += $output->writeString($this->unicoreBESEndPoint);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

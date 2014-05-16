@@ -51,6 +51,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("all") public class GSISSHJobSubmission implements org.apache.thrift.TBase<GSISSHJobSubmission, GSISSHJobSubmission._Fields>, java.io.Serializable, Cloneable, Comparable<GSISSHJobSubmission> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("GSISSHJobSubmission");
 
+  private static final org.apache.thrift.protocol.TField GSSISH_JOB_SUBMISSION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gssishJobSubmissionID", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField RESOURCE_JOB_MANAGER_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceJobManager", org.apache.thrift.protocol.TType.I32, (short)2);
   private static final org.apache.thrift.protocol.TField SSH_PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("sshPort", org.apache.thrift.protocol.TType.I32, (short)3);
   private static final org.apache.thrift.protocol.TField EXPORTS_FIELD_DESC = new org.apache.thrift.protocol.TField("exports", org.apache.thrift.protocol.TType.SET, (short)4);
@@ -65,6 +66,7 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new GSISSHJobSubmissionTupleSchemeFactory());
   }
 
+  private String gssishJobSubmissionID; // required
   private ResourceJobManager resourceJobManager; // required
   private int sshPort; // optional
   private Set<String> exports; // optional
@@ -75,6 +77,7 @@ import org.slf4j.LoggerFactory;
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+    GSSISH_JOB_SUBMISSION_ID((short)1, "gssishJobSubmissionID"),
     /**
      * 
      * @see ResourceJobManager
@@ -100,6 +103,8 @@ import org.slf4j.LoggerFactory;
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
+        case 1: // GSSISH_JOB_SUBMISSION_ID
+          return GSSISH_JOB_SUBMISSION_ID;
         case 2: // RESOURCE_JOB_MANAGER
           return RESOURCE_JOB_MANAGER;
         case 3: // SSH_PORT
@@ -160,6 +165,8 @@ import org.slf4j.LoggerFactory;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.GSSISH_JOB_SUBMISSION_ID, new org.apache.thrift.meta_data.FieldMetaData("gssishJobSubmissionID", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.RESOURCE_JOB_MANAGER, new org.apache.thrift.meta_data.FieldMetaData("resourceJobManager", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ResourceJobManager.class)));
     tmpMap.put(_Fields.SSH_PORT, new org.apache.thrift.meta_data.FieldMetaData("sshPort", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -182,14 +189,18 @@ import org.slf4j.LoggerFactory;
   }
 
   public GSISSHJobSubmission() {
+    this.gssishJobSubmissionID = "DO_NOT_SET_AT_CLIENTS";
+
     this.sshPort = 22;
 
   }
 
   public GSISSHJobSubmission(
+    String gssishJobSubmissionID,
     ResourceJobManager resourceJobManager)
   {
     this();
+    this.gssishJobSubmissionID = gssishJobSubmissionID;
     this.resourceJobManager = resourceJobManager;
   }
 
@@ -198,6 +209,9 @@ import org.slf4j.LoggerFactory;
    */
   public GSISSHJobSubmission(GSISSHJobSubmission other) {
     __isset_bitfield = other.__isset_bitfield;
+    if (other.isSetGssishJobSubmissionID()) {
+      this.gssishJobSubmissionID = other.gssishJobSubmissionID;
+    }
     if (other.isSetResourceJobManager()) {
       this.resourceJobManager = other.resourceJobManager;
     }
@@ -228,6 +242,8 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public void clear() {
+    this.gssishJobSubmissionID = "DO_NOT_SET_AT_CLIENTS";
+
     this.resourceJobManager = null;
     this.sshPort = 22;
 
@@ -236,6 +252,29 @@ import org.slf4j.LoggerFactory;
     this.postJobCommands = null;
     this.installedPath = null;
     this.monitorMode = null;
+  }
+
+  public String getGssishJobSubmissionID() {
+    return this.gssishJobSubmissionID;
+  }
+
+  public void setGssishJobSubmissionID(String gssishJobSubmissionID) {
+    this.gssishJobSubmissionID = gssishJobSubmissionID;
+  }
+
+  public void unsetGssishJobSubmissionID() {
+    this.gssishJobSubmissionID = null;
+  }
+
+  /** Returns true if field gssishJobSubmissionID is set (has been assigned a value) and false otherwise */
+  public boolean isSetGssishJobSubmissionID() {
+    return this.gssishJobSubmissionID != null;
+  }
+
+  public void setGssishJobSubmissionIDIsSet(boolean value) {
+    if (!value) {
+      this.gssishJobSubmissionID = null;
+    }
   }
 
   /**
@@ -453,6 +492,14 @@ import org.slf4j.LoggerFactory;
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
+    case GSSISH_JOB_SUBMISSION_ID:
+      if (value == null) {
+        unsetGssishJobSubmissionID();
+      } else {
+        setGssishJobSubmissionID((String)value);
+      }
+      break;
+
     case RESOURCE_JOB_MANAGER:
       if (value == null) {
         unsetResourceJobManager();
@@ -514,6 +561,9 @@ import org.slf4j.LoggerFactory;
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
+    case GSSISH_JOB_SUBMISSION_ID:
+      return getGssishJobSubmissionID();
+
     case RESOURCE_JOB_MANAGER:
       return getResourceJobManager();
 
@@ -546,6 +596,8 @@ import org.slf4j.LoggerFactory;
     }
 
     switch (field) {
+    case GSSISH_JOB_SUBMISSION_ID:
+      return isSetGssishJobSubmissionID();
     case RESOURCE_JOB_MANAGER:
       return isSetResourceJobManager();
     case SSH_PORT:
@@ -576,6 +628,15 @@ import org.slf4j.LoggerFactory;
   public boolean equals(GSISSHJobSubmission that) {
     if (that == null)
       return false;
+
+    boolean this_present_gssishJobSubmissionID = true && this.isSetGssishJobSubmissionID();
+    boolean that_present_gssishJobSubmissionID = true && that.isSetGssishJobSubmissionID();
+    if (this_present_gssishJobSubmissionID || that_present_gssishJobSubmissionID) {
+      if (!(this_present_gssishJobSubmissionID && that_present_gssishJobSubmissionID))
+        return false;
+      if (!this.gssishJobSubmissionID.equals(that.gssishJobSubmissionID))
+        return false;
+    }
 
     boolean this_present_resourceJobManager = true && this.isSetResourceJobManager();
     boolean that_present_resourceJobManager = true && that.isSetResourceJobManager();
@@ -656,6 +717,16 @@ import org.slf4j.LoggerFactory;
 
     int lastComparison = 0;
 
+    lastComparison = Boolean.valueOf(isSetGssishJobSubmissionID()).compareTo(other.isSetGssishJobSubmissionID());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetGssishJobSubmissionID()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gssishJobSubmissionID, other.gssishJobSubmissionID);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = Boolean.valueOf(isSetResourceJobManager()).compareTo(other.isSetResourceJobManager());
     if (lastComparison != 0) {
       return lastComparison;
@@ -746,6 +817,14 @@ import org.slf4j.LoggerFactory;
     StringBuilder sb = new StringBuilder("GSISSHJobSubmission(");
     boolean first = true;
 
+    sb.append("gssishJobSubmissionID:");
+    if (this.gssishJobSubmissionID == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.gssishJobSubmissionID);
+    }
+    first = false;
+    if (!first) sb.append(", ");
     sb.append("resourceJobManager:");
     if (this.resourceJobManager == null) {
       sb.append("null");
@@ -815,6 +894,10 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
+    if (!isSetGssishJobSubmissionID()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'gssishJobSubmissionID' is unset! Struct:" + toString());
+    }
+
     if (!isSetResourceJobManager()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'resourceJobManager' is unset! Struct:" + toString());
     }
@@ -858,6 +941,14 @@ import org.slf4j.LoggerFactory;
           break;
         }
         switch (schemeField.id) {
+          case 1: // GSSISH_JOB_SUBMISSION_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.gssishJobSubmissionID = iprot.readString();
+              struct.setGssishJobSubmissionIDIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           case 2: // RESOURCE_JOB_MANAGER
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.resourceJobManager = ResourceJobManager.findByValue(iprot.readI32());
@@ -957,6 +1048,11 @@ import org.slf4j.LoggerFactory;
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
+      if (struct.gssishJobSubmissionID != null) {
+        oprot.writeFieldBegin(GSSISH_JOB_SUBMISSION_ID_FIELD_DESC);
+        oprot.writeString(struct.gssishJobSubmissionID);
+        oprot.writeFieldEnd();
+      }
       if (struct.resourceJobManager != null) {
         oprot.writeFieldBegin(RESOURCE_JOB_MANAGER_FIELD_DESC);
         oprot.writeI32(struct.resourceJobManager.getValue());
@@ -1040,6 +1136,7 @@ import org.slf4j.LoggerFactory;
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, GSISSHJobSubmission struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
+      oprot.writeString(struct.gssishJobSubmissionID);
       oprot.writeI32(struct.resourceJobManager.getValue());
       BitSet optionals = new BitSet();
       if (struct.isSetSshPort()) {
@@ -1102,6 +1199,8 @@ import org.slf4j.LoggerFactory;
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, GSISSHJobSubmission struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
+      struct.gssishJobSubmissionID = iprot.readString();
+      struct.setGssishJobSubmissionIDIsSet(true);
       struct.resourceJobManager = ResourceJobManager.findByValue(iprot.readI32());
       struct.setResourceJobManagerIsSet(true);
       BitSet incoming = iprot.readBitSet(6);

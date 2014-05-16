@@ -24,6 +24,7 @@ package org.apache.airavata.client.samples;
 import org.apache.airavata.api.error.ExperimentNotFoundException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ClientSettings;
+import org.apache.airavata.model.appcatalog.GSISSHJobSubmission;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.*;
