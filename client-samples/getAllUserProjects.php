@@ -62,16 +62,16 @@ $airavataclient = new AiravataClient($protocol);
 
 try
 {
-
-
-
-    $userExperiments = $airavataclient->getAllUserProjects("admin");
-    echo "# of user projects = " . sizeof($userExperiments) . "<br>";
-    var_dump($userExperiments);
-
-
-
-
+    if ($argc != 2)
+    {
+        echo 'php getAllUserProjects.php <user>';
+    }
+    else
+    {
+        $userExperiments = $airavataclient->getAllUserProjects($argv[1]);
+        echo '# of user projects = ' . sizeof($userExperiments) . '       ';
+        var_dump($userExperiments);
+    }
 }
 catch (InvalidRequestException $ire)
 {

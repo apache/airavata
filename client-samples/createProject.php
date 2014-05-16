@@ -73,7 +73,7 @@ try
         $project->owner = $argv[1];
         $project->name = $argv[2];
 
-        $projId = $airavataclient->createProject($project, $project->owner);
+        $projId = $airavataclient->createProject($project);
 
         if ($projId)
         {
