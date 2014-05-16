@@ -509,7 +509,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *          rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
-    public ValidationResults launchExperiment(String airavataExperimentId, String airavataCredStoreToken) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+    public void launchExperiment(String airavataExperimentId, String airavataCredStoreToken) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, LaunchValidationException, TException {
         final OrchestratorService.Client orchestratorClient = getOrchestratorClient();
         final String expID = airavataExperimentId;
         (new Thread(){
@@ -525,7 +525,6 @@ public class AiravataServerHandler implements Airavata.Iface {
                 }
             }
         }).start();
-        return null;
     }
 
 	private OrchestratorService.Client getOrchestratorClient() {

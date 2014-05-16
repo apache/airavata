@@ -468,6 +468,315 @@ class AiravataClientException extends TException {
 
 }
 
+class ValidatorResult {
+  static $_TSPEC;
+
+  public $result = null;
+  public $errorDetails = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'result',
+          'type' => TType::BOOL,
+          ),
+        2 => array(
+          'var' => 'errorDetails',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['result'])) {
+        $this->result = $vals['result'];
+      }
+      if (isset($vals['errorDetails'])) {
+        $this->errorDetails = $vals['errorDetails'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'ValidatorResult';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->result);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->errorDetails);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('ValidatorResult');
+    if ($this->result !== null) {
+      $xfer += $output->writeFieldBegin('result', TType::BOOL, 1);
+      $xfer += $output->writeBool($this->result);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->errorDetails !== null) {
+      $xfer += $output->writeFieldBegin('errorDetails', TType::STRING, 2);
+      $xfer += $output->writeString($this->errorDetails);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class ValidationResults {
+  static $_TSPEC;
+
+  public $validationState = null;
+  public $validationResultList = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'validationState',
+          'type' => TType::BOOL,
+          ),
+        2 => array(
+          'var' => 'validationResultList',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\API\Error\ValidatorResult',
+            ),
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['validationState'])) {
+        $this->validationState = $vals['validationState'];
+      }
+      if (isset($vals['validationResultList'])) {
+        $this->validationResultList = $vals['validationResultList'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'ValidationResults';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->validationState);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::LST) {
+            $this->validationResultList = array();
+            $_size0 = 0;
+            $_etype3 = 0;
+            $xfer += $input->readListBegin($_etype3, $_size0);
+            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
+            {
+              $elem5 = null;
+              $elem5 = new \Airavata\API\Error\ValidatorResult();
+              $xfer += $elem5->read($input);
+              $this->validationResultList []= $elem5;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('ValidationResults');
+    if ($this->validationState !== null) {
+      $xfer += $output->writeFieldBegin('validationState', TType::BOOL, 1);
+      $xfer += $output->writeBool($this->validationState);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->validationResultList !== null) {
+      if (!is_array($this->validationResultList)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('validationResultList', TType::LST, 2);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->validationResultList));
+        {
+          foreach ($this->validationResultList as $iter6)
+          {
+            $xfer += $iter6->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class LaunchValidationException extends TException {
+  static $_TSPEC;
+
+  public $validationResult = null;
+  public $errorMessage = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'validationResult',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\ValidationResults',
+          ),
+        2 => array(
+          'var' => 'errorMessage',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['validationResult'])) {
+        $this->validationResult = $vals['validationResult'];
+      }
+      if (isset($vals['errorMessage'])) {
+        $this->errorMessage = $vals['errorMessage'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'LaunchValidationException';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->validationResult = new \Airavata\API\Error\ValidationResults();
+            $xfer += $this->validationResult->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->errorMessage);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('LaunchValidationException');
+    if ($this->validationResult !== null) {
+      if (!is_object($this->validationResult)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('validationResult', TType::STRUCT, 1);
+      $xfer += $this->validationResult->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->errorMessage !== null) {
+      $xfer += $output->writeFieldBegin('errorMessage', TType::STRING, 2);
+      $xfer += $output->writeString($this->errorMessage);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 class AiravataSystemException extends TException {
   static $_TSPEC;
 

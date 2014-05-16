@@ -24,6 +24,8 @@
 *  built in funcationality to raise TApplicationException for all internal server errors.
 */
 
+include "experimentModel.thrift"
+
 namespace java org.apache.airavata.api.error
 namespace php Airavata.API.Error
 namespace cpp airavata.api.error
@@ -133,6 +135,20 @@ exception AiravataClientException {
   2:  optional  string parameter
 }
 
+struct ValidatorResult {
+    1: required bool result,
+    2: optional string errorDetails
+}
+
+struct ValidationResults {
+    1: required bool validationState,
+    2: required list<ValidatorResult> validationResultList
+}
+
+exception LaunchValidationException {
+  1: required ValidationResults validationResult;
+  2: optional string errorMessage;
+}
 
 /**
  * This exception is thrown by Airavata Services when a call fails as a result of

@@ -20,7 +20,7 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package org.apache.airavata.model.workspace.experiment;
+package org.apache.airavata.api.error;
 
 import org.apache.thrift.scheme.IScheme;
 import org.apache.thrift.scheme.SchemeFactory;
@@ -48,13 +48,6 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * This data structure can be used to store the validation results
- * captured during validation step and during the launchExperiment
- * operation it can be easilly checked to see the errors occured
- * during the experiment launch operation
- * 
- */
 @SuppressWarnings("all") public class ValidatorResult implements org.apache.thrift.TBase<ValidatorResult, ValidatorResult._Fields>, java.io.Serializable, Cloneable, Comparable<ValidatorResult> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ValidatorResult");
 
@@ -67,8 +60,8 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new ValidatorResultTupleSchemeFactory());
   }
 
-  private boolean result; // required
-  private String errorDetails; // optional
+  public boolean result; // required
+  public String errorDetails; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -183,9 +176,10 @@ import org.slf4j.LoggerFactory;
     return this.result;
   }
 
-  public void setResult(boolean result) {
+  public ValidatorResult setResult(boolean result) {
     this.result = result;
     setResultIsSet(true);
+    return this;
   }
 
   public void unsetResult() {
@@ -205,8 +199,9 @@ import org.slf4j.LoggerFactory;
     return this.errorDetails;
   }
 
-  public void setErrorDetails(String errorDetails) {
+  public ValidatorResult setErrorDetails(String errorDetails) {
     this.errorDetails = errorDetails;
+    return this;
   }
 
   public void unsetErrorDetails() {
@@ -378,10 +373,7 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetResult()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'result' is unset! Struct:" + toString());
-    }
-
+    // alas, we cannot check 'result' because it's a primitive and you chose the non-beans generator.
     // check for sub-struct validity
   }
 
@@ -443,6 +435,11 @@ import org.slf4j.LoggerFactory;
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
+
+      // check for required fields of primitive type, which can't be checked in the validate method
+      if (!struct.isSetResult()) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'result' was not found in serialized data! Struct: " + toString());
+      }
       struct.validate();
     }
 
