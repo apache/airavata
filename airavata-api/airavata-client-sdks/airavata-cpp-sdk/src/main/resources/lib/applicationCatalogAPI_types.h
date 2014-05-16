@@ -4,8 +4,8 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-#ifndef airavataAPI_TYPES_H
-#define airavataAPI_TYPES_H
+#ifndef applicationCatalogAPI_TYPES_H
+#define applicationCatalogAPI_TYPES_H
 
 #include <thrift/Thrift.h>
 #include <thrift/TApplicationException.h>
@@ -15,13 +15,11 @@
 #include <thrift/cxxfunctional.h>
 #include "airavataErrors_types.h"
 #include "airavataDataModel_types.h"
-#include "experimentModel_types.h"
-#include "workspaceModel_types.h"
-#include "applicationCatalogAPI_types.h"
+#include "applicationCatalogDataModel_types.h"
 
 
-namespace airavata { namespace api {
+namespace airavata { namespace api { namespace appcatalog {
 
-}} // namespace
+}}} // namespace
 
 #endif

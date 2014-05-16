@@ -28,6 +28,7 @@ include "airavataErrors.thrift"
 include "airavataDataModel.thrift"
 include "experimentModel.thrift"
 include "workspaceModel.thrift"
+include "applicationCatalogAPI.thrift"
 
 namespace java org.apache.airavata.api
 namespace php Airavata.API
@@ -303,7 +304,7 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  void launchExperiment(1: required string airavataExperimentId
+  experimentModel.ValidationResults launchExperiment(1: required string airavataExperimentId
                                   2: required string airavataCredStoreToken)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.ExperimentNotFoundException enf,

@@ -18,7 +18,7 @@
  *
  */
 
-namespace java org.apache.airavata.model.appcatalog.computeresource
+namespace java org.apache.airavata.model.appcatalog
 
 const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 
