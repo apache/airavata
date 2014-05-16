@@ -335,14 +335,14 @@ struct WorkflowNodeDetails {
 **/
 
 struct ValidatorResult {
-    1: required boolean result,
+    1: required bool result,
     2: optional string errorDetails
 }
 
 
 struct ValidationResults {
-    1: required boolean validationState,
-    2: required list<ValidationResults>
+    1: required bool validationState,
+    2: required list<ValidatorResult> validationResultList
 }
 /**
  * A structure holding the experiment metadata and its child models.

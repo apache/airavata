@@ -2948,6 +2948,14 @@ uint32_t Airavata_launchExperiment_result::read(::apache::thrift::protocol::TPro
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->success.read(iprot);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -2998,7 +3006,11 @@ uint32_t Airavata_launchExperiment_result::write(::apache::thrift::protocol::TPr
 
   xfer += oprot->writeStructBegin("Airavata_launchExperiment_result");
 
-  if (this->__isset.ire) {
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRUCT, 0);
+    xfer += this->success.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
     xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
     xfer += this->ire.write(oprot);
     xfer += oprot->writeFieldEnd();
@@ -3040,6 +3052,14 @@ uint32_t Airavata_launchExperiment_presult::read(::apache::thrift::protocol::TPr
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += (*(this->success)).read(iprot);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -5045,10 +5065,10 @@ bool AiravataClient::recv_validateExperiment()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "validateExperiment failed: unknown result");
 }
 
-void AiravataClient::launchExperiment(const std::string& airavataExperimentId, const std::string& airavataCredStoreToken)
+void AiravataClient::launchExperiment( ::ValidationResults& _return, const std::string& airavataExperimentId, const std::string& airavataCredStoreToken)
 {
   send_launchExperiment(airavataExperimentId, airavataCredStoreToken);
-  recv_launchExperiment();
+  recv_launchExperiment(_return);
 }
 
 void AiravataClient::send_launchExperiment(const std::string& airavataExperimentId, const std::string& airavataCredStoreToken)
@@ -5066,7 +5086,7 @@ void AiravataClient::send_launchExperiment(const std::string& airavataExperiment
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_launchExperiment()
+void AiravataClient::recv_launchExperiment( ::ValidationResults& _return)
 {
 
   int32_t rseqid = 0;
@@ -5092,10 +5112,15 @@ void AiravataClient::recv_launchExperiment()
     iprot_->getTransport()->readEnd();
   }
   Airavata_launchExperiment_presult result;
+  result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
 
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
   if (result.__isset.ire) {
     throw result.ire;
   }
@@ -5108,7 +5133,7 @@ void AiravataClient::recv_launchExperiment()
   if (result.__isset.ase) {
     throw result.ase;
   }
-  return;
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "launchExperiment failed: unknown result");
 }
 
 void AiravataClient::getExperimentStatus( ::ExperimentStatus& _return, const std::string& airavataExperimentId)
@@ -6272,7 +6297,8 @@ void AiravataProcessor::process_launchExperiment(int32_t seqid, ::apache::thrift
 
   Airavata_launchExperiment_result result;
   try {
-    iface_->launchExperiment(args.airavataExperimentId, args.airavataCredStoreToken);
+    iface_->launchExperiment(result.success, args.airavataExperimentId, args.airavataCredStoreToken);
+    result.__isset.success = true;
   } catch ( ::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;

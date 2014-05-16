@@ -1597,6 +1597,103 @@ class WorkflowNodeDetails {
 
 void swap(WorkflowNodeDetails &a, WorkflowNodeDetails &b);
 
+typedef struct _ValidatorResult__isset {
+  _ValidatorResult__isset() : errorDetails(false) {}
+  bool errorDetails;
+} _ValidatorResult__isset;
+
+class ValidatorResult {
+ public:
+
+  static const char* ascii_fingerprint; // = "EB04A806CFFC9025AEE48CFFDC378A86";
+  static const uint8_t binary_fingerprint[16]; // = {0xEB,0x04,0xA8,0x06,0xCF,0xFC,0x90,0x25,0xAE,0xE4,0x8C,0xFF,0xDC,0x37,0x8A,0x86};
+
+  ValidatorResult() : result(0), errorDetails() {
+  }
+
+  virtual ~ValidatorResult() throw() {}
+
+  bool result;
+  std::string errorDetails;
+
+  _ValidatorResult__isset __isset;
+
+  void __set_result(const bool val) {
+    result = val;
+  }
+
+  void __set_errorDetails(const std::string& val) {
+    errorDetails = val;
+    __isset.errorDetails = true;
+  }
+
+  bool operator == (const ValidatorResult & rhs) const
+  {
+    if (!(result == rhs.result))
+      return false;
+    if (__isset.errorDetails != rhs.__isset.errorDetails)
+      return false;
+    else if (__isset.errorDetails && !(errorDetails == rhs.errorDetails))
+      return false;
+    return true;
+  }
+  bool operator != (const ValidatorResult &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ValidatorResult & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+void swap(ValidatorResult &a, ValidatorResult &b);
+
+
+class ValidationResults {
+ public:
+
+  static const char* ascii_fingerprint; // = "E73BC8630EE405DA5FB801ED852143D2";
+  static const uint8_t binary_fingerprint[16]; // = {0xE7,0x3B,0xC8,0x63,0x0E,0xE4,0x05,0xDA,0x5F,0xB8,0x01,0xED,0x85,0x21,0x43,0xD2};
+
+  ValidationResults() : validationState(0) {
+  }
+
+  virtual ~ValidationResults() throw() {}
+
+  bool validationState;
+  std::vector<ValidatorResult>  validationResultList;
+
+  void __set_validationState(const bool val) {
+    validationState = val;
+  }
+
+  void __set_validationResultList(const std::vector<ValidatorResult> & val) {
+    validationResultList = val;
+  }
+
+  bool operator == (const ValidationResults & rhs) const
+  {
+    if (!(validationState == rhs.validationState))
+      return false;
+    if (!(validationResultList == rhs.validationResultList))
+      return false;
+    return true;
+  }
+  bool operator != (const ValidationResults &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ValidationResults & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+void swap(ValidationResults &a, ValidationResults &b);
+
 typedef struct _Experiment__isset {
   _Experiment__isset() : creationTime(false), description(false), applicationId(false), applicationVersion(false), workflowTemplateId(false), workflowTemplateVersion(false), userConfigurationData(false), workflowExecutionInstanceId(false), experimentInputs(false), experimentOutputs(false), experimentStatus(false), stateChangeList(false), workflowNodeDetailsList(false), errors(false) {}
   bool creationTime;

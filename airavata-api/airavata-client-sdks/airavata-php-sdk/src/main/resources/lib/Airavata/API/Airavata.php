@@ -804,7 +804,7 @@ class AiravataClient implements \Airavata\API\AiravataIf {
   public function launchExperiment($airavataExperimentId, $airavataCredStoreToken)
   {
     $this->send_launchExperiment($airavataExperimentId, $airavataCredStoreToken);
-    $this->recv_launchExperiment();
+    return $this->recv_launchExperiment();
   }
 
   public function send_launchExperiment($airavataExperimentId, $airavataCredStoreToken)
@@ -847,6 +847,9 @@ class AiravataClient implements \Airavata\API\AiravataIf {
       $result->read($this->input_);
       $this->input_->readMessageEnd();
     }
+    if ($result->success !== null) {
+      return $result->success;
+    }
     if ($result->ire !== null) {
       throw $result->ire;
     }
@@ -859,7 +862,7 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     if ($result->ase !== null) {
       throw $result->ase;
     }
-    return;
+    throw new \Exception("launchExperiment failed: unknown result");
   }
 
   public function getExperimentStatus($airavataExperimentId)
@@ -3926,6 +3929,7 @@ class Airavata_launchExperiment_args {
 class Airavata_launchExperiment_result {
   static $_TSPEC;
 
+  public $success = null;
   public $ire = null;
   public $enf = null;
   public $ace = null;
@@ -3934,6 +3938,11 @@ class Airavata_launchExperiment_result {
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Workspace\Experiment\ValidationResults',
+          ),
         1 => array(
           'var' => 'ire',
           'type' => TType::STRUCT,
@@ -3957,6 +3966,9 @@ class Airavata_launchExperiment_result {
         );
     }
     if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
       if (isset($vals['ire'])) {
         $this->ire = $vals['ire'];
       }
@@ -3991,6 +4003,14 @@ class Airavata_launchExperiment_result {
       }
       switch ($fid)
       {
+        case 0:
+          if ($ftype == TType::STRUCT) {
+            $this->success = new \Airavata\Model\Workspace\Experiment\ValidationResults();
+            $xfer += $this->success->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         case 1:
           if ($ftype == TType::STRUCT) {
             $this->ire = new \Airavata\API\Error\InvalidRequestException();
@@ -4036,6 +4056,14 @@ class Airavata_launchExperiment_result {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_launchExperiment_result');
+    if ($this->success !== null) {
+      if (!is_object($this->success)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('success', TType::STRUCT, 0);
+      $xfer += $this->success->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->ire !== null) {
       $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
       $xfer += $this->ire->write($output);

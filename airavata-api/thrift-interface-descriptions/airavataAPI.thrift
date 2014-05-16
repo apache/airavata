@@ -304,7 +304,7 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  void launchExperiment(1: required string airavataExperimentId
+  experimentModel.ValidationResults launchExperiment(1: required string airavataExperimentId
                                   2: required string airavataCredStoreToken)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.ExperimentNotFoundException enf,
