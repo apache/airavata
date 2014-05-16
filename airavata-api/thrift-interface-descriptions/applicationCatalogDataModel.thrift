@@ -60,6 +60,7 @@ enum ResourceJobManager {
 */
 enum JobSubmissionProtocol {
     SSH,
+    GSISSH,
     GRAM,
     UNICORE
 }
