@@ -31,8 +31,9 @@ extern const std::map<int, const char*> _ResourceJobManager_VALUES_TO_NAMES;
 struct JobSubmissionProtocol {
   enum type {
     SSH = 0,
-    GRAM = 1,
-    UNICORE = 2
+    GSISSH = 1,
+    GRAM = 2,
+    UNICORE = 3
   };
 };
 
@@ -69,18 +70,23 @@ typedef struct _SCPDataMovement__isset {
 class SCPDataMovement {
  public:
 
-  static const char* ascii_fingerprint; // = "15D34740303C4E50CFFA807ABA20C3EF";
-  static const uint8_t binary_fingerprint[16]; // = {0x15,0xD3,0x47,0x40,0x30,0x3C,0x4E,0x50,0xCF,0xFA,0x80,0x7A,0xBA,0x20,0xC3,0xEF};
+  static const char* ascii_fingerprint; // = "FEB6B2CD28861B4EED855CACA1FEF2CB";
+  static const uint8_t binary_fingerprint[16]; // = {0xFE,0xB6,0xB2,0xCD,0x28,0x86,0x1B,0x4E,0xED,0x85,0x5C,0xAC,0xA1,0xFE,0xF2,0xCB};
 
-  SCPDataMovement() : securityProtocol((SecurityProtocol::type)0), sshPort(22) {
+  SCPDataMovement() : scpDataMovementID("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), sshPort(22) {
   }
 
   virtual ~SCPDataMovement() throw() {}
 
+  std::string scpDataMovementID;
   SecurityProtocol::type securityProtocol;
   int32_t sshPort;
 
   _SCPDataMovement__isset __isset;
+
+  void __set_scpDataMovementID(const std::string& val) {
+    scpDataMovementID = val;
+  }
 
   void __set_securityProtocol(const SecurityProtocol::type val) {
     securityProtocol = val;
@@ -93,6 +99,8 @@ class SCPDataMovement {
 
   bool operator == (const SCPDataMovement & rhs) const
   {
+    if (!(scpDataMovementID == rhs.scpDataMovementID))
+      return false;
     if (!(securityProtocol == rhs.securityProtocol))
       return false;
     if (__isset.sshPort != rhs.__isset.sshPort)
@@ -122,18 +130,23 @@ typedef struct _SSHJobSubmission__isset {
 class SSHJobSubmission {
  public:
 
-  static const char* ascii_fingerprint; // = "E65F4B00849C697EF0A023BF341A5599";
-  static const uint8_t binary_fingerprint[16]; // = {0xE6,0x5F,0x4B,0x00,0x84,0x9C,0x69,0x7E,0xF0,0xA0,0x23,0xBF,0x34,0x1A,0x55,0x99};
+  static const char* ascii_fingerprint; // = "FEB6B2CD28861B4EED855CACA1FEF2CB";
+  static const uint8_t binary_fingerprint[16]; // = {0xFE,0xB6,0xB2,0xCD,0x28,0x86,0x1B,0x4E,0xED,0x85,0x5C,0xAC,0xA1,0xFE,0xF2,0xCB};
 
-  SSHJobSubmission() : resourceJobManager((ResourceJobManager::type)0), sshPort(22) {
+  SSHJobSubmission() : sshJobSubmissionID("DO_NOT_SET_AT_CLIENTS"), resourceJobManager((ResourceJobManager::type)0), sshPort(22) {
   }
 
   virtual ~SSHJobSubmission() throw() {}
 
+  std::string sshJobSubmissionID;
   ResourceJobManager::type resourceJobManager;
   int32_t sshPort;
 
   _SSHJobSubmission__isset __isset;
+
+  void __set_sshJobSubmissionID(const std::string& val) {
+    sshJobSubmissionID = val;
+  }
 
   void __set_resourceJobManager(const ResourceJobManager::type val) {
     resourceJobManager = val;
@@ -146,6 +159,8 @@ class SSHJobSubmission {
 
   bool operator == (const SSHJobSubmission & rhs) const
   {
+    if (!(sshJobSubmissionID == rhs.sshJobSubmissionID))
+      return false;
     if (!(resourceJobManager == rhs.resourceJobManager))
       return false;
     if (__isset.sshPort != rhs.__isset.sshPort)
@@ -175,19 +190,24 @@ typedef struct _GlobusJobSubmission__isset {
 class GlobusJobSubmission {
  public:
 
-  static const char* ascii_fingerprint; // = "19AAB18E981C4EB11AEBB34F40FF0939";
-  static const uint8_t binary_fingerprint[16]; // = {0x19,0xAA,0xB1,0x8E,0x98,0x1C,0x4E,0xB1,0x1A,0xEB,0xB3,0x4F,0x40,0xFF,0x09,0x39};
+  static const char* ascii_fingerprint; // = "6B87230A5315302FA994567088F60D3A";
+  static const uint8_t binary_fingerprint[16]; // = {0x6B,0x87,0x23,0x0A,0x53,0x15,0x30,0x2F,0xA9,0x94,0x56,0x70,0x88,0xF6,0x0D,0x3A};
 
-  GlobusJobSubmission() : securityProtocol((SecurityProtocol::type)0), resourceJobManager((ResourceJobManager::type)0), globusGateKeeperEndPoint() {
+  GlobusJobSubmission() : globusJobSubmissionID("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), resourceJobManager((ResourceJobManager::type)0), globusGateKeeperEndPoint() {
   }
 
   virtual ~GlobusJobSubmission() throw() {}
 
+  std::string globusJobSubmissionID;
   SecurityProtocol::type securityProtocol;
   ResourceJobManager::type resourceJobManager;
   std::string globusGateKeeperEndPoint;
 
   _GlobusJobSubmission__isset __isset;
+
+  void __set_globusJobSubmissionID(const std::string& val) {
+    globusJobSubmissionID = val;
+  }
 
   void __set_securityProtocol(const SecurityProtocol::type val) {
     securityProtocol = val;
@@ -204,6 +224,8 @@ class GlobusJobSubmission {
 
   bool operator == (const GlobusJobSubmission & rhs) const
   {
+    if (!(globusJobSubmissionID == rhs.globusJobSubmissionID))
+      return false;
     if (!(securityProtocol == rhs.securityProtocol))
       return false;
     if (!(resourceJobManager == rhs.resourceJobManager))
@@ -240,14 +262,15 @@ typedef struct _GSISSHJobSubmission__isset {
 class GSISSHJobSubmission {
  public:
 
-  static const char* ascii_fingerprint; // = "91E841F79C1FDEC6DD757B48AC5FD97E";
-  static const uint8_t binary_fingerprint[16]; // = {0x91,0xE8,0x41,0xF7,0x9C,0x1F,0xDE,0xC6,0xDD,0x75,0x7B,0x48,0xAC,0x5F,0xD9,0x7E};
+  static const char* ascii_fingerprint; // = "6969A7F145C4403B2F9081A498E933FD";
+  static const uint8_t binary_fingerprint[16]; // = {0x69,0x69,0xA7,0xF1,0x45,0xC4,0x40,0x3B,0x2F,0x90,0x81,0xA4,0x98,0xE9,0x33,0xFD};
 
-  GSISSHJobSubmission() : resourceJobManager((ResourceJobManager::type)0), sshPort(22), installedPath(), monitorMode() {
+  GSISSHJobSubmission() : gssishJobSubmissionID("DO_NOT_SET_AT_CLIENTS"), resourceJobManager((ResourceJobManager::type)0), sshPort(22), installedPath(), monitorMode() {
   }
 
   virtual ~GSISSHJobSubmission() throw() {}
 
+  std::string gssishJobSubmissionID;
   ResourceJobManager::type resourceJobManager;
   int32_t sshPort;
   std::set<std::string>  exports;
@@ -257,6 +280,10 @@ class GSISSHJobSubmission {
   std::string monitorMode;
 
   _GSISSHJobSubmission__isset __isset;
+
+  void __set_gssishJobSubmissionID(const std::string& val) {
+    gssishJobSubmissionID = val;
+  }
 
   void __set_resourceJobManager(const ResourceJobManager::type val) {
     resourceJobManager = val;
@@ -294,6 +321,8 @@ class GSISSHJobSubmission {
 
   bool operator == (const GSISSHJobSubmission & rhs) const
   {
+    if (!(gssishJobSubmissionID == rhs.gssishJobSubmissionID))
+      return false;
     if (!(resourceJobManager == rhs.resourceJobManager))
       return false;
     if (__isset.sshPort != rhs.__isset.sshPort)
@@ -334,103 +363,6 @@ class GSISSHJobSubmission {
 };
 
 void swap(GSISSHJobSubmission &a, GSISSHJobSubmission &b);
-
-typedef struct _JobSubmissionProtocols__isset {
-  _JobSubmissionProtocols__isset() : preferedJobSubmissionProtocol(false), sshJobSubmissionInfo(false), globusGRAMHost(false), globusGRAMPort(true), unicoreBESEndPoint(false) {}
-  bool preferedJobSubmissionProtocol;
-  bool sshJobSubmissionInfo;
-  bool globusGRAMHost;
-  bool globusGRAMPort;
-  bool unicoreBESEndPoint;
-} _JobSubmissionProtocols__isset;
-
-class JobSubmissionProtocols {
- public:
-
-  static const char* ascii_fingerprint; // = "18B1F54358A01390B5830C26FFD334D4";
-  static const uint8_t binary_fingerprint[16]; // = {0x18,0xB1,0xF5,0x43,0x58,0xA0,0x13,0x90,0xB5,0x83,0x0C,0x26,0xFF,0xD3,0x34,0xD4};
-
-  JobSubmissionProtocols() : isEmpty(false), preferedJobSubmissionProtocol((JobSubmissionProtocol::type)0), globusGRAMHost(), globusGRAMPort(2119), unicoreBESEndPoint() {
-  }
-
-  virtual ~JobSubmissionProtocols() throw() {}
-
-  bool isEmpty;
-  JobSubmissionProtocol::type preferedJobSubmissionProtocol;
-  SSHJobSubmission sshJobSubmissionInfo;
-  std::string globusGRAMHost;
-  int32_t globusGRAMPort;
-  std::string unicoreBESEndPoint;
-
-  _JobSubmissionProtocols__isset __isset;
-
-  void __set_isEmpty(const bool val) {
-    isEmpty = val;
-  }
-
-  void __set_preferedJobSubmissionProtocol(const JobSubmissionProtocol::type val) {
-    preferedJobSubmissionProtocol = val;
-    __isset.preferedJobSubmissionProtocol = true;
-  }
-
-  void __set_sshJobSubmissionInfo(const SSHJobSubmission& val) {
-    sshJobSubmissionInfo = val;
-    __isset.sshJobSubmissionInfo = true;
-  }
-
-  void __set_globusGRAMHost(const std::string& val) {
-    globusGRAMHost = val;
-    __isset.globusGRAMHost = true;
-  }
-
-  void __set_globusGRAMPort(const int32_t val) {
-    globusGRAMPort = val;
-    __isset.globusGRAMPort = true;
-  }
-
-  void __set_unicoreBESEndPoint(const std::string& val) {
-    unicoreBESEndPoint = val;
-    __isset.unicoreBESEndPoint = true;
-  }
-
-  bool operator == (const JobSubmissionProtocols & rhs) const
-  {
-    if (!(isEmpty == rhs.isEmpty))
-      return false;
-    if (__isset.preferedJobSubmissionProtocol != rhs.__isset.preferedJobSubmissionProtocol)
-      return false;
-    else if (__isset.preferedJobSubmissionProtocol && !(preferedJobSubmissionProtocol == rhs.preferedJobSubmissionProtocol))
-      return false;
-    if (__isset.sshJobSubmissionInfo != rhs.__isset.sshJobSubmissionInfo)
-      return false;
-    else if (__isset.sshJobSubmissionInfo && !(sshJobSubmissionInfo == rhs.sshJobSubmissionInfo))
-      return false;
-    if (__isset.globusGRAMHost != rhs.__isset.globusGRAMHost)
-      return false;
-    else if (__isset.globusGRAMHost && !(globusGRAMHost == rhs.globusGRAMHost))
-      return false;
-    if (__isset.globusGRAMPort != rhs.__isset.globusGRAMPort)
-      return false;
-    else if (__isset.globusGRAMPort && !(globusGRAMPort == rhs.globusGRAMPort))
-      return false;
-    if (__isset.unicoreBESEndPoint != rhs.__isset.unicoreBESEndPoint)
-      return false;
-    else if (__isset.unicoreBESEndPoint && !(unicoreBESEndPoint == rhs.unicoreBESEndPoint))
-      return false;
-    return true;
-  }
-  bool operator != (const JobSubmissionProtocols &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const JobSubmissionProtocols & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-void swap(JobSubmissionProtocols &a, JobSubmissionProtocols &b);
 
 typedef struct _ComputeResourceDescription__isset {
   _ComputeResourceDescription__isset() : hostAliases(false), ipAddresses(false), resourceDescription(false), scratchLocation(false), preferredJobSubmissionProtocol(false) {}

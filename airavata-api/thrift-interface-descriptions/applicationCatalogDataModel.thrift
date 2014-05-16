@@ -111,22 +111,26 @@ enum SecurityProtocol {
 
 
 struct SCPDataMovement {
-    1: required SecurityProtocol securityProtocol,
-    2: optional i32 sshPort = 22,
+    1: required string scpDataMovementID = DEFAULT_ID,
+    2: required SecurityProtocol securityProtocol,
+    3: optional i32 sshPort = 22
 }
 
 struct SSHJobSubmission {
+    1: required string sshJobSubmissionID = DEFAULT_ID,
     2: required ResourceJobManager resourceJobManager,
     3: optional i32 sshPort = 22
 }
 
 struct GlobusJobSubmission {
-    1: required SecurityProtocol securityProtocol,
-    2: required ResourceJobManager resourceJobManager,
-    3: optional string globusGateKeeperEndPoint
+    1: required string globusJobSubmissionID = DEFAULT_ID,
+    2: required SecurityProtocol securityProtocol,
+    3: required ResourceJobManager resourceJobManager,
+    4: optional string globusGateKeeperEndPoint
 }
 
 struct GSISSHJobSubmission {
+    1: required string gssishJobSubmissionID = DEFAULT_ID,
     2: required ResourceJobManager resourceJobManager,
     3: optional i32 sshPort = 22,
     4: optional set<string> exports,
@@ -134,36 +138,6 @@ struct GSISSHJobSubmission {
     6: optional list<string> postJobCommands,
     7: optional string installedPath,
     8: optional string monitorMode
-}
-
-/**
- * Job Submission Protocols
- *
- * resourceId:
- *
- * hostName:
- *   Fully Qualified Host Name.
- *
- * ipAddress:
- *   IP Addresse of the Hostname.
- *
- * resourceDescription:
- *  A user friendly description of the hostname.
- *
- * preferedJobSubmissionProtocol:
- *  HPC resources may have multiple options to interact with the resource. This flag identified a prefered mechanism.
- *
- * preferedDataMovementProtocol:
- *  Option to specify a prefered data movement mechanism of the available options.
- *
-*/
-struct JobSubmissionProtocols {
-    1: required bool isEmpty = 0,
-    2: optional JobSubmissionProtocol preferedJobSubmissionProtocol,
-    3: optional SSHJobSubmission sshJobSubmissionInfo,
-    4: optional string globusGRAMHost,
-    5: optional i32 globusGRAMPort = 2119,
-    6: optional string unicoreBESEndPoint
 }
 
 /**

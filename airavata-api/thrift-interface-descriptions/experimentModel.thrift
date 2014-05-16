@@ -363,7 +363,7 @@ struct ValidationResults {
 
 struct Experiment {
     1: required string experimentID = DEFAULT_ID,
-    2: required string projectID = DEFAULT_PROJECT_NAME
+    2: required string projectID = DEFAULT_PROJECT_NAME,
     3: optional i64 creationTime,
     4: required string userName,
     5: required string name,
