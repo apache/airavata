@@ -20,7 +20,7 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package org.apache.airavata.model.workspace.experiment;
+package org.apache.airavata.api.error;
 
 import org.apache.thrift.scheme.IScheme;
 import org.apache.thrift.scheme.SchemeFactory;
@@ -60,8 +60,8 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new ValidationResultsTupleSchemeFactory());
   }
 
-  private boolean validationState; // required
-  private List<ValidatorResult> validationResultList; // required
+  public boolean validationState; // required
+  public List<ValidatorResult> validationResultList; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -182,9 +182,10 @@ import org.slf4j.LoggerFactory;
     return this.validationState;
   }
 
-  public void setValidationState(boolean validationState) {
+  public ValidationResults setValidationState(boolean validationState) {
     this.validationState = validationState;
     setValidationStateIsSet(true);
+    return this;
   }
 
   public void unsetValidationState() {
@@ -219,8 +220,9 @@ import org.slf4j.LoggerFactory;
     return this.validationResultList;
   }
 
-  public void setValidationResultList(List<ValidatorResult> validationResultList) {
+  public ValidationResults setValidationResultList(List<ValidatorResult> validationResultList) {
     this.validationResultList = validationResultList;
+    return this;
   }
 
   public void unsetValidationResultList() {
@@ -390,14 +392,10 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetValidationState()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'validationState' is unset! Struct:" + toString());
+    // alas, we cannot check 'validationState' because it's a primitive and you chose the non-beans generator.
+    if (validationResultList == null) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'validationResultList' was not present! Struct: " + toString());
     }
-
-    if (!isSetValidationResultList()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'validationResultList' is unset! Struct:" + toString());
-    }
-
     // check for sub-struct validity
   }
 
@@ -448,14 +446,14 @@ import org.slf4j.LoggerFactory;
           case 2: // VALIDATION_RESULT_LIST
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list88 = iprot.readListBegin();
-                struct.validationResultList = new ArrayList<ValidatorResult>(_list88.size);
-                for (int _i89 = 0; _i89 < _list88.size; ++_i89)
+                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
+                struct.validationResultList = new ArrayList<ValidatorResult>(_list0.size);
+                for (int _i1 = 0; _i1 < _list0.size; ++_i1)
                 {
-                  ValidatorResult _elem90;
-                  _elem90 = new ValidatorResult();
-                  _elem90.read(iprot);
-                  struct.validationResultList.add(_elem90);
+                  ValidatorResult _elem2;
+                  _elem2 = new ValidatorResult();
+                  _elem2.read(iprot);
+                  struct.validationResultList.add(_elem2);
                 }
                 iprot.readListEnd();
               }
@@ -470,6 +468,11 @@ import org.slf4j.LoggerFactory;
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
+
+      // check for required fields of primitive type, which can't be checked in the validate method
+      if (!struct.isSetValidationState()) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'validationState' was not found in serialized data! Struct: " + toString());
+      }
       struct.validate();
     }
 
@@ -484,9 +487,9 @@ import org.slf4j.LoggerFactory;
         oprot.writeFieldBegin(VALIDATION_RESULT_LIST_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.validationResultList.size()));
-          for (ValidatorResult _iter91 : struct.validationResultList)
+          for (ValidatorResult _iter3 : struct.validationResultList)
           {
-            _iter91.write(oprot);
+            _iter3.write(oprot);
           }
           oprot.writeListEnd();
         }
@@ -512,9 +515,9 @@ import org.slf4j.LoggerFactory;
       oprot.writeBool(struct.validationState);
       {
         oprot.writeI32(struct.validationResultList.size());
-        for (ValidatorResult _iter92 : struct.validationResultList)
+        for (ValidatorResult _iter4 : struct.validationResultList)
         {
-          _iter92.write(oprot);
+          _iter4.write(oprot);
         }
       }
     }
@@ -525,14 +528,14 @@ import org.slf4j.LoggerFactory;
       struct.validationState = iprot.readBool();
       struct.setValidationStateIsSet(true);
       {
-        org.apache.thrift.protocol.TList _list93 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-        struct.validationResultList = new ArrayList<ValidatorResult>(_list93.size);
-        for (int _i94 = 0; _i94 < _list93.size; ++_i94)
+        org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+        struct.validationResultList = new ArrayList<ValidatorResult>(_list5.size);
+        for (int _i6 = 0; _i6 < _list5.size; ++_i6)
         {
-          ValidatorResult _elem95;
-          _elem95 = new ValidatorResult();
-          _elem95.read(iprot);
-          struct.validationResultList.add(_elem95);
+          ValidatorResult _elem7;
+          _elem7 = new ValidatorResult();
+          _elem7.read(iprot);
+          struct.validationResultList.add(_elem7);
         }
       }
       struct.setValidationResultListIsSet(true);
