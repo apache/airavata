@@ -20,7 +20,6 @@ require_once $GLOBALS['THRIFT_ROOT'] . 'StringFunc/Core.php';
 
 $GLOBALS['AIRAVATA_ROOT'] = '../lib/Airavata/';
 require_once $GLOBALS['AIRAVATA_ROOT'] . 'API/Airavata.php';
-require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/Workspace/Experiment/Types.php';
 require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/Workspace/Types.php';
 require_once $GLOBALS['AIRAVATA_ROOT'] . 'API/Error/Types.php';
 
