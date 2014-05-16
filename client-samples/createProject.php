@@ -77,7 +77,7 @@ try
 
         if ($projId)
         {
-            print "Project $projId created!";
+            print "$projId";
         }
         else
         {
