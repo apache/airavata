@@ -477,6 +477,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Launch a previously created and configured experiment. Airavata Server will then start processing the request and appropriate
      * notifications and intermediate and output data will be subsequently available for this experiment.
      *
+     *
      * @param airavataExperimentId   The identifier for the requested experiment. This is returned during the create experiment step.
      * @param airavataCredStoreToken :
      *                               A requirement to execute experiments within Airavata is to first register the targeted remote computational account
@@ -508,7 +509,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *          rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
-    public void launchExperiment(String airavataExperimentId, String airavataCredStoreToken) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+    public ValidationResults launchExperiment(String airavataExperimentId, String airavataCredStoreToken) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
         final OrchestratorService.Client orchestratorClient = getOrchestratorClient();
         final String expID = airavataExperimentId;
         (new Thread(){
@@ -524,6 +525,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 }
             }
         }).start();
+        return null;
     }
 
 	private OrchestratorService.Client getOrchestratorClient() {
